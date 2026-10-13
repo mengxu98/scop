@@ -84,7 +84,7 @@ test_that("COMMOT environment is isolated and pinned to official Python 3.9", {
   expect_false("commot" %in% getFromNamespace("default_env_modules", "scop")())
   req <- env_requirements(modules = "commot")
   expect_identical(req$python, "3.9-1")
-  expect_match(unname(req$packages[["commot"]]), "zcang/COMMOT.git@d117445bc07e")
+  expect_match(unname(req$packages[["commot"]]), "zcang/COMMOT.git")
   expect_identical(unname(req$packages[["numpy"]]), "numpy==1.22.4")
   expect_error(
     getFromNamespace("normalize_env_modules", "scop")(c("commot", "scanpy")),
@@ -109,7 +109,7 @@ test_that("COMMOT runtime preflight checks its pinned standalone stack", {
   )
   expect_identical(unname(checked[["numpy"]]), "numpy==1.22.4")
   expect_identical(unname(checked[["scanpy"]]), "scanpy==1.8.2")
-  expect_match(unname(checked[["commot"]]), "zcang/COMMOT.git@d117445bc07e")
+  expect_match(unname(checked[["commot"]]), "zcang/COMMOT.git")
 })
 
 test_that("RunCOMMOT stores transport mass without inventing p-values", {
@@ -155,8 +155,10 @@ test_that("RunCOMMOT retains official cluster p-values and stored directions", {
 
 test_that("COMMOTPlot forwards theme controls to the network plot", {
   mock_commot_execute()
-  out <- RunCOMMOT(make_commot_test_object(), group.by = "celltype",
-    coord.cols = c("col", "row"), backend = "r", verbose = FALSE)
+  out <- RunCOMMOT(make_commot_test_object(),
+    group.by = "celltype",
+    coord.cols = c("col", "row"), backend = "r", verbose = FALSE
+  )
   before <- out@tools
   testthat::local_mocked_bindings(
     CCCNetworkPlot = function(object, method, plot_type, theme_use = NULL, theme_args = NULL, ...) {

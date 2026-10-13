@@ -39,7 +39,6 @@ except ModuleNotFoundError as e:
     ) from e
 
 
-BACKEND_COMMIT = "c03d1ca0bb963f550001c6070d4986a61ec8456a"
 PRODUCER = "RunCell2fate"
 RUNNER_SCHEMA_VERSION = 1
 
@@ -160,10 +159,9 @@ def _installed_backend_commit() -> str:
           message_type="error")
     metadata = json.loads(direct_url)
     observed = metadata.get("vcs_info", {}).get("commit_id")
-    if observed != BACKEND_COMMIT:
+    if not isinstance(observed, str) or not observed:
         log_message(
-            "Cell2fate backend commit mismatch: expected "
-            f"{BACKEND_COMMIT}, observed {observed or 'unknown'}. Recreate the "
+            "Cell2fate installation has no Git revision metadata; recreate the "
             "cell2fate_env with scop::PrepareEnv(modules = 'cell2fate', force = TRUE)",
           message_type="error")
     return observed
@@ -387,6 +385,7 @@ def _can_resume(
     fingerprint: str,
     parameters: dict[str, Any],
     require_velocity: bool,
+    backend_commit: str,
 ) -> bool:
     if not _is_owned_result(paths):
         return False
@@ -417,7 +416,7 @@ def _can_resume(
         and manifest.get("runner_schema_version") == RUNNER_SCHEMA_VERSION
         and manifest.get("input_sha256") == fingerprint
         and observed_parameter_fingerprint == _parameter_fingerprint(parameters)
-        and manifest.get("backend_commit") == BACKEND_COMMIT
+        and manifest.get("backend_commit") == backend_commit
         and manifest.get("status") == "complete"
         and _artifacts_match(
             manifest,
@@ -603,6 +602,7 @@ def _run_locked(config: dict[str, Any], lock_token: str) -> None:
         fingerprint,
         parameters,
         require_velocity=store_velocity,
+        backend_commit=observed_commit,
     ):
         _assert_external_lock(result_dir, lock_token)
         manifest = _read_json(paths["manifest"])

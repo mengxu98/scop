@@ -1,5 +1,5 @@
 name: Install external R packages
-description: Install pinned CI or optional packages into a dedicated library outside the project dependencies.
+description: Install CI or optional packages into a dedicated library outside the project dependencies.
 
 inputs:
   packages:

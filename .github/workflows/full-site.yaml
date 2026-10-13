@@ -38,6 +38,7 @@ jobs:
           extra-packages: |
             any::pkgdown
             local::.
+            github::immunogenomics/harmony
             bioc::org.Mm.eg.db
             bioc::GO.db
             any::shadowtext

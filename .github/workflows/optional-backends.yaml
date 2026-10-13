@@ -20,7 +20,7 @@ jobs:
           - suite: monocle2
             filter: monocle2
             packages: |-
-              mengxu98/monocle@ed3e7698f80ebdda8fb86be94a948e0c1353a769
+              mengxu98/monocle
               DDRTree@0.1.6
             required: |-
               monocle
@@ -28,20 +28,20 @@ jobs:
           - suite: giotto
             filter: framework-bridges|param-list-utils|pr306-spatial-baseline
             packages: |-
-              giotto-suite/Giotto@080d2e206c2f8b567a9ec2527297b6abd463ee64
+              giotto-suite/Giotto
               cran::geometry
             required: |-
               Giotto
               geometry
           - suite: tage
             filter: runtage-preprocessing|tage-cpp
-            packages: Gladyshev-Lab/tAge@d2bae09a2409deb42031f2b31aa3d9f391d5e2ab
+            packages: Gladyshev-Lab/tAge
             required: tAge
           - suite: cibersort
             filter: cibersort-cpp
             packages: |-
               bioc::preprocessCore
-              Moonerss/CIBERSORT@583877726927327fad6417be49abe4eb8c3d02f6
+              Moonerss/CIBERSORT
             required: CIBERSORT
 
     name: optional (${{ matrix.suite }})

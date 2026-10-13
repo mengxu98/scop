@@ -41,7 +41,7 @@
 #' `"python"`, preserves the existing Python-only behavior. The R component
 #' collects packages declared through `check_r()` and checks/installs them,
 #' including optional workflow dependencies not listed in `DESCRIPTION`.
-#' CHOIR is R-only, so `PrepareEnv(modules = "choir")` prepares its pinned
+#' CHOIR is R-only, so `PrepareEnv(modules = "choir")` prepares its
 #' optional R backend without creating a Python environment.
 #' @param cores Number of workers for R-package installation. Use `NULL` (the
 #' default) to let pak select its worker count automatically.
@@ -627,10 +627,7 @@ env_module_requirements <- function() {
   scenic_pkg <- stats::setNames(scenic_backend_requirement(), scenic_backend)
   scenic_method <- stats::setNames("pip", scenic_backend)
   scmalignantfinder_packages <- c(
-    "scMalignantFinder" = paste0(
-      "git+https://github.com/Jonyyqn/scMalignantFinder.git@",
-      "6ed094279c7adbbca30f2c73245fc074894d3715"
-    )
+    "scMalignantFinder" = "git+https://github.com/Jonyyqn/scMalignantFinder.git"
   )
   scmalignantfinder_methods <- c("scMalignantFinder" = "pip")
   if (is_osx()) {
@@ -690,24 +687,15 @@ env_module_requirements <- function() {
     cell2fate = env_python_spec(
       c(
         "jaxlib" = "jaxlib==0.4.10",
-        "cell2fate" = paste0(
-          "git+https://github.com/BayraktarLab/cell2fate.git@",
-          "c03d1ca0bb963f550001c6070d4986a61ec8456a"
-        )
+        "cell2fate" = "git+https://github.com/BayraktarLab/cell2fate.git"
       ),
       methods = c("jaxlib" = "conda", "cell2fate" = "pip")
     ),
     commot = env_python_spec(c(
-      "commot" = paste0(
-        "git+https://github.com/zcang/COMMOT.git@",
-        "d117445bc07eaa19109c7609e97d9e35b26e99ca"
-      )
+      "commot" = "git+https://github.com/zcang/COMMOT.git"
     )),
     spatialdm = env_python_spec(c(
-      "SpatialDM" = paste0(
-        "git+https://github.com/StatBiomed/SpatialDM.git@",
-        "9b0f559dfd152c361fdd311b129cda84692349f3"
-      )
+      "SpatialDM" = "git+https://github.com/StatBiomed/SpatialDM.git"
     )),
     magic = env_python_spec(c("magic-impute" = "magic-impute==3.0.0")),
     scfea = env_python_spec(c(
@@ -871,7 +859,7 @@ ensure_external_wrapper_r_packages <- function(modules, verbose = TRUE) {
   repos <- c(
     secact = "data2intelligence/SecAct",
     scpagwas = "sulab-wmu/scPagwas",
-    choir = "corceslab/CHOIR@e9ebfbc9089beeaf4ca088c7b81b18f39758b0bc"
+    choir = "corceslab/CHOIR"
   )
   modules <- intersect(names(repos), modules)
   if (length(modules) == 0) {
@@ -929,7 +917,7 @@ env_r_packages <- function(modules = NULL) {
   module_packages <- c(
     secact = "data2intelligence/SecAct",
     scpagwas = "sulab-wmu/scPagwas",
-    choir = "corceslab/CHOIR@e9ebfbc9089beeaf4ca088c7b81b18f39758b0bc"
+    choir = "corceslab/CHOIR"
   )
   unique(c(
     description_packages,

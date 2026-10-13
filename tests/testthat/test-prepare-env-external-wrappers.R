@@ -12,10 +12,7 @@ test_that("scMalignantFinder module declares Python runtime requirements", {
 
   expect_identical(
     unname(req$packages[["scMalignantFinder"]]),
-    paste0(
-      "git+https://github.com/Jonyyqn/scMalignantFinder.git@",
-      "6ed094279c7adbbca30f2c73245fc074894d3715"
-    )
+    "git+https://github.com/Jonyyqn/scMalignantFinder.git"
   )
   expect_identical(unname(req$install_methods[["scMalignantFinder"]]), "pip")
   expect_identical(unname(req$packages[["numpy"]]), "numpy==1.26.4")
@@ -49,7 +46,7 @@ test_that("external wrapper R packages remain optional explicit installs", {
     c(
       "data2intelligence/SecAct",
       "sulab-wmu/scPagwas",
-      "corceslab/CHOIR@e9ebfbc9089beeaf4ca088c7b81b18f39758b0bc"
+      "corceslab/CHOIR"
     )
   )
   expect_equal(
@@ -61,7 +58,7 @@ test_that("external wrapper R packages remain optional explicit installs", {
 test_that("PrepareEnv exposes CHOIR as an optional R module", {
   packages <- getFromNamespace("env_r_packages", "scop")("choir")
 
-  expect_true("corceslab/CHOIR@e9ebfbc9089beeaf4ca088c7b81b18f39758b0bc" %in% packages)
+  expect_true("corceslab/CHOIR" %in% packages)
 })
 
 test_that("PrepareEnv supports explicit R and Python components", {
