@@ -98,8 +98,8 @@ similar expression-shape clusters, not causal regulatory modules.
 pancreas_sub <- RunCellRankTrends(
   pancreas_sub,
   lineage = "Alpha",
-  assay = "RNA",
-  layer = "MAGIC_imputed_data",
+  assay = "MAGIC_imputed_data",
+  layer = "counts",
   top_n = 500L,
   heatmap_n = 50L,
   n_points = 200L,

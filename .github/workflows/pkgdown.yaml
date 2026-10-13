@@ -353,6 +353,13 @@ jobs:
       - name: Build home
         if: steps.scope.outputs.home_build == 'true'
         run: |
+          # Home-only builds do not run build_reference(), which normally
+          # copies README figures to their rewritten website paths.
+          if (dir.exists("man/figures")) {
+            dir.create("docs/reference", recursive = TRUE, showWarnings = FALSE)
+            stopifnot(file.copy("man/figures", "docs/reference",
+                               recursive = TRUE, overwrite = TRUE))
+          }
           pkgdown::build_home()
         shell: Rscript {0}
 

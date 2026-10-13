@@ -67,8 +67,9 @@ table(pancreas_sub$SubCellType)
 
 RNA velocity requires spliced and unspliced matrices. Generate those matrices
 outside `scop` with tools such as velocyto, bustools, or alevin-fry, then store
-them as assays in the Seurat object, or as extra layers of the `RNA` assay.
-`assay_y` accepts either location.
+them as separate `spliced` and `unspliced` assays for the native C++ example
+below. With `backend = "python"`, `assay_y` also accepts extra layers of the
+`RNA` assay; the C++ backend requires separate assays.
 
 ```{r scvelo}
 pancreas_sub <- RunSCVELO(
