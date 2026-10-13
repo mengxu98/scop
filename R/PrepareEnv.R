@@ -464,7 +464,7 @@ PrepareEnv <- function(
   env_info(
     conda = conda,
     envname = envname,
-    verbose = isTRUE(getOption("log_message.verbose", TRUE))
+    verbose = thisutils::get_verbose()
   )
 
   set_env_cache(cache_spec, python)

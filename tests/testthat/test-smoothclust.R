@@ -189,3 +189,25 @@ test_that("SmoothClust clusters are directly plottable with SpatialSpotPlot", {
   )
   expect_s3_class(p, "ggplot")
 })
+
+test_that("SmoothClust cell-column results follow current Seurat identities", {
+  with_mock_smoothclust({
+    out <- RunSmoothClust(make_smoothclust_seurat(), layer = "counts",
+      coord.cols = c("x", "y"), features = c("Gene1", "Gene2", "Gene4"),
+      min_spots = 1, k = 2, n_clusters = 2, n_pcs = 2,
+      cluster_colname = "custom_domains", tool_name = "custom_smooth", verbose = FALSE)
+  })
+  expect_spatial_result_lifecycle(out, "custom_smooth", "custom_domains", explicit_cell = TRUE)
+  # Older producer outputs used automatic row names, with the IDs in cell.
+  legacy <- out
+  legacy@tools$custom_smooth$result_index <- NULL
+  expect_equal(GetSpatialResult(legacy, "custom_smooth")$clusters$cell, colnames(out))
+  current <- subset(legacy, cells = colnames(legacy)[c(1, 3)])
+  expect_identical(GetSpatialResult(current, "custom_smooth")$clusters$cell, colnames(current))
+  broken <- out
+  broken@tools$custom_smooth$clusters$cell[1] <- "unknown"
+  expect_error(GetSpatialResult(broken, "custom_smooth"), "identities.*stale")
+  broken <- out
+  rownames(broken@tools$custom_smooth$clusters) <- rev(colnames(out))
+  expect_error(GetSpatialResult(broken, "custom_smooth"), "row names disagree")
+})

@@ -46,6 +46,12 @@
 #' display-scaled behavior used before scop 0.9.0.
 #' @param ... Additional arguments passed to `smoothclust::smoothclust()`.
 #'
+#' @details
+#' Stored results retain a private per-cell identity metadata column for
+#' [GetSpatialResult()]. Preserve this column when subsetting or renaming cells.
+#' The accessor returns current-cell assignments; stored native results and
+#' fit parameters remain unchanged.
+#'
 #' @return A `Seurat` object with smoothclust clusters in metadata. When
 #' `store_results = TRUE`, detailed outputs are stored in
 #' `srt@tools[[tool_name]]`.
@@ -151,6 +157,9 @@ RunSmoothClust <- function(
       message_type = "error"
     )
   }
+
+  previous_index <- srt@tools[[tool_name]]$result_index
+  spatial_check_identity_columns(srt, tool_name, cluster_colname)
 
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   if (!assay %in% SeuratObject::Assays(srt)) {
@@ -320,6 +329,9 @@ RunSmoothClust <- function(
         seed = seed
       )
     )
+    srt@tools[[tool_name]]$result_index <- list(method = "SmoothClust",
+      cluster_colname = cluster_colname, cells = names(clusters))
+    srt <- spatial_record_cell_identity(srt, tool_name, previous_index)
     srt@tools[[tool_name]] <- spatial_tag_coordinate_contract(srt@tools[[tool_name]])
     if (isTRUE(store_smoothed)) {
       srt@tools[[tool_name]][["smoothed"]] <- smoothed
