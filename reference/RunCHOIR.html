@@ -179,14 +179,14 @@ separate.</p></dd>
 
 <dt id="arg-max-clusters">max_clusters<a class="anchor" aria-label="anchor" href="#arg-max-clusters"></a></dt>
 <dd><p>Must be <code>"auto"</code>. Numeric limits are rejected because
-the pinned upstream backend can fail to terminate when the number of
+the upstream backend can fail to terminate when the number of
 clusters plateaus.</p></dd>
 
 
 <dt id="arg-normalization-method">normalization_method<a class="anchor" aria-label="anchor" href="#arg-normalization-method"></a></dt>
 <dd><p>Normalization performed inside CHOIR. Use
 <code>"none"</code> for previously normalized data or <code>"SCTransform"</code> with a counts
-layer. The pinned backend does not support <code>"SCTransform"</code> for Seurat v5
+layer. The upstream backend does not support <code>"SCTransform"</code> for Seurat v5
 <code>Assay5</code> objects.</p></dd>
 
 
@@ -215,7 +215,7 @@ reduction is supplied, variable features from <code>assay</code> are used.</p></
 
 
 <dt id="arg-cores">cores<a class="anchor" aria-label="anchor" href="#arg-cores"></a></dt>
-<dd><p>Number of cores used by CHOIR. The pinned backend supports
+<dd><p>Number of cores used by CHOIR. The upstream backend supports
 macOS and Linux; Windows execution is rejected before installation.</p></dd>
 
 

@@ -114,7 +114,7 @@ workflow and requires explicit opt-in.</p>
 <span>  grn_max_depth <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  grn_max_features <span class="op">=</span> <span class="fl">0.1</span>,</span>
 <span>  grn_subsample <span class="op">=</span> <span class="fl">0.9</span>,</span>
-<span>  grn_early_stop_window_length <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  grn_early_stop_window_length <span class="op">=</span> <span class="fl">25</span>,</span>
 <span>  seed <span class="op">=</span> <span class="fl">666</span>,</span>
 <span>  cores <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  assay_name <span class="op">=</span> <span class="st">"scenicplus"</span>,</span>
@@ -124,7 +124,10 @@ workflow and requires explicit opt-in.</p>
 <span>  envname <span class="op">=</span> <span class="st">"scenicplus_env"</span>,</span>
 <span>  conda <span class="op">=</span> <span class="st">"auto"</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  srt <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  srt <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  egrn_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gsea"</span>, <span class="st">"leading_edge"</span><span class="op">)</span>,</span>
+<span>  egrn_n_perm <span class="op">=</span> <span class="fl">1000L</span>,</span>
+<span>  region_auc_rankings <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -191,13 +194,16 @@ unambiguous.</p></dd>
 <dt id="arg-tf-gene-prior">tf_gene_prior<a class="anchor" aria-label="anchor" href="#arg-tf-gene-prior"></a></dt>
 <dd><p>Optional precomputed TF-gene table with columns <code>TF</code>,
 <code>target</code>, and <code>importance</code>. When supplied with <code>backend = "cpp"</code>, C++
-GRN inference is skipped and the table is used as the TF-gene evidence layer.</p></dd>
+GRN inference is skipped and the table is used as the TF-gene evidence layer.
+If a <code>rho</code> column is absent, correlations are computed from RNA when native
+GSEA is requested.</p></dd>
 
 
 <dt id="arg-region-gene-prior">region_gene_prior<a class="anchor" aria-label="anchor" href="#arg-region-gene-prior"></a></dt>
 <dd><p>Optional precomputed region-gene table with columns
 <code>region</code>, <code>gene</code>, and <code>score</code>. When supplied with <code>backend = "cpp"</code>, C++
-peak-to-gene correlation is skipped.</p></dd>
+importance fitting is skipped. If a <code>rho</code> column is absent, correlations are
+computed from RNA and ATAC when native GSEA is requested.</p></dd>
 
 
 <dt id="arg-tf-region-prior">tf_region_prior<a class="anchor" aria-label="anchor" href="#arg-tf-region-prior"></a></dt>
@@ -335,8 +341,8 @@ round.</p></dd>
 
 <dt id="arg-grn-early-stop-window-length">grn_early_stop_window_length<a class="anchor" aria-label="anchor" href="#arg-grn-early-stop-window-length"></a></dt>
 <dd><p>Out-of-bag improvement window used for
-C++ GRNBoost2 early stopping. The RunSCENICPlus default is <code>0</code>, which
-disables early stopping to match official SCENIC+ <code>SGBM_KWARGS</code>.</p></dd>
+C++ GRNBoost2 early stopping. The default is <code>25</code>, matching the monitor
+explicitly used by official SCENIC+. Set <code>0</code> to disable early stopping.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
@@ -386,10 +392,34 @@ Default is <code>TRUE</code>.</p></dd>
 <dd><p>Deprecated alias for <code>object</code>; supply exactly one of the two. It
 will be removed in scop 1.0.0.</p></dd>
 
+
+<dt id="arg-egrn-method">egrn_method<a class="anchor" aria-label="anchor" href="#arg-egrn-method"></a></dt>
+<dd><p>Local eModule filtering. <code>"gsea"</code> computes weighted
+permutation GSEA, NES and BH-adjusted p-values in native code. <code>"leading_edge"</code>
+retains the older approximation and its unfiltered fallback.</p></dd>
+
+
+<dt id="arg-egrn-n-perm">egrn_n_perm<a class="anchor" aria-label="anchor" href="#arg-egrn-n-perm"></a></dt>
+<dd><p>Number of gene-set permutations per GSEA module.</p></dd>
+
+
+<dt id="arg-region-auc-rankings">region_auc_rankings<a class="anchor" aria-label="anchor" href="#arg-region-auc-rankings"></a></dt>
+<dd><p>Optional cell-by-region 0-based rankings for
+region signature AUC. If absent, rankings are computed locally from ATAC.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A Seurat object with SCENICPlus-style results.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>The C++ route runs locally without importing or invoking Python. Native GSEA
+filters modules before merging; it does not substitute unfiltered triplets
+when no module passes. The tool result includes module <code>gsea_statistics</code>,
+<code>region_regulon_list</code> and <code>region_auc</code> alongside gene AUC. Locally computed
+gene and region rankings use PCG tie-breaking with fixed seed 123; the
+inference and GSEA seed is controlled separately by <code>seed</code>.</p>
     </div>
 
     <div class="section level2">
