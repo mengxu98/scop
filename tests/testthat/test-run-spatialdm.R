@@ -67,7 +67,7 @@ test_that("SpatialDM stores spatial association semantics without fake edges", {
   expect_identical(out@tools$SpatialDM$cells, colnames(srt))
   expect_identical(out@tools$SpatialDM$features, rownames(srt))
   expect_identical(out@tools$SpatialDM$source$spatial$coordinate_space, "raw")
-  expect_identical(out@tools$SpatialDM$provenance$commit, "9b0f559dfd152c361fdd311b129cda84692349f3")
+  expect_identical(out@tools$SpatialDM$provenance$commit, NA_character_)
   expect_true(is.null(out@tools$CCC))
   expect_equal(scop::GetSpatialDMResult(out, type = "global")$moran_r, 0.8)
   expect_s3_class(scop::SpatialDMPlot(out, plot_type = "global"), "ggplot")
@@ -155,7 +155,7 @@ test_that("SpatialDM is registered as a non-edge CCC method", {
 test_that("SpatialDM uses a standalone pinned Python environment", {
   req <- getFromNamespace("env_requirements", "scop")(modules = "spatialdm", verbose = FALSE)
   expect_identical(req$python, "3.10-1")
-  expect_match(unname(req$packages[["SpatialDM"]]), "StatBiomed/SpatialDM.git@9b0f559d")
+  expect_match(unname(req$packages[["SpatialDM"]]), "StatBiomed/SpatialDM.git")
   expect_match(unname(req$packages[["scipy"]]), "scipy==1.11.4")
   expect_match(unname(req$packages[["anndata"]]), "anndata==0.10.8")
   expect_error(

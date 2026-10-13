@@ -1,5 +1,7 @@
 # scop (development version)
 
+* **change**: Handwritten GitHub package installs follow the repository default branch. Backend checks accept the installed revision, and Cell2fate only reuses cached results from that revision. Automatically generated renv records are retained.
+
 * **breaking**: `SCTransform()` now comes from Seurat. scop no longer exports its own method, residual kernels, or load-time signature adapter. Preprocessing calls `Seurat::SCTransform()` and leaves thread control to `Seurat::setThreads()`. `CheckDataList()` and `CheckDataMerge()` no longer accept `cores`, which only controlled that removed path.
 
 * **fix**: SCT integration uses features present in every native layer model, completes residuals from the recorded source assay, and preserves all original models during legacy integration.

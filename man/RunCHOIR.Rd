@@ -65,12 +65,12 @@ RunCHOIR(
 separate.}
 
 \item{max_clusters}{Must be \code{"auto"}. Numeric limits are rejected because
-the pinned upstream backend can fail to terminate when the number of
+the upstream backend can fail to terminate when the number of
 clusters plateaus.}
 
 \item{normalization_method}{Normalization performed inside CHOIR. Use
 \code{"none"} for previously normalized data or \code{"SCTransform"} with a counts
-layer. The pinned backend does not support \code{"SCTransform"} for Seurat v5
+layer. The upstream backend does not support \code{"SCTransform"} for Seurat v5
 \code{Assay5} objects.}
 
 \item{batch.by}{Optional metadata column containing batch labels.}
@@ -87,7 +87,7 @@ reduction is supplied, variable features from \code{assay} are used.}
 
 \item{atac}{Whether the selected assay contains ATAC-seq data.}
 
-\item{cores}{Number of cores used by CHOIR. The pinned backend supports
+\item{cores}{Number of cores used by CHOIR. The upstream backend supports
 macOS and Linux; Windows execution is rejected before installation.}
 
 \item{seed}{Random seed passed to CHOIR.}

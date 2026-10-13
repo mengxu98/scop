@@ -62,7 +62,7 @@ method-specific workflows.}
 \code{"python"}, preserves the existing Python-only behavior. The R component
 collects packages declared through \code{check_r()} and checks/installs them,
 including optional workflow dependencies not listed in \code{DESCRIPTION}.
-CHOIR is R-only, so \code{PrepareEnv(modules = "choir")} prepares its pinned
+CHOIR is R-only, so \code{PrepareEnv(modules = "choir")} prepares its
 optional R backend without creating a Python environment.}
 
 \item{cores}{Number of workers for R-package installation. Use \code{NULL} (the

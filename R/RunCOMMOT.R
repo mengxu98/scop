@@ -1,4 +1,3 @@
-
 commot_validate_param_list <- function(x, name) {
   if (!is.list(x) || (length(x) > 0L && (is.null(names(x)) || any(!nzchar(names(x)))))) {
     log_message("{.arg {name}} must be a named list", message_type = "error")
@@ -407,7 +406,7 @@ RunCOMMOT <- function(
     provenance = list(
       producer = "RunCOMMOT", backend_id = "commot",
       backend_version = as.character(versions[["commot"]] %||% NA_character_),
-      repository = "zcang/COMMOT", commit = "d117445bc07eaa19109c7609e97d9e35b26e99ca",
+      repository = "zcang/COMMOT", commit = executed$manifest$backend_commit %||% NA_character_,
       manifest = executed$manifest
     )
   )

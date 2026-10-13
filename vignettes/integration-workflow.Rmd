@@ -35,11 +35,11 @@ resolve that experimental-design problem.
 SCOP's `RunHarmony2()` checks the official GitHub package origin. A CRAN
 installation with the same package name does not satisfy that check and can
 trigger an installation attempt in the middle of an analysis. Install the
-exact source before starting this page, then restart R:
+official GitHub source before starting this page, then restart R:
 
 ```r
 remotes::install_github(
-  "immunogenomics/harmony@df19af23ae0639bd6ea2da63898f973f08c85862",
+  "immunogenomics/harmony",
   upgrade = "never"
 )
 ```
@@ -59,7 +59,7 @@ library(scop)
 set.seed(11)
 harmony_source <- utils::packageDescription("harmony")
 stopifnot(identical(harmony_source$RemoteUsername, "immunogenomics"),
-          identical(harmony_source$RemoteSha, "df19af23ae0639bd6ea2da63898f973f08c85862"))
+          identical(harmony_source$RemoteRepo, "harmony"))
 data.frame(package = "harmony", version = harmony_source$Version,
            source = paste(harmony_source$RemoteUsername, harmony_source$RemoteRepo, sep = "/"),
            revision = harmony_source$RemoteSha)

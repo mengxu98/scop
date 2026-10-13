@@ -206,12 +206,7 @@ RunCell2fate <- function(
   )
   runtime_ok <- check_python(
     c(
-      paste0(
-        "git+https://github.com/",
-        "BayraktarLab/cell2fate",
-        ".git@",
-        "c03d1ca0bb963f550001c6070d4986a61ec8456a"
-      ),
+      "git+https://github.com/BayraktarLab/cell2fate.git",
       "scvi-tools==0.16.1",
       "anndata==0.8.0",
       "scanpy==1.9.1",
@@ -499,8 +494,7 @@ cell2fate_prepare_result_dir <- function(result_dir) {
     runner_write_json(
       list(
         producer = "RunCell2fate",
-        runner_schema_version = 1L,
-        backend_commit = "c03d1ca0bb963f550001c6070d4986a61ec8456a"
+        runner_schema_version = 1L
       ),
       file.path(result_dir, ".cell2fate.json")
     )
@@ -579,7 +573,10 @@ cell2fate_validate_manifest <- function(
     !is.na(schema) &&
     schema == 1L &&
     identical(manifest[["status"]], "complete") &&
-    identical(manifest[["backend_commit"]], "c03d1ca0bb963f550001c6070d4986a61ec8456a") &&
+    is.character(manifest[["backend_commit"]]) &&
+    length(manifest[["backend_commit"]]) == 1L &&
+    !is.na(manifest[["backend_commit"]]) &&
+    nzchar(manifest[["backend_commit"]]) &&
     identical(manifest[["request_id"]], request_id) &&
     is.list(artifacts) &&
     !is.null(names(artifacts)) &&
