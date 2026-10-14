@@ -2,9 +2,10 @@ make_atac_hvf_rank_object <- function(offset = 0L, prefix = "cell") {
   skip_if_not_installed("Signac")
   counts <- Matrix::Matrix(matrix(rep(12:1, 8), nrow = 12), sparse = TRUE)
   dimnames(counts) <- list(paste0("peak", 1:12), paste0(prefix, 1:8))
-  ranges <- GenomicRanges::GRanges(
-    "chr1", IRanges::IRanges(seq(1, by = 1000, length.out = 12) + offset, width = 50)
-  )
+  starts <- seq(1, by = 1000, length.out = 12) + offset
+  ranges <- GenomicRanges::makeGRangesFromDataFrame(data.frame(
+    seqnames = "chr1", start = starts, end = starts + 49
+  ))
   assay <- Signac::CreateChromatinAssay(
     counts = counts, ranges = ranges, min.cells = 0, min.features = 0,
     verbose = FALSE
