@@ -47,6 +47,8 @@ Imports:
     utils,
     uwot
 Suggests:
+    Biostrings,
+    BSgenome,
     GenomeInfoDb,
     hdf5r,
     Rsamtools,
