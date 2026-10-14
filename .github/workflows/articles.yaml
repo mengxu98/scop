@@ -50,6 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     concurrency:
       group: scop-pages-publish
+      queue: max
 
     steps:
       - uses: actions/checkout@v5
