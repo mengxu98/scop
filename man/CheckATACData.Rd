@@ -21,7 +21,10 @@ complete labels, not whether samples are independent biological replicates.}
 A list with \code{valid}, \code{errors}, \code{warnings}, \code{assay}, \code{n_cells},
 \code{n_peaks}, \code{genome}, \code{samples}, a \code{fragments} resource table, and
 \code{fragments_ready}. \code{valid} describes the matrix contract. Fragment readiness
-checks local file/index existence and cell mapping; it does not hash files,
+checks local file/index existence and cell mapping for resources with cells
+in the selected assay. The resource table retains all attached files; its
+\code{active} column identifies those required for this assay. Empty mappings
+left by native subsetting do not block readiness. It does not hash files,
 scan their contents, or guarantee fragment-dependent computation will pass.
 Use Signac's \code{ValidateFragments()} for content validation when required.
 }

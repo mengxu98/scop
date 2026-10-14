@@ -198,7 +198,21 @@ test_that("fragment mappings distinguish repeated barcodes across captures and s
   bad[["peaks"]]@fragments[[1]]@cells[] <- "AA-1"
   expect_true(CheckATACData(bad)$valid)
   expect_false(CheckATACData(bad)$fragments_ready)
+  capture <- subset(restored, cells = names(maps[[1]]))
+  capture_report <- CheckATACData(capture)
+  expect_true(capture_report$fragments_ready)
+  expect_identical(capture_report$fragments$active, c(TRUE, FALSE))
+  expect_equal(capture_report$fragments$n_cells, c(2L, 0L))
+  incomplete <- capture
+  incomplete[["peaks"]]@fragments[[1]]@cells <- maps[[1]][1L]
+  expect_false(CheckATACData(incomplete)$fragments_ready)
+  unlink(paths[2])
+  inactive_missing <- CheckATACData(capture)
+  expect_true(inactive_missing$fragments_ready)
+  expect_false(inactive_missing$fragments$file_exists[2L])
+  expect_identical(inactive_missing$warnings, capture_report$warnings)
   unlink(paths[1])
+  expect_false(CheckATACData(capture)$fragments_ready)
   missing <- CheckATACData(restored)
   expect_true(missing$valid)
   expect_false(missing$fragments_ready)

@@ -18,7 +18,10 @@
 #' @return A list with `valid`, `errors`, `warnings`, `assay`, `n_cells`,
 #'   `n_peaks`, `genome`, `samples`, a `fragments` resource table, and
 #'   `fragments_ready`. `valid` describes the matrix contract. Fragment readiness
-#'   checks local file/index existence and cell mapping; it does not hash files,
+#'   checks local file/index existence and cell mapping for resources with cells
+#'   in the selected assay. The resource table retains all attached files; its
+#'   `active` column identifies those required for this assay. Empty mappings
+#'   left by native subsetting do not block readiness. It does not hash files,
 #'   scan their contents, or guarantee fragment-dependent computation will pass.
 #'   Use Signac's `ValidateFragments()` for content validation when required.
 #' @seealso [ReadATACData()], [RunStandardWorkflow()]
@@ -40,7 +43,8 @@ CheckATACData <- function(object, assay = NULL, genome = NULL, sample.by = NULL)
     samples = NULL,
     fragments = data.frame(
       path = character(), index = character(),
-      file_exists = logical(), index_exists = logical(), n_cells = integer()
+      file_exists = logical(), index_exists = logical(), n_cells = integer(),
+      active = logical()
     ),
     fragments_ready = FALSE
   )
@@ -116,22 +120,26 @@ CheckATACData <- function(object, assay = NULL, genome = NULL, sample.by = NULL)
       data.frame(
         path = path, index = index,
         file_exists = file.exists(path), index_exists = file.exists(index),
-        n_cells = length(Signac::GetFragmentData(fragment, slot = "cells"))
+        n_cells = length(Signac::GetFragmentData(fragment, slot = "cells")),
+        active = any(names(Signac::GetFragmentData(fragment, slot = "cells")) %in% cells)
       )
     }))
     mappings <- lapply(fragment_objects, Signac::GetFragmentData, slot = "cells")
+    mappings <- lapply(mappings, function(x) x[names(x) %in% cells])
+    mappings <- mappings[report$fragments$active]
     mapped_cells <- unlist(lapply(mappings, names), use.names = FALSE)
     mapping_ok <- all(vapply(mappings, function(x) {
       atac_unique_ids(x) && atac_unique_ids(names(x))
     }, logical(1))) && !anyDuplicated(mapped_cells) && all(cells %in% mapped_cells)
-    report$fragments_ready <- all(report$fragments$file_exists & report$fragments$index_exists) && mapping_ok
+    resources_ready <- all((report$fragments$file_exists & report$fragments$index_exists)[report$fragments$active])
+    report$fragments_ready <- resources_ready && mapping_ok
     if (!mapping_ok) {
       report$warnings <- c(
         report$warnings,
         "Fragment mappings require unique non-empty barcodes per file and unique coverage of assay cells."
       )
     }
-    if (!all(report$fragments$file_exists & report$fragments$index_exists)) {
+    if (!resources_ready) {
       report$warnings <- c(report$warnings, "External fragment files or indexes are missing; matrix-only analysis remains available.")
     }
   } else {
