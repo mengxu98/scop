@@ -102,6 +102,7 @@ reference:
   - ReadATACData
   - ReadMultiomeData
   - CheckATACData
+  - RunGeneActivity
 
 - subtitle: "Quality Control"
 - contents:

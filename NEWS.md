@@ -1,5 +1,7 @@
 # scop (development version)
 
+* **feature**: `RunGeneActivity()` wraps native Signac fragment-based gene-body/promoter counting with explicit annotation identity/reference checks and active-capture validation. Results enter a new assay with provenance; ambiguous native IDs are rejected rather than merged or reconstructed.
+
 * **fix**: `CheckATACData()` determines fragment readiness from resources mapped to the selected assay cells, preserving inactive resources in its report after native subsetting.
 
 * **feature**: `ReadATACData()` and `ReadMultiomeData()` import existing raw peak and paired RNA counts through Signac/Seurat, preserving explicit feature and barcode alignment. `CheckATACData()` reports matrix/reference validity and external fragment availability without altering the object.
