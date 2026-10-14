@@ -135,10 +135,38 @@ CheckDataType.default <- function(
 #' @param HVF_min_intersection The feature needs to be present in batches for a minimum number of times in order to be considered as highly variable.
 #' @param vars_to_regress A vector of variable names to include as additional regression variables.
 #'
+#' @details
+#' For chromatin assays with `HVF_source = "separate"`, native
+#' [Seurat::SelectIntegrationFeatures()] ranks peaks by the number of batches
+#' selecting them, then by their median variable-feature rank. The `nHVF` cap
+#' is also limited to the smallest per-batch variable-feature count;
+#' `HVF_min_intersection` is applied to the ranked selection. This preserves
+#' native within-batch peak frequency ranking instead of sorting tied peak IDs.
+#'
 #' @return
 #' A list containing the preprocessed `Seurat` objects,
 #' the highly variable features, the assay name,
 #' and the type of assay.
+#'
+#' @examples
+#' counts <- matrix(rep(6:1, 4),
+#'   nrow = 6,
+#'   dimnames = list(
+#'     paste0("chr1-", seq(1, 501, 100), "-", seq(50, 550, 100)),
+#'     paste0("cell", 1:4)
+#'   )
+#' )
+#' peaks <- Signac::CreateChromatinAssay(counts,
+#'   min.cells = 0,
+#'   min.features = 0, verbose = FALSE
+#' )
+#' object <- SeuratObject::CreateSeuratObject(peaks, assay = "peaks")
+#' checked <- CheckDataList(list(object),
+#'   batch = "sample", assay = "peaks",
+#'   do_normalization = FALSE, normalization_method = "TFIDF", nHVF = 3,
+#'   verbose = FALSE
+#' )
+#' checked$HVF
 #'
 #' @export
 CheckDataList <- function(
@@ -612,7 +640,17 @@ CheckDataList <- function(
             function(srt) length(SeuratObject::VariableFeatures(srt))
           ))
         )
-        HVF <- names(utils::head(HVF_filter, nHVF_use))
+        HVF <- if (nHVF_use > 0) {
+          SelectIntegrationFeatures(
+            object.list = srt_list,
+            nfeatures = nHVF_use,
+            assay = rep(assay, length(srt_list)),
+            verbose = FALSE
+          )
+        } else {
+          character()
+        }
+        HVF <- intersect(HVF, names(HVF_filter))
       }
       if (length(HVF) == 0) {
         log_message(
