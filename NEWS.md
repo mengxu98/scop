@@ -1,5 +1,7 @@
 # scop (development version)
 
+* **feature**: `RunChromVAR()` computes native GC-corrected motif-accessibility deviations from existing aligned motif annotations and an explicit sequence reference. It preserves native scores, backgrounds and bias in a new data-only assay without changing source counts or caller RNG state.
+
 * **fix**: `CheckATACData()` determines fragment readiness from resources mapped to the selected assay cells, preserving inactive resources in its report after native subsetting.
 
 * **feature**: `ReadATACData()` and `ReadMultiomeData()` import existing raw peak and paired RNA counts through Signac/Seurat, preserving explicit feature and barcode alignment. `CheckATACData()` reports matrix/reference validity and external fragment availability without altering the object.

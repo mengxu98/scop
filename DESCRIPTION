@@ -47,6 +47,9 @@ Imports:
     utils,
     uwot
 Suggests:
+    chromVAR,
+    Biostrings,
+    BSgenome,
     GenomeInfoDb,
     hdf5r,
     Rsamtools,

@@ -102,6 +102,7 @@ reference:
   - ReadATACData
   - ReadMultiomeData
   - CheckATACData
+  - RunChromVAR
 
 - subtitle: "Quality Control"
 - contents:
