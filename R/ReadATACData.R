@@ -405,3 +405,19 @@ atac_new_assay_name <- function(object, name) {
   }
   invisible(name)
 }
+
+
+atac_qc_ranges <- function(regions, chromatin, label) {
+  if (!inherits(regions, "GRanges")) log_message(paste0(label, " must be a GRanges object."), message_type = "error")
+  if (any(GenomicRanges::start(regions) < 1L |
+    GenomicRanges::end(regions) < GenomicRanges::start(regions))) {
+    log_message(paste0(label, " requires positive 1-based closed intervals."), message_type = "error")
+  }
+  get_genome <- atac_backend_fun("GenomeInfoDb", "genome")
+  labels <- unique(c(
+    as.character(get_genome(chromatin)),
+    as.character(get_genome(Signac::granges(chromatin))), as.character(get_genome(regions))
+  ))
+  labels <- labels[!is.na(labels) & nzchar(labels)]
+  if (length(labels) > 1L) log_message(paste0(label, " and assay genome labels must agree."), message_type = "error")
+}
