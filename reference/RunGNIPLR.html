@@ -215,40 +215,27 @@ doi:10.1093/bioinformatics/btab099.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">expr</span> <span class="op">&lt;-</span> <span class="fu"><a href="GetAssayData5.html">GetAssayData5</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  assay <span class="op">=</span> <span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/DefaultAssay.html" class="external-link">DefaultAssay</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  layer <span class="op">=</span> <span class="st">"counts"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">expr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">expr</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">8</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">expr</span> <span class="op">&lt;-</span> <span class="va">expr</span><span class="op">[</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">expr</span>, <span class="fl">1</span>, <span class="fu">stats</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">var</a></span><span class="op">)</span>, decreasing <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span><span class="op">]</span>,</span></span>
-<span class="r-in"><span><span class="op">]</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">grn</span> <span class="op">&lt;-</span> <span class="fu">RunGNIPLR</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">expr</span>,</span></span>
-<span class="r-in"><span>  genes_in <span class="op">=</span> <span class="st">"rows"</span>,</span></span>
-<span class="r-in"><span>  correlation_threshold <span class="op">=</span> <span class="fl">0</span>,</span></span>
-<span class="r-in"><span>  lasso_degree <span class="op">=</span> <span class="fl">1</span>,</span></span>
-<span class="r-in"><span>  max_lag <span class="op">=</span> <span class="fl">1</span>,</span></span>
-<span class="r-in"><span>  max_edges_per_target <span class="op">=</span> <span class="fl">2</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-13 16:56:35] Running <span style="color: #0000BB;">GNIPLR</span> with `backend = cpp` on <span style="color: #0000BB;">5</span> genes and <span style="color: #0000BB;">8</span> cells</span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">grn</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     TF target importance      pvalue</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 Iapp   Nnat  2.2454349 0.005682836</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9 Rbp4   Spp1  1.6205718 0.023956766</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4  Pyy   Nnat  1.1742331 0.066952521</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7 Iapp   Rbp4  1.0851237 0.082200850</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8 Nnat   Rbp4  1.0308208 0.093149207</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 Nnat    Pyy  0.9471533 0.112939714</span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">grn</span>, <span class="st">"grn_matrix"</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>           Iapp       Pyy        Nnat</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iapp 0.0000000 0.9390915 0.005682836</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Pyy  0.8998447 0.0000000 0.066952521</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Nnat 0.3772449 0.1129397 0.000000000</span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
+<span><span class="va">expr</span> <span class="op">&lt;-</span> <span class="fu"><a href="GetAssayData5.html">GetAssayData5</a></span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  assay <span class="op">=</span> <span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/DefaultAssay.html" class="external-link">DefaultAssay</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span>,</span>
+<span>  layer <span class="op">=</span> <span class="st">"counts"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">expr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">expr</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">8</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">expr</span> <span class="op">&lt;-</span> <span class="va">expr</span><span class="op">[</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">expr</span>, <span class="fl">1</span>, <span class="fu">stats</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">var</a></span><span class="op">)</span>, decreasing <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span><span class="op">]</span>,</span>
+<span><span class="op">]</span></span>
+<span></span>
+<span><span class="va">grn</span> <span class="op">&lt;-</span> <span class="fu">RunGNIPLR</span><span class="op">(</span></span>
+<span>  <span class="va">expr</span>,</span>
+<span>  genes_in <span class="op">=</span> <span class="st">"rows"</span>,</span>
+<span>  correlation_threshold <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  lasso_degree <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  max_lag <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  max_edges_per_target <span class="op">=</span> <span class="fl">2</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">grn</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">grn</span>, <span class="st">"grn_matrix"</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

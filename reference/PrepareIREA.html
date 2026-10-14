@@ -141,15 +141,14 @@ resolution. Nature 625, 377-384 (2024). doi:10.1038/s41586-023-06816-9.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="va">references</span> <span class="op">&lt;-</span> <span class="fu">PrepareIREA</span><span class="op">(</span>db <span class="op">=</span> <span class="st">"IREA_NK_cell"</span>, species <span class="op">=</span> <span class="st">"Mus_musculus"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunIREA.html">RunIREA</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Isg15"</span>, <span class="st">"Ifit3"</span>, <span class="st">"Bst2"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  reference <span class="op">=</span> <span class="va">references</span><span class="op">[[</span><span class="st">"Mus_musculus"</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"IREA_NK_cell"</span><span class="op">]</span><span class="op">]</span>,</span></span>
-<span class="r-in"><span>  analysis <span class="op">=</span> <span class="st">"cell_polarization"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="IREAPlot.html">IREAPlot</a></span><span class="op">(</span><span class="va">result</span>, plot_type <span class="op">=</span> <span class="st">"radar"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span>
+<span><span class="va">references</span> <span class="op">&lt;-</span> <span class="fu">PrepareIREA</span><span class="op">(</span>db <span class="op">=</span> <span class="st">"IREA_NK_cell"</span>, species <span class="op">=</span> <span class="st">"Mus_musculus"</span><span class="op">)</span></span>
+<span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunIREA.html">RunIREA</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Isg15"</span>, <span class="st">"Ifit3"</span>, <span class="st">"Bst2"</span><span class="op">)</span>,</span>
+<span>  reference <span class="op">=</span> <span class="va">references</span><span class="op">[[</span><span class="st">"Mus_musculus"</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"IREA_NK_cell"</span><span class="op">]</span><span class="op">]</span>,</span>
+<span>  analysis <span class="op">=</span> <span class="st">"cell_polarization"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="IREAPlot.html">IREAPlot</a></span><span class="op">(</span><span class="va">result</span>, plot_type <span class="op">=</span> <span class="st">"radar"</span><span class="op">)</span></span>
+<span><span class="op">}</span> <span class="co"># }</span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

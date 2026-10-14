@@ -158,7 +158,7 @@ source is available. The default is resolved from common coordinate names.</p></
 
 
 <dt id="arg-algo">algo<a class="anchor" aria-label="anchor" href="#arg-algo"></a></dt>
-<dd><p>Clustering algorithm passed to <code><a href="https://rdrr.io/pkg/Banksy/man/clusterBanksy.html" class="external-link">Banksy::clusterBanksy()</a></code>.</p></dd>
+<dd><p>Clustering algorithm passed to <code>Banksy::clusterBanksy()</code>.</p></dd>
 
 
 <dt id="arg-k-neighbors">k_neighbors<a class="anchor" aria-label="anchor" href="#arg-k-neighbors"></a></dt>
@@ -180,22 +180,22 @@ scaling. It is an algorithm parameter and does not split sample fits.</p></dd>
 
 <dt id="arg-compute-banksy-params">compute_banksy_params<a class="anchor" aria-label="anchor" href="#arg-compute-banksy-params"></a></dt>
 <dd><p>Additional parameters passed to
-<code><a href="https://rdrr.io/pkg/Banksy/man/computeBanksy.html" class="external-link">Banksy::computeBanksy()</a></code>.</p></dd>
+<code>Banksy::computeBanksy()</code>.</p></dd>
 
 
 <dt id="arg-run-pca-params">run_pca_params<a class="anchor" aria-label="anchor" href="#arg-run-pca-params"></a></dt>
 <dd><p>Additional parameters passed to
-<code><a href="https://rdrr.io/pkg/Banksy/man/runBanksyPCA.html" class="external-link">Banksy::runBanksyPCA()</a></code>.</p></dd>
+<code>Banksy::runBanksyPCA()</code>.</p></dd>
 
 
 <dt id="arg-cluster-banksy-params">cluster_banksy_params<a class="anchor" aria-label="anchor" href="#arg-cluster-banksy-params"></a></dt>
 <dd><p>Additional parameters passed to
-<code><a href="https://rdrr.io/pkg/Banksy/man/clusterBanksy.html" class="external-link">Banksy::clusterBanksy()</a></code>.</p></dd>
+<code>Banksy::clusterBanksy()</code>.</p></dd>
 
 
 <dt id="arg-cluster-source">cluster_source<a class="anchor" aria-label="anchor" href="#arg-cluster-source"></a></dt>
 <dd><p>Optional BANKSY <code>colData</code> column to copy. If <code>NULL</code>,
-the first cluster name reported by <code><a href="https://rdrr.io/pkg/Banksy/man/clusterNames.html" class="external-link">Banksy::clusterNames()</a></code> is used when
+the first cluster name reported by <code>Banksy::clusterNames()</code> is used when
 available.</p></dd>
 
 
@@ -253,24 +253,23 @@ column; its name is recorded in <code>result_index$cell_id_colname</code>.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">keep_spots</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span>, length.out <span class="op">=</span> <span class="fl">400</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="va">visium_human_pancreas_sub</span><span class="op">[</span>, <span class="va">keep_spots</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu">RunBANKSY</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">spatial</span>,</span></span>
-<span class="r-in"><span>  layer <span class="op">=</span> <span class="st">"counts"</span>,</span></span>
-<span class="r-in"><span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">200</span><span class="op">]</span>,</span></span>
-<span class="r-in"><span>  resolution <span class="op">=</span> <span class="fl">0.6</span>,</span></span>
-<span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="SpatialSpotPlot.html">SpatialSpotPlot</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">spatial</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"BANKSY_cluster"</span>,</span></span>
-<span class="r-in"><span>  pt.size <span class="op">=</span> <span class="fl">1.5</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span></span>
+<span><span class="va">keep_spots</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span>, length.out <span class="op">=</span> <span class="fl">400</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="va">visium_human_pancreas_sub</span><span class="op">[</span>, <span class="va">keep_spots</span><span class="op">]</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span>
+<span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu">RunBANKSY</span><span class="op">(</span></span>
+<span>  <span class="va">spatial</span>,</span>
+<span>  layer <span class="op">=</span> <span class="st">"counts"</span>,</span>
+<span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">200</span><span class="op">]</span>,</span>
+<span>  resolution <span class="op">=</span> <span class="fl">0.6</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="SpatialSpotPlot.html">SpatialSpotPlot</a></span><span class="op">(</span></span>
+<span>  <span class="va">spatial</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"BANKSY_cluster"</span>,</span>
+<span>  pt.size <span class="op">=</span> <span class="fl">1.5</span></span>
+<span><span class="op">)</span></span>
+<span><span class="op">}</span> <span class="co"># }</span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

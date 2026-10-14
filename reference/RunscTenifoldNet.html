@@ -140,26 +140,26 @@ a <code>Seurat</code> object.</p></dd>
 
 
 <dt id="arg-qc-min-library-size-qc-remove-outlier-cells-qc-min-pct-qc-max-mt-ratio">qc_min_library_size, qc_remove_outlier_cells, qc_min_pct, qc_max_mt_ratio<a class="anchor" aria-label="anchor" href="#arg-qc-min-library-size-qc-remove-outlier-cells-qc-min-pct-qc-max-mt-ratio"></a></dt>
-<dd><p>Quality-control parameters forwarded to <code><a href="https://rdrr.io/pkg/scTenifoldNet/man/scQC.html" class="external-link">scTenifoldNet::scQC()</a></code>.</p></dd>
+<dd><p>Quality-control parameters forwarded to <code>scTenifoldNet::scQC()</code>.</p></dd>
 
 
 <dt id="arg-nc-nnet-nc-ncells-nc-ncomp-nc-symmetric-nc-scalescores-nc-q">nc_nNet, nc_nCells, nc_nComp, nc_symmetric, nc_scaleScores, nc_q<a class="anchor" aria-label="anchor" href="#arg-nc-nnet-nc-ncells-nc-ncomp-nc-symmetric-nc-scalescores-nc-q"></a></dt>
 <dd><p>Network
-construction parameters forwarded to <code><a href="https://rdrr.io/pkg/scTenifoldNet/man/makeNetworks.html" class="external-link">scTenifoldNet::makeNetworks()</a></code>.</p></dd>
+construction parameters forwarded to <code>scTenifoldNet::makeNetworks()</code>.</p></dd>
 
 
 <dt id="arg-td-k-td-ndecimal-td-maxiter-td-maxerror">td_K, td_nDecimal, td_maxIter, td_maxError<a class="anchor" aria-label="anchor" href="#arg-td-k-td-ndecimal-td-maxiter-td-maxerror"></a></dt>
 <dd><p>Tensor decomposition
-parameters forwarded to <code><a href="https://rdrr.io/pkg/scTenifoldNet/man/tensorDecomposition.html" class="external-link">scTenifoldNet::tensorDecomposition()</a></code>.</p></dd>
+parameters forwarded to <code>scTenifoldNet::tensorDecomposition()</code>.</p></dd>
 
 
 <dt id="arg-ma-ndim">ma_nDim<a class="anchor" aria-label="anchor" href="#arg-ma-ndim"></a></dt>
 <dd><p>Manifold-alignment dimension forwarded to
-<code><a href="https://rdrr.io/pkg/scTenifoldNet/man/manifoldAlignment.html" class="external-link">scTenifoldNet::manifoldAlignment()</a></code>.</p></dd>
+<code>scTenifoldNet::manifoldAlignment()</code>.</p></dd>
 
 
 <dt id="arg-cores">cores<a class="anchor" aria-label="anchor" href="#arg-cores"></a></dt>
-<dd><p>Number of cores forwarded to <code><a href="https://rdrr.io/pkg/scTenifoldNet/man/scTenifoldNet.html" class="external-link">scTenifoldNet::scTenifoldNet()</a></code>.</p></dd>
+<dd><p>Number of cores forwarded to <code>scTenifoldNet::scTenifoldNet()</code>.</p></dd>
 
 
 <dt id="arg-store-networks">store_networks<a class="anchor" aria-label="anchor" href="#arg-store-networks"></a></dt>
@@ -190,35 +190,30 @@ with results stored in <code>object@tools[[tool_name]]</code>.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="GetAssayData5.html">GetAssayData5</a></span><span class="op">(</span><span class="va">pancreas_sub</span>, assay <span class="op">=</span> <span class="st">"RNA"</span>, layer <span class="op">=</span> <span class="st">"counts"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">detected</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu">Matrix</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Matrix/man/colSums-methods.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">counts</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span>, decreasing <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">features_use</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">detected</span>, <span class="fl">300</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunscTenifoldNet</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  condition1 <span class="op">=</span> <span class="st">"Ductal"</span>,</span></span>
-<span class="r-in"><span>  condition2 <span class="op">=</span> <span class="st">"Endocrine"</span>,</span></span>
-<span class="r-in"><span>  features <span class="op">=</span> <span class="va">features_use</span>,</span></span>
-<span class="r-in"><span>  qc <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
-<span class="r-in"><span>  nc_nNet <span class="op">=</span> <span class="fl">3</span>,</span></span>
-<span class="r-in"><span>  nc_nCells <span class="op">=</span> <span class="fl">200</span>,</span></span>
-<span class="r-in"><span>  td_maxIter <span class="op">=</span> <span class="fl">200</span>,</span></span>
-<span class="r-in"><span>  ma_nDim <span class="op">=</span> <span class="fl">2</span>,</span></span>
-<span class="r-in"><span>  store_networks <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
-<span class="r-in"><span>  store_manifold <span class="op">=</span> <span class="cn">TRUE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-13 17:25:18] Run <span style="color: #0000BB;">scTenifoldNet</span> comparison using upstream implementation</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in get(fun, envir = ns, inherits = FALSE):</span> lazy-load database '/home/runner/work/_temp/Library/scTenifoldNet/R/scTenifoldNet.rdb' is corrupt</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">dr</span> <span class="op">&lt;-</span> <span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">scTenifoldNet</span><span class="op">$</span><span class="va">diffRegulation</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">dr</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="scTenifoldNetPlot.html">scTenifoldNetPlot</a></span><span class="op">(</span><span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"effect"</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in scTenifoldNetPlot(pancreas_sub, plot_type = "effect"):</span> Cannot find scTenifoldNet result <span style="color: #0000BB;">"scTenifoldNet"</span> in `srt@tools`</span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
+<span><span class="va">counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="GetAssayData5.html">GetAssayData5</a></span><span class="op">(</span><span class="va">pancreas_sub</span>, assay <span class="op">=</span> <span class="st">"RNA"</span>, layer <span class="op">=</span> <span class="st">"counts"</span><span class="op">)</span></span>
+<span><span class="va">detected</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu">Matrix</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Matrix/man/colSums-methods.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">counts</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span>, decreasing <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">features_use</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">detected</span>, <span class="fl">300</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunscTenifoldNet</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  condition1 <span class="op">=</span> <span class="st">"Ductal"</span>,</span>
+<span>  condition2 <span class="op">=</span> <span class="st">"Endocrine"</span>,</span>
+<span>  features <span class="op">=</span> <span class="va">features_use</span>,</span>
+<span>  qc <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  nc_nNet <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  nc_nCells <span class="op">=</span> <span class="fl">200</span>,</span>
+<span>  td_maxIter <span class="op">=</span> <span class="fl">200</span>,</span>
+<span>  ma_nDim <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  store_networks <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  store_manifold <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">dr</span> <span class="op">&lt;-</span> <span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">scTenifoldNet</span><span class="op">$</span><span class="va">diffRegulation</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">dr</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="scTenifoldNetPlot.html">scTenifoldNetPlot</a></span><span class="op">(</span><span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"effect"</span><span class="op">)</span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

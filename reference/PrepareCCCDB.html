@@ -79,7 +79,7 @@ cell-cell communication wrappers: the CellTalkDB ligand-receptor pairs
 (<code>"CellTalk"</code>) and the CellChat curated ligand-receptor database
 (<code>"CellChat"</code>). Each database is returned as a <code>TERM2GENE</code>/<code>TERM2NAME</code>
 mapping (with a <code>"ligand_*"</code>/<code>"receptor_*"</code> term convention) and cached with
-<a href="https://rdrr.io/pkg/R.cache/man/R.cache-package.html" class="external-link">R.cache</a> so that <a href="ListDB.html">ListDB</a> can list it like any other annotation database.</p>
+R.cache so that <a href="ListDB.html">ListDB</a> can list it like any other annotation database.</p>
     </div>
 
     <div class="section level2">
@@ -151,14 +151,13 @@ entries.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="va">ccc_db</span> <span class="op">&lt;-</span> <span class="fu">PrepareCCCDB</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Homo_sapiens"</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"CellChat"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ccc_db</span><span class="op">[[</span><span class="st">"Homo_sapiens"</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"CellChat"</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"TERM2GENE"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span>
+<span><span class="va">ccc_db</span> <span class="op">&lt;-</span> <span class="fu">PrepareCCCDB</span><span class="op">(</span></span>
+<span>  species <span class="op">=</span> <span class="st">"Homo_sapiens"</span>,</span>
+<span>  db <span class="op">=</span> <span class="st">"CellChat"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ccc_db</span><span class="op">[[</span><span class="st">"Homo_sapiens"</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"CellChat"</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"TERM2GENE"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="op">}</span> <span class="co"># }</span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

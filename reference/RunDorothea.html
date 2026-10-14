@@ -218,156 +218,100 @@ omics data. <em>Bioinformatics Advances</em>, 2, vbac016.
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-13 16:51:30] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunDorothea</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  layer <span class="op">=</span> <span class="st">"counts"</span>,</span></span>
-<span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span>,</span></span>
-<span class="r-in"><span>  confidence <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  method <span class="op">=</span> <span class="st">"ulm"</span>,</span></span>
-<span class="r-in"><span>  minsize <span class="op">=</span> <span class="fl">5</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-13 16:51:39] Run <span style="color: #0000BB;">"DoRothEA"</span>/<span style="color: #0000BB;">decoupleR</span> with <span style="color: #0000BB;">12895</span> regulon edges</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-13 16:51:52] <span style="color: #0000BB;">"DoRothEA"</span> TF activity scores stored in assay <span style="color: #0000BB;">"dorothea"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-13 16:51:52] <span style="color: #0000BB;">"DoRothEA"</span> TF activity scores stored in <span style="color: #0000BB;">&lt;Seurat&gt;</span> metadata</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">Dorothea</span><span class="op">$</span><span class="va">regulon_summary</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   n_tfs n_targets n_edges confidence</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1   273      5130   12895      A,B,C</span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">Dorothea</span><span class="op">$</span><span class="va">result</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   statistic source        condition     score      p_value</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1       ulm     Ar AAACCTGAGCCTTGAT 1.9230738 0.0544885134</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2       ulm     Ar AAACCTGGTAAGTGGC 3.8375556 0.0001247429</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3       ulm     Ar AAACGGGAGATATGGT 2.3175899 0.0204841737</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4       ulm     Ar AAACGGGCAAAGAATC 0.9565534 0.3388071679</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5       ulm     Ar AAACGGGGTACAGTTC 0.6864447 0.4924426684</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6       ulm     Ar AAACGGGTCAGCTCTC 1.0246312 0.3055527415</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">tf_use</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">intersect</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Sox9"</span>, <span class="st">"Neurod1"</span>, <span class="st">"Pdx1"</span>, <span class="st">"Foxa2"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">Dorothea</span><span class="op">$</span><span class="va">scores</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="FeatureDimPlot.html">FeatureDimPlot</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"dorothea"</span>,</span></span>
-<span class="r-in"><span>  features <span class="op">=</span> <span class="va">tf_use</span>,</span></span>
-<span class="r-in"><span>  ncol <span class="op">=</span> <span class="fl">2</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="RunDorothea-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="fu"><a href="FeatureStatPlot.html">FeatureStatPlot</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"dorothea"</span>,</span></span>
-<span class="r-in"><span>  stat.by <span class="op">=</span> <span class="va">tf_use</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"violin"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="RunDorothea-2.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="DorotheaPlot.html">DorotheaPlot</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  features <span class="op">=</span> <span class="st">"Sox9"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"dim"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-13 16:51:54] Draw <span style="color: #0000BB;">"DoRothEA"</span> embedding plots for <span style="color: #0000BB;">1</span> TFs</span>
-<span class="r-plt img"><img src="RunDorothea-3.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="fu"><a href="DorotheaPlot.html">DorotheaPlot</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  group1 <span class="op">=</span> <span class="st">"Endocrine"</span>,</span></span>
-<span class="r-in"><span>  group2 <span class="op">=</span> <span class="st">"Ductal"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"bar"</span>,</span></span>
-<span class="r-in"><span>  top_n <span class="op">=</span> <span class="fl">20</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-13 16:51:55] Compare <span style="color: #0000BB;">"DoRothEA"</span> TF activity: <span style="color: #0000BB;">"Endocrine"</span> vs <span style="color: #0000BB;">"Ductal"</span></span>
-<span class="r-plt img"><img src="RunDorothea-4.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="va">ht</span> <span class="op">&lt;-</span> <span class="fu"><a href="DorotheaPlot.html">DorotheaPlot</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"heatmap"</span>,</span></span>
-<span class="r-in"><span>  top_n <span class="op">=</span> <span class="fl">20</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-13 16:51:55] Draw <span style="color: #0000BB;">"DoRothEA"</span> TF activity heatmap for <span style="color: #0000BB;">20</span> TFs</span>
-<span class="r-in"><span><span class="va">ht</span><span class="op">$</span><span class="va">plot</span></span></span>
-<span class="r-plt img"><img src="RunDorothea-5.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="fu"><a href="DorotheaPlot.html">DorotheaPlot</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  group1 <span class="op">=</span> <span class="st">"Endocrine"</span>,</span></span>
-<span class="r-in"><span>  group2 <span class="op">=</span> <span class="st">"Ductal"</span>,</span></span>
-<span class="r-in"><span>  features <span class="op">=</span> <span class="st">"Sox9"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"targets"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-10-13 16:51:56] Dropping <span style="color: #0000BB;">3</span> <span style="color: #0000BB;">"Sox9"</span> targets missing from assay <span style="color: #0000BB;">"RNA"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-13 16:51:56] Draw <span style="color: #0000BB;">"DoRothEA"</span> regulon-target volcano for <span style="color: #0000BB;">"Sox9"</span> (<span style="color: #0000BB;">10</span> targets)</span>
-<span class="r-plt img"><img src="RunDorothea-6.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># A RunGRN-compatible unsigned network can be passed directly.</span></span></span>
-<span class="r-in"><span><span class="va">grn_targets</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span>, <span class="fl">5</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">grn_edges</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  TF <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"ExampleTF"</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">grn_targets</span><span class="op">)</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  target <span class="op">=</span> <span class="va">grn_targets</span>,</span></span>
-<span class="r-in"><span>  importance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">grn_targets</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">grn_targets</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunDorothea</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  regulons <span class="op">=</span> <span class="va">grn_edges</span>,</span></span>
-<span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span>,</span></span>
-<span class="r-in"><span>  minsize <span class="op">=</span> <span class="fl">1</span>,</span></span>
-<span class="r-in"><span>  new_assay <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
-<span class="r-in"><span>  add_meta <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
-<span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-13 16:51:56] The supplied network is unsigned; <span style="color: #0000BB;">"importance"</span> is used as positive edge weight. Scores represent target-program activity, not signed TF activation or repression.</span>
-<span class="r-in"><span><span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">Dorothea</span><span class="op">$</span><span class="va">network_info</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $source</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "custom"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $label</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "custom TF network"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $format</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "scop_grn"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $signed</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $regulator_column</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "TF"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $target_column</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "target"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $weight_column</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "importance"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $weight_semantics</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "unsigned_positive_weight"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $species</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Mus_musculus"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $input_species</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Mus_musculus"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"><span><span class="co"># A real RunGRN result can be connected in the same way:</span></span></span>
-<span class="r-in"><span><span class="co"># grn &lt;- RunGRN(pancreas_sub, grn_method = "genie3")</span></span></span>
-<span class="r-in"><span><span class="co"># pancreas_sub &lt;- RunDorothea(pancreas_sub, regulons = grn)</span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunDorothea</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  regulons <span class="op">=</span> <span class="st">"collectri"</span>,</span></span>
-<span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span>,</span></span>
-<span class="r-in"><span>  minsize <span class="op">=</span> <span class="fl">5</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
+<span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunDorothea</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  layer <span class="op">=</span> <span class="st">"counts"</span>,</span>
+<span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span>,</span>
+<span>  confidence <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span><span class="op">)</span>,</span>
+<span>  method <span class="op">=</span> <span class="st">"ulm"</span>,</span>
+<span>  minsize <span class="op">=</span> <span class="fl">5</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">Dorothea</span><span class="op">$</span><span class="va">regulon_summary</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">Dorothea</span><span class="op">$</span><span class="va">result</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">tf_use</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">intersect</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Sox9"</span>, <span class="st">"Neurod1"</span>, <span class="st">"Pdx1"</span>, <span class="st">"Foxa2"</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">Dorothea</span><span class="op">$</span><span class="va">scores</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="FeatureDimPlot.html">FeatureDimPlot</a></span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  assay <span class="op">=</span> <span class="st">"dorothea"</span>,</span>
+<span>  features <span class="op">=</span> <span class="va">tf_use</span>,</span>
+<span>  ncol <span class="op">=</span> <span class="fl">2</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="FeatureStatPlot.html">FeatureStatPlot</a></span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  assay <span class="op">=</span> <span class="st">"dorothea"</span>,</span>
+<span>  stat.by <span class="op">=</span> <span class="va">tf_use</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"violin"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="DorotheaPlot.html">DorotheaPlot</a></span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  features <span class="op">=</span> <span class="st">"Sox9"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"dim"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="DorotheaPlot.html">DorotheaPlot</a></span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  group1 <span class="op">=</span> <span class="st">"Endocrine"</span>,</span>
+<span>  group2 <span class="op">=</span> <span class="st">"Ductal"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"bar"</span>,</span>
+<span>  top_n <span class="op">=</span> <span class="fl">20</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">ht</span> <span class="op">&lt;-</span> <span class="fu"><a href="DorotheaPlot.html">DorotheaPlot</a></span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"heatmap"</span>,</span>
+<span>  top_n <span class="op">=</span> <span class="fl">20</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">ht</span><span class="op">$</span><span class="va">plot</span></span>
+<span><span class="fu"><a href="DorotheaPlot.html">DorotheaPlot</a></span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  group1 <span class="op">=</span> <span class="st">"Endocrine"</span>,</span>
+<span>  group2 <span class="op">=</span> <span class="st">"Ductal"</span>,</span>
+<span>  features <span class="op">=</span> <span class="st">"Sox9"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"targets"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># A RunGRN-compatible unsigned network can be passed directly.</span></span>
+<span><span class="va">grn_targets</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span>, <span class="fl">5</span><span class="op">)</span></span>
+<span><span class="va">grn_edges</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  TF <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"ExampleTF"</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">grn_targets</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  target <span class="op">=</span> <span class="va">grn_targets</span>,</span>
+<span>  importance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">grn_targets</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">grn_targets</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunDorothea</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  regulons <span class="op">=</span> <span class="va">grn_edges</span>,</span>
+<span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span>,</span>
+<span>  minsize <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  new_assay <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  add_meta <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">Dorothea</span><span class="op">$</span><span class="va">network_info</span></span>
+<span><span class="co"># A real RunGRN result can be connected in the same way:</span></span>
+<span><span class="co"># grn &lt;- RunGRN(pancreas_sub, grn_method = "genie3")</span></span>
+<span><span class="co"># pancreas_sub &lt;- RunDorothea(pancreas_sub, regulons = grn)</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span>
+<span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunDorothea</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  regulons <span class="op">=</span> <span class="st">"collectri"</span>,</span>
+<span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span>,</span>
+<span>  minsize <span class="op">=</span> <span class="fl">5</span></span>
+<span><span class="op">)</span></span>
+<span><span class="op">}</span> <span class="co"># }</span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
