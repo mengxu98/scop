@@ -2,6 +2,10 @@
 
 * **feature**: `ReadATACData()` and `ReadMultiomeData()` import existing raw peak and paired RNA counts through Signac/Seurat, preserving explicit feature and barcode alignment. `CheckATACData()` reports matrix/reference validity and external fragment availability without altering the object.
 
+* **fix**: Require Rcpp >= 1.0.13 for source installation, preventing
+  CellRank compilation failures with older headers that limit
+  `List::create()` to 20 arguments.
+
 * **change**: Handwritten GitHub package installs follow the repository default branch. Backend checks accept the installed revision, and Cell2fate only reuses cached results from that revision. Automatically generated renv records are retained.
 
 * **breaking**: `SCTransform()` now comes from Seurat. scop no longer exports its own method, residual kernels, or load-time signature adapter. Preprocessing calls `Seurat::SCTransform()` and leaves thread control to `Seurat::setThreads()`. `CheckDataList()` and `CheckDataMerge()` no longer accept `cores`, which only controlled that removed path.

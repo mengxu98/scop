@@ -32,7 +32,7 @@ Imports:
     ggplot2 (>= 3.5.0),
     methods,
     Matrix,
-    Rcpp,
+    Rcpp (>= 1.0.13),
     RcppParallel,
     Signac,
     splines,
@@ -164,7 +164,7 @@ Remotes:
     mengxu98/thisutils
 LinkingTo:
     cli,
-    Rcpp,
+    Rcpp (>= 1.0.13),
     RcppAnnoy,
     RcppArmadillo,
     RcppEigen,
