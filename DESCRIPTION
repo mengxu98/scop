@@ -132,6 +132,7 @@ Suggests:
     scDblFinder,
     decontX,
     edgeR,
+    statmod,
     scmap,
     stringr,
     sva,
