@@ -1,5 +1,7 @@
 # scop (development version)
 
+* **feature**: `ExportATACResults()` saves a complete ATAC object, explicit result tables, selected-assay matrix companions and an external-resource inventory with file checksums into a new directory. Matrix Market/BED3/barcode exports can be read by `ReadATACData()`; fragment resources remain external.
+
 * **fix**: `CheckATACData()` determines fragment readiness from resources mapped to the selected assay cells, preserving inactive resources in its report after native subsetting.
 
 * **feature**: `ReadATACData()` and `ReadMultiomeData()` import existing raw peak and paired RNA counts through Signac/Seurat, preserving explicit feature and barcode alignment. `CheckATACData()` reports matrix/reference validity and external fragment availability without altering the object.
