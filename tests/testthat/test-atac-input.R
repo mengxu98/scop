@@ -333,3 +333,25 @@ test_that("native barcode caches are not imported as metadata identity", {
   expect_identical(unname(object$group), metadata$group)
   expect_identical(as.vector(object$input_barcode), as.vector(colnames(x$counts)))
 })
+
+test_that("ATAC backends resolve public re-exported genomic accessors", {
+  for (fun in c("seqnames", "seqinfo", "start")) {
+    expect_identical(
+      scop:::atac_backend_fun("GenomicRanges", fun),
+      getExportedValue("GenomicRanges", fun)
+    )
+  }
+  for (fun in c("seqnames", "seqinfo", "genome", "genome<-", "seqlengths")) {
+    expect_identical(
+      scop:::atac_backend_fun("GenomeInfoDb", fun),
+      getExportedValue("GenomeInfoDb", fun)
+    )
+  }
+})
+
+test_that("ATAC backends report a missing public function", {
+  expect_error(
+    scop:::atac_backend_fun("GenomicRanges", "missing_atac_function"),
+    "not an exported object"
+  )
+})

@@ -278,7 +278,7 @@ atac_backend_fun <- function(package, fun) {
   if (!isTRUE(all(unlist(available, use.names = FALSE)))) {
     log_message(sprintf("Package '%s' is required; install it separately before ATAC analysis.", package), message_type = "error")
   }
-  resolved <- get_namespace_fun(package, fun)
+  resolved <- getExportedValue(package, fun)
   if (!is.function(resolved)) {
     log_message(sprintf("Function '%s' is not available in package '%s'.", fun, package), message_type = "error")
   }
