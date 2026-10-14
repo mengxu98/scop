@@ -1,5 +1,7 @@
 # scop (development version)
 
+* **feature**: `FilterATACPeaks()` creates a clean peak assay using explicit raw-count, interval and blacklist criteria. `AnnotateATACPeaks()` records native nearest-interval annotation hits with explicit genome-label/known-length checks, preserving unmatched peaks and existing results.
+
 * **fix**: `CheckATACData()` determines fragment readiness from resources mapped to the selected assay cells, preserving inactive resources in its report after native subsetting.
 
 * **feature**: `ReadATACData()` and `ReadMultiomeData()` import existing raw peak and paired RNA counts through Signac/Seurat, preserving explicit feature and barcode alignment. `CheckATACData()` reports matrix/reference validity and external fragment availability without altering the object.

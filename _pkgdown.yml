@@ -102,6 +102,8 @@ reference:
   - ReadATACData
   - ReadMultiomeData
   - CheckATACData
+  - FilterATACPeaks
+  - AnnotateATACPeaks
 
 - subtitle: "Quality Control"
 - contents:
