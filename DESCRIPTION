@@ -47,6 +47,7 @@ Imports:
     utils,
     uwot
 Suggests:
+    IRanges,
     GenomeInfoDb,
     hdf5r,
     Rsamtools,

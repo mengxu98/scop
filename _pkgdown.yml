@@ -106,7 +106,8 @@ reference:
 
   - FilterATACPeaks
   - AnnotateATACPeaks
-
+  - CombineATACPeaks
+  - RecountATAC
 - subtitle: "Quality Control"
 - contents:
   - RunDoubletDetection
