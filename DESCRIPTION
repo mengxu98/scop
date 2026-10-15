@@ -48,6 +48,10 @@ Imports:
     uwot
 Suggests:
     IRanges,
+    Biostrings,
+    BSgenome,
+    motifmatchr,
+    TFBSTools,
     GenomeInfoDb,
     hdf5r,
     Rsamtools,

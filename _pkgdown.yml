@@ -103,6 +103,8 @@ reference:
   - ReadMultiomeData
   - CheckATACData
   - ExportATACResults
+  - AddATACMotifs
+  - RunMotifEnrichment
 
   - FilterATACPeaks
   - AnnotateATACPeaks
