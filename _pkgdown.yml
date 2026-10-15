@@ -102,6 +102,7 @@ reference:
   - ReadATACData
   - ReadMultiomeData
   - CheckATACData
+  - ExportATACResults
 
 - subtitle: "Quality Control"
 - contents:
