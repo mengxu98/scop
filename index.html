@@ -177,7 +177,7 @@
 <li><a href="#gsea">GSEA</a></li>
 </ul>
 </li>
-<li><a href="#gene-regulatory-network-analysis-with-scenic">Gene regulatory network analysis with SCENIC</a></li>
+<li><a href="https://mengxu98.github.io/scop/articles/reproduce-pancreatic-endocrinogenesis.html#infer-tf-links-and-regulatory-activity">Gene regulatory network analysis with SCENIC (optional recipe)</a></li>
 <li><a href="#interactive-data-visualization-with-scexplorer">Interactive data visualization with SCExplorer</a></li>
 <li><a href="#other-visualization-examples">Other visualization examples</a></li>
 </ul>
@@ -193,7 +193,7 @@
 <p>The <a href="https://github.com/mengxu98/scop" class="external-link">scop</a> package is developed based on the <a href="https://github.com/zhanghao-njmu/SCP" class="external-link">SCP</a> package, with the following major improvements:</p>
 <ol style="list-style-type: decimal">
 <li>Compatibility: full support for <a href="https://github.com/satijalab/seurat" class="external-link">Seurat v5</a>.</li>
-<li>Stability: a large number of known issues have been fixed, and all functions have passed <code>devtools::check()</code>.</li>
+<li>Stability: compatibility repairs and automated package checks. Optional backends require separate runtime validation; a successful package check does not establish that every backend has executed.</li>
 <li>Usability: the <em>Python</em> environment setup workflow has been improved, with support for conda-compatible managers including conda, mamba, and micromamba; standardized console messages via <code><a href="https://mengxu98.github.io/thisutils/reference/log_message.html" class="external-link">thisutils::log_message</a></code> for consistent, readable function outputs.</li>
 <li>Performance: a new parallel framework has been developed based on <code><a href="https://mengxu98.github.io/thisutils/reference/parallelize_fun.html" class="external-link">thisutils::parallelize_fun</a></code>, providing a consistent experience across <em>Linux</em>, <em>macOS</em>, and <em>Windows</em>.</li>
 <li>Functionality: more analysis methods have been added.</li>
@@ -424,35 +424,45 @@
 <h4 id="cell-projection-between-single-cell-datasets">
 <strong>Cell projection between single-cell datasets</strong><a class="anchor" aria-label="anchor" href="#cell-projection-between-single-cell-datasets"></a>
 </h4>
+<p>This example holds out all <code>celseq2</code> cells from the bundled human pancreas object as query and uses the other technologies as reference. The inputs have no shared cells and use the same species and gene identifiers. Changing gene name capitalization is not cross-species ortholog mapping.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">genenames</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/make.unique.html" class="external-link">make.unique</a></span><span class="op">(</span></span>
-<span>  <span class="fu">thisutils</span><span class="fu">::</span><span class="fu"><a href="https://mengxu98.github.io/thisutils/reference/capitalize.html" class="external-link">capitalize</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">[[</span><span class="st">"RNA"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>,</span>
-<span>    force_tolower <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span>  <span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span></span>
+<span><span class="va">query_ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span><span class="op">[</span><span class="va">panc8_sub</span><span class="op">$</span><span class="va">tech</span> <span class="op">==</span> <span class="st">"celseq2"</span><span class="op">]</span></span>
+<span><span class="va">reference_ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span>, <span class="va">query_ids</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">intersect</a></span><span class="op">(</span><span class="va">query_ids</span>, <span class="va">reference_ids</span><span class="op">)</span><span class="op">)</span> <span class="op">==</span> <span class="fl">0</span>,</span>
+<span>          <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">query_ids</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">reference_ids</span><span class="op">)</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">annotation_query</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span></span>
+<span>  <span class="va">panc8_sub</span><span class="op">[</span>, <span class="va">query_ids</span><span class="op">]</span>, assay <span class="op">=</span> <span class="st">"RNA"</span>, seed <span class="op">=</span> <span class="fl">11</span>, cores <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">genenames</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span></span>
-<span><span class="va">panc8_rename</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/RenameFeatures.html">RenameFeatures</a></span><span class="op">(</span></span>
-<span>  <span class="va">panc8_sub</span>,</span>
-<span>  newnames <span class="op">=</span> <span class="va">genenames</span>,</span>
-<span>  assays <span class="op">=</span> <span class="st">"RNA"</span></span>
+<span><span class="va">annotation_reference</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span></span>
+<span>  <span class="va">panc8_sub</span><span class="op">[</span>, <span class="va">reference_ids</span><span class="op">]</span>, assay <span class="op">=</span> <span class="st">"RNA"</span>, seed <span class="op">=</span> <span class="fl">11</span>, cores <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="va">srt_query</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/RunKNNMap.html">RunKNNMap</a></span><span class="op">(</span></span>
-<span>  srt_query <span class="op">=</span> <span class="va">pancreas_sub</span>,</span>
-<span>  srt_ref <span class="op">=</span> <span class="va">panc8_rename</span>,</span>
-<span>  ref_umap <span class="op">=</span> <span class="st">"HarmonyUMAP2D"</span></span>
+<span><span class="va">shared_features</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">intersect</a></span><span class="op">(</span><span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/VariableFeatures.html" class="external-link">VariableFeatures</a></span><span class="op">(</span><span class="va">annotation_query</span><span class="op">)</span>,</span>
+<span>                             <span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/VariableFeatures.html" class="external-link">VariableFeatures</a></span><span class="op">(</span><span class="va">annotation_reference</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">shared_features</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">30</span><span class="op">)</span></span>
+<span><span class="va">label_colors</span> <span class="op">&lt;-</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span></span>
+<span>  <span class="fu">grDevices</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">hcl.colors</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">annotation_reference</span><span class="op">$</span><span class="va">celltype</span><span class="op">)</span><span class="op">)</span>, <span class="st">"Dark 3"</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">annotation_reference</span><span class="op">$</span><span class="va">celltype</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">annotation_query</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/RunKNNMap.html">RunKNNMap</a></span><span class="op">(</span></span>
+<span>  srt_query <span class="op">=</span> <span class="va">annotation_query</span>,</span>
+<span>  srt_ref <span class="op">=</span> <span class="va">annotation_reference</span>,</span>
+<span>  features <span class="op">=</span> <span class="va">shared_features</span>,</span>
+<span>  ref_umap <span class="op">=</span> <span class="fu"><a href="reference/DefaultReduction.html">DefaultReduction</a></span><span class="op">(</span><span class="va">annotation_reference</span>, pattern <span class="op">=</span> <span class="st">"UMAP"</span><span class="op">)</span>,</span>
+<span>  projection_method <span class="op">=</span> <span class="st">"knn"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/ProjectionPlot.html">ProjectionPlot</a></span><span class="op">(</span></span>
-<span>  srt_query <span class="op">=</span> <span class="va">srt_query</span>,</span>
-<span>  srt_ref <span class="op">=</span> <span class="va">panc8_rename</span>,</span>
-<span>  query_group <span class="op">=</span> <span class="st">"SubCellType"</span>,</span>
+<span>  srt_query <span class="op">=</span> <span class="va">annotation_query</span>,</span>
+<span>  srt_ref <span class="op">=</span> <span class="va">annotation_reference</span>,</span>
+<span>  query_group <span class="op">=</span> <span class="st">"celltype"</span>,</span>
 <span>  ref_group <span class="op">=</span> <span class="st">"celltype"</span>,</span>
-<span>  ref_param <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    xlab <span class="op">=</span> <span class="st">"UMAP_1"</span>,</span>
-<span>    ylab <span class="op">=</span> <span class="st">"UMAP_2"</span></span>
-<span>  <span class="op">)</span></span>
+<span>  query_param <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>palcolor <span class="op">=</span> <span class="va">label_colors</span>, cells.highlight <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>  ref_param <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>palcolor <span class="op">=</span> <span class="va">label_colors</span>, xlab <span class="op">=</span> <span class="st">"UMAP_1"</span>, ylab <span class="op">=</span> <span class="st">"UMAP_2"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNMap-1.svg#gh-light-mode-only" width="100%"><img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNMap-1-dark.svg#gh-dark-mode-only" width="100%"></p>
+<p><img src="reference/figures/readme-human-projection.png" alt="Held-out human pancreas cells projected onto a disjoint human reference" width="100%"></p>
+<p>The query colours here are the supplied held-out labels, not predictions. Projection is neighbour-weighted placement in the reference UMAP; it is not a new joint embedding or evidence of successful batch correction.</p>
 </div>
 <div class="section level4">
 <h4 id="cell-annotation-using-bulk-rna-seq-datasets">
@@ -479,37 +489,47 @@
 <h4 id="cell-annotation-using-single-cell-datasets">
 <strong>Cell annotation using single-cell datasets</strong><a class="anchor" aria-label="anchor" href="#cell-annotation-using-single-cell-datasets"></a>
 </h4>
+<p>Reuse the disjoint human query/reference above. Reference labels train the predictor; the query labels are used only to inspect agreement. Individual reference cells are used explicitly rather than collapsed group averages.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/RunKNNPredict.html">RunKNNPredict</a></span><span class="op">(</span></span>
-<span>  srt_query <span class="op">=</span> <span class="va">pancreas_sub</span>,</span>
-<span>  srt_ref <span class="op">=</span> <span class="va">panc8_rename</span>,</span>
+<code class="sourceCode R"><span><span class="va">annotation_query</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/RunKNNPredict.html">RunKNNPredict</a></span><span class="op">(</span></span>
+<span>  srt_query <span class="op">=</span> <span class="va">annotation_query</span>,</span>
+<span>  srt_ref <span class="op">=</span> <span class="va">annotation_reference</span>,</span>
 <span>  ref_group <span class="op">=</span> <span class="st">"celltype"</span>,</span>
-<span>  filter_lowfreq <span class="op">=</span> <span class="fl">20</span></span>
+<span>  query_assay <span class="op">=</span> <span class="st">"RNA"</span>, ref_assay <span class="op">=</span> <span class="st">"RNA"</span>, features <span class="op">=</span> <span class="va">shared_features</span>,</span>
+<span>  ref_collapsing <span class="op">=</span> <span class="cn">FALSE</span>, k <span class="op">=</span> <span class="fl">30</span>, filter_lowfreq <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  prefix <span class="op">=</span> <span class="st">"CellKNN"</span></span>
 <span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span>observed <span class="op">=</span> <span class="va">annotation_query</span><span class="op">$</span><span class="va">celltype</span>,</span>
+<span>      predicted <span class="op">=</span> <span class="va">annotation_query</span><span class="op">$</span><span class="va">CellKNN_classification</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span>
-<span>  <span class="va">pancreas_sub</span>,</span>
-<span>  group.by <span class="op">=</span> <span class="st">"KNNPredict_classification"</span>,</span>
+<span>  <span class="va">annotation_query</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"celltype"</span>, <span class="st">"CellKNN_classification"</span><span class="op">)</span>,</span>
 <span>  reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span>
-<span>  label <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  xlab <span class="op">=</span> <span class="st">"UMAP_1"</span>,</span>
-<span>  ylab <span class="op">=</span> <span class="st">"UMAP_2"</span></span>
+<span>  label <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  theme_use <span class="op">=</span> <span class="st">"theme_blank"</span>,</span>
+<span>  xlab <span class="op">=</span> <span class="st">"UMAP_1"</span>, ylab <span class="op">=</span> <span class="st">"UMAP_2"</span>,</span>
+<span>  palcolor <span class="op">=</span> <span class="va">label_colors</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNPredict-scrna-1.svg#gh-light-mode-only" width="100%"><img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNPredict-scrna-1-dark.svg#gh-dark-mode-only" width="100%"></p>
+<p><img src="reference/figures/readme-human-prediction.png" alt="Supplied and predicted labels for the held-out human pancreas query" width="100%"></p>
+<p>Agreement is descriptive for this related pancreas subset. Similarity scores are not calibrated probabilities, and rare predictions remain visible.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ht</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/CellCorHeatmap.html">CellCorHeatmap</a></span><span class="op">(</span></span>
-<span>  srt_query <span class="op">=</span> <span class="va">pancreas_sub</span>,</span>
-<span>  srt_ref <span class="op">=</span> <span class="va">panc8_rename</span>,</span>
-<span>  query_group <span class="op">=</span> <span class="st">"SubCellType"</span>,</span>
+<span>  srt_query <span class="op">=</span> <span class="va">annotation_query</span>,</span>
+<span>  srt_ref <span class="op">=</span> <span class="va">annotation_reference</span>,</span>
+<span>  query_group <span class="op">=</span> <span class="st">"celltype"</span>,</span>
 <span>  ref_group <span class="op">=</span> <span class="st">"celltype"</span>,</span>
-<span>  nlabel <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  features <span class="op">=</span> <span class="va">shared_features</span>,</span>
+<span>  query_group_palcolor <span class="op">=</span> <span class="va">label_colors</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">annotation_query</span><span class="op">$</span><span class="va">celltype</span><span class="op">)</span><span class="op">)</span><span class="op">]</span>,</span>
+<span>  ref_group_palcolor <span class="op">=</span> <span class="va">label_colors</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">annotation_reference</span><span class="op">$</span><span class="va">celltype</span><span class="op">)</span><span class="op">)</span><span class="op">]</span>,</span>
+<span>  nlabel <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  label_by <span class="op">=</span> <span class="st">"row"</span>,</span>
+<span>  label_size <span class="op">=</span> <span class="fl">8</span>,</span>
 <span>  show_row_names <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  show_column_names <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  width <span class="op">=</span> <span class="fl">4</span>,</span>
-<span>  height <span class="op">=</span> <span class="fl">2.5</span></span>
+<span>  show_column_names <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">ht</span><span class="op">$</span><span class="va">plot</span><span class="op">)</span></span></code></pre></div>
-<p><img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNPredict-scrna-3.svg#gh-light-mode-only" width="100%"><img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNPredict-scrna-3-dark.svg#gh-dark-mode-only" width="100%"></p>
+<p><img src="reference/figures/readme-human-correlation.png" alt="Group-level expression similarity between disjoint human query and reference cells" width="100%"></p>
+<p>See the <a href="https://mengxu98.github.io/scop/articles/cell-annotation-workflow.html">cell annotation workflow</a> for prediction tables, marker checks and the saved analysis provenance.</p>
 </div>
 </div>
 <div class="section level3">
