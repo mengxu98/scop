@@ -52,6 +52,7 @@ Suggests:
     BSgenome,
     motifmatchr,
     TFBSTools,
+    chromVAR,
     GenomeInfoDb,
     hdf5r,
     Rsamtools,
