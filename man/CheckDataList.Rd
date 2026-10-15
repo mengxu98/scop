@@ -60,3 +60,32 @@ assay type consistency, feature name consistency, and batch column consistency.
 It also performs data normalization and variable feature finding based on the specified parameters.
 Finally, it prepares the data for integration analysis based on the highly variable features.
 }
+\details{
+For chromatin assays with \code{HVF_source = "separate"}, native
+\code{\link[Seurat:SelectIntegrationFeatures]{Seurat::SelectIntegrationFeatures()}} ranks peaks by the number of batches
+selecting them, then by their median variable-feature rank. The \code{nHVF} cap
+is also limited to the smallest per-batch variable-feature count;
+\code{HVF_min_intersection} is applied to the ranked selection. This preserves
+native within-batch peak frequency ranking instead of sorting tied peak IDs.
+}
+\examples{
+counts <- matrix(rep(6:1, 4),
+  nrow = 6,
+  dimnames = list(
+    paste0("chr1-", seq(1, 501, 100), "-", seq(50, 550, 100)),
+    paste0("cell", 1:4)
+  )
+)
+peaks <- Signac::CreateChromatinAssay(counts,
+  min.cells = 0,
+  min.features = 0, verbose = FALSE
+)
+object <- SeuratObject::CreateSeuratObject(peaks, assay = "peaks")
+checked <- CheckDataList(list(object),
+  batch = "sample", assay = "peaks",
+  do_normalization = FALSE, normalization_method = "TFIDF", nHVF = 3,
+  verbose = FALSE
+)
+checked$HVF
+
+}

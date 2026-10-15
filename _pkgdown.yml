@@ -38,6 +38,12 @@ articles:
   contents:
   - single-cell-main-workflow
   - spatial-main-workflow
+- title: Analyze chromatin accessibility
+  navbar: ATAC workflows
+  contents:
+  - atac-matrix-workflow
+  - atac-fragments-workflow
+  - atac-paired-dar-workflow
 - title: Compare batches and transfer labels
   navbar: Compare and annotate
   contents:
@@ -113,6 +119,7 @@ reference:
   - AnnotateATACPeaks
   - CombineATACPeaks
   - RecountATAC
+  - CallATACPeaks
 - subtitle: "Quality Control"
 - contents:
   - RunDoubletDetection

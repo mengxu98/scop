@@ -8,7 +8,9 @@
 #' @param db_rate Expected doublet rate.
 #' @param data_type Optional [CheckDataType] result, used internally to avoid
 #' rescanning the count matrix.
-#' @param ... Passed to the selected doublet method.
+#' @param ... Passed to the selected doublet method. For a ChromatinAssay,
+#'   use `db_method = "scDblFinder"` and explicitly supply `sample.by` naming
+#'   the capture/library column; see [RunscDblFinder()].
 #'
 #' @return A `Seurat` object with doublet class and score columns in `meta.data`.
 #'
@@ -41,6 +43,13 @@ RunDoubletCalling <- function(
       "{.arg object} is not a {.cls Seurat}",
       message_type = "error"
     )
+  }
+  if (inherits(object[[assay]], "ChromatinAssay") && identical(db_method, "scDblFinder")) {
+    return(RunscDblFinder(object,
+      assay = assay,
+      db_rate = if (missing(db_rate)) NULL else db_rate,
+      ..., verbose = verbose
+    ))
   }
   status <- data_type %||% CheckDataType(object, layer = "counts", assay = assay)
   if (status != "raw_counts") {
@@ -104,6 +113,24 @@ RunDoubletCalling <- function(
 #' @md
 #' @inheritParams RunDoubletCalling
 #' @param ... Additional arguments to be passed to [scDblFinder::scDblFinder()].
+#' @param sample.by For ATAC, required metadata column identifying captures or
+#'   libraries in which doublets can form. Biological conditions are not capture
+#'   IDs. Native scDblFinder runs independently per capture (`multiSampleMode =
+#'   "split"`). RNA behavior is unchanged.
+#' @param seed Random seed for the ATAC path, restoring the caller's RNG.
+#' @details
+#' For ChromatinAssay input, use all raw peaks with native feature aggregation
+#' (`aggregateFeatures = TRUE`, `nfeatures = 25`, `processing = "normFeatures"`).
+#' `nfeatures` and other native model parameters can be supplied in `...`.
+#' With omitted `db_rate`, the ATAC path uses the backend's per-capture expected
+#' rate; explicitly supply the appropriate rate for the capture chemistry.
+#' Scores/classes are predictions, not ground-truth doublet labels. No cells
+#' are removed. Existing upstream doublet labels can instead be used directly
+#' to select cells; running a second detector is not required.
+#' @return A Seurat object with `db.scDblFinder_score` and
+#'   `db.scDblFinder_class` updated only for selected-assay cells. For ATAC,
+#'   `Misc(assay, "scop_atac_doublets")` records input cells, capture assignments,
+#'   parameters, native output and backend version; RNA-only cells are preserved.
 #'
 #' @export
 RunscDblFinder <- function(
@@ -113,7 +140,9 @@ RunscDblFinder <- function(
   data_type = NULL,
   ...,
   verbose = TRUE,
-  srt = NULL
+  srt = NULL,
+  sample.by = NULL,
+  seed = 1L
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   log_message("Running {.pkg scDblFinder}", verbose = verbose)
@@ -122,6 +151,12 @@ RunscDblFinder <- function(
       "{.arg srt} is not a {.cls Seurat}",
       message_type = "error"
     )
+  }
+  if (inherits(srt[[assay]], "ChromatinAssay")) {
+    return(atac_scdblfinder(srt, assay, sample.by,
+      db_rate = if (missing(db_rate)) NULL else db_rate,
+      seed = seed, verbose = verbose, ...
+    ))
   }
   status <- data_type %||% CheckDataType(srt, layer = "counts", assay = assay)
   if (status != "raw_counts") {

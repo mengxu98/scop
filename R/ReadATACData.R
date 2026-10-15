@@ -266,8 +266,14 @@ ReadATACData <- function(
   )
   # Fragment barcode lookup may attach a fastmatch cache to the shared ID vector.
   rownames(metadata) <- as.vector(rownames(metadata))
-  if (!all(colnames(metadata) %in% colnames(result[[]])) ||
-    !identical(result[[]][, colnames(metadata), drop = FALSE], metadata)) {
+  metadata$input_barcode <- as.vector(metadata$input_barcode)
+  if (!all(colnames(metadata) %in% colnames(result[[]]))) {
+    log_message("Native object creation omitted supplied metadata.", message_type = "error")
+  }
+  observed_metadata <- result[[]][, colnames(metadata), drop = FALSE]
+  rownames(observed_metadata) <- as.vector(rownames(observed_metadata))
+  observed_metadata$input_barcode <- as.vector(observed_metadata$input_barcode)
+  if (!identical(observed_metadata, metadata)) {
     log_message("Native object creation changed or omitted supplied metadata.", message_type = "error")
   }
   result

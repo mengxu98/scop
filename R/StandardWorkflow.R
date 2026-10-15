@@ -48,6 +48,11 @@
 #' @param linear_reduction,linear_reduction_dims,linear_reduction_dims_use,linear_reduction_params,force_linear_reduction
 #' Linear reduction (`"pca"`, `"svd"`, `"ica"`, `"nmf"`, `"mds"`, `"glmpca"`).
 #' `linear_reduction_dims_use = NULL` uses estimated dimensions, else the first 50.
+#' ATAC workflows record the actual selected dimensions and Pearson correlations
+#' with raw library depth in `Misc(reduction, "scop_atac_representation")`.
+#' Undefined correlations are retained as NA. Requested ATAC clustering or
+#' nonlinear-reduction failures terminate the workflow rather than return a
+#' partially processed object as successful.
 #' @param nonlinear_reduction,nonlinear_reduction_dims,nonlinear_reduction_params,force_nonlinear_reduction
 #' Nonlinear reduction (`"umap"`, `"umap-naive"`, `"tsne"`, `"dm"`, `"phate"`,
 #' `"pacmap"`, `"trimap"`, `"largevis"`, `"fr"`).
@@ -481,6 +486,7 @@ RunStandardWorkflow <- function(
     }
   }
 
+  atac_dimensions <- list()
   for (lr in linear_reduction) {
     log_message(
       "Perform {.pkg {lr}} linear dimension reduction",
@@ -531,6 +537,7 @@ RunStandardWorkflow <- function(
     } else {
       linear_reduction_dims_use_current <- linear_reduction_dims_use
     }
+    if (is_atac_assay) atac_dimensions[[lr]] <- linear_reduction_dims_use_current
 
     srt <- tryCatch(
       {
@@ -589,6 +596,7 @@ RunStandardWorkflow <- function(
         err_msg <- conditionMessage(error)
         err_msg <- gsub("{", "{{", err_msg, fixed = TRUE)
         err_msg <- gsub("}", "}}", err_msg, fixed = TRUE)
+        if (is_atac_assay) log_message(err_msg, message_type = "error")
         log_message(err_msg, message_type = "warning", verbose = verbose)
         log_message(
           "Error when performing {.fn Seurat::FindClusters}. Skip it",
@@ -654,6 +662,7 @@ RunStandardWorkflow <- function(
         err_msg <- conditionMessage(error)
         err_msg <- gsub("{", "{{", err_msg, fixed = TRUE)
         err_msg <- gsub("}", "}}", err_msg, fixed = TRUE)
+        if (is_atac_assay) log_message(err_msg, message_type = "error")
         log_message(err_msg, message_type = "warning", verbose = verbose)
         log_message(
           "Error when performing {.pkg {nr}} nonlinear dimension reduction. Skip it",
@@ -665,6 +674,25 @@ RunStandardWorkflow <- function(
     )
   }
 
+  if (is_atac_assay) {
+    for (lr in linear_reduction) {
+      reduction <- paste0(prefix, lr)
+      embeddings <- SeuratObject::Embeddings(srt[[reduction]])
+      depth <- Matrix::colSums(SeuratObject::LayerData(srt[[assay]], layer = "counts"))[rownames(embeddings)]
+      correlations <- vapply(seq_len(ncol(embeddings)), function(i) {
+        if (stats::sd(depth) == 0 || stats::sd(embeddings[, i]) == 0) {
+          return(NA_real_)
+        }
+        stats::cor(embeddings[, i], depth)
+      }, numeric(1))
+      SeuratObject::Misc(srt[[reduction]], "scop_atac_representation") <- list(
+        assay = assay, cells = rownames(embeddings), features = HVF,
+        dimensions = atac_dimensions[[lr]],
+        depth_correlation = stats::setNames(correlations, colnames(embeddings)),
+        depth = depth, correlation_method = "Pearson, raw count library totals", seed = seed
+      )
+    }
+  }
   cluster_name <- paste0(prefix, linear_reduction[1], "clusters")
   if (cluster_name %in% colnames(srt@meta.data)) {
     srt[[paste0(prefix, "clusters")]] <- srt[[cluster_name]]

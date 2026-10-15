@@ -23,6 +23,28 @@ make_atac_motif_entry_fixture <- function() {
   list(object = object, genome = genome, pfm = pfm)
 }
 
+test_that("final ranges can be scanned before counts exist and reused after recount", {
+  f <- make_atac_motif_entry_fixture()
+  ranges <- Signac::granges(f$object[["peaks"]])
+  original <- ranges
+  scanned <- AddATACMotifs(ranges, f$genome, f$pfm, "toy", verbose = FALSE)
+  native <- Signac::AddMotifs(ranges, genome = f$genome, pfm = f$pfm, verbose = FALSE)
+  expect_s4_class(scanned$motifs, "Motif")
+  expect_equal(scanned$motifs, native)
+  expect_identical(ranges, original)
+  expect_identical(scanned$receipt$peaks, rownames(f$object[["peaks"]]))
+  expect_identical(rownames(scanned$statistics), scanned$receipt$peaks)
+  assay <- f$object[["peaks"]]
+  Signac::Motifs(assay) <- scanned$motifs
+  assay <- SeuratObject::AddMetaData(assay, scanned$statistics)
+  expected <- AddATACMotifs(f$object, f$genome, f$pfm, "toy", verbose = FALSE)
+  expect_equal(Signac::Motifs(assay), Signac::Motifs(expected[["peaks"]]))
+  expect_equal(assay[[]], expected[["peaks"]][[]])
+  expect_error(AddATACMotifs(c(ranges, ranges[1]), f$genome, f$pfm, "toy"), "unique|[Dd]uplicate")
+  expect_error(AddATACMotifs(ranges, f$genome, f$pfm, "other"), "genome")
+  expect_error(AddATACMotifs(ranges[FALSE], f$genome, f$pfm, "toy"), "non-empty")
+})
+
 test_that("motif addition preserves native incidence, sequence statistics and counts", {
   fixture <- make_atac_motif_entry_fixture()
   native <- Signac::AddMotifs(fixture$object, genome = fixture$genome, pfm = fixture$pfm, verbose = FALSE)

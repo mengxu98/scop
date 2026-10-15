@@ -102,7 +102,12 @@ scaled data (\code{NULL}). One of \code{"LogNormalize"}, \code{"SCT"}, \code{"TF
 \item{regression_model}{\code{"linear"}, \code{"poisson"}, or \code{"negativebinomial"}.}
 
 \item{linear_reduction, linear_reduction_dims, linear_reduction_dims_use, linear_reduction_params, force_linear_reduction}{Linear reduction (\code{"pca"}, \code{"svd"}, \code{"ica"}, \code{"nmf"}, \code{"mds"}, \code{"glmpca"}).
-\code{linear_reduction_dims_use = NULL} uses estimated dimensions, else the first 50.}
+\code{linear_reduction_dims_use = NULL} uses estimated dimensions, else the first 50.
+ATAC workflows record the actual selected dimensions and Pearson correlations
+with raw library depth in \code{Misc(reduction, "scop_atac_representation")}.
+Undefined correlations are retained as NA. Requested ATAC clustering or
+nonlinear-reduction failures terminate the workflow rather than return a
+partially processed object as successful.}
 
 \item{nonlinear_reduction, nonlinear_reduction_dims, nonlinear_reduction_params, force_nonlinear_reduction}{Nonlinear reduction (\code{"umap"}, \code{"umap-naive"}, \code{"tsne"}, \code{"dm"}, \code{"phate"},
 \code{"pacmap"}, \code{"trimap"}, \code{"largevis"}, \code{"fr"}).}

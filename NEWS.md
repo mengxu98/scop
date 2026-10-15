@@ -1,5 +1,7 @@
 # scop (development version)
 
+* **feature**: ATAC `RunscDblFinder()` uses native feature aggregation and explicit per-capture fitting, preserving other assay cells and recording native predictions. `CallATACPeaks()` adds an explicit MACS2 BED path with per-capture groups, retained logs and checked exit status.
+
 * **feature**: `ExportATACResults()` saves a complete ATAC object, explicit result tables, selected-assay matrix companions and an external-resource inventory with file checksums into a new directory. Matrix Market/BED3/barcode exports can be read by `ReadATACData()`; fragment resources remain external.
 * **feature**: `RunGeneActivity()` wraps native Signac fragment-based gene-body/promoter counting with explicit annotation identity/reference checks and active-capture validation. Results enter a new assay with provenance; ambiguous native IDs are rejected rather than merged or reconstructed.
 - Add opt-in sample-level edgeR design/contrast models with biological-sample checks, paired/covariate designs, peak coordinates and complete tested-family provenance. Existing differential-testing defaults are unchanged.
