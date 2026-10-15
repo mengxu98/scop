@@ -97,6 +97,12 @@ reference:
   - theme_scop
   - theme_spatial
 
+- subtitle: "ATAC Input"
+- contents:
+  - ReadATACData
+  - ReadMultiomeData
+  - CheckATACData
+
 - subtitle: "Quality Control"
 - contents:
   - RunDoubletDetection

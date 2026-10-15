@@ -47,6 +47,10 @@ Imports:
     utils,
     uwot
 Suggests:
+    GenomeInfoDb,
+    hdf5r,
+    Rsamtools,
+    fastmatch,
     AnnotationDbi,
     arrow,
     AUCell,

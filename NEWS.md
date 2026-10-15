@@ -1,5 +1,9 @@
 # scop (development version)
 
+* **fix**: `CheckATACData()` determines fragment readiness from resources mapped to the selected assay cells, preserving inactive resources in its report after native subsetting.
+
+* **feature**: `ReadATACData()` and `ReadMultiomeData()` import existing raw peak and paired RNA counts through Signac/Seurat, preserving explicit feature and barcode alignment. `CheckATACData()` reports matrix/reference validity and external fragment availability without altering the object.
+
 * **fix**: Document all SingleR marker selection and reference aggregation arguments without relying on optional-package documentation inheritance.
 
 * **fix**: Require thisutils 0.5.3 for the local verbosity API used by database preparation. Keep communication database delegation tests independent of Ensembl availability and verify Presto calls without replacing same-named Seurat methods.
