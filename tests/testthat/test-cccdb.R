@@ -1,4 +1,3 @@
-
 test_that("ListCCCDB enumerates CCC databases with a unified schema", {
   liana_loaded <- "liana" %in% loadedNamespaces()
   tcltk_loaded <- "tcltk" %in% loadedNamespaces()
@@ -65,10 +64,12 @@ test_that("PrepareCCCDB validates db and species arguments", {
 })
 
 test_that("PrepareDB delegates CellChat and CellTalk to PrepareCCCDB", {
-  testthat::skip_if_not_installed("biomaRt")
+  testthat::skip_if_not_installed("R.cache")
+  testthat::local_mocked_bindings(saveCache = function(...) NULL, .package = "R.cache")
   mock_env <- environment()
   captured <- list()
   testthat::local_mocked_bindings(
+    GeneConvert = function(...) stop("Unexpected gene conversion in the delegation test"),
     PrepareCCCDB = function(species, db, convert_species = TRUE, data_dir = NULL,
                             db_version = "latest", db_update = FALSE, verbose = TRUE, ...) {
       local_captured <- get0("captured", envir = mock_env, inherits = FALSE)
@@ -91,14 +92,17 @@ test_that("PrepareDB delegates CellChat and CellTalk to PrepareCCCDB", {
     .package = "scop"
   )
 
-  out <- PrepareDB(
-    species = "Homo_sapiens",
-    db = "CellChat",
-    db_update = TRUE,
-    verbose = FALSE
-  )
-  expect_equal(captured$species, "Homo_sapiens")
-  expect_equal(captured$db, "CellChat")
-  expect_true("CellChat" %in% names(out$Homo_sapiens))
-  expect_true(all(c("TERM2GENE", "TERM2NAME", "version") %in% names(out$Homo_sapiens$CellChat)))
+  for (db in c("CellChat", "CellTalk")) {
+    out <- PrepareDB(
+      species = "Homo_sapiens",
+      db = db,
+      db_IDtypes = "symbol",
+      db_update = TRUE,
+      verbose = FALSE
+    )
+    expect_equal(captured$species, "Homo_sapiens")
+    expect_equal(captured$db, db)
+    expect_true(db %in% names(out$Homo_sapiens))
+    expect_true(all(c("TERM2GENE", "TERM2NAME", "version") %in% names(out$Homo_sapiens[[db]])))
+  }
 })

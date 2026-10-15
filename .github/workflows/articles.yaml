@@ -12,10 +12,45 @@ permissions:
   contents: write
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      articles: ${{ steps.changed.outputs.articles }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Determine changed articles
+        id: changed
+        shell: bash
+        run: |
+          if [[ "${{ github.event_name }}" != "push" ]]; then
+            echo "articles=all" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          base="${{ github.event.before }}"
+          head="${{ github.sha }}"
+          if [[ "$base" =~ ^0+$ ]] || ! git cat-file -e "$base^{commit}" 2>/dev/null; then
+            base="$head~1"
+            if [[ "$base" =~ ^0+$ ]] || ! git cat-file -e "$base^{commit}" 2>/dev/null; then
+              echo "articles=all" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          fi
+          articles="$(git diff --no-renames --diff-filter=AM --name-only "$base" "$head" -- vignettes/ |
+            sed -n 's|^vignettes/\(.*\)[.]Rmd$|\1|p' |
+            sort -u |
+            paste -sd, -)"
+          echo "articles=${articles:-none}" >> "$GITHUB_OUTPUT"
+
   articles:
+    needs: changes
+    if: needs.changes.outputs.articles != 'none'
     runs-on: ubuntu-latest
     concurrency:
-      group: articles-${{ github.event_name != 'pull_request' || github.run_id }}
+      group: scop-pages-publish
+      queue: max
 
     steps:
       - uses: actions/checkout@v5
@@ -27,21 +62,7 @@ jobs:
       - uses: r-lib/actions/setup-r@v2
         with:
           use-public-rspm: true
-
-      - name: Capture R library path 🔍
-        id: r-info
-        shell: bash
-        run: |
-          echo "r-version=$(Rscript -e 'cat(as.character(getRversion()))')" >> "$GITHUB_OUTPUT"
-          echo "r-lib=$(Rscript -e 'cat(.libPaths()[1])')" >> "$GITHUB_OUTPUT"
-
-      - name: Restore R package cache ♻️
-        uses: actions/cache/restore@v5
-        with:
-          path: ${{ steps.r-info.outputs.r-lib }}
-          key: r-full-v1-${{ runner.os }}-r${{ steps.r-info.outputs.r-version }}-${{ github.run_id }}-${{ github.run_attempt }}
-          restore-keys: |
-            r-full-v1-${{ runner.os }}-r${{ steps.r-info.outputs.r-version }}-
+          Ncpus: 2
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         env:
@@ -56,7 +77,6 @@ jobs:
             bioc::GO.db
             any::shadowtext
           needs: website
-          cache: false
 
       - name: Verify Harmony source
         shell: Rscript {0}
@@ -67,42 +87,10 @@ jobs:
             identical(harmony_source$RemoteRepo, "harmony")
           )
 
-      - name: Save R package cache 💾
-        uses: actions/cache/save@v5
-        with:
-          path: ${{ steps.r-info.outputs.r-lib }}
-          key: r-full-v1-${{ runner.os }}-r${{ steps.r-info.outputs.r-version }}-${{ github.run_id }}-${{ github.run_attempt }}
-
-      - name: Determine changed articles
-        id: changed
-        shell: bash
-        run: |
-          if [[ "${{ github.event_name }}" != "push" ]]; then
-            echo "articles=all" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          base="${{ github.event.before }}"
-          head="${{ github.sha }}"
-          if [[ "$base" =~ ^0+$ ]] || ! git cat-file -e "$base^{commit}" 2>/dev/null; then
-            # `github.event.before` is unreachable after a force-push;
-            # fall back to the parent commit instead of rebuilding all
-            # articles.
-            base="$head~1"
-            if [[ "$base" =~ ^0+$ ]] || ! git cat-file -e "$base^{commit}" 2>/dev/null; then
-              echo "articles=all" >> "$GITHUB_OUTPUT"
-              exit 0
-            fi
-          fi
-          articles="$(git diff --diff-filter=AM --name-only "$base" "$head" -- vignettes/ |
-            sed -n 's|^vignettes/\(.*\)[.]Rmd$|\1|p' |
-            sort -u |
-            paste -sd, -)"
-          echo "articles=${articles:-none}" >> "$GITHUB_OUTPUT"
-
       - name: Build changed articles
         shell: Rscript {0}
         env:
-          CHANGED_ARTICLES: ${{ steps.changed.outputs.articles }}
+          CHANGED_ARTICLES: ${{ needs.changes.outputs.articles }}
         run: |
           articles <- Sys.getenv("CHANGED_ARTICLES")
           if (!nzchar(articles) || identical(articles, "none")) {
@@ -127,7 +115,7 @@ jobs:
           }
 
       - name: Deploy to GitHub pages 🚀
-        if: steps.changed.outputs.articles != 'none'
+        if: needs.changes.outputs.articles != 'none'
         uses: JamesIves/github-pages-deploy-action@v4.4.1
         with:
           clean: false

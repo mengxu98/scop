@@ -2,23 +2,20 @@
 #'
 #' @md
 #' @inheritParams RunKNNPredict
-#' @inheritParams SingleR::SingleR
-#' @inheritParams SingleR::trainSingleR
 #' @inheritParams thisutils::log_message
 #' @inheritParams thisutils::parallelize_fun
-#' @param genes Marker specification passed to SingleR. Use `"de"` to select
-#'   markers from the reference, or supply a named list of markers per label
-#'   or per pair of labels as supported by [SingleR::trainSingleR].
-#' @param de.method Reference marker-selection method: `"wilcox"`, `"t"`, or
-#'   `"classic"`. Ignored when `genes` supplies explicit marker lists.
-#' @param sd.thresh Legacy SingleR argument, forwarded for compatibility.
-#'   Current SingleR versions deprecate and ignore it.
-#' @param de.n Number of reference markers selected per label comparison.
-#'   `NULL` uses SingleR's method-specific default. Ignored for explicit markers.
-#' @param aggr.ref Whether SingleR aggregates reference cells into representative
-#'   profiles to speed up classification.
-#' @param aggr.args Named list of arguments forwarded to
-#'   [SingleR::aggregateReference] when `aggr.ref = TRUE`.
+#' @param genes Marker selection strategy: `"de"` to detect markers from the
+#' reference, or a list of marker genes accepted by [SingleR::trainSingleR].
+#' @param de.method Differential expression method used to select markers:
+#' `"wilcox"`, `"t"`, or `"classic"`. Ignored when `genes` supplies markers.
+#' @param sd.thresh Numeric threshold forwarded to [SingleR::SingleR] for
+#' compatibility with older versions; ignored by current SingleR versions.
+#' @param de.n Number of marker genes selected per pair of labels. `NULL` uses
+#' the default for the selected `de.method` in [SingleR::trainSingleR].
+#' @param aggr.ref Logical indicating whether to aggregate reference cells into
+#' pseudo-bulk samples before classification.
+#' @param aggr.args Named list of arguments passed to
+#' [SingleR::aggregateReference] when `aggr.ref = TRUE`.
 #' @param quantile "quantile" parameter in [SingleR::SingleR] function.
 #' @param fine.tune `"fine.tune"` parameter in [SingleR::SingleR] function.
 #' @param tune.thresh `"tune.thresh"` parameter in [SingleR::SingleR] function.

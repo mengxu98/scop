@@ -1,5 +1,15 @@
 # scop (development version)
 
+* **fix**: Document all SingleR marker selection and reference aggregation arguments without relying on optional-package documentation inheritance.
+
+* **fix**: Require thisutils 0.5.3 for the local verbosity API used by database preparation. Keep communication database delegation tests independent of Ensembl availability and verify Presto calls without replacing same-named Seurat methods.
+
+* **change**: Reuse the source build for Linux backend checks, skip article environment setup when no articles changed, and build reference pages without executing examples. CI uses dependency-aware caches and two installation workers; optional backend caches track resolved package revisions.
+
+* **fix**: Require Rcpp >= 1.0.13 for source installation, preventing
+  CellRank compilation failures with older headers that limit
+  `List::create()` to 20 arguments.
+
 * **change**: Handwritten GitHub package installs follow the repository default branch. Backend checks accept the installed revision, and Cell2fate only reuses cached results from that revision. Automatically generated renv records are retained.
 
 * **breaking**: `SCTransform()` now comes from Seurat. scop no longer exports its own method, residual kernels, or load-time signature adapter. Preprocessing calls `Seurat::SCTransform()` and leaves thread control to `Seurat::setThreads()`. `CheckDataList()` and `CheckDataMerge()` no longer accept `cores`, which only controlled that removed path.
