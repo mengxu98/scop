@@ -47,6 +47,8 @@ Imports:
     utils,
     uwot
 Suggests:
+    enrichit,
+    fgsea,
     GenomeInfoDb,
     hdf5r,
     Rsamtools,
