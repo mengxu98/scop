@@ -5,7 +5,10 @@ test_that("ATAC scDblFinder uses capture groups and preserves partial-assay cell
     stats::rpois(200 * 120, 2), 200, 120,
     dimnames = list(paste0("p", 1:200), paste0("cell", 1:120))
   ), sparse = TRUE))
-  ranges <- GenomicRanges::GRanges("chr1", IRanges::IRanges(seq(1, by = 200, length.out = 200), width = 100))
+  ranges <- GenomicRanges::makeGRangesFromDataFrame(data.frame(
+    seqnames = "chr1", start = seq(1, by = 200, length.out = 200),
+    end = seq(100, by = 200, length.out = 200)
+  ))
   atac <- ReadATACData(counts, ranges = ranges, genome = "toy", verbose = FALSE)
   rna <- SeuratObject::CreateSeuratObject(Matrix::Matrix(matrix(1, 2, 121,
     dimnames = list(c("g1", "g2"), c(colnames(atac), "rna_only"))
