@@ -15,7 +15,10 @@ RunATACQC(
   max_nucleosome_signal = NULL,
   max_blacklist_ratio = NULL,
   verbose = TRUE,
-  srt = NULL
+  srt = NULL,
+  frip.columns = NULL,
+  frip = FALSE,
+  frip.chunk.size = 100000L
 )
 }
 \arguments{
@@ -23,33 +26,92 @@ RunATACQC(
 
 \item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
-\item{tss.positions}{TSS positions passed to \code{Signac::TSSEnrichment}.}
+\item{tss.positions}{TSS positions passed to \code{Signac::TSSEnrichment}. An
+explicit value requests recalculation, even when an imported TSS score exists.}
 
 \item{blacklist}{A \code{GRanges} blacklist used to compute \code{blacklist_ratio}.}
 
 \item{fast}{Whether to use the fast mode in \code{Signac::TSSEnrichment}.}
 
-\item{min_pct_reads_in_peaks, min_TSS_enrichment, max_nucleosome_signal, max_blacklist_ratio}{Optional thresholds used for filtering cells.}
+\item{min_pct_reads_in_peaks, min_TSS_enrichment, max_nucleosome_signal, max_blacklist_ratio}{Optional thresholds used for filtering cells. Fraction thresholds use 0--1,
+not percentages. A requested metric must be present and finite for every cell;
+missing or failed calculations never silently disable a requested filter.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{frip.columns}{Optional named character vector with \code{in_peaks} and
+\code{total} metadata column names. Supplying these explicitly asserts that both
+count the same read/fragment unit over the same files, cells and filtering
+rules, and that the numerator refers to the current peak universe. Legacy
+column names are not guessed. Without either this argument or \code{frip = TRUE},
+an existing \code{pct_reads_in_peaks} column is preserved, but a new FRiP is not
+inferred from matrix column sums.}
+
+\item{frip}{Explicitly recalculate a fragment-record fraction overlapping the
+current peak union. Each record counts once, even across several peaks.
+Duplicate input rows remain separate records; column-five support is not
+used as a weight. Stores \code{frip} and the legacy 0--1 alias.}
+
+\item{frip.chunk.size}{Maximum fragment records read per sequential block.}
 }
 \value{
-A \code{Seurat} object with QC metadata added.
+A \code{Seurat} object, retaining input cell order or the ordered subset
+passing all requested thresholds. Available metadata include fragment
+counts, \code{nucleosome_signal}, \code{nucleosome_percentile}, \code{TSS.enrichment},
+\code{pct_reads_in_peaks} and \code{blacklist_ratio}. Direct fragment FRiP also writes
+\code{frip} and a \code{scop_frip} receipt in the assay's \code{misc} slot, recording the
+peak union, mapped cells, source hashes and per-cell numerator/denominator.
+Explicit source-column recalculation also synchronizes \code{frip} and clears any
+previous direct-fragment receipt. Metrics are calculated only for cells in
+the selected assay; other cells and their existing metadata are preserved.
+Filtering removes only failed cells from the selected assay; at least one
+cell in that assay must pass the requested thresholds.
+Zero denominators produce \code{NA}; requested filters reject unavailable or
+non-finite metrics. Fraction metrics use 0--1, not percentages.
 }
 \description{
 Calculate common scATAC QC metrics and optionally filter cells by thresholds.
 }
-\examples{
-\donttest{
-data("pbmcmultiome_sub", package = "scop")
-pbmcmultiome_sub <- RunATACQC(
-  pbmcmultiome_sub,
-  assay = "peaks",
-  fast = TRUE
-)
+\details{
+\code{total.fragments} counts fragment-file records (\code{frequency_count}), not
+column-five read support (\code{reads_count}). Each file's explicit Signac barcode
+mapping is applied separately, so captures may reuse the same raw barcode.
+Resources without selected-assay cells are ignored during calculation but
+remain attached to the returned assay.
+\code{blacklist_ratio} is the fraction of peak-matrix counts assigned to peaks
+overlapping any blacklist interval. Each peak contributes once; it is not a
+fragment-level blacklist fraction. Existing QC columns are imported values;
+callers must verify their source, units and relevance after changing peaks.
+Explicit FRiP source columns must not use names overwritten by fragment
+counting (\code{frequency_count}, \code{reads_count}, \code{mononucleosomal},
+\code{nucleosome_free}, \code{total.fragments}); retain upstream values under distinct
+names when attaching fragments. TSS enrichment uses Signac's R implementation
+and does not select an external backend merely because a newer Signac release
+exports it.
+Missing optional inputs leave metrics unavailable. This function does not
+perform doublet detection or establish that all fragment QC is complete.
 }
+\examples{
+counts <- Matrix::sparseMatrix(
+  i = c(1, 2, 1, 2), j = c(1, 1, 2, 2), x = c(2, 1, 1, 3),
+  dimnames = list(c("chr1-1-10", "chr1-21-30"), c("cell1", "cell2"))
+)
+ranges <- GenomicRanges::makeGRangesFromDataFrame(data.frame(
+  seqnames = "chr1", start = c(1L, 21L), end = c(10L, 30L)
+))
+object <- ReadATACData(counts, ranges = ranges, genome = "toy", verbose = FALSE)
+object$source_in_peaks <- c(3, 4)
+object$source_total <- c(5, 8)
+object <- RunATACQC(object,
+  frip.columns = c(in_peaks = "source_in_peaks", total = "source_total"),
+  min_pct_reads_in_peaks = 0.5, verbose = FALSE
+)
+object$pct_reads_in_peaks
+}
+\seealso{
+\code{\link[=ReadATACData]{ReadATACData()}}, \code{\link[=CheckATACData]{CheckATACData()}}
 }

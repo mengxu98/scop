@@ -2,6 +2,8 @@
 
 * **fix**: `CheckATACData()` determines fragment readiness from resources mapped to the selected assay cells, preserving inactive resources in its report after native subsetting.
 
+* **feature**: `RunATACQC()` supports explicit fragment-record FRiP over the current peak union and matched source columns, applies per-file barcode mappings, and rejects unavailable requested filtering metrics. Fragment totals count records rather than read support; blacklist ratios count each overlapping peak once.
+
 * **feature**: `ReadATACData()` and `ReadMultiomeData()` import existing raw peak and paired RNA counts through Signac/Seurat, preserving explicit feature and barcode alignment. `CheckATACData()` reports matrix/reference validity and external fragment availability without altering the object.
 
 * **fix**: Document all SingleR marker selection and reference aggregation arguments without relying on optional-package documentation inheritance.

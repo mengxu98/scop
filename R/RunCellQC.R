@@ -942,7 +942,9 @@ RunDecontX <- function(
 #' @param decontX_args Extra [RunDecontX()] arguments. Explicit `decontX_*`
 #' parameters take precedence.
 #' @param atac_args Extra [RunATACQC()] arguments. Thresholds label `atac_qc`;
-#' filtering is done by [RunCellQC()].
+#' filtering is done by [RunCellQC()]. Requested ATAC metrics must be available
+#' and finite for every selected-assay cell; cells outside that assay are not
+#' marked as ATAC QC failures.
 #' @param outlier_n Minimum number of outlier rules a cell must fail.
 #' @param UMI_threshold,gene_threshold Keep cells with UMI/gene counts above these.
 #' @param mito_threshold,mito_pattern,mito_gene Discard cells above this mitochondrial
@@ -1434,35 +1436,12 @@ RunCellQC <- function(
           what = RunATACQC,
           args = atac_args_use
         )
-        atac_fail <- rep(FALSE, ncol(srt))
-        names(atac_fail) <- colnames(srt)
-        if (
-          !is.null(min_pct_reads_in_peaks) &&
-            "pct_reads_in_peaks" %in% colnames(srt@meta.data)
-        ) {
-          atac_fail <- atac_fail | srt$pct_reads_in_peaks < min_pct_reads_in_peaks
-        }
-        if (
-          !is.null(min_TSS_enrichment) &&
-            "TSS.enrichment" %in% colnames(srt@meta.data)
-        ) {
-          atac_fail <- atac_fail | srt$TSS.enrichment < min_TSS_enrichment
-        }
-        if (
-          !is.null(max_nucleosome_signal) &&
-            "nucleosome_signal" %in% colnames(srt@meta.data)
-        ) {
-          atac_fail <- atac_fail | srt$nucleosome_signal > max_nucleosome_signal
-        }
-        if (
-          !is.null(max_blacklist_ratio) &&
-            "blacklist_ratio" %in% colnames(srt@meta.data)
-        ) {
-          atac_fail <- atac_fail | (
-            !is.na(srt$blacklist_ratio) &
-              srt$blacklist_ratio > max_blacklist_ratio
-          )
-        }
+        atac_fail <- !atac_qc_keep(srt, assay, list(
+          pct_reads_in_peaks = min_pct_reads_in_peaks,
+          TSS.enrichment = min_TSS_enrichment,
+          nucleosome_signal = max_nucleosome_signal,
+          blacklist_ratio = max_blacklist_ratio
+        ))
         atac_qc <- names(atac_fail)[atac_fail]
       }
     }
