@@ -82,7 +82,7 @@ panc8_sub <- RunIntegrationBenchmark(
   celltype = "celltype",
   methods = c("Uncorrected", "Harmony"),
   nHVF = 2000,
-  linear_reduction_dims = 50,
+  linear_reduction_dims = 30,
   linear_reduction_dims_use = 1:30,
   perplexity = 30,
   skip_failed = FALSE,
@@ -91,10 +91,11 @@ panc8_sub <- RunIntegrationBenchmark(
 )
 ```
 
-The 2,000 variable genes and 30 latent dimensions define the shared model input;
-all cells are scored. No cell subsampling is performed. `skip_failed = FALSE`
-stops this two-method comparison if either method fails, so one successful
-method cannot be mistaken for a complete comparison.
+The 2,000 variable genes and 30 latent dimensions define the shared model input
+and scoring space. All cells are retained for integration, LISI and graph
+connectivity. The ASW metrics use a stratified sample of at most 800 cells.
+`skip_failed = FALSE` stops this two-method comparison if either method fails,
+so one successful method cannot be mistaken for a complete comparison.
 
 ## Print summary tables
 

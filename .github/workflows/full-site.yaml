@@ -41,6 +41,7 @@ jobs:
             any::pkgdown
             local::.
             github::immunogenomics/harmony
+            github::cole-trapnell-lab/monocle3
             bioc::org.Mm.eg.db
             bioc::GO.db
             any::shadowtext

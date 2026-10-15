@@ -169,12 +169,15 @@ jobs:
             exit 0
           fi
 
+          # Rebuild home inputs in place while still collecting any
+          # reference topics or news changed in the same push.
+          # Other version footers are refreshed by the weekly schedule.
           home_build=false
-          if awk '$2 ~ /^(README[.](md|Rmd|qmd)|DESCRIPTION)$/ { found = 1 } END { exit found ? 0 : 1 }' pkgdown-files.txt; then
+          if awk '$2 ~ /^(README[.](md|Rmd|qmd)$|DESCRIPTION$|man\/figures\/)/ { found = 1 } END { exit found ? 0 : 1 }' pkgdown-files.txt; then
             home_build=true
           fi
 
-          if awk '$2 !~ /^(R\/.*[.]R|man\/.*[.]Rd|NEWS[.]md|README[.](md|Rmd|qmd)|DESCRIPTION|_pkgdown[.]yml|[.]github\/workflows\/pkgdown[.]yaml)$/ { found = 1 } END { exit found ? 0 : 1 }' pkgdown-files.txt; then
+          if awk '$2 !~ /^(R\/.*[.]R|man\/.*[.]Rd|man\/figures\/.*|README[.](md|Rmd|qmd)|NEWS[.]md|DESCRIPTION|_pkgdown[.]yml|[.]github\/workflows\/pkgdown[.]yaml)$/ { found = 1 } END { exit found ? 0 : 1 }' pkgdown-files.txt; then
             echo "full_build=true" >> "$GITHUB_OUTPUT"
             echo "topics=" >> "$GITHUB_OUTPUT"
             echo "news_build=false" >> "$GITHUB_OUTPUT"
@@ -323,6 +326,13 @@ jobs:
       - name: Build home
         if: steps.scope.outputs.home_build == 'true'
         run: |
+          # Home-only builds do not run build_reference(), which normally
+          # copies README figures to their rewritten website paths.
+          if (dir.exists("man/figures")) {
+            dir.create("docs/reference", recursive = TRUE, showWarnings = FALSE)
+            stopifnot(file.copy("man/figures", "docs/reference",
+                               recursive = TRUE, overwrite = TRUE))
+          }
           pkgdown::build_home()
         shell: Rscript {0}
 
