@@ -1,5 +1,7 @@
 # scop (development version)
 
+* **feature**: `AddATACMotifs()` also accepts final peak ranges without a count matrix, returning native motifs and aligned sequence statistics for reuse after recount.
+
 * **feature**: `AddATACMotifs()` matches explicit motif matrices to a supplied sequence reference through Signac/motifmatchr, and `RunMotifEnrichment()` records the eligible universe and native foreground-inclusive enrichment population. Reference identity, sequence statistics, and peak/motif alignment are checked without downloading reference data.
 
 * **fix**: `CheckATACData()` determines fragment readiness from resources mapped to the selected assay cells, preserving inactive resources in its report after native subsetting.

@@ -3,7 +3,9 @@
 #' @md
 #' @description Match supplied position frequency/weight matrices to the exact
 #' source peak universe through Signac and motifmatchr.
-#' @param object A Seurat object containing a ChromatinAssay.
+#' @param object A Seurat object containing a ChromatinAssay, or a `GRanges`
+#'   of final peaks. The ranges-only path needs no counts or cells and can run
+#'   before recount. Coordinates use 1-based closed intervals.
 #' @param genome Loaded BSgenome, DNAStringSet or indexed FaFile. No download or
 #'   installation is performed.
 #' @param pfm A named TFBSTools PFMatrixList or PWMatrixList with unique motif IDs.
@@ -20,6 +22,13 @@
 #'   This receipt is a snapshot, not a replacement for current native assay state.
 #'   Existing sequence-statistic columns are refreshed by name; unrelated feature
 #'   metadata are preserved. Explicit replacement emits the native receipt-overwrite warning.
+#'   For `GRanges`, return a list with native `motifs`, aligned sequence
+#'   `statistics`, the input `ranges`, and a calculation-time `receipt`.
+#'   Motif row names are canonical Signac interval IDs. After recount over the
+#'   same ranges, assign the native Motif with `Signac::Motifs(assay) <- motifs`
+#'   and sequence statistics with `SeuratObject::AddMetaData()`; check exact
+#'   peak order and reference identity before assignment. No placeholder counts
+#'   are constructed and changing counts alone does not change sequence matches.
 #' @seealso [RunMotifEnrichment()]
 #' @examples
 #' if (all(vapply(c("Biostrings", "BSgenome", "TFBSTools", "motifmatchr"),
@@ -48,10 +57,29 @@ AddATACMotifs <- function(
   object, genome, pfm, genome.id, assay = NULL,
   replace = FALSE, verbose = TRUE
 ) {
-  report <- CheckATACData(object, assay = assay)
-  if (!report$valid) log_message("{paste(report$errors, collapse = ' ')}", message_type = "error")
-  assay <- report$assay
-  if (!atac_unique_ids(genome.id) || length(genome.id) != 1L || !identical(genome.id, report$genome) ||
+  ranges_only <- inherits(object, "GRanges")
+  if (ranges_only) {
+    problems <- atac_ranges_problems(object)
+    if (length(problems)) log_message("{paste(problems, collapse = ' ')}", message_type = "error")
+    ranges <- object
+    if (!length(ranges) || !atac_unique_ids(atac_range_ids(ranges))) {
+      log_message("Supply non-empty, unique peak intervals.", message_type = "error")
+    }
+    labels <- unique(as.character(atac_backend_fun("GenomeInfoDb", "genome")(ranges)))
+    labels <- labels[!is.na(labels) & nzchar(labels)]
+    if (length(labels) && !identical(labels, genome.id)) {
+      log_message("Known peak genome labels must agree with genome.id.", message_type = "error")
+    }
+  } else {
+    report <- CheckATACData(object, assay = assay)
+    if (!report$valid) log_message("{paste(report$errors, collapse = ' ')}", message_type = "error")
+    assay <- report$assay
+    ranges <- Signac::granges(object[[assay]])
+    if (!identical(genome.id, report$genome)) {
+      log_message("Supply a genome.id matching the source assay.", message_type = "error")
+    }
+  }
+  if (!atac_unique_ids(genome.id) || length(genome.id) != 1L ||
     !any(vapply(c("BSgenome", "DNAStringSet", "FaFile"), function(x) inherits(genome, x), logical(1)))) {
     log_message("Supply a loaded sequence reference and matching genome.id.", message_type = "error")
   }
@@ -61,10 +89,9 @@ AddATACMotifs <- function(
   if (!is.logical(replace) || length(replace) != 1L || is.na(replace)) {
     log_message("replace must be TRUE or FALSE.", message_type = "error")
   }
-  if (!replace && !is.null(Signac::Motifs(object[[assay]]))) {
+  if (!ranges_only && !replace && !is.null(Signac::Motifs(object[[assay]]))) {
     log_message("The assay already contains motifs; set replace = TRUE explicitly.", message_type = "error")
   }
-  ranges <- Signac::granges(object[[assay]])
   chromosomes <- unique(as.character(GenomicRanges::seqnames(ranges)))
   reference_chromosomes <- atac_backend_fun("GenomeInfoDb", "seqlevels")(genome)
   if (!all(chromosomes %in% reference_chromosomes)) {
@@ -76,7 +103,7 @@ AddATACMotifs <- function(
   if (length(reference_labels) && any(reference_labels != genome.id)) {
     log_message("Sequence-reference genome labels must agree with genome.id and the source assay.", message_type = "error")
   }
-  source_lengths <- get_lengths(object[[assay]])
+  source_lengths <- get_lengths(if (ranges_only) ranges else object[[assay]])
   shared_lengths <- get_lengths(genome)[names(source_lengths)]
   if (any(source_lengths != shared_lengths, na.rm = TRUE)) {
     log_message("Known source and sequence-reference chromosome lengths must agree.", message_type = "error")
@@ -86,6 +113,19 @@ AddATACMotifs <- function(
     log_message("Source peaks must fit within the known sequence-reference lengths.", message_type = "error")
   }
   atac_backend_fun("motifmatchr", "matchMotifs")
+  receipt <- list(
+    genome = genome.id, sequence_class = class(genome),
+    peaks = atac_range_ids(ranges), motifs = names(pfm), backend = c(
+      Signac = as.character(utils::packageVersion("Signac")),
+      motifmatchr = as.character(utils::packageVersion("motifmatchr"))
+    )
+  )
+  if (ranges_only) {
+    motifs <- Signac::AddMotifs(ranges, genome = genome, pfm = pfm, verbose = verbose)
+    statistics <- Signac::RegionStats(ranges, genome = genome, verbose = verbose)
+    rownames(statistics) <- receipt$peaks
+    return(list(motifs = motifs, statistics = statistics, ranges = ranges, receipt = receipt))
+  }
   result <- object
   matched <- Signac::AddMotifs(object[[assay]], genome = genome, pfm = pfm, verbose = verbose)
   statistics <- Signac::RegionStats(ranges, genome = genome, verbose = verbose)

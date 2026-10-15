@@ -15,7 +15,9 @@ AddATACMotifs(
 )
 }
 \arguments{
-\item{object}{A Seurat object containing a ChromatinAssay.}
+\item{object}{A Seurat object containing a ChromatinAssay, or a \code{GRanges}
+of final peaks. The ranges-only path needs no counts or cells and can run
+before recount. Coordinates use 1-based closed intervals.}
 
 \item{genome}{Loaded BSgenome, DNAStringSet or indexed FaFile. No download or
 installation is performed.}
@@ -40,6 +42,13 @@ ordered peaks, motif IDs, genome label and backend versions at addition time.
 This receipt is a snapshot, not a replacement for current native assay state.
 Existing sequence-statistic columns are refreshed by name; unrelated feature
 metadata are preserved. Explicit replacement emits the native receipt-overwrite warning.
+For \code{GRanges}, return a list with native \code{motifs}, aligned sequence
+\code{statistics}, the input \code{ranges}, and a calculation-time \code{receipt}.
+Motif row names are canonical Signac interval IDs. After recount over the
+same ranges, assign the native Motif with \code{Signac::Motifs(assay) <- motifs}
+and sequence statistics with \code{SeuratObject::AddMetaData()}; check exact
+peak order and reference identity before assignment. No placeholder counts
+are constructed and changing counts alone does not change sequence matches.
 }
 \description{
 Match supplied position frequency/weight matrices to the exact
