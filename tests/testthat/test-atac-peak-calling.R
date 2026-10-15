@@ -37,6 +37,8 @@ test_that("peak-call grouping separates metadata field names from output IDs", {
   file.create(program)
   call <- CallATACPeaks
   execution <- new.env(parent = environment(call))
+  # Unix returns NA for a missing path; reproduce that behavior on every OS.
+  execution$Sys.readlink <- function(path) NA_character_
   # Mock only the process boundary; fragment splitting and parsing are native.
   # Real MACS2 acceptance is performed separately on external PBMC data.
   execution$system2 <- function(command, args, stdout, stderr) {
@@ -65,4 +67,16 @@ test_that("peak-call grouping separates metadata field names from output IDs", {
   expect_identical(result$groups$group, unname(object$sample))
   expect_identical(result$receipt$sample.by, "call_id")
   expect_identical(result$receipt$group.by, "sample")
+  expect_error(call(object,
+    sample.by = "call_id", group.by = "sample",
+    macs2.path = program, outdir = file.path(directory, "calls"),
+    effective.genome.size = 1000, verbose = FALSE
+  ), "[Oo]utdir")
+  execution$Sys.readlink <- function(path) "missing-symlink-target"
+  expect_error(call(object,
+    sample.by = "call_id", group.by = "sample",
+    macs2.path = program, outdir = file.path(directory, "dangling"),
+    effective.genome.size = 1000, verbose = FALSE
+  ), "[Oo]utdir")
+  expect_false(dir.exists(file.path(directory, "dangling")))
 })

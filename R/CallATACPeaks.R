@@ -104,7 +104,7 @@ CallATACPeaks <- function(object, sample.by, group.by = NULL, cells = NULL,
   }
   resources <- atac_validate_fragment_inputs(object, assay, cells, verbose)
   if (!is.character(outdir) || length(outdir) != 1L || is.na(outdir) || !nzchar(outdir) ||
-    file.exists(outdir) || nzchar(Sys.readlink(outdir)) || !dir.exists(dirname(outdir))) {
+    file.exists(outdir) || isTRUE(nzchar(Sys.readlink(outdir), keepNA = TRUE)) || !dir.exists(dirname(outdir))) {
     log_message("outdir must be a new path within an existing directory.", message_type = "error")
   }
   if (!dir.create(outdir)) log_message("Cannot create outdir.", message_type = "error")
