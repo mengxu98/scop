@@ -6,6 +6,8 @@
 
 * **change**: Reuse the source build for Linux backend checks, skip article environment setup when no articles changed, and build reference pages without executing examples. CI uses dependency-aware caches and two installation workers; optional backend caches track resolved package revisions.
 
+- Fix ATAC label transfer for query IDs containing `_query`, preserve caller RNG, and record actual anchor features and prediction columns. Reruns replace only recorded prior results; unrelated metadata are protected.
+
 * **fix**: Require Rcpp >= 1.0.13 for source installation, preventing
   CellRank compilation failures with older headers that limit
   `List::create()` to 20 arguments.
