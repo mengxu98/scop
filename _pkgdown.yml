@@ -104,6 +104,9 @@ reference:
   - CheckATACData
   - ExportATACResults
 
+  - FilterATACPeaks
+  - AnnotateATACPeaks
+
 - subtitle: "Quality Control"
 - contents:
   - RunDoubletDetection

@@ -2,6 +2,8 @@
 
 * **feature**: `ExportATACResults()` saves a complete ATAC object, explicit result tables, selected-assay matrix companions and an external-resource inventory with file checksums into a new directory. Matrix Market/BED3/barcode exports can be read by `ReadATACData()`; fragment resources remain external.
 
+* **feature**: `FilterATACPeaks()` creates a clean peak assay using explicit raw-count, interval and blacklist criteria. `AnnotateATACPeaks()` records native nearest-interval annotation hits with explicit genome-label/known-length checks, preserving unmatched peaks and existing results.
+
 * **fix**: `CheckATACData()` determines fragment readiness from resources mapped to the selected assay cells, preserving inactive resources in its report after native subsetting.
 
 * **feature**: `RunATACQC()` supports explicit fragment-record FRiP over the current peak union and matched source columns, applies per-file barcode mappings, and rejects unavailable requested filtering metrics. Fragment totals count records rather than read support; blacklist ratios count each overlapping peak once.
