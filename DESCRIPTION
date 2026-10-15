@@ -53,6 +53,8 @@ Suggests:
     motifmatchr,
     TFBSTools,
     chromVAR,
+    enrichit,
+    fgsea,
     GenomeInfoDb,
     hdf5r,
     Rsamtools,
