@@ -49,10 +49,12 @@ path uses BED input and \code{--nomodel}; MACS3 FRAG arguments are not used.}
 \item{verbose}{Whether Signac reports fragment splitting progress.}
 }
 \value{
-A list with named \code{peaks} (\code{GRanges} per call), \code{groups} mapping safe
-output IDs to original capture/group labels, and \code{receipt} containing actual
+A list with named \code{peaks} (\code{GRanges} per call), \code{groups} with columns
+\code{call_id}, \code{sample} and optional \code{group}, and \code{receipt} containing actual
 cell membership, reference, fragment resources, backend versions, command
-arguments, logs, exit status and output files. Counts represent the supplied
+arguments, logs, exit status and output files. The receipt identifies the
+original \code{sample.by} and \code{group.by} metadata fields; their names cannot collide
+with the fixed output columns. Counts represent the supplied
 fragment records, not fifth-column read-support weights. Peak significance
 is a caller result, not a biological-replicate condition comparison.
 }

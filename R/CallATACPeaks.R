@@ -31,10 +31,12 @@
 #' Signac's splitting API is reused. The process is invoked directly so its
 #' exit status and both output streams can be retained, rather than relying on
 #' a caller wrapper that ignores the process exit status.
-#' @return A list with named `peaks` (`GRanges` per call), `groups` mapping safe
-#'   output IDs to original capture/group labels, and `receipt` containing actual
+#' @return A list with named `peaks` (`GRanges` per call), `groups` with columns
+#'   `call_id`, `sample` and optional `group`, and `receipt` containing actual
 #'   cell membership, reference, fragment resources, backend versions, command
-#'   arguments, logs, exit status and output files. Counts represent the supplied
+#'   arguments, logs, exit status and output files. The receipt identifies the
+#'   original `sample.by` and `group.by` metadata fields; their names cannot collide
+#'   with the fixed output columns. Counts represent the supplied
 #'   fragment records, not fifth-column read-support weights. Peak significance
 #'   is a caller result, not a biological-replicate condition comparison.
 #' @seealso [RunATACQC()], [CombineATACPeaks()], [RecountATAC()]
@@ -82,6 +84,7 @@ CallATACPeaks <- function(object, sample.by, group.by = NULL, cells = NULL,
     keep <- Reduce(`&`, lapply(fields, function(field) grouping[[field]] == groups[[field]][i]))
     membership[keep] <- ids[i]
   }
+  names(groups) <- c("sample", if (!is.null(group.by)) "group")
   groups <- data.frame(call_id = ids, groups, check.names = FALSE)
   if (!is.character(macs2.path) || length(macs2.path) != 1L ||
     is.na(macs2.path) || !file.exists(macs2.path)) {
@@ -139,7 +142,8 @@ CallATACPeaks <- function(object, sample.by, group.by = NULL, cells = NULL,
   }
   receipt <- list(
     cells = cells, membership = stats::setNames(membership, cells),
-    assay = assay, genome = report$genome, fragments = resources$resources,
+    assay = assay, genome = report$genome, sample.by = sample.by, group.by = group.by,
+    fragments = resources$resources,
     commands = commands, outdir = outdir,
     backend = c(Signac = as.character(utils::packageVersion("Signac")), MACS2 = paste(version, collapse = " "))
   )
