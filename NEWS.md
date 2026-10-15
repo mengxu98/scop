@@ -3,7 +3,9 @@
 * **feature**: `ExportATACResults()` saves a complete ATAC object, explicit result tables, selected-assay matrix companions and an external-resource inventory with file checksums into a new directory. Matrix Market/BED3/barcode exports can be read by `ReadATACData()`; fragment resources remain external.
 * **feature**: `RunGeneActivity()` wraps native Signac fragment-based gene-body/promoter counting with explicit annotation identity/reference checks and active-capture validation. Results enter a new assay with provenance; ambiguous native IDs are rejected rather than merged or reconstructed.
 - Add opt-in sample-level edgeR design/contrast models with biological-sample checks, paired/covariate designs, peak coordinates and complete tested-family provenance. Existing differential-testing defaults are unchanged.
+- Add RunLinkPeaks for native paired measured-RNA/ATAC associations with explicit pairing, reference metadata checks and protected native links.
 
+* **fix**: `CheckATACData()` determines fragment readiness from resources mapped to the selected assay cells, preserving inactive resources in its report after native subsetting.
 * **fix**: `CheckATACData()` determines fragment readiness from resources mapped to the selected assay cells, preserving inactive resources in its report after native subsetting.
 * **fix**: `CheckATACData()` determines fragment readiness from resources mapped to the selected assay cells, preserving inactive resources in its report after native subsetting.
 * **feature**: `FilterATACPeaks()` creates a clean peak assay using explicit raw-count, interval and blacklist criteria. `AnnotateATACPeaks()` records native nearest-interval annotation hits with explicit genome-label/known-length checks, preserving unmatched peaks and existing results.

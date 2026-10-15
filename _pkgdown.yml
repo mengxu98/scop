@@ -99,6 +99,7 @@ reference:
 
 - subtitle: "ATAC Input"
 - contents:
+  - RunLinkPeaks
   - ReadATACData
   - ReadMultiomeData
   - CheckATACData
