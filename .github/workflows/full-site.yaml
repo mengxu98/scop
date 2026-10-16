@@ -18,7 +18,8 @@ jobs:
   full-site:
     runs-on: ubuntu-latest
     concurrency:
-      group: full-site
+      group: scop-pages-publish
+      queue: max
 
     steps:
       - uses: actions/checkout@v5
@@ -30,6 +31,7 @@ jobs:
       - uses: r-lib/actions/setup-r@v2
         with:
           use-public-rspm: true
+          Ncpus: 2
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         env:
@@ -39,6 +41,7 @@ jobs:
             any::pkgdown
             local::.
             github::immunogenomics/harmony
+            github::cole-trapnell-lab/monocle3
             bioc::org.Mm.eg.db
             bioc::GO.db
             any::shadowtext
@@ -46,7 +49,7 @@ jobs:
 
       - name: Build full site
         shell: Rscript {0}
-        run: pkgdown::build_site()
+        run: pkgdown::build_site(examples = FALSE)
 
       - name: Deploy to GitHub pages 🚀
         uses: JamesIves/github-pages-deploy-action@v4.4.1
