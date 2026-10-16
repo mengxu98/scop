@@ -134,6 +134,8 @@ reference:
   - RunLinkPeaks
   - CoverageTrackPlot
 
+- title: "Single-Cell and Multimodal Analysis"
+
 - subtitle: "Quality Control"
 - contents:
   - RunDoubletDetection
@@ -253,6 +255,7 @@ reference:
 
 - subtitle: "Spatial QC and Normalization"
 - contents:
+  - RunSpotQC
   - RunSpaNorm
   - RunSpotSweeper
 
@@ -309,6 +312,8 @@ reference:
   - SpatialDeconvolutionPlot
   - SpatialVariableFeaturePlot
   - STdeconvolvePlot
+
+- title: "Downstream Interpretation"
 
 - subtitle: "Cell Type Annotation"
 - contents:
