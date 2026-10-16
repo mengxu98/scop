@@ -6,17 +6,26 @@ title: "Trajectory and dynamic feature workflow"
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  eval = FALSE,
+  eval = TRUE,
+  error = FALSE,
+  message = FALSE,
   fig.align = "center",
   dpi = 144,
   out.width = "92%"
 )
 ```
 
-This article displays a complete workflow without executing it during the
-website build. Trajectory and velocity backends can install Python environments
-and require method-specific inputs, so run the relevant sections explicitly in
-the environment used for the analysis.
+This page executes the complete bundled pancreas object and displays velocity,
+connectivity, pseudotime and dynamic-expression results. The velocity and PAGA
+examples explicitly select SCOP's native C++ backend; they are not executions of
+the Python scVelo or Scanpy packages. Slingshot and Monocle3 use their R backends.
+Keep the backend with every result when comparing implementations.
+
+Install the optional R backends before rendering this article. The examples use
+the existing environment; Python reference implementations can be selected with
+`backend = "python"` after preparing their separate environment.
+Dynamic fitting also requires a current `thisutils` build exporting
+`fit_trends`; older builds can have the same version number without this API.
 
 This article shows how to organize trajectory, RNA-velocity, and dynamic-feature
 analyses in `scop`. These methods answer related but distinct questions:
@@ -39,9 +48,16 @@ convenient example for both ordinary trajectory inference and RNA velocity.
 
 ```{r prepare-object}
 library(scop)
+stopifnot(all(unlist(check_r("slingshot", install = FALSE, verbose = FALSE))),
+          all(unlist(check_r("cole-trapnell-lab/monocle3", install = FALSE, verbose = FALSE))),
+          "fit_trends" %in% getNamespaceExports("thisutils"))
+set.seed(11)
 
 data(pancreas_sub)
-pancreas_sub <- RunStandardWorkflow(pancreas_sub, verbose = FALSE)
+input_cells <- colnames(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub, assay = "RNA", seed = 11,
+                                   cores = 1, verbose = FALSE)
+stopifnot(identical(colnames(pancreas_sub), input_cells))
 
 SeuratObject::Assays(pancreas_sub)
 table(pancreas_sub$SubCellType)
@@ -51,15 +67,17 @@ table(pancreas_sub$SubCellType)
 
 RNA velocity requires spliced and unspliced matrices. Generate those matrices
 outside `scop` with tools such as velocyto, bustools, or alevin-fry, then store
-them as assays in the Seurat object, or as extra layers of the `RNA` assay.
-`assay_y` accepts either location.
+them as separate `spliced` and `unspliced` assays for the native C++ example
+below. With `backend = "python"`, `assay_y` also accepts extra layers of the
+`RNA` assay; the C++ backend requires separate assays.
 
 ```{r scvelo}
 pancreas_sub <- RunSCVELO(
   pancreas_sub,
   group.by = "SubCellType",
   linear_reduction = "PCA",
-  nonlinear_reduction = "UMAP"
+  nonlinear_reduction = "UMAP",
+  backend = "cpp", cores = 1, show_plot = FALSE
 )
 
 VelocityPlot(
@@ -91,7 +109,8 @@ pancreas_sub <- RunPAGA(
   pancreas_sub,
   group.by = "SubCellType",
   linear_reduction = "PCA",
-  nonlinear_reduction = "UMAP"
+  nonlinear_reduction = "UMAP",
+  backend = "cpp", cores = 1, show_plot = FALSE
 )
 
 PAGAPlot(
@@ -118,7 +137,8 @@ pancreas_sub <- RunSlingshot(
   group.by = "SubCellType",
   reduction = "UMAP",
   start = "Ductal",
-  end = c("Alpha", "Beta")
+  end = c("Alpha", "Beta"),
+  show_plot = FALSE, seed = 11
 )
 
 CellDimPlot(
@@ -189,23 +209,22 @@ that vary along one or more lineages.
 pancreas_sub <- RunDynamicFeatures(
   pancreas_sub,
   lineages = c("Lineage1", "Lineage2"),
-  n_candidates = 200
+  features = unique(c(head(SeuratObject::VariableFeatures(pancreas_sub), 200),
+                      "Plk1", "Hes1", "Neurod2", "Ghrl", "Gcg", "Ins2")),
+  fit_method = "gam", cores = 1, seed = 11
 )
 
-pancreas_sub <- AnnotateFeatures(
-  pancreas_sub,
-  species = "Mus_musculus",
-  db = c("TF", "CSPA")
-)
 ```
 
 Use `DynamicHeatmap()` for module-like changes and `DynamicPlot()` for a small
 set of known features.
-In this heatmap, `GO_BP` means the Gene Ontology Biological Process database
-used to annotate dynamic gene modules. The term annotation summarizes module
-themes; it is not a claim that every gene in the module belongs to one pathway.
+The fitted feature set is the first 200 variable features plus the six named
+genes shown below; all input cells are retained. This is an explicitly selected
+illustrative gene set, not a genome-wide screen. The heatmap displays fitted
+expression without downloading a gene-set database. Module colors summarize
+expression shapes and do not establish regulatory or pathway membership.
 
-```{r dynamic-plots}
+```{r dynamic-heatmap, fig.width=12, fig.height=14}
 ht <- DynamicHeatmap(
   pancreas_sub,
   lineages = c("Lineage1", "Lineage2"),
@@ -214,15 +233,16 @@ ht <- DynamicHeatmap(
   reverse_ht = "Lineage1",
   species = "Mus_musculus",
   db = "GO_BP",
-  anno_terms = TRUE,
+  anno_terms = FALSE,
   anno_keys = FALSE,
   anno_features = FALSE,
   heatmap_palette = "viridis",
-  cell_annotation = "SubCellType",
-  feature_annotation = c("TF", "CSPA")
+  cell_annotation = "SubCellType"
 )
 print(ht$plot)
+```
 
+```{r dynamic-curves, fig.width=14, fig.height=8}
 DynamicPlot(
   pancreas_sub,
   lineages = c("Lineage1", "Lineage2"),
@@ -230,6 +250,24 @@ DynamicPlot(
   features = c("Plk1", "Hes1", "Neurod2", "Ghrl", "Gcg", "Ins2")
 )
 ```
+
+## Save and inspect the executed result
+
+```{r export-result}
+stopifnot(identical(colnames(pancreas_sub), input_cells))
+output_dir <- tempfile("trajectory-workflow-")
+dir.create(output_dir)
+saveRDS(pancreas_sub, file.path(output_dir, "analysis.rds"))
+utils::write.csv(pancreas_sub@meta.data, file.path(output_dir, "cell-metadata.csv"))
+writeLines(capture.output(sessionInfo()), file.path(output_dir, "session-info.txt"))
+data.frame(cells = ncol(pancreas_sub), genes = nrow(pancreas_sub),
+           velocity_backend = "cpp", paga_backend = "cpp")
+names(pancreas_sub@tools)
+```
+
+The temporary directory is for website builds. Choose a new persistent output
+directory for your own analysis. Save the fitted object and package versions;
+pseudotime is a relative model coordinate, not measured developmental time.
 
 ## What to Report
 

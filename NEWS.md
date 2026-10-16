@@ -1,5 +1,8 @@
 # scop (development version)
 
+* **fix**: Restore the package startup Logo, version, update date and website.
+  Startup messages still respect verbosity settings and `suppressPackageStartupMessages()`.
+
 * **feature**: ATAC `RunscDblFinder()` uses native feature aggregation and explicit capture/library groups, preserving RNA-only cells and recording native predictions and parameters. Input metadata comparisons ignore incidental fastmatch barcode-cache attributes, including those encountered with real multi-capture fragments.
 
 * **fix**: `CheckATACData()` determines fragment readiness from resources mapped to the selected assay cells, preserving inactive resources in its report after native subsetting.
