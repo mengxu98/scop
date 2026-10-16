@@ -340,7 +340,7 @@ metacell_supercell <- function(
 
   group_interaction <- do.call(
     interaction,
-    c(group_df, list(drop = TRUE, sep = "."))
+    c(unname(group_df), list(drop = TRUE, sep = "."))
   )
   group_levels <- levels(group_interaction)
 
@@ -502,7 +502,7 @@ metacell_seacells <- function(
   if (!is.null(group_df)) {
     group_interaction <- do.call(
       interaction,
-      c(group_df, list(drop = TRUE, sep = "."))
+      c(unname(group_df), list(drop = TRUE, sep = "."))
     )
     group_levels <- levels(group_interaction)
     n_metacells <- as.integer(gamma)
@@ -688,7 +688,7 @@ metacell_metacell <- function(
   } else {
     group_interaction <- do.call(
       interaction,
-      c(group_df, list(drop = TRUE, sep = "."))
+      c(unname(group_df), list(drop = TRUE, sep = "."))
     )
     group_levels <- levels(group_interaction)
 

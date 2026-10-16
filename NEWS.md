@@ -1,5 +1,14 @@
 # scop (development version)
 
+* **fix**: Preserve canonical Seurat command names and separate command history
+  entries in fallback normalization, scaling, variable-feature selection and
+  integration. Keep dynamic PCA and neighbor commands compact without
+  embedding the input object in log text.
+* **fix**: Treat metadata column names as data when constructing metacell groups
+  and LIANA sample keys, including names shared with function options.
+* **perf**: Avoid expanding complete vectors into correlation-test descriptions
+  in gene-immune and SCENIC plots while retaining the same statistics.
+
 * **fix**: Restore the package startup Logo, version, update date and website.
   Startup messages still respect verbosity settings and `suppressPackageStartupMessages()`.
 

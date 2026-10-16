@@ -40,8 +40,8 @@ NormalizeData.Seurat <- function(
   n_threads <- dots$cores
   dots$cores <- NULL
   delegate <- function() {
-    do.call(
-      utils::getFromNamespace("NormalizeData.Seurat", "Seurat"),
+    invoke_fun(
+      "NormalizeData.Seurat",
       c(
         list(
           object = object,
@@ -53,7 +53,8 @@ NormalizeData.Seurat <- function(
           verbose = verbose
         ),
         dots
-      )
+      ),
+      .env = asNamespace("Seurat")
     )
   }
   if (length(dots) > 0L && (is.null(names(dots)) || any(!nzchar(names(dots))))) {

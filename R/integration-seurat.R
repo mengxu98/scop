@@ -269,8 +269,9 @@ Seurat_integrate <- function(
       params1[[nm]] <- FindIntegrationAnchors_params[[nm]]
     }
     srt_anchors <- invoke_fun(
-      Seurat::FindIntegrationAnchors,
-      params1
+      "FindIntegrationAnchors",
+      params1,
+      .env = asNamespace("Seurat")
     )
 
     log_message("Perform {.pkg Seurat} integration")
@@ -320,7 +321,20 @@ Seurat_integrate <- function(
         }
       }
     }
-    srt_integrated <- invoke_fun(Seurat::IntegrateData, params2)
+    integration_started <- Sys.time()
+    srt_integrated <- invoke_fun("IntegrateData", params2, .env = asNamespace("Seurat"))
+    integration_command <- srt_integrated@commands[["withCallingHandlers"]]
+    if (
+      !is.null(integration_command) &&
+        isTRUE(integration_command@time.stamp >= integration_started) &&
+        identical(integration_command@params$new.assay.name, params2$new.assay.name)
+    ) {
+      integration_command@name <- "IntegrateData"
+      command_args <- stats::setNames(lapply(names(params2), as.name), names(params2))
+      integration_command@call.string <- deparse(as.call(c(list(as.name("IntegrateData")), command_args)))
+      srt_integrated@commands[["withCallingHandlers"]] <- NULL
+      srt_integrated[["IntegrateData"]] <- integration_command
+    }
     if (!is.null(source_merged)) {
       for (assay_name in restore_assays) {
         srt_integrated[[assay_name]] <- source_merged[[assay_name]]
@@ -386,7 +400,7 @@ Seurat_integrate <- function(
     for (nm in names(FindIntegrationAnchors_params)) {
       params1[[nm]] <- FindIntegrationAnchors_params[[nm]]
     }
-    srt_anchors <- invoke_fun(Seurat::FindIntegrationAnchors, params1)
+    srt_anchors <- invoke_fun("FindIntegrationAnchors", params1, .env = asNamespace("Seurat"))
 
     log_message("Perform {.pkg Seurat} integration")
     params2 <- list(
