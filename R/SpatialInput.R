@@ -65,6 +65,7 @@ spatial_input_info <- function(object, assay = NULL, image = NULL,
 #' Delegate file parsing to Seurat, validate each image against its assay, and
 #' record observation type, resolution and coordinate units. This function does
 #' not download data, normalize counts, segment cells, or install packages.
+#' Existing compatible spatial Seurat objects can enter analysis directly.
 #'
 #' @param data.dir Existing vendor output directory.
 #' @param technology One of visium, visium_hd, or xenium.

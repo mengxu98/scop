@@ -33,6 +33,7 @@ A validated Seurat object with misc$scop_spatial_input provenance.
 Delegate file parsing to Seurat, validate each image against its assay, and
 record observation type, resolution and coordinate units. This function does
 not download data, normalize counts, segment cells, or install packages.
+Existing compatible spatial Seurat objects can enter analysis directly.
 }
 \seealso{
 SpatialCellPlot

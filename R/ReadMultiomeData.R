@@ -4,6 +4,9 @@
 #' @description Import both measured modalities from one local 10x ARC count
 #' matrix without dropping cells, normalizing counts, or inferring RNA from ATAC.
 #'
+#' Existing compatible Seurat objects can enter the analysis workflow directly;
+#' this constructor is only needed when importing counts or files.
+#'
 #' @param object Path to one 10x ARC H5 file or one matrix directory containing
 #'   `matrix.mtx.gz`, `features.tsv.gz` and `barcodes.tsv.gz`. The input must
 #'   contain exactly the `Gene Expression` and `Peaks` modalities. H5 input

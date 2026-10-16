@@ -56,8 +56,6 @@ atac <- subset(atac, cells = cells, features = peaks)
 counts <- SeuratObject::LayerData(atac, layer = "counts")
 atac <- subset(atac, features = rownames(counts)[Matrix::rowSums(counts) > 0])
 atac$capture <- "PBMC_capture"
-report <- scop::CheckATACData(atac)
-stopifnot(report$valid, !report$fragments_ready)
 saveRDS(atac, file.path(data_dir, "atac_counts.rds"))
 ```
 
@@ -116,13 +114,17 @@ They describe motif-associated accessibility, not TF expression, binding or
 causality. Supplied reference labels document provenance; matching labels alone
 do not verify the DNA sequence itself.
 
-## Export and resume
+## Save and resume
+
+For a regular R checkpoint, `saveRDS(atac, "atac.rds")` and
+`readRDS("atac.rds")` preserve the complete object. No dedicated export step
+is needed to continue an analysis. The optional interchange example below
+adds BED/count files and an external-resource inventory.
 
 ```{r export}
 scop::ExportATACResults(atac, outdir = "pbmc_matrix_export", assay = "peaks", counts = TRUE)
 # In a fresh R session with the same dependencies:
 restored <- readRDS("pbmc_matrix_export/object.rds")
-stopifnot(scop::CheckATACData(restored)$valid)
 SeuratObject::Embeddings(restored[["ATACInitiallsi"]])[1:3, 1:3]
 ```
 

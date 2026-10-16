@@ -48,7 +48,8 @@ convention. Legacy \code{coords_x_orientation} image attributes are readable but
 should be migrated with \code{\link[=SetSpatialImageAxes]{SetSpatialImageAxes()}} before subsetting.
 Cell metadata never determines image axis order. Metadata-only coordinates
 retain their numerical orientation in both raw and display space.
-This function does not modify the object.
+This function does not modify the object. It is an advanced inspection
+interface; spatial analysis and plotting resolve coordinates internally.
 }
 \examples{
 data(visium_human_pancreas_sub)

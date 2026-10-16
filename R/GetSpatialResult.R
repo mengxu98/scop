@@ -31,6 +31,10 @@
 #' behavior. Custom metadata columns require a stored locator; the accessor
 #' does not guess a column from its values or prefix.
 #'
+#' This optional accessor is for programmatic inspection and downstream reuse.
+#' Spatial plotting functions read stored results directly; calling this
+#' accessor is not required between analysis and plotting.
+#'
 #' @md
 #' @param object A `Seurat` object returned by a spatial method.
 #' @param method Name of the method or tool entry, such as `"BANKSY"`.

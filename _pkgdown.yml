@@ -104,23 +104,36 @@ reference:
   - theme_scop
   - theme_spatial
 
-- subtitle: "ATAC Input"
+- title: "Chromatin Accessibility"
+
+- subtitle: "Peak Calling and Common Feature Space"
 - contents:
-  - RunLinkPeaks
-  - ReadATACData
-  - ReadMultiomeData
-  - CheckATACData
-  - ExportATACResults
+  - CallATACPeaks
+  - CombineATACPeaks
+  - RecountATAC
+  - FilterATACPeaks
+  - AnnotateATACPeaks
+
+- subtitle: "Differential Accessibility"
+  desc: "Use RunDEtest with raw peak counts and biological sample-level designs."
+- contents:
+  - RunDEtest
+  - DEtestPlot
+  - DEtestManhattanPlot
+  - DEtestRingPlot
+
+- subtitle: "Motifs and chromVAR"
+- contents:
   - AddATACMotifs
   - RunMotifEnrichment
   - RunChromVAR
-  - RunGeneActivity
 
-  - FilterATACPeaks
-  - AnnotateATACPeaks
-  - CombineATACPeaks
-  - RecountATAC
-  - CallATACPeaks
+- subtitle: "Gene Activity, Peak-Gene Links and Coverage"
+- contents:
+  - RunGeneActivity
+  - RunLinkPeaks
+  - CoverageTrackPlot
+
 - subtitle: "Quality Control"
 - contents:
   - RunDoubletDetection
@@ -176,6 +189,10 @@ reference:
   - Conos_integrate
   - ComBat_integrate
   - Coralysis_integrate
+
+- subtitle: "Multimodal Integration"
+  desc: "Paired measured RNA and ATAC use WNN; gene activity is not measured RNA."
+- contents:
   - WNN_integrate
 
 - subtitle: "Benchmark"
@@ -234,14 +251,6 @@ reference:
 
 - title: "Spatial Analysis"
 
-- subtitle: "Spatial Result Access"
-- contents:
-  - SpatialCoordinates
-  - ReadSpatialData
-  - SetSpatialImageAxes
-  - GetSpatialGraph
-  - GetSpatialResult
-
 - subtitle: "Spatial QC and Normalization"
 - contents:
   - RunSpaNorm
@@ -272,7 +281,7 @@ reference:
   - RunSpatialVariableFeatures
   - RunSpatialGradientFeatures
 
-- subtitle: "Spatial Neighborhoods and Multi-Sample Integration"
+- subtitle: "Spatial Neighborhoods and Communication"
 - contents:
   - RunSpatialNetwork
   - RunSpatialCellChat
@@ -281,13 +290,16 @@ reference:
   - RunSpatialNeighborhood
   - SpatialNeighborhoodProfile
   - RunStatialKontextual
-  - RunSpatialIntegration
   - RunMistyR
+
+- subtitle: "Spatial Multi-Sample Integration"
+- contents:
+  - RunSpatialIntegration
+  - SpatialIntegrationPlot
 
 - subtitle: "Spatial Visualization"
 - contents:
   - SpatialGradientPlot
-  - SpatialIntegrationPlot
   - SpatialNeighborhoodPlot
   - SpatialNetworkPlot
   - SpatialCellChatPlot
@@ -314,12 +326,12 @@ reference:
 
 - subtitle: "Differential Expression and Perturbation"
 - contents:
+  - RunDEtest
   - FindAllMarkers
   - FindMarkers
   - FoldChange
   - FindExpressedMarkers
   - RunAugur
-  - RunDEtest
   - RunFWP
   - RunRareQ
   - RunScissor
@@ -486,7 +498,6 @@ reference:
 
 - subtitle: "Other"
 - contents:
-  - CoverageTrackPlot
   - tAgePlot
   - RuntAge
 
@@ -497,6 +508,23 @@ reference:
   - FetchH5
   - PrepareSCExplorer
   - RunSCExplorer
+
+- subtitle: "Data Import"
+  desc: "Optional constructors for raw files or matrices. Existing compatible Seurat objects can enter analysis directly."
+- contents:
+  - ReadATACData
+  - ReadMultiomeData
+  - ReadSpatialData
+
+- subtitle: "Advanced Diagnostics and Result Access"
+  desc: "Optional inspection, custom-loader adaptation and ATAC interchange; these are not required stages of the analysis workflow."
+- contents:
+  - CheckATACData
+  - ExportATACResults
+  - SpatialCoordinates
+  - SetSpatialImageAxes
+  - GetSpatialGraph
+  - GetSpatialResult
 
 - subtitle: "Data Conversion"
 - contents:

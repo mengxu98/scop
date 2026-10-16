@@ -425,7 +425,8 @@ spatial_analysis_coords <- function(
 #' should be migrated with [SetSpatialImageAxes()] before subsetting.
 #' Cell metadata never determines image axis order. Metadata-only coordinates
 #' retain their numerical orientation in both raw and display space.
-#' This function does not modify the object.
+#' This function does not modify the object. It is an advanced inspection
+#' interface; spatial analysis and plotting resolve coordinates internally.
 #'
 #' @param object A `Seurat` object.
 #' @param image Optional Seurat image name.
@@ -490,7 +491,8 @@ SpatialCoordinates <- function(
 #' horizontal image-column axis or the vertical image-row axis. This does not
 #' move coordinates or change the raster. It replaces metadata-based guessing
 #' and survives Seurat subsetting and cell renaming. Stored spatial
-#' analyses must be rerun after changing the convention.
+#' analyses must be rerun after changing the convention. This advanced adapter
+#' is only needed for custom VisiumV2 loaders; standard imports need no call.
 #' @param object A Seurat object.
 #' @param image Image name. Required when several images are present.
 #' @param x_orientation `"horizontal"` for custom images whose centroid x is

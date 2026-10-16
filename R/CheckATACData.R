@@ -8,6 +8,11 @@
 #' fragments. This check does not install packages, retrieve resources, modify
 #' the object, or inspect dependencies of downstream optional analyses.
 #'
+#' @details
+#' This is an optional diagnostic for imported or restored objects. Analysis
+#' entry points validate their own required inputs; a separate call is not a
+#' prerequisite for every analysis step.
+#'
 #' @param object A Seurat object with a Signac `ChromatinAssay`.
 #' @param assay Assay to check; defaults to the object's default assay.
 #' @param genome Optional expected genome label. Unknown references are

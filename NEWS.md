@@ -1,5 +1,10 @@
 # scop (development version)
 
+* **docs**: Organize ATAC and spatial references by analysis task. Keep input
+  constructors and advanced diagnostics, coordinate adapters, result access and
+  ATAC interchange available without making them mandatory workflow stages.
+  Existing public APIs and computational results are unchanged.
+
 * **fix**: Preserve canonical Seurat command names and separate command history
   entries in fallback normalization, scaling, variable-feature selection and
   integration. Keep dynamic PCA and neighbor commands compact without
