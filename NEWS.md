@@ -1,5 +1,8 @@
 # scop (development version)
 
+* **fix**: Restore the package startup Logo, version, update date and website.
+  Startup messages still respect verbosity settings and `suppressPackageStartupMessages()`.
+
 * **fix**: Chromatin `CheckDataList()` feature selection preserves native within-batch peak ranking when batch frequencies tie, instead of ranking tied peak IDs alphabetically.
 
 * **fix**: `CheckATACData()` determines fragment readiness from resources mapped to the selected assay cells, preserving inactive resources in its report after native subsetting.
