@@ -55,19 +55,38 @@
 
   </div>
 </nav><div class="container template-reference-index">
+<!--
+Adapted from pkgdown's Bootstrap 5 reference-index template.
+Copyright (c) 2025 pkgdown authors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
 <div class="row">
-  <main id="main" class="col-md-9"><div class="page-header">
-
-      <h1>Package index</h1>
-    </div>
-
-    <div class="section level2">
-
-      <h3 id="single-cell-and-spatial-omics-analysis-pipeline">Single-cell and Spatial omics analysis pipeline<a class="anchor" aria-label="anchor" href="#single-cell-and-spatial-omics-analysis-pipeline"></a></h3>
+  <main id="main" class="col-md-9"><div class="section level2">
+      <h2 id="overview-and-workflows">Overview and Workflows<a class="anchor" aria-label="anchor" href="#overview-and-workflows"></a></h2>
 
 
       <dl></dl></div><div class="section level2">
 
+      <h3 data-toc-skip="true" id="package-overview">Package Overview<a class="anchor" aria-label="anchor" href="#package-overview"></a></h3>
+
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -86,229 +105,41 @@
         <dd>scop logo</dd>
       </dl></div><div class="section level2">
 
-      <h3 id="package-and-environment-management">Package and Environment Management<a class="anchor" aria-label="anchor" href="#package-and-environment-management"></a></h3>
-
+      <h3 data-toc-skip="true" id="standard-analysis-workflows">Standard Analysis Workflows<a class="anchor" aria-label="anchor" href="#standard-analysis-workflows"></a></h3>
 
       <dl></dl></div><div class="section level2">
-
 
 
 
       <dl><dt>
 
-          <code><a href="check_python.html">check_python()</a></code>
+          <code><a href="RunStandardWorkflow.html">RunStandardWorkflow()</a></code>
 
         </dt>
-        <dd>Check and install python packages</dd>
-
-        <dt>
-
-          <code><a href="env_requirements.html">env_requirements()</a></code>
-
-        </dt>
-        <dd>Python environment requirements</dd>
-
-        <dt>
-
-          <code><a href="env_info.html">env_info()</a></code>
-
-        </dt>
-        <dd>Print environment information</dd>
-
-        <dt>
-
-          <code><a href="ListEnv.html">ListEnv()</a></code>
-
-        </dt>
-        <dd>List conda-compatible Python environments</dd>
-
-        <dt>
-
-          <code><a href="PrepareEnv.html">PrepareEnv()</a></code>
-
-        </dt>
-        <dd>Prepare the python environment</dd>
-
-        <dt>
-
-          <code><a href="remove_python.html">remove_python()</a></code>
-
-        </dt>
-        <dd>Remove Python packages from a conda-compatible Python environment</dd>
-
-        <dt>
-
-          <code><a href="RemoveEnv.html">RemoveEnv()</a></code>
-
-        </dt>
-        <dd>Remove a conda-compatible Python environment</dd>
+        <dd>Standard single-cell and spatial workflow</dd>
       </dl></div><div class="section level2">
-
-      <h3 id="feature-processing">Feature Processing<a class="anchor" aria-label="anchor" href="#feature-processing"></a></h3>
+      <h2 id="quality-control-and-preprocessing">Quality Control and Preprocessing<a class="anchor" aria-label="anchor" href="#quality-control-and-preprocessing"></a></h2>
 
 
       <dl></dl></div><div class="section level2">
 
+      <h3 data-toc-skip="true" id="cell-quality-control">Cell Quality Control<a class="anchor" aria-label="anchor" href="#cell-quality-control"></a></h3>
+
+      <dl></dl></div><div class="section level2">
 
 
 
       <dl><dt>
 
-          <code><a href="AddFeaturesData.html">AddFeaturesData()</a></code>
+          <code><a href="RunCellQC.html">RunCellQC()</a></code>
 
         </dt>
-        <dd>Add features data</dd>
-
-        <dt>
-
-          <code><a href="AddModuleScore.html">AddModuleScore()</a></code>
-
-        </dt>
-        <dd>Add expression-program scores with a sparse native fast path</dd>
-
-        <dt>
-
-          <code><a href="AggregateExpression.html">AggregateExpression()</a></code>
-
-        </dt>
-        <dd>Aggregate expression by cell group</dd>
-
-        <dt>
-
-          <code><a href="AnnotateFeatures.html">AnnotateFeatures()</a></code>
-
-        </dt>
-        <dd>Annotate Features</dd>
-
-        <dt>
-
-          <code><a href="AverageExpression.html">AverageExpression()</a></code>
-
-        </dt>
-        <dd>Average expression by cell group</dd>
-
-        <dt>
-
-          <code><a href="GetFeaturesData.html">GetFeaturesData()</a></code>
-
-        </dt>
-        <dd>Get features data</dd>
-
-        <dt>
-
-          <code><a href="GetSimilarFeatures.html">GetSimilarFeatures()</a></code>
-
-        </dt>
-        <dd>Find features with expression patterns similar to provided features</dd>
-
-        <dt>
-
-          <code><a href="RenameFeatures.html">RenameFeatures()</a></code>
-
-        </dt>
-        <dd>Rename features for the Seurat object</dd>
+        <dd>Cell-level quality control</dd>
       </dl></div><div class="section level2">
 
-      <h3 id="feature-and-statistical-plots">Feature and Statistical Plots<a class="anchor" aria-label="anchor" href="#feature-and-statistical-plots"></a></h3>
-
-
-      <dl></dl></div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="CellCorHeatmap.html">CellCorHeatmap()</a></code>
-
-        </dt>
-        <dd>Cell Correlation Heatmap</dd>
-
-        <dt>
-
-          <code><a href="CellStatPlot.html">CellStatPlot()</a></code>
-
-        </dt>
-        <dd>Statistical plot of cells</dd>
-
-        <dt>
-
-          <code><a href="FeatureCorPlot.html">FeatureCorPlot()</a></code>
-
-        </dt>
-        <dd>Features correlation plot</dd>
-
-        <dt>
-
-          <code><a href="FeatureHeatmap.html">FeatureHeatmap()</a></code>
-
-        </dt>
-        <dd>Feature Heatmap</dd>
-
-        <dt>
-
-          <code><a href="FeatureStatPlot.html">FeatureStatPlot()</a></code>
-
-        </dt>
-        <dd>Feature statistical plots</dd>
-
-        <dt>
-
-          <code><a href="GroupHeatmap.html">GroupHeatmap()</a></code>
-
-        </dt>
-        <dd>Group heatmap</dd>
-
-        <dt>
-
-          <code><a href="theme_scop.html">theme_scop()</a></code>
-
-        </dt>
-        <dd>Default ggplot2 theme for scop plots</dd>
-
-        <dt>
-
-          <code><a href="theme_spatial.html">theme_spatial()</a></code>
-
-        </dt>
-        <dd>ggplot2 theme for spatial plots</dd>
-      </dl></div><div class="section level2">
-
-      <h3 id="atac-input">ATAC Input<a class="anchor" aria-label="anchor" href="#atac-input"></a></h3>
-
+      <h3 data-toc-skip="true" id="doublets-and-ambient-rna">Doublets and Ambient RNA<a class="anchor" aria-label="anchor" href="#doublets-and-ambient-rna"></a></h3>
 
       <dl></dl></div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="ReadATACData.html">ReadATACData()</a></code>
-
-        </dt>
-        <dd>Read raw ATAC counts into a ChromatinAssay</dd>
-
-        <dt>
-
-          <code><a href="ReadMultiomeData.html">ReadMultiomeData()</a></code>
-
-        </dt>
-        <dd>Read paired 10x RNA and ATAC counts</dd>
-
-        <dt>
-
-          <code><a href="CheckATACData.html">CheckATACData()</a></code>
-
-        </dt>
-        <dd>Check an ATAC object without changing it</dd>
-      </dl></div><div class="section level2">
-
-      <h3 id="quality-control">Quality Control<a class="anchor" aria-label="anchor" href="#quality-control"></a></h3>
-
-
-      <dl></dl></div><div class="section level2">
-
 
 
 
@@ -342,20 +173,6 @@
 
         <dt>
 
-          <code><a href="RunATACQC.html">RunATACQC()</a></code>
-
-        </dt>
-        <dd>Run scATAC quality control metrics</dd>
-
-        <dt>
-
-          <code><a href="RunCellQC.html">RunCellQC()</a></code>
-
-        </dt>
-        <dd>Cell-level quality control</dd>
-
-        <dt>
-
           <code><a href="RunDecontX.html">RunDecontX()</a></code>
 
         </dt>
@@ -367,20 +184,53 @@
 
         </dt>
         <dd>Doublet calling</dd>
-
-        <dt>
-
-          <code><a href="RunSpotQC.html">RunSpotQC()</a></code>
-
-        </dt>
-        <dd>Run spot-level quality control</dd>
       </dl></div><div class="section level2">
 
-      <h3 id="cell-cycle-analysis">Cell Cycle Analysis<a class="anchor" aria-label="anchor" href="#cell-cycle-analysis"></a></h3>
-
+      <h3 data-toc-skip="true" id="normalization-and-feature-selection">Normalization and Feature Selection<a class="anchor" aria-label="anchor" href="#normalization-and-feature-selection"></a></h3>
 
       <dl></dl></div><div class="section level2">
 
+
+
+      <dl><dt>
+
+          <code><a href="SelectIntegrationFeatures.html">SelectIntegrationFeatures()</a></code>
+
+        </dt>
+        <dd>Select integration features with exact vectorized ranking</dd>
+
+        <dt>
+
+          <code><a href="NormalizeData.html">NormalizeData()</a></code>
+
+        </dt>
+        <dd>Normalize a single-cell object</dd>
+
+        <dt>
+
+          <code><a href="FindVariableFeatures.html">FindVariableFeatures()</a></code>
+
+        </dt>
+        <dd>Find variable features</dd>
+      </dl></div><div class="section level2">
+
+      <h3 data-toc-skip="true" id="scaling-and-covariate-regression">Scaling and Covariate Regression<a class="anchor" aria-label="anchor" href="#scaling-and-covariate-regression"></a></h3>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+      <dl><dt>
+
+          <code><a href="ScaleData.html">ScaleData()</a></code>
+
+        </dt>
+        <dd>Scale expression data</dd>
+      </dl></div><div class="section level2">
+
+      <h3 data-toc-skip="true" id="cell-cycle-analysis">Cell Cycle Analysis<a class="anchor" aria-label="anchor" href="#cell-cycle-analysis"></a></h3>
+
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -405,83 +255,258 @@
         </dt>
         <dd>Run cell cycle scoring</dd>
       </dl></div><div class="section level2">
+      <h2 id="dimensionality-reduction-and-clustering">Dimensionality Reduction and Clustering<a class="anchor" aria-label="anchor" href="#dimensionality-reduction-and-clustering"></a></h2>
 
-      <h3 id="scop-pipeline">scop Pipeline<a class="anchor" aria-label="anchor" href="#scop-pipeline"></a></h3>
 
+      <dl></dl></div><div class="section level2">
+
+      <h3 data-toc-skip="true" id="reduction-selection-and-linear-methods">Reduction Selection and Linear Methods<a class="anchor" aria-label="anchor" href="#reduction-selection-and-linear-methods"></a></h3>
 
       <dl></dl></div><div class="section level2">
 
 
 
+      <dl><dt>
+
+          <code><a href="RunPCA.html">RunPCA()</a></code>
+
+        </dt>
+        <dd>Run principal component analysis</dd>
+
+        <dt>
+
+          <code><a href="RunCCA.html">RunCCA()</a></code>
+
+        </dt>
+        <dd>Run canonical correlation analysis</dd>
+
+        <dt>
+
+          <code><a href="RunDimsEstimate.html">RunDimsEstimate()</a></code>
+
+        </dt>
+        <dd>Estimate useful dimensions from a reduction</dd>
+
+        <dt>
+
+          <code><a href="RunDimsReduction.html">RunDimsReduction()</a></code>
+
+        </dt>
+        <dd>Run dimension reduction</dd>
+
+        <dt>
+
+          <code><a href="RunGLMPCA.html">RunGLMPCA()</a></code>
+
+        </dt>
+        <dd>Run generalized principal components analysis (GLMPCA)</dd>
+
+        <dt>
+
+          <code><a href="RunMDS.html">RunMDS()</a></code>
+
+        </dt>
+        <dd>Run MDS (multi-dimensional scaling)</dd>
+
+        <dt>
+
+          <code><a href="RunNMF.html">RunNMF()</a></code>
+
+        </dt>
+        <dd>Run NMF</dd>
+      </dl></div><div class="section level2">
+
+      <h3 data-toc-skip="true" id="nonlinear-embeddings">Nonlinear Embeddings<a class="anchor" aria-label="anchor" href="#nonlinear-embeddings"></a></h3>
+
+      <dl></dl></div><div class="section level2">
+
+
 
       <dl><dt>
 
-          <code><a href="RunStandardWorkflow.html">RunStandardWorkflow()</a></code>
+          <code><a href="RunUMAP.html">RunUMAP()</a></code>
 
         </dt>
-        <dd>Standard single-cell and spatial workflow</dd>
+        <dd>Run UMAP</dd>
 
         <dt>
+
+          <code><a href="RunDM.html">RunDM()</a></code>
+
+        </dt>
+        <dd>Run diffusion map (DM)</dd>
+
+        <dt>
+
+          <code><a href="RunFR.html">RunFR()</a></code>
+
+        </dt>
+        <dd>Run Force-Directed Layout (Fruchterman-Reingold algorithm)</dd>
+
+        <dt>
+
+          <code><a href="RunUMAP2.html">RunUMAP2()</a></code>
+
+        </dt>
+        <dd>Run UMAP</dd>
+
+        <dt>
+
+          <code><a href="RunPaCMAP.html">RunPaCMAP()</a></code>
+
+        </dt>
+        <dd>Run PaCMAP</dd>
+
+        <dt>
+
+          <code><a href="RunTriMap.html">RunTriMap()</a></code>
+
+        </dt>
+        <dd>Run TriMap</dd>
+
+        <dt>
+
+          <code><a href="RunPHATE.html">RunPHATE()</a></code>
+
+        </dt>
+        <dd>Run PHATE</dd>
+
+        <dt>
+
+          <code><a href="RunLargeVis.html">RunLargeVis()</a></code>
+
+        </dt>
+        <dd>Run LargeVis (Dimensionality Reduction with a LargeVis-like method)</dd>
+      </dl></div><div class="section level2">
+
+      <h3 data-toc-skip="true" id="neighbor-graphs-and-clustering">Neighbor Graphs and Clustering<a class="anchor" aria-label="anchor" href="#neighbor-graphs-and-clustering"></a></h3>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+      <dl><dt>
+
+          <code><a href="FindClusters.html">FindClusters()</a></code>
+
+        </dt>
+        <dd>Seurat clustering with transparent backend delegation</dd>
+
+        <dt>
+
+          <code><a href="FindNeighbors.html">FindNeighbors()</a></code>
+
+        </dt>
+        <dd>Find nearest neighbors</dd>
+
+        <dt>
+
+          <code><a href="RunCHOIR.html">RunCHOIR()</a></code>
+
+        </dt>
+        <dd>Run CHOIR clustering</dd>
+
+        <dt>
+
+          <code><a href="RunRareQ.html">RunRareQ()</a></code>
+
+        </dt>
+        <dd>RareQ rare-cell population detection</dd>
+      </dl></div><div class="section level2">
+
+      <h3 data-toc-skip="true" id="embedding-and-cluster-visualization">Embedding and Cluster Visualization<a class="anchor" aria-label="anchor" href="#embedding-and-cluster-visualization"></a></h3>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+      <dl><dt>
+
+          <code><a href="CellDimPlot.html">CellDimPlot()</a></code>
+
+        </dt>
+        <dd>Cell Dimensional Plot</dd>
+
+        <dt>
+
+          <code><a href="CellDimPlot3D.html">CellDimPlot3D()</a></code>
+
+        </dt>
+        <dd>3D-Dimensional reduction plot for cell classification visualization.</dd>
+
+        <dt>
+
+          <code><a href="CellDensityPlot.html">CellDensityPlot()</a></code>
+
+        </dt>
+        <dd>Cell density plot</dd>
+
+        <dt>
+
+          <code><a href="ClusterTreePlot.html">ClusterTreePlot()</a></code>
+
+        </dt>
+        <dd>Cluster tree plot</dd>
+
+        <dt>
+
+          <code><a href="DimsEstimatePlot.html">DimsEstimatePlot()</a></code>
+
+        </dt>
+        <dd>Dimension estimate diagnostic plot</dd>
+
+        <dt>
+
+          <code><a href="FeatureDimPlot.html">FeatureDimPlot()</a></code>
+
+        </dt>
+        <dd>Feature values on a 2D reduction</dd>
+
+        <dt>
+
+          <code><a href="FeatureDimPlot3D.html">FeatureDimPlot3D()</a></code>
+
+        </dt>
+        <dd>Feature values on a 3D reduction</dd>
+
+        <dt>
+
+          <code><a href="NMFHeatmap.html">NMFHeatmap()</a></code>
+
+        </dt>
+        <dd>NMF similarity heatmap</dd>
+
+        <dt>
+
+          <code><a href="ProjectionPlot.html">ProjectionPlot()</a></code>
+
+        </dt>
+        <dd>Projection Plot</dd>
+
+        <dt>
+
+          <code><a href="TACSPlot.html">TACSPlot()</a></code>
+
+        </dt>
+        <dd>Transcript-averaged cell scoring (TACS)</dd>
+      </dl></div><div class="section level2">
+      <h2 id="integration-and-reference-mapping">Integration and Reference Mapping<a class="anchor" aria-label="anchor" href="#integration-and-reference-mapping"></a></h2>
+
+
+      <dl></dl></div><div class="section level2">
+
+      <h3 data-toc-skip="true" id="batch-correction-and-integration">Batch Correction and Integration<a class="anchor" aria-label="anchor" href="#batch-correction-and-integration"></a></h3>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+      <dl><dt>
 
           <code><a href="RunIntegration.html">RunIntegration()</a></code>
 
         </dt>
         <dd>Integration workflow</dd>
-      </dl></div><div class="section level2">
-
-      <h3 id="metacell-analysis">Metacell Analysis<a class="anchor" aria-label="anchor" href="#metacell-analysis"></a></h3>
-
-
-      <dl></dl></div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="RunMetaCell.html">RunMetaCell()</a></code>
-
-        </dt>
-        <dd>Run metacell partitioning for single-cell data</dd>
-
-        <dt>
-
-          <code><a href="RunmcRigor.html">RunmcRigor()</a></code>
-
-        </dt>
-        <dd>Run mcRigor metacell partition assessment</dd>
-      </dl></div><div class="section level2">
-
-      <h3 id="metacell-plots">Metacell Plots<a class="anchor" aria-label="anchor" href="#metacell-plots"></a></h3>
-
-
-      <dl></dl></div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="MetaCellPlot.html">MetaCellPlot()</a></code>
-
-        </dt>
-        <dd>Visualize metacell partitions on a dimensionality reduction</dd>
-      </dl></div><div class="section level2">
-
-      <h3 id="data-integration-and-batch-effect-removal">Data Integration and Batch Effect Removal<a class="anchor" aria-label="anchor" href="#data-integration-and-batch-effect-removal"></a></h3>
-
-
-      <dl></dl></div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="SelectIntegrationFeatures.html">SelectIntegrationFeatures()</a></code>
-
-        </dt>
-        <dd>Select integration features with exact vectorized ranking</dd>
 
         <dt>
 
@@ -569,13 +594,6 @@
 
         <dt>
 
-          <code><a href="GLUE_integrate.html">GLUE_integrate()</a></code>
-
-        </dt>
-        <dd>GLUE integration function</dd>
-
-        <dt>
-
           <code><a href="LIGER_integrate.html">LIGER_integrate()</a></code>
 
         </dt>
@@ -594,13 +612,6 @@
 
         </dt>
         <dd>Seurat v5 scVI integration</dd>
-
-        <dt>
-
-          <code><a href="MultiMAP_integrate.html">MultiMAP_integrate()</a></code>
-
-        </dt>
-        <dd>MultiMAP integration function</dd>
 
         <dt>
 
@@ -625,54 +636,50 @@
 
         <dt>
 
-          <code><a href="WNN_integrate.html">WNN_integrate()</a></code>
+          <code><a href="RunHarmony2.html">RunHarmony2()</a></code>
 
         </dt>
-        <dd>WNN integration function</dd>
+        <dd>Run Harmony algorithm</dd>
       </dl></div><div class="section level2">
 
-      <h3 id="benchmark">Benchmark<a class="anchor" aria-label="anchor" href="#benchmark"></a></h3>
-
+      <h3 data-toc-skip="true" id="multimodal-integration">Multimodal Integration<a class="anchor" aria-label="anchor" href="#multimodal-integration"></a></h3>
 
       <dl></dl></div><div class="section level2">
-
 
 
 
       <dl><dt>
 
-          <code><a href="RunIntegrationBenchmark.html">RunIntegrationBenchmark()</a></code>
+          <code><a href="GLUE_integrate.html">GLUE_integrate()</a></code>
 
         </dt>
-        <dd>Benchmark single-cell integration methods</dd>
+        <dd>GLUE integration function</dd>
 
         <dt>
 
-          <code><a href="IntegrationBenchmarkPlot.html">IntegrationBenchmarkPlot()</a></code>
+          <code><a href="MultiMAP_integrate.html">MultiMAP_integrate()</a></code>
 
         </dt>
-        <dd>Plot integration benchmark results</dd>
+        <dd>MultiMAP integration function</dd>
 
         <dt>
 
-          <code><a href="RunSpatialBenchmark.html">RunSpatialBenchmark()</a></code>
+          <code><a href="WNN_integrate.html">WNN_integrate()</a></code>
 
         </dt>
-        <dd>Benchmark spatial domain clustering methods</dd>
+        <dd>WNN integration function</dd>
 
         <dt>
 
-          <code><a href="SpatialBenchmarkPlot.html">SpatialBenchmarkPlot()</a></code>
+          <code><a href="FindMultiModalNeighbors.html">FindMultiModalNeighbors()</a></code>
 
         </dt>
-        <dd>Plot spatial domain clustering benchmarks</dd>
+        <dd>Seurat weighted-nearest-neighbor construction</dd>
       </dl></div><div class="section level2">
 
-      <h3 id="integration-mapping">Integration Mapping<a class="anchor" aria-label="anchor" href="#integration-mapping"></a></h3>
-
+      <h3 data-toc-skip="true" id="reference-mapping-and-label-transfer">Reference Mapping and Label Transfer<a class="anchor" aria-label="anchor" href="#reference-mapping-and-label-transfer"></a></h3>
 
       <dl></dl></div><div class="section level2">
-
 
 
 
@@ -682,20 +689,6 @@
 
         </dt>
         <dd>Single-cell reference mapping with CSS method</dd>
-
-        <dt>
-
-          <code><a href="RunHarmony2.html">RunHarmony2()</a></code>
-
-        </dt>
-        <dd>Run Harmony algorithm</dd>
-
-        <dt>
-
-          <code><a href="RunLISI.html">RunLISI()</a></code>
-
-        </dt>
-        <dd>Compute LISI scores on a Seurat object</dd>
 
         <dt>
 
@@ -717,640 +710,6 @@
 
         </dt>
         <dd>Single-cell reference mapping with Symphony method</dd>
-      </dl></div><div class="section level2">
-
-      <h3 id="dimensionality-reduction-and-clustering">Dimensionality Reduction and Clustering<a class="anchor" aria-label="anchor" href="#dimensionality-reduction-and-clustering"></a></h3>
-
-
-      <dl></dl></div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="NormalizeData.html">NormalizeData()</a></code>
-
-        </dt>
-        <dd>Normalize a single-cell object</dd>
-
-        <dt>
-
-          <code><a href="FindVariableFeatures.html">FindVariableFeatures()</a></code>
-
-        </dt>
-        <dd>Find variable features</dd>
-
-        <dt>
-
-          <code><a href="ScaleData.html">ScaleData()</a></code>
-
-        </dt>
-        <dd>Scale expression data</dd>
-
-        <dt>
-
-          <code><a href="RunPCA.html">RunPCA()</a></code>
-
-        </dt>
-        <dd>Run principal component analysis</dd>
-
-        <dt>
-
-          <code><a href="RunCCA.html">RunCCA()</a></code>
-
-        </dt>
-        <dd>Run canonical correlation analysis</dd>
-
-        <dt>
-
-          <code><a href="RunUMAP.html">RunUMAP()</a></code>
-
-        </dt>
-        <dd>Run UMAP</dd>
-
-        <dt>
-
-          <code><a href="FindClusters.html">FindClusters()</a></code>
-
-        </dt>
-        <dd>Seurat clustering with transparent backend delegation</dd>
-
-        <dt>
-
-          <code><a href="FindMultiModalNeighbors.html">FindMultiModalNeighbors()</a></code>
-
-        </dt>
-        <dd>Seurat weighted-nearest-neighbor construction</dd>
-
-        <dt>
-
-          <code><a href="FindNeighbors.html">FindNeighbors()</a></code>
-
-        </dt>
-        <dd>Find nearest neighbors</dd>
-
-        <dt>
-
-          <code><a href="RunDimsEstimate.html">RunDimsEstimate()</a></code>
-
-        </dt>
-        <dd>Estimate useful dimensions from a reduction</dd>
-
-        <dt>
-
-          <code><a href="RunDimsReduction.html">RunDimsReduction()</a></code>
-
-        </dt>
-        <dd>Run dimension reduction</dd>
-
-        <dt>
-
-          <code><a href="RunCHOIR.html">RunCHOIR()</a></code>
-
-        </dt>
-        <dd>Run CHOIR clustering</dd>
-
-        <dt>
-
-          <code><a href="RunDM.html">RunDM()</a></code>
-
-        </dt>
-        <dd>Run diffusion map (DM)</dd>
-
-        <dt>
-
-          <code><a href="RunFR.html">RunFR()</a></code>
-
-        </dt>
-        <dd>Run Force-Directed Layout (Fruchterman-Reingold algorithm)</dd>
-
-        <dt>
-
-          <code><a href="RunGLMPCA.html">RunGLMPCA()</a></code>
-
-        </dt>
-        <dd>Run generalized principal components analysis (GLMPCA)</dd>
-
-        <dt>
-
-          <code><a href="RunMDS.html">RunMDS()</a></code>
-
-        </dt>
-        <dd>Run MDS (multi-dimensional scaling)</dd>
-
-        <dt>
-
-          <code><a href="RunNMF.html">RunNMF()</a></code>
-
-        </dt>
-        <dd>Run NMF</dd>
-
-        <dt>
-
-          <code><a href="RunUMAP2.html">RunUMAP2()</a></code>
-
-        </dt>
-        <dd>Run UMAP</dd>
-
-        <dt>
-
-          <code><a href="RunPaCMAP.html">RunPaCMAP()</a></code>
-
-        </dt>
-        <dd>Run PaCMAP</dd>
-
-        <dt>
-
-          <code><a href="RunTriMap.html">RunTriMap()</a></code>
-
-        </dt>
-        <dd>Run TriMap</dd>
-
-        <dt>
-
-          <code><a href="RunPHATE.html">RunPHATE()</a></code>
-
-        </dt>
-        <dd>Run PHATE</dd>
-
-        <dt>
-
-          <code><a href="RunLargeVis.html">RunLargeVis()</a></code>
-
-        </dt>
-        <dd>Run LargeVis (Dimensionality Reduction with a LargeVis-like method)</dd>
-      </dl></div><div class="section level2">
-
-      <h3 id="dimensionality-reduction-plots">Dimensionality Reduction Plots<a class="anchor" aria-label="anchor" href="#dimensionality-reduction-plots"></a></h3>
-
-
-      <dl></dl></div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="CellDimPlot.html">CellDimPlot()</a></code>
-
-        </dt>
-        <dd>Cell Dimensional Plot</dd>
-
-        <dt>
-
-          <code><a href="CellDimPlot3D.html">CellDimPlot3D()</a></code>
-
-        </dt>
-        <dd>3D-Dimensional reduction plot for cell classification visualization.</dd>
-
-        <dt>
-
-          <code><a href="CellDensityPlot.html">CellDensityPlot()</a></code>
-
-        </dt>
-        <dd>Cell density plot</dd>
-
-        <dt>
-
-          <code><a href="ClusterTreePlot.html">ClusterTreePlot()</a></code>
-
-        </dt>
-        <dd>Cluster tree plot</dd>
-
-        <dt>
-
-          <code><a href="DimsEstimatePlot.html">DimsEstimatePlot()</a></code>
-
-        </dt>
-        <dd>Dimension estimate diagnostic plot</dd>
-
-        <dt>
-
-          <code><a href="FeatureDimPlot.html">FeatureDimPlot()</a></code>
-
-        </dt>
-        <dd>Feature values on a 2D reduction</dd>
-
-        <dt>
-
-          <code><a href="FeatureDimPlot3D.html">FeatureDimPlot3D()</a></code>
-
-        </dt>
-        <dd>Feature values on a 3D reduction</dd>
-
-        <dt>
-
-          <code><a href="NMFHeatmap.html">NMFHeatmap()</a></code>
-
-        </dt>
-        <dd>NMF similarity heatmap</dd>
-
-        <dt>
-
-          <code><a href="ProjectionPlot.html">ProjectionPlot()</a></code>
-
-        </dt>
-        <dd>Projection Plot</dd>
-
-        <dt>
-
-          <code><a href="TACSPlot.html">TACSPlot()</a></code>
-
-        </dt>
-        <dd>Transcript-averaged cell scoring (TACS)</dd>
-      </dl></div><div class="section level2">
-      <h2 id="spatial-analysis">Spatial Analysis<a class="anchor" aria-label="anchor" href="#spatial-analysis"></a></h2>
-
-
-
-      <dl></dl></div><div class="section level2">
-
-      <h3 id="spatial-result-access">Spatial Result Access<a class="anchor" aria-label="anchor" href="#spatial-result-access"></a></h3>
-
-
-      <dl></dl></div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="SpatialCoordinates.html">SpatialCoordinates()</a></code>
-
-        </dt>
-        <dd>Read spatial coordinates with an explicit coordinate contract</dd>
-
-        <dt>
-
-          <code><a href="ReadSpatialData.html">ReadSpatialData()</a></code>
-
-        </dt>
-        <dd>Load and validate Visium, Visium HD, or Xenium data</dd>
-
-        <dt>
-
-          <code><a href="SetSpatialImageAxes.html">SetSpatialImageAxes()</a></code>
-
-        </dt>
-        <dd>Persist the coordinate axis convention of a VisiumV2 image</dd>
-
-        <dt>
-
-          <code><a href="GetSpatialGraph.html">GetSpatialGraph()</a></code>
-
-        </dt>
-        <dd>Read or convert a stored spatial graph</dd>
-
-        <dt>
-
-          <code><a href="GetSpatialResult.html">GetSpatialResult()</a></code>
-
-        </dt>
-        <dd>Access spatial analysis results</dd>
-      </dl></div><div class="section level2">
-
-      <h3 id="spatial-qc-and-normalization">Spatial QC and Normalization<a class="anchor" aria-label="anchor" href="#spatial-qc-and-normalization"></a></h3>
-
-
-      <dl></dl></div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="RunSpaNorm.html">RunSpaNorm()</a></code>
-
-        </dt>
-        <dd>Run SpaNorm spatial normalization</dd>
-
-        <dt>
-
-          <code><a href="RunSpotSweeper.html">RunSpotSweeper()</a></code>
-
-        </dt>
-        <dd>Run SpotSweeper spatial quality control</dd>
-      </dl></div><div class="section level2">
-
-      <h3 id="spatial-framework-bridges">Spatial Framework Bridges<a class="anchor" aria-label="anchor" href="#spatial-framework-bridges"></a></h3>
-
-
-      <dl></dl></div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="srt_to_giotto.html">srt_to_giotto()</a></code>
-
-        </dt>
-        <dd>Convert Seurat to a native Giotto object</dd>
-
-        <dt>
-
-          <code><a href="giotto_to_srt.html">giotto_to_srt()</a></code>
-
-        </dt>
-        <dd>Convert Giotto to Seurat</dd>
-      </dl></div><div class="section level2">
-
-      <h3 id="spatial-deconvolution-and-ecotypes">Spatial Deconvolution and Ecotypes<a class="anchor" aria-label="anchor" href="#spatial-deconvolution-and-ecotypes"></a></h3>
-
-
-      <dl></dl></div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="RunRCTD.html">RunRCTD()</a></code>
-
-        </dt>
-        <dd>Run RCTD spatial deconvolution</dd>
-
-        <dt>
-
-          <code><a href="RunCell2location.html">RunCell2location()</a></code>
-
-        </dt>
-        <dd>Run cell2location spatial deconvolution</dd>
-
-        <dt>
-
-          <code><a href="RunCSIDE.html">RunCSIDE()</a></code>
-
-        </dt>
-        <dd>Run C-SIDE spatial differential expression</dd>
-
-        <dt>
-
-          <code><a href="RunCARD.html">RunCARD()</a></code>
-
-        </dt>
-        <dd>Run CARD spatial deconvolution</dd>
-
-        <dt>
-
-          <code><a href="RunSTdeconvolve.html">RunSTdeconvolve()</a></code>
-
-        </dt>
-        <dd>Run STdeconvolve reference-free spatial deconvolution</dd>
-
-        <dt>
-
-          <code><a href="RunSPOTlight.html">RunSPOTlight()</a></code>
-
-        </dt>
-        <dd>Run SPOTlight spatial deconvolution</dd>
-
-        <dt>
-
-          <code><a href="RunSpatialEcoTyper.html">RunSpatialEcoTyper()</a></code>
-
-        </dt>
-        <dd>Run SpatialEcoTyper spatial ecotype analysis</dd>
-      </dl></div><div class="section level2">
-
-      <h3 id="spatial-domains-and-feature-patterns">Spatial Domains and Feature Patterns<a class="anchor" aria-label="anchor" href="#spatial-domains-and-feature-patterns"></a></h3>
-
-
-      <dl></dl></div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="RunBayesSpace.html">RunBayesSpace()</a></code>
-
-        </dt>
-        <dd>Run BayesSpace spatial clustering</dd>
-
-        <dt>
-
-          <code><a href="RunBANKSY.html">RunBANKSY()</a></code>
-
-        </dt>
-        <dd>Run BANKSY spatial clustering</dd>
-
-        <dt>
-
-          <code><a href="RunCytoSPACE.html">RunCytoSPACE()</a></code>
-
-        </dt>
-        <dd>Run CytoSPACE spatial assignment</dd>
-
-        <dt>
-
-          <code><a href="RunSmoothClust.html">RunSmoothClust()</a></code>
-
-        </dt>
-        <dd>Run smoothclust spatial domain clustering</dd>
-
-        <dt>
-
-          <code><a href="RunMERINGUE.html">RunMERINGUE()</a></code>
-
-        </dt>
-        <dd>Run MERINGUE spatial autocorrelation analysis</dd>
-
-        <dt>
-
-          <code><a href="RunSpatialVariableFeatures.html">RunSpatialVariableFeatures()</a></code>
-
-        </dt>
-        <dd>Run spatial variable feature detection</dd>
-
-        <dt>
-
-          <code><a href="RunSpatialGradientFeatures.html">RunSpatialGradientFeatures()</a></code>
-
-        </dt>
-        <dd>Run spatial gradient feature screening</dd>
-      </dl></div><div class="section level2">
-
-      <h3 id="spatial-neighborhoods-and-multi-sample-integration">Spatial Neighborhoods and Multi-Sample Integration<a class="anchor" aria-label="anchor" href="#spatial-neighborhoods-and-multi-sample-integration"></a></h3>
-
-
-      <dl></dl></div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="RunSpatialNetwork.html">RunSpatialNetwork()</a></code>
-
-        </dt>
-        <dd>Build a native spatial network</dd>
-
-        <dt>
-
-          <code><a href="RunSpatialCellChat.html">RunSpatialCellChat()</a></code>
-
-        </dt>
-        <dd>Run Spatial CellChat analysis</dd>
-
-        <dt>
-
-          <code><a href="MistyRPlot.html">MistyRPlot()</a></code>
-
-        </dt>
-        <dd>Plot stored MISTy results</dd>
-
-        <dt>
-
-          <code><a href="StatialKontextualPlot.html">StatialKontextualPlot()</a></code>
-
-        </dt>
-        <dd>Plot stored Statial Kontextual results</dd>
-
-        <dt>
-
-          <code><a href="RunSpatialNeighborhood.html">RunSpatialNeighborhood()</a></code>
-
-        </dt>
-        <dd>Run spatial neighborhood statistics</dd>
-
-        <dt>
-
-          <code><a href="SpatialNeighborhoodProfile.html">SpatialNeighborhoodProfile()</a></code>
-
-        </dt>
-        <dd>Profile cell neighborhoods at several distances</dd>
-
-        <dt>
-
-          <code><a href="RunStatialKontextual.html">RunStatialKontextual()</a></code>
-
-        </dt>
-        <dd>Run Statial Kontextual spatial relationships</dd>
-
-        <dt>
-
-          <code><a href="RunSpatialIntegration.html">RunSpatialIntegration()</a></code>
-
-        </dt>
-        <dd>Run multi-sample spatial integration</dd>
-
-        <dt>
-
-          <code><a href="RunMistyR.html">RunMistyR()</a></code>
-
-        </dt>
-        <dd>Run mistyR multiview spatial modeling</dd>
-      </dl></div><div class="section level2">
-
-      <h3 id="spatial-visualization">Spatial Visualization<a class="anchor" aria-label="anchor" href="#spatial-visualization"></a></h3>
-
-
-      <dl></dl></div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="SpatialGradientPlot.html">SpatialGradientPlot()</a></code>
-
-        </dt>
-        <dd>Plot spatial gradient screening results</dd>
-
-        <dt>
-
-          <code><a href="SpatialIntegrationPlot.html">SpatialIntegrationPlot()</a></code>
-
-        </dt>
-        <dd>Plot spatial integration results</dd>
-
-        <dt>
-
-          <code><a href="SpatialNeighborhoodPlot.html">SpatialNeighborhoodPlot()</a></code>
-
-        </dt>
-        <dd>Spatial neighborhood plot</dd>
-
-        <dt>
-
-          <code><a href="SpatialNetworkPlot.html">SpatialNetworkPlot()</a></code>
-
-        </dt>
-        <dd>Plot a native spatial network</dd>
-
-        <dt>
-
-          <code><a href="SpatialCellChatPlot.html">SpatialCellChatPlot()</a></code>
-
-        </dt>
-        <dd>Plot stored SpatialCellChat results</dd>
-
-        <dt>
-
-          <code><a href="SpatialCellPlot.html">SpatialCellPlot()</a></code>
-
-        </dt>
-        <dd>Plot spatial cell boundaries</dd>
-
-        <dt>
-
-          <code><a href="Cell2locationPlot.html">Cell2locationPlot()</a></code>
-
-        </dt>
-        <dd>Plot cell2location spatial results</dd>
-
-        <dt>
-
-          <code><a href="SpatialSpotPlot.html">SpatialSpotPlot()</a></code>
-
-        </dt>
-        <dd>Spatial spot plot</dd>
-
-        <dt>
-
-          <code><a href="SpatialDeconvolutionPlot.html">SpatialDeconvolutionPlot()</a></code>
-
-        </dt>
-        <dd>Plot stored spatial deconvolution proportions</dd>
-
-        <dt>
-
-          <code><a href="SpatialVariableFeaturePlot.html">SpatialVariableFeaturePlot()</a></code>
-
-        </dt>
-        <dd>Plot spatial variable feature results</dd>
-
-        <dt>
-
-          <code><a href="STdeconvolvePlot.html">STdeconvolvePlot()</a></code>
-
-        </dt>
-        <dd>Plot STdeconvolve topic proportions</dd>
-      </dl></div><div class="section level2">
-
-      <h3 id="cell-type-annotation">Cell Type Annotation<a class="anchor" aria-label="anchor" href="#cell-type-annotation"></a></h3>
-
-
-      <dl></dl></div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="CellTypistModels.html">CellTypistModels()</a></code>
-
-        </dt>
-        <dd>Get available CellTypist models</dd>
-
-        <dt>
-
-          <code><a href="RunCellTypist.html">RunCellTypist()</a></code>
-
-        </dt>
-        <dd>Run CellTypist cell type annotation</dd>
 
         <dt>
 
@@ -1368,13 +727,6 @@
 
         <dt>
 
-          <code><a href="RunKNNPredict.html">RunKNNPredict()</a></code>
-
-        </dt>
-        <dd>Run KNN prediction</dd>
-
-        <dt>
-
           <code><a href="RunLabelTransfer.html">RunLabelTransfer()</a></code>
 
         </dt>
@@ -1386,6 +738,59 @@
 
         </dt>
         <dd>Map query cells into a reference space</dd>
+      </dl></div><div class="section level2">
+
+      <h3 data-toc-skip="true" id="integration-benchmarking">Integration Benchmarking<a class="anchor" aria-label="anchor" href="#integration-benchmarking"></a></h3>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+      <dl><dt>
+
+          <code><a href="RunIntegrationBenchmark.html">RunIntegrationBenchmark()</a></code>
+
+        </dt>
+        <dd>Benchmark single-cell integration methods</dd>
+
+        <dt>
+
+          <code><a href="IntegrationBenchmarkPlot.html">IntegrationBenchmarkPlot()</a></code>
+
+        </dt>
+        <dd>Plot integration benchmark results</dd>
+
+        <dt>
+
+          <code><a href="RunLISI.html">RunLISI()</a></code>
+
+        </dt>
+        <dd>Compute LISI scores on a Seurat object</dd>
+      </dl></div><div class="section level2">
+      <h2 id="cell-type-annotation">Cell Type Annotation<a class="anchor" aria-label="anchor" href="#cell-type-annotation"></a></h2>
+
+
+      <dl></dl></div><div class="section level2">
+
+      <h3 data-toc-skip="true" id="reference-based-annotation">Reference-Based Annotation<a class="anchor" aria-label="anchor" href="#reference-based-annotation"></a></h3>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+      <dl><dt>
+
+          <code><a href="RunCellTypist.html">RunCellTypist()</a></code>
+
+        </dt>
+        <dd>Run CellTypist cell type annotation</dd>
+
+        <dt>
+
+          <code><a href="RunKNNPredict.html">RunKNNPredict()</a></code>
+
+        </dt>
+        <dd>Run KNN prediction</dd>
 
         <dt>
 
@@ -1407,6 +812,20 @@
 
         </dt>
         <dd>Annotate single cells using SingleR</dd>
+      </dl></div><div class="section level2">
+
+      <h3 data-toc-skip="true" id="reference-models-and-training">Reference Models and Training<a class="anchor" aria-label="anchor" href="#reference-models-and-training"></a></h3>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+      <dl><dt>
+
+          <code><a href="CellTypistModels.html">CellTypistModels()</a></code>
+
+        </dt>
+        <dd>Get available CellTypist models</dd>
 
         <dt>
 
@@ -1416,11 +835,41 @@
         <dd>Train a CellTypist model</dd>
       </dl></div><div class="section level2">
 
-      <h3 id="differential-expression-and-perturbation">Differential Expression and Perturbation<a class="anchor" aria-label="anchor" href="#differential-expression-and-perturbation"></a></h3>
+      <h3 data-toc-skip="true" id="specialized-cell-state-annotation">Specialized Cell State Annotation<a class="anchor" aria-label="anchor" href="#specialized-cell-state-annotation"></a></h3>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+      <dl><dt>
+
+          <code><a href="RunscMalignantFinder.html">RunscMalignantFinder()</a></code>
+
+        </dt>
+        <dd>Run scMalignantFinder malignant cell identification</dd>
+
+        <dt>
+
+          <code><a href="RunscMalignantRegion.html">RunscMalignantRegion()</a></code>
+
+        </dt>
+        <dd>Run scMalignantFinder malignant spatial region identification</dd>
+
+        <dt>
+
+          <code><a href="RunscMalignantStates.html">RunscMalignantStates()</a></code>
+
+        </dt>
+        <dd>Run scMalignantFinder cancer cell state scoring</dd>
+      </dl></div><div class="section level2">
+      <h2 id="differential-and-sample-level-analysis">Differential and Sample-Level Analysis<a class="anchor" aria-label="anchor" href="#differential-and-sample-level-analysis"></a></h2>
 
 
       <dl></dl></div><div class="section level2">
 
+      <h3 data-toc-skip="true" id="markers-and-differential-testing">Markers and Differential Testing<a class="anchor" aria-label="anchor" href="#markers-and-differential-testing"></a></h3>
+
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -1454,17 +903,150 @@
 
         <dt>
 
-          <code><a href="RunAugur.html">RunAugur()</a></code>
-
-        </dt>
-        <dd>Prioritize perturbed cell types using Augur</dd>
-
-        <dt>
-
           <code><a href="RunDEtest.html">RunDEtest()</a></code>
 
         </dt>
         <dd>Differential gene test</dd>
+      </dl></div><div class="section level2">
+
+      <h3 data-toc-skip="true" id="expression-aggregation">Expression Aggregation<a class="anchor" aria-label="anchor" href="#expression-aggregation"></a></h3>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+      <dl><dt>
+
+          <code><a href="AggregateExpression.html">AggregateExpression()</a></code>
+
+        </dt>
+        <dd>Aggregate expression by cell group</dd>
+
+        <dt>
+
+          <code><a href="AverageExpression.html">AverageExpression()</a></code>
+
+        </dt>
+        <dd>Average expression by cell group</dd>
+      </dl></div><div class="section level2">
+
+      <h3 data-toc-skip="true" id="metacell-analysis">Metacell Analysis<a class="anchor" aria-label="anchor" href="#metacell-analysis"></a></h3>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+      <dl><dt>
+
+          <code><a href="RunMetaCell.html">RunMetaCell()</a></code>
+
+        </dt>
+        <dd>Run metacell partitioning for single-cell data</dd>
+
+        <dt>
+
+          <code><a href="RunmcRigor.html">RunmcRigor()</a></code>
+
+        </dt>
+        <dd>Run mcRigor metacell partition assessment</dd>
+
+        <dt>
+
+          <code><a href="MetaCellPlot.html">MetaCellPlot()</a></code>
+
+        </dt>
+        <dd>Visualize metacell partitions on a dimensionality reduction</dd>
+      </dl></div><div class="section level2">
+
+      <h3 data-toc-skip="true" id="cell-abundance-and-composition">Cell Abundance and Composition<a class="anchor" aria-label="anchor" href="#cell-abundance-and-composition"></a></h3>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+      <dl><dt>
+
+          <code><a href="RunMilo.html">RunMilo()</a></code>
+
+        </dt>
+        <dd>Milo differential abundance wrapper</dd>
+
+        <dt>
+
+          <code><a href="RunPermutation.html">RunPermutation()</a></code>
+
+        </dt>
+        <dd>Permutation-based proportion test</dd>
+
+        <dt>
+
+          <code><a href="RunPropeller.html">RunPropeller()</a></code>
+
+        </dt>
+        <dd>Propeller differential abundance wrapper</dd>
+
+        <dt>
+
+          <code><a href="RunProportionTest.html">RunProportionTest()</a></code>
+
+        </dt>
+        <dd>Proportion Test</dd>
+
+        <dt>
+
+          <code><a href="RunscCODA.html">RunscCODA()</a></code>
+
+        </dt>
+        <dd>scCODA differential abundance</dd>
+      </dl></div><div class="section level2">
+
+      <h3 data-toc-skip="true" id="bulk-deconvolution-and-immune-scores">Bulk Deconvolution and Immune Scores<a class="anchor" aria-label="anchor" href="#bulk-deconvolution-and-immune-scores"></a></h3>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+      <dl><dt>
+
+          <code><a href="RunDeconvolution.html">RunDeconvolution()</a></code>
+
+        </dt>
+        <dd>Run bulk or pseudobulk deconvolution</dd>
+
+        <dt>
+
+          <code><a href="RunCIBERSORT.html">RunCIBERSORT()</a></code>
+
+        </dt>
+        <dd>Run CIBERSORT deconvolution</dd>
+
+        <dt>
+
+          <code><a href="RunESTIMATE.html">RunESTIMATE()</a></code>
+
+        </dt>
+        <dd>Run ESTIMATE tumor microenvironment scoring</dd>
+
+        <dt>
+
+          <code><a href="estimate_signatures.html">estimate_signatures</a></code>
+
+        </dt>
+        <dd>ESTIMATE gene signatures</dd>
+      </dl></div><div class="section level2">
+
+      <h3 data-toc-skip="true" id="perturbation-and-phenotype-response">Perturbation and Phenotype Response<a class="anchor" aria-label="anchor" href="#perturbation-and-phenotype-response"></a></h3>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+      <dl><dt>
+
+          <code><a href="RunAugur.html">RunAugur()</a></code>
+
+        </dt>
+        <dd>Prioritize perturbed cell types using Augur</dd>
 
         <dt>
 
@@ -1475,38 +1057,10 @@
 
         <dt>
 
-          <code><a href="RunRareQ.html">RunRareQ()</a></code>
-
-        </dt>
-        <dd>RareQ rare-cell population detection</dd>
-
-        <dt>
-
           <code><a href="RunScissor.html">RunScissor()</a></code>
 
         </dt>
         <dd>Run Scissor phenotype-associated cell selection</dd>
-
-        <dt>
-
-          <code><a href="RunscMalignantFinder.html">RunscMalignantFinder()</a></code>
-
-        </dt>
-        <dd>Run scMalignantFinder malignant cell identification</dd>
-
-        <dt>
-
-          <code><a href="RunscMalignantRegion.html">RunscMalignantRegion()</a></code>
-
-        </dt>
-        <dd>Run scMalignantFinder malignant spatial region identification</dd>
-
-        <dt>
-
-          <code><a href="RunscMalignantStates.html">RunscMalignantStates()</a></code>
-
-        </dt>
-        <dd>Run scMalignantFinder cancer cell state scoring</dd>
 
         <dt>
 
@@ -1523,11 +1077,9 @@
         <dd>Run scTenifoldNet network comparison</dd>
       </dl></div><div class="section level2">
 
-      <h3 id="differential-expression-and-perturbation-plots">Differential Expression and Perturbation Plots<a class="anchor" aria-label="anchor" href="#differential-expression-and-perturbation-plots"></a></h3>
-
+      <h3 data-toc-skip="true" id="differential-and-composition-visualization">Differential and Composition Visualization<a class="anchor" aria-label="anchor" href="#differential-and-composition-visualization"></a></h3>
 
       <dl></dl></div><div class="section level2">
-
 
 
 
@@ -1579,89 +1131,8 @@
 
         </dt>
         <dd>scTenifoldNet Plot</dd>
-      </dl></div><div class="section level2">
-
-      <h3 id="bulk-and-composition-analysis">Bulk and Composition Analysis<a class="anchor" aria-label="anchor" href="#bulk-and-composition-analysis"></a></h3>
-
-
-      <dl></dl></div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="RunDeconvolution.html">RunDeconvolution()</a></code>
-
-        </dt>
-        <dd>Run bulk or pseudobulk deconvolution</dd>
 
         <dt>
-
-          <code><a href="RunCIBERSORT.html">RunCIBERSORT()</a></code>
-
-        </dt>
-        <dd>Run CIBERSORT deconvolution</dd>
-
-        <dt>
-
-          <code><a href="RunESTIMATE.html">RunESTIMATE()</a></code>
-
-        </dt>
-        <dd>Run ESTIMATE tumor microenvironment scoring</dd>
-
-        <dt>
-
-          <code><a href="estimate_signatures.html">estimate_signatures</a></code>
-
-        </dt>
-        <dd>ESTIMATE gene signatures</dd>
-
-        <dt>
-
-          <code><a href="RunMilo.html">RunMilo()</a></code>
-
-        </dt>
-        <dd>Milo differential abundance wrapper</dd>
-
-        <dt>
-
-          <code><a href="RunPermutation.html">RunPermutation()</a></code>
-
-        </dt>
-        <dd>Permutation-based proportion test</dd>
-
-        <dt>
-
-          <code><a href="RunPropeller.html">RunPropeller()</a></code>
-
-        </dt>
-        <dd>Propeller differential abundance wrapper</dd>
-
-        <dt>
-
-          <code><a href="RunProportionTest.html">RunProportionTest()</a></code>
-
-        </dt>
-        <dd>Proportion Test</dd>
-
-        <dt>
-
-          <code><a href="RunscCODA.html">RunscCODA()</a></code>
-
-        </dt>
-        <dd>scCODA differential abundance</dd>
-      </dl></div><div class="section level2">
-
-      <h3 id="bulk-and-composition-plots">Bulk and Composition Plots<a class="anchor" aria-label="anchor" href="#bulk-and-composition-plots"></a></h3>
-
-
-      <dl></dl></div><div class="section level2">
-
-
-
-
-      <dl><dt>
 
           <code><a href="DeconvolutionPlot.html">DeconvolutionPlot()</a></code>
 
@@ -1703,60 +1174,18 @@
         </dt>
         <dd>Proportion Test Plot</dd>
       </dl></div><div class="section level2">
+      <h2 id="functional-and-pathway-analysis">Functional and Pathway Analysis<a class="anchor" aria-label="anchor" href="#functional-and-pathway-analysis"></a></h2>
 
-      <h3 id="copy-number-variation-analysis">Copy Number Variation Analysis<a class="anchor" aria-label="anchor" href="#copy-number-variation-analysis"></a></h3>
 
+      <dl></dl></div><div class="section level2">
+
+      <h3 data-toc-skip="true" id="over-representation-and-gsea">Over-Representation and GSEA<a class="anchor" aria-label="anchor" href="#over-representation-and-gsea"></a></h3>
 
       <dl></dl></div><div class="section level2">
 
 
 
-
       <dl><dt>
-
-          <code><a href="RunCNV.html">RunCNV()</a></code>
-
-        </dt>
-        <dd>Run copy-number alteration inference</dd>
-
-        <dt>
-
-          <code><a href="CNVPlot.html">CNVPlot()</a></code>
-
-        </dt>
-        <dd>Plot SCOP CNV results</dd>
-      </dl></div><div class="section level2">
-
-      <h3 id="enrichment-analysis">Enrichment Analysis<a class="anchor" aria-label="anchor" href="#enrichment-analysis"></a></h3>
-
-
-      <dl></dl></div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="CellScoring.html">CellScoring()</a></code>
-
-        </dt>
-        <dd>Cell scoring</dd>
-
-        <dt>
-
-          <code><a href="RunDorothea.html">RunDorothea()</a></code>
-
-        </dt>
-        <dd>Run transcription factor activity inference</dd>
-
-        <dt>
-
-          <code><a href="RunDynamicEnrichment.html">RunDynamicEnrichment()</a></code>
-
-        </dt>
-        <dd>RunDynamicEnrichment</dd>
-
-        <dt>
 
           <code><a href="RunEnrichment.html">RunEnrichment()</a></code>
 
@@ -1769,6 +1198,27 @@
 
         </dt>
         <dd>Perform the enrichment analysis (GSEA) on the genes</dd>
+      </dl></div><div class="section level2">
+
+      <h3 data-toc-skip="true" id="gene-set-and-pathway-scoring">Gene Set and Pathway Scoring<a class="anchor" aria-label="anchor" href="#gene-set-and-pathway-scoring"></a></h3>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+      <dl><dt>
+
+          <code><a href="AddModuleScore.html">AddModuleScore()</a></code>
+
+        </dt>
+        <dd>Add expression-program scores with a sparse native fast path</dd>
+
+        <dt>
+
+          <code><a href="CellScoring.html">CellScoring()</a></code>
+
+        </dt>
+        <dd>Cell scoring</dd>
 
         <dt>
 
@@ -1776,15 +1226,15 @@
 
         </dt>
         <dd>Perform Gene Set Variation Analysis (GSVA)</dd>
+      </dl></div><div class="section level2">
 
-        <dt>
+      <h3 data-toc-skip="true" id="immune-response-programs">Immune Response Programs<a class="anchor" aria-label="anchor" href="#immune-response-programs"></a></h3>
 
-          <code><a href="RunMetabolism.html">RunMetabolism()</a></code>
+      <dl></dl></div><div class="section level2">
 
-        </dt>
-        <dd>Run metabolism pathway scoring</dd>
 
-        <dt>
+
+      <dl><dt>
 
           <code><a href="PrepareIREA.html">PrepareIREA()</a></code>
 
@@ -1797,13 +1247,39 @@
 
         </dt>
         <dd>Analyse cytokine responses or immune-cell polarization</dd>
+
+        <dt>
+
+          <code><a href="IREAPlot.html">IREAPlot()</a></code>
+
+        </dt>
+        <dd>Plot IREA response or polarization results</dd>
       </dl></div><div class="section level2">
 
-      <h3 id="enrichment-analysis-plot">Enrichment Analysis Plot<a class="anchor" aria-label="anchor" href="#enrichment-analysis-plot"></a></h3>
-
+      <h3 data-toc-skip="true" id="metabolic-activity-and-flux">Metabolic Activity and Flux<a class="anchor" aria-label="anchor" href="#metabolic-activity-and-flux"></a></h3>
 
       <dl></dl></div><div class="section level2">
 
+
+
+      <dl><dt>
+
+          <code><a href="RunMetabolism.html">RunMetabolism()</a></code>
+
+        </dt>
+        <dd>Run metabolism pathway scoring</dd>
+
+        <dt>
+
+          <code><a href="RunscFEA.html">RunscFEA()</a></code>
+
+        </dt>
+        <dd>Run scFEA flux estimation for a Seurat object</dd>
+      </dl></div><div class="section level2">
+
+      <h3 data-toc-skip="true" id="functional-analysis-visualization">Functional Analysis Visualization<a class="anchor" aria-label="anchor" href="#functional-analysis-visualization"></a></h3>
+
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -1813,13 +1289,6 @@
 
         </dt>
         <dd>Plot CellScoring results from a Seurat object</dd>
-
-        <dt>
-
-          <code><a href="DorotheaPlot.html">DorotheaPlot()</a></code>
-
-        </dt>
-        <dd>Plot transcription factor activity</dd>
 
         <dt>
 
@@ -1858,29 +1327,6 @@
 
         <dt>
 
-          <code><a href="IREAPlot.html">IREAPlot()</a></code>
-
-        </dt>
-        <dd>Plot IREA response or polarization results</dd>
-      </dl></div><div class="section level2">
-
-      <h3 id="metabolic-flux-analysis">Metabolic Flux Analysis<a class="anchor" aria-label="anchor" href="#metabolic-flux-analysis"></a></h3>
-
-
-      <dl></dl></div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="RunscFEA.html">RunscFEA()</a></code>
-
-        </dt>
-        <dd>Run scFEA flux estimation for a Seurat object</dd>
-
-        <dt>
-
           <code><a href="scFEAHeatmap.html">scFEAHeatmap()</a></code>
 
         </dt>
@@ -1900,81 +1346,18 @@
         </dt>
         <dd>Plot scFEA metabolite balance changes</dd>
       </dl></div><div class="section level2">
+      <h2 id="trajectory-and-cell-fate">Trajectory and Cell Fate<a class="anchor" aria-label="anchor" href="#trajectory-and-cell-fate"></a></h2>
 
-      <h3 id="cellular-potency">Cellular Potency<a class="anchor" aria-label="anchor" href="#cellular-potency"></a></h3>
 
+      <dl></dl></div><div class="section level2">
+
+      <h3 data-toc-skip="true" id="trajectory-and-pseudotime">Trajectory and Pseudotime<a class="anchor" aria-label="anchor" href="#trajectory-and-pseudotime"></a></h3>
 
       <dl></dl></div><div class="section level2">
 
 
 
-
       <dl><dt>
-
-          <code><a href="RunCytoTRACE.html">RunCytoTRACE()</a></code>
-
-        </dt>
-        <dd>Run CytoTRACE 2</dd>
-
-        <dt>
-
-          <code><a href="CytoTRACEPlot.html">CytoTRACEPlot()</a></code>
-
-        </dt>
-        <dd>Plot CytoTRACE 2 Results</dd>
-
-        <dt>
-
-          <code><a href="RunFitDevo.html">RunFitDevo()</a></code>
-
-        </dt>
-        <dd>Run FitDevo developmental potential scoring</dd>
-
-        <dt>
-
-          <code><a href="FitDevoPlot.html">FitDevoPlot()</a></code>
-
-        </dt>
-        <dd>Plot FitDevo results</dd>
-      </dl></div><div class="section level2">
-
-      <h3 id="dynamic-trajectory-analysis">Dynamic Trajectory Analysis<a class="anchor" aria-label="anchor" href="#dynamic-trajectory-analysis"></a></h3>
-
-
-      <dl></dl></div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="RunCell2fate.html">RunCell2fate()</a></code>
-
-        </dt>
-        <dd>Run Cell2fate RNA velocity analysis</dd>
-
-        <dt>
-
-          <code><a href="RunCellRank.html">RunCellRank()</a></code>
-
-        </dt>
-        <dd>Run CellRank analysis</dd>
-
-        <dt>
-
-          <code><a href="RunCellRankTrends.html">RunCellRankTrends()</a></code>
-
-        </dt>
-        <dd>Fit and cluster CellRank lineage trends</dd>
-
-        <dt>
-
-          <code><a href="RunCellRankEnrichment.html">RunCellRankEnrichment()</a></code>
-
-        </dt>
-        <dd>Enrich CellRank trend modules</dd>
-
-        <dt>
 
           <code><a href="RunMonocle2.html">RunMonocle2()</a></code>
 
@@ -2008,6 +1391,20 @@
 
         </dt>
         <dd>RunSlingshot</dd>
+      </dl></div><div class="section level2">
+
+      <h3 data-toc-skip="true" id="rna-velocity-and-vector-fields">RNA Velocity and Vector Fields<a class="anchor" aria-label="anchor" href="#rna-velocity-and-vector-fields"></a></h3>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+      <dl><dt>
+
+          <code><a href="RunCell2fate.html">RunCell2fate()</a></code>
+
+        </dt>
+        <dd>Run Cell2fate RNA velocity analysis</dd>
 
         <dt>
 
@@ -2022,6 +1419,20 @@
 
         </dt>
         <dd>Run VECTOR developmental direction inference</dd>
+      </dl></div><div class="section level2">
+
+      <h3 data-toc-skip="true" id="cell-fate-and-lineages">Cell Fate and Lineages<a class="anchor" aria-label="anchor" href="#cell-fate-and-lineages"></a></h3>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+      <dl><dt>
+
+          <code><a href="RunCellRank.html">RunCellRank()</a></code>
+
+        </dt>
+        <dd>Run CellRank analysis</dd>
 
         <dt>
 
@@ -2029,6 +1440,83 @@
 
         </dt>
         <dd>Run WOT analysis</dd>
+      </dl></div><div class="section level2">
+
+      <h3 data-toc-skip="true" id="cell-potency-and-aging">Cell Potency and Aging<a class="anchor" aria-label="anchor" href="#cell-potency-and-aging"></a></h3>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+      <dl><dt>
+
+          <code><a href="RunCytoTRACE.html">RunCytoTRACE()</a></code>
+
+        </dt>
+        <dd>Run CytoTRACE 2</dd>
+
+        <dt>
+
+          <code><a href="CytoTRACEPlot.html">CytoTRACEPlot()</a></code>
+
+        </dt>
+        <dd>Plot CytoTRACE 2 Results</dd>
+
+        <dt>
+
+          <code><a href="RunFitDevo.html">RunFitDevo()</a></code>
+
+        </dt>
+        <dd>Run FitDevo developmental potential scoring</dd>
+
+        <dt>
+
+          <code><a href="FitDevoPlot.html">FitDevoPlot()</a></code>
+
+        </dt>
+        <dd>Plot FitDevo results</dd>
+
+        <dt>
+
+          <code><a href="tAgePlot.html">tAgePlot()</a></code>
+
+        </dt>
+        <dd>Plot tAge transcriptomic aging-clock predictions</dd>
+
+        <dt>
+
+          <code><a href="RuntAge.html">RuntAge()</a></code>
+
+        </dt>
+        <dd>Run tAge transcriptomic aging-clock prediction</dd>
+      </dl></div><div class="section level2">
+
+      <h3 data-toc-skip="true" id="dynamic-features-and-pathways">Dynamic Features and Pathways<a class="anchor" aria-label="anchor" href="#dynamic-features-and-pathways"></a></h3>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+      <dl><dt>
+
+          <code><a href="RunDynamicEnrichment.html">RunDynamicEnrichment()</a></code>
+
+        </dt>
+        <dd>RunDynamicEnrichment</dd>
+
+        <dt>
+
+          <code><a href="RunCellRankTrends.html">RunCellRankTrends()</a></code>
+
+        </dt>
+        <dd>Fit and cluster CellRank lineage trends</dd>
+
+        <dt>
+
+          <code><a href="RunCellRankEnrichment.html">RunCellRankEnrichment()</a></code>
+
+        </dt>
+        <dd>Enrich CellRank trend modules</dd>
 
         <dt>
 
@@ -2038,11 +1526,9 @@
         <dd>Calculates dynamic features for lineages</dd>
       </dl></div><div class="section level2">
 
-      <h3 id="dynamic-trajectory-plots">Dynamic Trajectory Plots<a class="anchor" aria-label="anchor" href="#dynamic-trajectory-plots"></a></h3>
-
+      <h3 data-toc-skip="true" id="trajectory-and-fate-visualization">Trajectory and Fate Visualization<a class="anchor" aria-label="anchor" href="#trajectory-and-fate-visualization"></a></h3>
 
       <dl></dl></div><div class="section level2">
-
 
 
 
@@ -2116,12 +1602,14 @@
         </dt>
         <dd>Velocity Plot</dd>
       </dl></div><div class="section level2">
-
-      <h3 id="cell-cell-communication-analysis">Cell-Cell Communication Analysis<a class="anchor" aria-label="anchor" href="#cell-cell-communication-analysis"></a></h3>
+      <h2 id="cell-cell-communication">Cell-Cell Communication<a class="anchor" aria-label="anchor" href="#cell-cell-communication"></a></h2>
 
 
       <dl></dl></div><div class="section level2">
 
+      <h3 data-toc-skip="true" id="communication-inference">Communication Inference<a class="anchor" aria-label="anchor" href="#communication-inference"></a></h3>
+
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -2134,59 +1622,10 @@
 
         <dt>
 
-          <code><a href="GetSpatialDMResult.html">GetSpatialDMResult()</a></code>
-
-        </dt>
-        <dd>Access stored SpatialDM results</dd>
-
-        <dt>
-
-          <code><a href="RunSecAct.html">RunSecAct()</a></code>
-
-        </dt>
-        <dd>Run SecAct secreted protein activity inference</dd>
-
-        <dt>
-
-          <code><a href="RunSecActCCC.html">RunSecActCCC()</a></code>
-
-        </dt>
-        <dd>Run SecAct cell-cell communication analysis</dd>
-
-        <dt>
-
-          <code><a href="RunSecActSignalingPattern.html">RunSecActSignalingPattern()</a></code>
-
-        </dt>
-        <dd>Run SecAct spatial signaling pattern analysis</dd>
-
-        <dt>
-
-          <code><a href="RunSecActPatternGenes.html">RunSecActPatternGenes()</a></code>
-
-        </dt>
-        <dd>Extract SecAct pattern-associated secreted proteins</dd>
-
-        <dt>
-
-          <code><a href="RunSecActVelocity.html">RunSecActVelocity()</a></code>
-
-        </dt>
-        <dd>Run SecAct spatial signaling velocity</dd>
-
-        <dt>
-
           <code><a href="RunCellChat.html">RunCellChat()</a></code>
 
         </dt>
         <dd>Run CellChat analysis</dd>
-
-        <dt>
-
-          <code><a href="GetCCCObject.html">GetCCCObject()</a></code>
-
-        </dt>
-        <dd>Get an upstream CellChat-family object</dd>
 
         <dt>
 
@@ -2225,20 +1664,6 @@
 
         <dt>
 
-          <code><a href="ListCCCDB.html">ListCCCDB()</a></code>
-
-        </dt>
-        <dd>List CCC ligand-receptor and prior-model databases</dd>
-
-        <dt>
-
-          <code><a href="PrepareCCCDB.html">PrepareCCCDB()</a></code>
-
-        </dt>
-        <dd>Prepare cell-cell communication databases</dd>
-
-        <dt>
-
           <code><a href="RunMDIC3.html">RunMDIC3()</a></code>
 
         </dt>
@@ -2264,6 +1689,83 @@
 
         </dt>
         <dd>Run scOMM label prediction</dd>
+      </dl></div><div class="section level2">
+
+      <h3 data-toc-skip="true" id="signaling-activity-and-dynamics">Signaling Activity and Dynamics<a class="anchor" aria-label="anchor" href="#signaling-activity-and-dynamics"></a></h3>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+      <dl><dt>
+
+          <code><a href="RunSecAct.html">RunSecAct()</a></code>
+
+        </dt>
+        <dd>Run SecAct secreted protein activity inference</dd>
+
+        <dt>
+
+          <code><a href="RunSecActCCC.html">RunSecActCCC()</a></code>
+
+        </dt>
+        <dd>Run SecAct cell-cell communication analysis</dd>
+
+        <dt>
+
+          <code><a href="RunSecActSignalingPattern.html">RunSecActSignalingPattern()</a></code>
+
+        </dt>
+        <dd>Run SecAct spatial signaling pattern analysis</dd>
+
+        <dt>
+
+          <code><a href="RunSecActPatternGenes.html">RunSecActPatternGenes()</a></code>
+
+        </dt>
+        <dd>Extract SecAct pattern-associated secreted proteins</dd>
+
+        <dt>
+
+          <code><a href="RunSecActVelocity.html">RunSecActVelocity()</a></code>
+
+        </dt>
+        <dd>Run SecAct spatial signaling velocity</dd>
+      </dl></div><div class="section level2">
+
+      <h3 data-toc-skip="true" id="communication-resources-and-interoperability">Communication Resources and Interoperability<a class="anchor" aria-label="anchor" href="#communication-resources-and-interoperability"></a></h3>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+      <dl><dt>
+
+          <code><a href="GetSpatialDMResult.html">GetSpatialDMResult()</a></code>
+
+        </dt>
+        <dd>Access stored SpatialDM results</dd>
+
+        <dt>
+
+          <code><a href="GetCCCObject.html">GetCCCObject()</a></code>
+
+        </dt>
+        <dd>Get an upstream CellChat-family object</dd>
+
+        <dt>
+
+          <code><a href="ListCCCDB.html">ListCCCDB()</a></code>
+
+        </dt>
+        <dd>List CCC ligand-receptor and prior-model databases</dd>
+
+        <dt>
+
+          <code><a href="PrepareCCCDB.html">PrepareCCCDB()</a></code>
+
+        </dt>
+        <dd>Prepare cell-cell communication databases</dd>
 
         <dt>
 
@@ -2280,34 +1782,9 @@
         <dd>Convert CCC results to a LIANA-like table</dd>
       </dl></div><div class="section level2">
 
-      <h3 id="gwas-integration">GWAS Integration<a class="anchor" aria-label="anchor" href="#gwas-integration"></a></h3>
-
-
-      <dl></dl></div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="RunscPagwas.html">RunscPagwas()</a></code>
-
-        </dt>
-        <dd>Run scPagwas</dd>
-
-        <dt>
-
-          <code><a href="PlotscPagwas.html">PlotscPagwas()</a></code>
-
-        </dt>
-        <dd>Plot scPagwas Scores</dd>
-      </dl></div><div class="section level2">
-
-      <h3 id="cell-cell-communication-plots">Cell-Cell Communication Plots<a class="anchor" aria-label="anchor" href="#cell-cell-communication-plots"></a></h3>
-
+      <h3 data-toc-skip="true" id="communication-visualization">Communication Visualization<a class="anchor" aria-label="anchor" href="#communication-visualization"></a></h3>
 
       <dl></dl></div><div class="section level2">
-
 
 
 
@@ -2353,12 +1830,14 @@
         </dt>
         <dd>Plot stored SpatialDM results</dd>
       </dl></div><div class="section level2">
-
-      <h3 id="gene-regulatory-network-inference">Gene Regulatory Network Inference<a class="anchor" aria-label="anchor" href="#gene-regulatory-network-inference"></a></h3>
+      <h2 id="gene-regulatory-networks">Gene Regulatory Networks<a class="anchor" aria-label="anchor" href="#gene-regulatory-networks"></a></h2>
 
 
       <dl></dl></div><div class="section level2">
 
+      <h3 data-toc-skip="true" id="network-inference">Network Inference<a class="anchor" aria-label="anchor" href="#network-inference"></a></h3>
+
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -2396,8 +1875,43 @@
 
         </dt>
         <dd>Run SCENIC gene regulatory network analysis</dd>
+      </dl></div><div class="section level2">
+
+      <h3 data-toc-skip="true" id="regulon-activity-and-motif-pruning">Regulon Activity and Motif Pruning<a class="anchor" aria-label="anchor" href="#regulon-activity-and-motif-pruning"></a></h3>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+      <dl><dt>
+
+          <code><a href="RunDorothea.html">RunDorothea()</a></code>
+
+        </dt>
+        <dd>Run transcription factor activity inference</dd>
 
         <dt>
+
+          <code><a href="DorotheaPlot.html">DorotheaPlot()</a></code>
+
+        </dt>
+        <dd>Plot transcription factor activity</dd>
+
+        <dt>
+
+          <code><a href="RunCisTarget.html">RunCisTarget()</a></code>
+
+        </dt>
+        <dd>Run cisTarget motif enrichment on a GRN adjacency table</dd>
+      </dl></div><div class="section level2">
+
+      <h3 data-toc-skip="true" id="multiomic-regulatory-networks">Multiomic Regulatory Networks<a class="anchor" aria-label="anchor" href="#multiomic-regulatory-networks"></a></h3>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+      <dl><dt>
 
           <code><a href="RunSCENICPlus.html">RunSCENICPlus()</a></code>
 
@@ -2405,11 +1919,9 @@
         <dd>Run an approximate SCENICPlus-compatible eGRN analysis</dd>
       </dl></div><div class="section level2">
 
-      <h3 id="gene-regulatory-network-plots">Gene Regulatory Network Plots<a class="anchor" aria-label="anchor" href="#gene-regulatory-network-plots"></a></h3>
-
+      <h3 data-toc-skip="true" id="regulatory-network-visualization">Regulatory Network Visualization<a class="anchor" aria-label="anchor" href="#regulatory-network-visualization"></a></h3>
 
       <dl></dl></div><div class="section level2">
-
 
 
 
@@ -2427,12 +1939,28 @@
         </dt>
         <dd>Plot SCENIC+ eRegulon activity</dd>
       </dl></div><div class="section level2">
-
-      <h3 id="other">Other<a class="anchor" aria-label="anchor" href="#other"></a></h3>
+      <h2 id="atac-and-multiome-analysis">ATAC and Multiome Analysis<a class="anchor" aria-label="anchor" href="#atac-and-multiome-analysis"></a></h2>
 
 
       <dl></dl></div><div class="section level2">
 
+      <h3 data-toc-skip="true" id="atac-quality-control">ATAC Quality Control<a class="anchor" aria-label="anchor" href="#atac-quality-control"></a></h3>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+      <dl><dt>
+
+          <code><a href="RunATACQC.html">RunATACQC()</a></code>
+
+        </dt>
+        <dd>Run scATAC quality control metrics</dd>
+      </dl></div><div class="section level2">
+
+      <h3 data-toc-skip="true" id="genomic-coverage-visualization">Genomic Coverage Visualization<a class="anchor" aria-label="anchor" href="#genomic-coverage-visualization"></a></h3>
+
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -2442,27 +1970,450 @@
 
         </dt>
         <dd>Coverage track plot for ATAC data</dd>
-
-        <dt>
-
-          <code><a href="tAgePlot.html">tAgePlot()</a></code>
-
-        </dt>
-        <dd>Plot tAge transcriptomic aging-clock predictions</dd>
-
-        <dt>
-
-          <code><a href="RuntAge.html">RuntAge()</a></code>
-
-        </dt>
-        <dd>Run tAge transcriptomic aging-clock prediction</dd>
       </dl></div><div class="section level2">
-
-      <h3 id="scexplorer">SCExplorer<a class="anchor" aria-label="anchor" href="#scexplorer"></a></h3>
+      <h2 id="spatial-omics-analysis">Spatial Omics Analysis<a class="anchor" aria-label="anchor" href="#spatial-omics-analysis"></a></h2>
 
 
       <dl></dl></div><div class="section level2">
 
+      <h3 data-toc-skip="true" id="spatial-quality-control-and-normalization">Spatial Quality Control and Normalization<a class="anchor" aria-label="anchor" href="#spatial-quality-control-and-normalization"></a></h3>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+      <dl><dt>
+
+          <code><a href="RunSpotQC.html">RunSpotQC()</a></code>
+
+        </dt>
+        <dd>Run spot-level quality control</dd>
+
+        <dt>
+
+          <code><a href="RunSpaNorm.html">RunSpaNorm()</a></code>
+
+        </dt>
+        <dd>Run SpaNorm spatial normalization</dd>
+
+        <dt>
+
+          <code><a href="RunSpotSweeper.html">RunSpotSweeper()</a></code>
+
+        </dt>
+        <dd>Run SpotSweeper spatial quality control</dd>
+      </dl></div><div class="section level2">
+
+      <h3 data-toc-skip="true" id="deconvolution-and-ecotypes">Deconvolution and Ecotypes<a class="anchor" aria-label="anchor" href="#deconvolution-and-ecotypes"></a></h3>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+      <dl><dt>
+
+          <code><a href="RunRCTD.html">RunRCTD()</a></code>
+
+        </dt>
+        <dd>Run RCTD spatial deconvolution</dd>
+
+        <dt>
+
+          <code><a href="RunCell2location.html">RunCell2location()</a></code>
+
+        </dt>
+        <dd>Run cell2location spatial deconvolution</dd>
+
+        <dt>
+
+          <code><a href="RunCSIDE.html">RunCSIDE()</a></code>
+
+        </dt>
+        <dd>Run C-SIDE spatial differential expression</dd>
+
+        <dt>
+
+          <code><a href="RunCARD.html">RunCARD()</a></code>
+
+        </dt>
+        <dd>Run CARD spatial deconvolution</dd>
+
+        <dt>
+
+          <code><a href="RunSTdeconvolve.html">RunSTdeconvolve()</a></code>
+
+        </dt>
+        <dd>Run STdeconvolve reference-free spatial deconvolution</dd>
+
+        <dt>
+
+          <code><a href="RunSPOTlight.html">RunSPOTlight()</a></code>
+
+        </dt>
+        <dd>Run SPOTlight spatial deconvolution</dd>
+
+        <dt>
+
+          <code><a href="RunSpatialEcoTyper.html">RunSpatialEcoTyper()</a></code>
+
+        </dt>
+        <dd>Run SpatialEcoTyper spatial ecotype analysis</dd>
+      </dl></div><div class="section level2">
+
+      <h3 data-toc-skip="true" id="domains-and-spatial-features">Domains and Spatial Features<a class="anchor" aria-label="anchor" href="#domains-and-spatial-features"></a></h3>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+      <dl><dt>
+
+          <code><a href="RunBayesSpace.html">RunBayesSpace()</a></code>
+
+        </dt>
+        <dd>Run BayesSpace spatial clustering</dd>
+
+        <dt>
+
+          <code><a href="RunBANKSY.html">RunBANKSY()</a></code>
+
+        </dt>
+        <dd>Run BANKSY spatial clustering</dd>
+
+        <dt>
+
+          <code><a href="RunCytoSPACE.html">RunCytoSPACE()</a></code>
+
+        </dt>
+        <dd>Run CytoSPACE spatial assignment</dd>
+
+        <dt>
+
+          <code><a href="RunSmoothClust.html">RunSmoothClust()</a></code>
+
+        </dt>
+        <dd>Run smoothclust spatial domain clustering</dd>
+
+        <dt>
+
+          <code><a href="RunMERINGUE.html">RunMERINGUE()</a></code>
+
+        </dt>
+        <dd>Run MERINGUE spatial autocorrelation analysis</dd>
+
+        <dt>
+
+          <code><a href="RunSpatialVariableFeatures.html">RunSpatialVariableFeatures()</a></code>
+
+        </dt>
+        <dd>Run spatial variable feature detection</dd>
+
+        <dt>
+
+          <code><a href="RunSpatialGradientFeatures.html">RunSpatialGradientFeatures()</a></code>
+
+        </dt>
+        <dd>Run spatial gradient feature screening</dd>
+      </dl></div><div class="section level2">
+
+      <h3 data-toc-skip="true" id="neighborhoods-and-interactions">Neighborhoods and Interactions<a class="anchor" aria-label="anchor" href="#neighborhoods-and-interactions"></a></h3>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+      <dl><dt>
+
+          <code><a href="RunSpatialNetwork.html">RunSpatialNetwork()</a></code>
+
+        </dt>
+        <dd>Build a native spatial network</dd>
+
+        <dt>
+
+          <code><a href="RunSpatialCellChat.html">RunSpatialCellChat()</a></code>
+
+        </dt>
+        <dd>Run Spatial CellChat analysis</dd>
+
+        <dt>
+
+          <code><a href="MistyRPlot.html">MistyRPlot()</a></code>
+
+        </dt>
+        <dd>Plot stored MISTy results</dd>
+
+        <dt>
+
+          <code><a href="StatialKontextualPlot.html">StatialKontextualPlot()</a></code>
+
+        </dt>
+        <dd>Plot stored Statial Kontextual results</dd>
+
+        <dt>
+
+          <code><a href="RunSpatialNeighborhood.html">RunSpatialNeighborhood()</a></code>
+
+        </dt>
+        <dd>Run spatial neighborhood statistics</dd>
+
+        <dt>
+
+          <code><a href="SpatialNeighborhoodProfile.html">SpatialNeighborhoodProfile()</a></code>
+
+        </dt>
+        <dd>Profile cell neighborhoods at several distances</dd>
+
+        <dt>
+
+          <code><a href="RunStatialKontextual.html">RunStatialKontextual()</a></code>
+
+        </dt>
+        <dd>Run Statial Kontextual spatial relationships</dd>
+
+        <dt>
+
+          <code><a href="RunMistyR.html">RunMistyR()</a></code>
+
+        </dt>
+        <dd>Run mistyR multiview spatial modeling</dd>
+      </dl></div><div class="section level2">
+
+      <h3 data-toc-skip="true" id="multi-sample-integration-and-benchmarking">Multi-Sample Integration and Benchmarking<a class="anchor" aria-label="anchor" href="#multi-sample-integration-and-benchmarking"></a></h3>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+      <dl><dt>
+
+          <code><a href="RunSpatialBenchmark.html">RunSpatialBenchmark()</a></code>
+
+        </dt>
+        <dd>Benchmark spatial domain clustering methods</dd>
+
+        <dt>
+
+          <code><a href="SpatialBenchmarkPlot.html">SpatialBenchmarkPlot()</a></code>
+
+        </dt>
+        <dd>Plot spatial domain clustering benchmarks</dd>
+
+        <dt>
+
+          <code><a href="RunSpatialIntegration.html">RunSpatialIntegration()</a></code>
+
+        </dt>
+        <dd>Run multi-sample spatial integration</dd>
+
+        <dt>
+
+          <code><a href="SpatialIntegrationPlot.html">SpatialIntegrationPlot()</a></code>
+
+        </dt>
+        <dd>Plot spatial integration results</dd>
+      </dl></div><div class="section level2">
+
+      <h3 data-toc-skip="true" id="spatial-visualization">Spatial Visualization<a class="anchor" aria-label="anchor" href="#spatial-visualization"></a></h3>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+      <dl><dt>
+
+          <code><a href="SpatialGradientPlot.html">SpatialGradientPlot()</a></code>
+
+        </dt>
+        <dd>Plot spatial gradient screening results</dd>
+
+        <dt>
+
+          <code><a href="SpatialNeighborhoodPlot.html">SpatialNeighborhoodPlot()</a></code>
+
+        </dt>
+        <dd>Spatial neighborhood plot</dd>
+
+        <dt>
+
+          <code><a href="SpatialNetworkPlot.html">SpatialNetworkPlot()</a></code>
+
+        </dt>
+        <dd>Plot a native spatial network</dd>
+
+        <dt>
+
+          <code><a href="SpatialCellChatPlot.html">SpatialCellChatPlot()</a></code>
+
+        </dt>
+        <dd>Plot stored SpatialCellChat results</dd>
+
+        <dt>
+
+          <code><a href="SpatialCellPlot.html">SpatialCellPlot()</a></code>
+
+        </dt>
+        <dd>Plot spatial cell boundaries</dd>
+
+        <dt>
+
+          <code><a href="Cell2locationPlot.html">Cell2locationPlot()</a></code>
+
+        </dt>
+        <dd>Plot cell2location spatial results</dd>
+
+        <dt>
+
+          <code><a href="SpatialSpotPlot.html">SpatialSpotPlot()</a></code>
+
+        </dt>
+        <dd>Spatial spot plot</dd>
+
+        <dt>
+
+          <code><a href="SpatialDeconvolutionPlot.html">SpatialDeconvolutionPlot()</a></code>
+
+        </dt>
+        <dd>Plot stored spatial deconvolution proportions</dd>
+
+        <dt>
+
+          <code><a href="SpatialVariableFeaturePlot.html">SpatialVariableFeaturePlot()</a></code>
+
+        </dt>
+        <dd>Plot spatial variable feature results</dd>
+
+        <dt>
+
+          <code><a href="STdeconvolvePlot.html">STdeconvolvePlot()</a></code>
+
+        </dt>
+        <dd>Plot STdeconvolve topic proportions</dd>
+      </dl></div><div class="section level2">
+      <h2 id="genomic-variation-and-trait-association">Genomic Variation and Trait Association<a class="anchor" aria-label="anchor" href="#genomic-variation-and-trait-association"></a></h2>
+
+
+      <dl></dl></div><div class="section level2">
+
+      <h3 data-toc-skip="true" id="copy-number-variation">Copy Number Variation<a class="anchor" aria-label="anchor" href="#copy-number-variation"></a></h3>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+      <dl><dt>
+
+          <code><a href="RunCNV.html">RunCNV()</a></code>
+
+        </dt>
+        <dd>Run copy-number alteration inference</dd>
+
+        <dt>
+
+          <code><a href="CNVPlot.html">CNVPlot()</a></code>
+
+        </dt>
+        <dd>Plot SCOP CNV results</dd>
+      </dl></div><div class="section level2">
+
+      <h3 data-toc-skip="true" id="gwas-and-trait-association">GWAS and Trait Association<a class="anchor" aria-label="anchor" href="#gwas-and-trait-association"></a></h3>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+      <dl><dt>
+
+          <code><a href="RunscPagwas.html">RunscPagwas()</a></code>
+
+        </dt>
+        <dd>Run scPagwas</dd>
+
+        <dt>
+
+          <code><a href="PlotscPagwas.html">PlotscPagwas()</a></code>
+
+        </dt>
+        <dd>Plot scPagwas Scores</dd>
+      </dl></div><div class="section level2">
+      <h2 id="general-visualization-and-utilities">General Visualization and Utilities<a class="anchor" aria-label="anchor" href="#general-visualization-and-utilities"></a></h2>
+
+
+      <dl></dl></div><div class="section level2">
+
+      <h3 data-toc-skip="true" id="feature-and-statistical-plots">Feature and Statistical Plots<a class="anchor" aria-label="anchor" href="#feature-and-statistical-plots"></a></h3>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+      <dl><dt>
+
+          <code><a href="CellStatPlot.html">CellStatPlot()</a></code>
+
+        </dt>
+        <dd>Statistical plot of cells</dd>
+
+        <dt>
+
+          <code><a href="FeatureCorPlot.html">FeatureCorPlot()</a></code>
+
+        </dt>
+        <dd>Features correlation plot</dd>
+
+        <dt>
+
+          <code><a href="FeatureStatPlot.html">FeatureStatPlot()</a></code>
+
+        </dt>
+        <dd>Feature statistical plots</dd>
+      </dl></div><div class="section level2">
+
+      <h3 data-toc-skip="true" id="heatmaps-and-plot-themes">Heatmaps and Plot Themes<a class="anchor" aria-label="anchor" href="#heatmaps-and-plot-themes"></a></h3>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+      <dl><dt>
+
+          <code><a href="CellCorHeatmap.html">CellCorHeatmap()</a></code>
+
+        </dt>
+        <dd>Cell Correlation Heatmap</dd>
+
+        <dt>
+
+          <code><a href="FeatureHeatmap.html">FeatureHeatmap()</a></code>
+
+        </dt>
+        <dd>Feature Heatmap</dd>
+
+        <dt>
+
+          <code><a href="GroupHeatmap.html">GroupHeatmap()</a></code>
+
+        </dt>
+        <dd>Group heatmap</dd>
+
+        <dt>
+
+          <code><a href="theme_scop.html">theme_scop()</a></code>
+
+        </dt>
+        <dd>Default ggplot2 theme for scop plots</dd>
+
+        <dt>
+
+          <code><a href="theme_spatial.html">theme_spatial()</a></code>
+
+        </dt>
+        <dd>ggplot2 theme for spatial plots</dd>
+      </dl></div><div class="section level2">
+
+      <h3 data-toc-skip="true" id="interactive-exploration">Interactive Exploration<a class="anchor" aria-label="anchor" href="#interactive-exploration"></a></h3>
+
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -2502,15 +2453,83 @@
         <dd>Run SCExplorer</dd>
       </dl></div><div class="section level2">
 
-      <h3 id="data-conversion">Data Conversion<a class="anchor" aria-label="anchor" href="#data-conversion"></a></h3>
-
+      <h3 data-toc-skip="true" id="object-conversion-and-manipulation">Object Conversion and Manipulation<a class="anchor" aria-label="anchor" href="#object-conversion-and-manipulation"></a></h3>
 
       <dl></dl></div><div class="section level2">
 
 
 
-
       <dl><dt>
+
+          <code><a href="ReadATACData.html">ReadATACData()</a></code>
+
+        </dt>
+        <dd>Read raw ATAC counts into a ChromatinAssay</dd>
+
+        <dt>
+
+          <code><a href="ReadMultiomeData.html">ReadMultiomeData()</a></code>
+
+        </dt>
+        <dd>Read paired 10x RNA and ATAC counts</dd>
+
+        <dt>
+
+          <code><a href="CheckATACData.html">CheckATACData()</a></code>
+
+        </dt>
+        <dd>Check an ATAC object without changing it</dd>
+
+        <dt>
+
+          <code><a href="SpatialCoordinates.html">SpatialCoordinates()</a></code>
+
+        </dt>
+        <dd>Read spatial coordinates with an explicit coordinate contract</dd>
+
+        <dt>
+
+          <code><a href="ReadSpatialData.html">ReadSpatialData()</a></code>
+
+        </dt>
+        <dd>Load and validate Visium, Visium HD, or Xenium data</dd>
+
+        <dt>
+
+          <code><a href="SetSpatialImageAxes.html">SetSpatialImageAxes()</a></code>
+
+        </dt>
+        <dd>Persist the coordinate axis convention of a VisiumV2 image</dd>
+
+        <dt>
+
+          <code><a href="GetSpatialGraph.html">GetSpatialGraph()</a></code>
+
+        </dt>
+        <dd>Read or convert a stored spatial graph</dd>
+
+        <dt>
+
+          <code><a href="GetSpatialResult.html">GetSpatialResult()</a></code>
+
+        </dt>
+        <dd>Access spatial analysis results</dd>
+
+        <dt>
+
+          <code><a href="srt_to_giotto.html">srt_to_giotto()</a></code>
+
+        </dt>
+        <dd>Convert Seurat to a native Giotto object</dd>
+
+        <dt>
+
+          <code><a href="giotto_to_srt.html">giotto_to_srt()</a></code>
+
+        </dt>
+        <dd>Convert Giotto to Seurat</dd>
+
+        <dt>
 
           <code><a href="adata_to_srt.html">adata_to_srt()</a></code>
 
@@ -2565,17 +2584,8 @@
 
         </dt>
         <dd>Convert SpatialExperiment to Seurat</dd>
-      </dl></div><div class="section level2">
 
-      <h3 id="data-processing">Data Processing<a class="anchor" aria-label="anchor" href="#data-processing"></a></h3>
-
-
-      <dl></dl></div><div class="section level2">
-
-
-
-
-      <dl><dt>
+        <dt>
 
           <code><a href="CheckDataType.html">CheckDataType()</a></code>
 
@@ -2609,20 +2619,6 @@
 
         </dt>
         <dd>FetchData but with zeroes for unavailable genes</dd>
-
-        <dt>
-
-          <code><a href="GeneConvert.html">GeneConvert()</a></code>
-
-        </dt>
-        <dd>Gene ID conversion function using biomart</dd>
-
-        <dt>
-
-          <code><a href="ConvertHomologs.html">ConvertHomologs()</a></code>
-
-        </dt>
-        <dd>Convert homologous gene symbols in expression objects</dd>
 
         <dt>
 
@@ -2660,11 +2656,65 @@
         <dd>Reorder idents by the gene expression</dd>
       </dl></div><div class="section level2">
 
-      <h3 id="database-operations">Database Operations<a class="anchor" aria-label="anchor" href="#database-operations"></a></h3>
-
+      <h3 data-toc-skip="true" id="feature-annotation-and-identifiers">Feature Annotation and Identifiers<a class="anchor" aria-label="anchor" href="#feature-annotation-and-identifiers"></a></h3>
 
       <dl></dl></div><div class="section level2">
 
+
+
+      <dl><dt>
+
+          <code><a href="AddFeaturesData.html">AddFeaturesData()</a></code>
+
+        </dt>
+        <dd>Add features data</dd>
+
+        <dt>
+
+          <code><a href="AnnotateFeatures.html">AnnotateFeatures()</a></code>
+
+        </dt>
+        <dd>Annotate Features</dd>
+
+        <dt>
+
+          <code><a href="GetFeaturesData.html">GetFeaturesData()</a></code>
+
+        </dt>
+        <dd>Get features data</dd>
+
+        <dt>
+
+          <code><a href="GetSimilarFeatures.html">GetSimilarFeatures()</a></code>
+
+        </dt>
+        <dd>Find features with expression patterns similar to provided features</dd>
+
+        <dt>
+
+          <code><a href="RenameFeatures.html">RenameFeatures()</a></code>
+
+        </dt>
+        <dd>Rename features for the Seurat object</dd>
+
+        <dt>
+
+          <code><a href="GeneConvert.html">GeneConvert()</a></code>
+
+        </dt>
+        <dd>Gene ID conversion function using biomart</dd>
+
+        <dt>
+
+          <code><a href="ConvertHomologs.html">ConvertHomologs()</a></code>
+
+        </dt>
+        <dd>Convert homologous gene symbols in expression objects</dd>
+      </dl></div><div class="section level2">
+
+      <h3 data-toc-skip="true" id="databases-and-reference-resources">Databases and Reference Resources<a class="anchor" aria-label="anchor" href="#databases-and-reference-resources"></a></h3>
+
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -2870,20 +2920,11 @@
 
         </dt>
         <dd>Prepare custom gene annotation databases</dd>
-
-        <dt>
-
-          <code><a href="RunCisTarget.html">RunCisTarget()</a></code>
-
-        </dt>
-        <dd>Run cisTarget motif enrichment on a GRN adjacency table</dd>
       </dl></div><div class="section level2">
 
-      <h3 id="data">Data<a class="anchor" aria-label="anchor" href="#data"></a></h3>
-
+      <h3 data-toc-skip="true" id="example-datasets">Example Datasets<a class="anchor" aria-label="anchor" href="#example-datasets"></a></h3>
 
       <dl></dl></div><div class="section level2">
-
 
 
 
@@ -2935,6 +2976,62 @@
 
         </dt>
         <dd>Excluded words in keyword enrichment analysis and extraction</dd>
+      </dl></div><div class="section level2">
+
+      <h3 data-toc-skip="true" id="package-and-environment-management">Package and Environment Management<a class="anchor" aria-label="anchor" href="#package-and-environment-management"></a></h3>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+      <dl><dt>
+
+          <code><a href="check_python.html">check_python()</a></code>
+
+        </dt>
+        <dd>Check and install python packages</dd>
+
+        <dt>
+
+          <code><a href="env_requirements.html">env_requirements()</a></code>
+
+        </dt>
+        <dd>Python environment requirements</dd>
+
+        <dt>
+
+          <code><a href="env_info.html">env_info()</a></code>
+
+        </dt>
+        <dd>Print environment information</dd>
+
+        <dt>
+
+          <code><a href="ListEnv.html">ListEnv()</a></code>
+
+        </dt>
+        <dd>List conda-compatible Python environments</dd>
+
+        <dt>
+
+          <code><a href="PrepareEnv.html">PrepareEnv()</a></code>
+
+        </dt>
+        <dd>Prepare the python environment</dd>
+
+        <dt>
+
+          <code><a href="remove_python.html">remove_python()</a></code>
+
+        </dt>
+        <dd>Remove Python packages from a conda-compatible Python environment</dd>
+
+        <dt>
+
+          <code><a href="RemoveEnv.html">RemoveEnv()</a></code>
+
+        </dt>
+        <dd>Remove a conda-compatible Python environment</dd>
       </dl></div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
