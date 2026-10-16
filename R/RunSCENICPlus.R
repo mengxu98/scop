@@ -1763,8 +1763,10 @@ scenicplus_tfr_motifs <- function(
   peak_names,
   max_tf_region = 500
 ) {
+  check_r("Signac", verbose = FALSE)
+
   motif_mat <- tryCatch(
-    Signac::GetMotifData(object = srt[[atac_assay]], slot = "data"),
+    get_namespace_fun("Signac", "GetMotifData")(object = srt[[atac_assay]], slot = "data"),
     error = function(...) NULL
   )
   if (is.null(motif_mat) || nrow(motif_mat) == 0L || ncol(motif_mat) == 0L) {
@@ -1794,7 +1796,7 @@ scenicplus_tfr_motifs <- function(
   }
 
   motif_names <- tryCatch(
-    Signac::GetMotifData(object = srt[[atac_assay]], slot = "motif.names"),
+    get_namespace_fun("Signac", "GetMotifData")(object = srt[[atac_assay]], slot = "motif.names"),
     error = function(...) NULL
   )
   if (is.null(motif_names) || length(motif_names) == 0L) {
@@ -1851,8 +1853,10 @@ scenicplus_tfr_motifs <- function(
 }
 
 scenicplus_peak_ranges <- function(peak_names) {
+  check_r("Signac", verbose = FALSE)
+
   peaks <- tryCatch(
-    Signac::StringToGRanges(peak_names, sep = c("-", "-")),
+    get_namespace_fun("Signac", "StringToGRanges")(peak_names, sep = c("-", "-")),
     error = function(err) {
       log_message(
         "Cannot parse ATAC peak names as genomic ranges: {conditionMessage(err)}",
@@ -1865,8 +1869,10 @@ scenicplus_peak_ranges <- function(peak_names) {
 }
 
 scenicplus_gene_ranges <- function(srt, atac_assay, genes_use) {
+  check_r("Signac", verbose = FALSE)
+
   check_r(c("GenomicRanges", "IRanges"), verbose = FALSE)
-  annotation <- Signac::Annotation(srt[[atac_assay]])
+  annotation <- get_namespace_fun("Signac", "Annotation")(srt[[atac_assay]])
   if (is.null(annotation) || length(annotation) == 0L) {
     log_message(
       "{.fn RunSCENICPlus} requires gene annotations on the chromatin assay",

@@ -49,6 +49,8 @@ CoverageTrackPlot <- function(
   ...,
   srt = NULL
 ) {
+  check_r("Signac", verbose = FALSE)
+
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   if (!inherits(srt[[assay]], "ChromatinAssay")) {
@@ -80,7 +82,7 @@ CoverageTrackPlot <- function(
     verbose = verbose
   )
 
-  Signac::CoveragePlot(
+  get_namespace_fun("Signac", "CoveragePlot")(
     object = srt,
     region = region,
     assay = assay,

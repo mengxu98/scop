@@ -20,7 +20,6 @@ Depends:
 Imports:
     cli,
     graphics,
-    ComplexHeatmap,
     dplyr,
     ggnewscale (>= 0.5.2),
     ggrepel,
@@ -28,14 +27,10 @@ Imports:
     lifecycle,
     reticulate,
     rlang,
-    ggforce,
     ggplot2 (>= 3.5.0),
     methods,
     Matrix,
     Rcpp (>= 1.0.13),
-    RcppParallel,
-    Signac,
-    splines,
     S4Vectors,
     Seurat,
     SeuratObject,
@@ -47,6 +42,9 @@ Imports:
     utils,
     uwot
 Suggests:
+    ggforce,
+    ComplexHeatmap,
+    Signac,
     GenomeInfoDb,
     hdf5r,
     Rsamtools,
@@ -108,7 +106,6 @@ Suggests:
     plotly,
     ps,
     proxyC,
-    qlcMatrix,
     RANN,
     RcppML,
     R.cache,
@@ -140,7 +137,6 @@ Suggests:
     SPOTlight,
     SpatialExperiment,
     spacexr,
-    tensorflow,
     testthat (>= 3.0.0),
     tibble,
     tricycle,
@@ -165,10 +161,8 @@ Remotes:
 LinkingTo:
     cli,
     Rcpp (>= 1.0.13),
-    RcppAnnoy,
     RcppArmadillo,
     RcppEigen,
-    RcppParallel,
     RSpectra,
     thisutils
 Config/Needs/website: mengxu98/thistemplate

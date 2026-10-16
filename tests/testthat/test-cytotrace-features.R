@@ -114,3 +114,20 @@ test_that("CytoTRACE2 reloads replaced and removed model assets at the same path
   unlink(features)
   expect_error(load_cytotrace2_data(data_dir, verbose = FALSE), "Feature file not found")
 })
+
+test_that("CytoTRACE2 model loads do not share mutable state across runs", {
+  data_dir <- tempfile()
+  dir.create(data_dir)
+  on.exit(unlink(data_dir, recursive = TRUE), add = TRUE)
+  state <- new.env(parent = emptyenv())
+  state$value <- 1L
+  saveRDS(list(state = state), file.path(data_dir, "model_parameters.rds"))
+  writeLines(c(",0", "0,A1bg"), file.path(data_dir, "features_model_training_17.csv"))
+
+  first <- load_cytotrace2_data(data_dir, verbose = FALSE)
+  first$parameter_dict$state$value <- 2L
+  second <- load_cytotrace2_data(data_dir, verbose = FALSE)
+
+  expect_identical(second$parameter_dict$state$value, 1L)
+  expect_false(identical(first$parameter_dict$state, second$parameter_dict$state))
+})

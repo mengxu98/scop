@@ -982,6 +982,7 @@ CellDimPlot <- function(
       }
 
       if (isTRUE(add_mark)) {
+        check_r("ggforce", verbose = FALSE)
         mark_fun <- switch(
           EXPR = mark_type,
           "ellipse" = "geom_mark_ellipse",
@@ -1031,7 +1032,7 @@ CellDimPlot <- function(
         if (!is.null(mark_border)) {
           mark_args[["colour"]] <- mark_border
         }
-        mark <- c(list(do.call(mark_fun, mark_args)), mark_scales)
+        mark <- c(list(do.call(get_namespace_fun("ggforce", mark_fun), mark_args)), mark_scales)
       } else {
         mark <- NULL
       }

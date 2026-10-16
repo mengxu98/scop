@@ -318,6 +318,8 @@ CellCorHeatmap <- function(
   ht_params = list(),
   verbose = TRUE
 ) {
+  check_r("ComplexHeatmap", verbose = FALSE)
+
   set.seed(seed)
   borders <- prepare_heatmap_borders(
     border = border,
@@ -711,7 +713,7 @@ CellCorHeatmap <- function(
   )
 
   lgd <- list()
-  lgd[["ht"]] <- ComplexHeatmap::Legend(
+  lgd[["ht"]] <- get_namespace_fun("ComplexHeatmap", "Legend")(
     title = exp_name,
     col_fun = colors,
     legend_gp = heatmap_border_gp(
@@ -754,7 +756,7 @@ CellCorHeatmap <- function(
       anno <- list()
       query_group_name <- paste0(c("Query", query_group), collapse = ":")
       if (isTRUE(query_collapsing)) {
-        anno[[query_group_name]] <- ComplexHeatmap::anno_block(
+        anno[[query_group_name]] <- get_namespace_fun("ComplexHeatmap", "anno_block")(
           align_to = split(
             seq_along(levels(cell_groups[["query_group"]])),
             levels(cell_groups[["query_group"]])
@@ -764,7 +766,7 @@ CellCorHeatmap <- function(
           show_name = FALSE
         )
       } else {
-        anno[[query_group_name]] <- ComplexHeatmap::anno_block(
+        anno[[query_group_name]] <- get_namespace_fun("ComplexHeatmap", "anno_block")(
           align_to = split(
             seq_along(cell_groups[["query_group"]]),
             cell_groups[["query_group"]]
@@ -775,7 +777,7 @@ CellCorHeatmap <- function(
         )
       }
       ha_cell_group <- do.call(
-        ComplexHeatmap::HeatmapAnnotation,
+        get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation"),
         args = c(
           anno,
           which = ifelse(flip, "column", "row"),
@@ -785,7 +787,7 @@ CellCorHeatmap <- function(
         )
       )
       ha_query_list[[query_group_name]] <- ha_cell_group
-      lgd[[query_group_name]] <- ComplexHeatmap::Legend(
+      lgd[[query_group_name]] <- get_namespace_fun("ComplexHeatmap", "Legend")(
         title = query_group_name,
         labels = levels(srt_query[[query_group, drop = TRUE]]),
         legend_gp = heatmap_discrete_legend_gp(
@@ -835,7 +837,7 @@ CellCorHeatmap <- function(
       anno <- list()
       ref_group_name <- paste0(c("Ref", ref_group), collapse = ":")
       if (isTRUE(ref_collapsing)) {
-        anno[[ref_group_name]] <- ComplexHeatmap::anno_block(
+        anno[[ref_group_name]] <- get_namespace_fun("ComplexHeatmap", "anno_block")(
           align_to = split(
             seq_along(levels(cell_groups[["ref_group"]])),
             levels(cell_groups[["ref_group"]])
@@ -845,7 +847,7 @@ CellCorHeatmap <- function(
           show_name = FALSE
         )
       } else {
-        anno[[ref_group_name]] <- ComplexHeatmap::anno_block(
+        anno[[ref_group_name]] <- get_namespace_fun("ComplexHeatmap", "anno_block")(
           align_to = split(
             seq_along(cell_groups[["ref_group"]]),
             cell_groups[["ref_group"]]
@@ -857,7 +859,7 @@ CellCorHeatmap <- function(
       }
 
       ha_cell_group <- do.call(
-        ComplexHeatmap::HeatmapAnnotation,
+        get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation"),
         args = c(
           anno,
           which = ifelse(!flip, "column", "row"),
@@ -867,7 +869,7 @@ CellCorHeatmap <- function(
         )
       )
       ha_ref_list[[ref_group_name]] <- ha_cell_group
-      lgd[[ref_group_name]] <- ComplexHeatmap::Legend(
+      lgd[[ref_group_name]] <- get_namespace_fun("ComplexHeatmap", "Legend")(
         title = ref_group_name,
         labels = levels(srt_ref[[ref_group, drop = TRUE]]),
         legend_gp = heatmap_discrete_legend_gp(
@@ -932,7 +934,7 @@ CellCorHeatmap <- function(
           )
 
           ha_cell <- list()
-          ha_cell[[cellan]] <- ComplexHeatmap::anno_customize(
+          ha_cell[[cellan]] <- get_namespace_fun("ComplexHeatmap", "anno_customize")(
             x = x_nm,
             graphics = graphics,
             which = ifelse(flip, "column", "row"),
@@ -957,7 +959,7 @@ CellCorHeatmap <- function(
           }
         } else {
           ha_cell <- list()
-          ha_cell[[cellan]] <- ComplexHeatmap::anno_simple(
+          ha_cell[[cellan]] <- get_namespace_fun("ComplexHeatmap", "anno_simple")(
             x = as.character(cell_anno[paste0(
               "query_",
               names(cell_groups[["query_group"]])
@@ -989,7 +991,7 @@ CellCorHeatmap <- function(
           }
         }
         query_cell_name <- paste0(c("Query", cellan), collapse = ":")
-        lgd[[query_cell_name]] <- ComplexHeatmap::Legend(
+        lgd[[query_cell_name]] <- get_namespace_fun("ComplexHeatmap", "Legend")(
           title = query_cell_name,
           labels = levels(cell_anno),
           legend_gp = heatmap_discrete_legend_gp(
@@ -1040,7 +1042,7 @@ CellCorHeatmap <- function(
             }
           )
           ha_cell <- list()
-          ha_cell[[cellan]] <- ComplexHeatmap::anno_customize(
+          ha_cell[[cellan]] <- get_namespace_fun("ComplexHeatmap", "anno_customize")(
             x = x_nm,
             graphics = graphics,
             which = ifelse(flip, "column", "row"),
@@ -1083,7 +1085,7 @@ CellCorHeatmap <- function(
             colors = palette_colors(palette = palette, palcolor = palcolor)
           )
           ha_cell <- list()
-          ha_cell[[cellan]] <- ComplexHeatmap::anno_simple(
+          ha_cell[[cellan]] <- get_namespace_fun("ComplexHeatmap", "anno_simple")(
             x = cell_anno[paste0(
               "query_",
               names(cell_groups[["query_group"]])
@@ -1120,7 +1122,7 @@ CellCorHeatmap <- function(
             )
           }
           query_cell_name <- paste0(c("Query", cellan), collapse = ":")
-          lgd[[query_cell_name]] <- ComplexHeatmap::Legend(
+          lgd[[query_cell_name]] <- get_namespace_fun("ComplexHeatmap", "Legend")(
             title = query_cell_name,
             col_fun = col_fun,
             legend_gp = heatmap_border_gp(
@@ -1182,7 +1184,7 @@ CellCorHeatmap <- function(
           )
 
           ha_cell <- list()
-          ha_cell[[cellan]] <- ComplexHeatmap::anno_customize(
+          ha_cell[[cellan]] <- get_namespace_fun("ComplexHeatmap", "anno_customize")(
             x = x_nm,
             graphics = graphics,
             which = ifelse(!flip, "column", "row"),
@@ -1207,7 +1209,7 @@ CellCorHeatmap <- function(
           }
         } else {
           ha_cell <- list()
-          ha_cell[[cellan]] <- ComplexHeatmap::anno_simple(
+          ha_cell[[cellan]] <- get_namespace_fun("ComplexHeatmap", "anno_simple")(
             x = as.character(cell_anno[paste0(
               "ref_",
               names(cell_groups[["ref_group"]])
@@ -1239,7 +1241,7 @@ CellCorHeatmap <- function(
           }
         }
         ref_cell_name <- paste0(c("Ref", cellan), collapse = ":")
-        lgd[[ref_cell_name]] <- ComplexHeatmap::Legend(
+        lgd[[ref_cell_name]] <- get_namespace_fun("ComplexHeatmap", "Legend")(
           title = ref_cell_name,
           labels = levels(cell_anno),
           legend_gp = heatmap_discrete_legend_gp(
@@ -1290,7 +1292,7 @@ CellCorHeatmap <- function(
             }
           )
           ha_cell <- list()
-          ha_cell[[cellan]] <- ComplexHeatmap::anno_customize(
+          ha_cell[[cellan]] <- get_namespace_fun("ComplexHeatmap", "anno_customize")(
             x = x_nm,
             graphics = graphics,
             which = ifelse(!flip, "column", "row"),
@@ -1323,7 +1325,7 @@ CellCorHeatmap <- function(
             colors = palette_colors(palette = palette, palcolor = palcolor)
           )
           ha_cell <- list()
-          ha_cell[[cellan]] <- ComplexHeatmap::anno_simple(
+          ha_cell[[cellan]] <- get_namespace_fun("ComplexHeatmap", "anno_simple")(
             x = cell_anno[paste0("ref_", names(cell_groups[["ref_group"]]))],
             col = col_fun,
             which = ifelse(!flip, "column", "row"),
@@ -1347,7 +1349,7 @@ CellCorHeatmap <- function(
             )
           }
           ref_cell_name <- paste0(c("Ref", cellan), collapse = ":")
-          lgd[[ref_cell_name]] <- ComplexHeatmap::Legend(
+          lgd[[ref_cell_name]] <- get_namespace_fun("ComplexHeatmap", "Legend")(
             title = ref_cell_name,
             col_fun = col_fun,
             legend_gp = heatmap_border_gp(
@@ -1376,8 +1378,8 @@ CellCorHeatmap <- function(
       } else {
         mat <- simil_matrix
       }
-      value <- ComplexHeatmap::pindex(mat, i, j)
-      ind_mat <- ComplexHeatmap::restore_matrix(j, i, x, y)
+      value <- get_namespace_fun("ComplexHeatmap", "pindex")(mat, i, j)
+      ind_mat <- get_namespace_fun("ComplexHeatmap", "restore_matrix")(j, i, x, y)
 
       inds <- NULL
       if (label_by %in% c("row", "both")) {
@@ -1484,12 +1486,14 @@ CellCorHeatmap <- function(
   ht_args <- c(ht_args, ht_params[setdiff(names(ht_params), names(ht_args))])
   if (isTRUE(flip)) {
     if (is.null(ht_list)) {
-      ht_list <- do.call(ComplexHeatmap::Heatmap, args = ht_args)
+      ht_list <- do.call(get_namespace_fun("ComplexHeatmap", "Heatmap"), args = ht_args)
     } else {
-      ht_list <- ht_list %v% do.call(ComplexHeatmap::Heatmap, args = ht_args)
+      ht_list <- get_namespace_fun("ComplexHeatmap", "%v%")(
+        ht_list, do.call(get_namespace_fun("ComplexHeatmap", "Heatmap"), args = ht_args)
+      )
     }
   } else {
-    ht_list <- ht_list + do.call(ComplexHeatmap::Heatmap, args = ht_args)
+    ht_list <- ht_list + do.call(get_namespace_fun("ComplexHeatmap", "Heatmap"), args = ht_args)
   }
 
   if (!is.null(width) || !is.null(height)) {
@@ -1531,7 +1535,7 @@ CellCorHeatmap <- function(
 
     g_tree <- grid::grid.grabExpr(
       {
-        ComplexHeatmap::draw(ht_list,
+        get_namespace_fun("ComplexHeatmap", "draw")(ht_list,
           annotation_legend_list = lgd,
           annotation_legend_side = legend.position
         )
@@ -1546,7 +1550,7 @@ CellCorHeatmap <- function(
     ht_height <- grid::unit(height_sum, units = units)
     g_tree <- grid::grid.grabExpr(
       {
-        ComplexHeatmap::draw(ht_list,
+        get_namespace_fun("ComplexHeatmap", "draw")(ht_list,
           annotation_legend_list = lgd,
           annotation_legend_side = legend.position
         )
