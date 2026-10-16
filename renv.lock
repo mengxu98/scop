@@ -18200,58 +18200,61 @@
       "RemoteSha": "598ab344434cc29c20416f3e230896968c6bbbce"
     },
     "thisutils": {
-        "Package": "thisutils",
-        "Version": "0.5.2",
-        "Source": "GitHub",
-        "Type": "Package",
-        "Title": "Reliable Utilities for Reusable Research Workflows",
-        "Date": "2026-09-05",
-        "Authors@R": "c( person(given = \"Meng\", family = \"Xu\", email = \"mengxu98@qq.com\", role = c(\"aut\", \"cre\"), comment = c(ORCID = \"0000-0002-8300-1054\")), person(given = \"Haoliang\", family = \"Zhu\", email = \"hurry060215@gmail.com\", role = c(\"aut\"), comment = c(ORCID = \"0009-0004-9766-5179\")) )",
-        "Maintainer": "Meng Xu <mengxu98@qq.com>",
-        "Description": "Provides reusable building blocks for research packages across matrix representation, numerical computation, neighborhood evaluation, controlled execution, and runtime interoperability. Core tools preserve declared sparse semantics, expose dense-memory and output boundaries, standardize neighborhood and classification results, and align serial and parallel result and error behavior. Additional helpers support structured messages, optional dependency checks, and common statistical workflows.",
-        "License": "MIT+ file LICENSE",
-        "URL": "https://mengxu98.github.io/thisutils/",
-        "BugReports": "https://github.com/mengxu98/thisutils/issues",
-        "Depends": [
-            "R (>= 4.1.0)"
-        ],
-        "Imports": [
-            "callr (>= 3.5.0)",
-            "cli",
-            "methods",
-            "Matrix",
-            "pak",
-            "parallel",
-            "ps",
-            "Rcpp",
-            "rlang",
-            "stats",
-            "utils"
-        ],
-        "Suggests": [
-            "BiocNeighbors",
-            "knitr",
-            "remotes",
-            "rmarkdown",
-            "testthat (>= 3.1.7)"
-        ],
-        "LinkingTo": [
-            "cli",
-            "Rcpp"
-        ],
-        "Config/Needs/website": "mengxu98/thistemplate",
-        "Config/testthat/edition": "3",
-        "VignetteBuilder": "knitr",
-        "Encoding": "UTF-8",
-        "Language": "en-US",
-        "Config/roxygen2/version": "8.1.0",
-        "Author": "Meng Xu [aut, cre] (ORCID: <https://orcid.org/0000-0002-8300-1054>), Haoliang Zhu [aut] (ORCID: <https://orcid.org/0009-0004-9766-5179>)",
-        "RemoteType": "github",
-        "RemoteHost": "api.github.com",
-        "RemoteUsername": "mengxu98",
-        "RemoteRepo": "thisutils",
-        "RemoteRef": "main",
-        "RemoteSha": "b0f701c261a28aaaceb1ba4d4184a39e227c5e1c"
+      "Package": "thisutils",
+      "Version": "0.5.3",
+      "Source": "GitHub",
+      "Type": "Package",
+      "Title": "Reliable Utilities for Reusable Research Workflows",
+      "Date": "2026-10-13",
+      "Authors@R": "c( person(given = \"Meng\", family = \"Xu\", email = \"mengxu98@qq.com\", role = c(\"aut\", \"cre\"), comment = c(ORCID = \"0000-0002-8300-1054\")), person(given = \"Haoliang\", family = \"Zhu\", email = \"hurry060215@gmail.com\", role = c(\"aut\"), comment = c(ORCID = \"0009-0004-9766-5179\")) )",
+      "Maintainer": "Meng Xu <mengxu98@qq.com>",
+      "Description": "Provides reusable building blocks for research packages across matrix representation, numerical computation, neighborhood evaluation, controlled execution, and runtime interoperability. Core tools preserve declared sparse semantics, expose dense-memory and output boundaries, standardize neighborhood and classification results, and align serial and parallel result and error behavior. Additional helpers support structured messages, optional dependency checks, and common statistical workflows.",
+      "License": "MIT+ file LICENSE",
+      "URL": "https://mengxu98.github.io/thisutils/",
+      "BugReports": "https://github.com/mengxu98/thisutils/issues",
+      "Depends": [
+        "R (>= 4.1.0)"
+      ],
+      "Imports": [
+        "callr (>= 3.5.0)",
+        "cli",
+        "methods",
+        "Matrix",
+        "mgcv",
+        "pak",
+        "parallel",
+        "ps",
+        "Rcpp",
+        "rlang",
+        "stats",
+        "splines",
+        "utils"
+      ],
+      "Suggests": [
+        "BiocNeighbors",
+        "knitr",
+        "remotes",
+        "rmarkdown",
+        "testthat (>= 3.1.7)"
+      ],
+      "LinkingTo": [
+        "cli",
+        "Rcpp"
+      ],
+      "Config/Needs/website": "mengxu98/thistemplate",
+      "Config/testthat/edition": "3",
+      "VignetteBuilder": "knitr",
+      "Encoding": "UTF-8",
+      "Language": "en-US",
+      "Config/roxygen2/version": "8.1.0",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "thisutils",
+      "RemoteUsername": "mengxu98",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "bdb36fbbad626c0a4cfb7f783e62552aeccad1a7",
+      "NeedsCompilation": "yes",
+      "Author": "Meng Xu [aut, cre] (ORCID: <https://orcid.org/0000-0002-8300-1054>), Haoliang Zhu [aut] (ORCID: <https://orcid.org/0009-0004-9766-5179>)"
     },
     "tibble": {
       "Package": "tibble",
