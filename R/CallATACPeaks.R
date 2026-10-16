@@ -61,7 +61,7 @@ CallATACPeaks <- function(object, sample.by, group.by = NULL, cells = NULL,
     log_message("Peak calling requires an explicit source genome label.", message_type = "error")
   }
   if (is.null(cells)) cells <- colnames(object[[assay]])
-  if (!atac_unique_ids(cells) || !length(cells) || !all(cells %in% colnames(object[[assay]]))) {
+  if (!atac_unique_ids(cells) || !all(cells %in% colnames(object[[assay]]))) {
     log_message("cells must contain unique selected-assay cell IDs.", message_type = "error")
   }
   metadata <- object[[]][cells, , drop = FALSE]

@@ -33,6 +33,12 @@ test_that("peak-call grouping separates metadata field names from output IDs", {
   object <- ReadATACData(counts, ranges = ranges, genome = "toy", fragments = fragments, verbose = FALSE)
   object$call_id <- c("capture/A", "capture_A")
   object$sample <- c("group/1", "group_1")
+  for (cells in list(character(), NA_character_, c("A", "A"), "unknown")) {
+    expect_error(
+      CallATACPeaks(object, sample.by = "sample", cells = cells),
+      "unique selected-assay cell IDs"
+    )
+  }
   program <- file.path(directory, "macs2")
   file.create(program)
   call <- CallATACPeaks

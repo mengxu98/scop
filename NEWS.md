@@ -1,5 +1,8 @@
 # scop (development version)
 
+* **refactor**: Remove redundant ATAC cell-count and reference-label branches
+  after their owning validation has already established the same invariants.
+
 * **docs**: Organize ATAC and spatial references by analysis task. Keep input
   constructors and advanced diagnostics, coordinate adapters, result access and
   ATAC interchange available without making them mandatory workflow stages.
