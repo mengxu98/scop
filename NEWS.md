@@ -1,5 +1,8 @@
 # scop (development version)
 
+* **fix**: Restore the package startup Logo, version, update date and website.
+  Startup messages still respect verbosity settings and `suppressPackageStartupMessages()`.
+
 * **fix**: `RunGSEA()` preserves native fgsea computation with the new clusterProfiler interface, using enrichit's public result converter instead of passing the removed `by` argument or silently changing numerical engines.
 
 * **fix**: `CheckATACData()` determines fragment readiness from resources mapped to the selected assay cells, preserving inactive resources in its report after native subsetting.
