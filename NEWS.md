@@ -1,5 +1,8 @@
 # scop (development version)
 
+* **fix**: Restore the package startup Logo, version, update date and website.
+  Startup messages still respect verbosity settings and `suppressPackageStartupMessages()`.
+
 * **feature**: `RunChromVAR()` computes native GC-corrected motif-accessibility deviations from existing aligned motif annotations and an explicit sequence reference. It preserves native scores, backgrounds and bias in a new data-only assay without changing source counts or caller RNG state.
 
 * **fix**: `CheckATACData()` determines fragment readiness from resources mapped to the selected assay cells, preserving inactive resources in its report after native subsetting.

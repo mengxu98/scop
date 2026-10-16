@@ -54,7 +54,10 @@ RunLabelTransfer(
 
 \item{reference_label}{Metadata column in the reference used as transfer labels.}
 
-\item{add_gene_activity}{Whether to calculate a gene activity assay for the query.}
+\item{add_gene_activity}{Whether to calculate a gene activity assay for the query.
+If the requested activity assay is absent, an existing query assay named
+\code{reference_assay} is used before attempting gene activity calculation. Set
+\code{FALSE} with an explicit existing \code{gene_activity_assay} to avoid this fallback.}
 
 \item{gene_activity_assay}{Name of the gene activity assay used for mapping.}
 
@@ -70,7 +73,9 @@ variable features are used.}
 
 \item{prediction_prefix}{Prefix added to prediction metadata columns. If
 \code{NULL}, \code{"predicted_"} is used for \code{method = "Seurat"} and \code{"scomm_"} is used
-for \code{method = "scOMM"}.}
+for \code{method = "scOMM"}. Seurat prefixes are literal strings. A rerun with
+the same tool and prefix replaces only columns recorded by that prior result;
+collisions with unrecorded metadata columns are rejected.}
 
 \item{k.weight}{Number of neighbors used when weighting transfer anchors.}
 
@@ -97,7 +102,13 @@ Default is \code{TRUE}.}
 will be removed in scop 1.0.0.}
 }
 \value{
-A \code{Seurat} object with prediction metadata added.
+A \code{Seurat} object with prediction metadata added. For the Seurat
+backend, the tool result records actual anchor features and current prediction
+columns. This is a calculation-time snapshot, not automatically updated by
+later subsetting or renaming. Caller RNG state and original cell IDs are
+preserved; temporary query IDs isolate native suffix handling. Predictions
+describe similarity to the supplied reference, not independently established
+biological accuracy.
 }
 \description{
 Standalone label-transfer workflow for query cells using a reference object.
@@ -105,33 +116,46 @@ The current implementation is optimized for scATAC query objects mapped to a
 scRNA-seq reference via gene activity.
 }
 \examples{
-data("pbmcmultiome_sub", package = "scop")
-pbmcmultiome_sub <- pbmcmultiome_sub[, seq_len(200)]
-pbmcmultiome_sub <- RunStandardWorkflow(
-  pbmcmultiome_sub,
-  assay = "RNA",
-  linear_reduction_dims = 10,
-  verbose = FALSE
+# A small synthetic technical example with independent reference/query cells.
+# ACTIVITY below is synthetic input, not measured RNA or inferred gene activity.
+set.seed(91)
+genes <- paste0("GENE", seq_len(150))
+make_counts <- function(n, prefix) {
+  mu <- matrix(8, 150, n)
+  mu[1:30, seq_len(n / 2)] <- 24
+  mu[31:60, (n / 2 + 1):n] <- 24
+  Matrix::Matrix(matrix(rnbinom(length(mu), mu = mu, size = 10), 150,
+    dimnames = list(genes, paste0(prefix, seq_len(n)))
+  ), sparse = TRUE)
+}
+reference <- SeuratObject::CreateSeuratObject(make_counts(60, "ref"))
+reference$label <- rep(c("classA", "classB"), each = 30)
+reference <- Seurat::NormalizeData(reference, verbose = FALSE)
+reference <- Seurat::FindVariableFeatures(reference, nfeatures = 150, verbose = FALSE)
+reference <- Seurat::ScaleData(reference, features = genes, verbose = FALSE)
+reference <- Seurat::RunPCA(reference, features = genes, npcs = 10, verbose = FALSE)
+activity <- make_counts(40, "query")
+peaks <- Matrix::Matrix(matrix(rpois(200 * 40, 4), 200,
+  dimnames = list(paste0(
+    "chr1-", seq(1, by = 200, length.out = 200), "-",
+    seq(100, by = 200, length.out = 200)
+  ), colnames(activity))
+), sparse = TRUE)
+query <- SeuratObject::CreateSeuratObject(
+  Signac::CreateChromatinAssay(counts = peaks),
+  assay = "peaks"
 )
-reference <- subset(pbmcmultiome_sub, cells = colnames(pbmcmultiome_sub)[1:120])
-query <- subset(pbmcmultiome_sub, cells = colnames(pbmcmultiome_sub)[121:200])
-query <- RunStandardWorkflow(
-  query,
+query[["ACTIVITY"]] <- SeuratObject::CreateAssayObject(counts = activity)
+query <- Seurat::NormalizeData(query, assay = "ACTIVITY", verbose = FALSE)
+query <- Signac::RunTFIDF(query, assay = "peaks", verbose = FALSE)
+query <- Signac::FindTopFeatures(query, assay = "peaks", min.cutoff = "q0", verbose = FALSE)
+query <- Signac::RunSVD(query, assay = "peaks", n = 10, verbose = FALSE)
+query <- RunLabelTransfer(query, reference,
   assay = "peaks",
-  normalization_method = "TFIDF",
-  linear_reduction_dims = 10,
-  verbose = FALSE
+  reference_assay = "RNA", reference_reduction = "pca", reference_dims = 1:5,
+  reference_label = "label", add_gene_activity = FALSE,
+  gene_activity_assay = "ACTIVITY", weight_reduction = "lsi", dims = 2:5,
+  features = genes, k.weight = 5, verbose = FALSE
 )
-query <- RunLabelTransfer(
-  object = query,
-  reference = reference,
-  assay = "peaks",
-  reference_assay = "RNA",
-  reference_reduction = "Standardpca",
-  reference_label = "CellType",
-  reference_dims = 1:10,
-  dims = 2:5,
-  verbose = FALSE
-)
-head(query[[]][, grep("^predicted_", colnames(query[[]]), value = TRUE), drop = FALSE])
+head(query$predicted_predicted.id)
 }

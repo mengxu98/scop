@@ -2,10 +2,20 @@
 #'
 #' @md
 #' @inheritParams RunKNNPredict
-#' @inheritParams SingleR::SingleR
-#' @inheritParams SingleR::trainSingleR
 #' @inheritParams thisutils::log_message
 #' @inheritParams thisutils::parallelize_fun
+#' @param genes Marker selection strategy: `"de"` to detect markers from the
+#' reference, or a list of marker genes accepted by [SingleR::trainSingleR].
+#' @param de.method Differential expression method used to select markers:
+#' `"wilcox"`, `"t"`, or `"classic"`. Ignored when `genes` supplies markers.
+#' @param sd.thresh Numeric threshold forwarded to [SingleR::SingleR] for
+#' compatibility with older versions; ignored by current SingleR versions.
+#' @param de.n Number of marker genes selected per pair of labels. `NULL` uses
+#' the default for the selected `de.method` in [SingleR::trainSingleR].
+#' @param aggr.ref Logical indicating whether to aggregate reference cells into
+#' pseudo-bulk samples before classification.
+#' @param aggr.args Named list of arguments passed to
+#' [SingleR::aggregateReference] when `aggr.ref = TRUE`.
 #' @param quantile "quantile" parameter in [SingleR::SingleR] function.
 #' @param fine.tune `"fine.tune"` parameter in [SingleR::SingleR] function.
 #' @param tune.thresh `"tune.thresh"` parameter in [SingleR::SingleR] function.
