@@ -1,5 +1,8 @@
 # scop (development version)
 
+* **fix**: Restore the package startup Logo, version, update date and website.
+  Startup messages still respect verbosity settings and `suppressPackageStartupMessages()`.
+
 * **fix**: WNN retains RNA and ATAC reductions, modality weights, graphs and representation receipts in both direct and integration-dispatch return paths. Automatic selection excludes known derived assays, custom RNA names require explicit selection, and a supplied batch warns that WNN does not perform batch correction. Caller RNG state is restored in the direct method.
 * **fix**: Chromatin `CheckDataList()` feature selection preserves native within-batch peak ranking when batch frequencies tie.
 * **fix**: `CheckATACData()` evaluates fragment readiness using resources mapped to selected assay cells, retaining inactive resources in its report. Input metadata comparisons ignore incidental fastmatch barcode-cache attributes.
