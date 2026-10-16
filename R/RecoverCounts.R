@@ -100,6 +100,9 @@ RecoverCounts <- function(
       verbose = verbose
     )
   }
+  if (!inherits(counts, "dgCMatrix")) {
+    counts <- SeuratObject::as.sparse(counts)
+  }
   if (is.null(sf)) {
     sf <- unique(round(Matrix::colSums(counts)))
   }

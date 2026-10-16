@@ -9,6 +9,10 @@
 * **perf**: Avoid expanding complete vectors into correlation-test descriptions
   in gene-immune and SCENIC plots while retaining the same statistics.
 
+* **fix**: Restore sparse count storage after `RecoverCounts(trans = "exp")`
+  exponentiation so count recovery can handle dense Matrix results and
+  implicit zeros correctly.
+
 * **fix**: Restore the package startup Logo, version, update date and website.
   Startup messages still respect verbosity settings and `suppressPackageStartupMessages()`.
 
