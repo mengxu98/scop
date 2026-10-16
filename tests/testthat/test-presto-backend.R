@@ -249,10 +249,19 @@ test_that("the installed runtime Presto backend drives SCOP marker entry points"
   object <- Seurat::NormalizeData(object, verbose = FALSE)
   SeuratObject::Idents(object) <- factor(rep(c("A", "B"), each = 10))
 
+  resolve_backend <- get_namespace_fun
+  presto_calls <- 0L
   testthat::local_mocked_bindings(
-    FindMarkers.Seurat = function(...) stop("Seurat pairwise fallback was reached"),
-    FindAllMarkers = function(...) stop("Seurat all-markers fallback was reached"),
-    .package = "Seurat"
+    get_namespace_fun = function(pkg, fun) {
+      if (identical(pkg, "presto") && identical(fun, "wilcoxauc")) {
+        return(function(...) {
+          presto_calls <<- presto_calls + 1L
+          presto_fun(...)
+        })
+      }
+      resolve_backend(pkg, fun)
+    },
+    .package = "scop"
   )
 
   pair <- scop::FindMarkers(
@@ -263,6 +272,8 @@ test_that("the installed runtime Presto backend drives SCOP marker entry points"
     min.pct = 0,
     verbose = FALSE
   )
+  expect_gt(presto_calls, 0L)
+  presto_calls <- 0L
   all_markers <- scop::FindAllMarkers(
     object,
     logfc.threshold = 0,
@@ -271,6 +282,7 @@ test_that("the installed runtime Presto backend drives SCOP marker entry points"
     verbose = FALSE
   )
 
+  expect_gt(presto_calls, 0L)
   expect_s3_class(pair, "data.frame")
   expect_s3_class(all_markers, "data.frame")
   expect_true(all(c("p_val", "p_val_adj") %in% colnames(pair)))

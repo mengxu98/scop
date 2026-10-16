@@ -1,5 +1,8 @@
 # scop (development version)
 
+* **fix**: Restore the package startup Logo, version, update date and website.
+  Startup messages still respect verbosity settings and `suppressPackageStartupMessages()`.
+
 * **feature**: `AddATACMotifs()` also accepts final peak ranges without a count matrix, returning native motifs and aligned sequence statistics for reuse after recount.
 
 * **feature**: `AddATACMotifs()` matches explicit motif matrices to a supplied sequence reference through Signac/motifmatchr, and `RunMotifEnrichment()` records the eligible universe and native foreground-inclusive enrichment population. Reference identity, sequence statistics, and peak/motif alignment are checked without downloading reference data.

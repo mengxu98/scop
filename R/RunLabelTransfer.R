@@ -15,6 +15,9 @@
 #' @param reference_dims Dimensions used from the reference reduction.
 #' @param reference_label Metadata column in the reference used as transfer labels.
 #' @param add_gene_activity Whether to calculate a gene activity assay for the query.
+#' If the requested activity assay is absent, an existing query assay named
+#' `reference_assay` is used before attempting gene activity calculation. Set
+#' `FALSE` with an explicit existing `gene_activity_assay` to avoid this fallback.
 #' @param gene_activity_assay Name of the gene activity assay used for mapping.
 #' @param weight_reduction Reduction in `object` used to weight transferred labels.
 #' If `NULL`, an ATAC linear reduction is resolved automatically from
@@ -25,7 +28,9 @@
 #' variable features are used.
 #' @param prediction_prefix Prefix added to prediction metadata columns. If
 #' `NULL`, `"predicted_"` is used for `method = "Seurat"` and `"scomm_"` is used
-#' for `method = "scOMM"`.
+#' for `method = "scOMM"`. Seurat prefixes are literal strings. A rerun with
+#' the same tool and prefix replaces only columns recorded by that prior result;
+#' collisions with unrecorded metadata columns are rejected.
 #' @param k.weight Number of neighbors used when weighting transfer anchors.
 #' @param evaluate Whether to compute mapping metrics against a truth label.
 #' @param truth_col Metadata column in `object` used as the truth label when
@@ -39,38 +44,57 @@
 #' @param scomm_hidden_nodes,scomm_epochs,scomm_batch_size,scomm_threshold,scomm_seed
 #' Parameters passed to the optional `scOMM` backend.
 #'
-#' @return A `Seurat` object with prediction metadata added.
+#' @return A `Seurat` object with prediction metadata added. For the Seurat
+#' backend, the tool result records actual anchor features and current prediction
+#' columns. This is a calculation-time snapshot, not automatically updated by
+#' later subsetting or renaming. Caller RNG state and original cell IDs are
+#' preserved; temporary query IDs isolate native suffix handling. Predictions
+#' describe similarity to the supplied reference, not independently established
+#' biological accuracy.
 #' @export
 #' @examples
-#' data("pbmcmultiome_sub", package = "scop")
-#' pbmcmultiome_sub <- pbmcmultiome_sub[, seq_len(200)]
-#' pbmcmultiome_sub <- RunStandardWorkflow(
-#'   pbmcmultiome_sub,
-#'   assay = "RNA",
-#'   linear_reduction_dims = 10,
-#'   verbose = FALSE
+#' # A small synthetic technical example with independent reference/query cells.
+#' # ACTIVITY below is synthetic input, not measured RNA or inferred gene activity.
+#' set.seed(91)
+#' genes <- paste0("GENE", seq_len(150))
+#' make_counts <- function(n, prefix) {
+#'   mu <- matrix(8, 150, n)
+#'   mu[1:30, seq_len(n / 2)] <- 24
+#'   mu[31:60, (n / 2 + 1):n] <- 24
+#'   Matrix::Matrix(matrix(rnbinom(length(mu), mu = mu, size = 10), 150,
+#'     dimnames = list(genes, paste0(prefix, seq_len(n)))
+#'   ), sparse = TRUE)
+#' }
+#' reference <- SeuratObject::CreateSeuratObject(make_counts(60, "ref"))
+#' reference$label <- rep(c("classA", "classB"), each = 30)
+#' reference <- Seurat::NormalizeData(reference, verbose = FALSE)
+#' reference <- Seurat::FindVariableFeatures(reference, nfeatures = 150, verbose = FALSE)
+#' reference <- Seurat::ScaleData(reference, features = genes, verbose = FALSE)
+#' reference <- Seurat::RunPCA(reference, features = genes, npcs = 10, verbose = FALSE)
+#' activity <- make_counts(40, "query")
+#' peaks <- Matrix::Matrix(matrix(rpois(200 * 40, 4), 200,
+#'   dimnames = list(paste0(
+#'     "chr1-", seq(1, by = 200, length.out = 200), "-",
+#'     seq(100, by = 200, length.out = 200)
+#'   ), colnames(activity))
+#' ), sparse = TRUE)
+#' query <- SeuratObject::CreateSeuratObject(
+#'   Signac::CreateChromatinAssay(counts = peaks),
+#'   assay = "peaks"
 #' )
-#' reference <- subset(pbmcmultiome_sub, cells = colnames(pbmcmultiome_sub)[1:120])
-#' query <- subset(pbmcmultiome_sub, cells = colnames(pbmcmultiome_sub)[121:200])
-#' query <- RunStandardWorkflow(
-#'   query,
+#' query[["ACTIVITY"]] <- SeuratObject::CreateAssayObject(counts = activity)
+#' query <- Seurat::NormalizeData(query, assay = "ACTIVITY", verbose = FALSE)
+#' query <- Signac::RunTFIDF(query, assay = "peaks", verbose = FALSE)
+#' query <- Signac::FindTopFeatures(query, assay = "peaks", min.cutoff = "q0", verbose = FALSE)
+#' query <- Signac::RunSVD(query, assay = "peaks", n = 10, verbose = FALSE)
+#' query <- RunLabelTransfer(query, reference,
 #'   assay = "peaks",
-#'   normalization_method = "TFIDF",
-#'   linear_reduction_dims = 10,
-#'   verbose = FALSE
+#'   reference_assay = "RNA", reference_reduction = "pca", reference_dims = 1:5,
+#'   reference_label = "label", add_gene_activity = FALSE,
+#'   gene_activity_assay = "ACTIVITY", weight_reduction = "lsi", dims = 2:5,
+#'   features = genes, k.weight = 5, verbose = FALSE
 #' )
-#' query <- RunLabelTransfer(
-#'   object = query,
-#'   reference = reference,
-#'   assay = "peaks",
-#'   reference_assay = "RNA",
-#'   reference_reduction = "Standardpca",
-#'   reference_label = "CellType",
-#'   reference_dims = 1:10,
-#'   dims = 2:5,
-#'   verbose = FALSE
-#' )
-#' head(query[[]][, grep("^predicted_", colnames(query[[]]), value = TRUE), drop = FALSE])
+#' head(query$predicted_predicted.id)
 RunLabelTransfer <- function(
   object,
   reference,
@@ -146,22 +170,14 @@ RunLabelTransfer <- function(
       features = features,
       prediction_prefix = prediction_prefix,
       k.weight = k.weight,
-      verbose = verbose
+      verbose = verbose,
+      tool_name = tool_name
     )
-    predicted_col <- resolve_pred_col(
-      srt = srt,
-      prediction_prefix = prediction_prefix
-    )
-    probability_col <- resolve_prob_col(
-      srt = srt,
-      prediction_prefix = prediction_prefix
-    )
-    probability_cols <- grep(
-      paste0("^", prediction_prefix, "prediction\\.score\\."),
-      colnames(srt@meta.data),
-      value = TRUE
-    )
-    used_features <- features
+    current <- srt@tools[[tool_name]]
+    predicted_col <- current$predicted_col
+    probability_col <- current$probability_col
+    probability_cols <- current$probability_cols
+    used_features <- current$features
   } else {
     if (isTRUE(add_gene_activity) && !gene_activity_assay %in% SeuratObject::Assays(srt)) {
       srt <- atac_add_activity(
@@ -274,7 +290,8 @@ atac_transfer_labels <- function(
   features = NULL,
   prediction_prefix = "predicted_",
   k.weight = 100,
-  verbose = TRUE
+  verbose = TRUE,
+  tool_name = NULL
 ) {
   if (!inherits(reference, "Seurat")) {
     log_message(
@@ -289,6 +306,18 @@ atac_transfer_labels <- function(
     )
   }
 
+  seed_exists <- exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
+  old_seed <- if (seed_exists) get(".Random.seed", envir = .GlobalEnv, inherits = FALSE) else NULL
+  on.exit(
+    {
+      if (seed_exists) {
+        assign(".Random.seed", old_seed, envir = .GlobalEnv)
+      } else if (exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) {
+        rm(".Random.seed", envir = .GlobalEnv)
+      }
+    },
+    add = TRUE
+  )
   reference_assay <- reference_assay %||% SeuratObject::DefaultAssay(reference)
   features <- features %||% SeuratObject::VariableFeatures(reference, assay = reference_assay)
   weight_reduction <- atac_weight_reduction(
@@ -346,9 +375,17 @@ atac_transfer_labels <- function(
   if (inherits(ref_labels, "data.frame")) {
     ref_labels <- ref_labels[[1]]
   }
+  # TransferData removes every literal "_query" token, including user ID content.
+  # Native temporary names avoid both lost labels and pre-writeback collisions.
+  query_cells <- colnames(srt)
+  reference_cells <- colnames(reference)
+  safe_cells <- make.unique(c(reference_cells, paste0("scopQuery", seq_along(query_cells))))[
+    length(reference_cells) + seq_along(query_cells)
+  ]
+  query <- SeuratObject::RenameCells(srt, new.names = stats::setNames(safe_cells, query_cells))
   anchors <- Seurat::FindTransferAnchors(
     reference = reference,
-    query = srt,
+    query = query,
     reference.assay = reference_assay,
     query.assay = query_assay,
     reduction = anchor_reduction,
@@ -369,13 +406,44 @@ atac_transfer_labels <- function(
   predictions <- Seurat::TransferData(
     anchorset = anchors,
     refdata = ref_labels,
-    weight.reduction = srt[[weight_reduction]],
+    weight.reduction = query[[weight_reduction]],
     dims = linear_reduction_dims_use,
     k.weight = k.weight_use,
     verbose = FALSE
   )
+  prediction_cells <- rownames(predictions)
+  if (length(prediction_cells) != length(safe_cells) || anyDuplicated(prediction_cells) ||
+    !setequal(prediction_cells, safe_cells)) {
+    log_message("Native label-transfer predictions must cover every query cell exactly once.", message_type = "error")
+  }
+  predictions <- predictions[match(safe_cells, prediction_cells), , drop = FALSE]
+  rownames(predictions) <- query_cells
   colnames(predictions) <- paste0(prediction_prefix, colnames(predictions))
+  predicted_col <- paste0(prediction_prefix, "predicted.id")
+  probability_col <- paste0(prediction_prefix, "prediction.score.max")
+  probability_cols <- colnames(predictions)[startsWith(colnames(predictions), paste0(prediction_prefix, "prediction.score."))]
+  if (!is.null(tool_name)) {
+    previous <- srt@tools[[tool_name]]
+    previous_columns <- if (is.list(previous) && identical(previous$method, "Seurat") &&
+      identical(previous$predicted_col, predicted_col)) {
+      unique(c(previous$predicted_col, previous$probability_col, previous$probability_cols))
+    } else {
+      character()
+    }
+    previous_columns <- intersect(previous_columns, colnames(srt@meta.data))
+    collisions <- intersect(colnames(predictions), setdiff(colnames(srt@meta.data), previous_columns))
+    if (length(collisions)) {
+      log_message("Prediction columns already exist outside this tool's recorded results; use an unused prediction_prefix.", message_type = "error")
+    }
+    srt@meta.data <- srt@meta.data[, setdiff(colnames(srt@meta.data), previous_columns), drop = FALSE]
+  }
   srt <- SeuratObject::AddMetaData(srt, metadata = predictions)
+  if (!is.null(tool_name)) {
+    srt@tools[[tool_name]] <- list(
+      predicted_col = predicted_col, probability_col = probability_col,
+      probability_cols = probability_cols, features = anchors@anchor.features
+    )
+  }
   srt@misc[["scop_mode"]] <- "atac"
   srt
 }

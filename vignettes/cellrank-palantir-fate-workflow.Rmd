@@ -2,8 +2,8 @@
 title: "CellRank and Palantir fate workflow"
 output: rmarkdown::html_vignette
 vignette: >
-  %\\VignetteIndexEntry{CellRank and Palantir fate workflow}
-  %\\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{CellRank and Palantir fate workflow}
+  %\VignetteEngine{knitr::rmarkdown}
 ---
 
 This workflow keeps the Palantir pseudotime direction and the CellRank fate
@@ -11,10 +11,29 @@ model as separate, inspectable result layers. Pseudotime is a relative ordering
 and fate probabilities are model-based transition probabilities; neither is a
 direct experimental time course.
 
-```{r setup, eval=FALSE}
+The input overview below is executed on all bundled cells. The Python analysis
+sections are code-only recipes and do not claim fitted Palantir or CellRank
+results from this website build. Run them in a prepared Python environment in
+the order shown; the overview embedding alone is not evidence of cell fate.
+
+```{r options, include=FALSE}
+knitr::opts_chunk$set(error = FALSE, message = FALSE, fig.align = "center",
+                     dpi = 144, out.width = "92%")
+```
+
+## Inspect the input
+
+```{r setup}
 library(scop)
 data(pancreas_sub)
-pancreas_sub <- RunStandardWorkflow(pancreas_sub)
+input_cells <- colnames(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub, assay = "RNA", seed = 11,
+                                   cores = 1, verbose = FALSE)
+stopifnot(identical(colnames(pancreas_sub), input_cells))
+table(pancreas_sub$SubCellType)
+CellDimPlot(pancreas_sub, group.by = "SubCellType", reduction = "UMAP", label = TRUE)
+FeatureDimPlot(pancreas_sub, features = c("Sox9", "Neurog3", "Gcg", "Ins2"),
+               reduction = "UMAP", ncol = 2)
 ```
 
 ## Palantir direction and MAGIC layer
@@ -79,8 +98,8 @@ similar expression-shape clusters, not causal regulatory modules.
 pancreas_sub <- RunCellRankTrends(
   pancreas_sub,
   lineage = "Alpha",
-  assay = "RNA",
-  layer = "MAGIC_imputed_data",
+  assay = "MAGIC_imputed_data",
+  layer = "counts",
   top_n = 500L,
   heatmap_n = 50L,
   n_points = 200L,
@@ -105,7 +124,7 @@ CellRankPlot(
 )
 ```
 
-The complete payload is stored in `srt@tools$Palantir` and
+After executing the Python sections, the complete payload is stored in `srt@tools$Palantir` and
 `srt@tools$CellRank`, including the actual backend, versions, cell/lineage
 names, transition matrix, fate probabilities, drivers, trend curves, modules,
 enrichment tables and run parameters.
