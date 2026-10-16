@@ -1,5 +1,9 @@
 # scop (development version)
 
+* **docs**: Use direct package calls in examples, remove redundant availability
+  guards, and mark optional or external-resource recipes explicitly. Preserve
+  interactive dataset and Monocle examples and regenerate affected help topics.
+
 * **refactor**: Remove the unused qlcMatrix dependency from CSS integration.
   Load CytoTRACE2 models once per run without retaining package-wide model
   state; preserve optional analysis backends and downloaded model resources.
