@@ -1,5 +1,8 @@
 # scop (development version)
 
+* **fix**: Restore the package startup Logo, version, update date and website.
+  Startup messages still respect verbosity settings and `suppressPackageStartupMessages()`.
+
 * **feature**: `ExportATACResults()` saves a complete ATAC object, explicit result tables, selected-assay matrix companions and an external-resource inventory with file checksums into a new directory. Matrix Market/BED3/barcode exports can be read by `ReadATACData()`; fragment resources remain external.
 
 * **fix**: `CheckATACData()` determines fragment readiness from resources mapped to the selected assay cells, preserving inactive resources in its report after native subsetting.

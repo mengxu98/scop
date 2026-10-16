@@ -64,7 +64,7 @@
     - [Enrichment analysis](#enrichment-analysis)
       - [Over-representation](#over-representation)
       - [GSEA](#gsea)
-    - [Gene regulatory network analysis with SCENIC](#gene-regulatory-network-analysis-with-scenic)
+    - [Gene regulatory network analysis with SCENIC (optional recipe)](https://mengxu98.github.io/scop/articles/reproduce-pancreatic-endocrinogenesis.html#infer-tf-links-and-regulatory-activity)
     - [Interactive data visualization with SCExplorer](#interactive-data-visualization-with-scexplorer)
     - [Other visualization examples](#other-visualization-examples)
 
@@ -73,7 +73,7 @@
 The [scop](https://github.com/mengxu98/scop) package is developed based on the [SCP](https://github.com/zhanghao-njmu/SCP) package, with the following major improvements:
 
 1. Compatibility: full support for [Seurat v5](https://github.com/satijalab/seurat).
-2. Stability: a large number of known issues have been fixed, and all functions have passed `devtools::check()`.
+2. Stability: compatibility repairs and automated package checks. Optional backends require separate runtime validation; a successful package check does not establish that every backend has executed.
 3. Usability: the *Python* environment setup workflow has been improved, with support for conda-compatible managers including conda, mamba, and micromamba; standardized console messages via `thisutils::log_message` for consistent, readable function outputs.
 4. Performance: a new parallel framework has been developed based on `thisutils::parallelize_fun`, providing a consistent experience across *Linux*, *macOS*, and *Windows*.
 5. Functionality: more analysis methods have been added.
@@ -325,38 +325,54 @@ CellDimPlot(
 
 #### **Cell projection between single-cell datasets**
 
+This example holds out all `celseq2` cells from the bundled human pancreas
+object as query and uses the other technologies as reference. The inputs have
+no shared cells and use the same species and gene identifiers. Changing gene
+name capitalization is not cross-species ortholog mapping.
+
 ``` r
-genenames <- make.unique(
-  thisutils::capitalize(
-    rownames(panc8_sub[["RNA"]]),
-    force_tolower = TRUE
-  )
+data(panc8_sub)
+query_ids <- colnames(panc8_sub)[panc8_sub$tech == "celseq2"]
+reference_ids <- setdiff(colnames(panc8_sub), query_ids)
+stopifnot(length(intersect(query_ids, reference_ids)) == 0,
+          length(query_ids) + length(reference_ids) == ncol(panc8_sub))
+annotation_query <- RunStandardWorkflow(
+  panc8_sub[, query_ids], assay = "RNA", seed = 11, cores = 1,
+  verbose = FALSE
 )
-names(genenames) <- rownames(panc8_sub)
-panc8_rename <- RenameFeatures(
-  panc8_sub,
-  newnames = genenames,
-  assays = "RNA"
+annotation_reference <- RunStandardWorkflow(
+  panc8_sub[, reference_ids], assay = "RNA", seed = 11, cores = 1,
+  verbose = FALSE
 )
-srt_query <- RunKNNMap(
-  srt_query = pancreas_sub,
-  srt_ref = panc8_rename,
-  ref_umap = "HarmonyUMAP2D"
+shared_features <- intersect(SeuratObject::VariableFeatures(annotation_query),
+                             SeuratObject::VariableFeatures(annotation_reference))
+stopifnot(length(shared_features) > 30)
+label_colors <- stats::setNames(
+  grDevices::hcl.colors(length(unique(annotation_reference$celltype)), "Dark 3"),
+  sort(unique(as.character(annotation_reference$celltype)))
+)
+annotation_query <- RunKNNMap(
+  srt_query = annotation_query,
+  srt_ref = annotation_reference,
+  features = shared_features,
+  ref_umap = DefaultReduction(annotation_reference, pattern = "UMAP"),
+  projection_method = "knn"
 )
 ProjectionPlot(
-  srt_query = srt_query,
-  srt_ref = panc8_rename,
-  query_group = "SubCellType",
+  srt_query = annotation_query,
+  srt_ref = annotation_reference,
+  query_group = "celltype",
   ref_group = "celltype",
-  ref_param = list(
-    xlab = "UMAP_1",
-    ylab = "UMAP_2"
-  )
+  query_param = list(palcolor = label_colors, cells.highlight = TRUE),
+  ref_param = list(palcolor = label_colors, xlab = "UMAP_1", ylab = "UMAP_2")
 )
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNMap-1.svg#gh-light-mode-only" width="100%"/>
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNMap-1-dark.svg#gh-dark-mode-only" width="100%"/>
+<img src="man/figures/readme-human-projection.png" alt="Held-out human pancreas cells projected onto a disjoint human reference" width="100%"/>
+
+The query colours here are the supplied held-out labels, not predictions.
+Projection is neighbour-weighted placement in the reference UMAP; it is not a
+new joint embedding or evidence of successful batch correction.
 
 #### **Cell annotation using bulk RNA-seq datasets**
 
@@ -382,44 +398,59 @@ CellDimPlot(
 
 #### **Cell annotation using single-cell datasets**
 
+Reuse the disjoint human query/reference above. Reference labels train the
+predictor; the query labels are used only to inspect agreement. Individual
+reference cells are used explicitly rather than collapsed group averages.
+
 ``` r
-pancreas_sub <- RunKNNPredict(
-  srt_query = pancreas_sub,
-  srt_ref = panc8_rename,
+annotation_query <- RunKNNPredict(
+  srt_query = annotation_query,
+  srt_ref = annotation_reference,
   ref_group = "celltype",
-  filter_lowfreq = 20
+  query_assay = "RNA", ref_assay = "RNA", features = shared_features,
+  ref_collapsing = FALSE, k = 30, filter_lowfreq = 0,
+  prefix = "CellKNN"
 )
+table(observed = annotation_query$celltype,
+      predicted = annotation_query$CellKNN_classification)
 CellDimPlot(
-  pancreas_sub,
-  group.by = "KNNPredict_classification",
+  annotation_query,
+  group.by = c("celltype", "CellKNN_classification"),
   reduction = "UMAP",
-  label = TRUE,
-  xlab = "UMAP_1",
-  ylab = "UMAP_2"
+  label = FALSE,
+  theme_use = "theme_blank",
+  xlab = "UMAP_1", ylab = "UMAP_2",
+  palcolor = label_colors
 )
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNPredict-scrna-1.svg#gh-light-mode-only" width="100%"/>
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNPredict-scrna-1-dark.svg#gh-dark-mode-only" width="100%"/>
+<img src="man/figures/readme-human-prediction.png" alt="Supplied and predicted labels for the held-out human pancreas query" width="100%"/>
+
+Agreement is descriptive for this related pancreas subset. Similarity scores
+are not calibrated probabilities, and rare predictions remain visible.
 
 ``` r
 ht <- CellCorHeatmap(
-  srt_query = pancreas_sub,
-  srt_ref = panc8_rename,
-  query_group = "SubCellType",
+  srt_query = annotation_query,
+  srt_ref = annotation_reference,
+  query_group = "celltype",
   ref_group = "celltype",
-  nlabel = 3,
+  features = shared_features,
+  query_group_palcolor = label_colors[unique(as.character(annotation_query$celltype))],
+  ref_group_palcolor = label_colors[unique(as.character(annotation_reference$celltype))],
+  nlabel = 1,
   label_by = "row",
+  label_size = 8,
   show_row_names = TRUE,
-  show_column_names = TRUE,
-  width = 4,
-  height = 2.5
+  show_column_names = TRUE
 )
 print(ht$plot)
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNPredict-scrna-3.svg#gh-light-mode-only" width="100%"/>
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNPredict-scrna-3-dark.svg#gh-dark-mode-only" width="100%"/>
+<img src="man/figures/readme-human-correlation.png" alt="Group-level expression similarity between disjoint human query and reference cells" width="100%"/>
+
+See the [cell annotation workflow](https://mengxu98.github.io/scop/articles/cell-annotation-workflow.html)
+for prediction tables, marker checks and the saved analysis provenance.
 
 ### **Cellular potency**
 

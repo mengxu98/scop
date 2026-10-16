@@ -40,6 +40,24 @@ Default is the default assay of the \code{srt_query} object.}
 \item{ref_assay}{Assay to be used for the reference data.
 Default is the default assay of the \code{srt_ref} object.}
 
+\item{genes}{Marker selection strategy: \code{"de"} to detect markers from the
+reference, or a list of marker genes accepted by \link[SingleR:trainSingleR]{SingleR::trainSingleR}.}
+
+\item{de.method}{Differential expression method used to select markers:
+\code{"wilcox"}, \code{"t"}, or \code{"classic"}. Ignored when \code{genes} supplies markers.}
+
+\item{sd.thresh}{Numeric threshold forwarded to \link[SingleR:SingleR]{SingleR::SingleR} for
+compatibility with older versions; ignored by current SingleR versions.}
+
+\item{de.n}{Number of marker genes selected per pair of labels. \code{NULL} uses
+the default for the selected \code{de.method} in \link[SingleR:trainSingleR]{SingleR::trainSingleR}.}
+
+\item{aggr.ref}{Logical indicating whether to aggregate reference cells into
+pseudo-bulk samples before classification.}
+
+\item{aggr.args}{Named list of arguments passed to
+\link[SingleR:aggregateReference]{SingleR::aggregateReference} when \code{aggr.ref = TRUE}.}
+
 \item{quantile}{"quantile" parameter in \link[SingleR:SingleR]{SingleR::SingleR} function.}
 
 \item{fine.tune}{\code{"fine.tune"} parameter in \link[SingleR:SingleR]{SingleR::SingleR} function.}
