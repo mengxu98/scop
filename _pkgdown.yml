@@ -44,6 +44,7 @@ articles:
   - atac-matrix-workflow
   - atac-fragments-workflow
   - atac-paired-dar-workflow
+  - atac-paired-wnn-workflow
 - title: Compare batches and transfer labels
   navbar: Compare and annotate
   contents:

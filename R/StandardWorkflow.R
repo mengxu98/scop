@@ -48,11 +48,6 @@
 #' @param linear_reduction,linear_reduction_dims,linear_reduction_dims_use,linear_reduction_params,force_linear_reduction
 #' Linear reduction (`"pca"`, `"svd"`, `"ica"`, `"nmf"`, `"mds"`, `"glmpca"`).
 #' `linear_reduction_dims_use = NULL` uses estimated dimensions, else the first 50.
-#' ATAC workflows record the actual selected dimensions and Pearson correlations
-#' with raw library depth in `Misc(reduction, "scop_atac_representation")`.
-#' Undefined correlations are retained as NA. Requested ATAC clustering or
-#' nonlinear-reduction failures terminate the workflow rather than return a
-#' partially processed object as successful.
 #' @param nonlinear_reduction,nonlinear_reduction_dims,nonlinear_reduction_params,force_nonlinear_reduction
 #' Nonlinear reduction (`"umap"`, `"umap-naive"`, `"tsne"`, `"dm"`, `"phate"`,
 #' `"pacmap"`, `"trimap"`, `"largevis"`, `"fr"`).
@@ -67,6 +62,13 @@
 #' including the effective `set_variable_features` value, `result_stored`, and
 #' `result_location`. A failed stage signals an error with the same table in
 #' attribute `standard_spatial_stages`.
+#'
+#' @details
+#' ATAC workflows record the actual selected dimensions and Pearson correlations
+#' with raw library depth in `Misc(reduction, "scop_atac_representation")`.
+#' Undefined correlations are retained as NA. Requested ATAC clustering or
+#' nonlinear-reduction failures terminate the workflow rather than return a
+#' partially processed object as successful.
 #'
 #' @export
 #'
