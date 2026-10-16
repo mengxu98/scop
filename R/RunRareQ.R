@@ -280,9 +280,9 @@ RunRareQ <- function(
       verbose = verbose
     )
     srt <- if (isTRUE(verbose)) {
-      do.call(FindNeighbors, find_neighbors_args)
+      invoke_fun(FindNeighbors, find_neighbors_args)
     } else {
-      suppressMessages(do.call(FindNeighbors, find_neighbors_args))
+      suppressMessages(invoke_fun(FindNeighbors, find_neighbors_args))
     }
     if (!neighbor_slot %in% names(srt@neighbors)) {
       log_message(
