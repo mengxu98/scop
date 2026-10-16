@@ -84,8 +84,25 @@ print.scop_logo <- function(x, ...) {
 .onAttach <- function(libname, pkgname) {
   options(scop_env_cache = NULL)
 
+  verbose <- thisutils::get_verbose()
+  if (isTRUE(verbose)) {
+    version <- utils::packageVersion(pkgname, lib.loc = libname)
+    date <- utils::packageDate(pkgname, lib.loc = libname)
+    url <- utils::packageDescription(pkgname, lib.loc = libname, fields = "URL")
+    packageStartupMessage(scop_logo())
+    packageStartupMessage(
+      cli::col_grey(strrep("-", 60)),
+      "\n",
+      cli::col_blue("Version: ", version, " (", date, " update)"),
+      "\n",
+      cli::col_blue("Website: ", cli::style_italic(url)),
+      "\n",
+      cli::col_grey(strrep("-", 60))
+    )
+  }
+
   if (
-    isTRUE(thisutils::get_verbose()) &&
+    isTRUE(verbose) &&
       isTRUE(getOption("scop_env_init", default = FALSE))
   ) {
     tryCatch(
