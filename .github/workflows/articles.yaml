@@ -1,15 +1,26 @@
-# Builds only the articles whose vignette changed on push, so heavy
-# article computations never block the pkgdown reference build.  Manual
-# dispatch rebuilds every article.
+# Builds changed articles independently of the pkgdown reference build.
+# Workflow changes and manual dispatch rebuild every article. Pull requests
+# validate articles with read-only permissions and never deploy.
 on:
   push:
     branches: [main, master, dev]
+  pull_request:
+    branches: [main, master, dev]
+    paths:
+      - 'vignettes/**'
+      - '.github/workflows/articles.yaml'
   workflow_dispatch:
 
 name: articles
 
 permissions:
-  contents: write
+  contents: read
+
+# Keep trusted builds and publication in the existing Pages queue. PR
+# validation has its own group and cannot delay or cancel publication.
+concurrency:
+  group: scop-pages-${{ github.event_name == 'pull_request' && github.run_id || 'publish' }}
+  queue: max
 
 jobs:
   changes:
@@ -20,23 +31,36 @@ jobs:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Determine changed articles
         id: changed
         shell: bash
         run: |
-          if [[ "${{ github.event_name }}" != "push" ]]; then
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            base="${{ github.event.pull_request.base.sha }}"
+            # Compare the same merge tree that checkout builds, not an
+            # outdated branch head that lacks newer base-branch changes.
+            head="${{ github.sha }}"
+          elif [[ "${{ github.event_name }}" == "push" ]]; then
+            base="${{ github.event.before }}"
+            head="${{ github.sha }}"
+          else
             echo "articles=all" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          base="${{ github.event.before }}"
-          head="${{ github.sha }}"
           if [[ "$base" =~ ^0+$ ]] || ! git cat-file -e "$base^{commit}" 2>/dev/null; then
             base="$head~1"
             if [[ "$base" =~ ^0+$ ]] || ! git cat-file -e "$base^{commit}" 2>/dev/null; then
               echo "articles=all" >> "$GITHUB_OUTPUT"
               exit 0
             fi
+          fi
+          # Dependency and build changes must be exercised even when no
+          # vignette source changed (for example, a dependency-only repair).
+          if ! git diff --quiet "$base" "$head" -- .github/workflows/articles.yaml; then
+            echo "articles=all" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
           articles="$(git diff --no-renames --diff-filter=AM --name-only "$base" "$head" -- vignettes/ |
             sed -n 's|^vignettes/\(.*\)[.]Rmd$|\1|p' |
@@ -48,14 +72,12 @@ jobs:
     needs: changes
     if: needs.changes.outputs.articles != 'none'
     runs-on: ubuntu-latest
-    concurrency:
-      group: scop-pages-publish
-      queue: max
 
     steps:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - uses: r-lib/actions/setup-pandoc@v2
 
@@ -68,11 +90,14 @@ jobs:
         env:
           GITHUB_PAT: ${{ github.token }}
         with:
+          # pryr is archived on CRAN and only used by Monocle3's own tests.
+          # pak's ignore modifier excludes optional dependencies only.
           extra-packages: |
             any::pkgdown
             local::.
             github::immunogenomics/harmony
             github::cole-trapnell-lab/monocle3
+            pryr=?ignore
             bioc::org.Mm.eg.db
             bioc::GO.db
             any::shadowtext
@@ -114,8 +139,35 @@ jobs:
             pkgdown::build_article(name)
           }
 
+      - name: Upload built articles
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: articles-${{ github.run_id }}
+          path: docs
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 1
+
+  deploy:
+    needs: articles
+    if: >-
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
+      (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: articles-${{ github.run_id }}
+          path: docs
+
       - name: Deploy to GitHub pages 🚀
-        if: needs.changes.outputs.articles != 'none'
         uses: JamesIves/github-pages-deploy-action@v4.4.1
         with:
           clean: false

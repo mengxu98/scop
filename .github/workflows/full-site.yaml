@@ -37,11 +37,14 @@ jobs:
         env:
           GITHUB_PAT: ${{ github.token }}
         with:
+          # pryr is archived on CRAN and only used by Monocle3's own tests.
+          # pak's ignore modifier excludes optional dependencies only.
           extra-packages: |
             any::pkgdown
             local::.
             github::immunogenomics/harmony
             github::cole-trapnell-lab/monocle3
+            pryr=?ignore
             bioc::org.Mm.eg.db
             bioc::GO.db
             any::shadowtext
