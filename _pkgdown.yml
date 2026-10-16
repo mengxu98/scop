@@ -259,11 +259,6 @@ reference:
   - RunSpaNorm
   - RunSpotSweeper
 
-- subtitle: "Spatial Framework Bridges"
-- contents:
-  - srt_to_giotto
-  - giotto_to_srt
-
 - subtitle: "Spatial Deconvolution and Ecotypes"
 - contents:
   - RunRCTD
@@ -533,6 +528,8 @@ reference:
 
 - subtitle: "Data Conversion"
 - contents:
+  - srt_to_giotto
+  - giotto_to_srt
   - adata_to_srt
   - h5ad_to_srt
   - loom_to_adata
