@@ -1,5 +1,8 @@
 # scop (development version)
 
+* **fix**: Restore the package startup Logo, version, update date and website.
+  Startup messages still respect verbosity settings and `suppressPackageStartupMessages()`.
+
 - Add opt-in sample-level edgeR design/contrast models with biological-sample checks, paired/covariate designs, peak coordinates and complete tested-family provenance. Existing differential-testing defaults are unchanged.
 
 * **fix**: `CheckATACData()` determines fragment readiness from resources mapped to the selected assay cells, preserving inactive resources in its report after native subsetting.
