@@ -1,5 +1,8 @@
 # scop (development version)
 
+* **fix**: Restore the package startup Logo, version, update date and website.
+  Startup messages still respect verbosity settings and `suppressPackageStartupMessages()`.
+
 * **feature**: `CombineATACPeaks()` constructs a shared interval universe with explicit source support, and `RecountATAC()` recounts indexed fragments through native Signac `FeatureMatrix()`. Counts preserve requested region/cell alignment without padding existing peak matrices; reference lengths, active capture mappings, and fragment availability are checked before optional new-assay writeback.
 
 * **fix**: `CheckATACData()` determines fragment readiness from resources mapped to the selected assay cells, preserving inactive resources in its report after native subsetting.
