@@ -187,7 +187,10 @@ test_that("PRECAST receives selected features and its SelectModel object argumen
           observed$features <<- customGenelist
           list(step = "created")
         },
-        AddParSetting = function(PRECASTObj, ...) PRECASTObj,
+        AddParSetting = function(PRECASTObj, ...) {
+          observed$par_params <<- list(...)
+          PRECASTObj
+        },
         PRECAST = function(PRECASTObj, ...) PRECASTObj,
         SelectModel = function(obj, ...) {
           observed$selected <<- obj
@@ -207,11 +210,17 @@ test_that("PRECAST receives selected features and its SelectModel object argumen
   )
 
   out <- spatial_integration_run_backend("PRECAST", input, verbose = FALSE)
+  expect_identical(observed$par_params$verbose, FALSE)
   expect_identical(observed$features, input$features)
   expect_identical(observed$selected, list(step = "created"))
   expect_identical(out$step, "created")
   expect_identical(out$backend_parameters$adj_params$type, "fixed_number")
   expect_equal(out$adjacency_summary, c(S1 = 6, S2 = 6))
+  spatial_integration_run_backend("PRECAST", input, verbose = TRUE)
+  expect_identical(observed$par_params$verbose, TRUE)
+  spatial_integration_run_backend("PRECAST", input, verbose = FALSE,
+    par_params = list(verbose = TRUE, maxIter = 7L))
+  expect_identical(observed$par_params, list(verbose = TRUE, maxIter = 7L))
 })
 
 test_that("PRECAST accessor counts describe current assignments and preserve raw fits", {

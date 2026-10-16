@@ -77,7 +77,8 @@ and aligned-coordinate input. The default is raw acquisition coordinates;
 the selected coordinate space and SCOP's exact spatial KNN implementation.
 PRECAST's fixed-distance Visium/ST array-index
 mode is not compatible with these coordinates and is rejected. For generic
-distance-based adjacency, explicitly choose \code{platform = "Other_SRT"}.}
+distance-based adjacency, explicitly choose \code{platform = "Other_SRT"}.
+\code{par_params$verbose} defaults to \code{verbose} and can be overridden explicitly.}
 }
 \value{
 A \code{Seurat} object with spatial integration results stored in
