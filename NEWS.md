@@ -1,5 +1,17 @@
 # scop (development version)
 
+* **fix**: Preserve canonical Seurat command names and separate command history
+  entries in fallback normalization, scaling, variable-feature selection and
+  integration. Keep dynamic PCA and neighbor commands compact without
+  embedding the input object in log text.
+* **fix**: Treat metadata column names as data when constructing metacell groups
+  and LIANA sample keys, including names shared with function options.
+* **perf**: Avoid expanding complete vectors into correlation-test descriptions
+  in gene-immune and SCENIC plots while retaining the same statistics.
+
+* **fix**: Restore sparse count storage after `RecoverCounts(trans = "exp")`
+  exponentiation so count recovery can handle dense Matrix results and
+  implicit zeros correctly.
 * **fix**: Read startup metadata from the loaded namespace so development loading preserves the Logo, version, date and website without requiring an installed copy.
 
 * **fix**: Restore the package startup Logo, version, update date and website.

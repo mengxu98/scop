@@ -286,7 +286,7 @@ RunDimsReduction <- function(
         seed.use = seed
       )
     } else if (identical(fun_use, "RunPCA")) {
-      do.call(RunPCA, params)
+      invoke_fun(RunPCA, params)
     } else {
       invoke_fun(.fn = fun_use, .args = params)
     }
