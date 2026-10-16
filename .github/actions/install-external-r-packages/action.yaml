@@ -3,7 +3,7 @@ description: Install CI or optional packages into a dedicated library outside th
 
 inputs:
   packages:
-    description: Newline-separated package specifications accepted by renv::install().
+    description: Newline-separated package specifications accepted by pak::lockfile_create().
     required: true
   required-packages:
     description: Newline-separated installed package names to verify.
@@ -30,6 +30,7 @@ runs:
       id: metadata
       shell: Rscript {0}
       env:
+        GITHUB_PAT: ${{ github.token }}
         SCOP_EXTERNAL_PACKAGES: ${{ inputs.packages }}
         SCOP_EXTERNAL_REQUIRED: ${{ inputs.required-packages }}
         SCOP_EXTERNAL_LIBRARY_NAME: ${{ inputs.library-name }}
@@ -51,13 +52,17 @@ runs:
 
         library <- file.path(Sys.getenv("RUNNER_TEMP"), library_name)
         dir.create(library, recursive = TRUE, showWarnings = FALSE)
-        manifest <- tempfile("scop-external-packages-")
-        writeLines(c(packages, "-- required --", required), manifest)
-        manifest_hash <- unname(tools::md5sum(manifest))
+        lockfile <- file.path(Sys.getenv("RUNNER_TEMP"), paste0(library_name, ".lock"))
+        pak::lockfile_create(
+          packages, lockfile = lockfile, lib = NULL,
+          upgrade = TRUE, dependencies = NA
+        )
+        manifest_hash <- unname(tools::md5sum(lockfile))
 
         cat(
           "library=", library, "\n",
           "packages-hash=", manifest_hash, "\n",
+          "lockfile=", lockfile, "\n",
           "r-version=", as.character(getRversion()), "\n",
           sep = "",
           file = Sys.getenv("GITHUB_OUTPUT"),
@@ -69,39 +74,20 @@ runs:
       uses: actions/cache@v5
       with:
         path: ${{ steps.metadata.outputs.library }}
-        key: ${{ inputs.cache-version }}-${{ runner.os }}-${{ runner.arch }}-r${{ steps.metadata.outputs.r-version }}-${{ steps.metadata.outputs.packages-hash }}
+        key: ${{ inputs.cache-version }}-pak-${{ runner.os }}-${{ runner.arch }}-r${{ steps.metadata.outputs.r-version }}-${{ steps.metadata.outputs.packages-hash }}
+        restore-keys: |
+          ${{ inputs.cache-version }}-pak-${{ runner.os }}-${{ runner.arch }}-r${{ steps.metadata.outputs.r-version }}-
 
     - name: Install external R packages 📦
-      if: steps.cache.outputs.cache-hit != 'true'
       shell: Rscript {0}
       env:
         GITHUB_PAT: ${{ github.token }}
-        RENV_CONFIG_CACHE_ENABLED: "FALSE"
-        SCOP_EXTERNAL_PACKAGES: ${{ inputs.packages }}
+        SCOP_EXTERNAL_LOCKFILE: ${{ steps.metadata.outputs.lockfile }}
         SCOP_EXTERNAL_LIBRARY: ${{ steps.metadata.outputs.library }}
       run: |
-        packages <- trimws(strsplit(
-          Sys.getenv("SCOP_EXTERNAL_PACKAGES"),
-          "\n",
-          fixed = TRUE
-        )[[1]])
-        packages <- packages[nzchar(packages)]
-        # thisutils is not available in this isolated install step.
-        # find.package(..., quiet = TRUE) returns character(0) when missing.
-        if (length(find.package("renv", quiet = TRUE)) == 0L) {
-          utils::install.packages("renv", quiet = TRUE)
-        }
-        install_project <- file.path(
-          Sys.getenv("RUNNER_TEMP"),
-          "scop-external-install-project"
-        )
-        dir.create(install_project, recursive = TRUE, showWarnings = FALSE)
-        renv::install(
-          packages,
-          library = Sys.getenv("SCOP_EXTERNAL_LIBRARY"),
-          lock = FALSE,
-          prompt = FALSE,
-          project = install_project
+        pak::lockfile_install(
+          Sys.getenv("SCOP_EXTERNAL_LOCKFILE"),
+          lib = Sys.getenv("SCOP_EXTERNAL_LIBRARY")
         )
 
     - name: Verify and expose external R library 🔎

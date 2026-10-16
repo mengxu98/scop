@@ -56,6 +56,9 @@ table(spatial$gold_domain)
 
 Methods share the same spot set. Tune per-method arguments through
 `method_params` when backends need different PCA counts or layers.
+This 36-spot example uses 10 expression neighbors for BANKSY: its default of
+50 exceeds the number of available spots. This is a small simulated interface
+example, not evidence of performance on real tissue.
 
 ```{r run-benchmark}
 bench <- RunSpatialBenchmark(
@@ -63,7 +66,7 @@ bench <- RunSpatialBenchmark(
   gold_standard = "gold_domain",
   method_params = list(
     BayesSpace = list(n.PCs = 5, n.HVGs = 20, coord.cols = c("x", "y")),
-    BANKSY = list(layer = "counts", coord.cols = c("x", "y")),
+    BANKSY = list(layer = "counts", coord.cols = c("x", "y"), k_neighbors = 10),
     SmoothClust = list(layer = "counts", min_spots = 1, coord.cols = c("x", "y"))
   ),
   verbose = FALSE
