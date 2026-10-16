@@ -328,7 +328,7 @@ spatial_record_cell_identity <- function(srt, tool_name, previous_index = NULL,
   }
   if (!reusable) {
     base <- paste0(".scop_", make.names(tool_name), "_cell_id")
-    column <- tail(make.unique(c(colnames(srt@meta.data), base)), 1L)
+    column <- utils::tail(make.unique(c(colnames(srt@meta.data), base)), 1L)
   }
   srt@meta.data[[column]] <- rownames(srt@meta.data)
   index$cell_id_colname <- column
