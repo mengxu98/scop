@@ -143,7 +143,7 @@ Scanorama_integrate <- function(
     }
     corrected <- invoke_fun(scanorama$correct, params)
 
-    cor_value <- Matrix::t(invoke_fun(rbind, corrected[[2]]))
+    cor_value <- Matrix::t(do.call(rbind, corrected[[2]]))
     rownames(cor_value) <- corrected[[3]]
     colnames(cor_value) <- unlist(sapply(assaylist, rownames))
     srt_integrated[["Scanoramacorrected"]] <- CreateAssayObject(
@@ -153,7 +153,7 @@ Scanorama_integrate <- function(
       "Scanoramacorrected"
     ]]) <- HVF
 
-    dim_reduction <- invoke_fun(rbind, corrected[[1]])
+    dim_reduction <- do.call(rbind, corrected[[1]])
     rownames(dim_reduction) <- unlist(sapply(assaylist, rownames))
     colnames(dim_reduction) <- paste0(
       "Scanorama_",
@@ -170,7 +170,7 @@ Scanorama_integrate <- function(
     }
     integrated <- invoke_fun(scanorama$integrate, params)
 
-    dim_reduction <- invoke_fun(rbind, integrated[[1]])
+    dim_reduction <- do.call(rbind, integrated[[1]])
     rownames(dim_reduction) <- unlist(sapply(assaylist, rownames))
     colnames(dim_reduction) <- paste0(
       "Scanorama_",

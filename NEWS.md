@@ -1,5 +1,9 @@
 # scop (development version)
 
+* **refactor**: Simplify fixed-argument plotting and backend calls, and use
+  ordinary matrix binding in Scanorama integration while preserving argument
+  values, matrix names and projection results.
+
 * **fix**: Preserve canonical Seurat command names and separate command history
   entries in fallback normalization, scaling, variable-feature selection and
   integration. Keep dynamic PCA and neighbor commands compact without
