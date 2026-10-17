@@ -86,8 +86,26 @@ jobs:
             bioc::Banksy
             bioc::SpatialExperiment
             bioc::BiocNeighbors
+            github::feiyoung/PRECAST
           needs: check
           dependencies: '"hard"'
+
+      - name: PRECAST native pipeline and clean process contract
+        shell: Rscript {0}
+        env:
+          NOT_CRAN: "true"
+        run: |
+          pkgload::load_all(".", quiet = TRUE, compile = FALSE)
+          stopifnot(isTRUE(all(unlist(
+            check_r("feiyoung/PRECAST", install = FALSE, verbose = FALSE)
+          ))))
+          results <- testthat::test_file(
+            "tests/testthat/test-spatial-original-consistency2.R",
+            desc = "RunSpatialIntegration PRECAST domains match the original PRECAST pipeline",
+            reporter = "summary", stop_on_failure = TRUE
+          )
+          results <- as.data.frame(results)
+          stopifnot(nrow(results) > 0L, !any(results$skipped))
 
       - name: Gene-set scoring contract tests 🧪
         shell: Rscript {0}
