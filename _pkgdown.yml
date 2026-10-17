@@ -435,6 +435,11 @@ reference:
   - FilterATACPeaks
   - AnnotateATACPeaks
 
+- subtitle: "Motifs and Accessibility Deviations"
+  contents:
+  - AddATACMotifs
+  - RunMotifEnrichment
+
 - title: "Spatial Omics Analysis"
 
 - subtitle: "Spatial Quality Control and Normalization"

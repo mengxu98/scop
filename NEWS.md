@@ -68,6 +68,11 @@
 * **fix**: `CheckATACData()` determines fragment readiness from resources mapped to the selected assay cells, preserving inactive resources in its report after native subsetting.
 
 * **feature**: `RunATACQC()` supports explicit fragment-record FRiP over the current peak union and matched source columns, applies per-file barcode mappings, and rejects unavailable requested filtering metrics. Fragment totals count records rather than read support; blacklist ratios count each overlapping peak once.
+* **feature**: `AddATACMotifs()` also accepts final peak ranges without a count matrix, returning native motifs and aligned sequence statistics for reuse after recount.
+
+* **feature**: `AddATACMotifs()` matches explicit motif matrices to a supplied sequence reference through Signac/motifmatchr, and `RunMotifEnrichment()` records the eligible universe and native foreground-inclusive enrichment population. Reference identity, sequence statistics, and peak/motif alignment are checked without downloading reference data.
+
+* **fix**: `CheckATACData()` determines fragment readiness from resources mapped to the selected assay cells, preserving inactive resources in its report after native subsetting.
 
 * **feature**: `ReadATACData()` and `ReadMultiomeData()` import existing raw peak and paired RNA counts through Signac/Seurat, preserving explicit feature and barcode alignment. `CheckATACData()` reports matrix/reference validity and external fragment availability without altering the object.
 
