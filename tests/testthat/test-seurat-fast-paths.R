@@ -849,3 +849,49 @@ test_that("multimodal delegation forwards smooth and supplied weights", {
   expect_identical(captured$modality.weight, weights)
   expect_true(captured$return.intermediate)
 })
+
+test_that("Conos matrix preparation preserves native layer values", {
+  skip_if_not_installed("conos")
+  samples <- list(a = make_fast_path_object(), b = make_fast_path_object(19))
+  samples <- lapply(samples, function(so) {
+    so[["RNA"]]$scale.data <- NULL
+    Seurat::ScaleData(so, features = rownames(so), verbose = FALSE)
+  })
+  samples$b <- SeuratObject::RenameCells(samples$b, add.cell.id = "b")
+  original <- getFromNamespace("scaledMatricesSeuratV3", "conos")
+  reference <- original
+  body(reference) <- parse(text = gsub(
+    "slot = slot", "layer = slot",
+    paste(deparse(body(reference)), collapse = "\n"), fixed = TRUE
+  ))[[1L]]
+  genes <- Reduce(intersect, lapply(samples, function(so) {
+    rownames(GetAssayData5(so, layer = "scale.data"))
+  }))
+  for (type in c("counts", "scaled")) {
+    for (scale in c(FALSE, TRUE)) {
+      expected <- reference(samples, type, genes, scale)
+      actual <- conos_scaled_matrices(samples, type, genes, scale)
+      expect_equal(actual, expected, tolerance = 1e-12)
+    }
+  }
+  expect_identical(getFromNamespace("scaledMatricesSeuratV3", "conos"), original)
+})
+
+test_that("Conos builds its native graph without changing backend methods", {
+  skip_if_not_installed("conos")
+  samples <- list(a = make_fast_path_object(), b = make_fast_path_object(19))
+  samples <- lapply(samples, function(so) {
+    so[["RNA"]]$scale.data <- NULL
+    Seurat::ScaleData(so, features = rownames(so), verbose = FALSE)
+  })
+  samples$b <- SeuratObject::RenameCells(samples$b[, seq_len(70)], add.cell.id = "b")
+  con <- get_namespace_fun("conos", "Conos")$new(samples, n.cores = 1, verbose = FALSE)
+  original <- con$.__enclos_env__$private$updatePairs
+  original_build <- con$buildGraph
+  set.seed(11)
+  conos_build_graph(con, list(k = 5, k.self = 2, ncomps = 4, n.odgenes = 40, verbose = FALSE))
+  expect_s3_class(con$graph, "igraph")
+  expect_setequal(igraph::V(con$graph)$name, unlist(lapply(samples, colnames)))
+  expect_identical(con$.__enclos_env__$private$updatePairs, original)
+  expect_identical(con$buildGraph, original_build)
+})

@@ -245,7 +245,7 @@ Conos_integrate <- function(
     utils::capture.output(
       suppressWarnings(
         suppressMessages(
-          invoke_fun(srt_list_con[["buildGraph"]], params)
+          conos_build_graph(srt_list_con, params)
         )
       ),
       type = "output"
@@ -318,4 +318,54 @@ Conos_integrate <- function(
   } else {
     return(srt_integrated)
   }
+}
+
+conos_scaled_matrices <- function(so.objs, data.type, od.genes, var.scale,
+                                  neighborhood.average) {
+  layer <- switch(data.type,
+    scaled = "scale.data", counts = "data",
+    stop("Unknown Seurat data type: ", data.type)
+  )
+  x.data <- lapply(so.objs, function(so) {
+    if (var.scale && data.type == "scaled") {
+      so <- Seurat::ScaleData(so, features = rownames(so), verbose = FALSE)
+    }
+    Matrix::t(GetAssayData5(so, layer = layer)[od.genes, , drop = FALSE])
+  })
+  mapply(function(so, x) x, so.objs, x.data)
+}
+
+conos_build_graph <- function(con, params) {
+  if (utils::packageVersion("conos") != "1.5.4") {
+    return(invoke_fun(con$buildGraph, params))
+  }
+  private <- con$.__enclos_env__$private
+  original <- private$updatePairs
+  matrix_method <- get_namespace_fun("conos", "scaledMatricesSeuratV3")
+  if (!identical(names(formals(matrix_method)), c(
+    "so.objs", "data.type", "od.genes", "var.scale", "neighborhood.average"
+  )) || !identical(names(formals(original)), c(
+    "space", "data.type", "ncomps", "n.odgenes", "var.scale",
+    "matching.mask", "exclude.samples", "score.component.variance", "verbose"
+  ))) {
+    log_message("Unsupported Conos 1.5.4 matrix preparation interface.", message_type = "error")
+  }
+  scope <- new.env(parent = environment(original))
+  for (name in c(
+    "quickCPCA", "quickJNMF", "quickNULL", "quickPlainPCA", "quickCCA",
+    "scaledMatrices", "getPcaBasedNeighborMatrix", "getDecoyProjections",
+    "projectSamplesOnGlobalAxes"
+  )) {
+    fun <- get_namespace_fun("conos", name)
+    environment(fun) <- scope
+    scope[[name]] <- fun
+  }
+  scope$scaledMatricesSeuratV3 <- conos_scaled_matrices
+  update <- original
+  environment(update) <- scope
+  scope$private <- new.env(parent = private)
+  scope$private$updatePairs <- update
+  build <- con$buildGraph
+  environment(build) <- scope
+  invoke_fun(build, params)
 }
