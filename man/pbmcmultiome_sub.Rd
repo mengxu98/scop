@@ -23,8 +23,7 @@ per gene.
 }
 \examples{
 if (interactive()) {
-  InstallData <- thisutils::get_namespace_fun("SeuratData", "InstallData")
-  InstallData("pbmcMultiome")
+  SeuratData::InstallData("pbmcMultiome")
   data(pbmcMultiome)
   pbmcMultiome <- UpdateSeuratObject(pbmcMultiome)
 
@@ -45,8 +44,7 @@ if (interactive()) {
   genes_keep <- names(Matrix::rowSums(rna_counts))[Matrix::rowSums(rna_counts) >= 10]
   pbmcmultiome_sub <- subset(pbmcmultiome_sub, features = c(genes_keep, peaks_keep))
 
-  use_data <- thisutils::get_namespace_fun("usethis", "use_data")
-  use_data(
+  usethis::use_data(
     pbmcmultiome_sub,
     compress = "xz",
     overwrite = TRUE

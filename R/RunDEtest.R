@@ -1607,12 +1607,13 @@ RunDEtestStopOnParallelErrors <- function(results, context) {
 
 RunDEtestNormalizeDataLayer <- function(object, assay, reason, verbose) {
   if (inherits(object[[assay]], "ChromatinAssay")) {
+    check_r("Signac", verbose = FALSE)
     log_message(
       paste0(reason, " Performing Signac::RunTFIDF()."),
       message_type = "warning",
       verbose = verbose
     )
-    return(Signac::RunTFIDF(
+    return(get_namespace_fun("Signac", "RunTFIDF")(
       object = object,
       assay = assay,
       verbose = FALSE

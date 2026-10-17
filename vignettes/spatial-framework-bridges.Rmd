@@ -10,7 +10,7 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.align = "center",
 Use this page when an analysis needs a different data container. You will
 convert a real Visium dataset to SpatialExperiment, verify what survived,
 convert back to Seurat, and save a reloadable result. A separate Giotto section
-checks the installed backend before attempting the same task. Conversion does
+shows the same task with the optional GiottoClass backend. Conversion does
 not run either framework's biological analysis.
 
 Start with the [main spatial workflow](spatial-main-workflow.html) for analysis,
@@ -40,7 +40,6 @@ normalized layer and then describe the returned `counts` layer as raw data.
 
 ```{r bridge-input}
 library(scop)
-stopifnot(requireNamespace("SpatialExperiment", quietly = TRUE))
 data(visium_human_pancreas_sub)
 spatial <- visium_human_pancreas_sub
 assay_name <- "Spatial"
@@ -155,76 +154,44 @@ Seurat major version. A single image can be resolved automatically; multiple
 images require `image =`. Normalize before export because the official reverse
 converter needs a nonempty normalized layer. This does not replace raw counts.
 
-The following code is evaluated: it records backend availability, runs the
-conversion if compatible converters are installed, and reports any error.
-It never installs a backend during rendering. A missing backend is reported
-as `not_run`, and a failed preservation check as `failed`, never `completed`.
 Install GiottoClass separately following the
 [official Giotto instructions](https://github.com/giotto-suite/GiottoClass)
-and rerun this section to validate your exact package versions.
+before running this section. This optional recipe is not evaluated when the
+page is rendered. Conversion errors are reported directly by the called functions.
 
-```{r giotto-roundtrip}
-seurat_major <- as.integer(strsplit(as.character(packageVersion("Seurat")), "\\.")[[1]][1])
-converter_suffix <- if (seurat_major >= 5L) "V5" else "V4"
-converters <- paste0(c("seuratToGiotto", "giottoToSeurat"), converter_suffix)
-giotto_available <- requireNamespace("GiottoClass", quietly = TRUE)
-giotto_compatible <- giotto_available && all(vapply(
-  converters, exists, logical(1), envir = asNamespace("GiottoClass"), inherits = FALSE
-))
-giotto_result <- NULL
-giotto_receipt <- data.frame(
-  backend = "GiottoClass",
-  version = if (giotto_available) as.character(packageVersion("GiottoClass")) else NA_character_,
-  status = "not_run",
-  reason = if (!giotto_available) "GiottoClass is not installed" else
-    if (!giotto_compatible) "Required converters are absent" else "Ready to attempt conversion"
+```{r giotto-roundtrip, eval=FALSE}
+giotto_input <- Seurat::NormalizeData(spatial, assay = assay_name, verbose = FALSE)
+native <- srt_to_giotto(giotto_input, image = image_name)
+restored <- giotto_to_srt(native)
+restored_assay <- SeuratObject::DefaultAssay(restored)
+restored_counts <- GetAssayData5(restored, assay = restored_assay, layer = "counts")
+stopifnot(setequal(colnames(restored_counts), colnames(counts_before)),
+          setequal(rownames(restored_counts), rownames(counts_before)))
+restored_counts <- restored_counts[rownames(counts_before), colnames(counts_before)]
+restored_xy <- SpatialCoordinates(restored, space = "raw")$data
+checks <- c(
+  counts = isTRUE(all.equal(restored_counts, counts_before)),
+  coda_annotation = "coda_label" %in% colnames(restored@meta.data) &&
+    identical(as.character(restored@meta.data[colnames(counts_before), "coda_label"]),
+              as.character(spatial$coda_label)),
+  coordinates = isTRUE(all.equal(
+    as.matrix(restored_xy[colnames(counts_before), c("x", "y")]), raw_xy,
+    check.attributes = FALSE
+  ))
 )
-
-if (giotto_compatible) {
-  giotto_result <- tryCatch({
-    giotto_input <- Seurat::NormalizeData(spatial, assay = assay_name, verbose = FALSE)
-    native <- srt_to_giotto(giotto_input, image = image_name)
-    restored <- giotto_to_srt(native)
-    restored_assay <- SeuratObject::DefaultAssay(restored)
-    restored_counts <- GetAssayData5(restored, assay = restored_assay, layer = "counts")
-    stopifnot(setequal(colnames(restored_counts), colnames(counts_before)),
-              setequal(rownames(restored_counts), rownames(counts_before)))
-    restored_counts <- restored_counts[rownames(counts_before), colnames(counts_before)]
-    restored_xy <- SpatialCoordinates(restored, space = "raw")$data
-    checks <- c(
-      counts = isTRUE(all.equal(restored_counts, counts_before)),
-      coda_annotation = "coda_label" %in% colnames(restored@meta.data) &&
-        identical(as.character(restored@meta.data[colnames(counts_before), "coda_label"]),
-                  as.character(spatial$coda_label)),
-      coordinates = isTRUE(all.equal(
-        as.matrix(restored_xy[colnames(counts_before), c("x", "y")]), raw_xy,
-        check.attributes = FALSE
-      ))
-    )
-    print(data.frame(check = names(checks), passed = unname(checks)))
-    stopifnot(all(checks))
-    list(native = native, restored = restored, assay = restored_assay, checks = checks,
-         metadata_columns_retained = intersect(colnames(spatial@meta.data), colnames(restored@meta.data)),
-         metadata_columns_missing = setdiff(colnames(spatial@meta.data), colnames(restored@meta.data)))
-  }, error = function(e) e)
-  if (inherits(giotto_result, "error")) {
-    giotto_receipt$status <- "failed"
-    giotto_receipt$reason <- conditionMessage(giotto_result)
-    giotto_result <- NULL
-  } else {
-    giotto_receipt$status <- "completed"
-    giotto_receipt$reason <- "Conversion and count, annotation, and coordinate checks passed"
-    print(giotto_result[c("metadata_columns_retained", "metadata_columns_missing")])
-  }
-}
-giotto_receipt
+print(data.frame(check = names(checks), passed = unname(checks)))
+stopifnot(all(checks))
+giotto_result <- list(
+  native = native, restored = restored, assay = restored_assay, checks = checks,
+  metadata_columns_retained = intersect(colnames(spatial@meta.data), colnames(restored@meta.data)),
+  metadata_columns_missing = setdiff(colnames(spatial@meta.data), colnames(restored@meta.data))
+)
+giotto_result[c("metadata_columns_retained", "metadata_columns_missing")]
 ```
 
-A successful conversion receipt verifies those named checks only. Read the
-metadata retention lists before relying on other columns. If this section
-reports `failed`, resolve its message and rerun before using the converted
-object for analysis. Even `completed` does not mean that Giotto's own analysis
-or plotting pipeline has run.
+The checks verify counts, annotation, and coordinates for the converted object.
+Read the metadata retention lists before relying on other columns. These checks
+do not establish that Giotto's own analysis or plotting pipeline has run.
 
 ## Save, reload, and recheck
 
@@ -238,8 +205,7 @@ dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
 bridge_file <- file.path(output_dir, "panin-spatialexperiment-roundtrip.rds")
 bridge_bundle <- list(
   spatial_experiment = spe, seurat = spatial_roundtrip,
-  input = input_receipt, checks = spe_checks, giotto_receipt = giotto_receipt,
-  giotto = giotto_result, session = utils::sessionInfo()
+  input = input_receipt, checks = spe_checks, session = utils::sessionInfo()
 )
 saveRDS(bridge_bundle, bridge_file)
 reloaded <- readRDS(bridge_file)

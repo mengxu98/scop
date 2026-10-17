@@ -19,15 +19,15 @@
 #' @return A coverage plot object.
 #' @export
 #' @examples
+#' \dontrun{
 #' data("pbmcmultiome_sub", package = "scop")
 #' # Coverage plotting requires an ATAC object with valid fragment information.
-#' if (length(Signac::Fragments(pbmcmultiome_sub[["peaks"]])) > 0) {
-#'   CoverageTrackPlot(
-#'     pbmcmultiome_sub,
-#'     region = rownames(pbmcmultiome_sub[["peaks"]])[1],
-#'     assay = "peaks",
-#'     group.by = "CellType"
-#'   )
+#' CoverageTrackPlot(
+#'   pbmcmultiome_sub,
+#'   region = rownames(pbmcmultiome_sub[["peaks"]])[1],
+#'   assay = "peaks",
+#'   group.by = "CellType"
+#' )
 #' }
 CoverageTrackPlot <- function(
   object,
@@ -49,6 +49,8 @@ CoverageTrackPlot <- function(
   ...,
   srt = NULL
 ) {
+  check_r("Signac", verbose = FALSE)
+
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   if (!inherits(srt[[assay]], "ChromatinAssay")) {
@@ -80,7 +82,7 @@ CoverageTrackPlot <- function(
     verbose = verbose
   )
 
-  Signac::CoveragePlot(
+  get_namespace_fun("Signac", "CoveragePlot")(
     object = srt,
     region = region,
     assay = assay,

@@ -91,7 +91,8 @@ RecoverCounts <- function(
         "Perform {.val {trans}} on the raw data",
         verbose = verbose
       )
-      counts <- do.call(trans, list(counts))
+      trans_fun <- get(trans, mode = "function", envir = environment())
+      counts <- trans_fun(counts)
     }
   }
   if (status == "raw_normalized_counts") {

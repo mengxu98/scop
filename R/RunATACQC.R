@@ -108,6 +108,7 @@ RunATACQC <- function(
     )
   }
 
+  get_fragments <- atac_backend_fun("Signac", "Fragments")
   original <- NULL
   assay_cells <- colnames(srt[[assay]])
   if (!setequal(assay_cells, colnames(srt))) {
@@ -122,7 +123,7 @@ RunATACQC <- function(
     log_message("Choose either direct fragment FRiP or explicit source columns.", message_type = "error")
   }
 
-  if (!is.null(frip.columns) && length(Signac::Fragments(srt[[assay]])) &&
+  if (!is.null(frip.columns) && length(get_fragments(srt[[assay]])) &&
     any(frip.columns %in% c(
       "frequency_count", "reads_count", "mononucleosomal",
       "nucleosome_free", "total.fragments"
@@ -160,13 +161,13 @@ RunATACQC <- function(
     !is.null(fragment_counts)) {
     srt <- tryCatch(
       {
-        fragments <- Signac::Fragments(srt[[assay]])
+        fragments <- get_namespace_fun("Signac", "Fragments")(srt[[assay]])
         tss_object <- srt
         tss_object[[assay]]@fragments <- Filter(function(fragment) {
-          any(names(Signac::GetFragmentData(fragment, "cells")) %in% colnames(srt[[assay]]))
+          any(names(get_namespace_fun("Signac", "GetFragmentData")(fragment, "cells")) %in% colnames(srt[[assay]]))
         }, fragments)
         tss_object <- suppressWarnings(
-          Signac::TSSEnrichment(
+          get_namespace_fun("Signac", "TSSEnrichment")(
             object = tss_object,
             assay = assay,
             tss.positions = tss.positions,
@@ -217,7 +218,7 @@ RunATACQC <- function(
     if (length(problems)) log_message("{paste(problems, collapse = \" \")}", message_type = "error")
     atac_qc_ranges(blacklist, srt[[assay]], "Blacklist")
     counts <- SeuratObject::GetAssayData(srt, assay = assay, layer = "counts")
-    overlaps <- !is.na(GenomicRanges::findOverlaps(Signac::granges(srt[[assay]]),
+    overlaps <- !is.na(GenomicRanges::findOverlaps(get_namespace_fun("Signac", "granges")(srt[[assay]]),
       blacklist,
       ignore.strand = TRUE, select = "first"
     ))
@@ -267,12 +268,12 @@ RunATACQC <- function(
 }
 
 atac_frag_counts <- function(srt, assay, verbose = TRUE) {
-  fragments <- Signac::Fragments(srt[[assay]])
+  fragments <- get_namespace_fun("Signac", "Fragments")(srt[[assay]])
   if (!length(fragments)) {
     return(NULL)
   }
   cells <- colnames(srt[[assay]])
-  maps <- lapply(fragments, Signac::GetFragmentData, slot = "cells")
+  maps <- lapply(fragments, get_namespace_fun("Signac", "GetFragmentData"), slot = "cells")
   maps <- lapply(maps, function(x) x[names(x) %in% cells])
   active <- lengths(maps) > 0L
   fragments <- fragments[active]
@@ -280,7 +281,7 @@ atac_frag_counts <- function(srt, assay, verbose = TRUE) {
   if (!all(vapply(maps, function(x) atac_unique_ids(x) && atac_unique_ids(names(x)), logical(1)))) {
     log_message("Fragment counts require explicit unique cell-to-barcode mappings.", message_type = "error")
   }
-  paths <- vapply(fragments, Signac::GetFragmentData, character(1), slot = "path")
+  paths <- vapply(fragments, get_namespace_fun("Signac", "GetFragmentData"), character(1), slot = "path")
   if (!all(file.exists(paths))) {
     log_message("Fragment counts unavailable: local fragment files are missing",
       message_type = "warning", verbose = verbose
@@ -300,7 +301,7 @@ atac_frag_counts <- function(srt, assay, verbose = TRUE) {
     if (!length(map)) {
       return(NULL)
     }
-    result <- Signac::CountFragments(
+    result <- get_namespace_fun("Signac", "CountFragments")(
       fragments = paths[[i]], cells = unname(map),
       max_lines = NULL, verbose = verbose
     )

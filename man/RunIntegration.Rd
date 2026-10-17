@@ -210,22 +210,20 @@ for (method in integration_methods) {
 # Python-backed methods prepare a scVI/scvi-tools environment and run model
 # training, so keep them separate from ordinary example checks.
 \dontrun{
-if (reticulate::py_module_available("scvi")) {
-  panc8_sub <- RunIntegration(
-    panc8_sub,
-    batch = "tech",
-    integration_methods = "scVI",
-    train_params = list(max_epochs = 2L),
-    nonlinear_reduction = "umap"
-  )
-  panc8_sub <- RunIntegration(
-    panc8_sub,
-    batch = "tech",
-    integration_methods = "scVI5",
-    IntegrateLayers_params = list(max_epochs = 2L),
-    nonlinear_reduction = "umap"
-  )
-}
+panc8_sub <- RunIntegration(
+  panc8_sub,
+  batch = "tech",
+  integration_methods = "scVI",
+  train_params = list(max_epochs = 2L),
+  nonlinear_reduction = "umap"
+)
+panc8_sub <- RunIntegration(
+  panc8_sub,
+  batch = "tech",
+  integration_methods = "scVI5",
+  IntegrateLayers_params = list(max_epochs = 2L),
+  nonlinear_reduction = "umap"
+)
 }
 
 nonlinear_reductions <- c(
