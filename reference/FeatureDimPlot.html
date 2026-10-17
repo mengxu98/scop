@@ -159,7 +159,8 @@ numeric metadata).</p>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  srt <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  title.face <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  title.color <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  title.color <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  show_points <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -241,7 +242,22 @@ quantile or absolute cutoffs for the color scale.</p></dd>
 
 
 <dt id="arg-add-density-density-color-density-filled-density-filled-palette-density-filled-palcolor">add_density, density_color, density_filled, density_filled_palette, density_filled_palcolor<a class="anchor" aria-label="anchor" href="#arg-add-density-density-color-density-filled-density-filled-palette-density-filled-palcolor"></a></dt>
-<dd><p>Density contours; <code>density_filled</code> draws filled bands.</p></dd>
+<dd><p>Add a smooth feature-expression layer. For unblended features, density
+contours are colored by local Gaussian-weighted mean feature values,
+including zero values. Contour shape represents cell density; color
+represents local mean expression and may vary along one contour.
+<code>density_filled = TRUE</code> draws the local mean expression surface with fine density contours instead.
+With points visible, the original point-expression scale is preserved and
+local means use that scale. Without points, the scale is based on the local
+means. Cutoffs and <code>keep_scale</code> apply to the selected scale. <code>bg_cutoff</code> only
+affects cell marks. When neither fill-color option is supplied, expression
+surfaces inherit <code>palette</code> and <code>palcolor</code>; explicit fill options override
+this default.
+For compatibility, explicitly supplying <code>density_color</code> retains the old
+fixed-color cell-density layer. Blended multi-feature plots using
+<code>compare_features = TRUE</code> also retain the original cell-density layer,
+including filled density bands and their original default colors.
+Use <code><a href="CellDimPlot.html">CellDimPlot()</a></code> for cell-distribution density layers.</p></dd>
 
 
 <dt id="arg-cells-highlight">cells.highlight<a class="anchor" aria-label="anchor" href="#arg-cells-highlight"></a></dt>
@@ -433,7 +449,26 @@ refer to features, not group names or panel order. These heading options do
 not affect the custom <code>title</code>, split labels, expression palette, or blended
 panels (<code>compare_features = TRUE</code>).</p></dd>
 
+
+<dt id="arg-show-points">show_points<a class="anchor" aria-label="anchor" href="#arg-show-points"></a></dt>
+<dd><p>Draw cell points or hexagonal bins and highlighted cell
+points. Set to <code>FALSE</code> for contour-only or surface-only plots. Labels and
+graph or lineage overlays are controlled separately. Defaults to <code>TRUE</code>.</p></dd>
+
 </dl></div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>Expression-colored contours use a 240 by 240 grid, Gaussian bandwidths from
+<code><a href="https://rdrr.io/r/stats/bandwidth.html" class="external-link">stats::bw.nrd()</a></code>, and nine density levels from 8% to 92% of peak density.
+Major contours use a wider stroke every third level. Grid limits extend three bandwidths beyond the finite coordinates to avoid
+clipping outer contours. Local means are interpolated onto contour vertices;
+filled surfaces omit grid points below 2% of peak kernel support, fade in
+between 2% and 3.5% support, and interpolate raster pixels for smooth edges.
+Cells with non-finite coordinates or feature values are omitted from this
+calculation. Panels with fewer than three finite cells or no variation in
+either coordinate return no contours with a warning. No additional public
+plotting function or dependency is required.</p>
+    </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><a href="CellDimPlot.html">CellDimPlot</a></p></div>
@@ -510,8 +545,13 @@ panels (<code>compare_features = TRUE</code>).</p></dd>
 <span>  <span class="va">pancreas_sub</span>,</span>
 <span>  features <span class="op">=</span> <span class="st">"Rbp4"</span>,</span>
 <span>  reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span>
-<span>  label <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  add_density <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  add_density <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  show_points <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  theme_use <span class="op">=</span> <span class="st">"theme_blank"</span>,</span>
+<span>  xlab <span class="op">=</span> <span class="st">"UMAP_1"</span>,</span>
+<span>  ylab <span class="op">=</span> <span class="st">"UMAP_2"</span>,</span>
+<span>  palcolor <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#345C96"</span>, <span class="st">"#349AA4"</span>, <span class="st">"#91C6B0"</span>, <span class="st">"#DDBF63"</span>,</span>
+<span>               <span class="st">"#D77A52"</span>, <span class="st">"#AC4968"</span>, <span class="st">"#753858"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">FeatureDimPlot</span><span class="op">(</span></span>
@@ -521,6 +561,20 @@ panels (<code>compare_features = TRUE</code>).</p></dd>
 <span>  label <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  add_density <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  density_filled <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">FeatureDimPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  features <span class="op">=</span> <span class="st">"Rbp4"</span>,</span>
+<span>  reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span>
+<span>  add_density <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  show_points <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  density_filled <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  theme_use <span class="op">=</span> <span class="st">"theme_blank"</span>,</span>
+<span>  xlab <span class="op">=</span> <span class="st">"UMAP_1"</span>,</span>
+<span>  ylab <span class="op">=</span> <span class="st">"UMAP_2"</span>,</span>
+<span>  density_filled_palcolor <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#F2F7F5"</span>, <span class="st">"#C5DFD8"</span>, <span class="st">"#89BDB5"</span>,</span>
+<span>                             <span class="st">"#4A969E"</span>, <span class="st">"#286B87"</span>, <span class="st">"#253D63"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Chane the plot type from point to the hexagonal bin</span></span>

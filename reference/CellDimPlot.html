@@ -287,7 +287,9 @@ radius at <code>raster.dpi = c(512, 512)</code> and scale with <code>raster.dpi<
 
 
 <dt id="arg-add-density-density-color-density-filled-density-filled-palette-density-filled-palcolor">add_density, density_color, density_filled, density_filled_palette, density_filled_palcolor<a class="anchor" aria-label="anchor" href="#arg-add-density-density-color-density-filled-density-filled-palette-density-filled-palcolor"></a></dt>
-<dd><p>Density contours; <code>density_filled</code> draws filled bands.</p></dd>
+<dd><p>Density contours on a grid padded by three Gaussian bandwidths to avoid
+clipping. Lines use major and minor widths; <code>density_filled</code> draws
+filled density bands with fine contour lines.</p></dd>
 
 
 <dt id="arg-add-mark-mark-type-mark-expand-mark-alpha-mark-linetype-mark-linewidth-mark-border">add_mark, mark_type, mark_expand, mark_alpha, mark_linetype, mark_linewidth, mark_border<a class="anchor" aria-label="anchor" href="#arg-add-mark-mark-type-mark-expand-mark-alpha-mark-linetype-mark-linewidth-mark-border"></a></dt>
@@ -553,6 +555,35 @@ will be removed in scop 1.0.0.</p></dd>
 <span>  density_filled <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  density_filled_palette <span class="op">=</span> <span class="st">"Blues"</span>,</span>
 <span>  cells.highlight <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">CellDimPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span>
+<span>  reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span>
+<span>  add_density <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  pt.alpha <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  density_color <span class="op">=</span> <span class="st">"#416C7D"</span>,</span>
+<span>  theme_use <span class="op">=</span> <span class="st">"theme_blank"</span>,</span>
+<span>  xlab <span class="op">=</span> <span class="st">"UMAP_1"</span>,</span>
+<span>  ylab <span class="op">=</span> <span class="st">"UMAP_2"</span>,</span>
+<span>  legend.position <span class="op">=</span> <span class="st">"none"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">CellDimPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span>
+<span>  reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span>
+<span>  add_density <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  pt.alpha <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  density_filled <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  density_color <span class="op">=</span> <span class="st">"#355D71"</span>,</span>
+<span>  density_filled_palcolor <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#F2F7F5"</span>, <span class="st">"#C5DFD8"</span>, <span class="st">"#89BDB5"</span>,</span>
+<span>                             <span class="st">"#4A969E"</span>, <span class="st">"#286B87"</span>, <span class="st">"#253D63"</span><span class="op">)</span>,</span>
+<span>  theme_use <span class="op">=</span> <span class="st">"theme_blank"</span>,</span>
+<span>  xlab <span class="op">=</span> <span class="st">"UMAP_1"</span>,</span>
+<span>  ylab <span class="op">=</span> <span class="st">"UMAP_2"</span>,</span>
+<span>  legend.position <span class="op">=</span> <span class="st">"none"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Add statistical charts</span></span>
