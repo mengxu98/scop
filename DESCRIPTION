@@ -93,6 +93,7 @@ Suggests:
     MatrixGenerics,
     metR,
     miloR,
+    monocle3,
     MASS,
     mgcv,
     matrixStats,
@@ -130,6 +131,7 @@ Suggests:
     decontX,
     edgeR,
     scmap,
+    SeuratData,
     stringr,
     sva,
     SingleR,
@@ -142,6 +144,7 @@ Suggests:
     tricycle,
     umap,
     UCell,
+    usethis,
     xgboost,
     yardstick,
     Banksy,
@@ -156,8 +159,10 @@ Suggests:
     SpaNorm,
     withr
 Remotes:
+    cole-trapnell-lab/monocle3,
     mengxu98/thisplot,
-    mengxu98/thisutils
+    mengxu98/thisutils,
+    satijalab/seurat-data
 LinkingTo:
     cli,
     Rcpp (>= 1.0.13),
