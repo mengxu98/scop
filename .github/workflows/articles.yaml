@@ -97,6 +97,7 @@ jobs:
             local::.
             github::immunogenomics/harmony
             github::cole-trapnell-lab/monocle3
+            github::satijalab/seurat-data
             pryr=?ignore
             bioc::org.Mm.eg.db
             bioc::GO.db
