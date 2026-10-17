@@ -1,0 +1,64 @@
+---
+title: "Paired RNA and ATAC with WNN"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(error = FALSE, collapse = TRUE, comment = "#>")
+```
+
+## Scope
+
+This small example executes weighted nearest-neighbor analysis on 80 paired
+cells from the packaged `pbmcmultiome_sub` object. It needs no downloaded
+fragments, reference sequence or Python environment. The subset and small
+feature/dimension settings illustrate the interface; they are not recommended
+parameters for a complete biological analysis.
+
+WNN combines RNA and ATAC neighborhoods. It does not correct sample batch
+effects. Supplying `batch` emits a warning rather than silently implying that
+correction occurred. Review batch effects separately before interpreting joint
+clusters. See [WNN_integrate()](../reference/WNN_integrate.html) for the method contract.
+
+## Run paired preprocessing and WNN
+
+```{r paired-wnn}
+data("pbmcmultiome_sub", package = "scop")
+paired <- subset(pbmcmultiome_sub, cells = colnames(pbmcmultiome_sub)[1:80])
+paired <- scop::WNN_integrate(
+  srt_merge = paired, assay = c("RNA", "peaks"),
+  linear_reduction_dims = 10, linear_reduction_dims_use = 2:8,
+  nHVF = 100, neighbor_k = 10, nonlinear_reduction_dims = 2,
+  verbose = FALSE
+)
+SeuratObject::Reductions(paired)
+```
+
+Explicit assay selection keeps derived `chromvar` and `ACTIVITY` assays out of
+the RNA input. Custom RNA assay names must be supplied explicitly. Gene
+activity is an accessibility-derived proxy, and chromVAR measures motif-related
+accessibility deviations; neither is measured RNA.
+
+## Inspect reusable outputs
+
+Both the default append mode and `append = FALSE` retain the RNA PCA, ATAC LSI,
+WNN graphs, modality weights and clustering results. The reduction receipt
+records the actual cells, peaks and selected dimensions at calculation time.
+
+```{r inspect-results}
+paired@misc$WNN_reduction_list
+paired@misc$WNN_dims_list
+stopifnot(all(paired@misc$WNN_reduction_list %in% SeuratObject::Reductions(paired)))
+head(paired[[]][, c("RNA.weight", "ATAC.weight", "WNNclusters")])
+SeuratObject::Misc(paired[["ATAClsi"]], "scop_atac_representation")$dimensions
+```
+
+```{r joint-embedding, fig.width=6, fig.height=4}
+Seurat::DimPlot(paired, reduction = "WNNUMAP2D", group.by = "WNNclusters")
+```
+
+For the common dispatcher, use `RunIntegration(srt_merge = paired,
+batch = NULL, integration_methods = "WNN", assay = c("RNA", "peaks"), ...)` with the same
+analysis parameters. Native counts remain available for a subsequent
+[RunLinkPeaks()](../reference/RunLinkPeaks.html) analysis, which additionally requires compatible gene
+coordinates and verified sequence statistics. WNN clusters and peak-gene
+associations do not by themselves establish causal regulation.

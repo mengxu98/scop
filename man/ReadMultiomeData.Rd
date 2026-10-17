@@ -43,6 +43,9 @@ raw counts to the data layer; this is not normalized expression.
 \description{
 Import both measured modalities from one local 10x ARC count
 matrix without dropping cells, normalizing counts, or inferring RNA from ATAC.
+
+Existing compatible Seurat objects can enter the analysis workflow directly;
+this constructor is only needed when importing counts or files.
 }
 \details{
 Gene IDs, rather than potentially duplicated gene symbols, identify RNA

@@ -40,6 +40,7 @@
 #' PRECAST's fixed-distance Visium/ST array-index
 #' mode is not compatible with these coordinates and is rejected. For generic
 #' distance-based adjacency, explicitly choose `platform = "Other_SRT"`.
+#' `par_params$verbose` defaults to `verbose` and can be overridden explicitly.
 #'
 #' @details
 #' Provide spatial samples with shared genes and raw coordinates. Use
@@ -721,9 +722,10 @@ spatial_integration_run_backend <- function(method, input, verbose = TRUE, ...) 
   spatial_integration_validate_neighbor_count(obj, adj_params)
   obj <- spatial_integration_set_precast_adjacency(obj, input, adj_params)
   edge_counts <- spatial_integration_validate_adjacency(obj)
+  par_params <- utils::modifyList(list(verbose = verbose), params$par_params %||% list())
   obj <- spatial_integration_call(
     par_fun,
-    c(list(PRECASTObj = obj), params$par_params %||% list())
+    c(list(PRECASTObj = obj), par_params)
   )
   obj <- spatial_integration_call(
     run_fun,

@@ -269,7 +269,8 @@ spatial_graph_validate <- function(graph) {
 #' @description
 #' Read a graph from a `SpatialNetwork` result without modifying the Seurat
 #' object. Graphs can be returned as their complete list representation, a
-#' sparse matrix, or a Seurat `Graph` object.
+#' sparse matrix, or a Seurat `Graph` object. This advanced conversion interface
+#' is optional: [SpatialNetworkPlot()] reads the stored graph directly.
 #'
 #' @param object Optional `Seurat` object containing `SpatialNetwork` results.
 #' @param res Optional `SpatialNetwork` result list.

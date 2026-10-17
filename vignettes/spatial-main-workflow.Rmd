@@ -14,7 +14,8 @@ knitr::opts_chunk$set(
 ```
 
 This is the short, result-first path for a spatial Seurat object: inspect the
-input, run a small baseline workflow, inspect the stored result, and plot it.
+input, run a small baseline workflow, and plot its results. Optional inspection
+sections explain the stored output without adding required workflow stages.
 The bundled `visium_human_pancreas_sub` object is a real Visium spot-level
 dataset used for the executable examples below. It is not a single-cell
 measurement: one spot can contain transcripts from several cells.
@@ -35,13 +36,11 @@ SeuratObject::DefaultAssay(spatial) <- "Spatial"
 
 SeuratObject::Images(spatial)
 head(spatial@meta.data[, c("x", "y", "coda_label")])
-raw_coordinates <- SpatialCoordinates(
-  spatial,
-  image = "slice1",
-  space = "raw"
-)
-raw_coordinates$source
 ```
+
+Analysis methods resolve and validate coordinates internally. For custom loader
+troubleshooting or coordinate export, see the optional [SpatialCoordinates()]
+interface. Standard Seurat imports need no axis-setting step.
 
 The first checks should answer four questions: which assay contains the counts,
 which image is selected, which columns identify the observations, and whether
@@ -105,7 +104,7 @@ spatial <- RunStandardWorkflow(
 )
 ```
 
-## Inspect stored results before plotting
+## Optional: inspect stored results
 
 ```{r inspect-results}
 workflow <- spatial@tools$run_standard_spatial_workflow

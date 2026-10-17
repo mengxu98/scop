@@ -123,9 +123,7 @@ RecountATAC <- function(
   known_lengths <- !is.na(shared_lengths)
   range_lengths[known_lengths] <- shared_lengths[known_lengths]
   ranges <- atac_backend_fun("GenomeInfoDb", "seqlengths<-")(ranges, value = range_lengths)
-  if (length(report$genome) == 1L) {
-    ranges <- atac_backend_fun("GenomeInfoDb", "genome<-")(ranges, value = report$genome)
-  }
+  ranges <- atac_backend_fun("GenomeInfoDb", "genome<-")(ranges, value = report$genome)
   input_peak_ids <- names(ranges)
   feature_ids <- atac_range_ids(ranges)
   native_ids <- Signac::GRangesToString(ranges, sep = c("-", "-"))

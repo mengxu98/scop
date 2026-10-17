@@ -157,6 +157,13 @@ not a multi-slice integration orchestrator.
 Objects that also contain a \code{ChromatinAssay} are preprocessed sequentially
 (default assay, then chromatin).
 }
+\details{
+ATAC workflows record the actual selected dimensions and Pearson correlations
+with raw library depth in \code{Misc(reduction, "scop_atac_representation")}.
+Undefined correlations are retained as NA. Requested ATAC clustering or
+nonlinear-reduction failures terminate the workflow rather than return a
+partially processed object as successful.
+}
 \examples{
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)

@@ -27,7 +27,8 @@ Record whether the centroid column named \code{x} represents the
 horizontal image-column axis or the vertical image-row axis. This does not
 move coordinates or change the raster. It replaces metadata-based guessing
 and survives Seurat subsetting and cell renaming. Stored spatial
-analyses must be rerun after changing the convention.
+analyses must be rerun after changing the convention. This advanced adapter
+is only needed for custom VisiumV2 loaders; standard imports need no call.
 }
 \examples{
 data(visium_human_pancreas_sub)

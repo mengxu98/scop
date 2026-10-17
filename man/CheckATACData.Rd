@@ -35,6 +35,11 @@ reported separately, so an otherwise valid matrix can be analysed without
 fragments. This check does not install packages, retrieve resources, modify
 the object, or inspect dependencies of downstream optional analyses.
 }
+\details{
+This is an optional diagnostic for imported or restored objects. Analysis
+entry points validate their own required inputs; a separate call is not a
+prerequisite for every analysis step.
+}
 \examples{
 counts <- Matrix::sparseMatrix(
   i = c(1, 2), j = c(1, 2), x = c(2, 3), dims = c(2, 2),

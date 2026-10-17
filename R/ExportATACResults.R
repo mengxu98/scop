@@ -16,6 +16,10 @@
 #' @param compress Compression passed to saveRDS for the complete object.
 #'
 #' @details
+#' Use this advanced interchange helper when BED/count companions or a fragment
+#' resource inventory are needed. For an ordinary R checkpoint, use `saveRDS()`
+#' and `readRDS()` directly; exporting is not required to continue analysis.
+#'
 #' The output contains object.rds, cells.csv, peaks.bed (0-based half-open),
 #' fragments.csv, fragment_cells.csv, check.rds, sessionInfo.txt, supplied result
 #' tables and a file manifest with MD5 checksums. Fragments and reference genomes

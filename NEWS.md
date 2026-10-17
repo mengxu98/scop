@@ -1,5 +1,12 @@
 # scop (development version)
 
+* **refactor**: Remove redundant ATAC cell-count and reference-label branches
+  after their owning validation has already established the same invariants.
+
+* **docs**: Organize ATAC and spatial references by analysis task. Keep input
+  constructors and advanced diagnostics, coordinate adapters, result access and
+  ATAC interchange available without making them mandatory workflow stages.
+  Existing public APIs and computational results are unchanged.
 * **fix**: Read startup metadata from the loaded namespace so development loading preserves the Logo, version, date and website without requiring an installed copy.
 
 * **refactor**: Simplify fixed-argument plotting and backend calls, and use
@@ -51,10 +58,22 @@
 * **fix**: Restore sparse count storage after `RecoverCounts(trans = "exp")`
   exponentiation so count recovery can handle dense Matrix results and
   implicit zeros correctly.
+* **fix**: Read startup metadata from the loaded namespace so development loading preserves the Logo, version, date and website without requiring an installed copy.
 
 * **fix**: Restore the package startup Logo, version, update date and website.
   Startup messages still respect verbosity settings and `suppressPackageStartupMessages()`.
 
+* **fix**: WNN retains RNA and ATAC reductions, modality weights, graphs and representation receipts in both direct and integration-dispatch return paths. Automatic selection excludes known derived assays, custom RNA names require explicit selection, and a supplied batch warns that WNN does not perform batch correction. Caller RNG state is restored in the direct method.
+* **fix**: Chromatin `CheckDataList()` feature selection preserves native within-batch peak ranking when batch frequencies tie.
+* **fix**: `CheckATACData()` evaluates fragment readiness using resources mapped to selected assay cells, retaining inactive resources in its report. Input metadata comparisons ignore incidental fastmatch barcode-cache attributes.
+* **feature**: `RunATACQC()` supports explicit fragment-record FRiP over the current peak union and matched source columns, applies per-file barcode mappings, and rejects unavailable requested filtering metrics. ATAC `RunscDblFinder()` fits captures separately with native feature aggregation and preserves other assay cells.
+* **feature**: `CallATACPeaks()` adds an explicit MACS2 2.x BED path with per-capture/group calls, retained logs and checked exit status. ATAC standard workflows record the final representation and fail when requested clustering or UMAP fails.
+* **feature**: `CombineATACPeaks()` builds a shared peak universe with explicit support; `RecountATAC()` counts indexed fragments through native Signac without padding existing matrices. `FilterATACPeaks()` applies count, interval and blacklist criteria; `AnnotateATACPeaks()` records native nearest-interval hits.
+* **feature**: `AddATACMotifs()` matches explicit motif matrices to a supplied reference, using either an assay or final ranges before recount. `RunMotifEnrichment()` records the foreground, eligible universe and foreground-inclusive native enrichment population.
+* **feature**: `RunChromVAR()` retains native GC-corrected motif deviations, backgrounds and bias in a new data-only assay. `RunGeneActivity()` counts fragments over annotated gene bodies/promoters into a new assay with provenance.
+* **feature**: `RunDEtest()` supports explicit sample-level edgeR designs and contrasts, paired/covariate models, peak coordinates and complete tested-family provenance. `RunLinkPeaks()` computes native paired measured-RNA/ATAC associations with protected links and explicit reference checks.
+* **feature**: `ExportATACResults()` saves objects, supplied result tables, matrix companions and resource inventories with file checksums. Fragments remain external. Formal articles cover matrix, fragments, paired DAR and a small executable paired WNN workflow.
+* **fix**: `RunGSEA()` preserves native fgsea computation with the new clusterProfiler interface, using enrichit's public result converter. Article builds validate shared dependency identity and optional Monocle3 resources.
 * **fix**: Chromatin `CheckDataList()` feature selection preserves native within-batch peak ranking when batch frequencies tie, instead of ranking tied peak IDs alphabetically.
 * **feature**: `ExportATACResults()` saves a complete ATAC object, explicit result tables, selected-assay matrix companions and an external-resource inventory with file checksums into a new directory. Matrix Market/BED3/barcode exports can be read by `ReadATACData()`; fragment resources remain external.
 * **feature**: `FilterATACPeaks()` creates a clean peak assay using explicit raw-count, interval and blacklist criteria. `AnnotateATACPeaks()` records native nearest-interval annotation hits with explicit genome-label/known-length checks, preserving unmatched peaks and existing results.

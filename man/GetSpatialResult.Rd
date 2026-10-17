@@ -49,6 +49,10 @@ metadata-only results use their current metadata assignments.
 Storage-disabled methods other than BANKSY retain their existing storage
 behavior. Custom metadata columns require a stored locator; the accessor
 does not guess a column from its values or prefix.
+
+This optional accessor is for programmatic inspection and downstream reuse.
+Spatial plotting functions read stored results directly; calling this
+accessor is not required between analysis and plotting.
 }
 \examples{
 data(visium_human_pancreas_sub)

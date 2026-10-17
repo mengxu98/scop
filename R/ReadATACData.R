@@ -7,6 +7,9 @@
 #' SCOP checks and aligns identifiers; Signac creates the native assay. No cells
 #' or peaks are filtered, and no resources are downloaded or installed.
 #'
+#' Existing compatible Seurat objects can enter the analysis workflow directly;
+#' this constructor is only needed when importing counts or files.
+#'
 #' @param object A numeric sparse peak-by-cell matrix, a local 10x ATAC/ARC
 #'   H5 path, or a local Matrix Market path. Separate matrices with different peak
 #'   universes must be recounted before combining; this function never fills

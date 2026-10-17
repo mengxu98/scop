@@ -31,6 +31,10 @@
 #' behavior. Custom metadata columns require a stored locator; the accessor
 #' does not guess a column from its values or prefix.
 #'
+#' This optional accessor is for programmatic inspection and downstream reuse.
+#' Spatial plotting functions read stored results directly; calling this
+#' accessor is not required between analysis and plotting.
+#'
 #' @md
 #' @param object A `Seurat` object returned by a spatial method.
 #' @param method Name of the method or tool entry, such as `"BANKSY"`.
@@ -324,7 +328,7 @@ spatial_record_cell_identity <- function(srt, tool_name, previous_index = NULL,
   }
   if (!reusable) {
     base <- paste0(".scop_", make.names(tool_name), "_cell_id")
-    column <- tail(make.unique(c(colnames(srt@meta.data), base)), 1L)
+    column <- utils::tail(make.unique(c(colnames(srt@meta.data), base)), 1L)
   }
   srt@meta.data[[column]] <- rownames(srt@meta.data)
   index$cell_id_colname <- column

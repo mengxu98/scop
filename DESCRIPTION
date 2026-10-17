@@ -48,6 +48,8 @@ Suggests:
     motifmatchr,
     TFBSTools,
     chromVAR,
+    enrichit,
+    fgsea,
     ggforce,
     ComplexHeatmap,
     Signac,

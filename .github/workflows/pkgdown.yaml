@@ -98,7 +98,9 @@ jobs:
         env:
           GITHUB_PAT: ${{ github.token }}
         with:
-          extra-packages: any::pkgdown, local::.
+          # Code highlighting loads motif namespaces even with examples disabled.
+          # Include their runtime system requirements when restoring R caches.
+          extra-packages: any::pkgdown, bioc::TFBSTools, local::.
           needs: website
           dependencies: '"hard"'
 
