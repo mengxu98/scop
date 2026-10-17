@@ -1,7 +1,9 @@
 scope <- new.env(parent = globalenv())
 for (expression in parse(".github/pkgdown-build.R")) {
   if (is.call(expression) && identical(expression[[1L]], as.name("<-")) &&
-      identical(expression[[2L]], as.name("check_pages"))) eval(expression, envir = scope)
+    identical(expression[[2L]], as.name("check_pages"))) {
+    eval(expression, envir = scope)
+  }
 }
 run <- function() {
   directory <- tempfile()

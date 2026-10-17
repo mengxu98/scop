@@ -91,6 +91,7 @@ jobs:
           extra-packages: ${{ steps.dependencies.outputs.extra }}
           needs: website
           dependencies: '"hard"'
+          cache: always
 
       - name: Invalidate output from a different R environment
         id: environment
@@ -112,6 +113,7 @@ jobs:
           extra-packages: ${{ steps.full-dependencies.outputs.extra }}
           needs: website
           dependencies: '"hard"'
+          cache: always
 
       - name: Restore unchanged website pages
         run: python3 .github/pkgdown-plan.py restore
