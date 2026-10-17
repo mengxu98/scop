@@ -94,7 +94,9 @@ jobs:
 
       - name: Invalidate output from a different R environment
         id: environment
-        run: Rscript --vanilla .github/pkgdown-environment.R
+        run: |
+          Rscript --vanilla .github/test-pkgdown-environment.R
+          Rscript --vanilla .github/pkgdown-environment.R
 
       - name: Determine full rebuild dependencies
         id: full-dependencies

@@ -92,12 +92,17 @@ for (article in split_names(Sys.getenv("PKGDOWN_ARTICLES"))) {
 }
 
 sources <- c(
+  thisplot = "github::mengxu98/thisplot",
+  thisutils = "github::mengxu98/thisutils",
   harmony = "github::immunogenomics/harmony",
   monocle3 = "github::cole-trapnell-lab/monocle3",
   SeuratData = "github::satijalab/seurat-data",
   spacexr = "github::dmcable/spacexr",
   CytoTRACE2 = "github::digitalcytometry/cytotrace2/cytotrace2_r"
 )
+if ("jinworks/SpatialCellChat" %in% packages || "SpatialCellChat" %in% packages) {
+  packages <- union(packages, c("KlugerLab/ALRA", "JEFworks-Lab/MERINGUE"))
+}
 github <- packages[grepl("/", packages, fixed = TRUE) & !grepl("::", packages, fixed = TRUE)]
 sources[sub(".*/", "", github)] <- paste0("github::", github)
 base_packages <- rownames(installed.packages(priority = "base"))
