@@ -6,9 +6,6 @@
 #' rebuilds the selected assay from the converted counts matrix and keeps cell
 #' metadata and spatial images when present.
 #'
-#' @details
-#' The example uses Ensembl release 115 for reproducible homolog annotations.
-#'
 #' @md
 #' @inheritParams GeneConvert
 #' @param object A `Seurat` object or a gene-by-cell matrix.

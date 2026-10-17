@@ -468,10 +468,9 @@ data.frame(
 )
 ```
 
-## Build provenance
+## Analysis provenance
 
-This receipt belongs to the actual rendered source and retained observations.
-Save it beside the exported object when adapting the workflow.
+Save the analysis provenance beside the exported object.
 
 ```{r build-provenance}
 source_revision <- Sys.getenv("GITHUB_SHA")

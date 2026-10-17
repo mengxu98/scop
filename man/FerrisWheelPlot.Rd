@@ -75,8 +75,8 @@ can be inferred from \code{de_results}.}
 \item{term_col, group_col, count_col, padj_col}{Column names used when \code{res} is
 an enrichment result. Defaults match \code{\link[=RunEnrichment]{RunEnrichment()}} output.}
 
-\item{up_group, down_group}{Group labels in enrichment results. Default
-matches examples that use \code{"Up"} and \code{"Down"} as \code{geneID_groups}.}
+\item{up_group, down_group}{Group labels in enrichment results. Defaults are
+\code{"Up"} and \code{"Down"}, respectively.}
 
 \item{padj_cutoff}{Adjusted p-value cutoff used to select enriched terms
 from \code{res}.}

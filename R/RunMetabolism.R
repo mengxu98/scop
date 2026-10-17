@@ -1,8 +1,5 @@
 #' @title Run metabolism pathway scoring
 #'
-#' @details
-#' The example uses Ensembl release 115 for reproducible cross-species gene annotations.
-#'
 #' @md
 #' @inheritParams RunStandardWorkflow
 #' @inheritParams PrepareDB

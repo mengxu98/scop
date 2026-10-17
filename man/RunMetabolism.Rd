@@ -118,9 +118,6 @@ When \code{group.by} is provided, stores in tools slot \verb{Metabolism_<group.b
 \description{
 Run metabolism pathway scoring
 }
-\details{
-The example uses Ensembl release 115 for reproducible cross-species gene annotations.
-}
 \examples{
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)

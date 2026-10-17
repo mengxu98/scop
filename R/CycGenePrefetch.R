@@ -4,10 +4,6 @@
 #' Based on the human cell cycle genes,
 #' the cell cycle genes of the corresponding species were captured by homologous gene conversion.
 #'
-#' @details
-#' The mouse example uses Ensembl release 115 and refreshes its mapping to keep
-#' the annotation version explicit.
-#'
 #' @md
 #' @inheritParams GeneConvert
 #' @inheritParams thisutils::log_message

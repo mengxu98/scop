@@ -1,8 +1,5 @@
 #' @title Plots for metabolism pathway scoring
 #'
-#' @details
-#' The examples use Ensembl release 115 for reproducible cross-species gene annotations.
-#'
 #' @md
 #' @inheritParams GSVAPlot
 #' @param srt Deprecated alias for `object`; supply exactly one of the two. It

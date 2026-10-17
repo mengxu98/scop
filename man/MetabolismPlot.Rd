@@ -34,9 +34,6 @@ will be removed in scop 1.0.0.}
 \description{
 Plots for metabolism pathway scoring
 }
-\details{
-The examples use Ensembl release 115 for reproducible cross-species gene annotations.
-}
 \examples{
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)

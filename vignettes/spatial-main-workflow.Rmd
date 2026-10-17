@@ -211,7 +211,7 @@ coordinate columns, method, and result status.
 
 ## Save, reload, and redraw
 
-Save the analysis object, not only its figure. This example uses a temporary
+Save the analysis object, not only its figure. The code below saves to a temporary
 file; choose a persistent filename when keeping your own results. The real
 analysis object is separate from the display-only fixture above.
 

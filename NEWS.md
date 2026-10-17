@@ -9,8 +9,7 @@
 
 * **fix**: Let `RunGSEA()` use the supported default backend in both older and
   current clusterProfiler releases without forwarding the removed `by` argument.
-* **docs**: Use the Ensembl 115 archive explicitly in gene conversion examples
-  for reproducible annotations.
+* **docs**: Use the Ensembl 115 archive explicitly in gene conversion examples.
 
 * **refactor**: Simplify fixed-argument plotting and backend calls, and use
   ordinary matrix binding in Scanorama integration while preserving argument

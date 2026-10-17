@@ -72,8 +72,7 @@ Depends on \code{action}: a data frame, a summary list, or a character vector.
 \description{
 Unified CellTypist model management interface. Use it to list available models,
 download models, inspect model metadata, extract model markers, subset models,
-convert models, or delete local models. Model listing and file-management
-examples are non-executing because they may download or modify local files.
+convert models, or delete local models.
 }
 \examples{
 \dontrun{

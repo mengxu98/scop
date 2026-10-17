@@ -219,8 +219,8 @@ print(ht$plot)
 
 ## Save, reload, and check the hand-off
 
-The build uses a temporary directory so repeated rendering cannot overwrite a
-previous analysis. For your work, replace it with a new persistent output folder.
+The code below saves to a temporary directory. Choose a persistent output
+folder when saving your analysis.
 Save the object **and** plain-text metadata; a figure alone cannot reproduce the
 analysis. No cells are sampled for this export.
 
@@ -254,12 +254,12 @@ data.frame(file = basename(list.files(output_dir, full.names = TRUE)),
   restart R and rerun from the input chunk. A skipped or failed method is not
   evidence that it worked. Preserve warnings and the exact error in your report.
 
-## Build and analysis provenance
+## Analysis provenance
 
 The receipt records the R seed. Python methods retain their documented backend
 seeds and parameters; setting the R seed alone does not control every backend.
 Package versions, BLAS libraries and backend changes can alter numerical results. Keep
-this receipt with the exported object. It describes this page's actual render.
+this receipt with the exported object.
 
 ```{r provenance}
 source_revision <- Sys.getenv("GITHUB_SHA")

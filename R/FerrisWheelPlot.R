@@ -21,8 +21,8 @@
 #' `total_up` and `total_down` from `avg_log2FC`.
 #' @param term_col,group_col,count_col,padj_col Column names used when `res` is
 #' an enrichment result. Defaults match [RunEnrichment()] output.
-#' @param up_group,down_group Group labels in enrichment results. Default
-#' matches examples that use `"Up"` and `"Down"` as `geneID_groups`.
+#' @param up_group,down_group Group labels in enrichment results. Defaults are
+#' `"Up"` and `"Down"`, respectively.
 #' @param padj_cutoff Adjusted p-value cutoff used to select enriched terms
 #' from `res`.
 #' @param top_n Number of enriched terms to show when `res` is provided.
