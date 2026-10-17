@@ -1,5 +1,8 @@
 #' @title Run metabolism pathway scoring
 #'
+#' @details
+#' The example uses Ensembl release 115 for reproducible cross-species gene annotations.
+#'
 #' @md
 #' @inheritParams RunStandardWorkflow
 #' @inheritParams PrepareDB
@@ -58,6 +61,7 @@
 #'   db = c("KEGG", "REACTOME"),
 #'   group.by = "CellType",
 #'   species = "Mus_musculus",
+#'   Ensembl_version = 115,
 #'   method = "AUCell",
 #'   use_preparedb = FALSE
 #' )

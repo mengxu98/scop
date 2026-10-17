@@ -146,12 +146,16 @@ duplicated target homologs by summing expression values. The Seurat method
 rebuilds the selected assay from the converted counts matrix and keeps cell
 metadata and spatial images when present.
 }
+\details{
+The example uses Ensembl release 115 for reproducible homolog annotations.
+}
 \examples{
 data(pancreas_sub)
 pancreas_human <- ConvertHomologs(
   pancreas_sub,
   species_from = "Mus_musculus",
-  species_to = "Homo_sapiens"
+  species_to = "Homo_sapiens",
+  Ensembl_version = 115
 )
 rownames(pancreas_human)[1:5]
 }

@@ -6,6 +6,9 @@
 #' rebuilds the selected assay from the converted counts matrix and keeps cell
 #' metadata and spatial images when present.
 #'
+#' @details
+#' The example uses Ensembl release 115 for reproducible homolog annotations.
+#'
 #' @md
 #' @inheritParams GeneConvert
 #' @param object A `Seurat` object or a gene-by-cell matrix.
@@ -33,7 +36,8 @@
 #' pancreas_human <- ConvertHomologs(
 #'   pancreas_sub,
 #'   species_from = "Mus_musculus",
-#'   species_to = "Homo_sapiens"
+#'   species_to = "Homo_sapiens",
+#'   Ensembl_version = 115
 #' )
 #' rownames(pancreas_human)[1:5]
 ConvertHomologs <- function(

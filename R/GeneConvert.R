@@ -3,6 +3,9 @@
 #' @description
 #' Convert different gene ID types within one species or between two species using the biomart service.
 #'
+#' @details
+#' The example uses Ensembl release 115 for reproducible gene annotations.
+#'
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams PrepareDB
@@ -36,7 +39,8 @@
 #' res <- GeneConvert(
 #'   geneID = c("CDK1", "MKI67", "TOP2A", "AURKA", "CTCF"),
 #'   species_from = "Homo_sapiens",
-#'   species_to = "Mus_musculus"
+#'   species_to = "Mus_musculus",
+#'   Ensembl_version = 115
 #' )
 #' str(res)
 GeneConvert <- function(

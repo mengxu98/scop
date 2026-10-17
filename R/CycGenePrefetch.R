@@ -4,6 +4,10 @@
 #' Based on the human cell cycle genes,
 #' the cell cycle genes of the corresponding species were captured by homologous gene conversion.
 #'
+#' @details
+#' The mouse example uses Ensembl release 115 and refreshes its mapping to keep
+#' the annotation version explicit.
+#'
 #' @md
 #' @inheritParams GeneConvert
 #' @inheritParams thisutils::log_message
@@ -20,7 +24,9 @@
 #' ccgenes <- CycGenePrefetch("Homo_sapiens")
 #' str(ccgenes)
 #'
-#' ccgenes <- CycGenePrefetch("Mus_musculus")
+#' ccgenes <- CycGenePrefetch(
+#'   "Mus_musculus", Ensembl_version = 115, use_cached_gene = FALSE
+#' )
 #' str(ccgenes)
 CycGenePrefetch <- function(
   species = "Homo_sapiens",

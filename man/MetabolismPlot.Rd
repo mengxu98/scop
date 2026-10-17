@@ -34,6 +34,9 @@ will be removed in scop 1.0.0.}
 \description{
 Plots for metabolism pathway scoring
 }
+\details{
+The examples use Ensembl release 115 for reproducible cross-species gene annotations.
+}
 \examples{
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
@@ -42,6 +45,7 @@ pancreas_sub <- RunMetabolism(
   db = c("KEGG", "REACTOME"),
   group.by = "CellType",
   species = "Mus_musculus",
+  Ensembl_version = 115,
   method = "AUCell",
   use_preparedb = FALSE
 )
@@ -116,6 +120,7 @@ pancreas_sub <- RunMetabolism(
   assay_name = "METABOLISM",
   db = c("KEGG", "REACTOME"),
   species = "Mus_musculus",
+  Ensembl_version = 115,
   use_preparedb = FALSE
 )
 
