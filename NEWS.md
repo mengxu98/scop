@@ -69,6 +69,7 @@
   Startup messages still respect verbosity settings and `suppressPackageStartupMessages()`.
 
 * **fix**: `RunGSEA()` preserves native fgsea computation with the new clusterProfiler interface, using enrichit's public result converter instead of passing the removed `by` argument or silently changing numerical engines.
+* **fix**: Chromatin `CheckDataList()` feature selection preserves native within-batch peak ranking when batch frequencies tie, instead of ranking tied peak IDs alphabetically.
 
 * **fix**: `CheckATACData()` determines fragment readiness from resources mapped to the selected assay cells, preserving inactive resources in its report after native subsetting.
 
