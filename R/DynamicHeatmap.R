@@ -382,6 +382,8 @@ DynamicHeatmap <- function(
   ...,
   srt = NULL
 ) {
+  check_r("ComplexHeatmap", verbose = FALSE)
+
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   set.seed(seed)
   borders <- prepare_heatmap_borders(
@@ -1059,7 +1061,7 @@ DynamicHeatmap <- function(
   }
 
   lgd <- list()
-  lgd[["ht"]] <- ComplexHeatmap::Legend(
+  lgd[["ht"]] <- get_namespace_fun("ComplexHeatmap", "Legend")(
     title = exp_name,
     col_fun = colors,
     legend_gp = heatmap_border_gp(
@@ -1088,8 +1090,8 @@ DynamicHeatmap <- function(
   )
 
   for (l in lineages) {
-    ha_top_list[[l]] <- ComplexHeatmap::HeatmapAnnotation(
-      Pseudotime = ComplexHeatmap::anno_simple(
+    ha_top_list[[l]] <- get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation")(
+      Pseudotime = get_namespace_fun("ComplexHeatmap", "anno_simple")(
         x = cell_metadata[
           dynamic_heatmap_lineage_cells(
             cell_order_list[[l]],
@@ -1110,7 +1112,7 @@ DynamicHeatmap <- function(
     )
   }
 
-  lgd[["pseudotime"]] <- ComplexHeatmap::Legend(
+  lgd[["pseudotime"]] <- get_namespace_fun("ComplexHeatmap", "Legend")(
     title = "Pseudotime",
     col_fun = pseudotime_col,
     legend_gp = heatmap_border_gp(
@@ -1154,7 +1156,7 @@ DynamicHeatmap <- function(
           lineage_idx <- match(lineage_cells, rownames(cell_metadata))
           cell_anno_lineage <- unname(as.character(cell_anno[lineage_idx]))
           ha_cell <- list()
-          ha_cell[[cellan]] <- ComplexHeatmap::anno_simple(
+          ha_cell[[cellan]] <- get_namespace_fun("ComplexHeatmap", "anno_simple")(
             x = cell_anno_lineage,
             col = cell_anno_cols,
             which = ifelse(flip, "row", "column"),
@@ -1178,14 +1180,14 @@ DynamicHeatmap <- function(
               names(anno_args)
             )]
           )
-          ha_top <- do.call(ComplexHeatmap::HeatmapAnnotation, args = anno_args)
+          ha_top <- do.call(get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation"), args = anno_args)
           if (is.null(ha_top_list[[l]])) {
             ha_top_list[[l]] <- ha_top
           } else {
             ha_top_list[[l]] <- c(ha_top_list[[l]], ha_top)
           }
         }
-        lgd[[cellan]] <- ComplexHeatmap::Legend(
+        lgd[[cellan]] <- get_namespace_fun("ComplexHeatmap", "Legend")(
           title = cellan,
           labels = levels(cell_anno),
           legend_gp = grid::gpar(
@@ -1215,7 +1217,7 @@ DynamicHeatmap <- function(
           )
           lineage_idx <- match(lineage_cells, rownames(cell_metadata))
           ha_cell <- list()
-          ha_cell[[cellan]] <- ComplexHeatmap::anno_simple(
+          ha_cell[[cellan]] <- get_namespace_fun("ComplexHeatmap", "anno_simple")(
             x = unname(cell_anno[lineage_idx]),
             col = col_fun,
             which = ifelse(flip, "row", "column"),
@@ -1236,14 +1238,14 @@ DynamicHeatmap <- function(
               names(anno_args)
             )]
           )
-          ha_top <- do.call(ComplexHeatmap::HeatmapAnnotation, args = anno_args)
+          ha_top <- do.call(get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation"), args = anno_args)
           if (is.null(ha_top_list[[l]])) {
             ha_top_list[[l]] <- ha_top
           } else {
             ha_top_list[[l]] <- c(ha_top_list[[l]], ha_top)
           }
         }
-        lgd[[cellan]] <- ComplexHeatmap::Legend(
+        lgd[[cellan]] <- get_namespace_fun("ComplexHeatmap", "Legend")(
           title = cellan,
           col_fun = col_fun,
           legend_gp = heatmap_border_gp(
@@ -1315,7 +1317,7 @@ DynamicHeatmap <- function(
           )
 
           ha_cell <- list()
-          ha_cell[[paste0(cellan, "\n(separate)")]] <- ComplexHeatmap::anno_block(
+          ha_cell[[paste0(cellan, "\n(separate)")]] <- get_namespace_fun("ComplexHeatmap", "anno_block")(
             panel_fun = block_graphics,
             which = ifelse(flip, "row", "column"),
             show_name = l == lineages[1]
@@ -1333,14 +1335,14 @@ DynamicHeatmap <- function(
               names(anno_args)
             )]
           )
-          ha_top <- do.call(ComplexHeatmap::HeatmapAnnotation, args = anno_args)
+          ha_top <- do.call(get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation"), args = anno_args)
           if (is.null(ha_top_list[[l]])) {
             ha_top_list[[l]] <- ha_top
           } else {
             ha_top_list[[l]] <- c(ha_top_list[[l]], ha_top)
           }
         }
-        lgd[[paste0("separate:", cellan)]] <- ComplexHeatmap::Legend(
+        lgd[[paste0("separate:", cellan)]] <- get_namespace_fun("ComplexHeatmap", "Legend")(
           title = paste0(cellan, "\n(separate)"),
           labels = levels(cell_anno),
           legend_gp = grid::gpar(
@@ -1393,7 +1395,7 @@ DynamicHeatmap <- function(
           ha_cell[[paste0(
             paste0(cellan, collapse = ","),
             "\n(separate)"
-          )]] <- ComplexHeatmap::anno_block(
+          )]] <- get_namespace_fun("ComplexHeatmap", "anno_block")(
             panel_fun = block_graphics,
             which = ifelse(flip, "row", "column"),
             show_name = l == lineages[1]
@@ -1411,14 +1413,14 @@ DynamicHeatmap <- function(
               names(anno_args)
             )]
           )
-          ha_top <- do.call(ComplexHeatmap::HeatmapAnnotation, args = anno_args)
+          ha_top <- do.call(get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation"), args = anno_args)
           if (is.null(ha_top_list[[l]])) {
             ha_top_list[[l]] <- ha_top
           } else {
             ha_top_list[[l]] <- c(ha_top_list[[l]], ha_top)
           }
         }
-        lgd[[paste0("separate:", paste0(cellan, collapse = ","))]] <- ComplexHeatmap::Legend(
+        lgd[[paste0("separate:", paste0(cellan, collapse = ","))]] <- get_namespace_fun("ComplexHeatmap", "Legend")(
           title = "Features\n(separate)",
           labels = cellan,
           legend_gp = grid::gpar(
@@ -1556,7 +1558,7 @@ DynamicHeatmap <- function(
   if (!is.null(row_split)) {
     if (isTRUE(cluster_row_slices)) {
       if (isFALSE(cluster_rows)) {
-        dend <- ComplexHeatmap::cluster_within_group(
+        dend <- get_namespace_fun("ComplexHeatmap", "cluster_within_group")(
           Matrix::t(mat_split),
           row_split_raw
         )
@@ -1572,8 +1574,8 @@ DynamicHeatmap <- function(
       border_color = feature_annotation_border_color,
       border_size = feature_annotation_border_size
     )
-    ha_clusters <- ComplexHeatmap::HeatmapAnnotation(
-      features_split = ComplexHeatmap::anno_block(
+    ha_clusters <- get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation")(
+      features_split = get_namespace_fun("ComplexHeatmap", "anno_block")(
         align_to = split(seq_along(row_split_raw), row_split_raw),
         panel_fun = block_graphics,
         width = grid::unit(0.1, "in"),
@@ -1594,7 +1596,7 @@ DynamicHeatmap <- function(
     } else {
       ha_left <- c(ha_left, ha_clusters)
     }
-    lgd[["Cluster"]] <- ComplexHeatmap::Legend(
+    lgd[["Cluster"]] <- get_namespace_fun("ComplexHeatmap", "Legend")(
       title = "Cluster",
       labels = intersect(levels(row_split_raw), row_split_raw),
       legend_gp = grid::gpar(
@@ -1659,10 +1661,10 @@ DynamicHeatmap <- function(
       use_raster = TRUE
     )
     ht_args <- c(ht_args, ht_params[setdiff(names(ht_params), names(ht_args))])
-    ht_list <- do.call(ComplexHeatmap::Heatmap, args = ht_args)
+    ht_list <- do.call(get_namespace_fun("ComplexHeatmap", "Heatmap"), args = ht_args)
     features_ordered <- rownames(mat)[unlist(
       suppressWarnings(
-        ComplexHeatmap::row_order(
+        get_namespace_fun("ComplexHeatmap", "row_order")(
           ht_list
         )
       )
@@ -1706,8 +1708,8 @@ DynamicHeatmap <- function(
     }
   }
   if (length(index) > 0) {
-    ha_mark <- ComplexHeatmap::HeatmapAnnotation(
-      gene = ComplexHeatmap::anno_mark(
+    ha_mark <- get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation")(
+      gene = get_namespace_fun("ComplexHeatmap", "anno_mark")(
         at = which(rownames(feature_metadata) %in% features_ordered[index]),
         labels = feature_metadata[
           which(rownames(feature_metadata) %in% features_ordered[index]),
@@ -1732,7 +1734,7 @@ DynamicHeatmap <- function(
   if (length(lineages) > 1) {
     ha_list <- list()
     for (l in lineages) {
-      ha_list[[l]] <- ComplexHeatmap::anno_simple(
+      ha_list[[l]] <- get_namespace_fun("ComplexHeatmap", "anno_simple")(
         x = is.na(feature_metadata[, paste0(l, order_by)]) + 0,
         col = c("0" = "#181830", "1" = "transparent"),
         width = grid::unit(5, "mm"),
@@ -1741,7 +1743,7 @@ DynamicHeatmap <- function(
       )
     }
     ha_lineage <- do.call(
-      ComplexHeatmap::HeatmapAnnotation,
+      get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation"),
       args = c(
         ha_list,
         which = ifelse(flip, "column", "row"),
@@ -1926,12 +1928,14 @@ DynamicHeatmap <- function(
     ht_args <- c(ht_args, ht_params[setdiff(names(ht_params), names(ht_args))])
     if (isTRUE(flip)) {
       if (is.null(ht_list)) {
-        ht_list <- do.call(ComplexHeatmap::Heatmap, args = ht_args)
+        ht_list <- do.call(get_namespace_fun("ComplexHeatmap", "Heatmap"), args = ht_args)
       } else {
-        ht_list <- ht_list %v% do.call(ComplexHeatmap::Heatmap, args = ht_args)
+        ht_list <- get_namespace_fun("ComplexHeatmap", "%v%")(
+          ht_list, do.call(get_namespace_fun("ComplexHeatmap", "Heatmap"), args = ht_args)
+        )
       }
     } else {
-      ht_list <- ht_list + do.call(ComplexHeatmap::Heatmap, args = ht_args)
+      ht_list <- ht_list + do.call(get_namespace_fun("ComplexHeatmap", "Heatmap"), args = ht_args)
     }
   }
 
@@ -1992,7 +1996,7 @@ DynamicHeatmap <- function(
 
     g_tree <- grid::grid.grabExpr(
       {
-        ComplexHeatmap::draw(ht_list,
+        get_namespace_fun("ComplexHeatmap", "draw")(ht_list,
           annotation_legend_list = lgd,
           annotation_legend_side = legend.position
         )
@@ -2018,18 +2022,16 @@ DynamicHeatmap <- function(
           if (length(enrich_anno) > 0) {
             for (enrich_anno_element in enrich_anno) {
               enrich_obj <- strsplit(enrich_anno_element, "_split_")[[1]][1]
-              ComplexHeatmap::decorate_annotation(
+              get_namespace_fun("ComplexHeatmap", "decorate_annotation")(
                 enrich_anno_element,
-                slice = 1,
-                {
+                slice = 1, {
                   grid::grid.text(
                     paste0(enrich, " (", enrich_obj, ")"),
                     x = grid::unit(1, "npc"),
                     y = grid::unit(1, "npc") + grid::unit(2.5, "mm"),
                     just = c("left", "bottom")
                   )
-                }
-              )
+              })
             }
           }
         }
@@ -2041,7 +2043,7 @@ DynamicHeatmap <- function(
             lwd <- pseudotime_label_linewidth[n]
             for (l in lineages) {
               for (slice in pseudotime_slices) {
-                ComplexHeatmap::decorate_heatmap_body(
+                get_namespace_fun("ComplexHeatmap", "decorate_heatmap_body")(
                   l,
                   {
                     pseudotime <- cell_metadata[
@@ -2088,7 +2090,7 @@ DynamicHeatmap <- function(
     ht_height <- grid::unit(height_sum, units = units)
     g_tree <- grid::grid.grabExpr(
       {
-        ComplexHeatmap::draw(ht_list,
+        get_namespace_fun("ComplexHeatmap", "draw")(ht_list,
           annotation_legend_list = lgd,
           annotation_legend_side = legend.position
         )
@@ -2114,18 +2116,16 @@ DynamicHeatmap <- function(
           if (length(enrich_anno) > 0) {
             for (enrich_anno_element in enrich_anno) {
               enrich_obj <- strsplit(enrich_anno_element, "_split_")[[1]][1]
-              ComplexHeatmap::decorate_annotation(
+              get_namespace_fun("ComplexHeatmap", "decorate_annotation")(
                 enrich_anno_element,
-                slice = 1,
-                {
+                slice = 1, {
                   grid::grid.text(
                     paste0(enrich, " (", enrich_obj, ")"),
                     x = grid::unit(1, "npc"),
                     y = grid::unit(1, "npc") + grid::unit(2.5, "mm"),
                     just = c("left", "bottom")
                   )
-                }
-              )
+              })
             }
           }
         }
@@ -2137,7 +2137,7 @@ DynamicHeatmap <- function(
             lwd <- pseudotime_label_linewidth[n]
             for (l in lineages) {
               for (slice in pseudotime_slices) {
-                ComplexHeatmap::decorate_heatmap_body(
+                get_namespace_fun("ComplexHeatmap", "decorate_heatmap_body")(
                   l,
                   {
                     pseudotime <- cell_metadata[
@@ -2253,7 +2253,7 @@ dynamic_heatmap_decorate_borders <- function(
       return(invisible(NULL))
     }
     try(
-      ComplexHeatmap::decorate_annotation(annotation, slice = 1, {
+      get_namespace_fun("ComplexHeatmap", "decorate_annotation")(annotation, slice = 1, {
         grid::grid.rect(
           gp = grid::gpar(fill = "transparent", col = color, lwd = size)
         )

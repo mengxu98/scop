@@ -131,7 +131,7 @@ RunCellRankTrends <- function(
     prepare_env = FALSE
   )
   functions <- scop_python_import("functions", convert = TRUE)
-  result <- do.call(functions$CellRankTrends, list(
+  result <- functions$CellRankTrends(
     adata = adata,
     fate_probabilities = reticulate::r_to_py(fate),
     fate_columns = colnames(fate),
@@ -151,7 +151,7 @@ RunCellRankTrends <- function(
     fallback_distribution = fallback_distribution,
     show_plot = FALSE,
     save = NULL
-  ))
+  )
 
   trend_matrix <- as.matrix(py_to_r2(result$trend_matrix))
   genes_out <- as.character(py_to_r2(result$genes))

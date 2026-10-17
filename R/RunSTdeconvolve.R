@@ -403,7 +403,7 @@ stdeconvolve_run_backend <- function(
 
   lda_input <- t(as.matrix(corpus_mat))
   models <- do.call(fit_lda, c(list(counts = lda_input, Ks = k), fit_lda_params))
-  model <- do.call(optimal_model, list(models = models, opt = opt))
+  model <- optimal_model(models = models, opt = opt)
   result <- do.call(get_beta_theta, c(list(lda = model), get_beta_theta_params))
   stdeconvolve_extract_result(
     result = result,
