@@ -170,7 +170,7 @@ LinkingTo:
     RcppEigen,
     RSpectra,
     thisutils
-Config/Needs/website: mengxu98/thistemplate
+Config/Needs/website: mengxu98/thistemplate@eba8ebbc6be12f6ced8431d815ed5f0077135f70
 URL: https://mengxu98.github.io/scop/
 BugReports: https://github.com/mengxu98/scop/issues
 Config/roxygen2/version: 8.1.0
