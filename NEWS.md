@@ -1,5 +1,7 @@
 # scop (development version)
 
+* **fix**: Read startup metadata from the loaded namespace so development loading preserves the Logo, version, date and website without requiring an installed copy.
+
 * **refactor**: Simplify fixed-argument plotting and backend calls, and use
   ordinary matrix binding in Scanorama integration while preserving argument
   values, matrix names and projection results.
