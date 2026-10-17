@@ -10,6 +10,7 @@
 * **fix**: Let `RunGSEA()` use the supported default backend in both older and
   current clusterProfiler releases without forwarding the removed `by` argument.
 * **docs**: Use the Ensembl 115 archive explicitly in gene conversion examples.
+* **fix**: Read startup metadata from the loaded namespace so development loading preserves the Logo, version, date and website without requiring an installed copy.
 
 * **refactor**: Simplify fixed-argument plotting and backend calls, and use
   ordinary matrix binding in Scanorama integration while preserving argument
