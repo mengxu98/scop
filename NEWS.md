@@ -1,5 +1,9 @@
 # scop (development version)
 
+* **refactor**: Simplify fixed-argument plotting and backend calls, and use
+  ordinary matrix binding in Scanorama integration while preserving argument
+  values, matrix names and projection results.
+
 * **docs**: Use direct package calls in examples, remove redundant availability
   guards, and mark optional or external-resource recipes explicitly. Preserve
   interactive dataset and Monocle examples and regenerate affected help topics.

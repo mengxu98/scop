@@ -39,6 +39,25 @@ make_benchmark_plot_result <- function(status = c("success", "success", "failed"
   )
 }
 
+test_that("per-cell benchmark panels retain the requested multi-feature layout", {
+  counts <- matrix(seq_len(12), nrow = 3,
+    dimnames = list(paste0("g", 1:3), paste0("c", 1:4)))
+  object <- SeuratObject::CreateSeuratObject(Matrix::Matrix(counts, sparse = TRUE))
+  object$A_LISI <- c(1, 2, 3, 4)
+  object$B_LISI <- c(4, 1, 2, 3)
+  object[["pca"]] <- SeuratObject::CreateDimReducObject(embeddings = matrix(seq_len(8), ncol = 2,
+    dimnames = list(colnames(object), c("PC_1", "PC_2"))), key = "PC_", assay = "RNA")
+  for (byrow in c(FALSE, TRUE)) {
+    plot <- benchmark_feature_plot(object, features = c("A_LISI", "B_LISI"), reduction = "pca",
+      plot_type = "feature", plot_boxplot = FALSE, nrow = 1, ncol = 2, byrow = byrow, verbose = FALSE)
+    expect_s3_class(plot, "patchwork")
+    expect_length(plot$patches$plots, 1L)
+    expect_equal(plot$patches$layout$nrow, 1)
+    expect_equal(plot$patches$layout$ncol, 2)
+    expect_identical(plot$patches$layout$byrow, byrow)
+  }
+})
+
 test_that("SpatialBenchmarkPlot selects publication benchmark views", {
   result <- make_benchmark_plot_result()
   expect_s3_class(SpatialBenchmarkPlot(data = result, plot_type = "quality"), "ggplot")
