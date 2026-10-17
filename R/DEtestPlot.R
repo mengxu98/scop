@@ -2,12 +2,11 @@
 #'
 #' @md
 #' @inheritParams CellDimPlot
-#' @param object A Seurat object, or NULL when supplying a result table in `res`.
 #' @inheritParams scop-params
 #' @param srt Deprecated alias for `object`; supply exactly one of the two. It
 #' will be removed in scop 1.0.0.
 #' @param object A `Seurat` object or `SummarizedExperiment` object containing the
-#' results of differential expression analysis.
+#' results of differential expression analysis. May be omitted when `res` is supplied.
 #' @param res A `data.frame` or `data.table` with differential expression results.
 #' When `res` is provided, `object` will be ignored.
 #' The data.frame must contain columns: `gene`, `group1` (factor or character),
@@ -162,7 +161,7 @@
 #'
 #' de_results1 <- pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox
 #' DEtestPlot(
-#'   object = NULL, res = de_results1,
+#'   res = de_results1,
 #'   plot_type = "volcano",
 #'   ncol = 2
 #' )
@@ -174,7 +173,7 @@
 #'   ident.2 = "Endocrine"
 #' )
 #' DEtestPlot(
-#'   object = NULL, res = de_results2,
+#'   res = de_results2,
 #'   plot_type = "volcano"
 #' )
 #'
@@ -183,12 +182,12 @@
 #'   group.by = "CellType"
 #' )
 #' DEtestPlot(
-#'   object = NULL, res = de_results3,
+#'   res = de_results3,
 #'   plot_type = "volcano",
 #'   ncol = 2
 #' )
 DEtestPlot <- function(
-  object,
+  object = NULL,
   group.by = NULL,
   test.use = "wilcox",
   res = NULL,
@@ -1010,7 +1009,7 @@ collect_volcano_enrichment_annotations <- function(
 #'   group.by = "CellType"
 #' )
 DEtestManhattanPlot <- function(
-  object,
+  object = NULL,
   group.by = NULL,
   test.use = "wilcox",
   res = NULL,
@@ -1279,7 +1278,7 @@ DEtestManhattanPlot <- function(
 #'   group.by = "CellType"
 #' )
 DEtestRingPlot <- function(
-  object,
+  object = NULL,
   group.by = NULL,
   test.use = "wilcox",
   res = NULL,
@@ -1549,7 +1548,7 @@ DEtestRingPlot <- function(
 #'   ncol = 2
 #' )
 VolcanoPlot <- function(
-  object,
+  object = NULL,
   group.by = NULL,
   test.use = "wilcox",
   res = NULL,

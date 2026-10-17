@@ -5,7 +5,7 @@
 \title{Volcano Plot}
 \usage{
 VolcanoPlot(
-  object,
+  object = NULL,
   group.by = NULL,
   test.use = "wilcox",
   res = NULL,
@@ -56,7 +56,7 @@ VolcanoPlot(
 }
 \arguments{
 \item{object}{A \code{Seurat} object or \code{SummarizedExperiment} object containing the
-results of differential expression analysis.}
+results of differential expression analysis. May be omitted when \code{res} is supplied.}
 
 \item{group.by}{Metadata column(s) used to color cells.}
 

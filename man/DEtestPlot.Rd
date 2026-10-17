@@ -5,7 +5,7 @@
 \title{Differential Expression Test Plot}
 \usage{
 DEtestPlot(
-  object,
+  object = NULL,
   group.by = NULL,
   test.use = "wilcox",
   res = NULL,
@@ -68,7 +68,7 @@ DEtestPlot(
 }
 \arguments{
 \item{object}{A \code{Seurat} object or \code{SummarizedExperiment} object containing the
-results of differential expression analysis.}
+results of differential expression analysis. May be omitted when \code{res} is supplied.}
 
 \item{group.by}{Metadata column(s) used to color cells.}
 
@@ -284,7 +284,7 @@ DEtestPlot(
 
 de_results1 <- pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox
 DEtestPlot(
-  object = NULL, res = de_results1,
+  res = de_results1,
   plot_type = "volcano",
   ncol = 2
 )
@@ -296,7 +296,7 @@ de_results2 <- Seurat::FindMarkers(
   ident.2 = "Endocrine"
 )
 DEtestPlot(
-  object = NULL, res = de_results2,
+  res = de_results2,
   plot_type = "volcano"
 )
 
@@ -305,7 +305,7 @@ de_results3 <- Seurat::FindAllMarkers(
   group.by = "CellType"
 )
 DEtestPlot(
-  object = NULL, res = de_results3,
+  res = de_results3,
   plot_type = "volcano",
   ncol = 2
 )

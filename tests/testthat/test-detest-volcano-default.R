@@ -1,3 +1,35 @@
+test_that("DE plots accept result tables without an object", {
+  skip_if_not_installed("geomtextpath")
+
+  res <- data.frame(
+    gene = paste0("G", seq_len(8)),
+    group1 = rep(c("A", "B"), each = 4),
+    avg_log2FC = rep(c(-2, -1, 1, 2), 2),
+    p_val = 0.001,
+    p_val_adj = 0.008,
+    pct.1 = rep(c(0.1, 0.2, 0.8, 0.9), 2),
+    pct.2 = 0.5
+  )
+  calls <- list(
+    list(fun = "DEtestPlot", args = list(plot_type = "volcano")),
+    list(fun = "DEtestPlot", args = list(plot_type = "manhattan")),
+    list(fun = "DEtestPlot", args = list(plot_type = "ring")),
+    list(fun = "VolcanoPlot", args = list()),
+    list(fun = "DEtestManhattanPlot", args = list()),
+    list(fun = "DEtestRingPlot", args = list())
+  )
+  for (call in calls) {
+    args <- c(list(res = res, nlabel = 0), call$args)
+    actual <- do.call(call$fun, args)
+    expected <- do.call(call$fun, c(list(object = NULL), args))
+    expect_s3_class(actual, "ggplot")
+    expect_equal(
+      ggplot2::ggplot_build(actual)$data,
+      ggplot2::ggplot_build(expected)$data
+    )
+  }
+})
+
 test_that("volcano defaults use signed layouts on real pancreas data", {
   skip_if_not_installed("Seurat")
 

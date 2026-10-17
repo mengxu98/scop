@@ -1,5 +1,8 @@
 # scop (development version)
 
+* **fix**: Accept result tables without `object` in `DEtestPlot()`,
+  `VolcanoPlot()`, `DEtestManhattanPlot()` and `DEtestRingPlot()`.
+
 * **ci**: Execute runnable reference examples during website builds, select
   changed pages against the last successful publication, and share one workflow
   and two build scripts for references and articles. Rebuild stale environment
