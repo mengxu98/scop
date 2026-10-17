@@ -532,6 +532,7 @@ reference:
   - CheckDataType
   - CheckDataList
   - CheckDataMerge
+  - ExportATACResults
 
 - subtitle: "Object and File Conversion"
   contents:
