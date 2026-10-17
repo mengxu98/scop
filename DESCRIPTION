@@ -45,6 +45,8 @@ Suggests:
     ggforce,
     ComplexHeatmap,
     Signac,
+    enrichit,
+    fgsea,
     GenomeInfoDb,
     hdf5r,
     Rsamtools,

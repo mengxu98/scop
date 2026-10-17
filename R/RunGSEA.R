@@ -359,7 +359,7 @@ RunGSEA <- function(
         TERM2NAME_tmp[["Term"]] %in% TERM2GENE_tmp[["Term"]], ,
         drop = FALSE
       ]
-      enrich_res <- clusterProfiler::GSEA(
+      enrich_res <- gsea_fgsea_result(
         geneList = geneList,
         minGSSize = ifelse(term %in% unlimited_db, 1, minGSSize),
         maxGSSize = ifelse(term %in% unlimited_db, Inf, maxGSSize),
@@ -559,4 +559,53 @@ RunGSEA <- function(
   } else {
     return(res)
   }
+}
+
+# clusterProfiler 4.20 replaced its fgsea dispatcher with enrichit. Keep the
+# requested numerical engine; use enrichit's public result converter only.
+gsea_fgsea_result <- function(geneList, minGSSize, maxGSSize, nPermSimple,
+                              eps, scoreType, pAdjustMethod, pvalueCutoff,
+                              TERM2GENE, TERM2NAME, verbose) {
+  if ("by" %in% names(formals(clusterProfiler::GSEA))) {
+    return(clusterProfiler::GSEA(
+      geneList = geneList, minGSSize = minGSSize, maxGSSize = maxGSSize,
+      nPermSimple = nPermSimple, eps = eps, scoreType = scoreType,
+      pAdjustMethod = pAdjustMethod, pvalueCutoff = pvalueCutoff,
+      TERM2GENE = TERM2GENE, TERM2NAME = TERM2NAME,
+      by = "fgsea", verbose = verbose
+    ))
+  }
+  if (!requireNamespace("fgsea", quietly = TRUE) ||
+    !requireNamespace("enrichit", quietly = TRUE)) {
+    log_message("RunGSEA requires fgsea and enrichit with this clusterProfiler version.", message_type = "error")
+  }
+  gene_sets <- lapply(split(as.character(TERM2GENE[[2L]]), TERM2GENE[[1L]]), unique)
+  native <- as.data.frame(fgsea::fgsea(
+    pathways = gene_sets, stats = geneList, minSize = minGSSize,
+    maxSize = maxGSSize, nPermSimple = nPermSimple, eps = eps,
+    scoreType = scoreType, gseaParam = 1, nproc = 0
+  ))
+  native$padj <- stats::p.adjust(native$pval, method = pAdjustMethod)
+  native <- native[!is.na(native$pval) & native$pval <= pvalueCutoff &
+    !is.na(native$padj) & native$padj <= pvalueCutoff, , drop = FALSE]
+  if (!nrow(native)) {
+    return(NULL)
+  }
+  native$Description <- as.character(TERM2NAME[[2L]])[
+    match(native$pathway, TERM2NAME[[1L]])
+  ]
+  result <- enrichit::as_gseaResult(
+    native,
+    geneList = geneList, geneSets = gene_sets,
+    exponent = 1, scoreType = scoreType, pAdjustMethod = pAdjustMethod
+  )
+  result@result <- result@result[
+    order(result@result$p.adjust, -abs(result@result$NES)), ,
+    drop = FALSE
+  ]
+  result@params <- c(result@params, list(
+    pvalueCutoff = pvalueCutoff, eps = eps, pAdjustMethod = pAdjustMethod,
+    minGSSize = minGSSize, maxGSSize = maxGSSize, backend = "fgsea"
+  ))
+  result
 }
