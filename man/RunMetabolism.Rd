@@ -77,9 +77,9 @@ case-insensitive direct symbol matching is used.}
 provides species-aware gene mapping via BioMart and KEGG/Reactome databases.
 This automatically handles gene symbol conversion for non-human species
 (e.g., \code{species = "Mus_musculus"} → mouse gene symbols in metabolism pathways).
-When \code{FALSE}, raw scMetabolism GMT files are
-downloaded and genes are matched case-insensitively with optional \link{GeneConvert}
-supplementation when \code{convert_species = TRUE}.}
+When \code{FALSE}, raw scMetabolism GMT files are downloaded from the data mirror;
+the scMetabolism R package is not required. Genes are matched case-insensitively
+with optional \link{GeneConvert} supplementation when \code{convert_species = TRUE}.}
 
 \item{method}{Scoring method, one of \code{"AUCell"}, \code{"GSVA"}, \code{"ssGSEA"}, \code{"VISION"}.}
 

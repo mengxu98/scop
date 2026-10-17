@@ -91,7 +91,8 @@ FeatureDimPlot(
   verbose = TRUE,
   srt = NULL,
   title.face = NULL,
-  title.color = NULL
+  title.color = NULL,
+  show_points = TRUE
 )
 }
 \arguments{
@@ -136,7 +137,22 @@ assay gene names or numeric metadata columns.}
 \item{lower_quantile, upper_quantile, lower_cutoff, upper_cutoff}{Per-feature
 quantile or absolute cutoffs for the color scale.}
 
-\item{add_density, density_color, density_filled, density_filled_palette, density_filled_palcolor}{Density contours; \code{density_filled} draws filled bands.}
+\item{add_density, density_color, density_filled, density_filled_palette, density_filled_palcolor}{Add a smooth feature-expression layer. For unblended features, density
+contours are colored by local Gaussian-weighted mean feature values,
+including zero values. Contour shape represents cell density; color
+represents local mean expression and may vary along one contour.
+\code{density_filled = TRUE} draws the local mean expression surface with fine density contours instead.
+With points visible, the original point-expression scale is preserved and
+local means use that scale. Without points, the scale is based on the local
+means. Cutoffs and \code{keep_scale} apply to the selected scale. \code{bg_cutoff} only
+affects cell marks. When neither fill-color option is supplied, expression
+surfaces inherit \code{palette} and \code{palcolor}; explicit fill options override
+this default.
+For compatibility, explicitly supplying \code{density_color} retains the old
+fixed-color cell-density layer. Blended multi-feature plots using
+\code{compare_features = TRUE} also retain the original cell-density layer,
+including filled density bands and their original default colors.
+Use \code{\link[=CellDimPlot]{CellDimPlot()}} for cell-distribution density layers.}
 
 \item{cells.highlight}{Cells to highlight and their appearance. \code{TRUE} highlights all cells.}
 
@@ -237,10 +253,26 @@ maps feature names to colors. Unspecified features inherit the theme. Names
 refer to features, not group names or panel order. These heading options do
 not affect the custom \code{title}, split labels, expression palette, or blended
 panels (\code{compare_features = TRUE}).}
+
+\item{show_points}{Draw cell points or hexagonal bins and highlighted cell
+points. Set to \code{FALSE} for contour-only or surface-only plots. Labels and
+graph or lineage overlays are controlled separately. Defaults to \code{TRUE}.}
 }
 \description{
 Color cells on a dimensionality reduction by feature values (assay genes or
 numeric metadata).
+}
+\details{
+Expression-colored contours use a 240 by 240 grid, Gaussian bandwidths from
+\code{\link[stats:bw.nrd]{stats::bw.nrd()}}, and nine density levels from 8\% to 92\% of peak density.
+Major contours use a wider stroke every third level. Grid limits extend three bandwidths beyond the finite coordinates to avoid
+clipping outer contours. Local means are interpolated onto contour vertices;
+filled surfaces omit grid points below 2\% of peak kernel support, fade in
+between 2\% and 3.5\% support, and interpolate raster pixels for smooth edges.
+Cells with non-finite coordinates or feature values are omitted from this
+calculation. Panels with fewer than three finite cells or no variation in
+either coordinate return no contours with a warning. No additional public
+plotting function or dependency is required.
 }
 \examples{
 data(pancreas_sub)
@@ -312,8 +344,13 @@ FeatureDimPlot(
   pancreas_sub,
   features = "Rbp4",
   reduction = "UMAP",
-  label = TRUE,
-  add_density = TRUE
+  add_density = TRUE,
+  show_points = FALSE,
+  theme_use = "theme_blank",
+  xlab = "UMAP_1",
+  ylab = "UMAP_2",
+  palcolor = c("#345C96", "#349AA4", "#91C6B0", "#DDBF63",
+               "#D77A52", "#AC4968", "#753858")
 )
 
 FeatureDimPlot(
@@ -323,6 +360,20 @@ FeatureDimPlot(
   label = TRUE,
   add_density = TRUE,
   density_filled = TRUE
+)
+
+FeatureDimPlot(
+  pancreas_sub,
+  features = "Rbp4",
+  reduction = "UMAP",
+  add_density = TRUE,
+  show_points = FALSE,
+  density_filled = TRUE,
+  theme_use = "theme_blank",
+  xlab = "UMAP_1",
+  ylab = "UMAP_2",
+  density_filled_palcolor = c("#F2F7F5", "#C5DFD8", "#89BDB5",
+                             "#4A969E", "#286B87", "#253D63")
 )
 
 # Chane the plot type from point to the hexagonal bin

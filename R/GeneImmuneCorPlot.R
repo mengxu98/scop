@@ -267,15 +267,12 @@ gene_immune_cor_edges <- function(
     for (cell_type in colnames(immune_mat)) {
       cr <- tryCatch(
         {
-          cor_args <- list(
+          stats::cor.test(
             x = as.numeric(gene_mat[, gene]),
             y = as.numeric(immune_mat[, cell_type]),
-            method = method
+            method = method,
+            exact = if (method %in% c("spearman", "kendall")) FALSE else NULL
           )
-          if (method %in% c("spearman", "kendall")) {
-            cor_args$exact <- FALSE
-          }
-          do.call(stats::cor.test, cor_args)
         },
         error = function(e) NULL
       )

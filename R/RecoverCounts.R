@@ -91,7 +91,8 @@ RecoverCounts <- function(
         "Perform {.val {trans}} on the raw data",
         verbose = verbose
       )
-      counts <- do.call(trans, list(counts))
+      trans_fun <- get(trans, mode = "function", envir = environment())
+      counts <- trans_fun(counts)
     }
   }
   if (status == "raw_normalized_counts") {
@@ -99,6 +100,9 @@ RecoverCounts <- function(
       "The data is presumed to be normalized without log transformation",
       verbose = verbose
     )
+  }
+  if (!inherits(counts, "dgCMatrix")) {
+    counts <- SeuratObject::as.sparse(counts)
   }
   if (is.null(sf)) {
     sf <- unique(round(Matrix::colSums(counts)))
