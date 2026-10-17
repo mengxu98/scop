@@ -441,6 +441,10 @@ reference:
   - RunMotifEnrichment
   - RunChromVAR
 
+- subtitle: "Gene Activity and Peak-Gene Associations"
+  contents:
+  - RunGeneActivity
+
 - title: "Spatial Omics Analysis"
 
 - subtitle: "Spatial Quality Control and Normalization"
