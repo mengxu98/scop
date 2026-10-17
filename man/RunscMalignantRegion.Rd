@@ -96,11 +96,11 @@ when spatial-neighborhood refinement is requested and the converted AnnData
 object does not already contain spatial coordinates.
 }
 \examples{
-\dontshow{if (FALSE) withAutoprint(\{ # examplesIf}
+\dontrun{
 srt <- RunscMalignantRegion(
   srt,
   signature_gmt = "path/to/sc_malignant_deg.gmt",
   spatial.cols = c("x", "y")
 )
-\dontshow{\}) # examplesIf}
+}
 }

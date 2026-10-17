@@ -471,9 +471,10 @@ FindVariableFeatures.Seurat <- function(
     if (!is.null(dispersion.function)) {
       fallback_args$dispersion.function <- dispersion.function
     }
-    return(do.call(
-      utils::getFromNamespace("FindVariableFeatures.Seurat", "Seurat"),
-      c(fallback_args, dots)
+    return(invoke_fun(
+      "FindVariableFeatures.Seurat",
+      c(fallback_args, dots),
+      .env = asNamespace("Seurat")
     ))
   }
   if (identical(selection.method, "vst")) {

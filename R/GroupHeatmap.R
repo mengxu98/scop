@@ -407,6 +407,8 @@ GroupHeatmap <- function(
   ...,
   srt = NULL
 ) {
+  check_r("ComplexHeatmap", verbose = FALSE)
+
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   set.seed(seed)
   borders <- prepare_heatmap_borders(
@@ -1133,7 +1135,7 @@ GroupHeatmap <- function(
     features[duplicated(features)]
 
   lgd <- list()
-  lgd[["ht"]] <- ComplexHeatmap::Legend(
+  lgd[["ht"]] <- get_namespace_fun("ComplexHeatmap", "Legend")(
     title = exp_name,
     col_fun = colors,
     legend_gp = heatmap_border_gp(
@@ -1147,7 +1149,7 @@ GroupHeatmap <- function(
     )
   )
   if (isTRUE(add_dot)) {
-    lgd[["point"]] <- ComplexHeatmap::Legend(
+    lgd[["point"]] <- get_namespace_fun("ComplexHeatmap", "Legend")(
       labels = paste0(seq(20, 100, length.out = 5), "%"),
       title = "Percent",
       type = "points",
@@ -1184,7 +1186,7 @@ GroupHeatmap <- function(
             message_type = "error"
           )
         }
-        dend <- ComplexHeatmap::cluster_within_group(
+        dend <- get_namespace_fun("ComplexHeatmap", "cluster_within_group")(
           mat_list[[cell_group]],
           column_split_list[[cell_group]]
         )
@@ -1206,7 +1208,7 @@ GroupHeatmap <- function(
       )
 
       anno <- list()
-      anno[[cell_group]] <- ComplexHeatmap::anno_block(
+      anno[[cell_group]] <- get_namespace_fun("ComplexHeatmap", "anno_block")(
         align_to = split(
           seq_along(levels(cell_groups[[cell_group]])),
           gsub(
@@ -1220,7 +1222,7 @@ GroupHeatmap <- function(
         show_name = FALSE
       )
       ha_cell_group <- do.call(
-        ComplexHeatmap::HeatmapAnnotation,
+        get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation"),
         args = c(
           anno,
           which = ifelse(flip, "row", "column"),
@@ -1243,7 +1245,7 @@ GroupHeatmap <- function(
       )
 
       anno <- list()
-      anno[[split.by]] <- ComplexHeatmap::anno_block(
+      anno[[split.by]] <- get_namespace_fun("ComplexHeatmap", "anno_block")(
         align_to = split(
           seq_along(levels(cell_groups[[cell_group]])),
           gsub(
@@ -1257,7 +1259,7 @@ GroupHeatmap <- function(
         show_name = i == 1
       )
       ha_split_by <- do.call(
-        ComplexHeatmap::HeatmapAnnotation,
+        get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation"),
         args = c(
           anno,
           which = ifelse(flip, "row", "column"),
@@ -1277,7 +1279,7 @@ GroupHeatmap <- function(
   for (i in seq_along(raw_group_by)) {
     cell_group <- raw_group_by[i]
     if (cell_group != "All.groups") {
-      lgd[[cell_group]] <- ComplexHeatmap::Legend(
+      lgd[[cell_group]] <- get_namespace_fun("ComplexHeatmap", "Legend")(
         title = cell_group,
         labels = levels(srt@meta.data[[cell_group]]),
         legend_gp = heatmap_discrete_legend_gp(
@@ -1299,7 +1301,7 @@ GroupHeatmap <- function(
   }
 
   if (!is.null(split.by)) {
-    lgd[[split.by]] <- ComplexHeatmap::Legend(
+    lgd[[split.by]] <- get_namespace_fun("ComplexHeatmap", "Legend")(
       title = split.by,
       labels = levels(srt@meta.data[[split.by]]),
       legend_gp = heatmap_discrete_legend_gp(
@@ -1365,7 +1367,7 @@ GroupHeatmap <- function(
           ha_top <- tryCatch(
             {
               ha_cell <- list()
-              ha_cell[[cellan]] <- ComplexHeatmap::anno_customize(
+              ha_cell[[cellan]] <- get_namespace_fun("ComplexHeatmap", "anno_customize")(
                 x = x_nm,
                 graphics = graphics,
                 which = ifelse(flip, "row", "column"),
@@ -1405,7 +1407,7 @@ GroupHeatmap <- function(
         cell_levels <- levels(cell_anno)
         cell_levels <- cell_levels[!is.na(cell_levels) & nzchar(cell_levels)]
         if (length(cell_levels) > 0) {
-          lgd[[cellan]] <- ComplexHeatmap::Legend(
+          lgd[[cellan]] <- get_namespace_fun("ComplexHeatmap", "Legend")(
             title = cellan,
             labels = cell_levels,
             legend_gp = heatmap_discrete_legend_gp(
@@ -1461,7 +1463,7 @@ GroupHeatmap <- function(
           ha_top <- tryCatch(
             {
               ha_cell <- list()
-              ha_cell[[cellan]] <- ComplexHeatmap::anno_customize(
+              ha_cell[[cellan]] <- get_namespace_fun("ComplexHeatmap", "anno_customize")(
                 x = x_nm,
                 graphics = graphics,
                 which = ifelse(flip, "row", "column"),
@@ -1626,7 +1628,7 @@ GroupHeatmap <- function(
   if (!is.null(row_split)) {
     if (isTRUE(cluster_row_slices)) {
       if (isFALSE(cluster_rows)) {
-        dend <- ComplexHeatmap::cluster_within_group(
+        dend <- get_namespace_fun("ComplexHeatmap", "cluster_within_group")(
           Matrix::t(mat_split),
           row_split_raw
         )
@@ -1642,8 +1644,8 @@ GroupHeatmap <- function(
       border_color = feature_annotation_border_color,
       border_size = feature_annotation_border_size
     )
-    ha_clusters <- ComplexHeatmap::HeatmapAnnotation(
-      features_split = ComplexHeatmap::anno_block(
+    ha_clusters <- get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation")(
+      features_split = get_namespace_fun("ComplexHeatmap", "anno_block")(
         align_to = split(seq_along(row_split_raw), row_split_raw),
         panel_fun = block_graphics,
         width = grid::unit(0.1, "in"),
@@ -1658,7 +1660,7 @@ GroupHeatmap <- function(
     } else {
       ha_left <- c(ha_left, ha_clusters)
     }
-    lgd[["Cluster"]] <- ComplexHeatmap::Legend(
+    lgd[["Cluster"]] <- get_namespace_fun("ComplexHeatmap", "Legend")(
       title = "Cluster",
       labels = intersect(levels(row_split_raw), row_split_raw),
       legend_gp = heatmap_discrete_legend_gp(
@@ -1719,10 +1721,10 @@ GroupHeatmap <- function(
       use_raster = TRUE
     )
     ht_args <- c(ht_args, ht_params[setdiff(names(ht_params), names(ht_args))])
-    ht_list <- do.call(ComplexHeatmap::Heatmap, args = ht_args)
+    ht_list <- do.call(get_namespace_fun("ComplexHeatmap", "Heatmap"), args = ht_args)
     ht_order <- unlist(
       suppressWarnings(
-        ComplexHeatmap::row_order(
+        get_namespace_fun("ComplexHeatmap", "row_order")(
           ht_list
         )
       )
@@ -1774,8 +1776,8 @@ GroupHeatmap <- function(
         width = row_names_wrap
       )
     }
-    ha_mark <- ComplexHeatmap::HeatmapAnnotation(
-      gene = ComplexHeatmap::anno_mark(
+    ha_mark <- get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation")(
+      gene = get_namespace_fun("ComplexHeatmap", "anno_mark")(
         at = which(rownames(feature_metadata) %in% features_ordered[index]),
         labels = mark_labels,
         side = ifelse(flip, "top", "left"),
@@ -1978,7 +1980,7 @@ GroupHeatmap <- function(
       if (isTRUE(add_reticle)) {
         paste0(
           "
-        ind_mat = ComplexHeatmap::restore_matrix(j, i, x, y);
+        ind_mat = get_namespace_fun('ComplexHeatmap', 'restore_matrix')(j, i, x, y);
         ind_top = ind_mat[1,];
         ind_left = ind_mat[,1];
         for(col in seq_len(ncol(ind_mat))){
@@ -2002,7 +2004,7 @@ GroupHeatmap <- function(
       },
       if (isTRUE(add_dot)) {
         paste0(
-          "perc <- ComplexHeatmap::pindex(mat_perc_list[['",
+          "perc <- get_namespace_fun('ComplexHeatmap', 'pindex')(mat_perc_list[['",
           cell_group,
           "']]",
           ", i, j);
@@ -2178,12 +2180,14 @@ GroupHeatmap <- function(
     ht_args <- c(ht_args, ht_params[setdiff(names(ht_params), names(ht_args))])
     if (isTRUE(flip)) {
       if (is.null(ht_list)) {
-        ht_list <- do.call(ComplexHeatmap::Heatmap, args = ht_args)
+        ht_list <- do.call(get_namespace_fun("ComplexHeatmap", "Heatmap"), args = ht_args)
       } else {
-        ht_list <- ht_list %v% do.call(ComplexHeatmap::Heatmap, args = ht_args)
+        ht_list <- get_namespace_fun("ComplexHeatmap", "%v%")(
+          ht_list, do.call(get_namespace_fun("ComplexHeatmap", "Heatmap"), args = ht_args)
+        )
       }
     } else {
-      ht_list <- ht_list + do.call(ComplexHeatmap::Heatmap, args = ht_args)
+      ht_list <- ht_list + do.call(get_namespace_fun("ComplexHeatmap", "Heatmap"), args = ht_args)
     }
   }
 
@@ -2251,7 +2255,7 @@ GroupHeatmap <- function(
 
   g_tree <- grid::grid.grabExpr(
     {
-      ComplexHeatmap::draw(
+      get_namespace_fun("ComplexHeatmap", "draw")(
         ht_list,
         annotation_legend_list = lgd,
         annotation_legend_side = legend.position
@@ -2264,18 +2268,16 @@ GroupHeatmap <- function(
         if (length(enrich_anno) > 0) {
           for (enrich_anno_element in enrich_anno) {
             enrich_obj <- strsplit(enrich_anno_element, "_split_")[[1]][1]
-            ComplexHeatmap::decorate_annotation(
+            get_namespace_fun("ComplexHeatmap", "decorate_annotation")(
               enrich_anno_element,
-              slice = 1,
-              {
+              slice = 1, {
                 grid::grid.text(
                   paste0(enrich, " (", enrich_obj, ")"),
                   x = grid::unit(1, "npc"),
                   y = grid::unit(1, "npc") + grid::unit(2.5, "mm"),
                   just = c("left", "bottom")
                 )
-              }
-            )
+            })
           }
         }
       }

@@ -237,6 +237,10 @@ CheckDataList <- function(
     )
   }
 
+  if (type == "Chromatin" || normalization_method == "TFIDF") {
+    check_r("Signac", verbose = FALSE)
+  }
+
   features_list <- lapply(
     srt_list, function(srt) {
       sort(
@@ -405,7 +409,7 @@ CheckDataList <- function(
           "Perform {.fn RunTFIDF} on {.val {i}}/{.val {length(srt_list)}} of {.arg srt_list}...",
           verbose = verbose
         )
-        srt_list[[i]] <- Signac::RunTFIDF(
+        srt_list[[i]] <- get_namespace_fun("Signac", "RunTFIDF")(
           object = srt_list[[i]],
           assay = assay,
           verbose = FALSE
@@ -472,7 +476,7 @@ CheckDataList <- function(
             "Perform {.fn FindTopFeatures} on {.val {i}}/{.val {length(srt_list)}} of {.arg srt_list}...",
             verbose = verbose
           )
-          srt_list[[i]] <- Signac::FindTopFeatures(
+          srt_list[[i]] <- get_namespace_fun("Signac", "FindTopFeatures")(
             srt_list[[i]],
             assay = assay,
             min.cutoff = "q5",
@@ -573,7 +577,7 @@ CheckDataList <- function(
         }
       }
       if (type == "Chromatin") {
-        srt_merge <- Signac::FindTopFeatures(
+        srt_merge <- get_namespace_fun("Signac", "FindTopFeatures")(
           srt_merge,
           assay = SeuratObject::DefaultAssay(srt_merge),
           min.cutoff = "q5",
