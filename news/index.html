@@ -64,7 +64,11 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="scop-development-version">scop (development version)<a class="anchor" aria-label="anchor" href="#scop-development-version"></a></h2>
-<ul><li><p><strong>fix</strong>: Preserve canonical Seurat command names and separate command history entries in fallback normalization, scaling, variable-feature selection and integration. Keep dynamic PCA and neighbor commands compact without embedding the input object in log text.</p></li>
+<ul><li><p><strong>docs</strong>: Use direct package calls in examples, remove redundant availability guards, and mark optional or external-resource recipes explicitly. Preserve interactive dataset and Monocle examples and regenerate affected help topics.</p></li>
+<li><p><strong>refactor</strong>: Remove the unused qlcMatrix dependency from CSS integration. Load CytoTRACE2 models once per run without retaining package-wide model state; preserve optional analysis backends and downloaded model resources.</p></li>
+<li><p><strong>fix</strong>: Read raw metabolism GMT files from the data mirror without requiring the scMetabolism package, and perform gene conversion without a package-wide result cache. Use explicit renv snapshots so optional backends outside DESCRIPTION, including SpaTalk, are prepared only when needed.</p></li>
+<li><p><strong>refactor</strong>: Load Signac, ComplexHeatmap and ggforce only when ATAC analysis, heatmap rendering or specialized plot layers need them. Check and install optional packages on first use with <code>check_r()</code>. Remove unused splines, RcppAnnoy, RcppParallel and R tensorflow dependencies and TBB build flags; retain Python TensorFlow environment preparation and OpenMP support.</p></li>
+<li><p><strong>fix</strong>: Preserve canonical Seurat command names and separate command history entries in fallback normalization, scaling, variable-feature selection and integration. Keep dynamic PCA and neighbor commands compact without embedding the input object in log text.</p></li>
 <li><p><strong>fix</strong>: Treat metadata column names as data when constructing metacell groups and LIANA sample keys, including names shared with function options.</p></li>
 <li><p><strong>perf</strong>: Avoid expanding complete vectors into correlation-test descriptions in gene-immune and SCENIC plots while retaining the same statistics.</p></li>
 <li><p><strong>fix</strong>: Restore sparse count storage after <code>RecoverCounts(trans = "exp")</code> exponentiation so count recovery can handle dense Matrix results and implicit zeros correctly.</p></li>
@@ -1011,7 +1015,7 @@ Related issus <a href="https://github.com/mengxu98/scop/issues/76" class="extern
 <h2 class="pkg-version" data-toc-text="0.2.2" id="scop-022">scop 0.2.2<a class="anchor" aria-label="anchor" href="#scop-022"></a></h2>
 <ul><li>
 <strong>feat</strong>:
-<ul><li>Replace all <code><a href="https://rdrr.io/pkg/BiocParallel/man/bplapply.html" class="external-link">BiocParallel::bplapply()</a></code> with <code><a href="https://mengxu98.github.io/thisutils/reference/parallelize_fun.html" class="external-link">thisutils::parallelize_fun()</a></code>.</li>
+<ul><li>Replace all <code>BiocParallel::bplapply()</code> with <code><a href="https://mengxu98.github.io/thisutils/reference/parallelize_fun.html" class="external-link">thisutils::parallelize_fun()</a></code>.</li>
 </ul></li>
 <li>
 <strong>fix</strong>:
@@ -1035,7 +1039,7 @@ Related issus <a href="https://github.com/mengxu98/scop/issues/76" class="extern
 <strong>feat</strong>:
 <ul><li>Update <code><a href="../reference/CellScoring.html">CellScoring()</a></code> and <code>AddModuleScore2()</code> functions. Now, new parameters <code>cores</code> and <code>verbose</code> have been added.</li>
 <li>
-<code>AddModuleScore2()</code> function no longer uses the <code><a href="https://rdrr.io/pkg/BiocParallel/man/register.html" class="external-link">BiocParallel::bpparam()</a></code> function to enable parallelization, but <code><a href="https://mengxu98.github.io/thisutils/reference/parallelize_fun.html" class="external-link">thisutils::parallelize_fun</a></code>, and the <code>cores</code> parameter is used to control the number of cores in <code><a href="https://mengxu98.github.io/thisutils/reference/parallelize_fun.html" class="external-link">thisutils::parallelize_fun</a></code>.</li>
+<code>AddModuleScore2()</code> function no longer uses the <code>BiocParallel::bpparam()</code> function to enable parallelization, but <code><a href="https://mengxu98.github.io/thisutils/reference/parallelize_fun.html" class="external-link">thisutils::parallelize_fun</a></code>, and the <code>cores</code> parameter is used to control the number of cores in <code><a href="https://mengxu98.github.io/thisutils/reference/parallelize_fun.html" class="external-link">thisutils::parallelize_fun</a></code>.</li>
 </ul></li>
 </ul></div>
     <div class="section level2">

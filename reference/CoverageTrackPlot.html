@@ -64,7 +64,7 @@
     </div>
 
     <div class="ref-description section level2">
-    <p>Thin wrapper around <code><a href="https://stuartlab.org/signac/reference/CoveragePlot.html" class="external-link">Signac::CoveragePlot</a></code> with scop defaults.</p>
+    <p>Thin wrapper around <code>Signac::CoveragePlot</code> with scop defaults.</p>
     </div>
 
     <div class="section level2">
@@ -100,7 +100,7 @@
 
 
 <dt id="arg-region">region<a class="anchor" aria-label="anchor" href="#arg-region"></a></dt>
-<dd><p>Genomic region passed to <code><a href="https://stuartlab.org/signac/reference/CoveragePlot.html" class="external-link">Signac::CoveragePlot</a></code>.</p></dd>
+<dd><p>Genomic region passed to <code>Signac::CoveragePlot</code>.</p></dd>
 
 
 <dt id="arg-assay">assay<a class="anchor" aria-label="anchor" href="#arg-assay"></a></dt>
@@ -144,7 +144,7 @@
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Additional parameters passed to <code><a href="https://stuartlab.org/signac/reference/CoveragePlot.html" class="external-link">Signac::CoveragePlot</a></code>.</p></dd>
+<dd><p>Additional parameters passed to <code>Signac::CoveragePlot</code>.</p></dd>
 
 
 <dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
@@ -159,16 +159,16 @@ will be removed in scop 1.0.0.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"pbmcmultiome_sub"</span>, package <span class="op">=</span> <span class="st">"scop"</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"pbmcmultiome_sub"</span>, package <span class="op">=</span> <span class="st">"scop"</span><span class="op">)</span></span>
 <span><span class="co"># Coverage plotting requires an ATAC object with valid fragment information.</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu">Signac</span><span class="fu">::</span><span class="fu"><a href="https://stuartlab.org/signac/reference/Fragments.html" class="external-link">Fragments</a></span><span class="op">(</span><span class="va">pbmcmultiome_sub</span><span class="op">[[</span><span class="st">"peaks"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu">CoverageTrackPlot</span><span class="op">(</span></span>
-<span>    <span class="va">pbmcmultiome_sub</span>,</span>
-<span>    region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">pbmcmultiome_sub</span><span class="op">[[</span><span class="st">"peaks"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
-<span>    assay <span class="op">=</span> <span class="st">"peaks"</span>,</span>
-<span>    group.by <span class="op">=</span> <span class="st">"CellType"</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
+<span><span class="fu">CoverageTrackPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pbmcmultiome_sub</span>,</span>
+<span>  region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">pbmcmultiome_sub</span><span class="op">[[</span><span class="st">"peaks"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>  assay <span class="op">=</span> <span class="st">"peaks"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="op">}</span> <span class="co"># }</span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

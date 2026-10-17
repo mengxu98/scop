@@ -196,18 +196,18 @@ will be removed in scop 1.0.0.</p></dd>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Annotate features using a GTF file</span></span>
-<span><span class="va">gtf_file</span> <span class="op">&lt;-</span> <span class="st">"/refdata-gex-mm10-2020-A/genes/genes.gtf"</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.exists</a></span><span class="op">(</span><span class="va">gtf_file</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">AnnotateFeatures</span><span class="op">(</span></span>
-<span>    <span class="va">pancreas_sub</span>,</span>
-<span>    gtf <span class="op">=</span> <span class="va">gtf_file</span></span>
+<span><span class="va">gtf_file</span> <span class="op">&lt;-</span> <span class="st">"path/to/genes.gtf"</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span>
+<span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">AnnotateFeatures</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  gtf <span class="op">=</span> <span class="va">gtf_file</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="GetFeaturesData.html">GetFeaturesData</a></span><span class="op">(</span></span>
+<span>    <span class="va">pancreas_sub</span></span>
 <span>  <span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="GetFeaturesData.html">GetFeaturesData</a></span><span class="op">(</span></span>
-<span>      <span class="va">pancreas_sub</span></span>
-<span>    <span class="op">)</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
+<span><span class="op">)</span></span>
+<span><span class="op">}</span> <span class="co"># }</span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
