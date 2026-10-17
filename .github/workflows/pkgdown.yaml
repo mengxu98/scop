@@ -115,6 +115,17 @@ jobs:
           dependencies: '"hard"'
           cache: always
 
+      - name: Verify enrichment backend compatibility
+        if: contains(env.PKGDOWN_TOPICS, 'RunGSEA') || contains(env.PKGDOWN_ARTICLES, 'differential-enrichment-workflow')
+        shell: Rscript {0}
+        run: |
+          stopifnot(requireNamespace("clusterProfiler", quietly = TRUE))
+          library(scop)
+          testthat::test_file(
+            "tests/testthat/test-gsea-enrichment-empty-version.R",
+            reporter = "summary", stop_on_failure = TRUE
+          )
+
       - name: Restore unchanged website pages
         run: python3 .github/pkgdown-plan.py restore
 
@@ -131,6 +142,7 @@ jobs:
             pkgdown-plan.json
             pkgdown-timings.csv
             pkgdown-session.txt
+            docs/**/*.html
 
       - name: Deploy website
         if: github.event_name != 'pull_request' && (github.event_name == 'release' || github.ref == format('refs/heads/{0}', github.event.repository.default_branch))

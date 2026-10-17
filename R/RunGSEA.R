@@ -370,7 +370,6 @@ RunGSEA <- function(
         pvalueCutoff = Inf,
         TERM2GENE = TERM2GENE_tmp,
         TERM2NAME = TERM2NAME_tmp,
-        by = "fgsea",
         verbose = FALSE
       )
 

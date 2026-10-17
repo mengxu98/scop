@@ -4,7 +4,11 @@
   changed pages against the last successful publication, and share one workflow
   for references and articles. Rebuild stale environment outputs, retain a weekly
   full build, and report rendering times. Python doublet recipes remain explicit
-  manual examples.
+  manual examples. Check each rendered page immediately and retain page timings,
+  installed package versions and HTML diagnostics when rendering fails.
+
+* **fix**: Let `RunGSEA()` use the supported default backend in both older and
+  current clusterProfiler releases without forwarding the removed `by` argument.
 
 * **refactor**: Simplify fixed-argument plotting and backend calls, and use
   ordinary matrix binding in Scanorama integration while preserving argument

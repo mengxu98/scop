@@ -21,28 +21,43 @@ record <- function(name, expression) {
   force(expression)
 }
 capture.output(sessioninfo::session_info(), file = "pkgdown-session.txt")
+installed <- installed.packages(fields = "RemoteSha")
+installed <- installed[!duplicated(installed[, "Package"]), , drop = FALSE]
+utils::write.table(installed[, c("Package", "Version", "RemoteSha")],
+  file = "pkgdown-session.txt", append = TRUE, sep = "\t", row.names = FALSE
+)
 options(Ncpus = 2L, future.globals.maxSize = 4 * 1024^3)
 if (requireNamespace("future", quietly = TRUE)) future::plan("sequential", gc = TRUE)
-if (plan$full) {
-  record("full-site", pkgdown::build_site(
-    examples = TRUE, run_dont_run = FALSE, install = FALSE,
-    new_process = FALSE, preview = FALSE
-  ))
-} else {
-  if (plan$home) record("home", pkgdown::build_home())
-  if (plan$news) record("news", pkgdown::build_news(preview = FALSE))
-  if (plan$reference_index) record("reference/index", pkgdown::build_reference_index())
+pkg <- pkgdown::as_pkgdown(".")
+build <- function() {
+  if (plan$full) record("initialise", pkgdown::init_site(pkg))
+  if (plan$home) record("home", pkgdown::build_home(pkg))
+  if (plan$news) record("news", pkgdown::build_news(pkg, preview = FALSE))
+  if (plan$reference_index) record("reference/index", pkgdown::build_reference_index(pkg))
   for (topic in plan$topics) {
-    record(paste0("reference/", topic), pkgdown::build_reference(
-      topics = topic, examples = TRUE, run_dont_run = FALSE, devel = FALSE
-    ))
+    record(paste0("reference/", topic), {
+      pkgdown::build_reference(pkg, topics = topic, examples = TRUE, run_dont_run = FALSE, devel = FALSE)
+      check_pages(file.path(pkg$dst_path, "reference", paste0(topic, ".html")))
+    })
   }
-  if (plan$articles_index) record("articles/index", pkgdown::build_articles_index())
+  if (plan$articles_index) record("articles/index", pkgdown::build_articles_index(pkg))
   for (article in plan$articles) {
-    record(paste0("articles/", article), pkgdown::build_article(article))
+    record(paste0("articles/", article), {
+      pkgdown::build_article(article, pkg = pkg)
+      check_pages(file.path(pkg$dst_path, "articles", paste0(article, ".html")))
+    })
   }
-  record("search", pkgdown::build_search())
+  if (plan$full) {
+    record("site-metadata", pkgdown::build_site(
+      pkg,
+      lazy = TRUE, examples = TRUE, run_dont_run = FALSE, install = FALSE,
+      new_process = FALSE, preview = FALSE
+    ))
+  } else {
+    record("search", pkgdown::build_search(pkg))
+  }
 }
+record(if (plan$full) "full-site" else "incremental-site", build())
 expected <- c(
   character(),
   if (length(plan$topics)) file.path("docs/reference", paste0(plan$topics, ".html")),

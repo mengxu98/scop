@@ -118,7 +118,7 @@ references <- vapply(packages, function(package) {
 }, "", USE.NAMES = FALSE)
 execute <- identical(Sys.getenv("PKGDOWN_EXECUTE"), "true")
 required <- if (execute) "deps::.,any::sessioninfo" else "any::sessioninfo"
-extra <- unique(c("any::pkgdown", if (execute) "local::.", references))
+extra <- unique(c("any::pkgdown", if (execute) c("local::.", "any::testthat"), references))
 output <- c(paste0("packages=", required), paste0("extra=", paste(extra, collapse = ",")))
 writeLines(output)
 destination <- Sys.getenv("GITHUB_OUTPUT")
