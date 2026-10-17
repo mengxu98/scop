@@ -11,7 +11,9 @@ RunscDblFinder(
   data_type = NULL,
   ...,
   verbose = TRUE,
-  srt = NULL
+  srt = NULL,
+  sample.by = NULL,
+  seed = 1L
 )
 }
 \arguments{
@@ -30,7 +32,29 @@ rescanning the count matrix.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{sample.by}{For ATAC, required metadata column identifying captures or
+libraries in which doublets can form. Biological conditions are not capture
+IDs. Native scDblFinder runs independently per capture (\code{multiSampleMode = "split"}). RNA behavior is unchanged.}
+
+\item{seed}{Random seed for the ATAC path, restoring the caller's RNG.}
+}
+\value{
+A Seurat object with \code{db.scDblFinder_score} and
+\code{db.scDblFinder_class} updated only for selected-assay cells. For ATAC,
+\code{Misc(assay, "scop_atac_doublets")} records input cells, capture assignments,
+parameters, native output and backend version; RNA-only cells are preserved.
 }
 \description{
 Run doublet-calling with scDblFinder
+}
+\details{
+For ChromatinAssay input, use all raw peaks with native feature aggregation
+(\code{aggregateFeatures = TRUE}, \code{nfeatures = 25}, \code{processing = "normFeatures"}).
+\code{nfeatures} and other native model parameters can be supplied in \code{...}.
+With omitted \code{db_rate}, the ATAC path uses the backend's per-capture expected
+rate; explicitly supply the appropriate rate for the capture chemistry.
+Scores/classes are predictions, not ground-truth doublet labels. No cells
+are removed. Existing upstream doublet labels can instead be used directly
+to select cells; running a second detector is not required.
 }

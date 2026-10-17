@@ -268,8 +268,14 @@ ReadATACData <- function(
   )
   # Fragment barcode lookup may attach a fastmatch cache to the shared ID vector.
   rownames(metadata) <- as.vector(rownames(metadata))
-  if (!all(colnames(metadata) %in% colnames(result[[]])) ||
-    !identical(result[[]][, colnames(metadata), drop = FALSE], metadata)) {
+  metadata$input_barcode <- as.vector(metadata$input_barcode)
+  if (!all(colnames(metadata) %in% colnames(result[[]]))) {
+    log_message("Native object creation omitted supplied metadata.", message_type = "error")
+  }
+  observed_metadata <- result[[]][, colnames(metadata), drop = FALSE]
+  rownames(observed_metadata) <- as.vector(rownames(observed_metadata))
+  observed_metadata$input_barcode <- as.vector(observed_metadata$input_barcode)
+  if (!identical(observed_metadata, metadata)) {
     log_message("Native object creation changed or omitted supplied metadata.", message_type = "error")
   }
   result
@@ -406,4 +412,20 @@ atac_new_assay_name <- function(object, name) {
     log_message("new.assay must be a syntactically valid unused name without assay, object or QC metadata collisions.", message_type = "error")
   }
   invisible(name)
+}
+
+
+atac_qc_ranges <- function(regions, chromatin, label) {
+  if (!inherits(regions, "GRanges")) log_message(paste0(label, " must be a GRanges object."), message_type = "error")
+  if (any(GenomicRanges::start(regions) < 1L |
+    GenomicRanges::end(regions) < GenomicRanges::start(regions))) {
+    log_message(paste0(label, " requires positive 1-based closed intervals."), message_type = "error")
+  }
+  get_genome <- atac_backend_fun("GenomeInfoDb", "genome")
+  labels <- unique(c(
+    as.character(get_genome(chromatin)),
+    as.character(get_genome(Signac::granges(chromatin))), as.character(get_genome(regions))
+  ))
+  labels <- labels[!is.na(labels) & nzchar(labels)]
+  if (length(labels) > 1L) log_message(paste0(label, " and assay genome labels must agree."), message_type = "error")
 }

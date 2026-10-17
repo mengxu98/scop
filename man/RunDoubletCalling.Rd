@@ -28,7 +28,9 @@ RunDoubletCalling(
 \item{data_type}{Optional \link{CheckDataType} result, used internally to avoid
 rescanning the count matrix.}
 
-\item{...}{Passed to the selected doublet method.}
+\item{...}{Passed to the selected doublet method. For a ChromatinAssay,
+use \code{db_method = "scDblFinder"} and explicitly supply \code{sample.by} naming
+the capture/library column; see \code{\link[=RunscDblFinder]{RunscDblFinder()}}.}
 
 \item{verbose}{Whether to print messages.}
 

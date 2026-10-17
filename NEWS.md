@@ -60,14 +60,13 @@
 * **fix**: `CheckATACData()` determines fragment readiness from resources mapped to the selected assay cells, preserving inactive resources in its report after native subsetting.
 
 * **feature**: `ReadATACData()` and `ReadMultiomeData()` import existing raw peak and paired RNA counts through Signac/Seurat, preserving explicit feature and barcode alignment. `CheckATACData()` reports matrix/reference validity and external fragment availability without altering the object.
+* **feature**: ATAC `RunscDblFinder()` uses native feature aggregation and explicit capture/library groups, preserving RNA-only cells and recording native predictions and parameters. Input metadata comparisons ignore incidental fastmatch barcode-cache attributes, including those encountered with real multi-capture fragments.
 
-* **fix**: Document all SingleR marker selection and reference aggregation arguments without relying on optional-package documentation inheritance.
+* **fix**: `CheckATACData()` determines fragment readiness from resources mapped to the selected assay cells, preserving inactive resources in its report after native subsetting.
 
-* **fix**: Require thisutils 0.5.3 for the local verbosity API used by database preparation. Keep communication database delegation tests independent of Ensembl availability and verify Presto calls without replacing same-named Seurat methods.
+* **feature**: `RunATACQC()` supports explicit fragment-record FRiP over the current peak union and matched source columns, applies per-file barcode mappings, and rejects unavailable requested filtering metrics. Fragment totals count records rather than read support; blacklist ratios count each overlapping peak once.
 
-* **change**: Reuse the source build for Linux backend checks, skip article environment setup when no articles changed, and build reference pages without executing examples. CI uses dependency-aware caches and two installation workers; optional backend caches track resolved package revisions.
-
-- Fix ATAC label transfer for query IDs containing `_query`, preserve caller RNG, and record actual anchor features and prediction columns. Reruns replace only recorded prior results; unrelated metadata are protected.
+* **feature**: `ReadATACData()` and `ReadMultiomeData()` import existing raw peak and paired RNA counts through Signac/Seurat, preserving explicit feature and barcode alignment. `CheckATACData()` reports matrix/reference validity and external fragment availability without altering the object.
 
 * **fix**: Require Rcpp >= 1.0.13 for source installation, preventing
   CellRank compilation failures with older headers that limit
