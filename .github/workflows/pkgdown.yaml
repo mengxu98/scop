@@ -1,8 +1,5 @@
-# Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
-# Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
-#
-# Articles are built and deployed by the separate articles workflow, so
-# heavy vignette computations never block this reference build.
+name: pkgdown
+
 on:
   push:
     branches: [main, master, dev]
@@ -11,81 +8,67 @@ on:
   release:
     types: [published]
   schedule:
-    # 02:00 Monday Asia/Shanghai, expressed in UTC for GitHub Actions.
     - cron: '0 18 * * 0'
   workflow_dispatch:
+    inputs:
+      full:
+        description: Rebuild every page and execute all runnable examples
+        type: boolean
+        default: false
 
-name: pkgdown
+permissions:
+  contents: read
+
+concurrency:
+  group: pkgdown-${{ github.event_name == 'pull_request' && github.ref || 'publish' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  changes:
+  plan:
     runs-on: ubuntu-latest
     outputs:
-      package_changed: ${{ steps.filter.outputs.package_changed }}
+      build: ${{ steps.plan.outputs.build }}
+      execute: ${{ steps.plan.outputs.execute }}
+      topics: ${{ steps.plan.outputs.topics }}
+      articles: ${{ steps.plan.outputs.articles }}
     steps:
       - uses: actions/checkout@v5
+
+      - name: Check incremental build selection
+        run: python3 .github/test-pkgdown-plan.py
+
+      - name: Plan website changes
+        id: plan
+        env:
+          PKGDOWN_EVENT: ${{ github.event_name }}
+          PKGDOWN_BASE: ${{ github.event.pull_request.base.sha }}
+          PKGDOWN_FORCE: ${{ inputs.full || false }}
+        run: python3 .github/pkgdown-plan.py
+
+      - uses: actions/upload-artifact@v4
         with:
-          fetch-depth: 0
-
-      - id: filter
-        shell: bash
-        run: |
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            base="${{ github.event.pull_request.base.sha }}"
-            head="${{ github.event.pull_request.head.sha }}"
-          elif [[ "${{ github.event_name }}" == "push" ]]; then
-            base="${{ github.event.before }}"
-            head="${{ github.sha }}"
-            if [[ "$base" =~ ^0+$ ]]; then
-              echo "package_changed=true" >> "$GITHUB_OUTPUT"
-              exit 0
-            fi
-          else
-            echo "package_changed=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          # `github.event.before` may be unreachable after a force-push.
-          # Fall back to the parent commit so a config-only push does not
-          # trigger a full site build; the weekly schedule rebuilds
-          # anything this comparison misses.
-          if ! git cat-file -e "$base^{commit}" 2>/dev/null; then
-            base="$head~1"
-            if ! git cat-file -e "$base^{commit}" 2>/dev/null; then
-              echo "package_changed=true" >> "$GITHUB_OUTPUT"
-              exit 0
-            fi
-          fi
-
-          files="$(git diff --name-only "$base" "$head")"
-          echo "$files"
-          # Deploy only when rendered website inputs change. Source-only
-          # changes are covered by R-CMD-check; their documentation is
-          # regenerated when the corresponding man pages are committed.
-          # Vignette changes are handled by the articles workflow.
-          if printf '%s\n' "$files" |
-            grep -E '^(README[.](md|Rmd|qmd)|NEWS\.md|DESCRIPTION|renv\.lock|_pkgdown\.yml|man/|pkgdown/|inst/pkgdown/|[.]github/workflows/(pkgdown|articles)\.yaml)' |
-            grep -q .; then
-            echo "package_changed=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "package_changed=false" >> "$GITHUB_OUTPUT"
-          fi
+          name: pkgdown-plan
+          path: pkgdown-plan.json
 
   pkgdown:
-    needs: changes
-    if: needs.changes.outputs.package_changed == 'true'
+    needs: plan
+    if: needs.plan.outputs.build == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    # Only restrict concurrency for non-PR jobs
-    concurrency:
-      group: scop-pages-${{ github.event_name == 'pull_request' && github.run_id || 'publish' }}
-      queue: max
-
+    env:
+      PKGDOWN_TOPICS: ${{ needs.plan.outputs.topics }}
+      PKGDOWN_ARTICLES: ${{ needs.plan.outputs.articles }}
+      PKGDOWN_EXECUTE: ${{ needs.plan.outputs.execute }}
+      OMP_NUM_THREADS: 2
+      OPENBLAS_NUM_THREADS: 1
+      MKL_NUM_THREADS: 1
     steps:
       - uses: actions/checkout@v5
+
+      - uses: actions/download-artifact@v4
         with:
-          fetch-depth: 0
+          name: pkgdown-plan
 
       - uses: r-lib/actions/setup-pandoc@v2
 
@@ -94,360 +77,59 @@ jobs:
           use-public-rspm: true
           Ncpus: 2
 
+      - name: Determine example and article dependencies
+        id: dependencies
+        run: |
+          Rscript --vanilla .github/test-pkgdown-dependencies.R
+          Rscript --vanilla .github/pkgdown-dependencies.R
+
       - uses: r-lib/actions/setup-r-dependencies@v2
         env:
           GITHUB_PAT: ${{ github.token }}
         with:
-          extra-packages: any::pkgdown, local::.
+          packages: ${{ steps.dependencies.outputs.packages }}
+          extra-packages: ${{ steps.dependencies.outputs.extra }}
           needs: website
           dependencies: '"hard"'
 
-      - name: Determine pkgdown scope
-        id: scope
-        if: github.event_name != 'pull_request'
-        shell: bash
-        run: |
-          if [[ "${{ github.event_name }}" != "push" ]]; then
-            echo "full_build=true" >> "$GITHUB_OUTPUT"
-            echo "topics=" >> "$GITHUB_OUTPUT"
-            echo "news_build=false" >> "$GITHUB_OUTPUT"
-            echo "home_build=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
+      - name: Invalidate output from a different R environment
+        id: environment
+        run: Rscript --vanilla .github/pkgdown-environment.R
 
-          base="${{ github.event.before }}"
-          head="${{ github.sha }}"
-          if [[ "$base" =~ ^0+$ ]]; then
-            echo "full_build=true" >> "$GITHUB_OUTPUT"
-            echo "topics=" >> "$GITHUB_OUTPUT"
-            echo "news_build=false" >> "$GITHUB_OUTPUT"
-            echo "home_build=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
+      - name: Determine full rebuild dependencies
+        id: full-dependencies
+        if: steps.environment.outputs.changed == 'true'
+        run: Rscript --vanilla .github/pkgdown-dependencies.R
 
-          # The previous SHA can be unreachable after a force-push. Fall
-          # back to the parent commit so a config-only push does not
-          # trigger a full build; the weekly schedule rebuilds anything
-          # this comparison misses.
-          if ! git cat-file -e "$base^{commit}" 2>/dev/null; then
-            base="$head~1"
-            if ! git cat-file -e "$base^{commit}" 2>/dev/null; then
-              echo "full_build=true" >> "$GITHUB_OUTPUT"
-              echo "topics=" >> "$GITHUB_OUTPUT"
-              echo "news_build=false" >> "$GITHUB_OUTPUT"
-              echo "home_build=false" >> "$GITHUB_OUTPUT"
-              exit 0
-            fi
-          fi
-
-          git diff --name-status "$base" "$head" > changed-files.txt
-          cat changed-files.txt
-
-          awk '$2 !~ /^(scripts\/|tests\/|vignettes\/|[.]github\/workflows\/(test-coverage|articles)[.]ya?ml$)/ { print }' changed-files.txt > pkgdown-files.txt
-          if [[ ! -s pkgdown-files.txt ]]; then
-            echo "full_build=false" >> "$GITHUB_OUTPUT"
-            echo "topics=" >> "$GITHUB_OUTPUT"
-            echo "news_build=false" >> "$GITHUB_OUTPUT"
-            echo "home_build=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          if awk '$1 ~ /D/ { found = 1 } END { exit found ? 0 : 1 }' pkgdown-files.txt; then
-            echo "full_build=true" >> "$GITHUB_OUTPUT"
-            echo "topics=" >> "$GITHUB_OUTPUT"
-            echo "news_build=false" >> "$GITHUB_OUTPUT"
-            echo "home_build=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          # Global pkgdown configuration can affect every generated page.
-          if awk '$2 == "_pkgdown.yml" { found = 1 } END { exit found ? 0 : 1 }' pkgdown-files.txt; then
-            echo "full_build=true" >> "$GITHUB_OUTPUT"
-            echo "topics=" >> "$GITHUB_OUTPUT"
-            echo "news_build=false" >> "$GITHUB_OUTPUT"
-            echo "home_build=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          # Rebuild home inputs in place while still collecting any
-          # reference topics or news changed in the same push.
-          # Other version footers are refreshed by the weekly schedule.
-          home_build=false
-          if awk '$2 ~ /^(README[.](md|Rmd|qmd)$|DESCRIPTION$|man\/figures\/)/ { found = 1 } END { exit found ? 0 : 1 }' pkgdown-files.txt; then
-            home_build=true
-          fi
-
-          if awk '$2 !~ /^(R\/.*[.]R|man\/.*[.]Rd|man\/figures\/.*|README[.](md|Rmd|qmd)|NEWS[.]md|DESCRIPTION|_pkgdown[.]yml|[.]github\/workflows\/pkgdown[.]yaml)$/ { found = 1 } END { exit found ? 0 : 1 }' pkgdown-files.txt; then
-            echo "full_build=true" >> "$GITHUB_OUTPUT"
-            echo "topics=" >> "$GITHUB_OUTPUT"
-            echo "news_build=false" >> "$GITHUB_OUTPUT"
-            echo "home_build=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          topics="$(
-            awk '$2 ~ /^man\/.*[.]Rd$/ { path = $2; sub(/^man\//, "", path); sub(/[.]Rd$/, "", path); print path }' pkgdown-files.txt |
-            sort -u |
-            paste -sd, -
-          )"
-
-          if awk '$2 == "NEWS.md" { found = 1 } END { exit found ? 0 : 1 }' pkgdown-files.txt; then
-            news_build=true
-          else
-            news_build=false
-          fi
-
-          echo "full_build=false" >> "$GITHUB_OUTPUT"
-          echo "topics=$topics" >> "$GITHUB_OUTPUT"
-          echo "news_build=$news_build" >> "$GITHUB_OUTPUT"
-          echo "home_build=$home_build" >> "$GITHUB_OUTPUT"
-
-      - name: Find missing published pages
-        id: missing
-        shell: Rscript {0}
-        run: |
-          config <- yaml::read_yaml("_pkgdown.yml")
-          contents_or_empty <- function(section) {
-            if (is.null(section$contents)) character() else section$contents
-          }
-
-          reference_topics <- unique(unlist(
-            lapply(config$reference, contents_or_empty),
-            use.names = FALSE
-          ))
-          reference_topics <- reference_topics[
-            is.character(reference_topics) & nzchar(reference_topics)
-          ]
-
-          rd_files <- list.files("man", pattern = "[.]Rd$", full.names = TRUE)
-          rd_aliases <- lapply(rd_files, function(path) {
-            lines <- readLines(path, warn = FALSE)
-            entries <- grep("^\\\\(name|alias)\\{", lines, value = TRUE)
-            sub("^\\\\(name|alias)\\{([^}]*)\\}.*$", "\\2", entries)
-          })
-          alias_to_page <- unlist(Map(
-            function(aliases, path) {
-              stats::setNames(
-                rep(tools::file_path_sans_ext(basename(path)), length(aliases)),
-                aliases
-              )
-            },
-            rd_aliases,
-            rd_files
-          ))
-          missing_rd <- setdiff(reference_topics, names(alias_to_page))
-          if (length(missing_rd) > 0L) {
-            stop(
-              "Configured reference topics have no Rd name or alias: ",
-              paste(missing_rd, collapse = ", ")
-            )
-          }
-          reference_pages <- unname(alias_to_page[reference_topics])
-
-          expected_reference <- file.path("reference", paste0(reference_pages, ".html"))
-
-          published <- tryCatch(
-            system2(
-              "git",
-              c("ls-tree", "-r", "--name-only", "upstream/gh-pages"),
-              stdout = TRUE,
-              stderr = FALSE
-            ),
-            error = function(e) character()
-          )
-          if (length(published) == 0L) {
-            published <- tryCatch(
-              system2(
-                "git",
-                c("ls-tree", "-r", "--name-only", "origin/gh-pages"),
-                stdout = TRUE,
-                stderr = FALSE
-              ),
-              error = function(e) character()
-            )
-          }
-          published <- gsub("\\\\", "/", published)
-
-          missing_reference <- reference_topics[!expected_reference %in% published]
-
-          output_file <- Sys.getenv("GITHUB_OUTPUT", unset = "")
-          output <- paste0("reference_topics=", paste(missing_reference, collapse = ","))
-          if (nzchar(output_file)) {
-            write(output, file = output_file, append = TRUE)
-          } else {
-            writeLines(output)
-          }
-          message(
-            "Missing published pkgdown reference pages: ", length(missing_reference)
-          )
-
-      - name: Build reference index
-        if: github.event_name == 'pull_request' || steps.scope.outputs.full_build == 'false'
-        run: |
-          # thisutils/scop are not loaded here. find.package(..., quiet = TRUE)
-          # returns character(0) when missing, without loading the package.
-          if (length(find.package("future", quiet = TRUE)) == 0L ||
-                length(find.package("future.apply", quiet = TRUE)) == 0L) {
-            install.packages(c("future", "future.apply"), quiet = TRUE)
-          }
-          future::plan("sequential", gc = TRUE)
-          pkgdown::build_reference_index()
-        shell: Rscript {0}
-
-      - name: Build changed reference topics
-        if: steps.scope.outputs.full_build != 'true' && (steps.scope.outputs.topics != '' || steps.missing.outputs.reference_topics != '')
-        run: |
-          # thisutils/scop are not loaded here. find.package(..., quiet = TRUE)
-          # returns character(0) when missing, without loading the package.
-          if (length(find.package("future", quiet = TRUE)) == 0L ||
-                length(find.package("future.apply", quiet = TRUE)) == 0L) {
-            install.packages(c("future", "future.apply"), quiet = TRUE)
-          }
-          future::plan("sequential", gc = TRUE)
-          split_topics <- function(x) {
-            if (!nzchar(x)) character() else strsplit(x, ",", fixed = TRUE)[[1]]
-          }
-          topics <- unique(c(
-            split_topics(Sys.getenv("PKGDOWN_TOPICS")),
-            split_topics(Sys.getenv("PKGDOWN_MISSING_TOPICS"))
-          ))
-          pkgdown::build_reference(topics = topics, lazy = FALSE, examples = FALSE)
-        shell: Rscript {0}
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        if: steps.environment.outputs.changed == 'true'
         env:
-          PKGDOWN_TOPICS: ${{ steps.scope.outputs.topics }}
-          PKGDOWN_MISSING_TOPICS: ${{ steps.missing.outputs.reference_topics }}
+          GITHUB_PAT: ${{ github.token }}
+        with:
+          packages: ${{ steps.full-dependencies.outputs.packages }}
+          extra-packages: ${{ steps.full-dependencies.outputs.extra }}
+          needs: website
+          dependencies: '"hard"'
 
-      - name: Build news
-        if: github.event_name != 'pull_request' && steps.scope.outputs.full_build == 'false' && steps.scope.outputs.news_build == 'true'
-        run: |
-          pkgdown::build_news(preview = FALSE)
-        shell: Rscript {0}
+      - name: Restore unchanged website pages
+        run: python3 .github/pkgdown-plan.py restore
 
-      - name: Build home
-        if: steps.scope.outputs.home_build == 'true'
-        run: |
-          # Home-only builds do not run build_reference(), which normally
-          # copies README figures to their rewritten website paths.
-          if (dir.exists("man/figures")) {
-            dir.create("docs/reference", recursive = TRUE, showWarnings = FALSE)
-            stopifnot(file.copy("man/figures", "docs/reference",
-                               recursive = TRUE, overwrite = TRUE))
-          }
-          pkgdown::build_home()
-        shell: Rscript {0}
+      - name: Build and verify website
+        run: Rscript --vanilla .github/pkgdown-build.R
 
-      - name: Build site
-        if: github.event_name != 'pull_request' && steps.scope.outputs.full_build == 'true'
-        run: |
-          # thisutils/scop are not loaded here. find.package(..., quiet = TRUE)
-          # returns character(0) when missing, without loading the package.
-          if (length(find.package("future", quiet = TRUE)) == 0L ||
-                length(find.package("future.apply", quiet = TRUE)) == 0L) {
-            install.packages(c("future", "future.apply"), quiet = TRUE)
-          }
-          future::plan("sequential", gc = TRUE)
-          # Articles are always built by the articles workflow (changed
-          # vignettes on push, everything on workflow_dispatch); the
-          # full build here covers home, reference, news, and search so
-          # heavy article computations never block this job.
-          pkgdown::build_home()
-          pkgdown::build_reference_index()
-          pkgdown::build_reference(examples = FALSE)
-          pkgdown::build_news(preview = FALSE)
-          pkgdown::build_search()
-          # Disable Jekyll so GitHub Pages serves the pkgdown output as-is.
-          file.create("docs/.nojekyll")
-        shell: Rscript {0}
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: pkgdown-diagnostics
+          path: |
+            pkgdown-plan.json
+            pkgdown-timings.csv
+            pkgdown-session.txt
 
-      - name: Audit configured pkgdown pages
-        shell: Rscript {0}
-        env:
-          PKGDOWN_FULL_BUILD: ${{ steps.scope.outputs.full_build }}
-        run: |
-          config <- yaml::read_yaml("_pkgdown.yml")
-          contents_or_empty <- function(section) {
-            if (is.null(section$contents)) character() else section$contents
-          }
-
-          reference_topics <- unique(unlist(
-            lapply(config$reference, contents_or_empty),
-            use.names = FALSE
-          ))
-          reference_topics <- reference_topics[
-            is.character(reference_topics) & nzchar(reference_topics)
-          ]
-          rd_files <- list.files("man", pattern = "[.]Rd$", full.names = TRUE)
-          rd_aliases <- lapply(rd_files, function(path) {
-            lines <- readLines(path, warn = FALSE)
-            entries <- grep("^\\\\(name|alias)\\{", lines, value = TRUE)
-            sub("^\\\\(name|alias)\\{([^}]*)\\}.*$", "\\2", entries)
-          })
-          alias_to_page <- unlist(Map(
-            function(aliases, path) {
-              stats::setNames(
-                rep(tools::file_path_sans_ext(basename(path)), length(aliases)),
-                aliases
-              )
-            },
-            rd_aliases,
-            rd_files
-          ))
-          reference_pages <- unname(alias_to_page[reference_topics])
-
-          expected_reference <- file.path("reference", paste0(reference_pages, ".html"))
-
-          published <- tryCatch(
-            system2(
-              "git",
-              c("ls-tree", "-r", "--name-only", "upstream/gh-pages"),
-              stdout = TRUE,
-              stderr = FALSE
-            ),
-            error = function(e) character()
-          )
-          if (length(published) == 0L) {
-            published <- tryCatch(
-              system2(
-                "git",
-                c("ls-tree", "-r", "--name-only", "origin/gh-pages"),
-                stdout = TRUE,
-                stderr = FALSE
-              ),
-              error = function(e) character()
-            )
-          }
-          published <- gsub("\\\\", "/", published)
-
-          local <- if (dir.exists("docs")) {
-            list.files("docs", recursive = TRUE, all.files = TRUE, no.. = TRUE)
-          } else {
-            character()
-          }
-          local <- gsub("\\\\", "/", local)
-          full_build <- identical(Sys.getenv("PKGDOWN_FULL_BUILD"), "true")
-          available <- if (full_build) local else unique(c(published, local))
-          missing <- expected_reference[!expected_reference %in% available]
-          if (length(missing) > 0L) {
-            stop(
-              "Configured pkgdown reference pages are absent from gh-pages and this build:\n- ",
-              paste(missing, collapse = "\n- "),
-              call. = FALSE
-            )
-          }
-          message(
-            "Pkgdown page audit passed against ",
-            if (full_build) "this full build" else "published and local output",
-            ": ", length(expected_reference), " reference pages"
-          )
-
-      - name: Deploy to GitHub pages 🚀
-        if: github.event_name != 'pull_request'
+      - name: Deploy website
+        if: github.event_name != 'pull_request' && (github.event_name == 'release' || github.ref == format('refs/heads/{0}', github.event.repository.default_branch))
         uses: JamesIves/github-pages-deploy-action@v4.4.1
         with:
-          # Never clean: the articles workflow deploys its own `articles/`
-          # directory to the same branch, and a clean build here would
-          # delete it. Stale pages are purged by the weekly full-site
-          # workflow (full-site.yaml), which rebuilds the entire site.
-          clean: false
           branch: gh-pages
           folder: docs
+          clean: true

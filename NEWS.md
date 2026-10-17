@@ -1,5 +1,11 @@
 # scop (development version)
 
+* **ci**: Execute runnable reference examples during website builds, select
+  changed pages against the last successful publication, and share one workflow
+  for references and articles. Rebuild stale environment outputs, retain a weekly
+  full build, and report rendering times. Python doublet recipes remain explicit
+  manual examples.
+
 * **refactor**: Simplify fixed-argument plotting and backend calls, and use
   ordinary matrix binding in Scanorama integration while preserving argument
   values, matrix names and projection results.
