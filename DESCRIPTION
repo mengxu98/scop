@@ -136,6 +136,7 @@ Suggests:
     scDblFinder,
     decontX,
     edgeR,
+    statmod,
     scmap,
     SeuratData,
     stringr,
