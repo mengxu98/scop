@@ -159,10 +159,8 @@ Suggests:
     SpaNorm,
     withr
 Remotes:
-    cole-trapnell-lab/monocle3,
     mengxu98/thisplot,
-    mengxu98/thisutils,
-    satijalab/seurat-data
+    mengxu98/thisutils
 LinkingTo:
     cli,
     Rcpp (>= 1.0.13),
