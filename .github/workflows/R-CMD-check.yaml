@@ -95,9 +95,9 @@ jobs:
         env:
           NOT_CRAN: "true"
         run: |
-          pkgload::load_all(".", quiet = TRUE, compile = FALSE)
+          pkgload::load_all(".", quiet = TRUE)
           stopifnot(isTRUE(all(unlist(
-            check_r("feiyoung/PRECAST", install = FALSE, verbose = FALSE)
+            thisutils::check_r("feiyoung/PRECAST", install = FALSE, verbose = FALSE)
           ))))
           results <- testthat::test_file(
             "tests/testthat/test-spatial-original-consistency2.R",
