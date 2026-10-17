@@ -158,13 +158,8 @@ RunCSSMap <- function(
 
   log_message("Run {.pkg CSS} projection", verbose = verbose)
   CSSmodel <- srt_ref[[ref_css]]@misc$model
-  css_proj <- invoke_fun(
-    .fn = get("css_project", envir = getNamespace("simspec")),
-    .args = list(
-      object = query_data,
-      model = CSSmodel
-    )
-  )
+  css_project <- get("css_project", envir = getNamespace("simspec"))
+  css_proj <- css_project(object = query_data, model = CSSmodel)
   rownames(css_proj) <- colnames(srt_query)
   colnames(css_proj) <- paste0("CSSPROJ_", seq_len(ncol(css_proj)))
   srt_query[["css_proj"]] <- SeuratObject::CreateDimReducObject(

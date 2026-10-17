@@ -101,8 +101,8 @@ ScaleData.Seurat <- function(
         logical(1)
       ))
   ) {
-    return(do.call(
-      utils::getFromNamespace("ScaleData.Seurat", "Seurat"),
+    return(invoke_fun(
+      "ScaleData.Seurat",
       c(
         list(
           object = object,
@@ -120,7 +120,8 @@ ScaleData.Seurat <- function(
           verbose = verbose
         ),
         dots
-      )
+      ),
+      .env = asNamespace("Seurat")
     ))
   }
   assay_name <- if (is.null(assay)) {
@@ -130,8 +131,8 @@ ScaleData.Seurat <- function(
   }
   assay_obj <- methods::slot(object, "assays")[[assay_name]]
   if (length(dots) > 0L || inherits(assay_obj, "SCTAssay")) {
-    return(do.call(
-      utils::getFromNamespace("ScaleData.Seurat", "Seurat"),
+    return(invoke_fun(
+      "ScaleData.Seurat",
       c(
         list(
           object = object,
@@ -149,7 +150,8 @@ ScaleData.Seurat <- function(
           verbose = verbose
         ),
         dots
-      )
+      ),
+      .env = asNamespace("Seurat")
     ))
   }
   features <- if (is.null(features)) {

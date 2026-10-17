@@ -21,7 +21,6 @@ if (interactive()) {
     "regulation", "regulated", "positive", "negative",
     "response", "process", "processing", "small", "large", "change"
   )
-  use_data <- thisutils::get_namespace_fun("usethis", "use_data")
-  use_data(words_excluded, compress = "xz")
+  usethis::use_data(words_excluded, compress = "xz")
 }
 }

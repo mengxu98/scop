@@ -1007,6 +1007,8 @@ ccc_matrix_heatmap_plot <- function(
   theme_args = list(),
   symmetric = FALSE
 ) {
+  check_r("ComplexHeatmap", verbose = FALSE)
+
   check_r("circlize", verbose = FALSE)
   top_anno <- ccc_match_side_anno(top_anno)
   right_anno <- ccc_match_side_anno(right_anno)
@@ -1119,7 +1121,7 @@ ccc_matrix_heatmap_plot <- function(
       palette = cell_palette,
       palcolor = cell_palcolor
     )
-    ComplexHeatmap::HeatmapAnnotation(
+    get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation")(
       df = stats::setNames(
         data.frame(col_nms, row.names = col_nms, stringsAsFactors = FALSE),
         column_annotation_name
@@ -1146,7 +1148,7 @@ ccc_matrix_heatmap_plot <- function(
       palette = cell_palette,
       palcolor = cell_palcolor
     )
-    ComplexHeatmap::rowAnnotation(
+    get_namespace_fun("ComplexHeatmap", "rowAnnotation")(
       df = stats::setNames(
         data.frame(row_nms, row.names = row_nms, stringsAsFactors = FALSE),
         row_annotation_name
@@ -1422,7 +1424,7 @@ ccc_matrix_heatmap_plot <- function(
     )
   )
 
-  ht <- ComplexHeatmap::Heatmap(
+  ht <- get_namespace_fun("ComplexHeatmap", "Heatmap")(
     matrix = mat,
     col = col_fun,
     name = value_label,
@@ -1459,7 +1461,7 @@ ccc_matrix_heatmap_plot <- function(
   )
 
   g_tree <- grid::grid.grabExpr(
-    ComplexHeatmap::draw(
+    get_namespace_fun("ComplexHeatmap", "draw")(
       ht,
       padding = grid::unit(c(4, 4, 12, 4), "mm")
     ),
@@ -2006,7 +2008,7 @@ ccc_build_annotation_wrapper <- function(
   }
   if (identical(which, "column")) {
     return(do.call(
-      ComplexHeatmap::HeatmapAnnotation,
+      get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation"),
       c(
         stats::setNames(list(anno), name),
         list(
@@ -2021,7 +2023,7 @@ ccc_build_annotation_wrapper <- function(
     ))
   }
   do.call(
-    ComplexHeatmap::rowAnnotation,
+    get_namespace_fun("ComplexHeatmap", "rowAnnotation"),
     c(
       stats::setNames(list(anno), name),
       list(
@@ -2067,9 +2069,9 @@ ccc_build_bar_annotation <- function(
   )
   if (identical(which, "column")) {
     wrapper_args$which <- "column"
-    return(do.call(ComplexHeatmap::HeatmapAnnotation, wrapper_args))
+    return(do.call(get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation"), wrapper_args))
   }
-  do.call(ComplexHeatmap::rowAnnotation, wrapper_args)
+  do.call(get_namespace_fun("ComplexHeatmap", "rowAnnotation"), wrapper_args)
 }
 
 
@@ -2099,7 +2101,7 @@ ccc_build_distribution_annotation <- function(
     type <- "box"
   }
   anno <- switch(type,
-    box = ComplexHeatmap::anno_boxplot(
+    box = get_namespace_fun("ComplexHeatmap", "anno_boxplot")(
       values_use,
       which = which,
       gp = grid::gpar(
@@ -2114,7 +2116,7 @@ ccc_build_distribution_annotation <- function(
       width = if (identical(which, "row")) grid::unit(2, "cm") else NULL,
       height = if (identical(which, "column")) grid::unit(2, "cm") else NULL
     ),
-    histogram = ComplexHeatmap::anno_histogram(
+    histogram = get_namespace_fun("ComplexHeatmap", "anno_histogram")(
       values_use,
       which = which,
       gp = grid::gpar(
@@ -2126,7 +2128,7 @@ ccc_build_distribution_annotation <- function(
       width = if (identical(which, "row")) grid::unit(2, "cm") else NULL,
       height = if (identical(which, "column")) grid::unit(2, "cm") else NULL
     ),
-    density = ComplexHeatmap::anno_density(
+    density = get_namespace_fun("ComplexHeatmap", "anno_density")(
       values_use,
       which = which,
       type = "lines",
@@ -2136,7 +2138,7 @@ ccc_build_distribution_annotation <- function(
       width = if (identical(which, "row")) grid::unit(2, "cm") else NULL,
       height = if (identical(which, "column")) grid::unit(2, "cm") else NULL
     ),
-    violin = ComplexHeatmap::anno_density(
+    violin = get_namespace_fun("ComplexHeatmap", "anno_density")(
       values_use,
       which = which,
       type = "violin",
@@ -2201,7 +2203,7 @@ ccc_build_summary_annotation <- function(
     return(NULL)
   }
   anno <- switch(type,
-    point = ComplexHeatmap::anno_points(
+    point = get_namespace_fun("ComplexHeatmap", "anno_points")(
       values,
       which = which,
       gp = grid::gpar(col = fill_cols),
@@ -2213,7 +2215,7 @@ ccc_build_summary_annotation <- function(
       width = if (identical(which, "row")) grid::unit(2, "cm") else NULL,
       height = if (identical(which, "column")) grid::unit(2, "cm") else NULL
     ),
-    line = ComplexHeatmap::anno_lines(
+    line = get_namespace_fun("ComplexHeatmap", "anno_lines")(
       values,
       which = which,
       gp = grid::gpar(col = "grey25", lwd = 1),
@@ -2278,7 +2280,7 @@ ccc_build_bar_annotation_args <- function(
       anno_args$width <- grid::unit(2, "cm")
     }
     out[[tools::toTitleCase(metric)]] <- do.call(
-      ComplexHeatmap::anno_barplot,
+      get_namespace_fun("ComplexHeatmap", "anno_barplot"),
       anno_args
     )
   }

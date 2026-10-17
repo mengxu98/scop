@@ -911,14 +911,11 @@ benchmark_feature_plot <- function(
     return(plots[[1]])
   }
 
-  do.call(
-    patchwork::wrap_plots,
-    list(
-      plotlist = plots,
-      nrow = nrow,
-      ncol = ncol,
-      byrow = byrow
-    )
+  patchwork::wrap_plots(
+    plotlist = plots,
+    nrow = nrow,
+    ncol = ncol,
+    byrow = byrow
   )
 }
 
