@@ -259,6 +259,8 @@ FeatureHeatmap <- function(
   ...,
   srt = NULL
 ) {
+  check_r("ComplexHeatmap", verbose = FALSE)
+
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   set.seed(seed)
   borders <- prepare_heatmap_borders(
@@ -850,7 +852,7 @@ FeatureHeatmap <- function(
     features[duplicated(features)]
 
   lgd <- list()
-  lgd[["ht"]] <- ComplexHeatmap::Legend(
+  lgd[["ht"]] <- get_namespace_fun("ComplexHeatmap", "Legend")(
     title = exp_name,
     col_fun = colors,
     legend_gp = heatmap_border_gp(
@@ -879,7 +881,7 @@ FeatureHeatmap <- function(
             message_type = "error"
           )
         }
-        dend <- ComplexHeatmap::cluster_within_group(
+        dend <- get_namespace_fun("ComplexHeatmap", "cluster_within_group")(
           mat_list[[cell_group]],
           column_split_list[[cell_group]]
         )
@@ -902,7 +904,7 @@ FeatureHeatmap <- function(
       )
 
       anno <- list()
-      anno[[cell_group]] <- ComplexHeatmap::anno_block(
+      anno[[cell_group]] <- get_namespace_fun("ComplexHeatmap", "anno_block")(
         align_to = split(
           seq_along(cell_groups[[cell_group]]),
           gsub(
@@ -916,7 +918,7 @@ FeatureHeatmap <- function(
         show_name = FALSE
       )
       ha_cell_group <- do.call(
-        ComplexHeatmap::HeatmapAnnotation,
+        get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation"),
         args = c(
           anno,
           which = ifelse(flip, "row", "column"),
@@ -939,7 +941,7 @@ FeatureHeatmap <- function(
       )
 
       anno <- list()
-      anno[[split.by]] <- ComplexHeatmap::anno_block(
+      anno[[split.by]] <- get_namespace_fun("ComplexHeatmap", "anno_block")(
         align_to = split(
           seq_along(cell_groups[[cell_group]]),
           gsub(
@@ -953,7 +955,7 @@ FeatureHeatmap <- function(
         show_name = i == 1
       )
       ha_split_by <- do.call(
-        ComplexHeatmap::HeatmapAnnotation,
+        get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation"),
         args = c(
           anno,
           which = ifelse(flip, "row", "column"),
@@ -972,7 +974,7 @@ FeatureHeatmap <- function(
   for (i in seq_along(raw.group.by)) {
     cell_group <- raw.group.by[i]
     if (cell_group != "All.groups") {
-      lgd[[cell_group]] <- ComplexHeatmap::Legend(
+      lgd[[cell_group]] <- get_namespace_fun("ComplexHeatmap", "Legend")(
         title = cell_group,
         labels = levels(srt@meta.data[[cell_group]]),
         legend_gp = grid::gpar(
@@ -987,7 +989,7 @@ FeatureHeatmap <- function(
     }
   }
   if (!is.null(split.by)) {
-    lgd[[split.by]] <- ComplexHeatmap::Legend(
+    lgd[[split.by]] <- get_namespace_fun("ComplexHeatmap", "Legend")(
       title = split.by,
       labels = levels(srt@meta.data[[split.by]]),
       legend_gp = grid::gpar(
@@ -1016,7 +1018,7 @@ FeatureHeatmap <- function(
         }
         for (cell_group in group.by) {
           ha_cell <- list()
-          ha_cell[[cellan]] <- ComplexHeatmap::anno_simple(
+          ha_cell[[cellan]] <- get_namespace_fun("ComplexHeatmap", "anno_simple")(
             x = as.character(cell_anno[names(cell_groups[[cell_group]])]),
             col = palette_colors(
               cell_anno,
@@ -1040,7 +1042,7 @@ FeatureHeatmap <- function(
             ha_top_list[[cell_group]] <- c(ha_top_list[[cell_group]], ha_top)
           }
         }
-        lgd[[cellan]] <- ComplexHeatmap::Legend(
+        lgd[[cellan]] <- get_namespace_fun("ComplexHeatmap", "Legend")(
           title = cellan,
           labels = levels(cell_anno),
           legend_gp = grid::gpar(
@@ -1063,7 +1065,7 @@ FeatureHeatmap <- function(
         )
         for (cell_group in group.by) {
           ha_cell <- list()
-          ha_cell[[cellan]] <- ComplexHeatmap::anno_simple(
+          ha_cell[[cellan]] <- get_namespace_fun("ComplexHeatmap", "anno_simple")(
             x = cell_anno[names(cell_groups[[cell_group]])],
             col = col_fun,
             which = ifelse(flip, "row", "column"),
@@ -1083,7 +1085,7 @@ FeatureHeatmap <- function(
             ha_top_list[[cell_group]] <- c(ha_top_list[[cell_group]], ha_top)
           }
         }
-        lgd[[cellan]] <- ComplexHeatmap::Legend(
+        lgd[[cellan]] <- get_namespace_fun("ComplexHeatmap", "Legend")(
           title = cellan,
           col_fun = col_fun,
           legend_gp = heatmap_border_gp(
@@ -1218,7 +1220,7 @@ FeatureHeatmap <- function(
   if (!is.null(row_split)) {
     if (isTRUE(cluster_row_slices)) {
       if (isFALSE(cluster_rows)) {
-        dend <- ComplexHeatmap::cluster_within_group(
+        dend <- get_namespace_fun("ComplexHeatmap", "cluster_within_group")(
           Matrix::t(mat_split), row_split_raw
         )
         cluster_rows <- dend
@@ -1233,8 +1235,8 @@ FeatureHeatmap <- function(
       border_color = feature_annotation_border_color,
       border_size = feature_annotation_border_size
     )
-    ha_clusters <- ComplexHeatmap::HeatmapAnnotation(
-      features_split = ComplexHeatmap::anno_block(
+    ha_clusters <- get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation")(
+      features_split = get_namespace_fun("ComplexHeatmap", "anno_block")(
         align_to = split(seq_along(row_split_raw), row_split_raw),
         panel_fun = block_graphics,
         width = grid::unit(0.1, "in"),
@@ -1254,7 +1256,7 @@ FeatureHeatmap <- function(
     } else {
       ha_left <- c(ha_left, ha_clusters)
     }
-    lgd[["Cluster"]] <- ComplexHeatmap::Legend(
+    lgd[["Cluster"]] <- get_namespace_fun("ComplexHeatmap", "Legend")(
       title = "Cluster",
       labels = intersect(levels(row_split_raw), row_split_raw),
       legend_gp = grid::gpar(
@@ -1309,12 +1311,12 @@ FeatureHeatmap <- function(
       use_raster = TRUE
     )
     ht_args <- c(ht_args, ht_params[setdiff(names(ht_params), names(ht_args))])
-    ht_list <- do.call(ComplexHeatmap::Heatmap, args = ht_args)
+    ht_list <- do.call(get_namespace_fun("ComplexHeatmap", "Heatmap"), args = ht_args)
     features_ordered <- rownames(
       mat_list[[1]]
     )[unlist(
       suppressWarnings(
-        ComplexHeatmap::row_order(
+        get_namespace_fun("ComplexHeatmap", "row_order")(
           ht_list
         )
       )
@@ -1364,8 +1366,8 @@ FeatureHeatmap <- function(
         width = row_names_wrap
       )
     }
-    ha_mark <- ComplexHeatmap::HeatmapAnnotation(
-      gene = ComplexHeatmap::anno_mark(
+    ha_mark <- get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation")(
+      gene = get_namespace_fun("ComplexHeatmap", "anno_mark")(
         at = which(rownames(feature_metadata) %in% features_ordered[index]),
         labels = mark_labels,
         side = ifelse(flip, "top", "left"),
@@ -1615,12 +1617,14 @@ FeatureHeatmap <- function(
     ht_args <- c(ht_args, ht_params[setdiff(names(ht_params), names(ht_args))])
     if (isTRUE(flip)) {
       if (is.null(ht_list)) {
-        ht_list <- do.call(ComplexHeatmap::Heatmap, args = ht_args)
+        ht_list <- do.call(get_namespace_fun("ComplexHeatmap", "Heatmap"), args = ht_args)
       } else {
-        ht_list <- ht_list %v% do.call(ComplexHeatmap::Heatmap, args = ht_args)
+        ht_list <- get_namespace_fun("ComplexHeatmap", "%v%")(
+          ht_list, do.call(get_namespace_fun("ComplexHeatmap", "Heatmap"), args = ht_args)
+        )
       }
     } else {
-      ht_list <- ht_list + do.call(ComplexHeatmap::Heatmap, args = ht_args)
+      ht_list <- ht_list + do.call(get_namespace_fun("ComplexHeatmap", "Heatmap"), args = ht_args)
     }
   }
 
@@ -1679,7 +1683,7 @@ FeatureHeatmap <- function(
 
     g_tree <- grid::grid.grabExpr(
       {
-        ComplexHeatmap::draw(ht_list,
+        get_namespace_fun("ComplexHeatmap", "draw")(ht_list,
           annotation_legend_list = lgd,
           annotation_legend_side = legend.position
         )
@@ -1691,18 +1695,16 @@ FeatureHeatmap <- function(
           if (length(enrich_anno) > 0) {
             for (enrich_anno_element in enrich_anno) {
               enrich_obj <- strsplit(enrich_anno_element, "_split_")[[1]][1]
-              ComplexHeatmap::decorate_annotation(
+              get_namespace_fun("ComplexHeatmap", "decorate_annotation")(
                 enrich_anno_element,
-                slice = 1,
-                {
+                slice = 1, {
                   grid::grid.text(
                     paste0(enrich, " (", enrich_obj, ")"),
                     x = grid::unit(1, "npc"),
                     y = grid::unit(1, "npc") + grid::unit(2.5, "mm"),
                     just = c("left", "bottom")
                   )
-                }
-              )
+              })
             }
           }
         }
@@ -1717,7 +1719,7 @@ FeatureHeatmap <- function(
     ht_height <- grid::unit(height_sum, units = units)
     g_tree <- grid::grid.grabExpr(
       {
-        ComplexHeatmap::draw(ht_list,
+        get_namespace_fun("ComplexHeatmap", "draw")(ht_list,
           annotation_legend_list = lgd,
           annotation_legend_side = legend.position
         )
@@ -1729,18 +1731,16 @@ FeatureHeatmap <- function(
           if (length(enrich_anno) > 0) {
             for (enrich_anno_element in enrich_anno) {
               enrich_obj <- strsplit(enrich_anno_element, "_split_")[[1]][1]
-              ComplexHeatmap::decorate_annotation(
+              get_namespace_fun("ComplexHeatmap", "decorate_annotation")(
                 enrich_anno_element,
-                slice = 1,
-                {
+                slice = 1, {
                   grid::grid.text(
                     paste0(enrich, " (", enrich_obj, ")"),
                     x = grid::unit(1, "npc"),
                     y = grid::unit(1, "npc") + grid::unit(2.5, "mm"),
                     just = c("left", "bottom")
                   )
-                }
-              )
+              })
             }
           }
         }

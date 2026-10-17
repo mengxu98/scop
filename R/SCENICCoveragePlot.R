@@ -230,7 +230,7 @@ scenic_annotation_gene_coords <- function(srt, atac_assay, genes) {
   if (!inherits(srt[[atac_assay]], "ChromatinAssay")) {
     return(NULL)
   }
-  ann <- tryCatch(Signac::Annotation(srt[[atac_assay]]), error = function(...) NULL)
+  ann <- tryCatch(get_namespace_fun("Signac", "Annotation")(srt[[atac_assay]]), error = function(...) NULL)
   if (is.null(ann) || length(ann) == 0L) {
     return(NULL)
   }
@@ -272,7 +272,7 @@ scenic_has_fragments <- function(srt, atac_assay) {
     return(FALSE)
   }
   tryCatch(
-    length(Signac::Fragments(srt[[atac_assay]])) > 0L,
+    length(get_namespace_fun("Signac", "Fragments")(srt[[atac_assay]])) > 0L,
     error = function(...) FALSE
   )
 }
@@ -424,7 +424,7 @@ scenic_set_signac_links <- function(srt, atac_assay, locus_links, gene_coords) {
     score = df[["score"]]
   )
   tryCatch(
-    Signac::Links(srt[[atac_assay]]) <- gr,
+    srt[[atac_assay]] <- get_namespace_fun("Signac", "Links<-")(srt[[atac_assay]], value = gr),
     error = function(...) NULL
   )
   invisible(NULL)

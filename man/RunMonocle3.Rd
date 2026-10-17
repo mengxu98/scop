@@ -135,28 +135,24 @@ if (interactive()) {
   ) +
     trajectory
 
-  if (FALSE) {
-    # Select the lineage using monocle3::choose_graph_segments
-    cds <- pancreas_sub@tools$Monocle3$cds
-    cds_sub <- thisutils::get_namespace_fun(
-      "monocle3", "choose_graph_segments"
-    )(
-      cds,
-      starting_pr_node = NULL,
-      ending_pr_nodes = NULL
-    )
-    pancreas_sub$Lineages_1 <- NA
-    pancreas_sub$Lineages_1[colnames(
-      cds_sub
-    )] <- pancreas_sub$Monocle3_Pseudotime[colnames(cds_sub)]
-    CellDimPlot(
-      pancreas_sub,
-      group.by = "SubCellType",
-      lineages = "Lineages_1",
-      lineages_span = 0.1,
-      theme_use = "theme_blank"
-    )
-  }
+  # Select the lineage using monocle3::choose_graph_segments
+  cds <- pancreas_sub@tools$Monocle3$cds
+  cds_sub <- monocle3::choose_graph_segments(
+    cds,
+    starting_pr_node = NULL,
+    ending_pr_nodes = NULL
+  )
+  pancreas_sub$Lineages_1 <- NA
+  pancreas_sub$Lineages_1[colnames(
+    cds_sub
+  )] <- pancreas_sub$Monocle3_Pseudotime[colnames(cds_sub)]
+  CellDimPlot(
+    pancreas_sub,
+    group.by = "SubCellType",
+    lineages = "Lineages_1",
+    lineages_span = 0.1,
+    theme_use = "theme_blank"
+  )
 
   # Use Seurat clusters to infer the trajectories
   pancreas_sub <- RunStandardWorkflow(pancreas_sub)

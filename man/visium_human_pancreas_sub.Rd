@@ -105,8 +105,7 @@ if (interactive()) {
   spatial <- spatial[genes_keep, ]
   spatial$feature_selection <- "top_5000_shared_with_panc8_by_spatial_counts"
 
-  use_data <- thisutils::get_namespace_fun("usethis", "use_data")
-  use_data(
+  usethis::use_data(
     spatial,
     compress = "xz",
     overwrite = TRUE

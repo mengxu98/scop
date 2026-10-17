@@ -45,6 +45,32 @@ cellqc_feature_test_object <- function() {
   Seurat::CreateSeuratObject(counts = counts)
 }
 
+test_that("RunCellQC forwards doublet arguments and retains both methods' results", {
+  object <- cellqc_feature_test_object()
+  calls <- list()
+  backend <- function(method) {
+    function(object, db_rate, data_type, ...) {
+      calls[[method]] <<- list(rate = db_rate, type = data_type, cells = colnames(object))
+      object[[paste0("db.", method, "_class")]] <- rep(c("doublet", "singlet"), length.out = ncol(object))
+      object
+    }
+  }
+  testthat::local_mocked_bindings(
+    RunscDblFinder = backend("scDblFinder"),
+    RunScrublet = backend("Scrublet"),
+    .package = "scop"
+  )
+  actual <- RunCellQC(object, qc_metrics = "doublets", db_method = c("scDblFinder", "Scrublet"),
+    db_rate = 0.1, verbose = FALSE)
+  expect_named(calls, c("scDblFinder", "Scrublet"))
+  for (call in calls) {
+    expect_identical(call$rate, 0.1)
+    expect_identical(call$type, "raw_counts")
+    expect_identical(call$cells, colnames(object))
+  }
+  expect_identical(as.character(actual$CellQC), c("Fail", "Pass", "Fail", "Pass"))
+})
+
 test_that("RunCellQC computes HB percentage without changing default filtering", {
   srt <- cellqc_feature_test_object()
 

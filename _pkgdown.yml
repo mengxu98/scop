@@ -59,458 +59,548 @@ articles:
   - spatial-benchmark-workflow
 
 reference:
-- subtitle: "Single-cell and Spatial omics analysis pipeline"
-- contents:
+- title: "Overview and Workflows"
+
+- subtitle: "Package and Standard Workflows"
+  contents:
   - scop-package
   - scop_logo
   - print.scop_logo
+  - RunStandardWorkflow
 
-- subtitle: "Package and Environment Management"
-- contents:
-  - check_python
-  - env_requirements
-  - env_info
-  - ListEnv
-  - PrepareEnv
-  - remove_python
-  - RemoveEnv
+- title: "Quality Control and Preprocessing"
 
-- subtitle: "Feature Processing"
-- contents:
-  - AddFeaturesData
-  - AddModuleScore
-  - AggregateExpression
-  - AnnotateFeatures
-  - AverageExpression
-  - GetFeaturesData
-  - GetSimilarFeatures
-  - RenameFeatures
-
-- subtitle: "Feature and Statistical Plots"
-- contents:
-  - CellCorHeatmap
-  - CellStatPlot
-  - FeatureCorPlot
-  - FeatureHeatmap
-  - FeatureStatPlot
-  - GroupHeatmap
-  - theme_scop
-  - theme_spatial
-
-- subtitle: "ATAC Input"
-- contents:
-  - ReadATACData
-  - ReadMultiomeData
-  - CheckATACData
-
-- subtitle: "Quality Control"
-- contents:
+- subtitle: "Cell Quality and Contamination Control"
+  contents:
+  - RunCellQC
+  - RunDoubletCalling
   - RunDoubletDetection
   - RunscDblFinder
   - Runscds
   - RunScrublet
-  - RunATACQC
-  - RunCellQC
   - RunDecontX
-  - RunDoubletCalling
-  - RunSpotQC
+
+- subtitle: "Normalization and Feature Selection"
+  contents:
+  - NormalizeData
+  - FindVariableFeatures
+  - ScaleData
 
 - subtitle: "Cell Cycle Analysis"
-- contents:
+  contents:
   - CellCycleScoring
   - CycGenePrefetch
   - RunCellCycle
 
-- subtitle: "scop Pipeline"
-- contents:
-  - RunStandardWorkflow
-  - RunIntegration
+- title: "Dimensionality Reduction and Clustering"
 
-- subtitle: "Metacell Analysis"
-- contents:
-  - RunMetaCell
-  - RunmcRigor
-
-- subtitle: "Metacell Plots"
-- contents:
-  - MetaCellPlot
-
-- subtitle: "Data Integration and Batch Effect Removal"
-- contents:
-  - SelectIntegrationFeatures
-  - Uncorrected_integrate
-  - Seurat_integrate
-  - CCA_integrate
-  - RPCA_integrate
-  - fastMNN_integrate
-  - fastMNN5_integrate
-  - Harmony_integrate
-  - Harmony5_integrate
-  - MNN_integrate
-  - Scanorama_integrate
-  - BBKNN_integrate
-  - CSS_integrate
-  - GLUE_integrate
-  - LIGER_integrate
-  - scVI_integrate
-  - scVI5_integrate
-  - MultiMAP_integrate
-  - Conos_integrate
-  - ComBat_integrate
-  - Coralysis_integrate
-  - WNN_integrate
-
-- subtitle: "Benchmark"
-- contents:
-  - RunIntegrationBenchmark
-  - IntegrationBenchmarkPlot
-  - RunSpatialBenchmark
-  - SpatialBenchmarkPlot
-
-- subtitle: "Integration Mapping"
-- contents:
-  - RunCSSMap
-  - RunHarmony2
-  - RunLISI
-  - RunPCAMap
-  - RunSeuratMap
-  - RunSymphonyMap
-
-- subtitle: "Dimensionality Reduction and Clustering"
-- contents:
-  - NormalizeData
-  - FindVariableFeatures
-  - ScaleData
+- subtitle: "Reduction Selection and Linear Embeddings"
+  contents:
+  - RunDimsEstimate
+  - DimsEstimatePlot
+  - RunDimsReduction
   - RunPCA
   - RunCCA
-  - RunUMAP
-  - FindClusters
-  - FindMultiModalNeighbors
-  - FindNeighbors
-  - RunDimsEstimate
-  - RunDimsReduction
-  - RunCHOIR
-  - RunDM
-  - RunFR
   - RunGLMPCA
   - RunMDS
   - RunNMF
+  - NMFHeatmap
+
+- subtitle: "Nonlinear Embeddings"
+  contents:
+  - RunUMAP
   - RunUMAP2
+  - RunDM
+  - RunFR
   - RunPaCMAP
   - RunTriMap
   - RunPHATE
   - RunLargeVis
 
-- subtitle: "Dimensionality Reduction Plots"
-- contents:
+- subtitle: "Clustering and Neighborhoods"
+  contents:
+  - FindNeighbors
+  - FindClusters
+  - ClusterTreePlot
+  - RunCHOIR
+  - RunRareQ
+
+- subtitle: "Embedding Visualization"
+  contents:
   - CellDimPlot
   - CellDimPlot3D
   - CellDensityPlot
-  - ClusterTreePlot
-  - DimsEstimatePlot
   - FeatureDimPlot
   - FeatureDimPlot3D
-  - NMFHeatmap
   - ProjectionPlot
   - TACSPlot
 
-- title: "Spatial Analysis"
+- title: "Data Integration and Reference Mapping"
 
-- subtitle: "Spatial Result Access"
-- contents:
-  - SpatialCoordinates
-  - ReadSpatialData
-  - SetSpatialImageAxes
-  - GetSpatialGraph
-  - GetSpatialResult
+- subtitle: "Integration Workflows and Feature Preparation"
+  contents:
+  - RunIntegration
+  - SelectIntegrationFeatures
+  - Uncorrected_integrate
 
-- subtitle: "Spatial QC and Normalization"
-- contents:
-  - RunSpaNorm
-  - RunSpotSweeper
+- subtitle: "Anchor and Neighbor-Based Integration"
+  contents:
+  - Seurat_integrate
+  - CCA_integrate
+  - RPCA_integrate
+  - MNN_integrate
+  - fastMNN_integrate
+  - fastMNN5_integrate
+  - Scanorama_integrate
 
-- subtitle: "Spatial Framework Bridges"
-- contents:
-  - srt_to_giotto
-  - giotto_to_srt
+- subtitle: "Embedding and Factor Integration"
+  contents:
+  - Harmony_integrate
+  - Harmony5_integrate
+  - RunHarmony2
+  - LIGER_integrate
+  - scVI_integrate
+  - scVI5_integrate
+  - Coralysis_integrate
 
-- subtitle: "Spatial Deconvolution and Ecotypes"
-- contents:
-  - RunRCTD
-  - RunCell2location
-  - RunCSIDE
-  - RunCARD
-  - RunSTdeconvolve
-  - RunSPOTlight
-  - RunSpatialEcoTyper
+- subtitle: "Graph and Expression-Space Integration"
+  contents:
+  - BBKNN_integrate
+  - Conos_integrate
+  - CSS_integrate
+  - ComBat_integrate
 
-- subtitle: "Spatial Domains and Feature Patterns"
-- contents:
-  - RunBayesSpace
-  - RunBANKSY
-  - RunCytoSPACE
-  - RunSmoothClust
-  - RunMERINGUE
-  - RunSpatialVariableFeatures
-  - RunSpatialGradientFeatures
+- subtitle: "Multimodal Integration"
+  contents:
+  - WNN_integrate
+  - FindMultiModalNeighbors
+  - GLUE_integrate
+  - MultiMAP_integrate
 
-- subtitle: "Spatial Neighborhoods and Multi-Sample Integration"
-- contents:
-  - RunSpatialNetwork
-  - RunSpatialCellChat
-  - MistyRPlot
-  - StatialKontextualPlot
-  - RunSpatialNeighborhood
-  - SpatialNeighborhoodProfile
-  - RunStatialKontextual
-  - RunSpatialIntegration
-  - RunMistyR
-
-- subtitle: "Spatial Visualization"
-- contents:
-  - SpatialGradientPlot
-  - SpatialIntegrationPlot
-  - SpatialNeighborhoodPlot
-  - SpatialNetworkPlot
-  - SpatialCellChatPlot
-  - SpatialCellPlot
-  - Cell2locationPlot
-  - SpatialSpotPlot
-  - SpatialDeconvolutionPlot
-  - SpatialVariableFeaturePlot
-  - STdeconvolvePlot
-
-- subtitle: "Cell Type Annotation"
-- contents:
-  - CellTypistModels
-  - RunCellTypist
-  - RunCoEmbedding
-  - RunKNNMap
-  - RunKNNPredict
-  - RunLabelTransfer
+- subtitle: "Reference Mapping and Label Transfer"
+  contents:
   - RunReferenceMapping
-  - RunScmap
-  - RunSciBet
-  - RunSingleR
-  - TrainCellTypist
+  - RunLabelTransfer
+  - RunSeuratMap
+  - RunSymphonyMap
+  - RunPCAMap
+  - RunCSSMap
+  - RunKNNMap
+  - RunCoEmbedding
 
-- subtitle: "Differential Expression and Perturbation"
-- contents:
-  - FindAllMarkers
-  - FindMarkers
-  - FoldChange
-  - FindExpressedMarkers
-  - RunAugur
-  - RunDEtest
-  - RunFWP
-  - RunRareQ
-  - RunScissor
+- subtitle: "Integration Evaluation"
+  contents:
+  - RunIntegrationBenchmark
+  - IntegrationBenchmarkPlot
+  - RunLISI
+
+- title: "Cell Type Annotation"
+
+- subtitle: "Reference-Based Annotation and Models"
+  contents:
+  - CellTypistModels
+  - TrainCellTypist
+  - RunCellTypist
+  - RunSingleR
+  - RunSciBet
+  - RunScmap
+  - RunKNNPredict
+
+- subtitle: "Specialized Cell State Annotation"
+  contents:
   - RunscMalignantFinder
   - RunscMalignantRegion
   - RunscMalignantStates
-  - RunscTenifoldKnk
-  - RunscTenifoldNet
 
-- subtitle: "Differential Expression and Perturbation Plots"
-- contents:
+- title: "Differential Expression and Cell Composition"
+
+- subtitle: "Markers and Differential Expression"
+  contents:
+  - FindAllMarkers
+  - FindMarkers
+  - FindExpressedMarkers
+  - FoldChange
+  - RunDEtest
   - DEtestPlot
   - DEtestManhattanPlot
   - DEtestRingPlot
   - VolcanoPlot
-  - ScissorPlot
-  - scTenifoldKnkPlot
-  - scTenifoldNetPlot
 
-- subtitle: "Bulk and Composition Analysis"
-- contents:
-  - RunDeconvolution
-  - RunCIBERSORT
-  - RunESTIMATE
-  - estimate_signatures
+- subtitle: "Expression Aggregation and Metacells"
+  contents:
+  - AggregateExpression
+  - AverageExpression
+  - RunMetaCell
+  - MetaCellPlot
+  - RunmcRigor
+
+- subtitle: "Cell Composition and Abundance"
+  contents:
   - RunMilo
-  - RunPermutation
   - RunPropeller
-  - RunProportionTest
   - RunscCODA
+  - RunProportionTest
+  - ProportionTestPlot
+  - RunPermutation
 
-- subtitle: "Bulk and Composition Plots"
-- contents:
+- subtitle: "Bulk Deconvolution and Immune Scores"
+  contents:
+  - RunDeconvolution
   - DeconvolutionPlot
+  - RunCIBERSORT
   - ImmuneAbundancePlot
+  - RunESTIMATE
   - EstimateScorePlot
   - EstimateGenePlot
   - GeneImmuneCorPlot
-  - ProportionTestPlot
+  - estimate_signatures
 
-- subtitle: "Copy Number Variation Analysis"
-- contents:
-  - RunCNV
-  - CNVPlot
+- title: "Functional and Pathway Analysis"
 
-- subtitle: "Enrichment Analysis"
-- contents:
-  - CellScoring
-  - RunDorothea
-  - RunDynamicEnrichment
+- subtitle: "Enrichment Testing and Visualization"
+  contents:
   - RunEnrichment
-  - RunGSEA
-  - RunGSVA
-  - RunMetabolism
-  - PrepareIREA
-  - RunIREA
-
-- subtitle: "Enrichment Analysis Plot"
-- contents:
-  - CellScoringPlot
-  - DorotheaPlot
   - EnrichmentPlot
   - FerrisWheelPlot
+  - RunGSEA
   - GSEAPlot
+
+- subtitle: "Gene Set and Pathway Scoring"
+  contents:
+  - AddModuleScore
+  - CellScoring
+  - CellScoringPlot
+  - RunGSVA
   - GSVAPlot
-  - MetabolismPlot
+
+- subtitle: "Immune Response Programs"
+  contents:
+  - PrepareIREA
+  - RunIREA
   - IREAPlot
 
-- subtitle: "Metabolic Flux Analysis"
-- contents:
+- subtitle: "Metabolic Activity and Flux"
+  contents:
+  - RunMetabolism
+  - MetabolismPlot
   - RunscFEA
   - scFEAHeatmap
   - scFEAVolcanoPlot
   - scFEABalanceBarPlot
 
-- subtitle: "Cellular Potency"
-- contents:
+- title: "Trajectory and Cell Fate"
+
+- subtitle: "Trajectory and Pseudotime Inference"
+  contents:
+  - RunMonocle2
+  - RunMonocle3
+  - RunPAGA
+  - PAGAPlot
+  - RunPalantir
+  - PalantirTrajectoryPlot
+  - RunSlingshot
+
+- subtitle: "RNA Velocity and Vector Fields"
+  contents:
+  - RunCell2fate
+  - RunSCVELO
+  - VelocityPlot
+  - RunVECTOR
+  - VECTORPlot
+
+- subtitle: "Fate Mapping and Lineages"
+  contents:
+  - RunCellRank
+  - CellRankPlot
+  - RunWOT
+  - LineagePlot
+  - BranchStreamPlot
+  - PseudotimeProjectionPlot
+
+- subtitle: "Dynamic Expression and Pathways"
+  contents:
+  - RunDynamicFeatures
+  - DynamicPlot
+  - DynamicHeatmap
+  - RunDynamicEnrichment
+  - RunCellRankTrends
+  - RunCellRankEnrichment
+
+- subtitle: "Cell Potency and Aging"
+  contents:
+  - PrepareCytoTRACE2
   - RunCytoTRACE
   - CytoTRACEPlot
   - RunFitDevo
   - FitDevoPlot
+  - RuntAge
+  - tAgePlot
 
-- subtitle: "Dynamic Trajectory Analysis"
-- contents:
-  - RunCell2fate
-  - RunCellRank
-  - RunCellRankTrends
-  - RunCellRankEnrichment
-  - RunMonocle2
-  - RunMonocle3
-  - RunPAGA
-  - RunPalantir
-  - RunSlingshot
-  - RunSCVELO
-  - RunVECTOR
-  - RunWOT
-  - RunDynamicFeatures
+- title: "Cell-Cell Communication"
 
-- subtitle: "Dynamic Trajectory Plots"
-- contents:
-  - BranchStreamPlot
-  - DynamicPlot
-  - DynamicHeatmap
-  - LineagePlot
-  - PAGAPlot
-  - PalantirTrajectoryPlot
-  - CellRankPlot
-  - PseudotimeProjectionPlot
-  - VECTORPlot
-  - VelocityPlot
-
-- subtitle: "Cell-Cell Communication Analysis"
-- contents:
+- subtitle: "Communication Inference"
+  contents:
   - RunCCC
+  - RunCellChat
+  - RunCellphoneDB
+  - RunLIANA
+  - RunMDIC3
+  - RunscOMM
+  - RunNichenetr
+  - RunMultiNichenetr
+
+- subtitle: "Spatial Communication"
+  contents:
+  - RunSpaTalk
+  - SpaTalkPlot
+  - RunCOMMOT
+  - COMMOTPlot
+  - RunSpatialDM
+  - SpatialDMPlot
   - GetSpatialDMResult
+  - RunSpatialCellChat
+  - SpatialCellChatPlot
+
+- subtitle: "Signaling Activity and Dynamics"
+  contents:
   - RunSecAct
   - RunSecActCCC
   - RunSecActSignalingPattern
   - RunSecActPatternGenes
   - RunSecActVelocity
-  - RunCellChat
+
+- subtitle: "Communication Resources and Interoperability"
+  contents:
   - GetCCCObject
-  - RunCellphoneDB
-  - RunLIANA
-  - RunSpaTalk
-  - RunCOMMOT
-  - RunSpatialDM
   - ListCCCDB
   - PrepareCCCDB
-  - RunMDIC3
-  - RunNichenetr
-  - RunMultiNichenetr
-  - RunscOMM
   - ccc_to_adata
   - ccc_to_liana
 
-- subtitle: "GWAS Integration"
-- contents:
-  - RunscPagwas
-  - PlotscPagwas
-
-- subtitle: "Cell-Cell Communication Plots"
-- contents:
+- subtitle: "Communication Visualization"
+  contents:
   - CCCHeatmap
   - CCCNetworkPlot
   - CCCStatPlot
-  - SpaTalkPlot
-  - COMMOTPlot
-  - SpatialDMPlot
 
-- subtitle: "Gene Regulatory Network Inference"
-- contents:
+- title: "Gene Regulatory Networks"
+
+- subtitle: "Network Inference"
+  contents:
   - RunGRN
   - RunGRNBoost2
   - RunGENIE3
   - RunGNIPLR
-  - RunSCENIC
-  - RunSCENICPlus
 
-- subtitle: "Gene Regulatory Network Plots"
-- contents:
+- subtitle: "Regulon Inference and Activity"
+  contents:
+  - RunSCENIC
   - SCENICPlot
+  - RunCisTarget
+  - RunDorothea
+  - DorotheaPlot
+
+- subtitle: "Multiomic Regulatory Networks"
+  contents:
+  - RunSCENICPlus
   - SCENICPlusPlot
 
-- subtitle: "Other"
-- contents:
-  - CoverageTrackPlot
-  - tAgePlot
-  - RuntAge
+- title: "Phenotype and Perturbation Analysis"
 
-- subtitle: "SCExplorer"
-- contents:
-  - CreateDataFile
-  - CreateMetaFile
-  - FetchH5
+- subtitle: "Phenotype Association"
+  contents:
+  - RunScissor
+  - ScissorPlot
+  - RunAugur
+  - RunFWP
+
+- subtitle: "Network Perturbation"
+  contents:
+  - RunscTenifoldKnk
+  - scTenifoldKnkPlot
+  - RunscTenifoldNet
+  - scTenifoldNetPlot
+
+- title: "ATAC and Multiome Analysis"
+
+- subtitle: "Accessibility Quality and Coverage"
+  contents:
+  - RunATACQC
+  - CoverageTrackPlot
+
+- title: "Spatial Omics Analysis"
+
+- subtitle: "Spatial Quality Control and Normalization"
+  contents:
+  - RunSpotQC
+  - RunSpotSweeper
+  - RunSpaNorm
+
+- subtitle: "Deconvolution and Ecotypes"
+  contents:
+  - RunRCTD
+  - RunCell2location
+  - Cell2locationPlot
+  - RunCARD
+  - RunSPOTlight
+  - RunSTdeconvolve
+  - STdeconvolvePlot
+  - RunSpatialEcoTyper
+  - SpatialDeconvolutionPlot
+
+- subtitle: "Spatial Domains and Cell Mapping"
+  contents:
+  - RunBayesSpace
+  - RunBANKSY
+  - RunCytoSPACE
+  - RunSmoothClust
+
+- subtitle: "Spatial Feature Patterns"
+  contents:
+  - RunMERINGUE
+  - RunSpatialVariableFeatures
+  - SpatialVariableFeaturePlot
+  - RunSpatialGradientFeatures
+  - SpatialGradientPlot
+  - RunCSIDE
+
+- subtitle: "Spatial Neighborhoods and Interactions"
+  contents:
+  - RunSpatialNeighborhood
+  - SpatialNeighborhoodProfile
+  - SpatialNeighborhoodPlot
+  - RunSpatialNetwork
+  - SpatialNetworkPlot
+  - RunMistyR
+  - MistyRPlot
+  - RunStatialKontextual
+  - StatialKontextualPlot
+
+- subtitle: "Spatial Integration and Evaluation"
+  contents:
+  - RunSpatialIntegration
+  - SpatialIntegrationPlot
+  - RunSpatialBenchmark
+  - SpatialBenchmarkPlot
+
+- subtitle: "Spatial Maps"
+  contents:
+  - SpatialSpotPlot
+  - SpatialCellPlot
+
+- title: "Genomic Variation and Trait Association"
+
+- subtitle: "Copy Number Variation"
+  contents:
+  - RunCNV
+  - CNVPlot
+
+- subtitle: "GWAS and Trait Association"
+  contents:
+  - RunscPagwas
+  - PlotscPagwas
+
+- title: "Visualization and Interactive Exploration"
+
+- subtitle: "Feature and Statistical Plots"
+  contents:
+  - CellStatPlot
+  - FeatureCorPlot
+  - FeatureStatPlot
+
+- subtitle: "Heatmaps and Themes"
+  contents:
+  - CellCorHeatmap
+  - FeatureHeatmap
+  - GroupHeatmap
+  - theme_scop
+  - theme_spatial
+
+- subtitle: "Interactive Exploration"
+  contents:
   - PrepareSCExplorer
   - RunSCExplorer
 
-- subtitle: "Data Conversion"
-- contents:
-  - adata_to_srt
-  - h5ad_to_srt
-  - loom_to_adata
-  - loom_to_srt
-  - srt_to_adata
-  - srt_to_h5ad
-  - srt_to_spe
-  - spe_to_srt
+- title: "Data I/O and Object Management"
 
-- subtitle: "Data Processing"
-- contents:
+- subtitle: "Data Import and Validation"
+  contents:
+  - ReadATACData
+  - ReadMultiomeData
+  - ReadSpatialData
+  - CheckATACData
   - CheckDataType
   - CheckDataList
   - CheckDataMerge
+
+- subtitle: "Object and File Conversion"
+  contents:
+  - adata_to_srt
+  - srt_to_adata
+  - h5ad_to_srt
+  - srt_to_h5ad
+  - loom_to_adata
+  - loom_to_srt
+
+- subtitle: "Spatial Framework Interoperability"
+  contents:
+  - srt_to_spe
+  - spe_to_srt
+  - srt_to_giotto
+  - giotto_to_srt
+
+- subtitle: "Spatial Coordinates and Results"
+  contents:
+  - SpatialCoordinates
+  - SetSpatialImageAxes
+  - GetSpatialGraph
+  - GetSpatialResult
+
+- subtitle: "Object Access and Organization"
+  contents:
   - DefaultReduction
   - FetchDataZero
-  - GeneConvert
-  - ConvertHomologs
   - GetAssayData5
   - RecoverCounts
   - RenameClusters
   - srt_append
   - srt_reorder
 
-- subtitle: "Database Operations"
-- contents:
+- subtitle: "Feature Annotation and Identifiers"
+  contents:
+  - AddFeaturesData
+  - GetFeaturesData
+  - AnnotateFeatures
+  - GetSimilarFeatures
+  - RenameFeatures
+  - GeneConvert
+  - ConvertHomologs
+
+- subtitle: "Interactive Data Files"
+  contents:
+  - CreateDataFile
+  - CreateMetaFile
+  - FetchH5
+
+- title: "Resources and Environment"
+
+- subtitle: "Resource Preparation"
+  contents:
   - ListDB
   - PrepareDB
+  - PrepareCustomDB
+
+- subtitle: "Pathway and Gene-Set Resources"
+  contents:
   - PrepareGO
+  - PrepareKEGG
+  - PrepareWikiPathway
+  - PrepareReactome
+  - PrepareMSigDB
+  - PrepareCORUM
+
+- subtitle: "Annotation and Ontology Resources"
+  contents:
   - PrepareMP
   - PrepareDO
   - PrepareHPO
@@ -518,29 +608,27 @@ reference:
   - PrepareChromosome
   - PrepareGeneType
   - PrepareEnzyme
-  - PrepareKEGG
-  - PrepareWikiPathway
-  - PrepareReactome
-  - PrepareMSigDB
-  - PrepareCORUM
+
+- subtitle: "Regulatory Resources"
+  contents:
   - PrepareTF
-  - PrepareCSPA
-  - PrepareSurfaceome
-  - PrepareSPRomeDB
-  - PrepareVerSeDa
   - PrepareTFLink
   - PrepareHTFtarget
   - PrepareTRRUST
   - PrepareJASPAR
   - PrepareENCODE
+
+- subtitle: "Cell Surface and Signaling Resources"
+  contents:
+  - PrepareCSPA
+  - PrepareSurfaceome
+  - PrepareSPRomeDB
+  - PrepareVerSeDa
   - PrepareCellTalk
   - PrepareCellChat
-  - PrepareCytoTRACE2
-  - PrepareCustomDB
-  - RunCisTarget
 
-- subtitle: "Data"
-- contents:
+- subtitle: "Example Datasets"
+  contents:
   - islet_bulk
   - panc8_sub
   - pancreas_sub
@@ -548,3 +636,13 @@ reference:
   - ref_scMCA
   - visium_human_pancreas_sub
   - words_excluded
+
+- subtitle: "Python Environment Management"
+  contents:
+  - check_python
+  - env_requirements
+  - env_info
+  - ListEnv
+  - PrepareEnv
+  - remove_python
+  - RemoveEnv

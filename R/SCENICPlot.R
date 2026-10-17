@@ -1593,16 +1593,13 @@ scenic_plot_activity_cor_dumbbell <- function(
           if (sum(keep) >= 3L &&
             stats::var(x[keep]) > 0 &&
             stats::var(y[keep]) > 0) {
-            cor_args <- list(
-              x = x[keep],
-              y = y[keep],
-              method = cor_method
-            )
-            if (cor_method %in% c("spearman", "kendall")) {
-              cor_args$exact <- FALSE
-            }
             cor_test <- tryCatch(
-              do.call(stats::cor.test, cor_args),
+              stats::cor.test(
+                x = x[keep],
+                y = y[keep],
+                method = cor_method,
+                exact = if (cor_method %in% c("spearman", "kendall")) FALSE else NULL
+              ),
               error = function(e) NULL
             )
           }

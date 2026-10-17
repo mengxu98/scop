@@ -59,10 +59,6 @@ reject \code{comparison}; use statistical plots for differential comparisons.}
 to and only support \code{"count"}: saved observed outgoing edges to the target
 type, not a spicyR effect. Other plot types retain the \code{"estimate"} default.}
 
-\item{sample}{Optional single sample ID for non-spatial plots. Results from
-multiple samples require explicit selection; no samples are aggregated.
-Use \code{comparison} and \code{condition} to resolve other repeated label pairs.}
-
 \item{FDR_threshold}{FDR cutoff used to mark significant pairs.}
 
 \item{top_n}{Number of pairs to show for network and statistic plots.}
@@ -118,6 +114,10 @@ scale-factor slots.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{sample}{Optional single sample ID for non-spatial plots. Results from
+multiple samples require explicit selection; no samples are aggregated.
+Use \code{comparison} and \code{condition} to resolve other repeated label pairs.}
 }
 \value{
 A \code{ggplot}, \code{patchwork}, or list of \code{ggplot} objects.
