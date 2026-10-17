@@ -1,3 +1,15 @@
+check_pages <- function(paths) {
+  missing <- paths[!file.exists(paths)]
+  if (length(missing)) stop("Missing generated pages: ", paste(missing, collapse = ", "))
+  errors <- lapply(paths, function(path) {
+    page <- xml2::read_html(path)
+    messages <- xml2::xml_text(xml2::xml_find_all(page, "//*[contains(concat(' ', normalize-space(@class), ' '), ' r-err ')]"))
+    if (length(messages)) paste(path, paste(unique(messages), collapse = "\n"), sep = ":\n") else character()
+  })
+  errors <- unlist(errors, use.names = FALSE)
+  if (length(errors)) stop("Example execution failed:\n", paste(errors, collapse = "\n\n"))
+}
+
 plan <- jsonlite::read_json("pkgdown-plan.json", simplifyVector = TRUE)
 timings <- data.frame(page = character(), seconds = numeric())
 record <- function(name, expression) {
@@ -36,8 +48,7 @@ expected <- c(
   if (length(plan$topics)) file.path("docs/reference", paste0(plan$topics, ".html")),
   if (length(plan$articles)) file.path("docs/articles", paste0(plan$articles, ".html"))
 )
-missing <- expected[!file.exists(expected)]
-if (length(missing)) stop("Missing generated pages: ", paste(missing, collapse = ", "))
+check_pages(expected)
 if (length(plan$deleted) && any(file.exists(file.path("docs", plan$deleted)))) {
   stop("Deleted documentation pages remain in website output")
 }

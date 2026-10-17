@@ -117,7 +117,9 @@ jobs:
         run: python3 .github/pkgdown-plan.py restore
 
       - name: Build and verify website
-        run: Rscript --vanilla .github/pkgdown-build.R
+        run: |
+          Rscript --vanilla .github/test-pkgdown-output.R
+          Rscript --vanilla .github/pkgdown-build.R
 
       - uses: actions/upload-artifact@v4
         if: failure()
