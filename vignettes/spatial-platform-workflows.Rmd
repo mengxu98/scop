@@ -185,46 +185,31 @@ Set one or more of `SCOP_VISIUM_DIR`, `SCOP_VISIUM_HD_DIR`, and
 running this section. Visium needs the expression matrix plus the `spatial/`
 outputs; HD needs the selected binned outputs and matching images; Xenium
 needs expression and existing cell segmentation. Do not point at an archive.
-No path is configured by default, so the table explicitly reports `not_run`.
+This section is not evaluated during rendering; run the calls for the datasets
+you have downloaded.
 
-```{r import-vendor-data}
-vendor_paths <- c(
-  visium = Sys.getenv("SCOP_VISIUM_DIR"),
-  visium_hd = Sys.getenv("SCOP_VISIUM_HD_DIR"),
-  xenium = Sys.getenv("SCOP_XENIUM_DIR")
+```{r import-vendor-data, eval=FALSE}
+visium_imported <- ReadSpatialData(
+  data.dir = Sys.getenv("SCOP_VISIUM_DIR"),
+  technology = "visium",
+  sample_id = "visium_sample1"
 )
-vendor_objects <- list()
-import_receipts <- lapply(names(vendor_paths), function(technology) {
-  path <- vendor_paths[[technology]]
-  status <- "not_run"
-  reason <- "No vendor directory configured"
-  observations <- NA_integer_
-  if (nzchar(path)) {
-    result <- tryCatch({
-      if (!dir.exists(path)) stop("Configured vendor directory does not exist")
-      ReadSpatialData(data.dir = path, technology = technology,
-                      bin.size = c(8, 16), sample_id = paste0(technology, "_sample1"))
-    }, error = function(e) e)
-    if (inherits(result, "error")) {
-      status <- "failed"
-      reason <- conditionMessage(result)
-    } else {
-      vendor_objects[[technology]] <<- result
-      status <- "completed"
-      reason <- "Vendor import and SCOP context validation completed"
-      observations <- ncol(result)
-    }
-  }
-  data.frame(technology = technology, status = status, observations = observations,
-             reason = reason)
-})
-import_receipts <- do.call(rbind, import_receipts)
-import_receipts
+visium_hd_imported <- ReadSpatialData(
+  data.dir = Sys.getenv("SCOP_VISIUM_HD_DIR"),
+  technology = "visium_hd",
+  bin.size = c(8, 16),
+  sample_id = "visium_hd_sample1"
+)
+xenium_imported <- ReadSpatialData(
+  data.dir = Sys.getenv("SCOP_XENIUM_DIR"),
+  technology = "xenium",
+  sample_id = "xenium_sample1"
+)
 ```
 
-Only `completed` means an import ran. For example, after a successful Visium
-import, use `visium <- vendor_objects$visium`, inspect its images/assays, and
-repeat the input checks with its actual dimensions. If your matrix filename
+After a successful Visium import, use `visium <- visium_imported`, inspect its
+images/assays, and repeat the input checks with its actual dimensions.
+If your matrix filename
 is nonstandard, pass Seurat's `filename =` argument through `ReadSpatialData()`;
 the GSE254829 source archive uses `filename = "filtered_feature_bc_matrix"`.
 For HD, inspect every image and its matching assay separately: one resolution
@@ -243,26 +228,20 @@ and [10x Xenium Explorer demo datasets](https://www.10xgenomics.com/support/soft
 Download and unpack them outside the package; do not hard-code a machine path
 in a reproducible article.
 
-## Optional method recipes: check availability first
+## Optional method recipes
 
 The complete input/QC/normalization path above is evaluated. The following
 backend-specific recipes are not executed by this page: several require
 separate installations, another sample, a matched reference, or a costly model
-fit. This table measures installation status and explicitly distinguishes it
-from execution. A package being installed does not prove that its model ran.
+fit. Install the backend for the recipe you intend to run.
 
-```{r platform-backend-status}
-backend_packages <- c("SpaNorm", "Banksy", "BayesSpace", "PRECAST", "spacexr")
-backend_status <- data.frame(
-  package = backend_packages,
-  installed = vapply(backend_packages, requireNamespace, logical(1), quietly = TRUE),
-  version = vapply(backend_packages, function(p) {
-    if (requireNamespace(p, quietly = TRUE)) as.character(packageVersion(p)) else NA_character_
-  }, character(1)),
-  execution = "not_run: optional recipe on this page"
-)
-backend_status
-```
+| Recipe | Required backend |
+|---|---|
+| SpaNorm normalization | SpaNorm |
+| BANKSY clustering | Banksy |
+| BayesSpace clustering | BayesSpace |
+| PRECAST integration | PRECAST |
+| RCTD deconvolution | spacexr |
 
 The main workflow contains executable spatial-feature and reference-based
 examples. Use its execution receipts to establish which methods actually ran.
@@ -275,8 +254,6 @@ plots and methods whose contract asks for a normalized layer. `SpaNorm` is a
 separate normalization stage; it does not replace the original count source.
 
 ```{r spanorm-template, eval=FALSE}
-stopifnot(requireNamespace("SpaNorm", quietly = TRUE),
-          requireNamespace("Banksy", quietly = TRUE))
 normalized <- RunStandardWorkflow(
   visium,
   workflow = "spatial",
@@ -293,7 +270,6 @@ normalized <- RunStandardWorkflow(
 normalized@tools$run_standard_spatial_workflow$stages
 
 # A separate count-dependent method; q is a required choice, not an inferred truth.
-stopifnot(requireNamespace("BayesSpace", quietly = TRUE))
 bayesspace <- RunBayesSpace(
   normalized,
   assay = "Spatial",  # this assay must retain the original counts
@@ -331,7 +307,6 @@ baseline <- RunStandardWorkflow(
 )
 
 baseline@tools$run_standard_spatial_workflow$stages
-stopifnot(requireNamespace("Banksy", quietly = TRUE))
 banksy <- RunStandardWorkflow(
   visium,
   workflow = "spatial",
@@ -369,11 +344,9 @@ single bundled section to manufacture an integration result. Inspect each
 object and adjust the assay/image map before running.
 
 ```{r precast-template, eval=FALSE}
-stopifnot(requireNamespace("PRECAST", quietly = TRUE))
 sample_files <- c(S1 = Sys.getenv("SCOP_SPATIAL_S1_RDS"),
                   S2 = Sys.getenv("SCOP_SPATIAL_S2_RDS"))
-stopifnot(all(nzchar(sample_files)), all(file.exists(sample_files)),
-          length(unique(normalizePath(sample_files))) == 2L)
+stopifnot(length(unique(normalizePath(sample_files))) == 2L)
 visium_S1 <- readRDS(sample_files[["S1"]])
 visium_S2 <- readRDS(sample_files[["S2"]])
 stopifnot(inherits(visium_S1, "Seurat"), inherits(visium_S2, "Seurat"))

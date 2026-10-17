@@ -1012,6 +1012,8 @@ ccc_heatmap_full_plot <- function(
   theme_use = "theme_scop",
   theme_args = list()
 ) {
+  check_r("ComplexHeatmap", verbose = FALSE)
+
   check_r("circlize", verbose = FALSE)
   bar_value <- ccc_match_bar_value(bar_value)
   top_anno <- ccc_match_side_anno(top_anno)
@@ -1310,7 +1312,7 @@ ccc_heatmap_full_plot <- function(
       dot_max <- 1
     }
     layer_fun <- function(j, i, x, y, width, height, fill) {
-      v <- ComplexHeatmap::pindex(mat_local, i, j)
+      v <- get_namespace_fun("ComplexHeatmap", "pindex")(mat_local, i, j)
       sz <- grid::unit(
         ifelse(is.finite(v), pmax(v / dot_max, 0.05), 0) * 8,
         "mm"
@@ -1355,7 +1357,7 @@ ccc_heatmap_full_plot <- function(
       palette = cell_palette,
       palcolor = cell_palcolor
     )
-    ComplexHeatmap::HeatmapAnnotation(
+    get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation")(
       df = data.frame(Sender = col_nms, row.names = col_nms),
       col = list(Sender = stats::setNames(col_cols, col_nms)),
       annotation_name_gp = grid::gpar(fontsize = font.size * 0.8),
@@ -1376,7 +1378,7 @@ ccc_heatmap_full_plot <- function(
       palette = cell_palette,
       palcolor = cell_palcolor
     )
-    ComplexHeatmap::rowAnnotation(
+    get_namespace_fun("ComplexHeatmap", "rowAnnotation")(
       df = data.frame(Receiver = row_nms, row.names = row_nms),
       col = list(Receiver = stats::setNames(row_cols, row_nms)),
       annotation_name_gp = grid::gpar(fontsize = font.size * 0.8),
@@ -1686,10 +1688,10 @@ ccc_heatmap_full_plot <- function(
     )
   )
 
-  ht <- do.call(ComplexHeatmap::Heatmap, ht_args)
+  ht <- do.call(get_namespace_fun("ComplexHeatmap", "Heatmap"), ht_args)
 
   g_tree <- grid::grid.grabExpr(
-    ComplexHeatmap::draw(
+    get_namespace_fun("ComplexHeatmap", "draw")(
       ht,
       padding = grid::unit(c(4, 4, 12, 4), "mm")
     ),
@@ -1814,6 +1816,8 @@ ccc_ligand_target_heatmap <- function(
   theme_use = "theme_scop",
   theme_args = list()
 ) {
+  check_r("ComplexHeatmap", verbose = FALSE)
+
   check_r("circlize", verbose = FALSE)
   bar_value <- ccc_match_bar_value(bar_value)
   top_anno <- ccc_match_side_anno(top_anno)
@@ -1965,7 +1969,7 @@ ccc_ligand_target_heatmap <- function(
       palette = cell_palette,
       palcolor = cell_palcolor
     )
-    ComplexHeatmap::HeatmapAnnotation(
+    get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation")(
       df = data.frame(Target = col_nms, row.names = col_nms),
       col = list(Target = stats::setNames(col_cols, col_nms)),
       annotation_name_gp = grid::gpar(fontsize = font.size * 0.8),
@@ -1986,7 +1990,7 @@ ccc_ligand_target_heatmap <- function(
       palette = cell_palette,
       palcolor = cell_palcolor
     )
-    ComplexHeatmap::rowAnnotation(
+    get_namespace_fun("ComplexHeatmap", "rowAnnotation")(
       df = data.frame(Ligand = row_nms, row.names = row_nms),
       col = list(Ligand = stats::setNames(row_cols, row_nms)),
       annotation_name_gp = grid::gpar(fontsize = font.size * 0.8),
@@ -2256,7 +2260,7 @@ ccc_ligand_target_heatmap <- function(
     )
   )
 
-  ht <- ComplexHeatmap::Heatmap(
+  ht <- get_namespace_fun("ComplexHeatmap", "Heatmap")(
     matrix = mat,
     col = col_fun,
     name = "Weight",
@@ -2293,7 +2297,7 @@ ccc_ligand_target_heatmap <- function(
   )
 
   g_tree <- grid::grid.grabExpr(
-    ComplexHeatmap::draw(
+    get_namespace_fun("ComplexHeatmap", "draw")(
       ht,
       padding = grid::unit(c(4, 4, 12, 4), "mm")
     ),

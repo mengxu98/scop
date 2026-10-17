@@ -82,7 +82,7 @@ files are not bundled with \code{scop}; provide a directory containing
 \code{model.joblib} and \code{ordered_feature.tsv} through \code{pretrain_dir}.
 }
 \examples{
-\dontshow{if (FALSE) withAutoprint(\{ # examplesIf}
+\dontrun{
 data(pancreas_sub)
 pancreas_sub <- RunscMalignantFinder(
   pancreas_sub,
@@ -91,7 +91,7 @@ pancreas_sub <- RunscMalignantFinder(
   pretrain_dir = "path/to/pretrained_model"
 )
 CellDimPlot(pancreas_sub, group.by = "malignancy_probability")
-\dontshow{\}) # examplesIf}
+}
 }
 \references{
 Yu Q, Li YY, Chen Y. scMalignantFinder distinguishes malignant cells in

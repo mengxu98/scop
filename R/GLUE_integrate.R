@@ -381,13 +381,15 @@ glue_add_feature_coords <- function(
   atac_assay,
   gene_annotation_by = c("auto", "gene_name", "gene_id")
 ) {
+  check_r("Signac", verbose = FALSE)
+
   gene_annotation_by <- match.arg(gene_annotation_by)
 
   rna_features <- GetFeaturesData(srt, assay = rna_assay)
   rna_features <- glue_add_gene_coords(
     features = rna_features,
     feature_names = glue_feature_names(srt, assay = rna_assay),
-    annotation = Signac::Annotation(srt[[atac_assay]]),
+    annotation = get_namespace_fun("Signac", "Annotation")(srt[[atac_assay]]),
     gene_annotation_by = gene_annotation_by
   )
   srt <- AddFeaturesData(

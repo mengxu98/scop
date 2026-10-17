@@ -116,7 +116,7 @@ CSS_integrate <- function(
   validate_nonlinear_reductions(nonlinear_reduction)
   cluster_algorithm_index <- resolve_cluster_algorithm_index(cluster_algorithm)
 
-  check_r(c("quadbio/simspec", "qlcMatrix"), verbose = FALSE)
+  check_r("quadbio/simspec", verbose = FALSE)
   set.seed(seed)
 
   if (normalization_method == "TFIDF") {
