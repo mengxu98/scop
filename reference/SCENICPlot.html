@@ -396,16 +396,6 @@ TF color. The default legend includes each TF's top RSS group when available.</p
 <dd><p>Max automatic or TF labels in <code>"network_graph"</code>. Highlighted TFs are always included, except with <code>label_nodes = "none"</code>. TF legends with more than 20 entries are omitted; full annotations are returned in <code>plot_data$annotations</code>.</p></dd>
 
 
-<dt id="arg-network-display-targets">network_display_targets<a class="anchor" aria-label="anchor" href="#arg-network-display-targets"></a></dt>
-<dd><p>Optional display limit per focal TF in <code>"network_graph"</code>. The default <code>Inf</code>
-displays the full network. Use <code>6</code> to show six direct targets per TF by
-absolute edge weight, together with
-all shared targets and TF-to-TF links. Selected regions retain their downstream
-genes. <code>plot_data$edges</code> and
-<code>plot_data$nodes</code> retain the network selected by <code>max_targets</code> and <code>max_edges</code>;
-the actual display subset is in <code>plot_data$display_edges</code> and <code>plot_data$display_nodes</code>.</p></dd>
-
-
 <dt id="arg-combine">combine<a class="anchor" aria-label="anchor" href="#arg-combine"></a></dt>
 <dd><p>Combine plots with <a href="https://patchwork.data-imaginist.com/reference/patchwork-package.html" class="external-link">patchwork</a>. <code>combine = FALSE</code> returns a list of ggplots.</p></dd>
 
@@ -482,6 +472,16 @@ will be removed in scop 1.0.0.</p></dd>
 
 <dt id="arg-theme-use-theme-args">theme_use, theme_args<a class="anchor" aria-label="anchor" href="#arg-theme-use-theme-args"></a></dt>
 <dd><p>Theme name or function, plus extra theme arguments.</p></dd>
+
+
+<dt id="arg-network-display-targets">network_display_targets<a class="anchor" aria-label="anchor" href="#arg-network-display-targets"></a></dt>
+<dd><p>Optional display limit per focal TF in <code>"network_graph"</code>. The default <code>Inf</code>
+displays the full network. Use <code>6</code> to show six direct targets per TF by
+absolute edge weight, together with
+all shared targets and TF-to-TF links. Selected regions retain their downstream
+genes. <code>plot_data$edges</code> and
+<code>plot_data$nodes</code> retain the network selected by <code>max_targets</code> and <code>max_edges</code>;
+the actual display subset is in <code>plot_data$display_edges</code> and <code>plot_data$display_nodes</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
