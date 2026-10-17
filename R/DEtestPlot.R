@@ -6,7 +6,7 @@
 #' @param srt Deprecated alias for `object`; supply exactly one of the two. It
 #' will be removed in scop 1.0.0.
 #' @param object A `Seurat` object or `SummarizedExperiment` object containing the
-#' results of differential expression analysis.
+#' results of differential expression analysis. May be omitted when `res` is supplied.
 #' @param res A `data.frame` or `data.table` with differential expression results.
 #' When `res` is provided, `object` will be ignored.
 #' The data.frame must contain columns: `gene`, `group1` (factor or character),
@@ -187,7 +187,7 @@
 #'   ncol = 2
 #' )
 DEtestPlot <- function(
-  object,
+  object = NULL,
   group.by = NULL,
   test.use = "wilcox",
   res = NULL,
@@ -1009,7 +1009,7 @@ collect_volcano_enrichment_annotations <- function(
 #'   group.by = "CellType"
 #' )
 DEtestManhattanPlot <- function(
-  object,
+  object = NULL,
   group.by = NULL,
   test.use = "wilcox",
   res = NULL,
@@ -1278,7 +1278,7 @@ DEtestManhattanPlot <- function(
 #'   group.by = "CellType"
 #' )
 DEtestRingPlot <- function(
-  object,
+  object = NULL,
   group.by = NULL,
   test.use = "wilcox",
   res = NULL,
@@ -1548,7 +1548,7 @@ DEtestRingPlot <- function(
 #'   ncol = 2
 #' )
 VolcanoPlot <- function(
-  object,
+  object = NULL,
   group.by = NULL,
   test.use = "wilcox",
   res = NULL,
