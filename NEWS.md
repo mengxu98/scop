@@ -1,5 +1,8 @@
 # scop (development version)
 
+* **fix**: Support current Seurat layers in Conos integration and avoid unused
+  scaling and full-matrix transposes during pairwise preparation.
+
 * **fix**: Preserve CSS integration and reference mapping with Seurat 5.6.0
   by supplying the new native SNN thread argument to simspec calls.
 
