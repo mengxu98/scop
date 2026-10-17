@@ -157,7 +157,38 @@ Default is <code>TRUE</code>.</p></dd>
 the highly variable features, the assay name,
 and the type of assay.</p>
     </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>For chromatin assays with <code>HVF_source = "separate"</code>, native
+<code><a href="https://satijalab.org/seurat/reference/SelectIntegrationFeatures.html" class="external-link">Seurat::SelectIntegrationFeatures()</a></code> ranks peaks by the number of batches
+selecting them, then by their median variable-feature rank. The <code>nHVF</code> cap
+is also limited to the smallest per-batch variable-feature count;
+<code>HVF_min_intersection</code> is applied to the ranked selection. This preserves
+native within-batch peak frequency ranking instead of sorting tied peak IDs.</p>
+    </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="va">counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">6</span><span class="op">:</span><span class="fl">1</span>, <span class="fl">4</span><span class="op">)</span>,</span>
+<span>  nrow <span class="op">=</span> <span class="fl">6</span>,</span>
+<span>  dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"chr1-"</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">501</span>, <span class="fl">100</span><span class="op">)</span>, <span class="st">"-"</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">550</span>, <span class="fl">100</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"cell"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">peaks</span> <span class="op">&lt;-</span> <span class="fu">Signac</span><span class="fu">::</span><span class="fu"><a href="https://stuartlab.org/signac/reference/CreateChromatinAssay.html" class="external-link">CreateChromatinAssay</a></span><span class="op">(</span><span class="va">counts</span>,</span>
+<span>  min.cells <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  min.features <span class="op">=</span> <span class="fl">0</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">object</span> <span class="op">&lt;-</span> <span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/CreateSeuratObject.html" class="external-link">CreateSeuratObject</a></span><span class="op">(</span><span class="va">peaks</span>, assay <span class="op">=</span> <span class="st">"peaks"</span><span class="op">)</span></span>
+<span><span class="va">checked</span> <span class="op">&lt;-</span> <span class="fu">CheckDataList</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">object</span><span class="op">)</span>,</span>
+<span>  batch <span class="op">=</span> <span class="st">"sample"</span>, assay <span class="op">=</span> <span class="st">"peaks"</span>,</span>
+<span>  do_normalization <span class="op">=</span> <span class="cn">FALSE</span>, normalization_method <span class="op">=</span> <span class="st">"TFIDF"</span>, nHVF <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">checked</span><span class="op">$</span><span class="va">HVF</span></span>
+<span></span></code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 
