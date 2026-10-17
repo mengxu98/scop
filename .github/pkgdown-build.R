@@ -7,6 +7,8 @@ if (mode == "dependencies") {
   }
 
   functions <- new.env(parent = emptyenv())
+  exports <- grep("^export\\(", readLines("NAMESPACE", warn = FALSE), value = TRUE)
+  exports <- gsub('"', "", sub("^export\\((.*)\\)$", "\\1", exports))
   for (path in list.files("R", pattern = "[.]R$", full.names = TRUE)) {
     for (expression in parse(path)) {
       if (is.call(expression) && identical(expression[[1L]], as.name("<-")) &&
@@ -58,7 +60,7 @@ if (mode == "dependencies") {
         package <- expression[[2L]]
         if (is.symbol(package) || is.character(package)) packages <<- union(packages, as.character(package))
       }
-      if (expand && exists(name, functions, inherits = FALSE) && !name %in% visited) {
+      if ((expand || !name %in% exports) && exists(name, functions, inherits = FALSE) && !name %in% visited) {
         visited <<- c(visited, name)
         methods <- ls(functions)
         methods <- methods[methods == name | startsWith(methods, paste0(name, "."))]

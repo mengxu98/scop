@@ -2,6 +2,7 @@
 #'
 #' @md
 #' @inheritParams CellDimPlot
+#' @param object A Seurat object, or NULL when supplying a result table in `res`.
 #' @inheritParams scop-params
 #' @param srt Deprecated alias for `object`; supply exactly one of the two. It
 #' will be removed in scop 1.0.0.
@@ -161,7 +162,7 @@
 #'
 #' de_results1 <- pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox
 #' DEtestPlot(
-#'   res = de_results1,
+#'   object = NULL, res = de_results1,
 #'   plot_type = "volcano",
 #'   ncol = 2
 #' )
@@ -173,7 +174,7 @@
 #'   ident.2 = "Endocrine"
 #' )
 #' DEtestPlot(
-#'   res = de_results2,
+#'   object = NULL, res = de_results2,
 #'   plot_type = "volcano"
 #' )
 #'
@@ -182,7 +183,7 @@
 #'   group.by = "CellType"
 #' )
 #' DEtestPlot(
-#'   res = de_results3,
+#'   object = NULL, res = de_results3,
 #'   plot_type = "volcano",
 #'   ncol = 2
 #' )

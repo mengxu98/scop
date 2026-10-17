@@ -284,7 +284,7 @@ DEtestPlot(
 
 de_results1 <- pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox
 DEtestPlot(
-  res = de_results1,
+  object = NULL, res = de_results1,
   plot_type = "volcano",
   ncol = 2
 )
@@ -296,7 +296,7 @@ de_results2 <- Seurat::FindMarkers(
   ident.2 = "Endocrine"
 )
 DEtestPlot(
-  res = de_results2,
+  object = NULL, res = de_results2,
   plot_type = "volcano"
 )
 
@@ -305,7 +305,7 @@ de_results3 <- Seurat::FindAllMarkers(
   group.by = "CellType"
 )
 DEtestPlot(
-  res = de_results3,
+  object = NULL, res = de_results3,
   plot_type = "volcano",
   ncol = 2
 )
