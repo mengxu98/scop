@@ -428,6 +428,11 @@ reference:
   - RunATACQC
   - CoverageTrackPlot
 
+- subtitle: "Peak Definition and Annotation"
+  contents:
+  - FilterATACPeaks
+  - AnnotateATACPeaks
+
 - title: "Spatial Omics Analysis"
 
 - subtitle: "Spatial Quality Control and Normalization"
