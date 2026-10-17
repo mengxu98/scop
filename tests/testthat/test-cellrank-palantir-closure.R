@@ -61,6 +61,7 @@ test_that("package checks use the selected environment interpreter profile", {
 test_that("RunCellRankTrends stores normalized trend payload", {
   srt <- make_cellrank_closure_srt()
   converted_fate <- NULL
+  forwarded <- NULL
   testthat::local_mocked_bindings(
     .package = "reticulate",
     r_to_py = function(x, convert = FALSE) {
@@ -75,6 +76,7 @@ test_that("RunCellRankTrends stores normalized trend payload", {
     srt_to_adata = function(...) "adata",
     scop_python_import = function(...) {
       list(CellRankTrends = function(...) {
+        forwarded <<- list(...)
         list(
           trend_matrix = matrix(1:6, nrow = 2),
           genes = c("g1", "g2"),
@@ -95,6 +97,12 @@ test_that("RunCellRankTrends stores normalized trend payload", {
   )
   expect_true("A" %in% names(out@tools$CellRank$trends))
   expect_identical(converted_fate, srt@tools$CellRank$fate_probabilities)
+  expect_identical(forwarded$n_points, 3L)
+  expect_identical(forwarded$genes, c("g1", "g2"))
+  expect_identical(forwarded$fate_columns, c("A", "B"))
+  expect_identical(forwarded$show_plot, FALSE)
+  expect_true("save" %in% names(forwarded))
+  expect_null(forwarded$save)
   expect_equal(out@tools$CellRank$trends$A$cluster_table$cluster, c("0", "1"))
   expect_equal(out@tools$CellRank$trends$A$heatmap_genes, c("g1", "g2"))
 })

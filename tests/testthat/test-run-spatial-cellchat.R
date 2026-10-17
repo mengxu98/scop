@@ -50,6 +50,9 @@ local_mock_spatialcellchat_backend <- function(fail = FALSE) {
       if (identical(package, "SpatialCellChat")) {
         return(function(...) invisible(NULL))
       }
+      if (identical(package, "ComplexHeatmap")) {
+        return(thisutils::get_namespace_fun(package, name))
+      }
       stop("unexpected namespace lookup")
     },
     spatialcellchat_database = function(...) list(mock = TRUE),

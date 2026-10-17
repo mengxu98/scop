@@ -180,7 +180,9 @@ radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
 
 \item{cells.highlight, cols.highlight, sizes.highlight, alpha.highlight, stroke.highlight}{Cells to highlight and their appearance. \code{TRUE} highlights all cells.}
 
-\item{add_density, density_color, density_filled, density_filled_palette, density_filled_palcolor}{Density contours; \code{density_filled} draws filled bands.}
+\item{add_density, density_color, density_filled, density_filled_palette, density_filled_palcolor}{Density contours on a grid padded by three Gaussian bandwidths to avoid
+clipping. Lines use major and minor widths; \code{density_filled} draws
+filled density bands with fine contour lines.}
 
 \item{add_mark, mark_type, mark_expand, mark_alpha, mark_linetype, mark_linewidth, mark_border}{Marks around groups. \code{mark_type} is \code{"hull"}, \code{"ellipse"}, \code{"rect"}, or \code{"circle"}.
 \code{mark_border = NULL} uses group colors.}
@@ -402,6 +404,35 @@ CellDimPlot(
   density_filled = TRUE,
   density_filled_palette = "Blues",
   cells.highlight = TRUE
+)
+
+CellDimPlot(
+  pancreas_sub,
+  group.by = "SubCellType",
+  reduction = "UMAP",
+  add_density = TRUE,
+  pt.alpha = 0,
+  density_color = "#416C7D",
+  theme_use = "theme_blank",
+  xlab = "UMAP_1",
+  ylab = "UMAP_2",
+  legend.position = "none"
+)
+
+CellDimPlot(
+  pancreas_sub,
+  group.by = "SubCellType",
+  reduction = "UMAP",
+  add_density = TRUE,
+  pt.alpha = 0,
+  density_filled = TRUE,
+  density_color = "#355D71",
+  density_filled_palcolor = c("#F2F7F5", "#C5DFD8", "#89BDB5",
+                             "#4A969E", "#286B87", "#253D63"),
+  theme_use = "theme_blank",
+  xlab = "UMAP_1",
+  ylab = "UMAP_2",
+  legend.position = "none"
 )
 
 # Add statistical charts

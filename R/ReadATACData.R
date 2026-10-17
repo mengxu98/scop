@@ -89,6 +89,8 @@ ReadATACData <- function(
   project = "ATAC",
   verbose = TRUE
 ) {
+  check_r("Signac", verbose = FALSE)
+
   counts <- object
   h5 <- matrix.file <- NULL
   if (is.character(object)) {
@@ -236,7 +238,7 @@ ReadATACData <- function(
   rownames(metadata) <- cell.names
   colnames(counts) <- cell.names
   fragment_objects <- atac_import_fragments(fragments, fragment.cells, input_cells, cell.names, verbose)
-  chromatin <- Signac::CreateChromatinAssay(
+  chromatin <- get_namespace_fun("Signac", "CreateChromatinAssay")(
     counts = counts, ranges = ranges,
     genome = atac_backend_fun("GenomeInfoDb", "seqinfo")(ranges),
     annotation = annotation, fragments = fragment_objects,
@@ -332,7 +334,7 @@ atac_ranges_problems <- function(ranges) {
 }
 
 atac_range_ids <- function(ranges) {
-  gsub("[_|]", "-", Signac::GRangesToString(ranges, sep = c("-", "-")))
+  gsub("[_|]", "-", get_namespace_fun("Signac", "GRangesToString")(ranges, sep = c("-", "-")))
 }
 
 atac_bed_ranges <- function(bed) {
@@ -390,7 +392,7 @@ atac_import_fragments <- function(paths, mappings, input_cells, cells, verbose) 
     log_message("Fragment mappings must cover every object cell exactly once across files.", message_type = "error")
   }
   lapply(seq_along(paths), function(i) {
-    Signac::CreateFragmentObject(
+    get_namespace_fun("Signac", "CreateFragmentObject")(
       path = paths[[i]], cells = mappings[[i]], validate.fragments = TRUE,
       tolerance = 0, max.lines = NULL, verbose = verbose
     )

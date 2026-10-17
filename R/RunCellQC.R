@@ -1388,15 +1388,12 @@ RunCellQC <- function(
           )
         }
         for (dbm in db_method) {
-          srt <- do.call(
-            what = RunDoubletCalling,
-            args = list(
-              object = srt,
-              db_method = dbm,
-              db_rate = db_rate_use,
-              data_type = status
-            )
-          )
+          srt <- do.call(RunDoubletCalling, list(
+            object = srt,
+            db_method = dbm,
+            db_rate = db_rate_use,
+            data_type = status
+          ))
           db_qc <- unique(c(
             db_qc,
             colnames(srt)[

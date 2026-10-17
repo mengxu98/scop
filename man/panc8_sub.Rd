@@ -22,8 +22,7 @@ For each data set in \code{panc8}, 200 cells were downsampled to form the \code{
 if (interactive()) {
   data(pancreas_sub)
 
-  InstallData <- thisutils::get_namespace_fun("SeuratData", "InstallData")
-  InstallData("panc8")
+  SeuratData::InstallData("panc8")
   data(panc8)
   panc8 <- UpdateSeuratObject(panc8)
   set.seed(98)
@@ -50,8 +49,7 @@ if (interactive()) {
   ), ]
   panc8_sub$celltype <- gsub("_", "-", panc8_sub$celltype)
   panc8_sub$celltype <- gsub(" ", "-", panc8_sub$celltype)
-  use_data <- thisutils::get_namespace_fun("usethis", "use_data")
-  use_data(
+  usethis::use_data(
     panc8_sub,
     compress = "xz",
     overwrite = TRUE
