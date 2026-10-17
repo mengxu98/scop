@@ -439,6 +439,7 @@ reference:
   contents:
   - AddATACMotifs
   - RunMotifEnrichment
+  - RunChromVAR
 
 - title: "Spatial Omics Analysis"
 

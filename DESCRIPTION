@@ -47,6 +47,7 @@ Suggests:
     BSgenome,
     motifmatchr,
     TFBSTools,
+    chromVAR,
     ggforce,
     ComplexHeatmap,
     Signac,
