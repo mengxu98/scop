@@ -69,7 +69,7 @@ test_that("PrepareEnv supports explicit R and Python components", {
 
   packages <- getFromNamespace("env_r_packages", "scop")("secact")
   expect_true(all(c(
-    "reticulate", "RcppAnnoy", "UCell",
+    "reticulate", "UCell",
     "jinworks/SpatialCellChat", "data2intelligence/SecAct"
   ) %in% packages))
 

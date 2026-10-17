@@ -68,10 +68,10 @@ units; \code{para_nn} is a unitless neighbor count.}
 \item{results_folder}{Folder passed to \code{mistyR::run_misty()}. If \code{NULL}, a
 temporary folder is used.}
 
+\item{seed, bypass_intra, cv_folds, model_cached, append}{Parameters passed to \code{mistyR::run_misty()}.}
+
 \item{target_subset}{Original feature names or numeric indices of selected
 features to model. Character names are mapped to the internal MISTy names.}
-
-\item{seed, bypass_intra, cv_folds, model_cached, append}{Parameters passed to \code{mistyR::run_misty()}.}
 
 \item{tool_name}{Name used to store results in \code{srt@tools}.}
 

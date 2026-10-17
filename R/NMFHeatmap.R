@@ -172,6 +172,8 @@ NMFHeatmap <- function(
   verbose = TRUE,
   srt = NULL
 ) {
+  check_r("ComplexHeatmap", verbose = FALSE)
+
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   set.seed(seed)
   borders <- prepare_heatmap_borders(
@@ -297,7 +299,7 @@ NMFHeatmap <- function(
     }
   )
   left_annotation <- do.call(
-    ComplexHeatmap::rowAnnotation,
+    get_namespace_fun("ComplexHeatmap", "rowAnnotation"),
     args = c(
       stats::setNames(list(nmf_cluster), cluster_title),
       list(
@@ -465,7 +467,7 @@ NMFHeatmap <- function(
     )
   }
   ht_args <- c(ht_args, ht_params[setdiff(names(ht_params), names(ht_args))])
-  ht_list <- do.call(ComplexHeatmap::Heatmap, args = ht_args)
+  ht_list <- do.call(get_namespace_fun("ComplexHeatmap", "Heatmap"), args = ht_args)
 
   plot <- nmf_heatmap_render_plot(
     ht_list = ht_list,
@@ -655,7 +657,7 @@ nmf_heatmap_top_annotation <- function(
     }
   }
   do.call(
-    ComplexHeatmap::HeatmapAnnotation,
+    get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation"),
     args = c(
       ann_list,
       list(
@@ -788,7 +790,7 @@ nmf_heatmap_render_plot <- function(
   )
   g_tree <- grid::grid.grabExpr(
     {
-      ComplexHeatmap::draw(
+      get_namespace_fun("ComplexHeatmap", "draw")(
         ht_list,
         heatmap_legend_side = legend.position,
         annotation_legend_list = legend_list,
@@ -825,7 +827,7 @@ nmf_heatmap_render_plot <- function(
 
 nmf_heatmap_decorate_blocks <- function(ht_name, nmf_cluster) {
   cluster_runs <- split(seq_along(nmf_cluster), nmf_cluster)
-  ComplexHeatmap::decorate_heatmap_body(ht_name, {
+  get_namespace_fun("ComplexHeatmap", "decorate_heatmap_body")(ht_name, {
     n <- length(nmf_cluster)
     for (idx in cluster_runs) {
       start <- min(idx)
@@ -852,18 +854,16 @@ nmf_heatmap_decorate_enrichment <- function(right_annotation, db) {
     if (length(enrich_anno) > 0) {
       for (enrich_anno_element in enrich_anno) {
         enrich_obj <- strsplit(enrich_anno_element, "_split_")[[1]][1]
-        ComplexHeatmap::decorate_annotation(
+        get_namespace_fun("ComplexHeatmap", "decorate_annotation")(
           enrich_anno_element,
-          slice = 1,
-          {
+          slice = 1, {
             grid::grid.text(
               paste0(enrich, " (", enrich_obj, ")"),
               x = grid::unit(1, "npc"),
               y = grid::unit(1, "npc") + grid::unit(2.5, "mm"),
               just = c("left", "bottom")
             )
-          }
-        )
+        })
       }
     }
   }

@@ -228,6 +228,8 @@ deconvolution_heatmap <- function(
   show_row_names = TRUE,
   show_column_names = TRUE
 ) {
+  check_r("ComplexHeatmap", verbose = FALSE)
+
   mat <- as.matrix(stats::xtabs(proportion ~ cell_type + sample, data = df))
   mat <- mat[
     levels(df$cell_type)[levels(df$cell_type) %in% rownames(mat)],
@@ -259,7 +261,7 @@ deconvolution_heatmap <- function(
     sample_split = sample_split
   )
 
-  ComplexHeatmap::Heatmap(
+  get_namespace_fun("ComplexHeatmap", "Heatmap")(
     matrix = mat,
     col = col_fun,
     name = "Proportion",
@@ -372,7 +374,7 @@ resolve_deconvolution_column_metadata <- function(
         }
       }
 
-      top_annotation <- ComplexHeatmap::HeatmapAnnotation(
+      top_annotation <- get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation")(
         df = anno_df,
         col = col_list,
         which = "column",
