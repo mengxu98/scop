@@ -458,9 +458,11 @@ atac_add_activity <- function(
     return(srt)
   }
 
+  check_r("Signac", verbose = FALSE)
+
   log_message("Calculating gene activity assay...", verbose = verbose)
   ga <- tryCatch(
-    Signac::GeneActivity(object = srt, assay = assay),
+    get_namespace_fun("Signac", "GeneActivity")(object = srt, assay = assay),
     error = function(error) error
   )
 

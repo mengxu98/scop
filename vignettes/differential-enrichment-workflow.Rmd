@@ -339,7 +339,6 @@ gsea_endocrine <- subset(
   pancreas_sub@tools$GSEA_CellType_wilcox$enrichment,
   Groups == "Endocrine" & Database == "custom"
 )
-if (nrow(gsea_endocrine) > 0 && any(gsea_endocrine$p.adjust < 0.05, na.rm = TRUE)) {
 gsea_id <- gsea_endocrine$ID[which.min(gsea_endocrine$p.adjust)]
 print(head(gsea_endocrine[order(gsea_endocrine$p.adjust),
                          c("ID", "Description", "NES", "p.adjust")], 5))
@@ -361,9 +360,6 @@ print(GSEAPlot(
   direction = "both",
   topTerm = 10
 ))
-} else {
-  cat("No Endocrine GO terms passed adjusted p < 0.05; inspect the complete GSEA table and input overlap.\n")
-}
 ```
 
 

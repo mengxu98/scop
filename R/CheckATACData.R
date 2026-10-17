@@ -59,9 +59,11 @@ CheckATACData <- function(object, assay = NULL, genome = NULL, sample.by = NULL)
     report$errors <- "assay must identify a Signac ChromatinAssay."
     return(report)
   }
+  check_r("Signac", verbose = FALSE)
+
   chromatin <- object[[assay]]
   counts <- SeuratObject::GetAssayData(chromatin, layer = "counts")
-  ranges <- Signac::granges(chromatin)
+  ranges <- getExportedValue("Signac", "granges")(chromatin)
   report$n_cells <- ncol(counts)
   report$n_peaks <- nrow(counts)
   report$errors <- c(atac_counts_problems(counts), atac_ranges_problems(ranges))
@@ -90,7 +92,7 @@ CheckATACData <- function(object, assay = NULL, genome = NULL, sample.by = NULL)
   labels <- unique(c(as.character(get_genome(ranges)), as.character(get_genome(chromatin))))
   labels <- labels[!is.na(labels) & nzchar(labels)]
   report$genome <- labels
-  annotation <- Signac::Annotation(chromatin)
+  annotation <- get_namespace_fun("Signac", "Annotation")(chromatin)
   annotation_labels <- if (length(annotation)) unique(as.character(get_genome(annotation))) else character()
   annotation_labels <- annotation_labels[!is.na(annotation_labels) & nzchar(annotation_labels)]
   if (length(unique(c(labels, annotation_labels))) > 1L) {
@@ -110,21 +112,21 @@ CheckATACData <- function(object, assay = NULL, genome = NULL, sample.by = NULL)
   } else if (!length(labels)) {
     report$warnings <- c(report$warnings, "The assay genome is unknown; supply verified reference information before sequence analysis.")
   }
-  fragment_objects <- Signac::Fragments(chromatin)
+  fragment_objects <- get_namespace_fun("Signac", "Fragments")(chromatin)
   if (length(fragment_objects)) {
     report$fragments <- do.call(rbind, lapply(fragment_objects, function(fragment) {
-      path <- Signac::GetFragmentData(fragment, slot = "path")
+      path <- get_namespace_fun("Signac", "GetFragmentData")(fragment, slot = "path")
       candidates <- paste0(path, c(".tbi", ".csi"))
       index <- candidates[file.exists(candidates)][1L]
       if (is.na(index)) index <- candidates[1L]
       data.frame(
         path = path, index = index,
         file_exists = file.exists(path), index_exists = file.exists(index),
-        n_cells = length(Signac::GetFragmentData(fragment, slot = "cells")),
-        active = any(names(Signac::GetFragmentData(fragment, slot = "cells")) %in% cells)
+        n_cells = length(get_namespace_fun("Signac", "GetFragmentData")(fragment, slot = "cells")),
+        active = any(names(get_namespace_fun("Signac", "GetFragmentData")(fragment, slot = "cells")) %in% cells)
       )
     }))
-    mappings <- lapply(fragment_objects, Signac::GetFragmentData, slot = "cells")
+    mappings <- lapply(fragment_objects, get_namespace_fun("Signac", "GetFragmentData"), slot = "cells")
     mappings <- lapply(mappings, function(x) x[names(x) %in% cells])
     mappings <- mappings[report$fragments$active]
     mapped_cells <- unlist(lapply(mappings, names), use.names = FALSE)
