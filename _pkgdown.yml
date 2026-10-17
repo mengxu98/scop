@@ -430,6 +430,8 @@ reference:
 
 - subtitle: "Peak Definition and Annotation"
   contents:
+  - CombineATACPeaks
+  - RecountATAC
   - FilterATACPeaks
   - AnnotateATACPeaks
 

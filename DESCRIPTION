@@ -42,6 +42,7 @@ Imports:
     utils,
     uwot
 Suggests:
+    IRanges,
     ggforce,
     ComplexHeatmap,
     Signac,
