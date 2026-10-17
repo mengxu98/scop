@@ -1,5 +1,8 @@
 # scop (development version)
 
+* **fix**: Preserve CSS integration and reference mapping with Seurat 5.6.0
+  by supplying the new native SNN thread argument to simspec calls.
+
 * **fix**: Accept result tables without `object` in `DEtestPlot()`,
   `VolcanoPlot()`, `DEtestManhattanPlot()` and `DEtestRingPlot()`.
 
