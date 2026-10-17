@@ -1365,14 +1365,15 @@ EnrichmentPlot <- function(
       df_edges[["to_dim1"]] <- df_nodes[df_edges[["to"]], "dim1"]
       df_edges[["to_dim2"]] <- df_nodes[df_edges[["to"]], "dim2"]
 
+      check_r("ggforce", verbose = FALSE)
       if (enrichmap_mark == "hull") {
         check_r("concaveman", verbose = FALSE)
       }
       mark_layer <- do.call(
-        switch(enrichmap_mark,
+        get_namespace_fun("ggforce", switch(enrichmap_mark,
           "ellipse" = "geom_mark_ellipse",
           "hull" = "geom_mark_hull"
-        ),
+        )),
         list(
           data = df_nodes,
           aes(

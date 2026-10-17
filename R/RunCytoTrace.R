@@ -482,8 +482,6 @@ RunCytoTRACE.default <- function(
   return(result_df)
 }
 
-.cytotrace2_data_cache <- new.env(parent = emptyenv())
-
 load_cytotrace2_data <- function(data_dir, verbose) {
   if (!is.null(data_dir)) {
     if (!dir.exists(data_dir)) {
@@ -506,20 +504,6 @@ load_cytotrace2_data <- function(data_dir, verbose) {
     }
     data_dir <- cyto_cache$data_dir
   }
-  cache_key <- normalizePath(data_dir, mustWork = FALSE)
-  assets <- file.path(data_dir, c(
-    "parameter_dict_19.rds", "model_parameters.rds",
-    "features_model_training_17.csv", "mt_dict_human_to_mouse.csv",
-    "mt_human_alias.csv", "mt_mouse_alias.csv"
-  ))
-  fingerprint <- tools::md5sum(assets[file.exists(assets)])
-  if (exists(cache_key, envir = .cytotrace2_data_cache, inherits = FALSE)) {
-    cached <- get(cache_key, envir = .cytotrace2_data_cache, inherits = FALSE)
-    if (identical(cached$fingerprint, fingerprint)) {
-      return(cached$data)
-    }
-  }
-
   log_message(
     "Loading model from {.path {data_dir}}",
     verbose = verbose
@@ -603,17 +587,13 @@ load_cytotrace2_data <- function(data_dir, verbose) {
     ))
   }
 
-  model_data <- list(
+  list(
     parameter_dict = parameter_dict,
     features = features,
     ortho_dict = ortho_dict,
     alias_dict = alias_dict,
     mouse_alias_dict = mouse_alias_dict
   )
-  assign(cache_key, list(fingerprint = fingerprint, data = model_data),
-    envir = .cytotrace2_data_cache
-  )
-  model_data
 }
 
 cytotrace2_smooth_groups <- function(n_cells, smooth_batch_size, seed) {

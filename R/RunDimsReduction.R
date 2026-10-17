@@ -287,6 +287,9 @@ RunDimsReduction <- function(
       )
     } else if (identical(fun_use, "RunPCA")) {
       invoke_fun(RunPCA, params)
+    } else if (identical(fun_use, "RunSVD")) {
+      check_r("Signac", verbose = FALSE)
+      invoke_fun(.fn = get_namespace_fun("Signac", "RunSVD"), .args = params)
     } else {
       invoke_fun(.fn = fun_use, .args = params)
     }

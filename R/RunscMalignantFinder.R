@@ -48,7 +48,8 @@
 #'
 #' @export
 #'
-#' @examplesIf FALSE
+#' @examples
+#' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- RunscMalignantFinder(
 #'   pancreas_sub,
@@ -57,6 +58,7 @@
 #'   pretrain_dir = "path/to/pretrained_model"
 #' )
 #' CellDimPlot(pancreas_sub, group.by = "malignancy_probability")
+#' }
 RunscMalignantFinder <- function(
   object = NULL,
   adata = NULL,
@@ -232,12 +234,14 @@ RunscMalignantFinder <- function(
 #'
 #' @export
 #'
-#' @examplesIf FALSE
+#' @examples
+#' \dontrun{
 #' srt <- RunscMalignantRegion(
 #'   srt,
 #'   signature_gmt = "path/to/sc_malignant_deg.gmt",
 #'   spatial.cols = c("x", "y")
 #' )
+#' }
 RunscMalignantRegion <- function(
   object = NULL,
   adata = NULL,
@@ -448,11 +452,13 @@ RunscMalignantRegion <- function(
 #'
 #' @export
 #'
-#' @examplesIf FALSE
+#' @examples
+#' \dontrun{
 #' srt <- RunscMalignantStates(
 #'   srt,
 #'   gene_sets = "path/to/Malignant_MPs.Gavish_2023.gmt"
 #' )
+#' }
 RunscMalignantStates <- function(
   object = NULL,
   adata = NULL,

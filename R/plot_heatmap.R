@@ -105,7 +105,7 @@ heatmap_row_labels_max_width <- function(labels, gp = NULL) {
   if (length(lines) == 0L) {
     return(grid::unit(0, "mm"))
   }
-  ComplexHeatmap::max_text_width(lines, gp = gp) + grid::unit(2, "mm")
+  get_namespace_fun("ComplexHeatmap", "max_text_width")(lines, gp = gp) + grid::unit(2, "mm")
 }
 
 heatmap_discrete_legend_gp <- function(
@@ -137,6 +137,8 @@ build_heatmap_feature_annotation <- function(
   discrete_legend_gp_border = TRUE,
   params = list()
 ) {
+  check_r("ComplexHeatmap", verbose = FALSE)
+
   values <- compact_heatmap_feature_annotation(values, annotation_name)
   which <- ifelse(flip, "column", "row")
   annotation <- list()
@@ -147,7 +149,7 @@ build_heatmap_feature_annotation <- function(
     } else if (!is.factor(values)) {
       values <- factor(values, levels = unique(values))
     }
-    annotation[[annotation_name]] <- ComplexHeatmap::anno_simple(
+    annotation[[annotation_name]] <- get_namespace_fun("ComplexHeatmap", "anno_simple")(
       x = as.character(values),
       col = palette_colors(values, palette = palette, palcolor = palcolor),
       which = which,
@@ -167,7 +169,7 @@ build_heatmap_feature_annotation <- function(
           lwd = border_size
         )
       }
-      ComplexHeatmap::Legend(
+      get_namespace_fun("ComplexHeatmap", "Legend")(
         title = annotation_name,
         labels = levels,
         legend_gp = do.call(grid::gpar, legend_gp),
@@ -185,14 +187,14 @@ build_heatmap_feature_annotation <- function(
       ),
       colors = palette_colors(palette = palette, palcolor = palcolor)
     )
-    annotation[[annotation_name]] <- ComplexHeatmap::anno_simple(
+    annotation[[annotation_name]] <- get_namespace_fun("ComplexHeatmap", "anno_simple")(
       x = values,
       col = col_fun,
       which = which,
       na_col = "transparent",
       border = annotation_border
     )
-    legend <- ComplexHeatmap::Legend(
+    legend <- get_namespace_fun("ComplexHeatmap", "Legend")(
       title = annotation_name,
       col_fun = col_fun,
       legend_gp = heatmap_border_gp(border, border_color, border_size),
@@ -273,6 +275,8 @@ heatmap_enrichment <- function(
   words_excluded = NULL,
   ...
 ) {
+  check_r("ComplexHeatmap", verbose = FALSE)
+
   res <- NULL
   lgd <- list()
   words_excluded <- words_excluded %||% scop::words_excluded
@@ -432,7 +436,7 @@ heatmap_enrichment <- function(
               )
             } else {
               textbox_terms <- lapply(terms_list, heatmap_enrichment_terms_textbox_df)
-              ComplexHeatmap::anno_textbox(
+              get_namespace_fun("ComplexHeatmap", "anno_textbox")(
                 align_to = geneID_groups,
                 text = textbox_terms,
                 max_width = terms_width,
@@ -451,12 +455,12 @@ heatmap_enrichment <- function(
             }
             if (length(intersect(geneID_groups, names(terms_list))) > 0) {
               ha_terms_args <- list(
-                "terms_empty" = ComplexHeatmap::anno_empty(
+                "terms_empty" = get_namespace_fun("ComplexHeatmap", "anno_empty")(
                   width = grid::unit(0.05, "in"),
                   border = FALSE,
                   which = "row"
                 ),
-                "terms_split" = ComplexHeatmap::anno_block(
+                "terms_split" = get_namespace_fun("ComplexHeatmap", "anno_block")(
                   gp = heatmap_discrete_legend_gp(
                     fill_split, feature_annotation_border,
                     feature_annotation_border_color, feature_annotation_border_size
@@ -477,7 +481,7 @@ heatmap_enrichment <- function(
                 ha_terms_args[["gap"]] <- grid::unit(c(0, 0, 1), "mm")
               }
               ha_terms <- do.call(
-                ComplexHeatmap::HeatmapAnnotation,
+                get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation"),
                 ha_terms_args
               )
               names(ha_terms) <- paste0(names(ha_terms), "_", enrich)
@@ -580,13 +584,13 @@ heatmap_enrichment <- function(
             names(keys_list) <- unlist(lapply(nm, function(x) x[[2]]))
             keys_list <- keys_list[lapply(keys_list, length) > 0]
             if (length(intersect(geneID_groups, names(keys_list))) > 0) {
-              ha_keys <- ComplexHeatmap::HeatmapAnnotation(
-                "keys_empty" = ComplexHeatmap::anno_empty(
+              ha_keys <- get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation")(
+                "keys_empty" = get_namespace_fun("ComplexHeatmap", "anno_empty")(
                   width = grid::unit(0.05, "in"),
                   border = FALSE,
                   which = "row"
                 ),
-                "keys_split" = ComplexHeatmap::anno_block(
+                "keys_split" = get_namespace_fun("ComplexHeatmap", "anno_block")(
                   gp = heatmap_discrete_legend_gp(
                     fill_split, feature_annotation_border,
                     feature_annotation_border_color, feature_annotation_border_size
@@ -594,7 +598,7 @@ heatmap_enrichment <- function(
                   width = grid::unit(0.1, "in"),
                   which = "row"
                 ),
-                "keys" = ComplexHeatmap::anno_textbox(
+                "keys" = get_namespace_fun("ComplexHeatmap", "anno_textbox")(
                   align_to = geneID_groups,
                   text = keys_list,
                   max_width = keys_width,
@@ -658,13 +662,13 @@ heatmap_enrichment <- function(
             })
             names(features_list) <- unlist(lapply(nm, function(x) x[[2]]))
             if (length(intersect(geneID_groups, names(features_list))) > 0) {
-              ha_features <- ComplexHeatmap::HeatmapAnnotation(
-                "features_empty" = ComplexHeatmap::anno_empty(
+              ha_features <- get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation")(
+                "features_empty" = get_namespace_fun("ComplexHeatmap", "anno_empty")(
                   width = grid::unit(0.05, "in"),
                   border = FALSE,
                   which = "row"
                 ),
-                "features_split" = ComplexHeatmap::anno_block(
+                "features_split" = get_namespace_fun("ComplexHeatmap", "anno_block")(
                   gp = heatmap_discrete_legend_gp(
                     fill_split, feature_annotation_border,
                     feature_annotation_border_color, feature_annotation_border_size
@@ -672,7 +676,7 @@ heatmap_enrichment <- function(
                   width = grid::unit(0.1, "in"),
                   which = "row"
                 ),
-                "features" = ComplexHeatmap::anno_textbox(
+                "features" = get_namespace_fun("ComplexHeatmap", "anno_textbox")(
                   align_to = geneID_groups,
                   text = features_list,
                   max_width = features_width,
@@ -828,7 +832,7 @@ heatmap_enrichment_terms_annotation <- function(
   )
   terms <- terms[names(align_to)]
   if (length(terms) == 0) {
-    return(ComplexHeatmap::anno_empty(width = width, border = FALSE, which = which))
+    return(get_namespace_fun("ComplexHeatmap", "anno_empty")(width = width, border = FALSE, which = which))
   }
   term_groups <- names(terms)
   last_group <- names(which.max(vapply(
@@ -868,7 +872,7 @@ heatmap_enrichment_terms_annotation <- function(
     terms = terms,
     max_width = width
   )
-  terms_annotation <- ComplexHeatmap::anno_link(
+  terms_annotation <- get_namespace_fun("ComplexHeatmap", "anno_link")(
     align_to = align_to,
     which = which,
     side = "right",
@@ -895,9 +899,8 @@ heatmap_enrichment_terms_annotation <- function(
         reserve_axis = isTRUE(show_axis) && identical(nm, last_group)
       )
       invisible(NULL)
-    }
-  )
-  stat_annotation <- ComplexHeatmap::anno_link(
+    })
+  stat_annotation <- get_namespace_fun("ComplexHeatmap", "anno_link")(
     align_to = align_to,
     which = which,
     side = "right",
@@ -934,8 +937,7 @@ heatmap_enrichment_terms_annotation <- function(
         axis_digits = axis_digits
       )
       invisible(NULL)
-    }
-  )
+    })
   list(terms = terms_annotation, stat = stat_annotation)
 }
 
@@ -1461,7 +1463,7 @@ heatmap_enrichment_score_legend_from_terms <- function(
   }
   cols <- heatmap_enrichment_score_colors(at, limits = range(score))
   border_gp <- heatmap_border_gp(border, border_color, border_size)
-  ComplexHeatmap::Legend(
+  get_namespace_fun("ComplexHeatmap", "Legend")(
     title = title,
     labels = heatmap_enrichment_format_stat(at, digits = 2),
     legend_gp = do.call(grid::gpar, c(list(fill = cols), border_gp)),

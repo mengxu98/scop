@@ -35,6 +35,8 @@ RunATACQC <- function(
   verbose = TRUE,
   srt = NULL
 ) {
+  check_r("Signac", verbose = FALSE)
+
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message(
@@ -69,7 +71,7 @@ RunATACQC <- function(
     } else {
       srt <- tryCatch(
         {
-          suppressWarnings(Signac::NucleosomeSignal(object = srt, assay = assay))
+          suppressWarnings(get_namespace_fun("Signac", "NucleosomeSignal")(object = srt, assay = assay))
         },
         error = function(error) {
           log_message(
@@ -119,7 +121,7 @@ RunATACQC <- function(
     srt <- tryCatch(
       {
         suppressWarnings(
-          Signac::TSSEnrichment(
+          get_namespace_fun("Signac", "TSSEnrichment")(
             object = srt,
             assay = assay,
             tss.positions = tss.positions,
@@ -145,7 +147,7 @@ RunATACQC <- function(
   } else if (!is.null(total_fragments_col)) {
     srt <- tryCatch(
       {
-        Signac::FRiP(
+        get_namespace_fun("Signac", "FRiP")(
           object = srt,
           assay = assay,
           total.fragments = total_fragments_col,
@@ -172,7 +174,7 @@ RunATACQC <- function(
   if (!is.null(blacklist)) {
     srt <- tryCatch(
       {
-        Signac::FractionCountsInRegion(
+        get_namespace_fun("Signac", "FractionCountsInRegion")(
           object = srt,
           assay = assay,
           regions = blacklist,
@@ -237,7 +239,7 @@ atac_frag_counts <- function(srt, assay, verbose = TRUE) {
 
   counts <- tryCatch(
     {
-      Signac::CountFragments(
+      get_namespace_fun("Signac", "CountFragments")(
         fragments = as.list(fragment_paths),
         cells = colnames(srt),
         verbose = verbose
@@ -260,7 +262,7 @@ atac_frag_counts <- function(srt, assay, verbose = TRUE) {
 
 atac_frag_paths <- function(srt, assay) {
   frags <- tryCatch(
-    Signac::Fragments(srt[[assay]]),
+    get_namespace_fun("Signac", "Fragments")(srt[[assay]]),
     error = function(...) list()
   )
   if (length(frags) == 0) {
@@ -268,7 +270,7 @@ atac_frag_paths <- function(srt, assay) {
   }
   vapply(
     frags,
-    FUN = function(fragment) Signac::GetFragmentData(fragment, slot = "path"),
+    FUN = function(fragment) get_namespace_fun("Signac", "GetFragmentData")(fragment, slot = "path"),
     FUN.VALUE = character(1)
   )
 }
@@ -305,7 +307,7 @@ atac_nuc_meta <- function(fragment_counts) {
 
 atac_has_annotation <- function(chrom_assay) {
   annotation <- tryCatch(
-    Signac::Annotation(chrom_assay),
+    get_namespace_fun("Signac", "Annotation")(chrom_assay),
     error = function(...) NULL
   )
   !is.null(annotation) && length(annotation) > 0

@@ -4,6 +4,25 @@
   ordinary matrix binding in Scanorama integration while preserving argument
   values, matrix names and projection results.
 
+* **docs**: Use direct package calls in examples, remove redundant availability
+  guards, and mark optional or external-resource recipes explicitly. Preserve
+  interactive dataset and Monocle examples and regenerate affected help topics.
+
+* **refactor**: Remove the unused qlcMatrix dependency from CSS integration.
+  Load CytoTRACE2 models once per run without retaining package-wide model
+  state; preserve optional analysis backends and downloaded model resources.
+
+* **fix**: Read raw metabolism GMT files from the data mirror without requiring
+  the scMetabolism package, and perform gene conversion without a package-wide
+  result cache. Use explicit renv snapshots so optional backends outside
+  DESCRIPTION, including SpaTalk, are prepared only when needed.
+
+* **refactor**: Load Signac, ComplexHeatmap and ggforce only when ATAC
+  analysis, heatmap rendering or specialized plot layers need them. Check and
+  install optional packages on first use with `check_r()`. Remove unused
+  splines, RcppAnnoy, RcppParallel and R tensorflow dependencies and TBB build
+  flags; retain Python TensorFlow environment preparation and OpenMP support.
+
 * **fix**: Preserve canonical Seurat command names and separate command history
   entries in fallback normalization, scaling, variable-feature selection and
   integration. Keep dynamic PCA and neighbor commands compact without
@@ -12,6 +31,10 @@
   and LIANA sample keys, including names shared with function options.
 * **perf**: Avoid expanding complete vectors into correlation-test descriptions
   in gene-immune and SCENIC plots while retaining the same statistics.
+
+* **fix**: Restore sparse count storage after `RecoverCounts(trans = "exp")`
+  exponentiation so count recovery can handle dense Matrix results and
+  implicit zeros correctly.
 
 * **fix**: Restore the package startup Logo, version, update date and website.
   Startup messages still respect verbosity settings and `suppressPackageStartupMessages()`.

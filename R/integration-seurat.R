@@ -42,6 +42,10 @@ Seurat_integrate <- function(
   verbose = TRUE,
   seed = 11
 ) {
+  if (normalization_method == "TFIDF") {
+    check_r("Signac", verbose = FALSE)
+  }
+
   if (length(linear_reduction) > 1) {
     log_message(
       "Only the first method in the {.arg linear_reduction} will be used",
@@ -170,7 +174,7 @@ Seurat_integrate <- function(
         1L
       }
     }
-    srt_merge <- Signac::RunTFIDF(
+    srt_merge <- get_namespace_fun("Signac", "RunTFIDF")(
       object = srt_merge,
       assay = SeuratObject::DefaultAssay(srt_merge),
       verbose = FALSE
@@ -412,7 +416,7 @@ Seurat_integrate <- function(
     for (nm in names(IntegrateEmbeddings_params)) {
       params2[[nm]] <- IntegrateEmbeddings_params[[nm]]
     }
-    srt_integrated <- invoke_fun(IntegrateEmbeddings, params2)
+    srt_integrated <- invoke_fun(Seurat::IntegrateEmbeddings, params2)
 
     if (is.null(linear_reduction_dims_use)) {
       linear_reduction_dims_use <- 2:max(srt_integrated@reductions[[paste0(
