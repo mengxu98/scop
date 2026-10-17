@@ -41,7 +41,7 @@
 #' refer to features, not group names or panel order. These heading options do
 #' not affect the custom `title`, split labels, expression palette, or blended
 #' panels (`compare_features = TRUE`).
-#' @param force Draw even when more than 100 features are requested.
+#' @template feature-dim-density
 #'
 #' @seealso [CellDimPlot]
 #'
@@ -117,8 +117,8 @@
 #'   pancreas_sub,
 #'   features = "Rbp4",
 #'   reduction = "UMAP",
-#'   label = TRUE,
-#'   add_density = TRUE
+#'   add_density = TRUE,
+#'   show_points = FALSE
 #' )
 #'
 #' FeatureDimPlot(
@@ -382,10 +382,15 @@ FeatureDimPlot <- function(
   verbose = TRUE,
   srt = NULL,
   title.face = NULL,
-  title.color = NULL
+  title.color = NULL,
+  show_points = TRUE
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   set.seed(seed)
+  if (!is.logical(show_points) || length(show_points) != 1L || is.na(show_points)) {
+    stop("'show_points' must be TRUE or FALSE.")
+  }
+  expression_density <- isTRUE(add_density) && missing(density_color)
   if (!is.null(title.face)) {
     title.face <- match.arg(title.face, c("plain", "bold", "italic", "bold.italic"))
   }
@@ -615,6 +620,13 @@ FeatureDimPlot <- function(
   features <- unique(features[
     features %in% c(features_gene, features_meta, features_embedding)
   ])
+  if (expression_density && isTRUE(compare_features) && length(features) > 1L) {
+    expression_density <- FALSE
+  }
+  if (expression_density && missing(density_filled_palette) && missing(density_filled_palcolor)) {
+    density_filled_palette <- palette
+    density_filled_palcolor <- palcolor
+  }
 
   if (!is.numeric(dat_exp) && !inherits(dat_exp, "Matrix")) {
     log_message(
@@ -622,6 +634,7 @@ FeatureDimPlot <- function(
       message_type = "error"
     )
   }
+  dat_exp_density <- if (expression_density) dat_exp else NULL
   dat_exp[, features][dat_exp[, features] <= bg_cutoff] <- NA
 
   if (length(features) > 50 && isFALSE(force)) {
@@ -668,7 +681,7 @@ FeatureDimPlot <- function(
   point_config <- dim_plot_point_config(
     n = nrow(dat_use),
     pt.size = pt.size,
-    raster = raster,
+    raster = if (show_points) raster else FALSE,
     raster.dpi = raster.dpi
   )
   pt.size <- point_config$pt.size
@@ -910,7 +923,7 @@ FeatureDimPlot <- function(
             legend.direction = legend.direction
           )
 
-        if (isTRUE(raster)) {
+        if (isTRUE(show_points) && isTRUE(raster)) {
           p <- p +
             scattermore::geom_scattermore(
               data = dat[dat[, "color_blend"] == bg_color, , drop = FALSE],
@@ -936,7 +949,7 @@ FeatureDimPlot <- function(
             ) +
             scale_color_identity() +
             ggnewscale::new_scale_color()
-        } else {
+        } else if (isTRUE(show_points)) {
           p <- p +
             geom_point(
               mapping = aes(
@@ -953,7 +966,7 @@ FeatureDimPlot <- function(
             ggnewscale::new_scale_color()
         }
 
-        if (!is.null(cells.highlight_use)) {
+        if (isTRUE(show_points) && !is.null(cells.highlight_use)) {
           cell_df <- subset(p$data, rownames(p$data) %in% cells.highlight_use)
           if (nrow(cell_df) > 0) {
             if (isTRUE(raster)) {
@@ -1236,6 +1249,30 @@ FeatureDimPlot <- function(
       dat_exp[row.names(dat_use), features, drop = FALSE]
     )
     dat_split <- split.data.frame(dat_all, dat_all[[split.by]])
+    density_data <- list()
+    x_limits <- range(dat_use[, paste0(reduction_key, dims[1])], na.rm = TRUE)
+    y_limits <- range(dat_use[, paste0(reduction_key, dims[2])], na.rm = TRUE)
+    if (expression_density) {
+      density_data <- lapply(rownames(comb), function(i) {
+        f <- comb[i, "feature"]
+        s <- comb[i, "split"]
+        panel <- dat_split[[ifelse(split.by == "All.groups", 1, s)]]
+        paths <- feature_dim_expression_density(data.frame(
+          x = panel[, paste0(reduction_key, dims[1])],
+          y = panel[, paste0(reduction_key, dims[2])],
+          value = dat_exp_density[rownames(panel), f]
+        ))
+        paths$features <- rep(f, nrow(paths))
+        paths[[split.by]] <- rep(s, nrow(paths))
+        paths
+      })
+      names(density_data) <- rownames(comb)
+      density_coordinates <- if (isTRUE(density_filled)) {
+        lapply(density_data, attr, "grid")
+      } else density_data
+      x_limits <- range(x_limits, unlist(lapply(density_coordinates, `[[`, "x")))
+      y_limits <- range(y_limits, unlist(lapply(density_coordinates, `[[`, "y")))
+    }
     colors <- palette_colors(
       type = "continuous",
       palette = palette,
@@ -1290,7 +1327,27 @@ FeatureDimPlot <- function(
         } else {
           subtitle_use <- subtitle[f]
         }
-        if (all(is.na(dat[["value"]]))) {
+        density_values <- if (expression_density) {
+          selected <- if (is.null(keep_scale)) i else if (keep_scale == "feature") {
+            rownames(comb)[comb$feature == f]
+          } else names(density_data)
+          values <- unlist(lapply(density_data[selected], function(d) {
+            if (isTRUE(density_filled)) attr(d, "grid")$value else d$value
+          }), use.names = FALSE)
+          values[is.finite(values)]
+        } else numeric()
+        missing_point_values <- all(is.na(dat[["value"]]))
+        if (expression_density && show_points && !is.null(keep_scale)) {
+          point_values <- if (keep_scale == "feature") dat_exp[, f] else as_matrix(dat_exp[, features])
+          missing_point_values <- !any(is.finite(point_values))
+        }
+        if (length(density_values) && (!show_points || missing_point_values)) {
+          colors_value <- seq(
+            lower_cutoff %||% stats::quantile(density_values, lower_quantile),
+            (upper_cutoff %||% stats::quantile(density_values, upper_quantile)) + 0.001,
+            length.out = 100
+          )
+        } else if (missing_point_values) {
           colors_value <- rep(0, 100)
         } else {
           if (is.null(keep_scale)) {
@@ -1361,7 +1418,32 @@ FeatureDimPlot <- function(
           edge_alpha = edge_alpha,
           edge_size = edge_size
         )
-        density <- dim_plot_density_layers(
+        density <- if (expression_density && isTRUE(density_filled)) {
+          grid <- attr(density_data[[i]], "grid")
+          grid$features <- rep(f, nrow(grid))
+          grid[[split.by]] <- rep(s, nrow(grid))
+          list(
+            ggplot2::geom_raster(data = grid, aes(x = .data[["x"]], y = .data[["y"]],
+                                                 fill = .data[["value"]], alpha = I(.data[["alpha"]])),
+                                 interpolate = TRUE, inherit.aes = FALSE, na.rm = TRUE),
+            scale_fill_gradientn(
+              name = legend.title %||% "Expression",
+              colours = palette_colors(palette = density_filled_palette,
+                                       palcolor = density_filled_palcolor),
+              limits = range(colors_value), oob = scales::squish, na.value = NA
+            ),
+            ggnewscale::new_scale_fill(),
+            geom_path(data = density_data[[i]],
+                      aes(x = .data[["x"]], y = .data[["y"]], group = .data[["path"]]),
+                      color = "#355D71", alpha = 0.42, linewidth = 0.24,
+                      lineend = "round", linejoin = "round", inherit.aes = FALSE)
+          )
+        } else if (expression_density) geom_path(
+          data = density_data[[i]],
+          mapping = aes(x = .data[["x"]], y = .data[["y"]],
+                        color = .data[["value"]], group = .data[["path"]],
+                        linewidth = I(.data[["width"]])), lineend = "round", linejoin = "round", inherit.aes = FALSE
+        ) else dim_plot_density_layers(
           add_density = add_density,
           density_filled = density_filled,
           density_color = density_color,
@@ -1373,16 +1455,10 @@ FeatureDimPlot <- function(
           density +
           labs(title = title, subtitle = subtitle_use, x = xlab, y = ylab) +
           scale_x_continuous(
-            limits = c(
-              min(dat_use[, paste0(reduction_key, dims[1])], na.rm = TRUE),
-              max(dat_use[, paste0(reduction_key, dims[1])], na.rm = TRUE)
-            )
+            limits = x_limits
           ) +
           scale_y_continuous(
-            limits = c(
-              min(dat_use[, paste0(reduction_key, dims[2])], na.rm = TRUE),
-              max(dat_use[, paste0(reduction_key, dims[2])], na.rm = TRUE)
-            )
+            limits = y_limits
           ) +
           apply_plot_theme(theme_use, theme_args) +
           theme(
@@ -1390,7 +1466,7 @@ FeatureDimPlot <- function(
             legend.position = legend.position,
             legend.direction = legend.direction
           )
-        if (isTRUE(raster)) {
+        if (isTRUE(show_points) && isTRUE(raster)) {
           p <- p +
             scattermore::geom_scattermore(
               data = dat[is.na(dat[, "value"]), , drop = FALSE],
@@ -1414,7 +1490,7 @@ FeatureDimPlot <- function(
               alpha = pt.alpha,
               pixels = raster.dpi
             )
-        } else if (isTRUE(hex)) {
+        } else if (isTRUE(show_points) && isTRUE(hex)) {
           check_r("hexbin", verbose = FALSE)
           dat_na <- dat[is.na(dat[["value"]]), , drop = FALSE]
           dat_hex <- dat[!is.na(dat[["value"]]), , drop = FALSE]
@@ -1463,7 +1539,7 @@ FeatureDimPlot <- function(
             }
             p <- p + ggnewscale::new_scale_fill()
           }
-        } else {
+        } else if (isTRUE(show_points)) {
           p <- p +
             geom_point(
               mapping = aes(
@@ -1477,7 +1553,7 @@ FeatureDimPlot <- function(
               alpha = pt.alpha
             )
         }
-        if (!is.null(cells.highlight_use) && isFALSE(hex)) {
+        if (isTRUE(show_points) && !is.null(cells.highlight_use) && isFALSE(hex)) {
           cell_df <- subset(p$data, rownames(p$data) %in% cells.highlight_use)
           if (nrow(cell_df) > 0) {
             if (isTRUE(raster)) {
@@ -1544,7 +1620,7 @@ FeatureDimPlot <- function(
           }
         }
         legend_title_use <- if (is.null(legend.title)) "" else legend.title
-        if (all(is.na(dat[["value"]]))) {
+        if (all(is.na(dat[["value"]])) && !length(density_values)) {
           p <- p +
             scale_colour_gradient(
               name = legend_title_use,
@@ -1558,6 +1634,7 @@ FeatureDimPlot <- function(
               colours = colors,
               values = scales::rescale(colors_value),
               limits = range(colors_value),
+              oob = if (expression_density) scales::squish else scales::censor,
               na.value = bg_color,
               aesthetics = c("color")
             )
@@ -1684,6 +1761,57 @@ FeatureDimPlot <- function(
     plist,
     combine = combine, nrow = nrow, ncol = ncol, byrow = byrow
   )
+}
+
+feature_dim_expression_density <- function(dat) {
+  empty <- data.frame(x = numeric(), y = numeric(), value = numeric(), path = integer(), width = numeric())
+  attr(empty, "grid") <- data.frame(x = numeric(), y = numeric(), value = numeric(), alpha = numeric())
+  dat <- dat[is.finite(dat$x) & is.finite(dat$y) & is.finite(dat$value), , drop = FALSE]
+  if (nrow(dat) < 3L || diff(range(dat$x)) == 0 || diff(range(dat$y)) == 0) {
+    warning("Expression density needs at least three finite cells and varying coordinates.", call. = FALSE)
+    return(empty)
+  }
+  bandwidth <- vapply(dat[c("x", "y")], stats::bw.nrd, numeric(1))
+  for (j in seq_along(bandwidth)) {
+    if (!is.finite(bandwidth[j]) || bandwidth[j] <= 0) {
+      bandwidth[j] <- diff(range(dat[[j]])) / 10
+    }
+  }
+  n <- 240L
+  gx <- seq(min(dat$x) - 3 * bandwidth[1], max(dat$x) + 3 * bandwidth[1], length.out = n)
+  gy <- seq(min(dat$y) - 3 * bandwidth[2], max(dat$y) + 3 * bandwidth[2], length.out = n)
+  support <- weighted <- matrix(0, nrow = n, ncol = n)
+  for (start in seq.int(1L, nrow(dat), by = 1024L)) {
+    cells <- start:min(start + 1023L, nrow(dat))
+    kx <- exp(-0.5 * (outer(gx, dat$x[cells], "-") / bandwidth[1])^2)
+    ky <- exp(-0.5 * (outer(gy, dat$y[cells], "-") / bandwidth[2])^2)
+    support <- support + tcrossprod(kx, ky)
+    weighted <- weighted + tcrossprod(sweep(kx, 2L, dat$value[cells], "*"), ky)
+  }
+  z <- weighted / pmax(support, .Machine$double.xmin)
+  contours <- grDevices::contourLines(
+    gx, gy, support, levels = max(support) * seq(0.08, 0.92, length.out = 9L)
+  )
+  if (!length(contours)) return(empty)
+  paths <- do.call(rbind, lapply(seq_along(contours), function(i) {
+    index <- which.min(abs(seq(0.08, 0.92, length.out = 9L) - contours[[i]]$level / max(support)))
+    data.frame(x = contours[[i]]$x, y = contours[[i]]$y, path = i,
+               width = if (index %in% c(1L, 4L, 7L)) 0.75 else 0.32)
+  }))
+  ix <- findInterval(paths$x, gx, all.inside = TRUE)
+  iy <- findInterval(paths$y, gy, all.inside = TRUE)
+  tx <- (paths$x - gx[ix]) / (gx[ix + 1L] - gx[ix])
+  ty <- (paths$y - gy[iy]) / (gy[iy + 1L] - gy[iy])
+  paths$value <- (1 - tx) * (1 - ty) * z[cbind(ix, iy)] +
+    tx * (1 - ty) * z[cbind(ix + 1L, iy)] +
+    (1 - tx) * ty * z[cbind(ix, iy + 1L)] +
+    tx * ty * z[cbind(ix + 1L, iy + 1L)]
+  grid <- expand.grid(x = gx, y = gy)
+  grid$value <- as.vector(z)
+  grid$alpha <- pmin(1, pmax(0, (as.vector(support) / max(support) - 0.02) / 0.015))
+  grid$value[as.vector(support) < 0.02 * max(support)] <- NA_real_
+  attr(paths, "grid") <- grid
+  paths
 }
 
 #' @title Feature values on a 3D reduction

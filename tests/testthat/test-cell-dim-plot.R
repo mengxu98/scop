@@ -22,6 +22,30 @@ make_cell_dim_plot_srt <- function(n_cells = 10L) {
   srt
 }
 
+test_that("CellDimPlot density contours close within shared panel limits", {
+  srt <- make_cell_dim_plot_srt(40L)
+  for (show_na in c(FALSE, TRUE)) {
+    plots <- CellDimPlot(srt, group.by = "celltype", split.by = "major_type",
+                        reduction = "umap", add_density = TRUE, show_na = show_na,
+                        raster = FALSE, combine = FALSE, verbose = FALSE)
+    for (p in plots) {
+      layer <- which(vapply(p$layers, function(l) inherits(l$stat, "StatDensity2d"), logical(1)))
+      paths <- ggplot2::ggplot_build(p)$data[[layer]]
+      expect_gt(nrow(paths), 0L)
+      closed <- vapply(split(paths, paths$group), function(d) {
+        isTRUE(all.equal(as.numeric(d[1L, c("x", "y")]),
+                         as.numeric(d[nrow(d), c("x", "y")]), tolerance = 1e-8))
+      }, logical(1))
+      expect_true(all(closed))
+      expect_no_warning(ggplot2::ggplotGrob(p))
+    }
+    expect_equal(plots[[1L]]$scales$get_scales("x")$limits,
+                 plots[[2L]]$scales$get_scales("x")$limits)
+    expect_equal(plots[[1L]]$scales$get_scales("y")$limits,
+                 plots[[2L]]$scales$get_scales("y")$limits)
+  }
+})
+
 test_that("FeatureDimPlot reuses the expression layer for co-expression", {
   srt <- make_cell_dim_plot_srt()
   counts <- GetAssayData5(srt, assay = "RNA", layer = "counts")
@@ -687,4 +711,22 @@ test_that("FeatureDimPlot styles feature headings by identity across reordered s
   expect_error(FeatureDimPlot(srt, "gene1", title.color = c("red", "blue")), "title.color")
   expect_error(FeatureDimPlot(srt, "gene1", title.color = c(gene1 = "red", gene1 = "blue")), "title.color")
   expect_error(FeatureDimPlot(srt, "gene1", title.color = "not-a-color"), "invalid color")
+})
+
+test_that("cell density bands render without losing point colours", {
+  srt <- make_cell_dim_plot_srt()
+  plain <- CellDimPlot(srt, "major_type", reduction = "umap", raster = FALSE, verbose = FALSE)
+  filled <- CellDimPlot(srt, "major_type", reduction = "umap", raster = FALSE,
+                        add_density = TRUE, density_filled = TRUE,
+                        density_color = "tomato", verbose = FALSE)
+  expect_no_warning(built <- ggplot2::ggplot_build(filled))
+  bands <- which(vapply(filled$layers, function(l) inherits(l$geom, "GeomDensity2dFilled"), logical(1)))
+  expect_length(bands, 1L)
+  expect_gt(nrow(built$data[[bands]]), 0L)
+  expect_true(all(is.finite(built$data[[bands]]$x) & is.finite(built$data[[bands]]$y)))
+  points <- which(vapply(filled$layers, function(l) inherits(l$geom, "GeomPoint"), logical(1)))
+  base_points <- which(vapply(plain$layers, function(l) inherits(l$geom, "GeomPoint"), logical(1)))
+  expect_setequal(built$data[[points]]$colour, ggplot2::ggplot_build(plain)$data[[base_points]]$colour)
+  line <- which(vapply(filled$layers, function(l) inherits(l$geom, "GeomDensity2d"), logical(1)))
+  expect_true(all(built$data[[line]]$colour == "tomato"))
 })

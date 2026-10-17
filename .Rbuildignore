@@ -9,6 +9,7 @@
 ^data-raw$
 ^docs$
 ^pkgdown$
+^man-roxygen$
 ^\.github$
 ^\.posit$
 (^|/)\.claude($|/)

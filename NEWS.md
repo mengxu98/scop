@@ -4,6 +4,20 @@
   ordinary matrix binding in Scanorama integration while preserving argument
   values, matrix names and projection results.
 
+* **feature**: `FeatureDimPlot()` supports contour-only plots with
+  `show_points = FALSE`. For unblended features, `add_density = TRUE` colors
+  density contours or smooth surfaces by local mean expression. Point values
+  and their color scale remain unchanged when adding these layers. Expression
+  surfaces inherit the feature palette unless fill colors are supplied.
+  Explicit `density_color` and blended-feature calls retain the original
+  cell-density layers, including filled bands. `CellDimPlot()` continues
+  to display cell-distribution density. Split panels and shared scales remain
+  supported.
+* **fix**: `CellDimPlot()` pads density grids beyond the cell coordinates so
+  outer contours close without clipping. Density lines use major and minor
+  widths, cell-density fills use vector bands with fine contours, and
+  feature-expression surfaces fade at low-support edges with fine contours.
+
 * **docs**: Use direct package calls in examples, remove redundant availability
   guards, and mark optional or external-resource recipes explicitly. Preserve
   interactive dataset and Monocle examples and regenerate affected help topics.
