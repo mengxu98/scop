@@ -369,3 +369,17 @@ test_that("ATAC backends report a missing public function", {
     "not an exported object"
   )
 })
+test_that("fragment lookup caches do not invalidate original-barcode metadata", {
+  skip_if_not_installed("fastmatch")
+  counts <- Matrix::sparseMatrix(
+    i = c(1, 2), j = c(1, 2), x = 1,
+    dims = c(2, 2), dimnames = list(c("p1", "p2"), c("cellA", "cellB"))
+  )
+  ids <- colnames(counts)
+  fastmatch::fmatch(ids, ids)
+  colnames(counts) <- ids
+  ranges <- GenomicRanges::GRanges(c("chr1:1-50", "chr1:101-150"))
+  object <- ReadATACData(counts, ranges = ranges, genome = "toy", verbose = FALSE)
+  expect_identical(as.vector(object$input_barcode), as.vector(ids))
+  expect_identical(as.vector(colnames(object)), as.vector(ids))
+})

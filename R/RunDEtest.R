@@ -87,8 +87,27 @@ RunEdgeR <- function(
   only.pos = FALSE,
   logfc.threshold = 0,
   p.adjust.method = "BH",
-  verbose = TRUE
+  verbose = TRUE,
+  sample_data = NULL,
+  design = NULL,
+  contrast = NULL
 ) {
+  if (RunDEtestCheckDesign(design, contrast)) {
+    out <- RunDEtest_edgeR(
+      count_matrix, condition, condition1, condition2,
+      only.pos, logfc.threshold, p.adjust.method, sample_data, design, contrast
+    )
+    model <- attr(out, "edgeR_model")
+    attr(out, "edgeR_model") <- NULL
+    return(list(
+      status = "success", reason = NULL, results = out,
+      details = list(condition_pair = model$condition_pair, edgeR_model = model),
+      parameters = list(
+        only.pos = only.pos, logfc.threshold = logfc.threshold,
+        p.adjust.method = p.adjust.method, design = model$formula, contrast = model$contrast
+      )
+    ))
+  }
   check_r("edgeR", verbose = FALSE)
 
   pair <- tryCatch(
@@ -418,6 +437,10 @@ dispatch_de <- function(
     )
   }
 
+  explicit_design <- !is.null(de_args$design) || !is.null(de_args$contrast)
+  if (explicit_design && !length(ctx$counts_by_group)) {
+    log_message("No bulk sample groups participate in the explicit edgeR comparison; check group.by metadata.", message_type = "error")
+  }
   per_group <- list()
   results_list <- list()
   fail_messages <- character(0)
@@ -434,6 +457,7 @@ dispatch_de <- function(
       error = function(e) e
     )
     if (inherits(comparison_specs, "error")) {
+      if (explicit_design) stop(conditionMessage(comparison_specs), call. = FALSE)
       fail_messages <- c(
         fail_messages,
         paste0(grp, ": ", comparison_specs$message)
@@ -460,6 +484,7 @@ dispatch_de <- function(
           args[names(args) %in% names(formals(method_fun))]
         ),
         error = function(e) {
+          if (explicit_design) stop(conditionMessage(e), call. = FALSE)
           list(
             status = "failed",
             reason = e$message,
@@ -487,8 +512,8 @@ dispatch_de <- function(
             df$gene <- rownames(df)
           }
           df$group1 <- grp
-          df$group2 <- spec$label
-          df$comparison <- compose_comparison_label(grp, spec$label)
+          df$group2 <- if (explicit_design) bundle$details$edgeR_model$positive_direction else spec$label
+          df$comparison <- compose_comparison_label(grp, unique(df$group2))
           df$method <- method_name
           results_list[[paste0(
             grp,
@@ -527,7 +552,7 @@ dispatch_de <- function(
     out
   }
 
-  if (nrow(results) > 0) {
+  if (nrow(results) > 0 || (explicit_design && !length(fail_messages))) {
     list(
       status = "success",
       reason = NULL,
@@ -797,7 +822,10 @@ coerce_de_schema <- function(df) {
     "method"
   )
   optional <- intersect(
-    c("pct.1", "pct.2", "ave_expr", "comparison"),
+    c(
+      "pct.1", "pct.2", "ave_expr", "comparison", "F", "p_val_BH",
+      "feature", "feature_type", "chromosome", "start", "end", "genome", "coordinate_system"
+    ),
     colnames(df)
   )
   out <- df[, c(keep, optional), drop = FALSE]
@@ -1681,8 +1709,17 @@ RunDEtest_edgeR <- function(
   condition2 = NULL,
   only.pos = TRUE,
   logfc.threshold = 0,
-  p.adjust.method = "bonferroni"
+  p.adjust.method = "bonferroni",
+  sample_data = NULL,
+  design = NULL,
+  contrast = NULL
 ) {
+  if (RunDEtestCheckDesign(design, contrast)) {
+    return(RunDEtestEdgeRModel(
+      count_matrix, condition, condition1, condition2,
+      sample_data, design, contrast, only.pos, logfc.threshold, p.adjust.method
+    ))
+  }
   check_r("edgeR", verbose = FALSE)
 
   condition_all <- as.character(condition)
@@ -1758,8 +1795,11 @@ RunDEtest_pseudobulk <- function(
   assay = NULL,
   verbose = TRUE,
   cores = 1,
-  ...
+  ...,
+  design = NULL,
+  contrast = NULL
 ) {
+  explicit_design <- RunDEtestCheckDesign(design, contrast, test.use)
   if (is.null(assay)) {
     assay <- SeuratObject::DefaultAssay(srt)
   }
@@ -1805,11 +1845,24 @@ RunDEtest_pseudobulk <- function(
     )
   }
   counts <- counts[features, , drop = FALSE]
+  coordinates <- if (explicit_design) RunDEtestFeatureCoordinates(srt, assay, features, feature_type) else NULL
+  if (explicit_design) {
+    missing <- setdiff(all.vars(design), colnames(srt@meta.data))
+    if (length(missing)) log_message("{paste(\"Missing design metadata columns:\", paste(missing, collapse = \", \"))}", message_type = "error")
+  }
 
   condition_levels_all <- unique(as.character(stats::na.omit(srt[[
     condition_col,
     drop = TRUE
   ]])))
+  if (explicit_design) {
+    participating <- srt@meta.data[colnames(counts), , drop = FALSE]
+    if (!is.null(group.by)) participating <- participating[!is.na(participating[[group.by]]), , drop = FALSE]
+    condition_levels_all <- unique(as.character(stats::na.omit(participating[[condition_col]])))
+    if (length(condition_levels_all) > 2L && (is.null(group1) || is.null(group2))) {
+      log_message("Explicit edgeR models require one selected condition pair; set group1 and group2 for more than two conditions.", message_type = "error")
+    }
+  }
   condition1 <- group1 %||% NULL
   condition2 <- group2 %||% NULL
   if (is.null(condition1) || is.null(condition2)) {
@@ -1829,8 +1882,23 @@ RunDEtest_pseudobulk <- function(
     )
   }
 
+  comparison_metadata <- NULL
+  if (explicit_design) {
+    comparison_metadata <- srt@meta.data[colnames(counts), , drop = FALSE]
+    selected <- as.character(comparison_metadata[[condition_col]]) %in% c(condition1, condition2)
+    if (!is.null(group.by)) selected <- selected & !is.na(comparison_metadata[[group.by]])
+    comparison_metadata <- comparison_metadata[selected, , drop = FALSE]
+    if (!nrow(comparison_metadata)) {
+      log_message("No selected-assay cells participate in the requested explicit comparison.", message_type = "error")
+    }
+    # Sample identity and covariates must be consistent across all participating
+    # groups, not just within each independently fitted cell-type subset.
+    RunDEtestModelSampleData(comparison_metadata, sample_col, condition_col, design)
+  }
   target_groups <- if (is.null(group.by)) {
     "All"
+  } else if (explicit_design) {
+    unique(as.character(comparison_metadata[[group.by]]))
   } else {
     unique(as.character(stats::na.omit(srt[[group.by, drop = TRUE]])))
   }
@@ -1849,20 +1917,23 @@ RunDEtest_pseudobulk <- function(
   all_markers <- run_group_fun(
     target_groups,
     function(current_group) {
-      cells_use <- colnames(srt)
+      cells_use <- if (explicit_design) rownames(comparison_metadata) else colnames(srt)
       if (!is.null(group.by)) {
-        cells_use <- colnames(srt)[
-          srt[[group.by, drop = TRUE]] %in% current_group
-        ]
+        cells_use <- cells_use[srt@meta.data[cells_use, group.by] %in% current_group]
       }
       meta_use <- srt@meta.data[
         cells_use,
-        c(sample_col, condition_col),
+        unique(c(sample_col, condition_col, if (explicit_design) all.vars(design))),
         drop = FALSE
       ]
-      meta_use <- meta_use[stats::complete.cases(meta_use), , drop = FALSE]
+      if (explicit_design) {
+        RunDEtestModelSampleData(meta_use, sample_col, condition_col, design)
+      } else {
+        meta_use <- meta_use[stats::complete.cases(meta_use), , drop = FALSE]
+      }
       cells_use <- rownames(meta_use)
       if (length(cells_use) == 0) {
+        if (explicit_design) log_message("{paste(\"No observed samples for explicit design in\", current_group)}", message_type = "error")
         return(list(
           markers = NULL,
           inventory = RunDEtestEmptySampleInventory()
@@ -1898,6 +1969,7 @@ RunDEtest_pseudobulk <- function(
       }
       keep_samples <- inventory$sample[inventory$kept]
       if (length(keep_samples) == 0L) {
+        if (explicit_design) log_message("{paste(\"No samples remain after min.cells.sample filtering in\", current_group)}", message_type = "error")
         log_message(
           "No samples remain in {.val {current_group}} after requiring at least {.val {min.cells.sample}} cells per sample",
           message_type = "warning",
@@ -1916,6 +1988,12 @@ RunDEtest_pseudobulk <- function(
       ])
 
       counts_use <- counts[, cells_use, drop = FALSE]
+      if (explicit_design) {
+        values <- if (inherits(counts_use, "sparseMatrix") && "x" %in% methods::slotNames(counts_use)) counts_use@x else as.vector(counts_use)
+        if (any(!is.finite(values)) || any(values < 0) || any(values %% 1 != 0)) {
+          log_message("Explicit edgeR models require raw integer counts before pseudobulk aggregation.", message_type = "error")
+        }
+      }
       count_matrix <- aggregate_counts_by_group(
         counts = counts_use,
         groups = meta_use[[sample_col]]
@@ -1928,6 +2006,7 @@ RunDEtest_pseudobulk <- function(
       n_condition1 <- sum(condition_use == condition1, na.rm = TRUE)
       n_condition2 <- sum(condition_use == condition2, na.rm = TRUE)
       if (n_condition1 < 2L || n_condition2 < 2L) {
+        if (explicit_design) log_message("{paste(\"Explicit edgeR models need at least 2 biological samples per condition after min.cells.sample filtering in\", current_group)}", message_type = "error")
         log_message(
           "Skip {.val {current_group}}: need at least 2 samples per condition after {.arg min.cells.sample} filtering ({.val {condition1}} = {.val {n_condition1}}, {.val {condition2}} = {.val {n_condition2}})",
           message_type = "warning",
@@ -1935,6 +2014,7 @@ RunDEtest_pseudobulk <- function(
         )
         return(list(markers = NULL, inventory = inventory))
       }
+      sample_data <- if (explicit_design) RunDEtestModelSampleData(meta_use, sample_col, condition_col, design) else NULL
       markers <- switch(test.use,
         limma = RunDEtest_limma(
           count_matrix = count_matrix,
@@ -1952,7 +2032,10 @@ RunDEtest_pseudobulk <- function(
           condition2 = condition2,
           only.pos = only.pos,
           logfc.threshold = log(fc.threshold, base = base),
-          p.adjust.method = p.adjust.method
+          p.adjust.method = p.adjust.method,
+          sample_data = sample_data,
+          design = design,
+          contrast = contrast
         ),
         DESeq2 = RunDEtest_DESeq2(
           count_matrix = count_matrix,
@@ -1973,25 +2056,40 @@ RunDEtest_pseudobulk <- function(
           p.adjust.method = p.adjust.method
         )
       )
+      model <- attr(markers, "edgeR_model")
+      if (!is.null(model)) {
+        model$full_results <- RunDEtestAnnotateModel(model$full_results, coordinates, feature_type)
+        model$sample_inventory <- inventory
+        model$sample_unit$source <- paste0("user-declared aggregate IDs in sample_col = ", sample_col)
+        model$cell_samples <- data.frame(cell = rownames(meta_use), sample = as.character(meta_use[[sample_col]]))
+        model$input <- list(
+          assay = assay, layer = layer, sample_col = sample_col,
+          condition_col = condition_col, group.by = group.by, group = current_group,
+          min.cells.sample = min.cells.sample
+        )
+        attr(markers, "edgeR_model") <- NULL
+        markers <- RunDEtestAnnotateModel(markers, coordinates, feature_type)
+      }
       if (is.null(markers) || nrow(markers) == 0) {
-        return(list(markers = NULL, inventory = inventory))
+        return(list(markers = NULL, inventory = inventory, model = model))
       }
       markers[, "gene"] <- rownames(markers)
       markers[, "feature"] <- rownames(markers)
       markers[, "feature_type"] <- feature_type
       markers[, "group1"] <- current_group
-      markers[, "group2"] <- paste0(condition2, "_vs_", condition1)
+      markers[, "group2"] <- if (explicit_design) model$positive_direction else paste0(condition2, "_vs_", condition1)
       markers[, "condition1"] <- condition1
       markers[, "condition2"] <- condition2
       markers[, "sample_number1"] <- n_condition1
       markers[, "sample_number2"] <- n_condition2
-      list(markers = markers, inventory = inventory)
+      list(markers = markers, inventory = inventory, model = model)
     }
   )
   RunDEtestStopOnParallelErrors(
     all_markers,
     context = "Sample-level differential testing"
   )
+  all_markers_by_group <- all_markers
   bound <- RunDEtestBindPseudobulkResults(all_markers)
   all_markers <- bound$markers
   sample_inventory <- bound$inventory
@@ -2015,6 +2113,13 @@ RunDEtest_pseudobulk <- function(
   srt@tools[[tool_name]][["layer"]] <- layer
   srt@tools[[tool_name]][["group.by"]] <- group.by
   srt@tools[[tool_name]][["groups_tested"]] <- target_groups
+  if (explicit_design) {
+    srt@tools[[tool_name]][["edgeR_models"]] <- stats::setNames(lapply(all_markers_by_group, `[[`, "model"), target_groups)
+    srt@tools[[tool_name]][["feature_coordinates"]] <- coordinates
+  } else {
+    srt@tools[[tool_name]][["edgeR_models"]] <- NULL
+    srt@tools[[tool_name]][["feature_coordinates"]] <- NULL
+  }
 
   if (is.null(all_markers) || nrow(all_markers) == 0) {
     srt@tools[[tool_name]][[paste0("AllMarkers_", test.use)]] <- data.frame()
@@ -2103,6 +2208,21 @@ RunDEtest_pseudobulk <- function(
 #' are dropped before aggregation. Default `10`. Set to `1` to keep every
 #' sample that has at least one cell. Ignored for cell-level tests and for
 #' `SummarizedExperiment` input.
+#' @param design Optional one-sided formula for sample-level `test.use = "edgeR"`,
+#' evaluated using cell metadata aggregated by `sample_col`, or bulk `colData`.
+#' Supply together with `contrast`, using exact argument names. Available for
+#' RNA/gene and ATAC peak/cCRE inputs; omitted arguments preserve legacy behavior.
+#' Every formula variable must be constant
+#' within an aggregate sample. For paired cell types, use distinct donor-by-cell-type
+#' sample IDs and a donor block such as `~ donor + cell_type`. Missing combinations
+#' are never zero-filled. The model must have full rank and positive residual
+#' degrees of freedom, with at least two biological samples per selected condition.
+#' Formula `offset()` terms are not supported and are rejected explicitly.
+#' @param contrast Optional finite named numeric coefficient contrast for `design`.
+#' Names must match every fitted model-matrix column exactly, including zero-weight
+#' columns; order is aligned by name. Positive log-fold changes follow this vector,
+#' not necessarily `group2` versus `group1`. Only one condition pair is fitted per
+#' `group.by` level. Invalid explicit models fail rather than being skipped.
 #' @param bulk_assay Assay name used as the bulk counts matrix for
 #' `SummarizedExperiment` input.
 #' @param p.adjust.method A character value specifying the method to use for adjusting p-values.
@@ -2113,6 +2233,31 @@ RunDEtest_pseudobulk <- function(
 #' @param ... Additional arguments passed to the marker backend. Arguments not
 #'   supported by scop's sparse Wilcoxon path are delegated to
 #'   [Seurat::FindMarkers].
+#'
+#' @details
+#' Without `design` and `contrast`, existing defaults and comparison behavior are
+#' unchanged. Explicit edgeR models use native `filterByExpr(design = ...)`, TMM
+#' normalization, dispersion estimation, `glmQLFit(robust = TRUE)`, and
+#' `glmQLFTest(contrast = ...)`. Both `p_val_adj` (the requested adjustment) and
+#' `p_val_BH` use the full tested feature universe before fold-change display
+#' filtering. Set `p.adjust.method = "BH"` to also use BH for `p_val_adj`; its
+#' default remains `"bonferroni"`. A fold-change display filter is not a
+#' minimum-effect-size hypothesis test.
+#'
+#' Seurat results retain one receipt per group under
+#' `object@tools[["DEtest_pseudobulk"]]$edgeR_models`, or
+#' `object@tools[[paste0("DEtest_", group.by)]]$edgeR_models`. Each receipt contains
+#' `full_results`, input/tested/filtered feature IDs, raw pseudobulk counts,
+#' sample metadata and cell membership, cell counts, library sizes, normalization
+#' factors, design matrix, contrast, direction, residual degrees of freedom and
+#' backend versions. Bulk receipts are under
+#' `S4Vectors::metadata(object)$DEtest$methods$de_edgeR_qlf$details$groups`, in each
+#' comparison's `details$edgeR_model` (without per-cell membership).
+#' Explicit `peak`/`cCRE` models require a `ChromatinAssay` or
+#' `RangedSummarizedExperiment`; full and displayed results include 1-based closed
+#' coordinates and supplied genome labels. No coordinates or count units are
+#' guessed from feature names. Cells and technical libraries must not be relabeled
+#' as independent biological replicates; metadata cannot establish independence.
 #'
 #' @export
 #'
@@ -2345,6 +2490,39 @@ RunDEtest_pseudobulk <- function(
 #'   x_metric = "avg_log2FC",
 #'   y_metric = "p_val"
 #' )
+#'
+#' # Explicit paired sample-level model (synthetic biological-sample counts).
+#' if (requireNamespace("edgeR", quietly = TRUE) &&
+#'   requireNamespace("statmod", quietly = TRUE)) {
+#'   local({
+#'     withr::local_preserve_seed()
+#'     set.seed(11)
+#'     samples <- data.frame(
+#'       donor = factor(rep(paste0("D", 1:4), each = 2)),
+#'       condition = factor(rep(c("control", "treated"), 4)),
+#'       row.names = paste0("sample", 1:8)
+#'     )
+#'     counts <- matrix(rnbinom(200 * 8, mu = 60, size = 12),
+#'       nrow = 200,
+#'       dimnames = list(paste0("gene", 1:200), rownames(samples))
+#'     )
+#'     bulk <- SummarizedExperiment::SummarizedExperiment(
+#'       assays = list(counts = counts), colData = samples
+#'     )
+#'     columns <- colnames(model.matrix(~ donor + condition, samples))
+#'     contrast <- setNames(rep(0, length(columns)), columns)
+#'     contrast["conditiontreated"] <- 1
+#'     fitted <- RunDEtest(bulk,
+#'       condition_col = "condition",
+#'       group1 = "control", group2 = "treated", test.use = "edgeR",
+#'       design = ~ donor + condition, contrast = contrast,
+#'       only.pos = FALSE, fc.threshold = 1, p.adjust.method = "BH", verbose = FALSE
+#'     )
+#'     results <- S4Vectors::metadata(fitted)$DEtest$results
+#'     stopifnot(all(results$p_val_BH >= 0 & results$p_val_BH <= 1))
+#'   })
+#' }
+#' # End explicit paired sample-level model.
 RunDEtest <- function(
   object = NULL,
   ...,
@@ -2415,8 +2593,11 @@ RunDEtest.Seurat <- function(
   seed = 11,
   verbose = TRUE,
   cores = 1,
-  ...
+  ...,
+  design = NULL,
+  contrast = NULL
 ) {
+  RunDEtestCheckDesign(design, contrast, test.use)
   srt <- object
   set.seed(seed)
   feature_type <- match.arg(feature_type)
@@ -2534,6 +2715,8 @@ RunDEtest.Seurat <- function(
       sample_col = sample_col,
       condition_col = condition_col,
       min.cells.sample = min.cells.sample,
+      design = design,
+      contrast = contrast,
       p.adjust.method = p.adjust.method,
       layer = layer,
       assay = assay,
@@ -3468,15 +3651,18 @@ RunDEtest.SummarizedExperiment <- function(
   seed = 11,
   verbose = TRUE,
   cores = 1,
-  ...
+  ...,
+  design = NULL,
+  contrast = NULL
 ) {
+  explicit_design <- RunDEtestCheckDesign(design, contrast, test.use)
   set.seed(seed)
   feature_type <- match.arg(feature_type)
   markers_type <- match.arg(markers_type)
   meta.method <- match.arg(meta.method)
   bulk_se <- object
 
-  if (!identical(feature_type, "gene")) {
+  if (!identical(feature_type, "gene") && !explicit_design) {
     log_message(
       "{.arg feature_type} currently supports only {.val gene} for {.cls SummarizedExperiment} input.",
       message_type = "error"
@@ -3591,6 +3777,11 @@ RunDEtest.SummarizedExperiment <- function(
     )
   }
 
+  if (explicit_design && (!identical(markers_type, "all") ||
+    (length(unique(as.character(ctx$condition_global))) > 2L && (is.null(group1) || is.null(group2))))) {
+    log_message("Explicit edgeR models require markers_type = 'all' and one selected condition pair; set group1 and group2 for more than two conditions.", message_type = "error")
+  }
+  coordinates <- if (explicit_design) RunDEtestFeatureCoordinates(bulk_se, NULL, rownames(ctx$counts_global), feature_type) else NULL
   de_markers_type <- if (identical(markers_type, "paired")) {
     "paired"
   } else {
@@ -3612,12 +3803,34 @@ RunDEtest.SummarizedExperiment <- function(
       list(
         only.pos = only.pos,
         logfc.threshold = log(fc.threshold, base = base),
-        p.adjust.method = p.adjust.method
+        p.adjust.method = p.adjust.method,
+        design = design,
+        contrast = contrast
       ),
       list(...)
     ),
     verbose = verbose
   )
+  if (explicit_design) {
+    for (grp in names(bundle$details$groups)) {
+      for (comparison in names(bundle$details$groups[[grp]]$comparisons)) {
+        model <- bundle$details$groups[[grp]]$comparisons[[comparison]]$details$edgeR_model
+        model$full_results <- RunDEtestAnnotateModel(model$full_results, coordinates, feature_type)
+        model$input <- list(bulk_assay = bulk_assay, condition_col = condition_col, group.by = group.by, group = grp)
+        bundle$details$groups[[grp]]$comparisons[[comparison]]$details$edgeR_model <- model
+      }
+    }
+    if (nrow(bundle$results)) {
+      bundle$results$feature <- bundle$results$gene
+      bundle$results$feature_type <- feature_type
+      if (!is.null(coordinates)) {
+        bundle$results <- cbind(
+          bundle$results,
+          coordinates[bundle$results$gene, setdiff(colnames(coordinates), "feature"), drop = FALSE]
+        )
+      }
+    }
+  }
   bundle$results <- coerce_de_schema(bundle$results)
   store <- list(
     input = list(

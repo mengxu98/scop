@@ -428,6 +428,24 @@ reference:
   - RunATACQC
   - CoverageTrackPlot
 
+- subtitle: "Peak Definition and Annotation"
+  contents:
+  - CombineATACPeaks
+  - RecountATAC
+  - FilterATACPeaks
+  - AnnotateATACPeaks
+
+- subtitle: "Motifs and Accessibility Deviations"
+  contents:
+  - AddATACMotifs
+  - RunMotifEnrichment
+  - RunChromVAR
+
+- subtitle: "Gene Activity and Peak-Gene Associations"
+  contents:
+  - RunGeneActivity
+  - RunLinkPeaks
+
 - title: "Spatial Omics Analysis"
 
 - subtitle: "Spatial Quality Control and Normalization"
@@ -532,6 +550,7 @@ reference:
   - CheckDataType
   - CheckDataList
   - CheckDataMerge
+  - ExportATACResults
 
 - subtitle: "Object and File Conversion"
   contents:

@@ -83,7 +83,9 @@ value. \code{NULL} computes decontX without filtering.}
 parameters take precedence.}
 
 \item{atac_args}{Extra \code{\link[=RunATACQC]{RunATACQC()}} arguments. Thresholds label \code{atac_qc};
-filtering is done by \code{\link[=RunCellQC]{RunCellQC()}}.}
+filtering is done by \code{\link[=RunCellQC]{RunCellQC()}}. Requested ATAC metrics must be available
+and finite for every selected-assay cell; cells outside that assay are not
+marked as ATAC QC failures.}
 
 \item{outlier_threshold}{Outlier rules as \code{"metric:tail:nmads"}.}
 

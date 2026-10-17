@@ -56,18 +56,29 @@
   Startup messages still respect verbosity settings and `suppressPackageStartupMessages()`.
 
 * **fix**: Chromatin `CheckDataList()` feature selection preserves native within-batch peak ranking when batch frequencies tie, instead of ranking tied peak IDs alphabetically.
+* **feature**: `ExportATACResults()` saves a complete ATAC object, explicit result tables, selected-assay matrix companions and an external-resource inventory with file checksums into a new directory. Matrix Market/BED3/barcode exports can be read by `ReadATACData()`; fragment resources remain external.
+* **feature**: `FilterATACPeaks()` creates a clean peak assay using explicit raw-count, interval and blacklist criteria. `AnnotateATACPeaks()` records native nearest-interval annotation hits with explicit genome-label/known-length checks, preserving unmatched peaks and existing results.
+* **feature**: `CombineATACPeaks()` constructs a shared interval universe with explicit source support, and `RecountATAC()` recounts indexed fragments through native Signac `FeatureMatrix()`. Counts preserve requested region/cell alignment without padding existing peak matrices; reference lengths, active capture mappings, and fragment availability are checked before optional new-assay writeback.
+* **feature**: `RunChromVAR()` computes native GC-corrected motif-accessibility deviations from existing aligned motif annotations and an explicit sequence reference. It preserves native scores, backgrounds and bias in a new data-only assay without changing source counts or caller RNG state.
+* **feature**: `RunGeneActivity()` wraps native Signac fragment-based gene-body/promoter counting with explicit annotation identity/reference checks and active-capture validation. Results enter a new assay with provenance; ambiguous native IDs are rejected rather than merged or reconstructed.
+- Add opt-in sample-level edgeR design/contrast models with biological-sample checks, paired/covariate designs, peak coordinates and complete tested-family provenance. Existing differential-testing defaults are unchanged.
+- Add RunLinkPeaks for native paired measured-RNA/ATAC associations with explicit pairing, reference metadata checks and protected native links.
 
 * **fix**: `CheckATACData()` determines fragment readiness from resources mapped to the selected assay cells, preserving inactive resources in its report after native subsetting.
 
 * **feature**: `ReadATACData()` and `ReadMultiomeData()` import existing raw peak and paired RNA counts through Signac/Seurat, preserving explicit feature and barcode alignment. `CheckATACData()` reports matrix/reference validity and external fragment availability without altering the object.
+* **feature**: ATAC `RunscDblFinder()` uses native feature aggregation and explicit capture/library groups, preserving RNA-only cells and recording native predictions and parameters. Input metadata comparisons ignore incidental fastmatch barcode-cache attributes, including those encountered with real multi-capture fragments.
 
-* **fix**: Document all SingleR marker selection and reference aggregation arguments without relying on optional-package documentation inheritance.
+* **fix**: `CheckATACData()` determines fragment readiness from resources mapped to the selected assay cells, preserving inactive resources in its report after native subsetting.
 
-* **fix**: Require thisutils 0.5.3 for the local verbosity API used by database preparation. Keep communication database delegation tests independent of Ensembl availability and verify Presto calls without replacing same-named Seurat methods.
+* **feature**: `RunATACQC()` supports explicit fragment-record FRiP over the current peak union and matched source columns, applies per-file barcode mappings, and rejects unavailable requested filtering metrics. Fragment totals count records rather than read support; blacklist ratios count each overlapping peak once.
+* **feature**: `AddATACMotifs()` also accepts final peak ranges without a count matrix, returning native motifs and aligned sequence statistics for reuse after recount.
 
-* **change**: Reuse the source build for Linux backend checks, skip article environment setup when no articles changed, and build reference pages without executing examples. CI uses dependency-aware caches and two installation workers; optional backend caches track resolved package revisions.
+* **feature**: `AddATACMotifs()` matches explicit motif matrices to a supplied sequence reference through Signac/motifmatchr, and `RunMotifEnrichment()` records the eligible universe and native foreground-inclusive enrichment population. Reference identity, sequence statistics, and peak/motif alignment are checked without downloading reference data.
 
-- Fix ATAC label transfer for query IDs containing `_query`, preserve caller RNG, and record actual anchor features and prediction columns. Reruns replace only recorded prior results; unrelated metadata are protected.
+* **fix**: `CheckATACData()` determines fragment readiness from resources mapped to the selected assay cells, preserving inactive resources in its report after native subsetting.
+
+* **feature**: `ReadATACData()` and `ReadMultiomeData()` import existing raw peak and paired RNA counts through Signac/Seurat, preserving explicit feature and barcode alignment. `CheckATACData()` reports matrix/reference validity and external fragment availability without altering the object.
 
 * **fix**: Require Rcpp >= 1.0.13 for source installation, preventing
   CellRank compilation failures with older headers that limit

@@ -42,6 +42,12 @@ Imports:
     utils,
     uwot
 Suggests:
+    IRanges,
+    Biostrings,
+    BSgenome,
+    motifmatchr,
+    TFBSTools,
+    chromVAR,
     ggforce,
     ComplexHeatmap,
     Signac,
@@ -130,6 +136,7 @@ Suggests:
     scDblFinder,
     decontX,
     edgeR,
+    statmod,
     scmap,
     SeuratData,
     stringr,

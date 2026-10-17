@@ -48,7 +48,9 @@ RunDEtest(object = NULL, ..., srt = NULL)
   seed = 11,
   verbose = TRUE,
   cores = 1,
-  ...
+  ...,
+  design = NULL,
+  contrast = NULL
 )
 
 \method{RunDEtest}{SummarizedExperiment}(
@@ -86,7 +88,9 @@ RunDEtest(object = NULL, ..., srt = NULL)
   seed = 11,
   verbose = TRUE,
   cores = 1,
-  ...
+  ...,
+  design = NULL,
+  contrast = NULL
 )
 }
 \arguments{
@@ -219,12 +223,54 @@ Default is \code{TRUE}.}
 
 \item{cores}{The number of worker processes to use for parallelization.
 Default is \code{1}.}
+
+\item{design}{Optional one-sided formula for sample-level \code{test.use = "edgeR"},
+evaluated using cell metadata aggregated by \code{sample_col}, or bulk \code{colData}.
+Supply together with \code{contrast}, using exact argument names. Available for
+RNA/gene and ATAC peak/cCRE inputs; omitted arguments preserve legacy behavior.
+Every formula variable must be constant
+within an aggregate sample. For paired cell types, use distinct donor-by-cell-type
+sample IDs and a donor block such as \code{~ donor + cell_type}. Missing combinations
+are never zero-filled. The model must have full rank and positive residual
+degrees of freedom, with at least two biological samples per selected condition.
+Formula \code{offset()} terms are not supported and are rejected explicitly.}
+
+\item{contrast}{Optional finite named numeric coefficient contrast for \code{design}.
+Names must match every fitted model-matrix column exactly, including zero-weight
+columns; order is aligned by name. Positive log-fold changes follow this vector,
+not necessarily \code{group2} versus \code{group1}. Only one condition pair is fitted per
+\code{group.by} level. Invalid explicit models fail rather than being skipped.}
 }
 \description{
 Perform differential expression testing on a \code{Seurat} object or a
 \code{SummarizedExperiment} bulk object.
 Users have the flexibility to specify custom cell groups, marker types, and
 various options for DE analysis.
+}
+\details{
+Without \code{design} and \code{contrast}, existing defaults and comparison behavior are
+unchanged. Explicit edgeR models use native \code{filterByExpr(design = ...)}, TMM
+normalization, dispersion estimation, \code{glmQLFit(robust = TRUE)}, and
+\code{glmQLFTest(contrast = ...)}. Both \code{p_val_adj} (the requested adjustment) and
+\code{p_val_BH} use the full tested feature universe before fold-change display
+filtering. Set \code{p.adjust.method = "BH"} to also use BH for \code{p_val_adj}; its
+default remains \code{"bonferroni"}. A fold-change display filter is not a
+minimum-effect-size hypothesis test.
+
+Seurat results retain one receipt per group under
+\code{object@tools[["DEtest_pseudobulk"]]$edgeR_models}, or
+\code{object@tools[[paste0("DEtest_", group.by)]]$edgeR_models}. Each receipt contains
+\code{full_results}, input/tested/filtered feature IDs, raw pseudobulk counts,
+sample metadata and cell membership, cell counts, library sizes, normalization
+factors, design matrix, contrast, direction, residual degrees of freedom and
+backend versions. Bulk receipts are under
+\code{S4Vectors::metadata(object)$DEtest$methods$de_edgeR_qlf$details$groups}, in each
+comparison's \code{details$edgeR_model} (without per-cell membership).
+Explicit \code{peak}/\code{cCRE} models require a \code{ChromatinAssay} or
+\code{RangedSummarizedExperiment}; full and displayed results include 1-based closed
+coordinates and supplied genome labels. No coordinates or count units are
+guessed from feature names. Cells and technical libraries must not be relabeled
+as independent biological replicates; metadata cannot establish independence.
 }
 \examples{
 data(pancreas_sub)
@@ -452,6 +498,39 @@ DEtestPlot(
   x_metric = "avg_log2FC",
   y_metric = "p_val"
 )
+
+# Explicit paired sample-level model (synthetic biological-sample counts).
+if (requireNamespace("edgeR", quietly = TRUE) &&
+  requireNamespace("statmod", quietly = TRUE)) {
+  local({
+    withr::local_preserve_seed()
+    set.seed(11)
+    samples <- data.frame(
+      donor = factor(rep(paste0("D", 1:4), each = 2)),
+      condition = factor(rep(c("control", "treated"), 4)),
+      row.names = paste0("sample", 1:8)
+    )
+    counts <- matrix(rnbinom(200 * 8, mu = 60, size = 12),
+      nrow = 200,
+      dimnames = list(paste0("gene", 1:200), rownames(samples))
+    )
+    bulk <- SummarizedExperiment::SummarizedExperiment(
+      assays = list(counts = counts), colData = samples
+    )
+    columns <- colnames(model.matrix(~ donor + condition, samples))
+    contrast <- setNames(rep(0, length(columns)), columns)
+    contrast["conditiontreated"] <- 1
+    fitted <- RunDEtest(bulk,
+      condition_col = "condition",
+      group1 = "control", group2 = "treated", test.use = "edgeR",
+      design = ~ donor + condition, contrast = contrast,
+      only.pos = FALSE, fc.threshold = 1, p.adjust.method = "BH", verbose = FALSE
+    )
+    results <- S4Vectors::metadata(fitted)$DEtest$results
+    stopifnot(all(results$p_val_BH >= 0 & results$p_val_BH <= 1))
+  })
+}
+# End explicit paired sample-level model.
 }
 \seealso{
 \link{VolcanoPlot}, \link{RunEnrichment}, \link{RunGSEA}, \link{GroupHeatmap}
