@@ -444,6 +444,7 @@ reference:
 - subtitle: "Gene Activity and Peak-Gene Associations"
   contents:
   - RunGeneActivity
+  - RunLinkPeaks
 
 - title: "Spatial Omics Analysis"
 
