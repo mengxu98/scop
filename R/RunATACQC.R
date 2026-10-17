@@ -218,7 +218,7 @@ RunATACQC <- function(
     if (length(problems)) log_message("{paste(problems, collapse = \" \")}", message_type = "error")
     atac_qc_ranges(blacklist, srt[[assay]], "Blacklist")
     counts <- SeuratObject::GetAssayData(srt, assay = assay, layer = "counts")
-    overlaps <- !is.na(GenomicRanges::findOverlaps(get_namespace_fun("Signac", "granges")(srt[[assay]]),
+    overlaps <- !is.na(GenomicRanges::findOverlaps(atac_backend_fun("Signac", "granges")(srt[[assay]]),
       blacklist,
       ignore.strand = TRUE, select = "first"
     ))
