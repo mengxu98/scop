@@ -1260,15 +1260,19 @@ scenicplus_regulon_tbl <- function(
 
 scenicplus_region_signatures <- function(eregulons, triplets, tf_gene, region_gene) {
   signed <- scenicplus_add_eregulon_signs(triplets, tf_gene, region_gene)
-  if (nrow(signed) == 0L) return(list())
+  if (nrow(signed) == 0L) {
+    return(list())
+  }
   keys <- paste0(signed$TF, "_direct_", signed$tf_sign, "/", signed$r2g_sign)
   out <- lapply(names(eregulons), function(name) {
     base <- sub("_\\([0-9]+g\\)$", "", name)
     unique(signed$region[keys == base & signed$gene %in% eregulons[[name]]])
   })
   keep <- lengths(out) > 0L
-  names(out) <- paste0(sub("_\\([0-9]+g\\)$", "", names(eregulons)),
-                        "_(", lengths(out), "r)")
+  names(out) <- paste0(
+    sub("_\\([0-9]+g\\)$", "", names(eregulons)),
+    "_(", lengths(out), "r)"
+  )
   out[keep]
 }
 
@@ -1363,7 +1367,9 @@ scenicplus_tf_gene_native <- function(
 }
 
 scenicplus_order_tf_edges <- function(adjacency, targets, regulators) {
-  if (nrow(adjacency) == 0L) return(adjacency)
+  if (nrow(adjacency) == 0L) {
+    return(adjacency)
+  }
   target_index <- match(adjacency[["target"]], targets)
   regulator_index <- match(adjacency[["TF"]], regulators)
   if (anyNA(target_index) || anyNA(regulator_index)) {

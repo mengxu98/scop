@@ -198,14 +198,6 @@ TF color. The default legend includes each TF's top RSS group when available.}
 
 \item{network_label_top_n}{Max automatic or TF labels in \code{"network_graph"}. Highlighted TFs are always included, except with \code{label_nodes = "none"}. TF legends with more than 20 entries are omitted; full annotations are returned in \code{plot_data$annotations}.}
 
-\item{network_display_targets}{Optional display limit per focal TF in \code{"network_graph"}. The default \code{Inf}
-displays the full network. Use \code{6} to show six direct targets per TF by
-absolute edge weight, together with
-all shared targets and TF-to-TF links. Selected regions retain their downstream
-genes. \code{plot_data$edges} and
-\code{plot_data$nodes} retain the network selected by \code{max_targets} and \code{max_edges};
-the actual display subset is in \code{plot_data$display_edges} and \code{plot_data$display_nodes}.}
-
 \item{combine}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE} returns a list of ggplots.}
 
 \item{ncol}{Number of columns of the combined plot.}
@@ -245,6 +237,14 @@ will be removed in scop 1.0.0.}
 will be removed in scop 1.0.0.}
 
 \item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
+
+\item{network_display_targets}{Optional display limit per focal TF in \code{"network_graph"}. The default \code{Inf}
+displays the full network. Use \code{6} to show six direct targets per TF by
+absolute edge weight, together with
+all shared targets and TF-to-TF links. Selected regions retain their downstream
+genes. \code{plot_data$edges} and
+\code{plot_data$nodes} retain the network selected by \code{max_targets} and \code{max_edges};
+the actual display subset is in \code{plot_data$display_edges} and \code{plot_data$display_nodes}.}
 }
 \value{
 Plot, or a list with \code{rss_matrix}, \code{rank_table}, \code{top_table}, \code{plots}, and \code{plot} when \code{return_data = TRUE}.
