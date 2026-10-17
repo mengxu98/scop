@@ -1,5 +1,4 @@
 #' @import thisutils thisplot
-#' @importFrom Seurat IntegrateEmbeddings
 #' @importFrom SeuratObject AddMetaData CreateAssayObject CreateDimReducObject
 #'   DefaultAssay DefaultAssay<- Embeddings FetchData Idents Idents<-
 #' @importFrom ggplot2 .pt aes after_stat alpha annotate coord_cartesian coord_flip
@@ -21,16 +20,11 @@
 #'   theme_bw theme_classic theme_dark theme_gray theme_grey theme_light
 #'   theme_linedraw theme_minimal theme_test theme_void
 #'   xlab ylab
-#' @importFrom ComplexHeatmap %v%
 #' @importFrom ggrepel GeomTextRepel
-#' @importFrom Signac RunSVD
-#' @importFrom ggforce geom_mark_ellipse geom_mark_hull geom_mark_rect geom_mark_circle
 #' @importFrom dplyr "%>%" %>% .data
 #' @importFrom grDevices as.raster
 #' @importFrom methods slot
-#' @importFrom splines bs
 #' @importFrom Rcpp evalCpp
-#' @importFrom RcppParallel RcppParallelLibs
 #' @importFrom stats ave density median model.matrix p.adjust setNames
 #' @importFrom utils getFromNamespace head
 #' @export

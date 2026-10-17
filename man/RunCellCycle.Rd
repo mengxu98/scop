@@ -58,6 +58,7 @@ or \href{https://bioconductor.org/packages/tricycle}{tricycle}.
 data(pancreas_sub)
 srt <- pancreas_sub[, 1:80]
 
+\dontrun{
 srt <- RunCellCycle(
   srt,
   method = "cyclone",
@@ -71,16 +72,15 @@ srt <- RunCellCycle(
   species = "Mus_musculus",
   name = "Tricycle"
 )
-if ("Cyclone_cyclone_Phase" \%in\% colnames(srt@meta.data)) {
-  CellDimPlot(
-    srt,
-    reduction = "Tricycle_tricycleEmbedding",
-    group.by = "Cyclone_cyclone_Phase"
-  )
-}
+CellDimPlot(
+  srt,
+  reduction = "Tricycle_tricycleEmbedding",
+  group.by = "Cyclone_cyclone_Phase"
+)
 FeatureDimPlot(
   srt,
   reduction = "Tricycle_tricycleEmbedding",
   features = "Tricycle_tricyclePosition"
 )
+}
 }

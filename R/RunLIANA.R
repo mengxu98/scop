@@ -1332,8 +1332,8 @@ ccc_aggregate_liana_table <- function(out, sample_col = NULL, backend = c("cpp",
       if (has_sample) {
         remaining_cols <- setdiff(remaining_cols, sample_col)
       }
-      key_vals <- do.call(paste, c(out[key_cols], sep = "\r"))
-      cpp_keys <- do.call(paste, c(cpp_result[key_cols], sep = "\r"))
+      key_vals <- do.call(paste, c(unname(out[key_cols]), sep = "\r"))
+      cpp_keys <- do.call(paste, c(unname(cpp_result[key_cols]), sep = "\r"))
       key_to_idx <- match(cpp_keys, key_vals)
       for (col in remaining_cols) {
         if (col %in% colnames(cpp_result)) next
@@ -1352,7 +1352,7 @@ ccc_aggregate_liana_table <- function(out, sample_col = NULL, backend = c("cpp",
       return(cpp_result)
     }
   }
-  key <- do.call(paste, c(out[key_cols], sep = "\r"))
+  key <- do.call(paste, c(unname(out[key_cols]), sep = "\r"))
   split_idx <- split(seq_len(nrow(out)), key, drop = TRUE)
   pieces <- lapply(split_idx, function(idx) {
     x <- out[idx, , drop = FALSE]

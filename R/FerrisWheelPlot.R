@@ -134,6 +134,8 @@ FerrisWheelPlot <- function(
   theme_use = "theme_scop",
   theme_args = list()
 ) {
+  check_r("ggforce", verbose = FALSE)
+
   legend.position <- match.arg(legend.position)
   label_case <- match.arg(label_case)
   if (is.null(data) && is.null(res)) {
@@ -378,7 +380,7 @@ FerrisWheelPlot <- function(
       linewidth = line.linewidth,
       color = line.color
     ) +
-    ggforce::geom_arc_bar(
+    get_namespace_fun("ggforce", "geom_arc_bar")(
       data = arc_df,
       ggplot2::aes(
         x0 = .data$x0,

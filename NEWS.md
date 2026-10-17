@@ -2,6 +2,56 @@
 
 * **fix**: Read startup metadata from the loaded namespace so development loading preserves the Logo, version, date and website without requiring an installed copy.
 
+* **refactor**: Simplify fixed-argument plotting and backend calls, and use
+  ordinary matrix binding in Scanorama integration while preserving argument
+  values, matrix names and projection results.
+
+* **feature**: `FeatureDimPlot()` supports contour-only plots with
+  `show_points = FALSE`. For unblended features, `add_density = TRUE` colors
+  density contours or smooth surfaces by local mean expression. Point values
+  and their color scale remain unchanged when adding these layers. Expression
+  surfaces inherit the feature palette unless fill colors are supplied.
+  Explicit `density_color` and blended-feature calls retain the original
+  cell-density layers, including filled bands. `CellDimPlot()` continues
+  to display cell-distribution density. Split panels and shared scales remain
+  supported.
+* **fix**: `CellDimPlot()` pads density grids beyond the cell coordinates so
+  outer contours close without clipping. Density lines use major and minor
+  widths, cell-density fills use vector bands with fine contours, and
+  feature-expression surfaces fade at low-support edges with fine contours.
+
+* **docs**: Use direct package calls in examples, remove redundant availability
+  guards, and mark optional or external-resource recipes explicitly. Preserve
+  interactive dataset and Monocle examples and regenerate affected help topics.
+
+* **refactor**: Remove the unused qlcMatrix dependency from CSS integration.
+  Load CytoTRACE2 models once per run without retaining package-wide model
+  state; preserve optional analysis backends and downloaded model resources.
+
+* **fix**: Read raw metabolism GMT files from the data mirror without requiring
+  the scMetabolism package, and perform gene conversion without a package-wide
+  result cache. Use explicit renv snapshots so optional backends outside
+  DESCRIPTION, including SpaTalk, are prepared only when needed.
+
+* **refactor**: Load Signac, ComplexHeatmap and ggforce only when ATAC
+  analysis, heatmap rendering or specialized plot layers need them. Check and
+  install optional packages on first use with `check_r()`. Remove unused
+  splines, RcppAnnoy, RcppParallel and R tensorflow dependencies and TBB build
+  flags; retain Python TensorFlow environment preparation and OpenMP support.
+
+* **fix**: Preserve canonical Seurat command names and separate command history
+  entries in fallback normalization, scaling, variable-feature selection and
+  integration. Keep dynamic PCA and neighbor commands compact without
+  embedding the input object in log text.
+* **fix**: Treat metadata column names as data when constructing metacell groups
+  and LIANA sample keys, including names shared with function options.
+* **perf**: Avoid expanding complete vectors into correlation-test descriptions
+  in gene-immune and SCENIC plots while retaining the same statistics.
+
+* **fix**: Restore sparse count storage after `RecoverCounts(trans = "exp")`
+  exponentiation so count recovery can handle dense Matrix results and
+  implicit zeros correctly.
+
 * **fix**: Restore the package startup Logo, version, update date and website.
   Startup messages still respect verbosity settings and `suppressPackageStartupMessages()`.
 

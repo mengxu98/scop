@@ -90,17 +90,17 @@ head(
 )
 
 # Annotate features using a GTF file
-gtf_file <- "/refdata-gex-mm10-2020-A/genes/genes.gtf"
-if (file.exists(gtf_file)) {
-  pancreas_sub <- AnnotateFeatures(
-    pancreas_sub,
-    gtf = gtf_file
+gtf_file <- "path/to/genes.gtf"
+\dontrun{
+pancreas_sub <- AnnotateFeatures(
+  pancreas_sub,
+  gtf = gtf_file
+)
+head(
+  GetFeaturesData(
+    pancreas_sub
   )
-  head(
-    GetFeaturesData(
-      pancreas_sub
-    )
-  )
+)
 }
 }
 \seealso{
