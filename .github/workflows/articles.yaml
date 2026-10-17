@@ -98,6 +98,8 @@ jobs:
             github::immunogenomics/harmony
             github::cole-trapnell-lab/monocle3
             github::satijalab/seurat-data
+            # Optional SeuratData mapping support is not used by these articles.
+            Azimuth=?ignore
             pryr=?ignore
             bioc::org.Mm.eg.db
             bioc::GO.db
