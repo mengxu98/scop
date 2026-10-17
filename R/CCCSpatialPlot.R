@@ -450,6 +450,7 @@ ccc_spatial_network_plot <- function(
   }
   p <- ggplot2::ggplot()
   if (!is.null(stored$payload$composition) && identical(composition_display, "pie")) {
+    check_r("ggforce", verbose = FALSE)
     radius <- composition_radius %||% ccc_spatial_auto_radius(coords)
     if (length(radius) != 1L || !is.finite(radius) || radius <= 0) {
       log_message("{.arg composition_radius} must be one positive finite display-coordinate value", message_type = "error")
@@ -473,7 +474,7 @@ ccc_spatial_network_plot <- function(
       }
     }
     pies <- do.call(rbind, pie_rows)
-    p <- p + ggforce::geom_arc_bar(
+    p <- p + get_namespace_fun("ggforce", "geom_arc_bar")(
       data = pies,
       ggplot2::aes(
         x0 = .data[["x0"]], y0 = .data[["y0"]], r0 = .data[["r0"]],

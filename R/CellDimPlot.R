@@ -33,7 +33,9 @@
 #' @param label_repel,label_repulsion,label_point_size,label_point_color,label_segment_color
 #' Repel labels away from cluster centers.
 #' @param add_density,density_color,density_filled,density_filled_palette,density_filled_palcolor
-#' Density contours; `density_filled` draws filled bands.
+#' Density contours on a grid padded by three Gaussian bandwidths to avoid
+#' clipping. Lines use major and minor widths; `density_filled` draws
+#' filled density bands with fine contour lines.
 #' @param add_mark,mark_type,mark_expand,mark_alpha,mark_linetype,mark_linewidth,mark_border
 #' Marks around groups. `mark_type` is `"hull"`, `"ellipse"`, `"rect"`, or `"circle"`.
 #' `mark_border = NULL` uses group colors.
@@ -233,6 +235,35 @@
 #'   density_filled = TRUE,
 #'   density_filled_palette = "Blues",
 #'   cells.highlight = TRUE
+#' )
+#'
+#' CellDimPlot(
+#'   pancreas_sub,
+#'   group.by = "SubCellType",
+#'   reduction = "UMAP",
+#'   add_density = TRUE,
+#'   pt.alpha = 0,
+#'   density_color = "#416C7D",
+#'   theme_use = "theme_blank",
+#'   xlab = "UMAP_1",
+#'   ylab = "UMAP_2",
+#'   legend.position = "none"
+#' )
+#'
+#' CellDimPlot(
+#'   pancreas_sub,
+#'   group.by = "SubCellType",
+#'   reduction = "UMAP",
+#'   add_density = TRUE,
+#'   pt.alpha = 0,
+#'   density_filled = TRUE,
+#'   density_color = "#355D71",
+#'   density_filled_palcolor = c("#F2F7F5", "#C5DFD8", "#89BDB5",
+#'                              "#4A969E", "#286B87", "#253D63"),
+#'   theme_use = "theme_blank",
+#'   xlab = "UMAP_1",
+#'   ylab = "UMAP_2",
+#'   legend.position = "none"
 #' )
 #'
 #' # Add statistical charts
@@ -898,6 +929,26 @@ CellDimPlot <- function(
     stringsAsFactors = FALSE
   )
   rownames(comb) <- paste0(comb[["split"]], ":", comb[["group"]])
+  dim_names <- paste0(reduction_key, dims[1:2])
+  plot_limits <- lapply(dim_names, function(d) range(dat_dim[, d], na.rm = TRUE))
+  if (isTRUE(add_density)) {
+    panels <- if (isFALSE(show_na)) lapply(seq_len(nrow(comb)), function(i) {
+      dat_use[which(dat_use[[split.by]] == comb$split[i] &
+                      !is.na(dat_use[[comb$group[i]]])), , drop = FALSE]
+    }) else list(dat_use)
+    for (panel in panels) {
+      panel <- panel[is.finite(panel[[dim_names[1]]]) &
+                       is.finite(panel[[dim_names[2]]]), , drop = FALSE]
+      if (nrow(panel) < 2L) next
+      for (j in seq_along(dim_names)) {
+        values <- panel[[dim_names[j]]]
+        bandwidth <- stats::bw.nrd(values)
+        if (is.finite(bandwidth) && bandwidth > 0) {
+          plot_limits[[j]] <- range(plot_limits[[j]], range(values) + c(-3, 3) * bandwidth)
+        }
+      }
+    }
+  }
   plist <- lapply(
     stats::setNames(rownames(comb), rownames(comb)), function(i) {
       g <- comb[i, "group"]
@@ -982,6 +1033,7 @@ CellDimPlot <- function(
       }
 
       if (isTRUE(add_mark)) {
+        check_r("ggforce", verbose = FALSE)
         mark_fun <- switch(
           EXPR = mark_type,
           "ellipse" = "geom_mark_ellipse",
@@ -1031,7 +1083,7 @@ CellDimPlot <- function(
         if (!is.null(mark_border)) {
           mark_args[["colour"]] <- mark_border
         }
-        mark <- c(list(do.call(mark_fun, mark_args)), mark_scales)
+        mark <- c(list(do.call(get_namespace_fun("ggforce", mark_fun), mark_args)), mark_scales)
       } else {
         mark <- NULL
       }
@@ -1068,16 +1120,10 @@ CellDimPlot <- function(
         density +
         labs(title = title, subtitle = subtitle_use, x = xlab, y = ylab) +
         scale_x_continuous(
-          limits = c(
-            min(dat_dim[, paste0(reduction_key, dims[1])], na.rm = TRUE),
-            max(dat_dim[, paste0(reduction_key, dims[1])], na.rm = TRUE)
-          )
+          limits = plot_limits[[1L]]
         ) +
         scale_y_continuous(
-          limits = c(
-            min(dat_dim[, paste0(reduction_key, dims[2])], na.rm = TRUE),
-            max(dat_dim[, paste0(reduction_key, dims[2])], na.rm = TRUE)
-          )
+          limits = plot_limits[[2L]]
         ) +
         apply_plot_theme(theme_use, theme_args) +
         theme(
@@ -1563,31 +1609,37 @@ dim_plot_density_layers <- function(
   if (!isTRUE(add_density)) {
     return(NULL)
   }
-  if (!isTRUE(density_filled)) {
-    return(
-      geom_density_2d(
-        aes(x = .data[["x"]], y = .data[["y"]]),
-        color = density_color,
-        inherit.aes = FALSE,
-        show.legend = line_show_legend
-      )
-    )
-  }
-
+  lines <- geom_density_2d(
+    aes(x = .data[["x"]], y = .data[["y"]],
+        linewidth = after_stat(I(ifelse(
+          round((.data[["level"]] - 0.08) / 0.105) %% 3 == 0, 0.75, 0.32
+        )))),
+    n = 240L, contour_var = "ndensity", breaks = seq(0.08, 0.92, length.out = 9L),
+    color = density_color, lineend = "round", linejoin = "round",
+    inherit.aes = FALSE, show.legend = line_show_legend
+  )
+  if (!isTRUE(density_filled)) return(lines)
   filled_color <- palette_colors(
     palette = density_filled_palette,
     palcolor = density_filled_palcolor
   )
   list(
-    stat_density_2d(
-      geom = "raster",
-      aes(x = .data[["x"]], y = .data[["y"]], fill = after_stat(density)),
-      contour = FALSE,
-      inherit.aes = FALSE,
-      show.legend = FALSE
+    ggplot2::geom_density_2d_filled(
+      aes(x = .data[["x"]], y = .data[["y"]], fill = after_stat(.data[["level_mid"]])),
+      n = 240L, contour_var = "ndensity",
+      breaks = c(0.02, seq(0.08, 0.92, length.out = 9L), 1 + 1e-8),
+      inherit.aes = FALSE, show.legend = FALSE
     ),
-    scale_fill_gradientn(name = "Density", colours = filled_color),
-    ggnewscale::new_scale_fill()
+    ggplot2::scale_fill_stepsn(name = "Density", colours = filled_color, limits = c(0, 1),
+                             guide = ggplot2::guide_coloursteps()),
+    ggnewscale::new_scale_fill(),
+    geom_density_2d(
+      aes(x = .data[["x"]], y = .data[["y"]]),
+      n = 240L, contour_var = "ndensity", breaks = seq(0.08, 0.88, length.out = 6L),
+      color = density_color, linewidth = 0.24, alpha = 0.42,
+      lineend = "round", linejoin = "round", inherit.aes = FALSE,
+      show.legend = FALSE
+    )
   )
 }
 

@@ -52,8 +52,7 @@
 #'   pancreas_sub$SubCellType <- gsub(" ", "-", pancreas_sub$SubCellType)
 #'   pancreas_sub@reductions$X_pca <- NULL
 #'   pancreas_sub@reductions$X_umap <- NULL
-#'   use_data <- thisutils::get_namespace_fun("usethis", "use_data")
-#'   use_data(
+#'   usethis::use_data(
 #'     pancreas_sub,
 #'     compress = "xz",
 #'     overwrite = TRUE
@@ -82,8 +81,7 @@ NULL
 #' if (interactive()) {
 #'   data(pancreas_sub)
 #'
-#'   InstallData <- thisutils::get_namespace_fun("SeuratData", "InstallData")
-#'   InstallData("panc8")
+#'   SeuratData::InstallData("panc8")
 #'   data(panc8)
 #'   panc8 <- UpdateSeuratObject(panc8)
 #'   set.seed(98)
@@ -110,8 +108,7 @@ NULL
 #'   ), ]
 #'   panc8_sub$celltype <- gsub("_", "-", panc8_sub$celltype)
 #'   panc8_sub$celltype <- gsub(" ", "-", panc8_sub$celltype)
-#'   use_data <- thisutils::get_namespace_fun("usethis", "use_data")
-#'   use_data(
+#'   usethis::use_data(
 #'     panc8_sub,
 #'     compress = "xz",
 #'     overwrite = TRUE
@@ -141,8 +138,7 @@ NULL
 #'
 #' @examples
 #' if (interactive()) {
-#'   InstallData <- thisutils::get_namespace_fun("SeuratData", "InstallData")
-#'   InstallData("pbmcMultiome")
+#'   SeuratData::InstallData("pbmcMultiome")
 #'   data(pbmcMultiome)
 #'   pbmcMultiome <- UpdateSeuratObject(pbmcMultiome)
 #'
@@ -163,8 +159,7 @@ NULL
 #'   genes_keep <- names(Matrix::rowSums(rna_counts))[Matrix::rowSums(rna_counts) >= 10]
 #'   pbmcmultiome_sub <- subset(pbmcmultiome_sub, features = c(genes_keep, peaks_keep))
 #'
-#'   use_data <- thisutils::get_namespace_fun("usethis", "use_data")
-#'   use_data(
+#'   usethis::use_data(
 #'     pbmcmultiome_sub,
 #'     compress = "xz",
 #'     overwrite = TRUE
@@ -276,8 +271,7 @@ NULL
 #'   spatial <- spatial[genes_keep, ]
 #'   spatial$feature_selection <- "top_5000_shared_with_panc8_by_spatial_counts"
 #'
-#'   use_data <- thisutils::get_namespace_fun("usethis", "use_data")
-#'   use_data(
+#'   usethis::use_data(
 #'     spatial,
 #'     compress = "xz",
 #'     overwrite = TRUE
@@ -370,8 +364,7 @@ NULL
 #'     "regulation", "regulated", "positive", "negative",
 #'     "response", "process", "processing", "small", "large", "change"
 #'   )
-#'   use_data <- thisutils::get_namespace_fun("usethis", "use_data")
-#'   use_data(words_excluded, compress = "xz")
+#'   usethis::use_data(words_excluded, compress = "xz")
 #' }
 #' @name words_excluded
 NULL
@@ -385,7 +378,7 @@ NULL
 #'   ref_scMCA <- NormalizeData(get("ref.expr", envir = asNamespace("scMCA")))
 #'   Encoding(colnames(ref_scMCA)) <- "latin1"
 #'   colnames(ref_scMCA) <- iconv(colnames(ref_scMCA), "latin1", "UTF-8")
-#'   # thisutils::get_namespace_fun("usethis", "use_data")(ref_scMCA, compress = "xz")
+#'   # usethis::use_data(ref_scMCA, compress = "xz")
 #' }
 #' @name ref_scMCA
 NULL
