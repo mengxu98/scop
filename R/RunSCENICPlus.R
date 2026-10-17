@@ -1260,15 +1260,19 @@ scenicplus_regulon_tbl <- function(
 
 scenicplus_region_signatures <- function(eregulons, triplets, tf_gene, region_gene) {
   signed <- scenicplus_add_eregulon_signs(triplets, tf_gene, region_gene)
-  if (nrow(signed) == 0L) return(list())
+  if (nrow(signed) == 0L) {
+    return(list())
+  }
   keys <- paste0(signed$TF, "_direct_", signed$tf_sign, "/", signed$r2g_sign)
   out <- lapply(names(eregulons), function(name) {
     base <- sub("_\\([0-9]+g\\)$", "", name)
     unique(signed$region[keys == base & signed$gene %in% eregulons[[name]]])
   })
   keep <- lengths(out) > 0L
-  names(out) <- paste0(sub("_\\([0-9]+g\\)$", "", names(eregulons)),
-                        "_(", lengths(out), "r)")
+  names(out) <- paste0(
+    sub("_\\([0-9]+g\\)$", "", names(eregulons)),
+    "_(", lengths(out), "r)"
+  )
   out[keep]
 }
 
@@ -1363,7 +1367,9 @@ scenicplus_tf_gene_native <- function(
 }
 
 scenicplus_order_tf_edges <- function(adjacency, targets, regulators) {
-  if (nrow(adjacency) == 0L) return(adjacency)
+  if (nrow(adjacency) == 0L) {
+    return(adjacency)
+  }
   target_index <- match(adjacency[["target"]], targets)
   regulator_index <- match(adjacency[["TF"]], regulators)
   if (anyNA(target_index) || anyNA(regulator_index)) {
@@ -1763,8 +1769,10 @@ scenicplus_tfr_motifs <- function(
   peak_names,
   max_tf_region = 500
 ) {
+  check_r("Signac", verbose = FALSE)
+
   motif_mat <- tryCatch(
-    Signac::GetMotifData(object = srt[[atac_assay]], slot = "data"),
+    get_namespace_fun("Signac", "GetMotifData")(object = srt[[atac_assay]], slot = "data"),
     error = function(...) NULL
   )
   if (is.null(motif_mat) || nrow(motif_mat) == 0L || ncol(motif_mat) == 0L) {
@@ -1794,7 +1802,7 @@ scenicplus_tfr_motifs <- function(
   }
 
   motif_names <- tryCatch(
-    Signac::GetMotifData(object = srt[[atac_assay]], slot = "motif.names"),
+    get_namespace_fun("Signac", "GetMotifData")(object = srt[[atac_assay]], slot = "motif.names"),
     error = function(...) NULL
   )
   if (is.null(motif_names) || length(motif_names) == 0L) {
@@ -1851,8 +1859,10 @@ scenicplus_tfr_motifs <- function(
 }
 
 scenicplus_peak_ranges <- function(peak_names) {
+  check_r("Signac", verbose = FALSE)
+
   peaks <- tryCatch(
-    Signac::StringToGRanges(peak_names, sep = c("-", "-")),
+    get_namespace_fun("Signac", "StringToGRanges")(peak_names, sep = c("-", "-")),
     error = function(err) {
       log_message(
         "Cannot parse ATAC peak names as genomic ranges: {conditionMessage(err)}",
@@ -1865,8 +1875,10 @@ scenicplus_peak_ranges <- function(peak_names) {
 }
 
 scenicplus_gene_ranges <- function(srt, atac_assay, genes_use) {
+  check_r("Signac", verbose = FALSE)
+
   check_r(c("GenomicRanges", "IRanges"), verbose = FALSE)
-  annotation <- Signac::Annotation(srt[[atac_assay]])
+  annotation <- get_namespace_fun("Signac", "Annotation")(srt[[atac_assay]])
   if (is.null(annotation) || length(annotation) == 0L) {
     log_message(
       "{.fn RunSCENICPlus} requires gene annotations on the chromatin assay",

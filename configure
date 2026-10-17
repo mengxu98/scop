@@ -1,18 +1,7 @@
 #!/bin/sh
 
-# scop configure script
-# Detects RcppParallel flags and optional OpenMP paths.
-# Generates src/Makevars from src/Makevars.in.
-
 R_HOME=${R_HOME:-$(R RHOME 2>/dev/null || echo "/Library/Frameworks/R.framework/Resources")}
-RSCRIPT="${R_HOME}/bin/Rscript"
-
-# RcppParallel flags
-RCPP_PARALLEL_CXXFLAGS=$("${RSCRIPT}" --vanilla -e "cat(RcppParallel::CxxFlags())" 2>/dev/null || echo "")
-RCPP_PARALLEL_LIBS=$("${RSCRIPT}" --vanilla -e "cat(RcppParallel::LdFlags())" 2>/dev/null || echo "")
-
-# RcppParallel library dir for rpath
-RCPP_PARALLEL_LIBDIR=$("${RSCRIPT}" --vanilla -e "cat(system.file('lib', package='RcppParallel'))" 2>/dev/null || echo "")
+OMP_CXXFLAGS=""
 
 # Darwin OpenMP detection (Homebrew libomp)
 OMP_LIBS=""
@@ -38,7 +27,7 @@ if [ "$(uname -s)" = "Darwin" ]; then
     HAS_OMP_CXXFLAGS=$(echo 'SHLIB_OPENMP_CXXFLAGS' | "${R_HOME}/bin/R" --no-save --no-restore -s -e 'cat(Sys.getenv("SHLIB_OPENMP_CXXFLAGS"))' 2>/dev/null || echo "")
     if [ -z "$HAS_OMP_CXXFLAGS" ]; then
       # R doesn't provide SHLIB_OPENMP_CXXFLAGS — add Darwin-specific flags
-      RCPP_PARALLEL_CXXFLAGS="$RCPP_PARALLEL_CXXFLAGS -Xclang -fopenmp -I$OMP_INCLUDE_DIR"
+      OMP_CXXFLAGS="-Xclang -fopenmp -I$OMP_INCLUDE_DIR"
     fi
     # For linking: always add the Darwin libomp path if R's default path is different
     if [ -f "${R_HOME}/lib/libomp.dylib" ]; then
@@ -51,13 +40,10 @@ fi
 
 # Substitute placeholders in Makevars.in -> Makevars
 sed \
-  -e "s|@RCPP_PARALLEL_CXXFLAGS@|${RCPP_PARALLEL_CXXFLAGS}|g" \
-  -e "s|@RCPP_PARALLEL_LIBS@|${RCPP_PARALLEL_LIBS}|g" \
-  -e "s|@RCPP_PARALLEL_LIBDIR@|${RCPP_PARALLEL_LIBDIR}|g" \
+  -e "s|@OMP_CXXFLAGS@|${OMP_CXXFLAGS}|g" \
   -e "s|@R_HOME@|${R_HOME}|g" \
   -e "s|@OMP_LIBS@|${OMP_LIBS}|g" \
   src/Makevars.in > src/Makevars
 
-echo "scop configure: RcppParallel CXXFLAGS = ${RCPP_PARALLEL_CXXFLAGS}"
-echo "scop configure: RcppParallel LIBS    = ${RCPP_PARALLEL_LIBS}"
+echo "scop configure: OMP_CXXFLAGS         = ${OMP_CXXFLAGS}"
 echo "scop configure: OMP_LIBS             = ${OMP_LIBS}"

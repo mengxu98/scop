@@ -48,7 +48,7 @@ jobs:
         env:
           GITHUB_PAT: ${{ github.token }}
         with:
-          extra-packages: any::rcmdcheck, any::testthat, any::callr, any::ps, github::immunogenomics/presto, bioc::speckle, bioc::glmGamPoi
+          extra-packages: any::rcmdcheck, any::testthat, any::callr, any::ps, github::immunogenomics/presto, bioc::speckle, bioc::glmGamPoi, any::Signac, bioc::ComplexHeatmap, any::ggforce
           needs: check
           dependencies: '"hard"'
 

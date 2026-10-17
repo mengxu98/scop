@@ -18,9 +18,9 @@
 #' provides species-aware gene mapping via BioMart and KEGG/Reactome databases.
 #' This automatically handles gene symbol conversion for non-human species
 #' (e.g., `species = "Mus_musculus"` → mouse gene symbols in metabolism pathways).
-#' When `FALSE`, raw scMetabolism GMT files are
-#' downloaded and genes are matched case-insensitively with optional [GeneConvert]
-#' supplementation when `convert_species = TRUE`.
+#' When `FALSE`, raw scMetabolism GMT files are downloaded from the data mirror;
+#' the scMetabolism R package is not required. Genes are matched case-insensitively
+#' with optional [GeneConvert] supplementation when `convert_species = TRUE`.
 #' @param cpp_chunk_size Optional cell chunk size for C++ GSVA kernels. `NULL`
 #' or `"auto"` automatically chunks large matrices to reduce peak dense
 #' intermediate memory; positive values set the chunk size manually.
@@ -319,9 +319,12 @@ RunMetabolism <- function(
         verbose = verbose
       )
       conv <- tryCatch(
-        scmetabolism_convert_genes(
-          all_human_genes = all_human_genes,
-          species = species,
+        GeneConvert(
+          geneID = all_human_genes,
+          geneID_from_IDtype = "symbol",
+          geneID_to_IDtype = "symbol",
+          species_from = "Homo_sapiens",
+          species_to = species,
           Ensembl_version = Ensembl_version,
           biomart = biomart,
           mirror = mirror,
@@ -617,70 +620,10 @@ RunMetabolism <- function(
 }
 
 scmetabolism_gmt_sources <- function() {
-  urls <- c(
+  c(
     KEGG = "https://raw.githubusercontent.com/mengxu98/datasets/main/scMetabolism/KEGG_metabolism_nc.gmt",
     Reactome = "https://raw.githubusercontent.com/mengxu98/datasets/main/scMetabolism/REACTOME_metabolism.gmt"
   )
-  local <- c(
-    KEGG = system.file(
-      "data",
-      "KEGG_metabolism_nc.gmt",
-      package = "scMetabolism"
-    ),
-    Reactome = system.file(
-      "data",
-      "REACTOME_metabolism.gmt",
-      package = "scMetabolism"
-    )
-  )
-  out <- urls
-  use_local <- file.exists(local) & nzchar(local)
-  out[use_local] <- local[use_local]
-  out
-}
-
-.scmetabolism_conversion_cache <- new.env(parent = emptyenv())
-
-scmetabolism_convert_genes <- function(
-  all_human_genes,
-  species,
-  Ensembl_version = NULL,
-  biomart = NULL,
-  mirror = NULL,
-  max_tries = 5,
-  verbose = TRUE
-) {
-  all_human_genes <- unique(as.character(all_human_genes))
-  cache_key <- paste(
-    c(
-      species,
-      Ensembl_version %||% "",
-      biomart %||% "",
-      mirror %||% "",
-      as.character(max_tries),
-      all_human_genes
-    ),
-    collapse = "\r"
-  )
-  if (exists(cache_key, envir = .scmetabolism_conversion_cache, inherits = FALSE)) {
-    return(get(cache_key, envir = .scmetabolism_conversion_cache, inherits = FALSE))
-  }
-  conversion <- GeneConvert(
-    geneID = all_human_genes,
-    geneID_from_IDtype = "symbol",
-    geneID_to_IDtype = "symbol",
-    species_from = "Homo_sapiens",
-    species_to = species,
-    Ensembl_version = Ensembl_version,
-    biomart = biomart,
-    mirror = mirror,
-    max_tries = max_tries,
-    verbose = verbose
-  )
-  if (!is.null(conversion)) {
-    assign(cache_key, conversion, envir = .scmetabolism_conversion_cache)
-  }
-  conversion
 }
 
 load_scmetabolism_gmt <- function(source, db_name, verbose = TRUE) {

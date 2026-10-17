@@ -173,6 +173,8 @@ cnv_plot_heatmap <- function(
   use_raster = TRUE,
   ...
 ) {
+  check_r("ComplexHeatmap", verbose = FALSE)
+
   check_r("circlize", verbose = FALSE)
   mat <- cnv_require_matrix(bundle)
   cells <- intersect(colnames(mat), colnames(srt))
@@ -213,7 +215,7 @@ cnv_plot_heatmap <- function(
     cells <- cells[group_order]
     mat <- mat[, cells, drop = FALSE]
     group_values <- group_values[group_order]
-    top_annotation <- ComplexHeatmap::HeatmapAnnotation(
+    top_annotation <- get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation")(
       group = group_values,
       col = list(group = cnv_discrete_colors(group_values, palette = palette, palcolor = palcolor)),
       show_annotation_name = TRUE
@@ -230,7 +232,7 @@ cnv_plot_heatmap <- function(
     seq(-1, 1, length.out = length(colors)),
     colors
   )
-  ComplexHeatmap::Heatmap(
+  get_namespace_fun("ComplexHeatmap", "Heatmap")(
     mat,
     name = paste0(method, " CNV"),
     col = col_fun,

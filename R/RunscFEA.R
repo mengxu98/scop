@@ -442,6 +442,8 @@ scFEAHeatmap <- function(
   verbose = TRUE,
   srt = NULL
 ) {
+  check_r("ComplexHeatmap", verbose = FALSE)
+
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   borders <- prepare_heatmap_borders(
     border = border,
@@ -553,7 +555,7 @@ scFEAHeatmap <- function(
       palette = feature_split_palette,
       palcolor = feature_split_palcolor
     )
-    left_annotation <- ComplexHeatmap::rowAnnotation(
+    left_annotation <- get_namespace_fun("ComplexHeatmap", "rowAnnotation")(
       SM_anno = sm_anno,
       col = list(SM_anno = sm_cols),
       show_annotation_name = FALSE,
@@ -583,7 +585,7 @@ scFEAHeatmap <- function(
     )
     group_df <- data.frame(group = colnames(plot_mat), check.names = FALSE)
     colnames(group_df) <- group.by
-    top_annotation <- ComplexHeatmap::HeatmapAnnotation(
+    top_annotation <- get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation")(
       df = group_df,
       col = stats::setNames(list(group_cols), group.by),
       show_annotation_name = FALSE,
@@ -630,8 +632,8 @@ scFEAHeatmap <- function(
       } else if (is.numeric(mark_annotation_width)) {
         mark_annotation_width <- grid::unit(mark_annotation_width, "mm")
       }
-      right_annotation <- ComplexHeatmap::rowAnnotation(
-        mark = ComplexHeatmap::anno_mark(
+      right_annotation <- get_namespace_fun("ComplexHeatmap", "rowAnnotation")(
+        mark = get_namespace_fun("ComplexHeatmap", "anno_mark")(
           at = match(mark_features_use, rownames(plot_mat)),
           labels = unname(mark_row_labels[mark_features_use]),
           labels_gp = mark_labels_gp,
@@ -681,7 +683,7 @@ scFEAHeatmap <- function(
     )
   )
   ht_args <- utils::modifyList(ht_args, ht_params)
-  ht <- do.call(ComplexHeatmap::Heatmap, ht_args)
+  ht <- do.call(get_namespace_fun("ComplexHeatmap", "Heatmap"), ht_args)
   attr(ht, "width") <- width
   attr(ht, "height") <- height
   ht

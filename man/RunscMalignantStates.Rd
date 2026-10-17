@@ -67,10 +67,10 @@ Score cancer cell state gene sets with \code{scMalignantFinder} AUCell utilities
 and append the resulting activity scores to Seurat metadata.
 }
 \examples{
-\dontshow{if (FALSE) withAutoprint(\{ # examplesIf}
+\dontrun{
 srt <- RunscMalignantStates(
   srt,
   gene_sets = "path/to/Malignant_MPs.Gavish_2023.gmt"
 )
-\dontshow{\}) # examplesIf}
+}
 }

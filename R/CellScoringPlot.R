@@ -863,8 +863,9 @@ scoreplot_umap <- function(
       group.colors[[highlight]]
     )
     if (identical(highlight.mark.type, "hull")) {
+      check_r("ggforce", verbose = FALSE)
       plot <- plot +
-        ggforce::geom_mark_hull(
+        get_namespace_fun("ggforce", "geom_mark_hull")(
           data = subset,
           ggplot2::aes(x = Dim1, y = Dim2),
           inherit.aes = FALSE,
