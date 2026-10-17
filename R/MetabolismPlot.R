@@ -22,6 +22,7 @@
 #'   db = c("KEGG", "REACTOME"),
 #'   group.by = "CellType",
 #'   species = "Mus_musculus",
+#'   Ensembl_version = 115,
 #'   method = "AUCell",
 #'   use_preparedb = FALSE
 #' )
@@ -96,6 +97,7 @@
 #'   assay_name = "METABOLISM",
 #'   db = c("KEGG", "REACTOME"),
 #'   species = "Mus_musculus",
+#'   Ensembl_version = 115,
 #'   use_preparedb = FALSE
 #' )
 #'

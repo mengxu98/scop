@@ -432,6 +432,7 @@ scds_hybrid_xgboost_compat <- function(
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' pancreas_sub <- RunScrublet(pancreas_sub)
@@ -446,6 +447,7 @@ scds_hybrid_xgboost_compat <- function(
 #'   reduction = "umap",
 #'   features = "db.Scrublet_score"
 #' )
+#' }
 RunScrublet <- function(
   object,
   assay = "RNA",
@@ -559,6 +561,7 @@ RunScrublet <- function(
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' pancreas_sub <- RunDoubletDetection(pancreas_sub)
@@ -573,6 +576,7 @@ RunScrublet <- function(
 #'   reduction = "umap",
 #'   features = "db.DoubletDetection_score"
 #' )
+#' }
 RunDoubletDetection <- function(
   object,
   assay = "RNA",

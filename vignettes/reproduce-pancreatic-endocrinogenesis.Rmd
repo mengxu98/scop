@@ -69,8 +69,8 @@ PCA, neighbor graph, clustering, and UMAP coordinates.
 
 ```{r preprocess}
 library(scop)
-stopifnot(all(unlist(check_r("slingshot", install = FALSE, verbose = FALSE))),
-          all(unlist(check_r("cole-trapnell-lab/monocle3", install = FALSE, verbose = FALSE))),
+stopifnot(all(unlist(thisutils::check_r("slingshot", install = FALSE, verbose = FALSE))),
+          all(unlist(thisutils::check_r("cole-trapnell-lab/monocle3", install = FALSE, verbose = FALSE))),
           "fit_trends" %in% getNamespaceExports("thisutils"))
 set.seed(11)
 
@@ -181,7 +181,7 @@ FeatureDimPlot(
 ```
 
 Monocle3 provides an independent graph-based pseudotime layer. The root cell is
-fixed to a ductal cell so the article renders without interactive selection.
+set to the first ductal cell.
 
 ```{r monocle3-trajectory, fig.width=9, fig.height=5}
 ductal_root <- colnames(pancreas_sub)[pancreas_sub$SubCellType == "Ductal"][1]
@@ -268,9 +268,7 @@ For an executed differential-expression example, see the
 
 The reproduction then moves from dynamic genes to regulatory hypotheses. Use a
 focused set of pancreatic-development TFs as candidate regulators and combine
-them with marker genes and highly variable genes as targets. This keeps the
-example small while preserving the key regulators expected in endocrine
-differentiation.
+them with marker genes and highly variable genes as targets.
 
 ```{r tf-and-target-sets, eval=FALSE}
 pancreas_tfs <- c(

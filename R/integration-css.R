@@ -203,10 +203,7 @@ CSS_integrate <- function(
   for (nm in names(CSS_params)) {
     params[[nm]] <- CSS_params[[nm]]
   }
-  srt_integrated <- invoke_fun(
-    get_namespace_fun("simspec", "cluster_sim_spectrum"),
-    params
-  )
+  srt_integrated <- invoke_fun(css_simspec_method(), params)
 
   if (any(is.na(srt_integrated@reductions[["CSS"]]@cell.embeddings))) {
     log_message(
@@ -267,4 +264,23 @@ CSS_integrate <- function(
   } else {
     return(srt_integrated)
   }
+}
+
+css_simspec_method <- function() {
+  scope <- new.env(parent = getNamespace("simspec"))
+  for (name in c("cluster_sim_spectrum.Seurat", "cluster_sim_spectrum.default", "build_knn_graph")) {
+    fun <- get_namespace_fun("simspec", name)
+    environment(fun) <- scope
+    scope[[name]] <- fun
+  }
+  scope$.Call <- function(.NAME, ..., PACKAGE) {
+    if (identical(.NAME, "_Seurat_ComputeSNN") && identical(PACKAGE, "Seurat")) {
+      symbol <- getNativeSymbolInfo(.NAME, PACKAGE = PACKAGE)
+      args <- list(...)
+      if (symbol$numParameters == 3L && length(args) == 2L) args[[3L]] <- 1L
+      return(do.call(base::.Call, c(list(symbol), args)))
+    }
+    do.call(base::.Call, c(list(.NAME), list(...), list(PACKAGE = PACKAGE)))
+  }
+  scope$cluster_sim_spectrum.Seurat
 }

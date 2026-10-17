@@ -1,5 +1,21 @@
 # scop (development version)
 
+* **fix**: Preserve CSS integration and reference mapping with Seurat 5.6.0
+  by supplying the new native SNN thread argument to simspec calls.
+
+* **fix**: Accept result tables without `object` in `DEtestPlot()`,
+  `VolcanoPlot()`, `DEtestManhattanPlot()` and `DEtestRingPlot()`.
+
+* **ci**: Execute runnable reference examples during website builds, select
+  changed pages against the last successful publication, and share one workflow
+  and two build scripts for references and articles. Rebuild stale environment
+  outputs, retain a weekly full build, and report rendering times. Python doublet
+  recipes remain explicit manual examples. Check each rendered page immediately and retain page timings,
+  installed package versions and HTML diagnostics when rendering fails.
+
+* **fix**: Let `RunGSEA()` use the supported default backend in both older and
+  current clusterProfiler releases without forwarding the removed `by` argument.
+* **docs**: Use the Ensembl 115 archive explicitly in gene conversion examples.
 * **fix**: Read startup metadata from the loaded namespace so development loading preserves the Logo, version, date and website without requiring an installed copy.
 
 * **refactor**: Simplify fixed-argument plotting and backend calls, and use
@@ -55,6 +71,7 @@
 * **fix**: Restore the package startup Logo, version, update date and website.
   Startup messages still respect verbosity settings and `suppressPackageStartupMessages()`.
 
+* **fix**: `RunGSEA()` preserves native fgsea computation with the new clusterProfiler interface, using enrichit's public result converter instead of passing the removed `by` argument or silently changing numerical engines.
 * **fix**: Chromatin `CheckDataList()` feature selection preserves native within-batch peak ranking when batch frequencies tie, instead of ranking tied peak IDs alphabetically.
 * **feature**: `ExportATACResults()` saves a complete ATAC object, explicit result tables, selected-assay matrix companions and an external-resource inventory with file checksums into a new directory. Matrix Market/BED3/barcode exports can be read by `ReadATACData()`; fragment resources remain external.
 * **feature**: `FilterATACPeaks()` creates a clean peak assay using explicit raw-count, interval and blacklist criteria. `AnnotateATACPeaks()` records native nearest-interval annotation hits with explicit genome-label/known-length checks, preserving unmatched peaks and existing results.

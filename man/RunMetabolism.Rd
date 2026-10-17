@@ -128,6 +128,7 @@ pancreas_sub <- RunMetabolism(
   db = c("KEGG", "REACTOME"),
   group.by = "CellType",
   species = "Mus_musculus",
+  Ensembl_version = 115,
   method = "AUCell",
   use_preparedb = FALSE
 )

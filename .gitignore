@@ -46,4 +46,7 @@ testthat-problems.rds
 skills-lock.json
 AGENTS.md
 /artifacts
+/pkgdown-plan.json
+/pkgdown-timings.csv
+/pkgdown-session.txt
 /tests/validation/

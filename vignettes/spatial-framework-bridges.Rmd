@@ -195,9 +195,8 @@ do not establish that Giotto's own analysis or plotting pipeline has run.
 
 ## Save, reload, and recheck
 
-Save both the portable object and the receipt. The example uses a temporary
-directory so a build does not overwrite your work. For a persistent analysis,
-set `SCOP_BRIDGE_OUTPUT_DIR` to a new project directory before running it.
+Save both the portable object and the receipt. Set `SCOP_BRIDGE_OUTPUT_DIR`
+to a persistent output directory; the default is a temporary directory.
 
 ```{r save-bridge}
 output_dir <- Sys.getenv("SCOP_BRIDGE_OUTPUT_DIR", file.path(tempdir(), "scop-bridges"))
@@ -258,10 +257,9 @@ data.frame(
 )
 ```
 
-## Build provenance
+## Analysis provenance
 
-This receipt belongs to the actual rendered source and retained observations.
-Save it beside the exported object when adapting the workflow.
+Save the analysis provenance beside the exported object.
 
 ```{r build-provenance}
 source_revision <- Sys.getenv("GITHUB_SHA")

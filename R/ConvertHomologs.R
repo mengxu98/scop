@@ -33,7 +33,8 @@
 #' pancreas_human <- ConvertHomologs(
 #'   pancreas_sub,
 #'   species_from = "Mus_musculus",
-#'   species_to = "Homo_sapiens"
+#'   species_to = "Homo_sapiens",
+#'   Ensembl_version = 115
 #' )
 #' rownames(pancreas_human)[1:5]
 ConvertHomologs <- function(
