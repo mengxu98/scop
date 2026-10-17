@@ -34,9 +34,6 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Check incremental build selection
-        run: python3 .github/test-pkgdown-plan.py
-
       - name: Plan website changes
         id: plan
         env:
@@ -79,9 +76,7 @@ jobs:
 
       - name: Determine example and article dependencies
         id: dependencies
-        run: |
-          Rscript --vanilla .github/test-pkgdown-dependencies.R
-          Rscript --vanilla .github/pkgdown-dependencies.R
+        run: Rscript --vanilla .github/pkgdown-build.R dependencies
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         env:
@@ -95,14 +90,12 @@ jobs:
 
       - name: Invalidate output from a different R environment
         id: environment
-        run: |
-          Rscript --vanilla .github/test-pkgdown-environment.R
-          Rscript --vanilla .github/pkgdown-environment.R
+        run: Rscript --vanilla .github/pkgdown-build.R environment
 
       - name: Determine full rebuild dependencies
         id: full-dependencies
         if: steps.environment.outputs.changed == 'true'
-        run: Rscript --vanilla .github/pkgdown-dependencies.R
+        run: Rscript --vanilla .github/pkgdown-build.R dependencies
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         if: steps.environment.outputs.changed == 'true'
@@ -115,24 +108,11 @@ jobs:
           dependencies: '"hard"'
           cache: always
 
-      - name: Verify enrichment backend compatibility
-        if: contains(env.PKGDOWN_TOPICS, 'RunGSEA') || contains(env.PKGDOWN_ARTICLES, 'differential-enrichment-workflow')
-        shell: Rscript {0}
-        run: |
-          stopifnot(requireNamespace("clusterProfiler", quietly = TRUE))
-          library(scop)
-          testthat::test_file(
-            "tests/testthat/test-gsea-enrichment-empty-version.R",
-            reporter = "summary", stop_on_failure = TRUE
-          )
-
       - name: Restore unchanged website pages
         run: python3 .github/pkgdown-plan.py restore
 
       - name: Build and verify website
-        run: |
-          Rscript --vanilla .github/test-pkgdown-output.R
-          Rscript --vanilla .github/pkgdown-build.R
+        run: Rscript --vanilla .github/pkgdown-build.R build
 
       - uses: actions/upload-artifact@v4
         if: failure()

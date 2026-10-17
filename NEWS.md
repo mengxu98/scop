@@ -2,9 +2,9 @@
 
 * **ci**: Execute runnable reference examples during website builds, select
   changed pages against the last successful publication, and share one workflow
-  for references and articles. Rebuild stale environment outputs, retain a weekly
-  full build, and report rendering times. Python doublet recipes remain explicit
-  manual examples. Check each rendered page immediately and retain page timings,
+  and two build scripts for references and articles. Rebuild stale environment
+  outputs, retain a weekly full build, and report rendering times. Python doublet
+  recipes remain explicit manual examples. Check each rendered page immediately and retain page timings,
   installed package versions and HTML diagnostics when rendering fails.
 
 * **fix**: Let `RunGSEA()` use the supported default backend in both older and
