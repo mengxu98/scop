@@ -32,6 +32,7 @@ if (plan$full) {
   record("search", pkgdown::build_search())
 }
 expected <- c(
+  character(),
   if (length(plan$topics)) file.path("docs/reference", paste0(plan$topics, ".html")),
   if (length(plan$articles)) file.path("docs/articles", paste0(plan$articles, ".html"))
 )

@@ -9,6 +9,7 @@
 ^data-raw$
 ^docs$
 ^pkgdown$
+^pkgdown-(plan\.json|timings\.csv|session\.txt)$
 ^\.github$
 ^\.posit$
 (^|/)\.claude($|/)
