@@ -280,7 +280,7 @@ css_simspec_method <- function() {
       if (symbol$numParameters == 3L && length(args) == 2L) args[[3L]] <- 1L
       return(do.call(base::.Call, c(list(symbol), args)))
     }
-    base::.Call(.NAME, ..., PACKAGE = PACKAGE)
+    do.call(base::.Call, c(list(.NAME), list(...), list(PACKAGE = PACKAGE)))
   }
   scope$cluster_sim_spectrum.Seurat
 }
