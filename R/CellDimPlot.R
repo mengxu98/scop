@@ -237,6 +237,35 @@
 #'   cells.highlight = TRUE
 #' )
 #'
+#' CellDimPlot(
+#'   pancreas_sub,
+#'   group.by = "SubCellType",
+#'   reduction = "UMAP",
+#'   add_density = TRUE,
+#'   pt.alpha = 0,
+#'   density_color = "#416C7D",
+#'   theme_use = "theme_blank",
+#'   xlab = "UMAP_1",
+#'   ylab = "UMAP_2",
+#'   legend.position = "none"
+#' )
+#'
+#' CellDimPlot(
+#'   pancreas_sub,
+#'   group.by = "SubCellType",
+#'   reduction = "UMAP",
+#'   add_density = TRUE,
+#'   pt.alpha = 0,
+#'   density_filled = TRUE,
+#'   density_color = "#355D71",
+#'   density_filled_palcolor = c("#F2F7F5", "#C5DFD8", "#89BDB5",
+#'                              "#4A969E", "#286B87", "#253D63"),
+#'   theme_use = "theme_blank",
+#'   xlab = "UMAP_1",
+#'   ylab = "UMAP_2",
+#'   legend.position = "none"
+#' )
+#'
 #' # Add statistical charts
 #' CellDimPlot(
 #'   pancreas_sub,

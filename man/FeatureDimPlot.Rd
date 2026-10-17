@@ -345,7 +345,12 @@ FeatureDimPlot(
   features = "Rbp4",
   reduction = "UMAP",
   add_density = TRUE,
-  show_points = FALSE
+  show_points = FALSE,
+  theme_use = "theme_blank",
+  xlab = "UMAP_1",
+  ylab = "UMAP_2",
+  palcolor = c("#345C96", "#349AA4", "#91C6B0", "#DDBF63",
+               "#D77A52", "#AC4968", "#753858")
 )
 
 FeatureDimPlot(
@@ -355,6 +360,20 @@ FeatureDimPlot(
   label = TRUE,
   add_density = TRUE,
   density_filled = TRUE
+)
+
+FeatureDimPlot(
+  pancreas_sub,
+  features = "Rbp4",
+  reduction = "UMAP",
+  add_density = TRUE,
+  show_points = FALSE,
+  density_filled = TRUE,
+  theme_use = "theme_blank",
+  xlab = "UMAP_1",
+  ylab = "UMAP_2",
+  density_filled_palcolor = c("#F2F7F5", "#C5DFD8", "#89BDB5",
+                             "#4A969E", "#286B87", "#253D63")
 )
 
 # Chane the plot type from point to the hexagonal bin
