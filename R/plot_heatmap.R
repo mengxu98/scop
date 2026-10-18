@@ -1,3 +1,23 @@
+heatmap_color_mapping <- function(col_fun, values) {
+  values <- unique(as.vector(values))
+  mapped <- col_fun(values)
+  fun <- function(x = NULL, return_rgb = FALSE, max_value = 1) {
+    if (is.null(x) || !is.numeric(x) || return_rgb || all(is.na(x))) {
+      return(col_fun(x, return_rgb = return_rgb, max_value = max_value))
+    }
+    index <- match(x, values)
+    result <- mapped[index]
+    unmatched <- is.na(index)
+    if (any(unmatched)) {
+      result[unmatched] <- col_fun(x[unmatched])
+    }
+    attributes(result) <- attributes(x)
+    result
+  }
+  attributes(fun) <- attributes(col_fun)
+  fun
+}
+
 prepare_heatmap_borders <- function(
   border,
   heatmap_border,

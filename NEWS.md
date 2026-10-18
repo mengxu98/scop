@@ -1,5 +1,19 @@
 # scop (development version)
 
+* **perf**: Interpolate colors once per distinct matrix value within each
+  `FeatureHeatmap()`, `GroupHeatmap()` and `DynamicHeatmap()` call, then reuse
+  the exact native colors during sizing and drawing. Preserve circlize
+  interpolation, precision, transparency, missing values and legend attributes;
+  each lookup belongs to its individual plot call. With R 4.5.3 and circlize
+  0.4.18, replaying 247 complete large color-mapping inputs from all six
+  `FeatureHeatmap` examples took 17.628/16.342/15.328 seconds before and
+  3.485/3.423/3.178 seconds after in three alternating comparisons, including
+  lookup construction (median paired speedup 4.8x). All colors, attributes and
+  caller RNG state were strictly identical. Complete examples for all three
+  pages execute, with all 22 figures identical byte for byte. Whole-page elapsed
+  times varied substantially between local runs; stable whole-page and whole-site
+  CI gains remain unestablished.
+
 * **perf**: Reduce paired Wilcoxon `RunDEtest()` worker overhead by computing
   fold changes and feature masks once and sharing the expression matrix instead
   of the full Seurat object. With all 1,000 `pancreas_sub` cells, 15,998 input
