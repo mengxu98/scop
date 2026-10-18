@@ -29,9 +29,11 @@
   cross-type formatting takes 20.051 to 0.308 seconds for all 20,529 recorded
   native result terms, including index construction. Five-group annotation
   preparation takes 1.858 to 0.345 seconds. These steps exclude fgsea execution;
-  its engine, full rankings, default 100,000 permutations and version-compatible
-  public result conversion are preserved. Existing duplicate-ranking errors
-  after one-to-many conversion remain unchanged.
+  its engine, default 100,000 permutations and public version-compatible conversion
+  are preserved. Keep original ranks separate from expanded output IDs, match
+  mappings exactly and retain original labels for unmapped outputs, fixing
+  conversion-induced duplicate rankings without dropping input genes. Full-data
+  validation retains all 36,764 ranks and exact native statistics/RNG across five groups.
 
 * **perf**: Heatmaps, `EnrichmentPlot()` and `GSEAPlot()` use sparse GO keyword
   counts (49.3x), preserving native Fisher tests and Holm correction with

@@ -312,8 +312,13 @@ RunGSEA <- function(
     colnames(geneMap)[1] <- IDtype
   }
 
-  input[[IDtype]] <- geneMap[as.character(input$geneID), IDtype]
-  input[[result_IDtype]] <- geneMap[as.character(input$geneID), result_IDtype]
+  map_index <- match(as.character(input$geneID), rownames(geneMap))
+  missing_map <- is.na(map_index)
+  input[[IDtype]] <- geneMap[map_index, IDtype]
+  input[[result_IDtype]] <- geneMap[map_index, result_IDtype]
+  input[[IDtype]][missing_map] <- as.character(input$geneID[missing_map])
+  input[[result_IDtype]][missing_map] <- as.character(input$geneID[missing_map])
+  rank_input <- input[!is.na(input[[IDtype]]), , drop = FALSE]
   input <- unnest_fun(input, cols = c(IDtype, result_IDtype))
   input <- input[!is.na(input[[IDtype]]), , drop = FALSE]
   log_message(
@@ -365,9 +370,9 @@ RunGSEA <- function(
     function(i) {
       group <- comb[i, "group"]
       term <- comb[i, "term"]
-      geneList <- input[input$geneID_groups == group, "geneScore"]
-      names(geneList) <- input[input$geneID_groups == group, IDtype]
-      gene_mapid <- input[input$geneID_groups == group, result_IDtype]
+      geneList <- rank_input[rank_input$geneID_groups == group, "geneScore"]
+      names(geneList) <- rank_input[rank_input$geneID_groups == group, IDtype]
+      gene_mapid <- rank_input[rank_input$geneID_groups == group, result_IDtype]
       ord <- order(geneList, decreasing = TRUE)
       geneList <- geneList[ord]
       gene_mapid <- gene_mapid[ord]
