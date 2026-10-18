@@ -1,3 +1,17 @@
+test_that("GO keyword counts and Fisher results match the native backend", {
+  skip_if_not_installed("simplifyEnrichment")
+  ids <- c("GO:0006351", "GO:0006355", "GO:0006366", "GO:0006396", "GO:0006412")
+  set.seed(11)
+  rng <- .Random.seed
+  for (query in list(ids, c(ids, ids[[1]], "GO:unknown"), character())) {
+    expect_identical(
+      enrichment_go_keywords(query),
+      simplifyEnrichment::keyword_enrichment_from_GO(query)
+    )
+  }
+  expect_identical(.Random.seed, rng)
+})
+
 test_that("EnrichmentPlot overlap edges match pairwise shared-gene counts", {
   actual <- enrichment_overlap_edges(
     c("term_a", "term_b", "term_c"),

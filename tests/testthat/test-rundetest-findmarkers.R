@@ -169,6 +169,21 @@ test_that("RunDEtest exports internal marker workers to parallel processes", {
   markers <- out@tools$DEtest_group$PairedMarkers_wilcox
   expect_s3_class(markers, "data.frame")
   expect_true(all(c("gene", "group1", "group2") %in% colnames(markers)))
+  reference <- get("FindMarkers.Seurat", asNamespace("Seurat"))(
+    srt,
+    ident.1 = colnames(srt)[srt$group == "A"],
+    ident.2 = colnames(srt)[srt$group == "B"],
+    features = rownames(srt)[1:30], logfc.threshold = 0,
+    min.pct = 0, only.pos = FALSE, verbose = FALSE
+  )
+  reference$p_val_adj <- stats::p.adjust(reference$p_val, method = "bonferroni")
+  actual <- markers[markers$group1 == "A" & markers$group2 == "B", ]
+  expect_identical(actual$gene, rownames(reference))
+  columns <- c("p_val", "avg_log2FC", "pct.1", "pct.2", "p_val_adj")
+  actual <- actual[, columns]
+  reference <- reference[, columns]
+  rownames(actual) <- rownames(reference) <- NULL
+  expect_equal(actual, reference, tolerance = 1e-12)
 })
 
 test_that("supported RunDEtest Wilcoxon branches stay on the scop backend", {
