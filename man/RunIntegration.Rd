@@ -253,6 +253,7 @@ for (nr in nonlinear_reductions) {
 \link{Seurat_integrate},
 \link{scVI_integrate},
 \link{MultiMAP_integrate},
+\link{WNN_integrate},
 \link{GLUE_integrate},
 \link{MNN_integrate},
 \link{fastMNN_integrate},

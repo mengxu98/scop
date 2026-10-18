@@ -98,6 +98,9 @@ if (mode == "dependencies") {
   }
 
   sources <- c(
+    # Temporary runtime pin until CRAN includes r-lib/pak#917. Without the fix,
+    # pak can unload processx's SIGCHLD handler before parallel restores it.
+    pak = "github::r-lib/pak@6f4c90a69a6dafcc5b1fbfd715feba22055e77df",
     thisplot = "github::mengxu98/thisplot",
     thisutils = "github::mengxu98/thisutils",
     harmony = "github::immunogenomics/harmony",
@@ -124,7 +127,7 @@ if (mode == "dependencies") {
   }, "", USE.NAMES = FALSE)
   execute <- identical(Sys.getenv("PKGDOWN_EXECUTE"), "true")
   required <- if (execute) "deps::.,any::sessioninfo" else "any::sessioninfo"
-  extra <- unique(c("any::pkgdown", if (execute) "local::.", references))
+  extra <- unique(c("any::pkgdown", if (execute) c("local::.", sources[["pak"]]), references))
   output <- c(paste0("packages=", required), paste0("extra=", paste(extra, collapse = ",")))
   writeLines(output)
   destination <- Sys.getenv("GITHUB_OUTPUT")

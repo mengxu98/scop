@@ -42,13 +42,17 @@ WNN_integrate(
 \arguments{
 \item{srt_merge}{A merged `Seurat` object that includes the batch information.}
 
-\item{batch}{Batch variable name.}
+\item{batch}{Accepted for integration-interface compatibility. WNN does not
+perform batch correction; supplying this argument emits a warning.}
 
 \item{append}{Append integrated results to \code{srt_merge}.}
 
 \item{srt_list}{A list of \code{Seurat} objects to be checked and preprocessed.}
 
-\item{assay}{Assay to use. \code{NULL} uses the default assay.}
+\item{assay}{One RNA assay and one chromatin assay, or one assay whose
+partner can be inferred. Automatic selection prefers an active RNA/SCT
+assay, then RNA, then SCT; custom RNA assay names must be explicit.
+Known SCOP gene-activity and chromVAR assays cannot substitute for RNA.}
 
 \item{do_normalization}{Whether data normalization should be performed.}
 
@@ -89,16 +93,37 @@ Default is \code{TRUE}.}
 
 \item{seed}{Random seed.}
 }
+\value{
+A Seurat object with RNA PCA and ATAC LSI reductions, \code{WNN} neighbors,
+\code{WNNKNN} and \code{WNNSNN} graphs, \code{WNNclusters} metadata and requested WNN
+embeddings. \code{Misc(object, "WNN_reduction_list")} names the retained source
+reductions; \code{WNN_dims_list} records their selected dimensions. Both return
+modes retain ATAC reductions, metadata and any existing representation receipts. The
+caller's random-number state is restored.
+}
 \description{
-WNN integration function
+Combine paired RNA and ATAC representations with weighted
+nearest neighbors, retaining both modality reductions and the WNN graph.
+}
+\details{
+Cells must represent paired measurements. RNA and ATAC preprocessing is
+followed by native multimodal neighbor construction. This function does not
+use batch labels to correct either modality. Specify assays explicitly after
+adding derived assays, for example \code{assay = c("RNA", "peaks")}.
 }
 \examples{
+# Small paired subset; no external fragments or reference downloads.
 data("pbmcmultiome_sub", package = "scop")
-pbmcmultiome_sub$batch <- rep(c("batch1", "batch2"), length.out = ncol(pbmcmultiome_sub))
-pbmcmultiome_sub <- WNN_integrate(
-  srt_merge = pbmcmultiome_sub,
-  batch = "batch",
-  linear_reduction_dims = 20,
-  linear_reduction_dims_use = 1:10
+paired <- subset(pbmcmultiome_sub, cells = colnames(pbmcmultiome_sub)[1:80])
+paired <- WNN_integrate(
+  srt_merge = paired, assay = c("RNA", "peaks"),
+  linear_reduction_dims = 10, linear_reduction_dims_use = 2:8,
+  nHVF = 100, neighbor_k = 10, nonlinear_reduction_dims = 2,
+  verbose = FALSE
 )
+SeuratObject::Reductions(paired)
+stopifnot(all(paired@misc$WNN_reduction_list \%in\% SeuratObject::Reductions(paired)))
+}
+\seealso{
+\code{\link[=ReadMultiomeData]{ReadMultiomeData()}}, \code{\link[=RunStandardWorkflow]{RunStandardWorkflow()}}, \code{\link[=RunLinkPeaks]{RunLinkPeaks()}}
 }

@@ -83,7 +83,9 @@ jobs:
           GITHUB_PAT: ${{ github.token }}
         with:
           packages: ${{ steps.dependencies.outputs.packages }}
-          extra-packages: ${{ steps.dependencies.outputs.extra }}
+          extra-packages: |
+            ${{ steps.dependencies.outputs.extra }}
+            any::testthat
           needs: website
           dependencies: '"hard"'
           cache: always
@@ -103,7 +105,9 @@ jobs:
           GITHUB_PAT: ${{ github.token }}
         with:
           packages: ${{ steps.full-dependencies.outputs.packages }}
-          extra-packages: ${{ steps.full-dependencies.outputs.extra }}
+          extra-packages: |
+            ${{ steps.full-dependencies.outputs.extra }}
+            any::testthat
           needs: website
           dependencies: '"hard"'
           cache: always
@@ -111,8 +115,78 @@ jobs:
       - name: Restore unchanged website pages
         run: python3 .github/pkgdown-plan.py restore
 
+      - uses: actions/setup-python@v6
+        id: macs2-python
+        if: env.PKGDOWN_EXECUTE == 'true'
+        with:
+          python-version: '3.11'
+          update-environment: false
+
+      - name: Prepare official MACS2 for synthetic acceptance
+        if: env.PKGDOWN_EXECUTE == 'true'
+        run: |
+          mkdir -p atac-acceptance
+          "${{ steps.macs2-python.outputs.python-path }}" -m venv "$RUNNER_TEMP/scop-macs2"
+          "$RUNNER_TEMP/scop-macs2/bin/python" -m pip install --no-cache-dir --index-url https://pypi.org/simple \
+            'setuptools>=41.2' wheel 'numpy==1.26.4' 'Cython==0.29.37'
+          printf '%s\n' 'MACS2==2.2.9.1 --hash=sha256:8d56bc37fb823fc6387d78138ce968405c54a0a8cd9776682705fd0983252d16' \
+            > "$RUNNER_TEMP/scop-macs2-requirements.txt"
+          "$RUNNER_TEMP/scop-macs2/bin/python" -m pip install --no-cache-dir --index-url https://pypi.org/simple \
+            --no-build-isolation --no-deps --require-hashes -r "$RUNNER_TEMP/scop-macs2-requirements.txt"
+          "$RUNNER_TEMP/scop-macs2/bin/python" -m pip check
+          "$RUNNER_TEMP/scop-macs2/bin/python" --version > atac-acceptance/python-version.txt
+          "$RUNNER_TEMP/scop-macs2/bin/python" -m pip freeze > atac-acceptance/python-packages.txt
+          "$RUNNER_TEMP/scop-macs2/bin/macs2" --version > atac-acceptance/macs2-version.txt
+          sha256sum "$RUNNER_TEMP/scop-macs2/bin/macs2" > atac-acceptance/macs2-launcher.sha256
+
+      - name: Verify combined ATAC and WNN contracts
+        if: env.PKGDOWN_EXECUTE == 'true'
+        run: Rscript --vanilla .github/atac-combined-acceptance.R . atac-acceptance
+
+      - name: Verify real MACS2 calls with synthetic fragments
+        if: env.PKGDOWN_EXECUTE == 'true'
+        run: Rscript --vanilla .github/atac-macs2-acceptance.R "$RUNNER_TEMP/scop-macs2/bin/macs2" atac-acceptance/macs2
+
+      - name: Verify pak survives processx and parallel shutdown
+        if: env.PKGDOWN_EXECUTE == 'true'
+        run: Rscript --vanilla .github/pkgdown-pak-exit.R
+
       - name: Build and verify website
-        run: Rscript --vanilla .github/pkgdown-build.R build
+        run: |
+          Rscript --vanilla -e '
+            tryCatch(
+              source(".github/pkgdown-build.R", echo = FALSE),
+              finally = {
+                tryCatch(
+                  capture.output({
+                    cat("Loaded namespaces\n")
+                    print(sort(loadedNamespaces()))
+                    cat("\nLoaded DLLs\n")
+                    print(getLoadedDLLs())
+                    cat("\nSession information\n")
+                    print(sessionInfo())
+                    cat("\nProcess mappings\n")
+                    if (file.exists("/proc/self/maps")) {
+                      writeLines(readLines("/proc/self/maps", warn = FALSE))
+                    }
+                  }, file = "pkgdown-exit-state.txt"),
+                  error = function(e) {
+                    message("Could not save pkgdown exit diagnostics: ", conditionMessage(e))
+                  }
+                )
+              }
+            )
+          ' build
+
+      - uses: actions/upload-artifact@v4
+        if: always() && env.PKGDOWN_EXECUTE == 'true'
+        with:
+          name: atac-combined-acceptance
+          include-hidden-files: true
+          path: |
+            atac-acceptance/
+            pkgdown-session.txt
+            docs/.pkgdown-build.json
 
       - uses: actions/upload-artifact@v4
         if: failure()
@@ -122,6 +196,7 @@ jobs:
             pkgdown-plan.json
             pkgdown-timings.csv
             pkgdown-session.txt
+            pkgdown-exit-state.txt
             docs/**/*.html
 
       - name: Deploy website
