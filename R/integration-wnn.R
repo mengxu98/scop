@@ -1,17 +1,42 @@
 #' @title WNN integration function
 #'
+#' @md
 #' @inheritParams RunIntegration
+#'
+#' @description Combine paired RNA and ATAC representations with weighted
+#' nearest neighbors, retaining both modality reductions and the WNN graph.
+#' @param assay One RNA assay and one chromatin assay, or one assay whose
+#' partner can be inferred. Automatic selection prefers an active RNA/SCT
+#' assay, then RNA, then SCT; custom RNA assay names must be explicit.
+#' Known SCOP gene-activity and chromVAR assays cannot substitute for RNA.
+#' @param batch Accepted for integration-interface compatibility. WNN does not
+#' perform batch correction; supplying this argument emits a warning.
+#' @details
+#' Cells must represent paired measurements. RNA and ATAC preprocessing is
+#' followed by native multimodal neighbor construction. This function does not
+#' use batch labels to correct either modality. Specify assays explicitly after
+#' adding derived assays, for example `assay = c("RNA", "peaks")`.
+#' @return A Seurat object with RNA PCA and ATAC LSI reductions, `WNN` neighbors,
+#' `WNNKNN` and `WNNSNN` graphs, `WNNclusters` metadata and requested WNN
+#' embeddings. `Misc(object, "WNN_reduction_list")` names the retained source
+#' reductions; `WNN_dims_list` records their selected dimensions. Both return
+#' modes retain ATAC reductions, metadata and any existing representation receipts. The
+#' caller's random-number state is restored.
+#' @seealso [ReadMultiomeData()], [RunStandardWorkflow()], [RunLinkPeaks()]
 #'
 #' @export
 #' @examples
+#' # Small paired subset; no external fragments or reference downloads.
 #' data("pbmcmultiome_sub", package = "scop")
-#' pbmcmultiome_sub$batch <- rep(c("batch1", "batch2"), length.out = ncol(pbmcmultiome_sub))
-#' pbmcmultiome_sub <- WNN_integrate(
-#'   srt_merge = pbmcmultiome_sub,
-#'   batch = "batch",
-#'   linear_reduction_dims = 20,
-#'   linear_reduction_dims_use = 1:10
+#' paired <- subset(pbmcmultiome_sub, cells = colnames(pbmcmultiome_sub)[1:80])
+#' paired <- WNN_integrate(
+#'   srt_merge = paired, assay = c("RNA", "peaks"),
+#'   linear_reduction_dims = 10, linear_reduction_dims_use = 2:8,
+#'   nHVF = 100, neighbor_k = 10, nonlinear_reduction_dims = 2,
+#'   verbose = FALSE
 #' )
+#' SeuratObject::Reductions(paired)
+#' stopifnot(all(paired@misc$WNN_reduction_list %in% SeuratObject::Reductions(paired)))
 WNN_integrate <- function(
   srt_merge = NULL,
   batch = NULL,
@@ -48,7 +73,15 @@ WNN_integrate <- function(
 ) {
   cluster_algorithm_index <- resolve_cluster_algorithm_index(cluster_algorithm)
 
+  atac_backend_fun("withr", "local_preserve_seed")()
   set.seed(seed)
+  if (!is.null(batch)) {
+    # Supported thisutils releases silence warnings when verbose is FALSE.
+    log_message(
+      "WNN combines modalities but does not perform batch correction; batch is not used to correct the input representations.",
+      message_type = "warning", verbose = TRUE
+    )
+  }
   if (is.null(srt_merge) && is.null(srt_list)) {
     log_message(
       "{.arg srt_list} or {.arg srt_merge} must be provided",
@@ -219,7 +252,10 @@ WNN_integrate <- function(
     srt_merge_raw <- srt_append(
       srt_raw = srt_merge_raw,
       srt_append = srt_merge,
-      pattern = paste0(rna_assay, "|", atac_assay, "|WNN|Default_reduction"),
+      pattern = paste0(
+        "^(", paste(gsub(".", "[.]", unique(c(rna_assay, atac_assay, rna_prefix, atac_prefix)), fixed = TRUE), collapse = "|"),
+        "|WNN|Default_reduction)"
+      ),
       overwrite = TRUE,
       verbose = FALSE
     )
@@ -238,40 +274,39 @@ wnn_assays <- function(srt, assay = NULL) {
     logical(1)
   )]
   rna_assays <- setdiff(assays_available, chrom_assays)
+  derived <- vapply(rna_assays, function(name) {
+    name %in% c("ACTIVITY", "chromvar") ||
+      !is.null(SeuratObject::Misc(srt[[name]], "scop_gene_activity")) ||
+      !is.null(SeuratObject::Misc(srt[[name]], "scop_chromvar"))
+  }, logical(1))
+  rna_assays <- rna_assays[!derived]
   if (length(chrom_assays) == 0 || length(rna_assays) == 0) {
     log_message(
       "WNN requires at least one RNA assay and one {.cls ChromatinAssay}",
       message_type = "error"
     )
   }
-  if (is.null(assay)) {
-    assay_default <- SeuratObject::DefaultAssay(srt)
-    rna_assay <- if (assay_default %in% rna_assays) assay_default else rna_assays[[1]]
-    atac_assay <- if ("peaks" %in% chrom_assays) "peaks" else chrom_assays[[1]]
-    return(list(rna = rna_assay, atac = atac_assay))
-  }
-
-  assay <- unique(as.character(assay))
-  if (length(assay) == 1) {
-    if (assay %in% chrom_assays) {
-      return(list(
-        rna = if ("RNA" %in% rna_assays) "RNA" else rna_assays[[1]],
-        atac = assay
-      ))
-    }
-    if (assay %in% rna_assays) {
-      return(list(
-        rna = assay,
-        atac = if ("peaks" %in% chrom_assays) "peaks" else chrom_assays[[1]]
-      ))
-    }
-  }
-
-  rna_assay <- assay[assay %in% rna_assays][[1]] %||% NULL
-  atac_assay <- assay[assay %in% chrom_assays][[1]] %||% NULL
-  if (is.null(rna_assay) || is.null(atac_assay)) {
+  if (!is.null(assay) && (!is.character(assay) || !length(assay) ||
+    length(assay) > 2L || anyNA(assay) || anyDuplicated(assay) ||
+    !all(assay %in% c(rna_assays, chrom_assays)))) {
     log_message(
-      "{.arg assay} for WNN must include one RNA assay and one {.cls ChromatinAssay}",
+      "assay for WNN must select measured RNA and chromatin assays; derived scores and unknown or duplicate assay names are not supported.",
+      message_type = "error"
+    )
+  }
+  rna_assay <- assay[assay %in% rna_assays]
+  atac_assay <- assay[assay %in% chrom_assays]
+  if (!length(rna_assay)) {
+    preferred <- unique(c(SeuratObject::DefaultAssay(srt), "RNA", "SCT"))
+    preferred <- preferred[preferred %in% intersect(rna_assays, c("RNA", "SCT"))]
+    rna_assay <- utils::head(preferred, 1L)
+  }
+  if (!length(atac_assay)) {
+    atac_assay <- if ("peaks" %in% chrom_assays) "peaks" else chrom_assays
+  }
+  if (length(rna_assay) != 1L || length(atac_assay) != 1L) {
+    log_message(
+      "WNN requires one RNA assay and one ChromatinAssay; specify assay = c('RNA_assay', 'ATAC_assay') when selection is ambiguous or RNA uses a custom name.",
       message_type = "error"
     )
   }
