@@ -186,7 +186,8 @@ run_acceptance <- function() {
   check(identical(names(called$peaks), expected_groups$call_id) &&
           identical(names(called$receipt$commands), expected_groups$call_id),
         "Peak or command identifiers differ from expected call identifiers.")
-  check(identical(as.vector(called$receipt$cells), cells) &&
+  # Native fastmatch may cache a lookup hash on either shared character vector.
+  check(identical(as.vector(called$receipt$cells), as.vector(cells)) &&
           identical(called$receipt$sample.by, "capture") &&
           identical(called$receipt$group.by, "group"),
         "Receipt does not retain selected cells and grouping fields.")
