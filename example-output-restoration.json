@@ -280,10 +280,9 @@
     },
     {
       "page": "DEtestRingPlot.html",
-      "kind": "archive",
-      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
-      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
-      "date": "2026-10-13",
+      "kind": "current",
+      "source": "85224cf393d43327b3c7d90f4a66779c6bd70aa1",
+      "date": "2026-10-18",
       "images": [
         "restored-figures/DEtestRingPlot/DEtestRingPlot-1.png"
       ]
@@ -1506,6 +1505,16 @@
         "restored-figures/VolcanoPlot/VolcanoPlot-4.png",
         "restored-figures/VolcanoPlot/VolcanoPlot-5.png",
         "restored-figures/VolcanoPlot/VolcanoPlot-6.png"
+      ]
+    },
+    {
+      "page": "FetchH5.html",
+      "kind": "archive",
+      "source": "100e404e16cdbf454903d5003662e549a4a19ea2",
+      "date": "2026-05-31",
+      "images": [
+        "restored-figures/FetchH5/FetchH5-1.png",
+        "restored-figures/FetchH5/FetchH5-2.png"
       ]
     }
   ]
