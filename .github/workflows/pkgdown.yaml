@@ -111,6 +111,10 @@ jobs:
       - name: Restore unchanged website pages
         run: python3 .github/pkgdown-plan.py restore
 
+      - name: Verify pak survives processx and parallel shutdown
+        if: env.PKGDOWN_EXECUTE == 'true'
+        run: Rscript --vanilla .github/pkgdown-pak-exit.R
+
       - name: Build and verify website
         run: |
           Rscript --vanilla -e '
@@ -156,3 +160,4 @@ jobs:
           branch: gh-pages
           folder: docs
           clean: true
+
