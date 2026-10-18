@@ -33,6 +33,18 @@ test_that("explicit Ensembl releases resolve when the main archive catalog is un
   expect_true(all(archives$current_release == ""))
   expect_error(ensembl_archive_catalog("current_release"), "catalog unavailable")
   expect_error(ensembl_archive_catalog(116), "catalog unavailable")
+  archive_mart <- NULL
+  testthat::local_mocked_bindings(
+    useMart = function(...) stop("unexpected archive catalog lookup"),
+    listDatasets = function(mart, ...) {
+      archive_mart <<- mart
+      stop("archive-offline")
+    },
+    .package = "biomaRt"
+  )
+  expect_error(suppressWarnings(GeneConvert("INS", Ensembl_version = 115, max_tries = 1, verbose = FALSE)), "archive-offline")
+  expect_s4_class(archive_mart, "Mart")
+  expect_identical(archive_mart@host, "https://sep2025.archive.ensembl.org:443/biomart/martservice?redirect=no")
   mart <- methods::new("Mart", biomart = "ENSEMBL_MART_ENSEMBL",
     host = "https://sep2025.archive.ensembl.org/biomart/martservice"
   )

@@ -197,7 +197,12 @@ GeneConvert <- function(
         } else if (!is.null(mirror)) {
           biomaRt::useEnsembl(biomart = "ensembl", mirror = mirror)
         } else {
-          biomaRt::useMart(biomart = "ensembl", host = url)
+          methods::new(
+            "Mart",
+            biomart = "ENSEMBL_MART_ENSEMBL",
+            vschema = "default",
+            host = paste0(url, ":443/biomart/martservice?redirect=no")
+          )
         }
       },
       max_tries = max_tries,
