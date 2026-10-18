@@ -382,20 +382,24 @@ RunGSEA <- function(
           collapse = ";"
         )
         IDlist <- strsplit(result$core_enrichment, "/")
-        result$core_enrichment <- unlist(lapply(IDlist, function(x) {
-          x_result <- NULL
-          for (i in x) {
-            if (i %in% input[[IDtype]]) {
-              x_result <- c(
-                x_result,
-                unique(geneMap[geneMap[[IDtype]] == i, result_IDtype])
-              )
-            } else {
-              x_result <- c(x_result, i)
+        if (identical(IDtype, result_IDtype) && is.character(geneMap[[IDtype]])) {
+          result$core_enrichment <- vapply(IDlist, paste0, character(1), collapse = "/")
+        } else {
+          result$core_enrichment <- unlist(lapply(IDlist, function(x) {
+            x_result <- NULL
+            for (i in x) {
+              if (i %in% input[[IDtype]]) {
+                x_result <- c(
+                  x_result,
+                  unique(geneMap[geneMap[[IDtype]] == i, result_IDtype])
+                )
+              } else {
+                x_result <- c(x_result, i)
+              }
             }
-          }
-          return(paste0(x_result, collapse = "/"))
-        }))
+            return(paste0(x_result, collapse = "/"))
+          }))
+        }
         enrich_res@result <- result
         enrich_res@gene2Symbol <- as.character(gene_mapid)
 

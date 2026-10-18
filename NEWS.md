@@ -30,6 +30,11 @@
   acceleration supports simplifyEnrichment 2.4.1/2.6.0, with native fallback
   for other versions; MP timings exclude downloads and later ID conversion.
 
+* **perf**: Skip repeated leading-edge ID lookups in `RunGSEA()` when character
+  IDs retain their type. With 36,764 ranked rows across five groups and 20,529
+  result terms, median formatting time falls from 36.980 to 0.178 seconds;
+  native GSEA statistics and default 100,000 permutations remain unchanged.
+
 * **perf**: Reuse exact circlize colors within each `FeatureHeatmap()`,
   `GroupHeatmap()` and `DynamicHeatmap()` call. Replaying 247 complete mapping
   inputs takes median 16.342 to 3.423 seconds, including lookup construction
