@@ -1,0 +1,1512 @@
+{
+  "source": "85224cf393d43327b3c7d90f4a66779c6bd70aa1",
+  "pages": [
+    {
+      "page": "BranchStreamPlot.html",
+      "kind": "archive",
+      "source": "151e7134c597a318db23aacdc01739f82fa44758",
+      "published_commit": "6c43b29a8087d4accf4e1d0f4a7f8d7230e9834a",
+      "date": "2026-10-10",
+      "images": [
+        "restored-figures/BranchStreamPlot/BranchStreamPlot-1.png"
+      ]
+    },
+    {
+      "page": "CCCHeatmap.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/CCCHeatmap/CCCHeatmap-1.png",
+        "restored-figures/CCCHeatmap/CCCHeatmap-2.png",
+        "restored-figures/CCCHeatmap/CCCHeatmap-3.png",
+        "restored-figures/CCCHeatmap/CCCHeatmap-4.png",
+        "restored-figures/CCCHeatmap/CCCHeatmap-5.png",
+        "restored-figures/CCCHeatmap/CCCHeatmap-6.png",
+        "restored-figures/CCCHeatmap/CCCHeatmap-7.png",
+        "restored-figures/CCCHeatmap/CCCHeatmap-8.png",
+        "restored-figures/CCCHeatmap/CCCHeatmap-9.png",
+        "restored-figures/CCCHeatmap/CCCHeatmap-10.png",
+        "restored-figures/CCCHeatmap/CCCHeatmap-11.png",
+        "restored-figures/CCCHeatmap/CCCHeatmap-12.png"
+      ]
+    },
+    {
+      "page": "CCCNetworkPlot.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/CCCNetworkPlot/CCCNetworkPlot-1.png",
+        "restored-figures/CCCNetworkPlot/CCCNetworkPlot-2.png",
+        "restored-figures/CCCNetworkPlot/CCCNetworkPlot-3.png",
+        "restored-figures/CCCNetworkPlot/CCCNetworkPlot-4.png",
+        "restored-figures/CCCNetworkPlot/CCCNetworkPlot-5.png",
+        "restored-figures/CCCNetworkPlot/CCCNetworkPlot-6.png",
+        "restored-figures/CCCNetworkPlot/CCCNetworkPlot-7.png",
+        "restored-figures/CCCNetworkPlot/CCCNetworkPlot-8.png",
+        "restored-figures/CCCNetworkPlot/CCCNetworkPlot-9.png",
+        "restored-figures/CCCNetworkPlot/CCCNetworkPlot-10.png",
+        "restored-figures/CCCNetworkPlot/CCCNetworkPlot-11.png",
+        "restored-figures/CCCNetworkPlot/CCCNetworkPlot-12.png",
+        "restored-figures/CCCNetworkPlot/CCCNetworkPlot-13.png",
+        "restored-figures/CCCNetworkPlot/CCCNetworkPlot-14.png",
+        "restored-figures/CCCNetworkPlot/CCCNetworkPlot-15.png",
+        "restored-figures/CCCNetworkPlot/CCCNetworkPlot-16.png",
+        "restored-figures/CCCNetworkPlot/CCCNetworkPlot-17.png"
+      ]
+    },
+    {
+      "page": "CCCStatPlot.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/CCCStatPlot/CCCStatPlot-1.png",
+        "restored-figures/CCCStatPlot/CCCStatPlot-2.png",
+        "restored-figures/CCCStatPlot/CCCStatPlot-3.png",
+        "restored-figures/CCCStatPlot/CCCStatPlot-4.png",
+        "restored-figures/CCCStatPlot/CCCStatPlot-5.png",
+        "restored-figures/CCCStatPlot/CCCStatPlot-6.png",
+        "restored-figures/CCCStatPlot/CCCStatPlot-7.png",
+        "restored-figures/CCCStatPlot/CCCStatPlot-8.png",
+        "restored-figures/CCCStatPlot/CCCStatPlot-9.png",
+        "restored-figures/CCCStatPlot/CCCStatPlot-10.png",
+        "restored-figures/CCCStatPlot/CCCStatPlot-11.png",
+        "restored-figures/CCCStatPlot/CCCStatPlot-12.png"
+      ]
+    },
+    {
+      "page": "CellCorHeatmap.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/CellCorHeatmap/CellCorHeatmap-1.png",
+        "restored-figures/CellCorHeatmap/CellCorHeatmap-2.png",
+        "restored-figures/CellCorHeatmap/CellCorHeatmap-3.png",
+        "restored-figures/CellCorHeatmap/CellCorHeatmap-4.png"
+      ]
+    },
+    {
+      "page": "CellDensityPlot.html",
+      "kind": "current",
+      "source": "85224cf393d43327b3c7d90f4a66779c6bd70aa1",
+      "date": "2026-10-18",
+      "images": [
+        "restored-figures/CellDensityPlot/CellDensityPlot-1.png",
+        "restored-figures/CellDensityPlot/CellDensityPlot-2.png",
+        "restored-figures/CellDensityPlot/CellDensityPlot-3.png",
+        "restored-figures/CellDensityPlot/CellDensityPlot-4.png"
+      ]
+    },
+    {
+      "page": "CellDimPlot.html",
+      "kind": "current",
+      "source": "85224cf393d43327b3c7d90f4a66779c6bd70aa1",
+      "date": "2026-10-18",
+      "images": [
+        "restored-figures/CellDimPlot/CellDimPlot-1.png",
+        "restored-figures/CellDimPlot/CellDimPlot-2.png",
+        "restored-figures/CellDimPlot/CellDimPlot-3.png",
+        "restored-figures/CellDimPlot/CellDimPlot-4.png",
+        "restored-figures/CellDimPlot/CellDimPlot-5.png",
+        "restored-figures/CellDimPlot/CellDimPlot-6.png",
+        "restored-figures/CellDimPlot/CellDimPlot-7.png",
+        "restored-figures/CellDimPlot/CellDimPlot-8.png",
+        "restored-figures/CellDimPlot/CellDimPlot-9.png",
+        "restored-figures/CellDimPlot/CellDimPlot-10.png",
+        "restored-figures/CellDimPlot/CellDimPlot-11.png",
+        "restored-figures/CellDimPlot/CellDimPlot-12.png",
+        "restored-figures/CellDimPlot/CellDimPlot-13.png",
+        "restored-figures/CellDimPlot/CellDimPlot-14.png",
+        "restored-figures/CellDimPlot/CellDimPlot-15.png",
+        "restored-figures/CellDimPlot/CellDimPlot-16.png",
+        "restored-figures/CellDimPlot/CellDimPlot-17.png",
+        "restored-figures/CellDimPlot/CellDimPlot-18.png",
+        "restored-figures/CellDimPlot/CellDimPlot-19.png",
+        "restored-figures/CellDimPlot/CellDimPlot-20.png",
+        "restored-figures/CellDimPlot/CellDimPlot-21.png",
+        "restored-figures/CellDimPlot/CellDimPlot-22.png",
+        "restored-figures/CellDimPlot/CellDimPlot-23.png",
+        "restored-figures/CellDimPlot/CellDimPlot-24.png",
+        "restored-figures/CellDimPlot/CellDimPlot-25.png",
+        "restored-figures/CellDimPlot/CellDimPlot-26.png",
+        "restored-figures/CellDimPlot/CellDimPlot-27.png",
+        "restored-figures/CellDimPlot/CellDimPlot-28.png",
+        "restored-figures/CellDimPlot/CellDimPlot-29.png",
+        "restored-figures/CellDimPlot/CellDimPlot-30.png",
+        "restored-figures/CellDimPlot/CellDimPlot-31.png",
+        "restored-figures/CellDimPlot/CellDimPlot-32.png",
+        "restored-figures/CellDimPlot/CellDimPlot-33.png",
+        "restored-figures/CellDimPlot/CellDimPlot-34.png",
+        "restored-figures/CellDimPlot/CellDimPlot-35.png",
+        "restored-figures/CellDimPlot/CellDimPlot-36.png",
+        "restored-figures/CellDimPlot/CellDimPlot-37.png",
+        "restored-figures/CellDimPlot/CellDimPlot-38.png",
+        "restored-figures/CellDimPlot/CellDimPlot-39.png",
+        "restored-figures/CellDimPlot/CellDimPlot-40.png",
+        "restored-figures/CellDimPlot/CellDimPlot-41.png",
+        "restored-figures/CellDimPlot/CellDimPlot-42.png"
+      ]
+    },
+    {
+      "page": "CellScoring.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/CellScoring/CellScoring-1.png",
+        "restored-figures/CellScoring/CellScoring-2.png",
+        "restored-figures/CellScoring/CellScoring-3.png",
+        "restored-figures/CellScoring/CellScoring-4.png",
+        "restored-figures/CellScoring/CellScoring-5.png"
+      ]
+    },
+    {
+      "page": "CellScoringPlot.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/CellScoringPlot/CellScoringPlot-1.png"
+      ]
+    },
+    {
+      "page": "CellStatPlot.html",
+      "kind": "current",
+      "source": "85224cf393d43327b3c7d90f4a66779c6bd70aa1",
+      "date": "2026-10-18",
+      "images": [
+        "restored-figures/CellStatPlot/CellStatPlot-1.png",
+        "restored-figures/CellStatPlot/CellStatPlot-2.png",
+        "restored-figures/CellStatPlot/CellStatPlot-3.png",
+        "restored-figures/CellStatPlot/CellStatPlot-4.png",
+        "restored-figures/CellStatPlot/CellStatPlot-5.png",
+        "restored-figures/CellStatPlot/CellStatPlot-6.png",
+        "restored-figures/CellStatPlot/CellStatPlot-7.png",
+        "restored-figures/CellStatPlot/CellStatPlot-8.png",
+        "restored-figures/CellStatPlot/CellStatPlot-9.png",
+        "restored-figures/CellStatPlot/CellStatPlot-10.png",
+        "restored-figures/CellStatPlot/CellStatPlot-11.png",
+        "restored-figures/CellStatPlot/CellStatPlot-12.png",
+        "restored-figures/CellStatPlot/CellStatPlot-13.png",
+        "restored-figures/CellStatPlot/CellStatPlot-14.png",
+        "restored-figures/CellStatPlot/CellStatPlot-15.png",
+        "restored-figures/CellStatPlot/CellStatPlot-16.png",
+        "restored-figures/CellStatPlot/CellStatPlot-17.png",
+        "restored-figures/CellStatPlot/CellStatPlot-18.png",
+        "restored-figures/CellStatPlot/CellStatPlot-19.png",
+        "restored-figures/CellStatPlot/CellStatPlot-20.png",
+        "restored-figures/CellStatPlot/CellStatPlot-21.png",
+        "restored-figures/CellStatPlot/CellStatPlot-22.png",
+        "restored-figures/CellStatPlot/CellStatPlot-23.png",
+        "restored-figures/CellStatPlot/CellStatPlot-24.png",
+        "restored-figures/CellStatPlot/CellStatPlot-25.png",
+        "restored-figures/CellStatPlot/CellStatPlot-26.png",
+        "restored-figures/CellStatPlot/CellStatPlot-27.png",
+        "restored-figures/CellStatPlot/CellStatPlot-28.png",
+        "restored-figures/CellStatPlot/CellStatPlot-29.png",
+        "restored-figures/CellStatPlot/CellStatPlot-30.png",
+        "restored-figures/CellStatPlot/CellStatPlot-31.png"
+      ]
+    },
+    {
+      "page": "ClusterTreePlot.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/ClusterTreePlot/ClusterTreePlot-1.png",
+        "restored-figures/ClusterTreePlot/ClusterTreePlot-2.png"
+      ]
+    },
+    {
+      "page": "CytoTRACEPlot.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/CytoTRACEPlot/CytoTRACEPlot-1.png",
+        "restored-figures/CytoTRACEPlot/CytoTRACEPlot-2.png"
+      ]
+    },
+    {
+      "page": "DeconvolutionPlot.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/DeconvolutionPlot/DeconvolutionPlot-1.png",
+        "restored-figures/DeconvolutionPlot/DeconvolutionPlot-2.png",
+        "restored-figures/DeconvolutionPlot/DeconvolutionPlot-3.png"
+      ]
+    },
+    {
+      "page": "DEtestManhattanPlot.html",
+      "kind": "current",
+      "source": "85224cf393d43327b3c7d90f4a66779c6bd70aa1",
+      "date": "2026-10-18",
+      "images": [
+        "restored-figures/DEtestManhattanPlot/DEtestManhattanPlot-1.png"
+      ]
+    },
+    {
+      "page": "DEtestPlot.html",
+      "kind": "current",
+      "source": "85224cf393d43327b3c7d90f4a66779c6bd70aa1",
+      "date": "2026-10-18",
+      "images": [
+        "restored-figures/DEtestPlot/DEtestPlot-1.png",
+        "restored-figures/DEtestPlot/DEtestPlot-2.png",
+        "restored-figures/DEtestPlot/DEtestPlot-3.png",
+        "restored-figures/DEtestPlot/DEtestPlot-4.png",
+        "restored-figures/DEtestPlot/DEtestPlot-5.png",
+        "restored-figures/DEtestPlot/DEtestPlot-6.png",
+        "restored-figures/DEtestPlot/DEtestPlot-7.png",
+        "restored-figures/DEtestPlot/DEtestPlot-8.png",
+        "restored-figures/DEtestPlot/DEtestPlot-9.png",
+        "restored-figures/DEtestPlot/DEtestPlot-10.png"
+      ]
+    },
+    {
+      "page": "DEtestRingPlot.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/DEtestRingPlot/DEtestRingPlot-1.png"
+      ]
+    },
+    {
+      "page": "DimsEstimatePlot.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/DimsEstimatePlot/DimsEstimatePlot-1.png"
+      ]
+    },
+    {
+      "page": "DorotheaPlot.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/DorotheaPlot/DorotheaPlot-1.png",
+        "restored-figures/DorotheaPlot/DorotheaPlot-2.png",
+        "restored-figures/DorotheaPlot/DorotheaPlot-3.png",
+        "restored-figures/DorotheaPlot/DorotheaPlot-4.png",
+        "restored-figures/DorotheaPlot/DorotheaPlot-5.png",
+        "restored-figures/DorotheaPlot/DorotheaPlot-6.png",
+        "restored-figures/DorotheaPlot/DorotheaPlot-7.png"
+      ]
+    },
+    {
+      "page": "DynamicHeatmap.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/DynamicHeatmap/DynamicHeatmap-1.png",
+        "restored-figures/DynamicHeatmap/DynamicHeatmap-2.png",
+        "restored-figures/DynamicHeatmap/DynamicHeatmap-3.png",
+        "restored-figures/DynamicHeatmap/DynamicHeatmap-4.png",
+        "restored-figures/DynamicHeatmap/DynamicHeatmap-5.png"
+      ]
+    },
+    {
+      "page": "DynamicPlot.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/DynamicPlot/DynamicPlot-1.png",
+        "restored-figures/DynamicPlot/DynamicPlot-2.png",
+        "restored-figures/DynamicPlot/DynamicPlot-3.png",
+        "restored-figures/DynamicPlot/DynamicPlot-4.png",
+        "restored-figures/DynamicPlot/DynamicPlot-5.png",
+        "restored-figures/DynamicPlot/DynamicPlot-6.png"
+      ]
+    },
+    {
+      "page": "EnrichmentPlot.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/EnrichmentPlot/EnrichmentPlot-1.png",
+        "restored-figures/EnrichmentPlot/EnrichmentPlot-2.png",
+        "restored-figures/EnrichmentPlot/EnrichmentPlot-3.png",
+        "restored-figures/EnrichmentPlot/EnrichmentPlot-4.png",
+        "restored-figures/EnrichmentPlot/EnrichmentPlot-5.png",
+        "restored-figures/EnrichmentPlot/EnrichmentPlot-6.png",
+        "restored-figures/EnrichmentPlot/EnrichmentPlot-7.png",
+        "restored-figures/EnrichmentPlot/EnrichmentPlot-8.png",
+        "restored-figures/EnrichmentPlot/EnrichmentPlot-9.png",
+        "restored-figures/EnrichmentPlot/EnrichmentPlot-10.png",
+        "restored-figures/EnrichmentPlot/EnrichmentPlot-11.png",
+        "restored-figures/EnrichmentPlot/EnrichmentPlot-12.png",
+        "restored-figures/EnrichmentPlot/EnrichmentPlot-13.png",
+        "restored-figures/EnrichmentPlot/EnrichmentPlot-14.png",
+        "restored-figures/EnrichmentPlot/EnrichmentPlot-15.png",
+        "restored-figures/EnrichmentPlot/EnrichmentPlot-16.png",
+        "restored-figures/EnrichmentPlot/EnrichmentPlot-17.png",
+        "restored-figures/EnrichmentPlot/EnrichmentPlot-18.png",
+        "restored-figures/EnrichmentPlot/EnrichmentPlot-19.png",
+        "restored-figures/EnrichmentPlot/EnrichmentPlot-20.png",
+        "restored-figures/EnrichmentPlot/EnrichmentPlot-21.png",
+        "restored-figures/EnrichmentPlot/EnrichmentPlot-22.png",
+        "restored-figures/EnrichmentPlot/EnrichmentPlot-23.png"
+      ]
+    },
+    {
+      "page": "EstimateGenePlot.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/EstimateGenePlot/EstimateGenePlot-1.png"
+      ]
+    },
+    {
+      "page": "EstimateScorePlot.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/EstimateScorePlot/EstimateScorePlot-1.png"
+      ]
+    },
+    {
+      "page": "FeatureCorPlot.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/FeatureCorPlot/FeatureCorPlot-1.png",
+        "restored-figures/FeatureCorPlot/FeatureCorPlot-2.png",
+        "restored-figures/FeatureCorPlot/FeatureCorPlot-3.png"
+      ]
+    },
+    {
+      "page": "FeatureDimPlot.html",
+      "kind": "current",
+      "source": "85224cf393d43327b3c7d90f4a66779c6bd70aa1",
+      "date": "2026-10-18",
+      "images": [
+        "restored-figures/FeatureDimPlot/FeatureDimPlot-1.png",
+        "restored-figures/FeatureDimPlot/FeatureDimPlot-2.png",
+        "restored-figures/FeatureDimPlot/FeatureDimPlot-3.png",
+        "restored-figures/FeatureDimPlot/FeatureDimPlot-4.png",
+        "restored-figures/FeatureDimPlot/FeatureDimPlot-5.png",
+        "restored-figures/FeatureDimPlot/FeatureDimPlot-6.png",
+        "restored-figures/FeatureDimPlot/FeatureDimPlot-7.png",
+        "restored-figures/FeatureDimPlot/FeatureDimPlot-8.png",
+        "restored-figures/FeatureDimPlot/FeatureDimPlot-9.png",
+        "restored-figures/FeatureDimPlot/FeatureDimPlot-10.png",
+        "restored-figures/FeatureDimPlot/FeatureDimPlot-11.png",
+        "restored-figures/FeatureDimPlot/FeatureDimPlot-12.png",
+        "restored-figures/FeatureDimPlot/FeatureDimPlot-13.png",
+        "restored-figures/FeatureDimPlot/FeatureDimPlot-14.png",
+        "restored-figures/FeatureDimPlot/FeatureDimPlot-15.png",
+        "restored-figures/FeatureDimPlot/FeatureDimPlot-16.png",
+        "restored-figures/FeatureDimPlot/FeatureDimPlot-17.png",
+        "restored-figures/FeatureDimPlot/FeatureDimPlot-18.png",
+        "restored-figures/FeatureDimPlot/FeatureDimPlot-19.png",
+        "restored-figures/FeatureDimPlot/FeatureDimPlot-20.png",
+        "restored-figures/FeatureDimPlot/FeatureDimPlot-21.png",
+        "restored-figures/FeatureDimPlot/FeatureDimPlot-22.png",
+        "restored-figures/FeatureDimPlot/FeatureDimPlot-23.png",
+        "restored-figures/FeatureDimPlot/FeatureDimPlot-24.png",
+        "restored-figures/FeatureDimPlot/FeatureDimPlot-25.png",
+        "restored-figures/FeatureDimPlot/FeatureDimPlot-26.png",
+        "restored-figures/FeatureDimPlot/FeatureDimPlot-27.png",
+        "restored-figures/FeatureDimPlot/FeatureDimPlot-28.png"
+      ]
+    },
+    {
+      "page": "FeatureHeatmap.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/FeatureHeatmap/FeatureHeatmap-1.png",
+        "restored-figures/FeatureHeatmap/FeatureHeatmap-2.png",
+        "restored-figures/FeatureHeatmap/FeatureHeatmap-3.png",
+        "restored-figures/FeatureHeatmap/FeatureHeatmap-4.png",
+        "restored-figures/FeatureHeatmap/FeatureHeatmap-5.png",
+        "restored-figures/FeatureHeatmap/FeatureHeatmap-6.png",
+        "restored-figures/FeatureHeatmap/FeatureHeatmap-7.png",
+        "restored-figures/FeatureHeatmap/FeatureHeatmap-8.png"
+      ]
+    },
+    {
+      "page": "FeatureStatPlot.html",
+      "kind": "current",
+      "source": "85224cf393d43327b3c7d90f4a66779c6bd70aa1",
+      "date": "2026-10-18",
+      "images": [
+        "restored-figures/FeatureStatPlot/FeatureStatPlot-1.png",
+        "restored-figures/FeatureStatPlot/FeatureStatPlot-2.png",
+        "restored-figures/FeatureStatPlot/FeatureStatPlot-3.png",
+        "restored-figures/FeatureStatPlot/FeatureStatPlot-4.png",
+        "restored-figures/FeatureStatPlot/FeatureStatPlot-5.png",
+        "restored-figures/FeatureStatPlot/FeatureStatPlot-6.png",
+        "restored-figures/FeatureStatPlot/FeatureStatPlot-7.png",
+        "restored-figures/FeatureStatPlot/FeatureStatPlot-8.png",
+        "restored-figures/FeatureStatPlot/FeatureStatPlot-9.png",
+        "restored-figures/FeatureStatPlot/FeatureStatPlot-10.png",
+        "restored-figures/FeatureStatPlot/FeatureStatPlot-11.png",
+        "restored-figures/FeatureStatPlot/FeatureStatPlot-12.png",
+        "restored-figures/FeatureStatPlot/FeatureStatPlot-13.png",
+        "restored-figures/FeatureStatPlot/FeatureStatPlot-14.png",
+        "restored-figures/FeatureStatPlot/FeatureStatPlot-15.png",
+        "restored-figures/FeatureStatPlot/FeatureStatPlot-16.png",
+        "restored-figures/FeatureStatPlot/FeatureStatPlot-17.png",
+        "restored-figures/FeatureStatPlot/FeatureStatPlot-18.png",
+        "restored-figures/FeatureStatPlot/FeatureStatPlot-19.png",
+        "restored-figures/FeatureStatPlot/FeatureStatPlot-20.png",
+        "restored-figures/FeatureStatPlot/FeatureStatPlot-21.png",
+        "restored-figures/FeatureStatPlot/FeatureStatPlot-22.png",
+        "restored-figures/FeatureStatPlot/FeatureStatPlot-23.png",
+        "restored-figures/FeatureStatPlot/FeatureStatPlot-24.png",
+        "restored-figures/FeatureStatPlot/FeatureStatPlot-25.png",
+        "restored-figures/FeatureStatPlot/FeatureStatPlot-26.png",
+        "restored-figures/FeatureStatPlot/FeatureStatPlot-27.png",
+        "restored-figures/FeatureStatPlot/FeatureStatPlot-28.png",
+        "restored-figures/FeatureStatPlot/FeatureStatPlot-29.png"
+      ]
+    },
+    {
+      "page": "FerrisWheelPlot.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/FerrisWheelPlot/FerrisWheelPlot-1.png"
+      ]
+    },
+    {
+      "page": "FindExpressedMarkers.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/FindExpressedMarkers/FindExpressedMarkers-1.png"
+      ]
+    },
+    {
+      "page": "FitDevoPlot.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/FitDevoPlot/FitDevoPlot-1.png"
+      ]
+    },
+    {
+      "page": "GroupHeatmap.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/GroupHeatmap/GroupHeatmap-1.png",
+        "restored-figures/GroupHeatmap/GroupHeatmap-2.png",
+        "restored-figures/GroupHeatmap/GroupHeatmap-3.png",
+        "restored-figures/GroupHeatmap/GroupHeatmap-4.png",
+        "restored-figures/GroupHeatmap/GroupHeatmap-5.png",
+        "restored-figures/GroupHeatmap/GroupHeatmap-6.png",
+        "restored-figures/GroupHeatmap/GroupHeatmap-7.png",
+        "restored-figures/GroupHeatmap/GroupHeatmap-8.png",
+        "restored-figures/GroupHeatmap/GroupHeatmap-9.png"
+      ]
+    },
+    {
+      "page": "GSEAPlot.html",
+      "kind": "current",
+      "source": "85224cf393d43327b3c7d90f4a66779c6bd70aa1",
+      "date": "2026-10-18",
+      "images": [
+        "restored-figures/GSEAPlot/GSEAPlot-1.png",
+        "restored-figures/GSEAPlot/GSEAPlot-2.png"
+      ]
+    },
+    {
+      "page": "GSVAPlot.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/GSVAPlot/GSVAPlot-1.png",
+        "restored-figures/GSVAPlot/GSVAPlot-2.png",
+        "restored-figures/GSVAPlot/GSVAPlot-3.png"
+      ]
+    },
+    {
+      "page": "LIGER_integrate.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/LIGER_integrate/LIGER_integrate-1.png"
+      ]
+    },
+    {
+      "page": "LineagePlot.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/LineagePlot/LineagePlot-1.png",
+        "restored-figures/LineagePlot/LineagePlot-2.png"
+      ]
+    },
+    {
+      "page": "MetabolismPlot.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/MetabolismPlot/MetabolismPlot-1.png",
+        "restored-figures/MetabolismPlot/MetabolismPlot-2.png",
+        "restored-figures/MetabolismPlot/MetabolismPlot-3.png",
+        "restored-figures/MetabolismPlot/MetabolismPlot-4.png",
+        "restored-figures/MetabolismPlot/MetabolismPlot-5.png",
+        "restored-figures/MetabolismPlot/MetabolismPlot-6.png",
+        "restored-figures/MetabolismPlot/MetabolismPlot-7.png",
+        "restored-figures/MetabolismPlot/MetabolismPlot-8.png",
+        "restored-figures/MetabolismPlot/MetabolismPlot-9.png"
+      ]
+    },
+    {
+      "page": "MetaCellPlot.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/MetaCellPlot/MetaCellPlot-1.png",
+        "restored-figures/MetaCellPlot/MetaCellPlot-2.png",
+        "restored-figures/MetaCellPlot/MetaCellPlot-3.png"
+      ]
+    },
+    {
+      "page": "NMFHeatmap.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/NMFHeatmap/NMFHeatmap-1.png",
+        "restored-figures/NMFHeatmap/NMFHeatmap-2.png"
+      ]
+    },
+    {
+      "page": "PAGAPlot.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/PAGAPlot/PAGAPlot-1.png",
+        "restored-figures/PAGAPlot/PAGAPlot-2.png",
+        "restored-figures/PAGAPlot/PAGAPlot-3.png",
+        "restored-figures/PAGAPlot/PAGAPlot-4.png",
+        "restored-figures/PAGAPlot/PAGAPlot-5.png",
+        "restored-figures/PAGAPlot/PAGAPlot-6.png",
+        "restored-figures/PAGAPlot/PAGAPlot-7.png",
+        "restored-figures/PAGAPlot/PAGAPlot-8.png",
+        "restored-figures/PAGAPlot/PAGAPlot-9.png",
+        "restored-figures/PAGAPlot/PAGAPlot-10.png",
+        "restored-figures/PAGAPlot/PAGAPlot-11.png",
+        "restored-figures/PAGAPlot/PAGAPlot-12.png"
+      ]
+    },
+    {
+      "page": "ProjectionPlot.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/ProjectionPlot/ProjectionPlot-1.png",
+        "restored-figures/ProjectionPlot/ProjectionPlot-2.png"
+      ]
+    },
+    {
+      "page": "ProportionTestPlot.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/ProportionTestPlot/ProportionTestPlot-1.png",
+        "restored-figures/ProportionTestPlot/ProportionTestPlot-2.png"
+      ]
+    },
+    {
+      "page": "PseudotimeProjectionPlot.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/PseudotimeProjectionPlot/PseudotimeProjectionPlot-1.png",
+        "restored-figures/PseudotimeProjectionPlot/PseudotimeProjectionPlot-2.png",
+        "restored-figures/PseudotimeProjectionPlot/PseudotimeProjectionPlot-3.png",
+        "restored-figures/PseudotimeProjectionPlot/PseudotimeProjectionPlot-4.png",
+        "restored-figures/PseudotimeProjectionPlot/PseudotimeProjectionPlot-5.png"
+      ]
+    },
+    {
+      "page": "RenameClusters.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RenameClusters/RenameClusters-1.png",
+        "restored-figures/RenameClusters/RenameClusters-2.png",
+        "restored-figures/RenameClusters/RenameClusters-3.png"
+      ]
+    },
+    {
+      "page": "RunAugur.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunAugur/RunAugur-1.png"
+      ]
+    },
+    {
+      "page": "RunBANKSY.html",
+      "kind": "archive",
+      "source": "06d363dad24bc69adb622842095c347a092388b5",
+      "published_commit": "9dc7962b2a20233ce4c0f07c4a71640e5c1544bf",
+      "date": "2026-09-21",
+      "images": [
+        "restored-figures/RunBANKSY/RunBANKSY-1.png"
+      ]
+    },
+    {
+      "page": "RunBayesSpace.html",
+      "kind": "archive",
+      "source": "151e7134c597a318db23aacdc01739f82fa44758",
+      "published_commit": "6c43b29a8087d4accf4e1d0f4a7f8d7230e9834a",
+      "date": "2026-10-10",
+      "images": [
+        "restored-figures/RunBayesSpace/RunBayesSpace-1.png"
+      ]
+    },
+    {
+      "page": "RunCellChat.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunCellChat/RunCellChat-1.png",
+        "restored-figures/RunCellChat/RunCellChat-2.png",
+        "restored-figures/RunCellChat/RunCellChat-3.png"
+      ]
+    },
+    {
+      "page": "RunCellCycle.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunCellCycle/RunCellCycle-1.png",
+        "restored-figures/RunCellCycle/RunCellCycle-2.png"
+      ]
+    },
+    {
+      "page": "RunCellQC.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunCellQC/RunCellQC-1.png"
+      ]
+    },
+    {
+      "page": "RunCoEmbedding.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunCoEmbedding/RunCoEmbedding-1.png"
+      ]
+    },
+    {
+      "page": "RunCSSMap.html",
+      "kind": "archive",
+      "source": "65373dbf2951c8e3a3ad1e6403a38abeb5da9f06",
+      "published_commit": "8413f1164124b8dc5e14f38aa9f55cefad2cc115",
+      "date": "2026-10-05",
+      "images": [
+        "restored-figures/RunCSSMap/RunCSSMap-1.png",
+        "restored-figures/RunCSSMap/RunCSSMap-2.png"
+      ]
+    },
+    {
+      "page": "RunCytoSPACE.html",
+      "kind": "archive",
+      "source": "151e7134c597a318db23aacdc01739f82fa44758",
+      "published_commit": "6c43b29a8087d4accf4e1d0f4a7f8d7230e9834a",
+      "date": "2026-10-10",
+      "images": [
+        "restored-figures/RunCytoSPACE/RunCytoSPACE-1.png"
+      ]
+    },
+    {
+      "page": "RunCytoTRACE.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunCytoTRACE/RunCytoTRACE-1.png"
+      ]
+    },
+    {
+      "page": "RunDecontX.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunDecontX/RunDecontX-1.png",
+        "restored-figures/RunDecontX/RunDecontX-2.png"
+      ]
+    },
+    {
+      "page": "RunDeconvolution.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunDeconvolution/RunDeconvolution-1.png",
+        "restored-figures/RunDeconvolution/RunDeconvolution-2.png",
+        "restored-figures/RunDeconvolution/RunDeconvolution-3.png"
+      ]
+    },
+    {
+      "page": "RunDEtest.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunDEtest/RunDEtest-1.png",
+        "restored-figures/RunDEtest/RunDEtest-2.png",
+        "restored-figures/RunDEtest/RunDEtest-3.png",
+        "restored-figures/RunDEtest/RunDEtest-4.png",
+        "restored-figures/RunDEtest/RunDEtest-5.png",
+        "restored-figures/RunDEtest/RunDEtest-6.png",
+        "restored-figures/RunDEtest/RunDEtest-7.png",
+        "restored-figures/RunDEtest/RunDEtest-8.png",
+        "restored-figures/RunDEtest/RunDEtest-9.png",
+        "restored-figures/RunDEtest/RunDEtest-10.png",
+        "restored-figures/RunDEtest/RunDEtest-11.png",
+        "restored-figures/RunDEtest/RunDEtest-12.png"
+      ]
+    },
+    {
+      "page": "RunDimsEstimate.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunDimsEstimate/RunDimsEstimate-1.png"
+      ]
+    },
+    {
+      "page": "RunDorothea.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunDorothea/RunDorothea-1.png",
+        "restored-figures/RunDorothea/RunDorothea-2.png",
+        "restored-figures/RunDorothea/RunDorothea-3.png",
+        "restored-figures/RunDorothea/RunDorothea-4.png",
+        "restored-figures/RunDorothea/RunDorothea-5.png",
+        "restored-figures/RunDorothea/RunDorothea-6.png"
+      ]
+    },
+    {
+      "page": "RunDynamicEnrichment.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunDynamicEnrichment/RunDynamicEnrichment-1.png"
+      ]
+    },
+    {
+      "page": "RunDynamicFeatures.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunDynamicFeatures/RunDynamicFeatures-1.png",
+        "restored-figures/RunDynamicFeatures/RunDynamicFeatures-2.png",
+        "restored-figures/RunDynamicFeatures/RunDynamicFeatures-3.png",
+        "restored-figures/RunDynamicFeatures/RunDynamicFeatures-4.png",
+        "restored-figures/RunDynamicFeatures/RunDynamicFeatures-5.png"
+      ]
+    },
+    {
+      "page": "RunEnrichment.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunEnrichment/RunEnrichment-1.png"
+      ]
+    },
+    {
+      "page": "RunFitDevo.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunFitDevo/RunFitDevo-1.png",
+        "restored-figures/RunFitDevo/RunFitDevo-2.png"
+      ]
+    },
+    {
+      "page": "RunFR.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunFR/RunFR-1.png"
+      ]
+    },
+    {
+      "page": "RunFWP.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunFWP/RunFWP-1.png"
+      ]
+    },
+    {
+      "page": "RunGLMPCA.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunGLMPCA/RunGLMPCA-1.png"
+      ]
+    },
+    {
+      "page": "RunGSEA.html",
+      "kind": "archive",
+      "source": "151e7134c597a318db23aacdc01739f82fa44758",
+      "published_commit": "6c43b29a8087d4accf4e1d0f4a7f8d7230e9834a",
+      "date": "2026-10-10",
+      "images": [
+        "restored-figures/RunGSEA/RunGSEA-1.png"
+      ]
+    },
+    {
+      "page": "RunGSVA.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunGSVA/RunGSVA-1.png",
+        "restored-figures/RunGSVA/RunGSVA-2.png"
+      ]
+    },
+    {
+      "page": "RunHarmony2.html",
+      "kind": "archive",
+      "source": "083f5f31e37220a9e9a5b0110e63ea4ed3f49317",
+      "published_commit": "00cfc677a0ed7e5ea135810be5aa0607b1ab2eb0",
+      "date": "2026-10-12",
+      "images": [
+        "restored-figures/RunHarmony2/RunHarmony2-1.png",
+        "restored-figures/RunHarmony2/RunHarmony2-2.png",
+        "restored-figures/RunHarmony2/RunHarmony2-3.png",
+        "restored-figures/RunHarmony2/RunHarmony2-4.png"
+      ]
+    },
+    {
+      "page": "RunIntegrationBenchmark.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunIntegrationBenchmark/RunIntegrationBenchmark-1.png",
+        "restored-figures/RunIntegrationBenchmark/RunIntegrationBenchmark-2.png",
+        "restored-figures/RunIntegrationBenchmark/RunIntegrationBenchmark-3.png",
+        "restored-figures/RunIntegrationBenchmark/RunIntegrationBenchmark-4.png",
+        "restored-figures/RunIntegrationBenchmark/RunIntegrationBenchmark-5.png"
+      ]
+    },
+    {
+      "page": "RunKNNMap.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunKNNMap/RunKNNMap-1.png"
+      ]
+    },
+    {
+      "page": "RunKNNPredict.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunKNNPredict/RunKNNPredict-1.png",
+        "restored-figures/RunKNNPredict/RunKNNPredict-2.png"
+      ]
+    },
+    {
+      "page": "RunLargeVis.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunLargeVis/RunLargeVis-1.png"
+      ]
+    },
+    {
+      "page": "RunLISI.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunLISI/RunLISI-1.png"
+      ]
+    },
+    {
+      "page": "RunmcRigor.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunmcRigor/RunmcRigor-1.png",
+        "restored-figures/RunmcRigor/RunmcRigor-2.png"
+      ]
+    },
+    {
+      "page": "RunMDS.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunMDS/RunMDS-1.png"
+      ]
+    },
+    {
+      "page": "RunMetaCell.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunMetaCell/RunMetaCell-1.png",
+        "restored-figures/RunMetaCell/RunMetaCell-2.png"
+      ]
+    },
+    {
+      "page": "RunNMF.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunNMF/RunNMF-1.png",
+        "restored-figures/RunNMF/RunNMF-2.png",
+        "restored-figures/RunNMF/RunNMF-3.png",
+        "restored-figures/RunNMF/RunNMF-4.png"
+      ]
+    },
+    {
+      "page": "RunPAGA.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunPAGA/RunPAGA-1.png",
+        "restored-figures/RunPAGA/RunPAGA-2.png"
+      ]
+    },
+    {
+      "page": "RunPalantir.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunPalantir/RunPalantir-1.png",
+        "restored-figures/RunPalantir/RunPalantir-2.png",
+        "restored-figures/RunPalantir/RunPalantir-3.png",
+        "restored-figures/RunPalantir/RunPalantir-4.png"
+      ]
+    },
+    {
+      "page": "RunPCAMap.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunPCAMap/RunPCAMap-1.png",
+        "restored-figures/RunPCAMap/RunPCAMap-2.png"
+      ]
+    },
+    {
+      "page": "RunProportionTest.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunProportionTest/RunProportionTest-1.png"
+      ]
+    },
+    {
+      "page": "RunRareQ.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunRareQ/RunRareQ-1.png",
+        "restored-figures/RunRareQ/RunRareQ-2.png",
+        "restored-figures/RunRareQ/RunRareQ-3.png"
+      ]
+    },
+    {
+      "page": "RunRCTD.html",
+      "kind": "archive",
+      "source": "083f5f31e37220a9e9a5b0110e63ea4ed3f49317",
+      "published_commit": "00cfc677a0ed7e5ea135810be5aa0607b1ab2eb0",
+      "date": "2026-10-12",
+      "images": [
+        "restored-figures/RunRCTD/RunRCTD-1.png"
+      ]
+    },
+    {
+      "page": "Runscds.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/Runscds/Runscds-1.png",
+        "restored-figures/Runscds/Runscds-2.png"
+      ]
+    },
+    {
+      "page": "RunSciBet.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunSciBet/RunSciBet-1.png"
+      ]
+    },
+    {
+      "page": "RunScissor.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunScissor/RunScissor-1.png"
+      ]
+    },
+    {
+      "page": "RunScmap.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunScmap/RunScmap-1.png"
+      ]
+    },
+    {
+      "page": "RunSCVELO.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunSCVELO/RunSCVELO-1.png",
+        "restored-figures/RunSCVELO/RunSCVELO-2.png",
+        "restored-figures/RunSCVELO/RunSCVELO-3.png"
+      ]
+    },
+    {
+      "page": "RunSeuratMap.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunSeuratMap/RunSeuratMap-1.png",
+        "restored-figures/RunSeuratMap/RunSeuratMap-2.png"
+      ]
+    },
+    {
+      "page": "RunSingleR.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunSingleR/RunSingleR-1.png",
+        "restored-figures/RunSingleR/RunSingleR-2.png"
+      ]
+    },
+    {
+      "page": "RunSlingshot.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunSlingshot/RunSlingshot-1.png",
+        "restored-figures/RunSlingshot/RunSlingshot-2.png",
+        "restored-figures/RunSlingshot/RunSlingshot-3.png",
+        "restored-figures/RunSlingshot/RunSlingshot-4.png",
+        "restored-figures/RunSlingshot/RunSlingshot-5.png"
+      ]
+    },
+    {
+      "page": "RunSmoothClust.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunSmoothClust/RunSmoothClust-1.png"
+      ]
+    },
+    {
+      "page": "RunSpaNorm.html",
+      "kind": "archive",
+      "source": "083f5f31e37220a9e9a5b0110e63ea4ed3f49317",
+      "published_commit": "00cfc677a0ed7e5ea135810be5aa0607b1ab2eb0",
+      "date": "2026-10-12",
+      "images": [
+        "restored-figures/RunSpaNorm/RunSpaNorm-1.png"
+      ]
+    },
+    {
+      "page": "RunSpatialGradientFeatures.html",
+      "kind": "archive",
+      "source": "151e7134c597a318db23aacdc01739f82fa44758",
+      "published_commit": "6c43b29a8087d4accf4e1d0f4a7f8d7230e9834a",
+      "date": "2026-10-10",
+      "images": [
+        "restored-figures/RunSpatialGradientFeatures/RunSpatialGradientFeatures-1.png",
+        "restored-figures/RunSpatialGradientFeatures/RunSpatialGradientFeatures-2.png"
+      ]
+    },
+    {
+      "page": "RunSpatialNeighborhood.html",
+      "kind": "archive",
+      "source": "151e7134c597a318db23aacdc01739f82fa44758",
+      "published_commit": "6c43b29a8087d4accf4e1d0f4a7f8d7230e9834a",
+      "date": "2026-10-10",
+      "images": [
+        "restored-figures/RunSpatialNeighborhood/RunSpatialNeighborhood-1.png"
+      ]
+    },
+    {
+      "page": "RunSpatialNetwork.html",
+      "kind": "archive",
+      "source": "151e7134c597a318db23aacdc01739f82fa44758",
+      "published_commit": "6c43b29a8087d4accf4e1d0f4a7f8d7230e9834a",
+      "date": "2026-10-10",
+      "images": [
+        "restored-figures/RunSpatialNetwork/RunSpatialNetwork-1.png"
+      ]
+    },
+    {
+      "page": "RunSpatialVariableFeatures.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunSpatialVariableFeatures/RunSpatialVariableFeatures-1.png",
+        "restored-figures/RunSpatialVariableFeatures/RunSpatialVariableFeatures-2.png"
+      ]
+    },
+    {
+      "page": "RunSpotQC.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunSpotQC/RunSpotQC-1.png"
+      ]
+    },
+    {
+      "page": "RunSymphonyMap.html",
+      "kind": "archive",
+      "source": "083f5f31e37220a9e9a5b0110e63ea4ed3f49317",
+      "published_commit": "00cfc677a0ed7e5ea135810be5aa0607b1ab2eb0",
+      "date": "2026-10-12",
+      "images": [
+        "restored-figures/RunSymphonyMap/RunSymphonyMap-1.png",
+        "restored-figures/RunSymphonyMap/RunSymphonyMap-2.png"
+      ]
+    },
+    {
+      "page": "RunUMAP2.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunUMAP2/RunUMAP2-1.png"
+      ]
+    },
+    {
+      "page": "RunVECTOR.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/RunVECTOR/RunVECTOR-1.png",
+        "restored-figures/RunVECTOR/RunVECTOR-2.png",
+        "restored-figures/RunVECTOR/RunVECTOR-3.png"
+      ]
+    },
+    {
+      "page": "ScissorPlot.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/ScissorPlot/ScissorPlot-1.png",
+        "restored-figures/ScissorPlot/ScissorPlot-2.png",
+        "restored-figures/ScissorPlot/ScissorPlot-3.png",
+        "restored-figures/ScissorPlot/ScissorPlot-4.png",
+        "restored-figures/ScissorPlot/ScissorPlot-5.png",
+        "restored-figures/ScissorPlot/ScissorPlot-6.png",
+        "restored-figures/ScissorPlot/ScissorPlot-7.png",
+        "restored-figures/ScissorPlot/ScissorPlot-8.png",
+        "restored-figures/ScissorPlot/ScissorPlot-9.png"
+      ]
+    },
+    {
+      "page": "scTenifoldKnkPlot.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/scTenifoldKnkPlot/scTenifoldKnkPlot-1.png",
+        "restored-figures/scTenifoldKnkPlot/scTenifoldKnkPlot-2.png",
+        "restored-figures/scTenifoldKnkPlot/scTenifoldKnkPlot-3.png",
+        "restored-figures/scTenifoldKnkPlot/scTenifoldKnkPlot-4.png"
+      ]
+    },
+    {
+      "page": "SpatialBenchmarkPlot.html",
+      "kind": "archive",
+      "source": "151e7134c597a318db23aacdc01739f82fa44758",
+      "published_commit": "6c43b29a8087d4accf4e1d0f4a7f8d7230e9834a",
+      "date": "2026-10-10",
+      "images": [
+        "restored-figures/SpatialBenchmarkPlot/SpatialBenchmarkPlot-1.png",
+        "restored-figures/SpatialBenchmarkPlot/SpatialBenchmarkPlot-2.png"
+      ]
+    },
+    {
+      "page": "SpatialCellPlot.html",
+      "kind": "archive",
+      "source": "151e7134c597a318db23aacdc01739f82fa44758",
+      "published_commit": "6c43b29a8087d4accf4e1d0f4a7f8d7230e9834a",
+      "date": "2026-10-10",
+      "images": [
+        "restored-figures/SpatialCellPlot/SpatialCellPlot-1.png"
+      ]
+    },
+    {
+      "page": "SpatialDeconvolutionPlot.html",
+      "kind": "archive",
+      "source": "083f5f31e37220a9e9a5b0110e63ea4ed3f49317",
+      "published_commit": "00cfc677a0ed7e5ea135810be5aa0607b1ab2eb0",
+      "date": "2026-10-12",
+      "images": [
+        "restored-figures/SpatialDeconvolutionPlot/SpatialDeconvolutionPlot-1.png"
+      ]
+    },
+    {
+      "page": "SpatialGradientPlot.html",
+      "kind": "archive",
+      "source": "151e7134c597a318db23aacdc01739f82fa44758",
+      "published_commit": "6c43b29a8087d4accf4e1d0f4a7f8d7230e9834a",
+      "date": "2026-10-10",
+      "images": [
+        "restored-figures/SpatialGradientPlot/SpatialGradientPlot-1.png",
+        "restored-figures/SpatialGradientPlot/SpatialGradientPlot-2.png"
+      ]
+    },
+    {
+      "page": "SpatialNeighborhoodPlot.html",
+      "kind": "archive",
+      "source": "151e7134c597a318db23aacdc01739f82fa44758",
+      "published_commit": "6c43b29a8087d4accf4e1d0f4a7f8d7230e9834a",
+      "date": "2026-10-10",
+      "images": [
+        "restored-figures/SpatialNeighborhoodPlot/SpatialNeighborhoodPlot-1.png"
+      ]
+    },
+    {
+      "page": "SpatialNetworkPlot.html",
+      "kind": "archive",
+      "source": "151e7134c597a318db23aacdc01739f82fa44758",
+      "published_commit": "6c43b29a8087d4accf4e1d0f4a7f8d7230e9834a",
+      "date": "2026-10-10",
+      "images": [
+        "restored-figures/SpatialNetworkPlot/SpatialNetworkPlot-1.png"
+      ]
+    },
+    {
+      "page": "SpatialSpotPlot.html",
+      "kind": "archive",
+      "source": "151e7134c597a318db23aacdc01739f82fa44758",
+      "published_commit": "6c43b29a8087d4accf4e1d0f4a7f8d7230e9834a",
+      "date": "2026-10-10",
+      "images": [
+        "restored-figures/SpatialSpotPlot/SpatialSpotPlot-1.png",
+        "restored-figures/SpatialSpotPlot/SpatialSpotPlot-2.png"
+      ]
+    },
+    {
+      "page": "SpatialVariableFeaturePlot.html",
+      "kind": "archive",
+      "source": "151e7134c597a318db23aacdc01739f82fa44758",
+      "published_commit": "6c43b29a8087d4accf4e1d0f4a7f8d7230e9834a",
+      "date": "2026-10-10",
+      "images": [
+        "restored-figures/SpatialVariableFeaturePlot/SpatialVariableFeaturePlot-1.png"
+      ]
+    },
+    {
+      "page": "TACSPlot.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/TACSPlot/TACSPlot-1.png",
+        "restored-figures/TACSPlot/TACSPlot-2.png",
+        "restored-figures/TACSPlot/TACSPlot-3.png",
+        "restored-figures/TACSPlot/TACSPlot-4.png"
+      ]
+    },
+    {
+      "page": "VECTORPlot.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/VECTORPlot/VECTORPlot-1.png",
+        "restored-figures/VECTORPlot/VECTORPlot-2.png"
+      ]
+    },
+    {
+      "page": "VelocityPlot.html",
+      "kind": "archive",
+      "source": "53ed7e08f35462ce4fcbff8730b863a6d1ae80d3",
+      "published_commit": "3fe76d9a62d5cfaf82b9cd1c5148e04d137f7fbc",
+      "date": "2026-10-13",
+      "images": [
+        "restored-figures/VelocityPlot/VelocityPlot-1.png",
+        "restored-figures/VelocityPlot/VelocityPlot-2.png",
+        "restored-figures/VelocityPlot/VelocityPlot-3.png",
+        "restored-figures/VelocityPlot/VelocityPlot-4.png",
+        "restored-figures/VelocityPlot/VelocityPlot-5.png",
+        "restored-figures/VelocityPlot/VelocityPlot-6.png"
+      ]
+    },
+    {
+      "page": "VolcanoPlot.html",
+      "kind": "current",
+      "source": "85224cf393d43327b3c7d90f4a66779c6bd70aa1",
+      "date": "2026-10-18",
+      "images": [
+        "restored-figures/VolcanoPlot/VolcanoPlot-1.png",
+        "restored-figures/VolcanoPlot/VolcanoPlot-2.png",
+        "restored-figures/VolcanoPlot/VolcanoPlot-3.png",
+        "restored-figures/VolcanoPlot/VolcanoPlot-4.png",
+        "restored-figures/VolcanoPlot/VolcanoPlot-5.png",
+        "restored-figures/VolcanoPlot/VolcanoPlot-6.png"
+      ]
+    }
+  ]
+}
