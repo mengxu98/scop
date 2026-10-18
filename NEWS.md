@@ -1,5 +1,97 @@
 # scop (development version)
 
+* **perf**: Reduce paired Wilcoxon `RunDEtest()` worker overhead by computing
+  fold changes and feature masks once and sharing the expression matrix instead
+  of the full Seurat object. With all 1,000 `pancreas_sub` cells, 15,998 input
+  genes and two workers, three alternating comparisons measured a median paired
+  speedup of 3.9x (range 3.4–11.2x). Complete marker tables and caller RNG state
+  were strictly identical. Other tests and existing fallback paths are retained.
+
+* **perf**: Let `RunPCA()` delegate unsupported automatic PCA shapes to Seurat
+  before computing unused variances. PCA results and RNG state were identical;
+  complete default and multiple-reduction `RunStandardWorkflow()` comparisons
+  preserved assays, metadata, graphs and embeddings. A stable PCA or whole-workflow
+  speedup has not yet been established.
+
+* **perf**: Convert Coralysis prediction input to row-sparse storage once for
+  unscaled LiblineaR prediction, retaining the native scaled path. With Coralysis
+  1.0.0 and all 1,600 `panc8_sub` cells and 12,932 input genes, conversion and
+  prediction took 0.517 versus 0.130 seconds. Labels and probabilities were
+  identical; integration metadata matched and embeddings agreed within 1e-12.
+  This measures prediction preparation, not complete integration.
+
+* **perf**: Use sparse row sums for GO keyword counts in heatmaps,
+  `EnrichmentPlot()` and `GSEAPlot()`, retaining individual Fisher tests,
+  thresholds, Holm adjustment and ordering. Three alternating comparisons gave
+  a median paired speedup of 49.3x for keyword calculation with identical results
+  and RNG state. The fast path supports simplifyEnrichment 2.4.1 and 2.6.0;
+  other versions retain native behavior. One complete `DynamicHeatmap` page
+  comparison took 94.775 versus 67.430 seconds with five byte-identical figures.
+
+* **perf**: Reuse the native ORA background index within each database call
+  across query groups in the default C++ backend. Preserve the hypergeometric
+  calculation, complete backgrounds, filtering, ordering and adjusted results;
+  other backends are unchanged and no package-level cache is introduced. With
+  all 1,000 cells, 15,998 input genes, eight groups and complete GO_BP/GO_CC
+  backgrounds, three alternating comparisons gave a median paired speedup of
+  6.9x (range 3.9–9.4x), with strictly identical complete result storage and RNG
+  state. Complete page comparisons took 160.800 versus 45.395 seconds for
+  `EnrichmentPlot` and 91.167 versus 76.118 seconds for `GroupHeatmap`, with all
+  23 and nine figures respectively identical byte for byte.
+
+* **perf**: Resolve repeated MP annotation row identifiers once per unique key,
+  preserving exact, partial, ambiguous and missing row lookup behavior. Using
+  complete frozen MGI reports, three alternating comparisons gave a median
+  paired speedup of 3.7x (range 2.4–3.8x). All 218,936 term-gene rows and 10,961
+  term-name rows were strictly identical. Timings cover annotation construction,
+  excluding downloads and subsequent shared identifier conversion and caching.
+
+* **perf**: Use gzip instead of xz for installed lazy-data compression; source
+  dataset files are unchanged. Three alternating local comparisons reduced median
+  loading times from 1.121 to 0.204 seconds for `pancreas_sub`, 0.520 to 0.113
+  seconds for `panc8_sub`, and 0.870 to 0.278 seconds for `pbmcmultiome_sub`.
+  The installed data database grows from approximately 28 MB to 54–61 MB,
+  depending on R and platform; this is disk storage, not additional loaded-object
+  memory. All eight bundled datasets were strictly identical on each tested host.
+
+  Source installation measurements on 2026-10-18 used the same source revision
+  (`a4e8d2efa`), changing only compression, with three alternating fresh installs
+  per mode and host. All 18 installs completed using
+  `R CMD INSTALL --preclean --no-multiarch`, two compilation threads, two OpenMP
+  threads and one BLAS thread. Help, byte compilation, native compilation and
+  installation load checks remained enabled. Median elapsed seconds were:
+
+  | Platform | R | Total xz | Total gzip | Lazy-data stage xz | Lazy-data stage gzip |
+  | --- | --- | ---: | ---: | ---: | ---: |
+  | macOS arm64 | 4.5.3 | 265.875 | 124.046 | 107.188 | 14.189 |
+  | Windows x86-64 | 4.6.1 | 589.984 | 391.422 | 236.938 | 13.047 |
+  | Linux x86-64 | 4.4.3 | 420.239 | 281.098 | 143.158 | 9.135 |
+
+  Observed total installation medians decreased by 33.7% on Windows and 33.1%
+  on Linux. On macOS, a retained high-load gzip run took 602.557 seconds,
+  including 433.192 seconds of native compilation; mean totals were essentially
+  unchanged (279.2 versus 278.9 seconds), so the median difference does not
+  establish a stable total installation speedup. Linux used an isolated copy of
+  matching R configuration files because the existing configuration was empty;
+  the original environment was preserved. Timers exclude source transfer,
+  extraction, dependency preparation and final data-equivalence checks. Binary
+  package download and installation speeds were not measured.
+
+* **fix**: Connect directly to the requested Ensembl archive after resolving an
+  explicit release, avoiding a duplicate global archive catalog lookup. Retain
+  native dataset discovery and annotation queries, and errors for unavailable
+  releases. With the global lookup forced to fail and live Ensembl 115 queries,
+  all five affected reference pages executed completely; all nine metabolism
+  figures matched the previous successful render byte for byte. No paired
+  connection speedup is claimed.
+
+* **docs**: Runtime measurements above use complete inputs and real optional
+  backends, preserving algorithms, defaults, permutations and executable
+  examples. Local runtime comparisons used R 4.5.3; repeated speedups are medians
+  of paired ratios, not ratios of medians. Page comparisons each used one ordered
+  before/after pair and include cache, warmup and machine-load effects. They do
+  not establish a stable whole-site CI speedup.
+
 * **fix**: Retain classical MDS coordinate standard deviations so automatic
   scree dimension selection works in standard workflows.
 
