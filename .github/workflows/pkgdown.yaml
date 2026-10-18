@@ -112,7 +112,31 @@ jobs:
         run: python3 .github/pkgdown-plan.py restore
 
       - name: Build and verify website
-        run: Rscript --vanilla .github/pkgdown-build.R build
+        run: |
+          Rscript --vanilla -e '
+            tryCatch(
+              source(".github/pkgdown-build.R", echo = FALSE),
+              finally = {
+                tryCatch(
+                  capture.output({
+                    cat("Loaded namespaces\n")
+                    print(sort(loadedNamespaces()))
+                    cat("\nLoaded DLLs\n")
+                    print(getLoadedDLLs())
+                    cat("\nSession information\n")
+                    print(sessionInfo())
+                    cat("\nProcess mappings\n")
+                    if (file.exists("/proc/self/maps")) {
+                      writeLines(readLines("/proc/self/maps", warn = FALSE))
+                    }
+                  }, file = "pkgdown-exit-state.txt"),
+                  error = function(e) {
+                    message("Could not save pkgdown exit diagnostics: ", conditionMessage(e))
+                  }
+                )
+              }
+            )
+          ' build
 
       - uses: actions/upload-artifact@v4
         if: failure()
@@ -122,6 +146,7 @@ jobs:
             pkgdown-plan.json
             pkgdown-timings.csv
             pkgdown-session.txt
+            pkgdown-exit-state.txt
             docs/**/*.html
 
       - name: Deploy website
