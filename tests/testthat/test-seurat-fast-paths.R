@@ -142,6 +142,12 @@ test_that("RunPCA fast path stores total variance and cell embeddings", {
   expect_true("total.variance" %in% names(obj@reductions$pca@misc))
   expect_true(is.finite(obj@reductions$pca@misc$total.variance))
   expect_equal(nrow(SeuratObject::Embeddings(obj[["pca"]])), ncol(obj))
+  x <- SeuratObject::GetAssayData(obj, layer = "scale.data")
+  reference <- get("RunPCA.default", asNamespace("Seurat"))(
+    x, assay = "RNA", npcs = 10, verbose = FALSE
+  )
+  testthat::local_mocked_bindings(fast_row_vars = function(...) stop("duplicate variance pass"))
+  expect_identical(RunPCA.default(x, npcs = 10, verbose = FALSE), reference)
 })
 
 test_that("NormalizeData supports legacy Assay objects", {
