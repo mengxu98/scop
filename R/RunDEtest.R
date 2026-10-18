@@ -3453,41 +3453,43 @@ RunDEtest.Seurat <- function(
     }
 
     if (markers_type == "conserved") {
-      ConservedMarkers <- parallelize_fun(
-        levels(cell_group),
-        function(group) {
-          cells.1 <- names(cell_group)[which(cell_group == group)]
-          cells.2 <- names(cell_group)[which(cell_group != group)]
-          if (length(cells.1) < 3 || length(cells.2) < 3) {
-            return(NULL)
-          } else {
-            conserved_args <- args1
-            conserved_args[["srt"]] <- NULL
-            conserved_args[["cells.1"]] <- cells.1
-            conserved_args[["cells.2"]] <- cells.2
-            conserved_args[["object"]] <- srt
-            conserved_args[["assay"]] <- assay
-            conserved_args[["grouping.var"]] <- grouping.var
-            conserved_args[["meta.method"]] <- meta.method
-            markers <- do.call(find_conserved_markers_fun, conserved_args)
-            if (!is.null(markers) && nrow(markers) > 0) {
-              markers[, "gene"] <- rownames(markers)
-              markers[, "group1"] <- as.character(group)
-              markers[, "group2"] <- "others"
-              if ("p_val" %in% colnames(markers)) {
-                markers[, "p_val_adj"] <- stats::p.adjust(
-                  markers[, "p_val"],
-                  method = p.adjust.method
-                )
-              }
-              return(markers)
-            } else {
-              return(NULL)
+      conserved_worker <- function(group) {
+        cells.1 <- names(cell_group)[which(cell_group == group)]
+        cells.2 <- names(cell_group)[which(cell_group != group)]
+        if (length(cells.1) < 3 || length(cells.2) < 3) {
+          return(NULL)
+        } else {
+          conserved_args <- args1
+          conserved_args[["srt"]] <- NULL
+          conserved_args[["cells.1"]] <- cells.1
+          conserved_args[["cells.2"]] <- cells.2
+          conserved_args[["grouping.var"]] <- grouping.var
+          conserved_args[["meta.method"]] <- meta.method
+          markers <- do.call(find_conserved_markers_fun, conserved_args)
+          if (!is.null(markers) && nrow(markers) > 0) {
+            markers[, "gene"] <- rownames(markers)
+            markers[, "group1"] <- as.character(group)
+            markers[, "group2"] <- "others"
+            if ("p_val" %in% colnames(markers)) {
+              markers[, "p_val_adj"] <- stats::p.adjust(
+                markers[, "p_val"],
+                method = p.adjust.method
+              )
             }
+            return(markers)
+          } else {
+            return(NULL)
           }
-        },
-        cores = cores,
-        verbose = verbose
+        }
+      }
+      environment(conserved_worker) <- list2env(list(
+        cell_group = cell_group, args1 = args1,
+        grouping.var = grouping.var, meta.method = meta.method,
+        find_conserved_markers_fun = find_conserved_markers_fun,
+        p.adjust.method = p.adjust.method
+      ), parent = baseenv())
+      ConservedMarkers <- parallelize_fun(
+        levels(cell_group), conserved_worker, cores = cores, verbose = verbose
       )
       RunDEtestStopOnParallelErrors(
         ConservedMarkers,

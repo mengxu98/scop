@@ -16,10 +16,12 @@
   remains available with a warning until scop 1.0.0.
 
 * **perf**: `RunDEtest()` paired Wilcoxon preparation is median 3.9x faster
-  with all 1,000 pancreas cells, 15,998 genes and two workers. `FindExpressedMarkers()`
-  dense Wilcoxon reuses cell indices: median 3.384 to 2.388 seconds with the same
-  full input and default filtering, preserving all 5,059 result rows, native limma
-  tests and RNG.
+  with all 1,000 pancreas cells, 15,998 genes and two workers. Conserved-marker
+  worker closures shrink from 457.1 to 131.8 MB; median runtime falls from
+  30.678 to 29.444 seconds with all 1,600 panc8 cells, 12,932 genes and two workers.
+  `FindExpressedMarkers()` dense Wilcoxon reuses cell indices: median 3.384 to
+  2.388 seconds on the full pancreas input, retaining all 5,059 rows and native
+  limma tests. Complete results and RNG are unchanged.
 
 * **perf**: `RunEnrichment()` reuses ORA backgrounds across groups (6.9x) and
   indexes cross-type ID mappings once per call: five-group CPP analysis falls
