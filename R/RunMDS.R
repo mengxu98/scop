@@ -15,6 +15,10 @@
 #' @param reduction.key The prefix for the column names of the basis vectors.
 #' @param ... Passed to [stats::cmdscale], [MASS::isoMDS] or [MASS::sammon].
 #'
+#' @return A `DimReduc` object, or a Seurat object containing the reduction.
+#' For classical MDS, standard deviations are `sqrt(eigenvalue / (n - 1))`
+#' for the retained coordinates, where `n` is the number of embedded points.
+#'
 #' @rdname RunMDS
 #' @export
 #'
@@ -194,6 +198,11 @@ RunMDS.default <- function(
   colnames(x = cell_embeddings) <- paste0(reduction.key, seq_len(nmds))
   reduction_data <- SeuratObject::CreateDimReducObject(
     embeddings = cell_embeddings,
+    stdev = if (mds.method == "cmdscale") {
+      sqrt(mds_results$eig[seq_len(ncol(cell_embeddings))] / (nrow(cell_embeddings) - 1))
+    } else {
+      numeric()
+    },
     assay = assay,
     key = reduction.key,
     misc = list(

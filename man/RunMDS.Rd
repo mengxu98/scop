@@ -101,6 +101,11 @@ Default is \code{TRUE}.}
 
 \item{seed.use}{Random seed.}
 }
+\value{
+A \code{DimReduc} object, or a Seurat object containing the reduction.
+For classical MDS, standard deviations are \code{sqrt(eigenvalue / (n - 1))}
+for the retained coordinates, where \code{n} is the number of embedded points.
+}
 \description{
 Run MDS (multi-dimensional scaling)
 }

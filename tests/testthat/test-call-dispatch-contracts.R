@@ -199,3 +199,21 @@ test_that("TFIDF integration retains its canonical anchor command", {
   expect_identical(dim(SeuratObject::Embeddings(actual, "Seuratlsi")), c(120L, 5L))
   expect_false(".fn" %in% names(actual@commands))
 })
+
+test_that("classical MDS preserves coordinates and supplies scree variances", {
+  object <- make_dispatch_object(nfeatures = 80L, ncells = 64L)
+  actual <- RunMDS(object, features = rownames(object), nmds = 8, verbose = FALSE)
+  distances <- stats::as.dist(proxyC::dist(Matrix::t(GetAssayData5(object, layer = "data")), method = "euclidean"))
+  expected <- stats::cmdscale(distances, k = 8, eig = TRUE)
+  embeddings <- SeuratObject::Embeddings(actual, "mds")
+  expect_equal(unname(embeddings), unname(expected$points), tolerance = 1e-12)
+  expect_equal(actual[["mds"]]@stdev, sqrt(expected$eig[seq_len(8)] / 63), tolerance = 1e-12)
+  expect_equal(unname(actual[["mds"]]@stdev), unname(apply(embeddings, 2, stats::sd)), tolerance = 1e-12)
+  dims <- RunDimsEstimate(actual, reduction = "mds", reduction_method = "mds", use_stored = FALSE, verbose = FALSE)
+  expect_true(length(dims) >= 5L)
+  expect_true(all(dims %in% seq_len(ncol(embeddings))))
+  pipeline <- RunDimsReduction(object, features = rownames(object),
+    linear_reduction = "mds", linear_reduction_dims = 8, verbose = FALSE)
+  expect_equal(SeuratObject::Embeddings(pipeline, "mds"), embeddings, tolerance = 1e-12)
+  expect_identical(pipeline[["mds"]]@misc$dims_estimate, dims)
+})
