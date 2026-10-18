@@ -220,6 +220,17 @@ PrepareCustomDB <- function(
   )
 }
 
+preparedb_row_index <- function(query, rows) {
+  if (!is.character(query)) {
+    return(query)
+  }
+  keys <- unique(query)
+  index <- match(keys, rows)
+  missing <- is.na(index)
+  index[missing] <- pmatch(keys[missing], rows, duplicates.ok = TRUE)
+  index[match(query, keys)]
+}
+
 preparedb_annotation <- function(
   species = c("Homo_sapiens", "Mus_musculus"),
   db,

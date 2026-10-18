@@ -7,6 +7,60 @@ make_dispatch_object <- function(nfeatures = 40L, ncells = 32L, seed = 511L, pre
   ScaleData(object, features = rownames(object), verbose = FALSE)
 }
 
+test_that("explicit Ensembl releases resolve when the main archive catalog is unavailable", {
+  skip_if_not_installed("biomaRt")
+  skip_if_not_installed("httr")
+  testthat::local_mocked_bindings(
+    listEnsemblArchives = function() stop("catalog unavailable"),
+    .package = "biomaRt"
+  )
+  html <- paste0(
+    '<a href="http://Sep2025.archive.ensembl.org">Ensembl 115: Sep 2025</a>',
+    '<a href="http://May2025.archive.ensembl.org">Ensembl 114: May 2025</a>'
+  )
+  testthat::local_mocked_bindings(
+    GET = function(...) structure(list(
+      status_code = 200L, content = charToRaw(html), headers = list(),
+      url = "https://sep2025.archive.ensembl.org/info/website/archives/index.html"
+    ), class = "response"),
+    .package = "httr"
+  )
+  archives <- ensembl_archive_catalog(115)
+  expect_identical(archives$version, c("115", "114"))
+  expect_identical(archives$url, c(
+    "https://sep2025.archive.ensembl.org", "https://may2025.archive.ensembl.org"
+  ))
+  expect_true(all(archives$current_release == ""))
+  expect_error(ensembl_archive_catalog("current_release"), "catalog unavailable")
+  expect_error(ensembl_archive_catalog(116), "catalog unavailable")
+  archive_mart <- NULL
+  testthat::local_mocked_bindings(
+    useMart = function(...) stop("unexpected archive catalog lookup"),
+    listDatasets = function(mart, ...) {
+      archive_mart <<- mart
+      stop("archive-offline")
+    },
+    .package = "biomaRt"
+  )
+  expect_error(suppressWarnings(GeneConvert("INS", Ensembl_version = 115, max_tries = 1, verbose = FALSE)), "archive-offline")
+  expect_s4_class(archive_mart, "Mart")
+  expect_identical(archive_mart@host, "https://sep2025.archive.ensembl.org:443/biomart/martservice?redirect=no")
+  mart <- methods::new("Mart", biomart = "ENSEMBL_MART_ENSEMBL",
+    host = "https://sep2025.archive.ensembl.org/biomart/martservice"
+  )
+  mirror_calls <- 0L
+  testthat::local_mocked_bindings(
+    useDataset = function(...) stop("archive dataset unavailable"),
+    useEnsembl = function(...) {
+      mirror_calls <<- mirror_calls + 1L
+      stop("unexpected current-release mirror")
+    },
+    .package = "biomaRt"
+  )
+  expect_error(connect_biomart_dataset("hsapiens_gene_ensembl", mart), "archive dataset unavailable")
+  expect_identical(mirror_calls, 0L)
+})
+
 test_that("Seurat fallbacks preserve distinct canonical command history", {
   object <- make_dispatch_object()
   object@commands <- list()

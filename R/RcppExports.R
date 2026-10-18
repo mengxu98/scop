@@ -145,6 +145,10 @@ ora_hypergeom <- function(genes, term_ids, term_genes, term_name_ids, term_names
     .Call(`_scop_ora_hypergeom`, genes, term_ids, term_genes, term_name_ids, term_names, min_size, max_size)
 }
 
+ora_hypergeom_batch <- function(genes, term_ids, term_genes, term_name_ids, term_names, min_size = 10L, max_size = 2147483647L) {
+    .Call(`_scop_ora_hypergeom_batch`, genes, term_ids, term_genes, term_name_ids, term_names, min_size, max_size)
+}
+
 module_score_sparse <- function(expr, feature_sets, control_sets, n_threads = 0L) {
     .Call(`_scop_module_score_sparse`, expr, feature_sets, control_sets, n_threads)
 }

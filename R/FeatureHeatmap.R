@@ -796,6 +796,8 @@ FeatureHeatmap <- function(
     )
   }
 
+  colors <- heatmap_color_mapping(colors, combined_mat)
+
   ann_use <- intersect(
     cell_annotation,
     rownames(Seurat::GetAssay(srt, assay = assay))

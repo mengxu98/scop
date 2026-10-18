@@ -1060,6 +1060,8 @@ DynamicHeatmap <- function(
     )
   }
 
+  colors <- heatmap_color_mapping(colors, mat)
+
   lgd <- list()
   lgd[["ht"]] <- get_namespace_fun("ComplexHeatmap", "Legend")(
     title = exp_name,
