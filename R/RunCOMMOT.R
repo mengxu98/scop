@@ -451,10 +451,14 @@ commot_select_key <- function(table, key, label) {
 #' @examples
 #' \dontrun{
 #' data(visium_human_pancreas_sub)
+#' visium_human_pancreas_sub <- Seurat::NormalizeData(
+#'   visium_human_pancreas_sub, assay = "Spatial", verbose = FALSE
+#' )
 #' spatial <- RunCOMMOT(
 #'   visium_human_pancreas_sub,
-#'   group.by = "CellType",
-#'   coord.cols = c("col", "row"),
+#'   group.by = "coda_label",
+#'   assay = "Spatial", image = "slice1",
+#'   species = "human", coord.cols = NULL,
 #'   cluster = TRUE,
 #'   direction = TRUE,
 #'   backend = "r"

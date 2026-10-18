@@ -68,6 +68,7 @@
 #'   width = 1,
 #'   height = 2
 #' )
+#' ht$plot
 #'
 #' features_all <- rownames(pancreas_sub)
 #' pancreas_sub <- RunGSVA(

@@ -144,6 +144,7 @@ ht1 <- DynamicHeatmap(
   cell_annotation = "CellType",
   n_split = 3
 )
+ht1$plot
 
 pancreas_sub <- RunDynamicEnrichment(
   pancreas_sub,
@@ -160,6 +161,7 @@ ht2 <- DynamicHeatmap(
   n_split = 3,
   split_method = "kmeans-peaktime"
 )
+ht2$plot
 }
 \seealso{
 \link{RunDynamicFeatures}, \link{DynamicHeatmap}

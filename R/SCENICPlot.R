@@ -125,8 +125,7 @@
 #' SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "heatmap_dotplot")
 #' SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "network", features = example_tfs)
 #' SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "network_graph", features = example_tfs)
-#' SCENICPlusPlot(pancreas_sub, group.by = "CellType", plot_type = "egrn", features = example_tfs)
-#' SCENICPlusPlot(pancreas_sub, group.by = "CellType", plot_type = "coverage", features = example_tfs)
+#' # SCENIC+ plots require a separate RunSCENICPlus analysis with ATAC input.
 #' }
 SCENICPlot <- function(
   object,

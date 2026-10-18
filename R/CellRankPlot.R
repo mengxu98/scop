@@ -35,6 +35,13 @@
 #' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
+#' # Generate the pseudotime used by the CellRank kernel first.
+#' pancreas_sub <- RunPalantir(
+#'   pancreas_sub,
+#'   group.by = "SubCellType", early_group = "Ductal",
+#'   terminal_groups = c("Alpha", "Beta", "Delta", "Epsilon"),
+#'   backend = "python"
+#' )
 #' pancreas_sub <- RunCellRank(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",

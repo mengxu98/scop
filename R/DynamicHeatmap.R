@@ -117,6 +117,7 @@
 #'   width = 1,
 #'   height = 2
 #' )
+#' ht4$plot
 #'
 #' ht5 <- DynamicHeatmap(
 #'   pancreas_sub,
@@ -141,6 +142,7 @@
 #'   features_width = grid::unit(0.5, "in"),
 #'   features_fontsize = c(3, 6)
 #' )
+#' ht5$plot
 #'
 #' pancreas_sub <- AnnotateFeatures(
 #'   pancreas_sub,
@@ -182,6 +184,7 @@
 #'   width = 1,
 #'   height = 2
 #' )
+#' ht6$plot
 #'
 #' ht7 <- DynamicHeatmap(
 #'   pancreas_sub,
@@ -216,6 +219,7 @@
 #'   width = 2,
 #'   height = 1
 #' )
+#' ht7$plot
 DynamicHeatmap <- function(
   object,
   lineages,

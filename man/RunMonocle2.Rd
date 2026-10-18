@@ -104,7 +104,7 @@ A Seurat object with the Monocle2 analysis results added to the @tools slot.
 Run Monocle2 analysis
 }
 \examples{
-if (interactive()) {
+if (all(unlist(check_r("mengxu98/monocle", install = FALSE, verbose = FALSE)))) {
   data(pancreas_sub)
   pancreas_sub <- RunStandardWorkflow(pancreas_sub)
   pancreas_sub <- RunMonocle2(
@@ -121,16 +121,16 @@ if (interactive()) {
     label = TRUE,
     theme_use = "theme_blank"
   )
-  p1
+  print(p1)
 
-  p1 + trajectory
+  print(p1 + trajectory)
 
-  FeatureDimPlot(
+  print(FeatureDimPlot(
     pancreas_sub,
     features = "Monocle2_Pseudotime",
     reduction = "UMAP",
     theme_use = "theme_blank"
-  )
+  ))
 
   pancreas_sub <- RunMonocle2(
     pancreas_sub,
@@ -145,16 +145,16 @@ if (interactive()) {
     label = TRUE,
     theme_use = "theme_blank"
   )
-  p2
+  print(p2)
 
-  p2 + trajectory
+  print(p2 + trajectory)
 
-  FeatureDimPlot(
+  print(FeatureDimPlot(
     pancreas_sub,
     features = "Monocle2_Pseudotime",
     reduction = "UMAP",
     theme_use = "theme_blank"
-  )
+  ))
 }
 }
 \seealso{

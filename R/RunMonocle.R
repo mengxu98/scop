@@ -45,7 +45,7 @@
 #' A Seurat object with the Monocle2 analysis results added to the @tools slot.
 #'
 #' @examples
-#' if (interactive()) {
+#' if (all(unlist(check_r("mengxu98/monocle", install = FALSE, verbose = FALSE)))) {
 #'   data(pancreas_sub)
 #'   pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #'   pancreas_sub <- RunMonocle2(
@@ -62,16 +62,16 @@
 #'     label = TRUE,
 #'     theme_use = "theme_blank"
 #'   )
-#'   p1
+#'   print(p1)
 #'
-#'   p1 + trajectory
+#'   print(p1 + trajectory)
 #'
-#'   FeatureDimPlot(
+#'   print(FeatureDimPlot(
 #'     pancreas_sub,
 #'     features = "Monocle2_Pseudotime",
 #'     reduction = "UMAP",
 #'     theme_use = "theme_blank"
-#'   )
+#'   ))
 #'
 #'   pancreas_sub <- RunMonocle2(
 #'     pancreas_sub,
@@ -86,16 +86,16 @@
 #'     label = TRUE,
 #'     theme_use = "theme_blank"
 #'   )
-#'   p2
+#'   print(p2)
 #'
-#'   p2 + trajectory
+#'   print(p2 + trajectory)
 #'
-#'   FeatureDimPlot(
+#'   print(FeatureDimPlot(
 #'     pancreas_sub,
 #'     features = "Monocle2_Pseudotime",
 #'     reduction = "UMAP",
 #'     theme_use = "theme_blank"
-#'   )
+#'   ))
 #' }
 RunMonocle2 <- function(
   object,
@@ -397,137 +397,39 @@ monocle2_reduce_dimension_args <- function(
 #' @export
 #'
 #' @examples
-#' if (interactive()) {
+#' if (all(unlist(check_r("cole-trapnell-lab/monocle3", install = FALSE, verbose = FALSE)))) {
 #'   data(pancreas_sub)
-#'   pancreas_sub <- RunStandardWorkflow(pancreas_sub)
+#'   pancreas_sub <- RunStandardWorkflow(pancreas_sub, cores = 1, verbose = FALSE)
+#'   # Root this developmental example in a ductal cell; no manual selection.
+#'   root <- colnames(pancreas_sub)[pancreas_sub$SubCellType == "Ductal"][1]
 #'   pancreas_sub <- RunMonocle3(
 #'     pancreas_sub,
-#'     reduction = "UMAP"
+#'     reduction = "UMAP", group.by = "SubCellType",
+#'     root_cells = root, use_partition = FALSE
 #'   )
-#'
-#'   pancreas_sub <- RunMonocle3(
-#'     pancreas_sub,
-#'     reduction = "UMAP",
-#'     group.by = "CellType"
-#'   )
-#'   names(pancreas_sub@tools$Monocle3)
 #'   trajectory <- pancreas_sub@tools$Monocle3$trajectory
 #'   milestones <- pancreas_sub@tools$Monocle3$milestones
-#'
-#'   CellDimPlot(
+#'   print(CellDimPlot(
 #'     pancreas_sub,
-#'     group.by = "Monocle3_partitions",
-#'     reduction = "UMAP",
-#'     label = TRUE,
-#'     theme_use = "theme_blank"
-#'   ) +
-#'     trajectory +
-#'     milestones
-#'   CellDimPlot(
-#'     pancreas_sub,
-#'     group.by = "Monocle3_clusters",
-#'     reduction = "UMAP",
-#'     label = TRUE,
-#'     theme_use = "theme_blank"
-#'   ) +
-#'     trajectory
-#'   FeatureDimPlot(
-#'     pancreas_sub,
-#'     features = "Monocle3_Pseudotime",
-#'     reduction = "UMAP",
-#'     theme_use = "theme_blank"
-#'   ) +
-#'     trajectory
-#'
-#'   # Select the lineage using monocle3::choose_graph_segments
-#'   cds <- pancreas_sub@tools$Monocle3$cds
-#'   cds_sub <- monocle3::choose_graph_segments(
-#'     cds,
-#'     starting_pr_node = NULL,
-#'     ending_pr_nodes = NULL
-#'   )
-#'   pancreas_sub$Lineages_1 <- NA
-#'   pancreas_sub$Lineages_1[colnames(
-#'     cds_sub
-#'   )] <- pancreas_sub$Monocle3_Pseudotime[colnames(cds_sub)]
-#'   CellDimPlot(
-#'     pancreas_sub,
-#'     group.by = "SubCellType",
-#'     lineages = "Lineages_1",
-#'     lineages_span = 0.1,
-#'     theme_use = "theme_blank"
-#'   )
-#'
-#'   # Use Seurat clusters to infer the trajectories
-#'   pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#'   CellDimPlot(
-#'     pancreas_sub,
-#'     group.by = c("Standardclusters", "CellType"),
-#'     label = TRUE,
-#'     theme_use = "theme_blank"
-#'   )
-#'
-#'   pancreas_sub <- RunMonocle3(
-#'     pancreas_sub,
-#'     clusters = "Standardclusters"
-#'   )
-#'
-#'   trajectory <- pancreas_sub@tools$Monocle3$trajectory
-#'   CellDimPlot(
-#'     pancreas_sub,
-#'     group.by = "Monocle3_partitions",
-#'     reduction = "StandardUMAP2D",
+#'     group.by = "SubCellType", reduction = "UMAP",
 #'     label = TRUE, theme_use = "theme_blank"
-#'   ) + trajectory
-#'
-#'   CellDimPlot(
+#'   ) + trajectory + milestones)
+#'   print(CellDimPlot(
 #'     pancreas_sub,
-#'     group.by = "Monocle3_clusters",
-#'     reduction = "StandardUMAP2D",
+#'     group.by = "Monocle3_clusters", reduction = "UMAP",
 #'     label = TRUE, theme_use = "theme_blank"
-#'   ) + trajectory
-#'   FeatureDimPlot(
+#'   ) + trajectory)
+#'   print(FeatureDimPlot(
 #'     pancreas_sub,
-#'     features = "Monocle3_Pseudotime",
-#'     reduction = "StandardUMAP2D",
+#'     features = "Monocle3_Pseudotime", reduction = "UMAP",
 #'     theme_use = "theme_blank"
-#'   ) + trajectory
+#'   ) + trajectory)
 #'
-#'   # Use custom graphs and cell clusters to infer
-#'   # the partitions and trajectories, respectively
-#'   pancreas_sub <- RunStandardWorkflow(
-#'     pancreas_sub,
-#'     cluster_resolution = 5
-#'   )
-#'   CellDimPlot(
-#'     pancreas_sub,
-#'     group.by = c("Standardclusters", "CellType"),
-#'     label = TRUE
-#'   )
-#'   pancreas_sub <- RunMonocle3(
-#'     pancreas_sub,
-#'     clusters = "Standardclusters",
-#'     graph = "Standardpca_SNN"
-#'   )
-#'   trajectory <- pancreas_sub@tools$Monocle3$trajectory
-#'   CellDimPlot(
-#'     pancreas_sub,
-#'     group.by = "Monocle3_partitions",
-#'     reduction = "StandardUMAP2D",
-#'     label = TRUE, theme_use = "theme_blank"
-#'   ) + trajectory
-#'   CellDimPlot(
-#'     pancreas_sub,
-#'     group.by = "Monocle3_clusters",
-#'     reduction = "StandardUMAP2D",
-#'     label = TRUE, theme_use = "theme_blank"
-#'   ) + trajectory
-#'   FeatureDimPlot(
-#'     pancreas_sub,
-#'     features = "Monocle3_Pseudotime",
-#'     reduction = "StandardUMAP2D",
-#'     theme_use = "theme_blank"
-#'   ) + trajectory
+#'   # Only manual branch selection requires an interactive session.
+#'   if (interactive()) {
+#'     choose_segments <- get_namespace_fun("monocle3", "choose_graph_segments")
+#'     cds_sub <- choose_segments(pancreas_sub@tools$Monocle3$cds)
+#'   }
 #' }
 RunMonocle3 <- function(
   object,

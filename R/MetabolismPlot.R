@@ -124,6 +124,7 @@
 #'   width = 1,
 #'   height = 2
 #' )
+#' ht$plot
 MetabolismPlot <- function(
   object = NULL,
   res = NULL,

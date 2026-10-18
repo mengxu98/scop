@@ -180,13 +180,29 @@ if (mode == "environment") {
 check_pages <- function(paths) {
   missing <- paths[!file.exists(paths)]
   if (length(missing)) stop("Missing generated pages: ", paste(missing, collapse = ", "))
+  expected <- jsonlite::read_json(".github/pkgdown-figures.json", simplifyVector = TRUE)
   errors <- lapply(paths, function(path) {
     page <- xml2::read_html(path)
     messages <- xml2::xml_text(xml2::xml_find_all(page, "//*[contains(concat(' ', normalize-space(@class), ' '), ' r-err ')]"))
+    images <- xml2::xml_attr(xml2::xml_find_all(page, "//main//img | //div[@id='main']//img"), "src")
+    images <- images[!is.na(images) & nzchar(images)]
+    key <- paste(basename(dirname(path)), basename(path), sep = "/")
+    minimum <- expected[[key]]
+    if (!is.null(minimum) && length(images) < minimum) {
+      messages <- c(messages, sprintf("Expected at least %d result images; found %d", minimum, length(images)))
+    }
+    local <- images[!grepl("^([[:alpha:]][[:alnum:]+.-]*:|//|#)", images)]
+    local <- vapply(local, function(src) utils::URLdecode(sub("[?#].*$", "", src)), character(1))
+    targets <- character()
+    if (length(local)) {
+      targets <- ifelse(startsWith(local, "/"), file.path("docs", sub("^/", "", local)), file.path(dirname(path), local))
+    }
+    absent <- local[!file.exists(targets)]
+    if (length(absent)) messages <- c(messages, paste("Missing image files:", paste(absent, collapse = ", ")))
     if (length(messages)) paste(path, paste(unique(messages), collapse = "\n"), sep = ":\n") else character()
   })
   errors <- unlist(errors, use.names = FALSE)
-  if (length(errors)) stop("Example execution failed:\n", paste(errors, collapse = "\n\n"))
+  if (length(errors)) stop("Documentation verification failed:\n", paste(errors, collapse = "\n\n"))
 }
 
 timings <- data.frame(page = character(), seconds = numeric())
@@ -236,6 +252,11 @@ build <- function() {
   }
 }
 record(if (plan$full) "full-site" else "incremental-site", build())
+check_pages(unique(c(
+  file.path(pkg$dst_path, names(jsonlite::read_json(".github/pkgdown-figures.json"))),
+  list.files(file.path(pkg$dst_path, "reference"), "[.]html$", full.names = TRUE),
+  list.files(file.path(pkg$dst_path, "articles"), "[.]html$", full.names = TRUE, recursive = TRUE)
+)))
 if (length(plan$deleted) && any(file.exists(file.path("docs", plan$deleted)))) {
   stop("Deleted documentation pages remain in website output")
 }

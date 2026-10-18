@@ -442,6 +442,7 @@ ht4 <- DynamicHeatmap(
   width = 1,
   height = 2
 )
+ht4$plot
 
 ht5 <- DynamicHeatmap(
   pancreas_sub,
@@ -466,6 +467,7 @@ ht5 <- DynamicHeatmap(
   features_width = grid::unit(0.5, "in"),
   features_fontsize = c(3, 6)
 )
+ht5$plot
 
 pancreas_sub <- AnnotateFeatures(
   pancreas_sub,
@@ -507,6 +509,7 @@ ht6 <- DynamicHeatmap(
   width = 1,
   height = 2
 )
+ht6$plot
 
 ht7 <- DynamicHeatmap(
   pancreas_sub,
@@ -541,6 +544,7 @@ ht7 <- DynamicHeatmap(
   width = 2,
   height = 1
 )
+ht7$plot
 }
 \seealso{
 \link{RunDynamicFeatures}, \link{RunDynamicEnrichment}

@@ -38,6 +38,7 @@
 #'   cell_annotation = "CellType",
 #'   n_split = 3
 #' )
+#' ht1$plot
 #'
 #' pancreas_sub <- RunDynamicEnrichment(
 #'   pancreas_sub,
@@ -54,6 +55,7 @@
 #'   n_split = 3,
 #'   split_method = "kmeans-peaktime"
 #' )
+#' ht2$plot
 RunDynamicEnrichment <- function(
   object,
   lineages,

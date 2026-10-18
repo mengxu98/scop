@@ -144,6 +144,7 @@ ht <- GroupHeatmap(
   width = 1,
   height = 2
 )
+ht$plot
 }
 \seealso{
 \link{RunMetabolism}, \link{EnrichmentPlot}

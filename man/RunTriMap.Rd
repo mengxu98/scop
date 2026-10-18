@@ -103,17 +103,17 @@ and optimizer; \code{"python"} retains the official trimap package.}
 Run TriMap
 }
 \examples{
-\dontrun{
+# Execute the native backend; the Python backend needs its own environment.
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 pancreas_sub <- RunTriMap(
   object = pancreas_sub,
-  features = SeuratObject::VariableFeatures(pancreas_sub)
+  features = SeuratObject::VariableFeatures(pancreas_sub),
+  backend = "cpp"
 )
 CellDimPlot(
   pancreas_sub,
   group.by = "CellType",
   reduction = "trimap"
 )
-}
 }

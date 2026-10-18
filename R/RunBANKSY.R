@@ -64,19 +64,19 @@
 #' data(visium_human_pancreas_sub)
 #' keep_spots <- unique(round(seq(1, ncol(visium_human_pancreas_sub), length.out = 400)))
 #' spatial <- visium_human_pancreas_sub[, keep_spots]
-#' \dontrun{
-#' spatial <- RunBANKSY(
-#'   spatial,
-#'   layer = "counts",
-#'   features = rownames(spatial)[1:200],
-#'   resolution = 0.6,
-#'   verbose = FALSE
-#' )
-#' SpatialSpotPlot(
-#'   spatial,
-#'   group.by = "BANKSY_cluster",
-#'   pt.size = 1.5
-#' )
+#' if (all(unlist(check_r("Banksy", install = FALSE, verbose = FALSE)))) {
+#'   spatial <- RunBANKSY(
+#'     spatial,
+#'     layer = "counts",
+#'     features = rownames(spatial)[1:200],
+#'     resolution = 0.6,
+#'     verbose = FALSE
+#'   )
+#'   print(SpatialSpotPlot(
+#'     spatial,
+#'     group.by = "BANKSY_cluster",
+#'     pt.size = 1.5
+#'   ))
 #' }
 RunBANKSY <- function(
   object,

@@ -134,16 +134,16 @@ completed, skipped, failed, or not requested; an artifact that was not
 evaluated is never reported as a negative artifact call.
 }
 \examples{
-\dontrun{
-data(visium_human_pancreas_sub)
-spatial <- RunSpotSweeper(
-  visium_human_pancreas_sub,
-  assay = "Spatial", image = "slice1",
-  metrics = c("nCount_Spatial", "nFeature_Spatial"),
-  directions = c("lower", "lower"), n_neighbors = 12,
-  run_artifact = FALSE, verbose = FALSE
-)
-# Plot local-outlier calls.
-SpatialSpotPlot(spatial, group.by = "SpotSweeper_local_outlier_qc", image = "slice1")
+if (all(unlist(check_r("MicTott/SpotSweeper", install = FALSE, verbose = FALSE)))) {
+  data(visium_human_pancreas_sub)
+  spatial <- RunSpotSweeper(
+    visium_human_pancreas_sub,
+    assay = "Spatial", image = "slice1",
+    metrics = c("nCount_Spatial", "nFeature_Spatial"),
+    directions = c("lower", "lower"), n_neighbors = 12,
+    run_artifact = FALSE, verbose = FALSE
+  )
+  # Plot local-outlier calls.
+  print(SpatialSpotPlot(spatial, group.by = "SpotSweeper_local_outlier_qc", image = "slice1"))
 }
 }

@@ -76,7 +76,7 @@ case-insensitive direct symbol matching is used.}
 \item{use_preparedb}{When \code{TRUE}, gene sets are built via \link{PrepareDB} which
 provides species-aware gene mapping via BioMart and KEGG/Reactome databases.
 This automatically handles gene symbol conversion for non-human species
-(e.g., \code{species = "Mus_musculus"} → mouse gene symbols in metabolism pathways).
+(e.g., \code{species = "Mus_musculus"} <U+2192> mouse gene symbols in metabolism pathways).
 When \code{FALSE}, raw scMetabolism GMT files are downloaded from the data mirror;
 the scMetabolism R package is not required. Genes are matched case-insensitively
 with optional \link{GeneConvert} supplementation when \code{convert_species = TRUE}.}
@@ -140,4 +140,5 @@ ht <- MetabolismPlot(
   width = 1,
   height = 2
 )
+ht$plot
 }

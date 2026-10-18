@@ -50,9 +50,13 @@ Plot stored SpatialDM results
 \examples{
 \dontrun{
 data(visium_human_pancreas_sub)
+visium_human_pancreas_sub <- Seurat::NormalizeData(
+  visium_human_pancreas_sub, assay = "Spatial", verbose = FALSE
+)
 spatial <- RunSpatialDM(
   visium_human_pancreas_sub,
-  coord.cols = c("col", "row")
+  species = "human", assay = "Spatial",
+  image = "slice1", coord.cols = NULL
 )
 SpatialDMPlot(spatial, plot_type = "global")
 SpatialDMPlot(spatial, plot_type = "weights", spot = colnames(spatial)[1])
