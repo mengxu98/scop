@@ -1,3 +1,20 @@
+test_that("batched enrichment preserves single-query tables and ordering", {
+  term_genes <- data.frame(
+    Term = c(rep("A", 4), rep("B", 3), "C", "C", NA, ""),
+    symbol = c("G1", "G2", "G2", "G3", "G2", "G4", "G5", "G6", "G7", "G1", "G1")
+  )
+  term_names <- data.frame(Term = c("A", "B", "C"), Name = c("First", "Second", "Third"))
+  queries <- list(first = c("G3", "G2", "G2", NA, "missing"), empty = character(), last = c("G6", "G7"))
+  for (minimum in c(1, 3)) {
+    expected <- lapply(queries, function(gene) run_ora_result(
+      gene, term_genes, term_names, "symbol", min_gs_size = minimum, max_gs_size = 4
+    ))
+    expect_identical(run_ora_result(
+      queries, term_genes, term_names, "symbol", min_gs_size = minimum, max_gs_size = 4
+    ), expected)
+  }
+})
+
 enrichment_serial_fixture <- function(n_groups) {
   genes <- paste0("G", seq_len(n_groups * 2L))
   list(

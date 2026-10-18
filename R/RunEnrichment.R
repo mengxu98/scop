@@ -311,19 +311,17 @@ RunEnrichment <- function(
     )
     group_levels <- levels(geneID_groups)
     genes_by_group <- split(input[[IDtype]], input$geneID_groups, drop = TRUE)
-    result_list <- lapply(group_levels, function(group) {
-      gene <- genes_by_group[[group]]
-      if (is.null(gene)) {
-        gene <- character(0)
-      }
-      result <- run_ora_result(
-        gene = gene,
-        TERM2GENE = TERM2GENE_tmp,
-        TERM2NAME = TERM2NAME_tmp,
-        IDtype = IDtype,
-        min_gs_size = ifelse(term %in% unlimited_db, 1, minGSSize),
-        max_gs_size = ifelse(term %in% unlimited_db, Inf, maxGSSize)
-      )
+    group_results <- run_ora_result(
+      gene = lapply(group_levels, function(group) genes_by_group[[group]] %||% character()),
+      TERM2GENE = TERM2GENE_tmp,
+      TERM2NAME = TERM2NAME_tmp,
+      IDtype = IDtype,
+      min_gs_size = ifelse(term %in% unlimited_db, 1, minGSSize),
+      max_gs_size = ifelse(term %in% unlimited_db, Inf, maxGSSize)
+    )
+    result_list <- lapply(seq_along(group_levels), function(i) {
+      group <- group_levels[[i]]
+      result <- group_results[[i]]
       if (is.null(result) || nrow(result) == 0L) {
         return(NULL)
       }
@@ -400,6 +398,22 @@ RunEnrichment <- function(
     db
   )
 
+  group_levels <- levels(geneID_groups)
+  term_results <- if (identical(backend, "cpp")) {
+    group_genes <- lapply(group_levels, function(group) input[input$geneID_groups == group, IDtype])
+    stats::setNames(lapply(db, function(term) {
+      term_input <- term_inputs[[term]]
+      run_ora_result(
+        gene = group_genes,
+        TERM2GENE = term_input[["TERM2GENE"]],
+        TERM2NAME = term_input[["TERM2NAME"]],
+        IDtype = IDtype,
+        min_gs_size = term_input[["minGSSize"]],
+        max_gs_size = term_input[["maxGSSize"]]
+      )
+    }), db)
+  }
+
   res_list <- lapply(
     seq_len(nrow(comb)),
     function(i) {
@@ -411,14 +425,7 @@ RunEnrichment <- function(
       TERM2GENE_tmp <- term_input[["TERM2GENE"]]
       TERM2NAME_tmp <- term_input[["TERM2NAME"]]
       if (identical(backend, "cpp")) {
-        result <- run_ora_result(
-          gene = gene,
-          TERM2GENE = TERM2GENE_tmp,
-          TERM2NAME = TERM2NAME_tmp,
-          IDtype = IDtype,
-          min_gs_size = term_input[["minGSSize"]],
-          max_gs_size = term_input[["maxGSSize"]]
-        )
+        result <- term_results[[term]][[match(group, group_levels)]]
         enrich_res <- result
       } else {
         enrich_res <- clusterProfiler::enricher(

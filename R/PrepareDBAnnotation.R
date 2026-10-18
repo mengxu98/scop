@@ -228,8 +228,10 @@ PrepareMP <- function(
           fill = TRUE,
           quote = ""
         )
-        mp_gene[["symbol"]] <- gene_id[mp_gene[["V7"]], "3. marker symbol"]
-        mp_gene[["MP"]] <- mp_name[mp_gene[, "V5"], 2]
+        gene_index <- preparedb_row_index(mp_gene[["V7"]], rownames(gene_id))
+        term_index <- preparedb_row_index(mp_gene[, "V5"], rownames(mp_name))
+        mp_gene[["symbol"]] <- gene_id[gene_index, "3. marker symbol"]
+        mp_gene[["MP"]] <- mp_name[term_index, 2]
         TERM2GENE <- mp_gene[, c("V5", "symbol")]
         TERM2NAME <- mp_gene[, c("V5", "MP")]
 

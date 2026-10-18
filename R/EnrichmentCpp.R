@@ -16,8 +16,9 @@ run_ora_result <- function(
     term_names[["Name"]] <- term_names[["Term"]]
   }
 
-  res <- ora_hypergeom(
-    genes = as.character(gene),
+  ora_fun <- if (is.list(gene)) ora_hypergeom_batch else ora_hypergeom
+  res <- ora_fun(
+    genes = if (is.list(gene)) lapply(gene, as.character) else as.character(gene),
     term_ids = as.character(TERM2GENE[["Term"]]),
     term_genes = as.character(TERM2GENE[[IDtype]]),
     term_name_ids = as.character(term_names[["Term"]]),
@@ -25,6 +26,13 @@ run_ora_result <- function(
     min_size = as.integer(min_gs_size),
     max_size = max_size
   )
+  if (is.list(gene)) {
+    return(lapply(res, format_ora_result))
+  }
+  format_ora_result(res)
+}
+
+format_ora_result <- function(res) {
   if (nrow(res) == 0L) {
     return(NULL)
   }

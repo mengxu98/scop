@@ -542,6 +542,22 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+List ora_hypergeom_batch(List genes, CharacterVector term_ids, CharacterVector term_genes, CharacterVector term_name_ids, CharacterVector term_names, int min_size, int max_size);
+RcppExport SEXP _scop_ora_hypergeom_batch(SEXP genesSEXP, SEXP term_idsSEXP, SEXP term_genesSEXP, SEXP term_name_idsSEXP, SEXP term_namesSEXP, SEXP min_sizeSEXP, SEXP max_sizeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type genes(genesSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type term_ids(term_idsSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type term_genes(term_genesSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type term_name_ids(term_name_idsSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type term_names(term_namesSEXP);
+    Rcpp::traits::input_parameter< int >::type min_size(min_sizeSEXP);
+    Rcpp::traits::input_parameter< int >::type max_size(max_sizeSEXP);
+    rcpp_result_gen = Rcpp::wrap(ora_hypergeom_batch(genes, term_ids, term_genes, term_name_ids, term_names, min_size, max_size));
+    return rcpp_result_gen;
+END_RCPP
+}
 // module_score_sparse
 NumericMatrix module_score_sparse(S4 expr, List feature_sets, List control_sets, int n_threads);
 RcppExport SEXP _scop_module_score_sparse(SEXP exprSEXP, SEXP feature_setsSEXP, SEXP control_setsSEXP, SEXP n_threadsSEXP) {
@@ -2475,6 +2491,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_aucell_auc_ranked", (DL_FUNC) &_scop_aucell_auc_ranked, 3},
     {"_scop_aucell_auc_ranked_full", (DL_FUNC) &_scop_aucell_auc_ranked_full, 4},
     {"_scop_ora_hypergeom", (DL_FUNC) &_scop_ora_hypergeom, 7},
+    {"_scop_ora_hypergeom_batch", (DL_FUNC) &_scop_ora_hypergeom_batch, 7},
     {"_scop_module_score_sparse", (DL_FUNC) &_scop_module_score_sparse, 4},
     {"_scop_proportion_permutation", (DL_FUNC) &_scop_proportion_permutation, 6},
     {"_scop_ssgsea_rank_dense", (DL_FUNC) &_scop_ssgsea_rank_dense, 4},
