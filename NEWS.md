@@ -16,8 +16,10 @@
   remains available with a warning until scop 1.0.0.
 
 * **perf**: `RunDEtest()` paired Wilcoxon preparation is median 3.9x faster
-  with all 1,000 pancreas cells, 15,998 genes and two workers. `RunStandardWorkflow()`
-  skips an unused PCA variance pass; a stable PCA gain remains unestablished.
+  with all 1,000 pancreas cells, 15,998 genes and two workers. `FindExpressedMarkers()`
+  dense Wilcoxon reuses cell indices: median 3.384 to 2.388 seconds with the same
+  full input and default filtering, preserving all 5,059 result rows, native limma
+  tests and RNG.
 
 * **perf**: `RunEnrichment()` reuses ORA backgrounds across groups (6.9x) and
   indexes cross-type ID mappings once per call: five-group CPP analysis falls
@@ -66,7 +68,8 @@
 * **fix**: Preserve MDS standard deviations, Conos layers and Seurat 5.6.0 CSS
   integration/reference mapping; avoid unused Conos scaling/transposes. Coralysis
   prediction preparation takes 0.517 to 0.130 seconds with all 1,600 cells and
-  12,932 genes, retaining native scaling.
+  12,932 genes, retaining native scaling. `RunStandardWorkflow()` skips an
+  unused PCA variance pass; a stable PCA gain remains unestablished.
 
 * **ci**: Execute examples in dynamic pkgdown builds, select pages against the
   last successful publication, rebuild changed environments and retain weekly

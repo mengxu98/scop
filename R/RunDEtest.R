@@ -1130,12 +1130,13 @@ WilcoxDETest <- function(
 
   data.use <- as_matrix(data.use)
   data.use[data.use <= min.expression] <- NA
+  group1_index <- match(unique(cells.1), colnames(data.use))
   check_r("limma", verbose = FALSE)
   p_val <- parallelize_fun(
     seq_len(nrow(data.use)),
     fun = function(x) {
-      keep <- colnames(data.use)[!is.na(data.use[x, ])]
-      j <- seq_len(length.out = length(intersect(cells.1, keep)))
+      keep <- !is.na(data.use[x, ])
+      j <- seq_len(sum(keep[group1_index]))
       statistics <- data.use[x, keep]
       min(
         2 *
