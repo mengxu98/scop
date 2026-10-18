@@ -774,11 +774,15 @@ ensembl_archive_catalog <- function(version) {
     if (!length(links)) {
       stop(error)
     }
-    data.frame(
+    archives <- data.frame(
       url = sub("^http:", "https:", tolower(sub('.*href="([^"]+)".*', "\\1", links))),
       version = sub(".*>Ensembl ([0-9]+):$", "\\1", links),
       current_release = ""
     )
+    if (!as.character(version) %in% archives$version) {
+      stop(error)
+    }
+    archives
   })
 }
 

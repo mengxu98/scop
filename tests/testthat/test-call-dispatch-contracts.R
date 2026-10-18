@@ -32,6 +32,7 @@ test_that("explicit Ensembl releases resolve when the main archive catalog is un
   ))
   expect_true(all(archives$current_release == ""))
   expect_error(ensembl_archive_catalog("current_release"), "catalog unavailable")
+  expect_error(ensembl_archive_catalog(116), "catalog unavailable")
   mart <- methods::new("Mart", biomart = "ENSEMBL_MART_ENSEMBL",
     host = "https://sep2025.archive.ensembl.org/biomart/martservice"
   )
