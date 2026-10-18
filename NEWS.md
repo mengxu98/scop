@@ -15,180 +15,130 @@
   duplicate `object`/`srt` inputs consistently. The deprecated `srt` alias
   remains available with a warning until scop 1.0.0.
 
-* **perf**: Reduce paired Wilcoxon `RunDEtest()` worker transfers and repeated
-  fold-change preparation: median 3.9x faster with all 1,000 pancreas cells,
-  15,998 input genes and two workers. Skip unused `RunPCA()` variance calculations
-  before native delegation in `RunStandardWorkflow()`; a stable PCA gain remains
-  unestablished. Coralysis prediction preparation takes 0.517 to 0.130 seconds
-  with all 1,600 cells and 12,932 genes, retaining its native scaling path.
+* **perf**: `RunDEtest()` paired Wilcoxon preparation is median 3.9x faster
+  with all 1,000 pancreas cells, 15,998 genes and two workers. `RunStandardWorkflow()`
+  skips an unused PCA variance pass; a stable PCA gain remains unestablished.
 
-* **perf**: Use sparse GO keyword counts in heatmaps, `EnrichmentPlot()` and
-  `GSEAPlot()`, reuse ORA backgrounds across groups, and resolve repeated MP
-  annotation identifiers once per key: median local
-  step speedups are 49.3x, 6.9x and 3.7x, respectively. Preserve Fisher tests,
-  hypergeometric statistics, adjustment and matching semantics. GO keyword
-  acceleration supports simplifyEnrichment 2.4.1/2.6.0, with native fallback
-  for other versions; MP timings exclude downloads and later ID conversion.
+* **perf**: `RunEnrichment()` reuses ORA backgrounds across groups (6.9x) and
+  indexes cross-type ID mappings once per call: five-group CPP analysis falls
+  from median 6.040 to 1.600 seconds with identical 18,173 result rows. Mapping
+  timings use frozen real Ensembl 115 responses and exclude network requests.
 
-* **perf**: Skip repeated leading-edge ID lookups in `RunGSEA()` when character
-  IDs retain their type. With 36,764 ranked rows across five groups and 20,529
-  result terms, median formatting time falls from 36.980 to 0.178 seconds;
-  native GSEA statistics and default 100,000 permutations remain unchanged.
+* **perf**: `RunGSEA()` reuses annotations across groups and avoids repeated ID
+  scans. Median identity-ID formatting falls from 36.980 to 0.178 seconds;
+  cross-type formatting takes 20.051 to 0.308 seconds for all 20,529 recorded
+  native result terms, including index construction. Five-group annotation
+  preparation takes 1.858 to 0.345 seconds. These steps exclude fgsea execution;
+  its engine, full rankings, default 100,000 permutations and version-compatible
+  public result conversion are preserved. Existing duplicate-ranking errors
+  after one-to-many conversion remain unchanged.
 
-* **perf**: Reuse exact circlize colors within each `FeatureHeatmap()`,
-  `GroupHeatmap()` and `DynamicHeatmap()` call. Replaying 247 complete mapping
-  inputs takes median 16.342 to 3.423 seconds, including lookup construction
-  (median paired speedup 4.8x); all 22 reference figures match byte for byte.
-  Avoid expanding full vectors in gene-immune and SCENIC correlation descriptions.
+* **perf**: Heatmaps, `EnrichmentPlot()` and `GSEAPlot()` use sparse GO keyword
+  counts (49.3x), preserving native Fisher tests and Holm correction with
+  simplifyEnrichment 2.4.1/2.6.0 and native fallback for other versions.
+  `FeatureHeatmap()`, `GroupHeatmap()` and `DynamicHeatmap()` reuse exact circlize
+  colors: 247 complete mappings take median 16.342 to 3.423 seconds (4.8x), with
+  22 byte-identical figures. Avoid full-vector correlation descriptions.
 
-* **perf**: Switch installed lazy data from xz to gzip. Median local loading
-  times fall from 1.121 to 0.204 seconds for `pancreas_sub`, 0.520 to 0.113 for
-  `panc8_sub`, and 0.870 to 0.278 for `pbmcmultiome_sub`. All eight datasets
-  remain identical; the installed data file grows from about 28 MB to 54–61 MB.
+* **perf**: Installed lazy data use gzip instead of xz; all eight objects remain
+  identical. Median loading times for `pancreas_sub`, `panc8_sub` and
+  `pbmcmultiome_sub` fall from 1.121/0.520/0.870 to 0.204/0.113/0.278 seconds;
+  installed data grow from about 28 MB to 54–61 MB. Three alternating source-install
+  pairs per host give median xz/gzip totals of 265.875/124.046 seconds on macOS
+  R 4.5.3, 589.984/391.422 on Windows R 4.6.1 and 420.239/281.098 on Linux R 4.4.3;
+  lazy-data stages take 107.188/14.189, 236.938/13.047 and 143.158/9.135 seconds.
+  Windows/Linux totals improve by 33.7%/33.1%; a 602.557-second macOS outlier
+  prevents a stable total-time claim there. All 18 installs pass with two compiler
+  jobs and prepared dependencies; downloads and binary installs are excluded.
 
-* **perf**: Across three alternating fresh source-installation pairs per host,
-  median xz/gzip totals are 265.875/124.046 seconds on macOS R 4.5.3,
-  589.984/391.422 on Windows R 4.6.1 and 420.239/281.098 on Linux R 4.4.3.
-  Lazy-data stages take 107.188/14.189, 236.938/13.047 and 143.158/9.135 seconds,
-  respectively. Windows/Linux totals improve by 33.7%/33.1%; a retained
-  602.557-second high-load macOS run prevents a stable total-time claim there.
-  All 18 installs pass with two compiler jobs and prepared dependencies;
-  Linux uses isolated matching R configuration. Downloads, dependency setup
-  and binary installation are outside these measurements.
+* **docs**: Performance comparisons retain complete inputs, algorithms, defaults,
+  real backends and executable examples. Checked outputs/RNG match; Coralysis
+  embeddings agree within 1e-12. Function timings use local R 4.5.3 and three
+  alternating pairs; speedups are median paired ratios. Step and replay timings
+  do not establish whole-site CI gains.
 
-* **docs**: Performance checks retain complete inputs, real backends, defaults
-  and executable examples. Measured outputs and RNG states match; Coralysis
-  embeddings agree within 1e-12. Runtime measurements use local R 4.5.3;
-  repeated speedups are medians of paired ratios. Whole-page timings vary,
-  and stable whole-site CI gains remain unestablished.
+* **fix**: Connect directly to requested Ensembl archives, with archive-hosted
+  catalog recovery and errors for unavailable releases. Examples use Ensembl 115.
+  Restore the startup Logo, version, update date and website, respecting suppression.
 
-* **fix**: Connect directly to explicitly requested Ensembl archives, using
-  the archive-hosted catalog when the main catalog fails and retaining errors
-  for unavailable releases. Gene conversion examples use Ensembl 115.
+* **fix**: Preserve MDS standard deviations, Conos layers and Seurat 5.6.0 CSS
+  integration/reference mapping; avoid unused Conos scaling/transposes. Coralysis
+  prediction preparation takes 0.517 to 0.130 seconds with all 1,600 cells and
+  12,932 genes, retaining native scaling.
 
-* **fix**: Restore the startup Logo, version, update date and website when loading
-  installed or development copies, respecting verbosity and suppression.
+* **ci**: Execute examples in dynamic pkgdown builds, select pages against the
+  last successful publication, rebuild changed environments and retain weekly
+  full builds, page validation and timings. Examples call packages directly;
+  dataset/Monocle interactivity and manual Python recipes are preserved.
 
-* **fix**: Preserve `RunGSEA()` native fgsea statistics across clusterProfiler versions,
-  using enrichit's public converter when the `by` argument is unavailable.
-  Preserve MDS standard deviations, current Conos layers and Seurat 5.6.0
-  CSS integration/reference mapping; avoid unused Conos scaling and transposes.
+* **refactor**: Load Signac, ComplexHeatmap and ggforce on demand. Remove unused
+  qlcMatrix, splines, RcppAnnoy, RcppParallel, Rfast, R tensorflow, TBB flags and
+  package caches; retain optional backends, Python TensorFlow and OpenMP. Read GMT
+  resources without scMetabolism; explicit renv snapshots exclude unrelated backends.
+  Require Rcpp >= 1.0.13 and standard `check_r()`/`PrepareEnv()` preparation,
+  including pinned CHOIR and SCENIC arrow. GitHub installs follow default branches;
+  Cell2fate caches follow their revision.
 
-* **ci**: Execute runnable examples in dynamic pkgdown builds, select changed
-  pages against the last successful publication, rebuild changed environments,
-  and retain weekly full builds. Validate each page and retain timings,
-  package versions and failure diagnostics. Examples use direct package calls;
-  dataset/Monocle interactivity and explicit manual Python recipes are preserved.
+* **change**: Add independent `PrepareGO()`, `PrepareKEGG()`, `PrepareMSigDB()` and
+  other database interfaces with shared caching/conversion. Preserve nested MSigDB
+  collections, requested subsets and cached parent resolution; reject unknown
+  collections. Normalize species names across annotation, scoring and metabolism;
+  resolve chromosomes lazily. MP identifier preparation is 3.7x faster with unchanged
+  matching; timings exclude downloads and later ID conversion.
 
-* **refactor**: Load Signac, ComplexHeatmap and ggforce on demand; remove unused
-  qlcMatrix, splines, RcppAnnoy, RcppParallel, Rfast, R tensorflow and TBB flags.
-  Keep optional backends, Python TensorFlow preparation and OpenMP support.
-  Read metabolism GMT resources without scMetabolism and remove unused package
-  caches; explicit renv snapshots avoid installing unrelated optional backends.
+* **feature**: Extend `FeatureDimPlot()` density views, palettes, italic headings
+  and title controls; preserve density colors/blending and close outer contours.
+  Embedding plots now default to `label_insitu = TRUE`; use `FALSE` for numbered labels.
+  Accept standalone DE tables in DE, volcano, Manhattan and ring plots. Honor CNV
+  palettes, SCENIC default reductions and thisplot's Pastel1 volcano overlays.
+  Update integration benchmark and deconvolution documentation.
 
-* **fix**: Require Rcpp >= 1.0.13 for source installation. Use standard
-  `check_r()` installation behavior and `PrepareEnv()` for backend preparation,
-  including pinned CHOIR and arrow for `RunSCENIC()` ranking databases. Handwritten
-  GitHub installs follow default branches; Cell2fate caches match their revision.
+* **feature**: Add ATAC/multiome reading, QC/filtering, peak annotation, shared-peak
+  combination and native Signac recounting. Preserve cell/region alignment, native
+  ties, fragment-based FRiP, capture identities and ATAC doublet aggregation.
+  Extend motifs to raw ranges; preserve eligible enrichment backgrounds. Add native
+  ChromVAR, gene activity and peak linking with bias correction, measured pairing
+  and protected results; export complete results and checksummed resources.
+  Sample-level edgeR supports replicate, pairing and covariate validation.
 
-* **change**: Add independent `PrepareGO()`, `PrepareKEGG()`, `PrepareMSigDB()`
-  and other database interfaces with shared caching/conversion. Preserve nested
-  MSigDB collections, return only requested subsets, reject unknown collections
-  and resolve cached parent data
-  before ID conversion. Normalize Latin species names across scoring,
-  annotation and metabolism (`RunDynamicEnrichment()`, `RunCellRankEnrichment()`,
-  `AnnotateFeatures()` and `RunMetabolism()`); resolve chromosome mappings on first use.
+* **change**: BANKSY prefers image/Spatial/RNA/default assays; `sample.by` produces
+  separate, sample-prefixed, unaligned fits. Store membership/provenance, control
+  receipts with `verbose`/`store_results`, and rerun legacy results lacking provenance.
+  Spatial results follow current cell order; BANKSY, PRECAST, SmoothClust, CHOIR
+  and RareQ retain identities across subset/rename operations and reject invalid provenance.
 
-* **feature**: Extend `FeatureDimPlot()` with contour-only and local-expression
-  density views, feature palettes, italic gene headings and `title.face`/
-  `title.color`. Preserve explicit density colors and blended-feature behavior;
-  close outer contours and soften low-support surfaces. `CellDimPlot()`,
-  `FeatureDimPlot()`, `PAGAPlot()` and CCC embedding plots now default to
-  `label_insitu = TRUE`; use `FALSE` to restore numbered labels.
+* **fix**: Align selected-assay references in RCTD, CARD and SPOTlight, retaining
+  RCTD library depths. PRECAST uses selected raw counts, exact six-neighbor adjacency
+  and stored native parameters. Spatial neighborhood tables are deterministic;
+  feature surfaces retain saved coordinates and complete p-value families.
+  SpatialCellChat requires explicit Visium HD calibration/tolerance.
 
-* **fix**: Accept standalone DE tables in `DEtestPlot()`, `VolcanoPlot()`,
-  `DEtestManhattanPlot()` and `DEtestRingPlot()`. Honor `CNVPlot()` heatmap
-  palettes, use `DefaultReduction()` in `SCENICPlot()` and thisplot's Pastel1 for
-  volcano overlays. Update `IntegrationBenchmarkPlot()` and `RunDeconvolution()` docs.
+* **change**: Milo, scCODA and Propeller require biological `sample.by` by default;
+  pseudo-samples are descriptive with inference unavailable. Preserve sample-condition
+  units, donor pairing, seeds, Milo membership/SpatialFDR and scCODA credibility/native
+  references. Propeller uses speckle transformations and empirical Bayes tests with
+  robust/trend/paired controls and two samples per condition; bootstrap ratio intervals
+  remain descriptive. Preserve CytoSPACE singleton, label-collision and zero-cell provenance.
 
-* **feature**: Add `ReadATACData()`/`ReadMultiomeData()`, `RunATACQC()`,
-  `FilterATACPeaks()` and `AnnotateATACPeaks()` with aligned raw counts, QC,
-  interval/blacklist filtering and native nearest annotation. `CheckATACData()`
-  reports fragment readiness for selected-assay cells. Preserve native peak
-  ranking ties, fragment-record FRiP and multi-capture identities; ATAC
-  `RunscDblFinder()` uses native feature aggregation.
+* **perf**: Match GSVA sparse scoring to versions <= 2.4 or >= 2.6, dropping explicit
+  zeros and using >= 2.6 defaults when absent. Its Gaussian walk is about 2.8x faster
+  than before and 50x faster than delegated GSVA on 2,000 genes, 1,000 cells and
+  400 sets. Support CRAN RcppML with Matrix attachment scoped to `RunNMF()`.
 
-* **feature**: Add `CombineATACPeaks()` and native Signac `RecountATAC()` for
-  shared peak universes and fragment recounting; retain cell/region alignment,
-  reference lengths and capture mappings. Extend `AddATACMotifs()` to raw peak
-  ranges; `RunMotifEnrichment()` retains the eligible foreground/background.
+* **fix**: Align Palantir bandwidth/start pseudotime, CellRank Fisher-z p-values and
+  stochastic scVelo percentile weighting with native references; existing results
+  change. Sparse scVelo storage reduces a 50,000-cell velocity graph from about
+  56 GiB to 11 MiB; RSpectra eigensolvers can return fewer terminal regions for
+  near-closed classes. Restore temporary thread settings and validate Python runtimes.
 
-* **feature**: Add native `RunChromVAR()`, `RunGeneActivity()` and `RunLinkPeaks()`
-  with GC/bias correction, measured RNA/ATAC pairing, reference checks and
-  protected results. Add sample-level edgeR designs/contrasts with replicate,
-  pairing and covariate validation. `ExportATACResults()` exports complete
-  objects, tables, matrices and checksummed external-resource inventories.
+* **feature**: Add experimental IREA analysis/plots and checksum-checked resources
+  with contrast provenance; equivalence to the official portal remains unestablished.
 
-* **change**: `RunBANKSY(assay = NULL)` prefers the image assay, then `Spatial`,
-  `RNA` and `DefaultAssay`; set `assay` explicitly for earlier selections.
-  Use `sample.by` for separate fits with sample-prefixed, unaligned domains.
-  Results record inputs and membership for `GetSpatialResult()`; control receipts
-  with `verbose` and detail storage with `store_results`. Legacy per-sample
-  results lacking membership provenance require rerunning BANKSY.
-
-* **fix**: Align selected-assay reference labels in `RunRCTD()`, `RunCARD()` and
-  `RunSPOTlight()`; RCTD retains full library depths. `GetSpatialResult()` follows
-  current cell order and recomputes BANKSY/PRECAST summaries; BANKSY, PRECAST,
-  SmoothClust, CHOIR and RareQ retain identities across subsetting and renaming,
-  rejecting invalid provenance while preserving native fits and compatible reads.
-
-* **fix**: PRECAST uses selected raw counts and exact distance-based six-neighbor
-  adjacency, validates graphs/results and records backend parameters.
-  `RunSpatialNeighborhood()` tables have deterministic backend-independent ordering.
-  Spatial feature surfaces use saved coordinates and complete p-value families;
-  SpatialCellChat requires explicit Visium HD calibration and tolerance.
-
-* **change**: Milo, scCODA and Propeller require biological `sample.by` by
-  default; `allow_pseudo_samples = TRUE` permits descriptive effects with
-  inference unavailable. Preserve sample-condition units, paired donors and
-  permutation seeds. Milo plots use member cells and `SpatialFDR`; `RunscCODA()`
-  preserves credibility and native automatic references, rejecting unknown IDs.
-  `ProportionTestPlot()` accepts neighborhood-level results.
-
-* **change**: `RunPropeller()` uses speckle's transformed proportions and
-  empirical Bayes tests with `transform`, `robust`, `trend` and paired-donor
-  blocking; require two samples per condition. Bootstrap ratio intervals
-  remain descriptive. Preserve `RunCytoSPACE()` singleton sampling, colliding labels
-  and zero-cell assignments with explicit stored provenance.
-
-* **fix**: Match `RunGSVA()`/`CellScoring()` sparse scoring to installed GSVA (<= 2.4 or
-  >= 2.6), dropping explicit zeros and using >= 2.6 defaults when GSVA is absent.
-  The Gaussian running-sum walk is about 2.8x faster than its predecessor and
-  50x faster than delegated GSVA on 2,000 genes x 1,000 cells with 400 sets.
-  `RunNMF()` supports CRAN RcppML with Matrix attachment scoped to the call.
-
-* **perf**: Store scVelo transitions, terminal states and pseudotime sparsely:
-  the velocity graph falls from about 56 GiB to 11 MiB at 50,000 cells.
-  Iterative eigensolvers require RSpectra and can yield fewer terminal regions
-  for graphs with multiple near-closed classes.
-
-* **fix**: Align native trajectory statistics with their references: `RunPalantir()`
-  bandwidth/start pseudotime, `RunCellRank()` Fisher-z driver p-values and stochastic
-  `RunSCVELO()` 95th-percentile weighting. Existing results change accordingly.
-  Bound PCA BLAS threads where supported; restore `RunscTenifoldKnk()`/Palantir thread
-  settings, validate Python runtime changes and reject conflicting core aliases.
-
-* **feature**: Add experimental IREA analysis/plots and checksum-checked
-  `PrepareDB(db = "IREA_<cell type>")` resources with contrast provenance.
-  Numerical equivalence to the official portal remains unestablished.
-
-* **refactor**: Share spatial/heatmap helpers, simplify fixed backend calls and
-  Scanorama binding, and remove unused helpers, Rcpp bridges, static constants
-  and obsolete compatibility code. Preserve canonical Seurat command history,
-  metadata-name handling and sparse `RecoverCounts(trans = "exp")` results.
-  Load CytoTRACE2 models once per call and invalidate changed assets; trajectory
-  Python backends use managed `PrepareEnv()` validation. Resolve Python logging
-  from thisutils `scripts/`, retaining compatibility with older `python/` paths.
+* **refactor**: Share spatial/heatmap helpers and simplify backend/Scanorama calls;
+  remove unused helpers, bridges, constants and compatibility code. Preserve Seurat
+  command history, metadata names and sparse `RecoverCounts(trans = "exp")` results.
+  Load CytoTRACE2 models once per call, invalidate changed assets and validate managed
+  Python environments. Resolve logging from thisutils `scripts/`, with older-path compatibility.
 
 # scop 0.9.2
 

@@ -287,6 +287,10 @@ RunEnrichment <- function(
     input <- input[!is.na(input[[IDtype]]), , drop = FALSE]
   }
 
+  if (!identical(IDtype, result_IDtype)) {
+    map_gene_ids <- make_enrichment_id_mapper(geneMap, IDtype, result_IDtype)
+  }
+
   if (isTRUE(direct_cpp_custom)) {
     term <- db[[1]]
     TERM2GENE_tmp <- db_list[[species]][[term]][["TERM2GENE"]][, c(
@@ -329,21 +333,7 @@ RunEnrichment <- function(
       result[["Database"]] <- term
       result[["Version"]] <- term_version
       if (!identical(IDtype, result_IDtype)) {
-        IDlist <- strsplit(result$geneID, split = "/")
-        result$geneID <- unlist(lapply(IDlist, function(x) {
-          x_result <- NULL
-          for (i in x) {
-            if (i %in% geneMap[[IDtype]]) {
-              x_result <- c(
-                x_result,
-                unique(geneMap[geneMap[[IDtype]] == i, result_IDtype])
-              )
-            } else {
-              x_result <- c(x_result, i)
-            }
-          }
-          paste0(x_result, collapse = "/")
-        }))
+        result$geneID <- map_gene_ids(result$geneID)
       }
       result
     })
@@ -447,21 +437,7 @@ RunEnrichment <- function(
         result[["Database"]] <- term
         result[["Version"]] <- term_input[["version"]]
         if (!identical(IDtype, result_IDtype)) {
-          IDlist <- strsplit(result$geneID, split = "/")
-          result$geneID <- unlist(lapply(IDlist, function(x) {
-            x_result <- NULL
-            for (i in x) {
-              if (i %in% geneMap[[IDtype]]) {
-                x_result <- c(
-                  x_result,
-                  unique(geneMap[geneMap[[IDtype]] == i, result_IDtype])
-                )
-              } else {
-                x_result <- c(x_result, i)
-              }
-            }
-            return(paste0(x_result, collapse = "/"))
-          }))
+          result$geneID <- map_gene_ids(result$geneID)
         }
         if (identical(backend, "cpp")) {
           enrich_res <- result
@@ -617,5 +593,38 @@ RunEnrichment <- function(
     )
   } else {
     return(res)
+  }
+}
+
+make_enrichment_id_mapper <- function(geneMap, IDtype, result_IDtype,
+                                      known_ids = geneMap[[IDtype]]) {
+  source_ids <- geneMap[[IDtype]]
+  keys <- unique(source_ids)
+  rows <- split(seq_along(source_ids), match(source_ids, keys))
+  missing_source <- anyNA(source_ids)
+  mapped <- lapply(seq_along(keys), function(i) {
+    index <- if (missing_source) source_ids == keys[[i]] else rows[[i]]
+    unique(geneMap[index, result_IDtype])
+  })
+  known <- keys %in% known_ids
+  function(ids) {
+    IDlist <- strsplit(ids, "/")
+    tokens <- unlist(IDlist, use.names = FALSE)
+    index <- match(tokens, keys)
+    valid <- !is.na(index) & known[index]
+    pieces <- as.list(tokens)
+    pieces[valid] <- mapped[index[valid]]
+    ends <- cumsum(lengths(IDlist))
+    starts <- ends - lengths(IDlist)
+    result <- unlist(lapply(seq_along(IDlist), function(i) {
+      take <- if (ends[[i]] > starts[[i]]) {
+        seq.int(starts[[i]] + 1L, ends[[i]])
+      } else {
+        integer()
+      }
+      paste0(do.call(c, c(list(NULL), pieces[take])), collapse = "/")
+    }))
+    names(result) <- names(IDlist)
+    result
   }
 }
