@@ -397,7 +397,9 @@ monocle2_reduce_dimension_args <- function(
 #' @export
 #'
 #' @examples
-#' if (all(unlist(thisutils::check_r("cole-trapnell-lab/monocle3", install = FALSE, verbose = FALSE)))) {
+#' if (all(unlist(thisutils::check_r(
+#'   "cole-trapnell-lab/monocle3", install = FALSE, verbose = FALSE
+#' )))) {
 #'   data(pancreas_sub)
 #'   pancreas_sub <- RunStandardWorkflow(pancreas_sub, cores = 1, verbose = FALSE)
 #'   # Root this developmental example in a ductal cell; no manual selection.
