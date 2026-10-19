@@ -188,257 +188,96 @@ Generates various types of plots for enrichment (over-representation) analysis.
 \examples{
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-pancreas_sub <- RunDEtest(
-  pancreas_sub,
-  group.by = "CellType"
-)
-
+pancreas_sub <- RunDEtest(pancreas_sub, group.by = "CellType")
 pancreas_sub <- RunEnrichment(
   pancreas_sub,
   db = c("GO_BP", "GO_CC"),
-  group.by = "CellType",
-  species = "Mus_musculus"
+  group.by = "CellType", species = "Mus_musculus"
 )
 
+# One group per figure keeps long pathway labels readable in the help page.
 EnrichmentPlot(
   pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  group_use = "Ductal",
-  plot_type = "bar"
+  db = "GO_BP", group.by = "CellType",
+  group_use = "Ductal", plot_type = "bar", topTerm = 5,
+  character_width = 30, aspect.ratio = NULL,
+  theme_args = list(base_size = 11)
 )
 
+# Display both groups separately instead of shrinking a multi-panel grid.
+group_plots <- EnrichmentPlot(
+  pancreas_sub,
+  db = "GO_BP", group.by = "CellType",
+  group_use = c("Ductal", "Endocrine"), plot_type = "bar",
+  color_by = "Groups", topTerm = 4, character_width = 30,
+  aspect.ratio = NULL, theme_args = list(base_size = 11), combine = FALSE
+)
+for (p in group_plots) print(p)
+
+# Compare the selected groups in one panel.
 EnrichmentPlot(
   pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  plot_type = "bar",
-  color_by = "Groups",
-  ncol = 2
+  db = "GO_BP", group.by = "CellType",
+  group_use = c("Ductal", "Endocrine"), plot_type = "comparison",
+  topTerm = 3, character_width = 30, aspect.ratio = NULL,
+  theme_args = list(base_size = 11)
 )
 
+# Multiple databases, again rendered individually to preserve label space.
+database_plots <- EnrichmentPlot(
+  pancreas_sub,
+  db = c("GO_BP", "GO_CC"), group.by = "CellType",
+  group_use = "Ductal", plot_type = "bar", split_by = "Database",
+  topTerm = 4, character_width = 30, aspect.ratio = NULL,
+  theme_args = list(base_size = 11), combine = FALSE
+)
+for (p in database_plots) print(p)
+
 EnrichmentPlot(
   pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  plot_type = "bar",
-  id_use = list(
-    "Ductal" = c(
-      "GO:0002181", "GO:0045787",
-      "GO:0006260", "GO:0050679"
-    ),
-    "Ngn3-low-EP" = c(
-      "GO:0050678", "GO:0051101",
-      "GO:0072091", "GO:0006631"
-    ),
-    "Ngn3-high-EP" = c(
-      "GO:0035270", "GO:0030325",
-      "GO:0008637", "GO:0030856"
-    ),
-    "Pre-endocrine" = c(
-      "GO:0090276", "GO:0031018",
-      "GO:0030073", "GO:1903532"
-    )
-  )
+  db = "GO_BP", group.by = "CellType",
+  group_use = "Ductal", plot_type = "dot", topTerm = 5,
+  character_width = 30, aspect.ratio = NULL,
+  theme_args = list(base_size = 11)
+)
+EnrichmentPlot(
+  pancreas_sub,
+  db = "GO_BP", group.by = "CellType",
+  group_use = "Ductal", plot_type = "lollipop", topTerm = 5,
+  character_width = 30, aspect.ratio = NULL,
+  theme_args = list(base_size = 11)
 )
 
+# Bound the number of words and nodes in small documentation figures.
 EnrichmentPlot(
   pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  topTerm = 3,
-  plot_type = "comparison"
+  db = "GO_BP", group.by = "CellType",
+  group_use = "Ductal", plot_type = "wordcloud", topWord = 30,
+  word_size = c(3, 6), theme_args = list(base_size = 11)
 )
-
-EnrichmentPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  topTerm = 3,
-  plot_type = "comparison",
-  compare_only_sig = TRUE
+# Use two significant terms with small overlaps for a readable gene network.
+# This is a layout example, not a ranking of the strongest biological signals.
+network_table <- pancreas_sub@tools$Enrichment_CellType_wilcox$enrichment
+network_table <- subset(
+  network_table,
+  Database == "GO_BP" & Groups == "Ductal" & p.adjust <= 0.05 &
+    Count >= 5 & Count <= 15
 )
-
+network_ids <- head(network_table$ID[order(network_table$p.adjust)], 2)
+stopifnot(length(network_ids) == 2)
 EnrichmentPlot(
   pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  group_use = c("Ductal", "Endocrine"),
-  plot_type = "comparison"
-)
-
+  db = "GO_BP", group.by = "CellType",
+  group_use = "Ductal", plot_type = "network", id_use = network_ids,
+  network_labelsize = 3, character_width = 25,
+  theme_args = list(base_size = 10)
+) + ggplot2::scale_x_continuous(expand = ggplot2::expansion(mult = 0.15))
 EnrichmentPlot(
   pancreas_sub,
-  db = c("GO_BP", "GO_CC"),
-  group.by = "CellType",
-  group_use = c("Ductal", "Endocrine"),
-  plot_type = "bar",
-  split_by = "Groups"
-)
-
-EnrichmentPlot(
-  pancreas_sub,
-  db = c("GO_BP", "GO_CC"),
-  group.by = "CellType",
-  group_use = c("Ductal", "Endocrine"),
-  plot_type = "bar",
-  split_by = "Database",
-  color_by = "Groups"
-)
-
-EnrichmentPlot(
-  pancreas_sub,
-  db = c("GO_BP", "GO_CC"),
-  group.by = "CellType",
-  group_use = c("Ductal", "Endocrine"),
-  plot_type = "bar",
-  split_by = c("Database", "Groups")
-)
-
-EnrichmentPlot(
-  pancreas_sub,
-  db = c("GO_BP", "GO_CC"),
-  group.by = "CellType",
-  plot_type = "bar",
-  split_by = "Database",
-  color_by = "Groups",
-  palette = "Set1"
-)
-
-EnrichmentPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  group_use = "Ductal",
-  plot_type = "dot",
-  palette = "GdRd"
-)
-
-EnrichmentPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  group_use = "Ductal",
-  plot_type = "lollipop",
-  palette = "GdRd"
-)
-
-EnrichmentPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  group_use = "Ductal",
-  plot_type = "wordcloud"
-)
-
-EnrichmentPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  group_use = "Ductal",
-  plot_type = "wordcloud",
-  word_type = "feature"
-)
-
-EnrichmentPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  group_use = "Ductal",
-  plot_type = "network"
-)
-
-EnrichmentPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  group_use = "Ductal",
-  plot_type = "network",
-  id_use = c(
-    "GO:0050678",
-    "GO:0035270",
-    "GO:0090276",
-    "GO:0030073"
-  )
-)
-
-EnrichmentPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  group_use = "Ductal",
-  plot_type = "network",
-  network_layoutadjust = FALSE
-)
-
-EnrichmentPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  group_use = "Ductal",
-  plot_type = "network",
-  topTerm = 4,
-  network_blendmode = "average",
-  theme_use = "theme_blank",
-  theme_args = list(add_coord = FALSE)
-) |> thisplot::panel_fix(height = 5)
-
-EnrichmentPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  group_use = "Ductal",
-  plot_type = "enrichmap"
-)
-
-EnrichmentPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  group_use = "Ductal",
-  plot_type = "enrichmap",
-  enrichmap_expand = c(2, 1)
-)
-
-EnrichmentPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  group_use = "Ductal",
-  plot_type = "enrichmap",
-  enrichmap_show_keyword = TRUE,
-  character_width = 10
-)
-
-EnrichmentPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  group_use = "Ductal",
-  plot_type = "enrichmap",
-  topTerm = 200,
-  enrichmap_mark = "hull",
-  enrichmap_label = "feature",
-  enrichmap_nlabel = 3,
-  character_width = 10,
-  theme_use = "theme_blank",
-  theme_args = list(add_coord = FALSE)
-) |> thisplot::panel_fix(height = 4)
-
-pancreas_sub <- RunEnrichment(
-  pancreas_sub,
-  db = c("MP", "DO"),
-  group.by = "CellType",
-  convert_species = TRUE,
-  species = "Mus_musculus"
-)
-
-EnrichmentPlot(
-  pancreas_sub,
-  db = c("MP", "DO"),
-  group.by = "CellType",
-  group_use = "Ductal",
-  ncol = 1
+  db = "GO_BP", group.by = "CellType",
+  group_use = "Ductal", plot_type = "enrichmap", topTerm = 20,
+  enrichmap_nlabel = 2, enrichmap_labelsize = 3, character_width = 25,
+  theme_args = list(base_size = 10)
 )
 }
 \seealso{
