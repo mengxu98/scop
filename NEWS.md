@@ -4,6 +4,8 @@
   magnitude, with group colors, adjustable solid-point sizes, and halo labels.
   Rank views default to 80 terms per group and do not rerun enrichment.
 
+* **feat**: `GroupHeatmap()` accepts `legend_params` to customize expression and percent legends independently, including horizontal color bars and single-row dot legends.
+
 * **breaking**:
 
   * `RunscTenifoldKnk()` removes `backend` and replaces `qc_min_cells` with
