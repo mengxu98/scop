@@ -159,7 +159,8 @@ GroupHeatmap(
   ht_params = list(),
   verbose = TRUE,
   ...,
-  srt = NULL
+  srt = NULL,
+  legend_params = list()
 )
 }
 \arguments{
@@ -294,6 +295,12 @@ Default is \code{TRUE}.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{legend_params}{Named list with optional \code{expression} and \code{percent}
+entries, each a named list of arguments passed to \link[ComplexHeatmap:Legend]{ComplexHeatmap::Legend},
+overriding that legend's defaults. Use \code{expression = list(direction = "horizontal", legend_width = grid::unit(35, "mm"), title_position = "topcenter")} and \code{percent = list(direction = "horizontal", nrow = 1, title_position = "topcenter")} for horizontal legends. \code{legend.position}
+controls their placement independently. The percent entry is used only when
+\code{add_dot = TRUE}; other annotation legends are unchanged. Default: \code{list()}.}
 }
 \value{
 A list with \code{plot}, \code{matrix_list}, \code{feature_split}, \code{cell_metadata},

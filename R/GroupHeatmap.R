@@ -71,6 +71,14 @@
 #' @param width,height,units Heatmap size. `NULL` sizes from matrix dimensions.
 #' @param legend.position Legend side (`"right"`, `"left"`, `"top"`, `"bottom"`).
 #' Gap to the heatmap grows automatically when long row names are on the right.
+#' @param legend_params Named list with optional `expression` and `percent`
+#' entries, each a named list of arguments passed to [ComplexHeatmap::Legend],
+#' overriding that legend's defaults. Use `expression = list(direction =
+#' "horizontal", legend_width = grid::unit(35, "mm"), title_position =
+#' "topcenter")` and `percent = list(direction = "horizontal", nrow = 1,
+#' title_position = "topcenter")` for horizontal legends. `legend.position`
+#' controls their placement independently. The percent entry is used only when
+#' `add_dot = TRUE`; other annotation legends are unchanged. Default: `list()`.
 #' @param ht_params Extra arguments passed to [ComplexHeatmap::Heatmap], overriding defaults.
 #' @param ... Additional arguments passed to helper functions.
 #'
@@ -405,10 +413,33 @@ GroupHeatmap <- function(
   ht_params = list(),
   verbose = TRUE,
   ...,
-  srt = NULL
+  srt = NULL,
+  legend_params = list()
 ) {
   check_r("ComplexHeatmap", verbose = FALSE)
+  legend_fun <- get_namespace_fun("ComplexHeatmap", "Legend")
 
+  if (!is.list(legend_params) || (length(legend_params) > 0L &&
+    (is.null(names(legend_params)) || anyNA(names(legend_params)) ||
+      anyDuplicated(names(legend_params)) ||
+      !all(names(legend_params) %in% c("expression", "percent"))))) {
+    log_message(
+      "{.arg legend_params} must be a named list with entries {.val expression} and/or {.val percent}.",
+      message_type = "error"
+    )
+  }
+  for (legend_name in names(legend_params)) {
+    params <- legend_params[[legend_name]]
+    if (!is.list(params) || (length(params) > 0L &&
+      (is.null(names(params)) || anyNA(names(params)) ||
+        anyDuplicated(names(params)) ||
+        !all(names(params) %in% names(formals(legend_fun)))))) {
+      log_message(
+        "Each {.arg legend_params} entry must be a named list of valid ComplexHeatmap::Legend arguments.",
+        message_type = "error"
+      )
+    }
+  }
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   set.seed(seed)
   borders <- prepare_heatmap_borders(
@@ -1137,7 +1168,7 @@ GroupHeatmap <- function(
     features[duplicated(features)]
 
   lgd <- list()
-  lgd[["ht"]] <- get_namespace_fun("ComplexHeatmap", "Legend")(
+  expression_legend_args <- list(
     title = exp_name,
     col_fun = colors,
     legend_gp = heatmap_border_gp(
@@ -1150,8 +1181,10 @@ GroupHeatmap <- function(
       heatmap_border_color
     )
   )
+  expression_legend_args[names(legend_params$expression)] <- legend_params$expression
+  lgd[["ht"]] <- do.call(legend_fun, expression_legend_args)
   if (isTRUE(add_dot)) {
-    lgd[["point"]] <- get_namespace_fun("ComplexHeatmap", "Legend")(
+    percent_legend_args <- list(
       labels = paste0(seq(20, 100, length.out = 5), "%"),
       title = "Percent",
       type = "points",
@@ -1164,6 +1197,8 @@ GroupHeatmap <- function(
       background = "transparent",
       direction = "vertical"
     )
+    percent_legend_args[names(legend_params$percent)] <- legend_params$percent
+    lgd[["point"]] <- do.call(legend_fun, percent_legend_args)
   }
 
   ha_top_list <- NULL
