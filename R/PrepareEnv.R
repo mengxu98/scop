@@ -6,7 +6,8 @@
 #' @md
 #' @inheritParams thisutils::log_message
 #' @param envname Conda-compatible Python environment.
-#' If `NULL`, the environment name will be set to `"scop_env"`.
+#' If `NULL`, use the current environment selection. [PrepareEnv()] selects
+#' a separate module profile when required.
 #' @param conda The path or command name of a conda-compatible executable
 #' (`conda`, `mamba`, or `micromamba`). Use `"auto"` to allow automatically
 #' finding an appropriate environment manager. If `"micromamba"` is requested
@@ -23,13 +24,16 @@
 #' @param modules Optional Python dependency modules to install in addition to
 #' the default scientific stack.
 #' If `NULL` or omitted in [PrepareEnv()], the default environment is installed.
-#' The default excludes `"cell2location"`, `"cell2fate"`, `"commot"`, `"sccoda"`, and
+#' The default excludes `"phate"`, `"magic"`, `"cell2location"`, `"cell2fate"`, `"commot"`, `"sccoda"`, and
 #' `"scomm"` because these workflows use long-running or incompatible dependency
 #' stacks. Cell2fate and COMMOT are prepared in standalone `"cell2fate_env"`
 #' and `"commot_env"` environments with Python 3.9. `"scenic"` is also excluded
 #' from the default environment and is prepared
 #' in `"scenic_env"` by default because SCENIC requires an older Python/numpy
-#' stack. `"scmalignantfinder"` is prepared in a standalone
+#' stack. PHATE and MAGIC are prepared explicitly in `"scprep_env"` with
+#' pandas 2.0.3, separately from the default scientific stack. scCODA and scOMM
+#' use `"tensorflow_env"` to keep TensorFlow dependencies separate from JAX.
+#' `"scmalignantfinder"` is prepared in a standalone
 #' `"scmalignantfinder_env"` because its upstream package pins an older
 #' scanpy/anndata stack. On Windows, the
 #' default also excludes `"scvi"`, `"glue"`, and `"multimap"` because those
@@ -156,7 +160,10 @@ PrepareEnv <- function(
       version <- "3.10-1"
     }
   }
-  envname <- get_envname(envname)
+  profile <- env_module_environment(modules)
+  isolated <- vapply(env_module_requirements(), function(spec) spec$environment %||% "", "")
+  if (is.null(envname) && is.null(profile) && get_envname() %in% isolated[nzchar(isolated)]) envname <- "scop_env"
+  envname <- get_envname(envname %||% profile)
   pip_options <- normalize_cli_args(pip_options)
   conda_auto <- identical(conda, "auto")
   if (!is.null(conda)) {
@@ -168,7 +175,7 @@ PrepareEnv <- function(
       error = function(...) NULL
     )
     existing_minor <- python_minor_version(existing_python)
-    if (existing_minor %in% c("3.10", "3.11", "3.12")) {
+    if (isTRUE(existing_minor %in% c("3.10", "3.11", "3.12"))) {
       version <- paste0(existing_minor, "-1")
     }
   }
@@ -369,15 +376,14 @@ PrepareEnv <- function(
   pip_packages <- packages[install_methods == "pip"]
 
   log_message(
-    "{.val {length(packages)}} package{?s} to install, {.val {length(conda_packages)}} conda packages and {.val {length(pip_packages)}} pip packages"
+    "{.val {length(packages)}} requirement{?s} to check, {.val {length(conda_packages)}} conda requirements and {.val {length(pip_packages)}} pip requirements"
   )
 
-  install_ok <- TRUE
   if (length(conda_packages) > 0) {
     log_message(
-      "Installing {.val {length(conda_packages)}} {.pkg conda} packages"
+      "Checking {.val {length(conda_packages)}} {.pkg conda} requirements"
     )
-    install_ok <- isTRUE(check_python(
+    check_python(
       packages = conda_packages,
       envname = envname,
       conda = conda,
@@ -385,20 +391,32 @@ PrepareEnv <- function(
       pip = FALSE,
       verbose = FALSE,
       ...
-    )) && install_ok
+    )
   }
+
+  pip_installed <- installed_python_pkgs_pip(envname = envname, conda = conda)
+  pip_names <- canonical_python_distribution_name(pip_installed$package)
+  conda_python_packages <- vapply(seq_along(conda_packages), function(i) {
+    req <- parse_python_requirement(conda_packages[[i]], fallback_name = names(conda_packages)[[i]])
+    name <- requirements$package_aliases[[req$name]] %||% req$name
+    if (!canonical_python_distribution_name(name) %in% pip_names) {
+      return("")
+    }
+    paste0(name, if (!is.na(req$version)) paste0(req$operator, req$version))
+  }, "")
+  pip_packages <- unique(c(pip_packages, conda_python_packages[nzchar(conda_python_packages)]))
 
   if (length(pip_packages) > 0) {
     if (!is.null(uv)) {
       log_message(
-        "Installing {.val {length(pip_packages)}} packages using {.pkg uv}"
+        "Checking {.val {length(pip_packages)}} requirements using {.pkg uv}"
       )
     } else {
       log_message(
-        "Installing {.val {length(pip_packages)}} {.pkg pip} packages"
+        "Checking {.val {length(pip_packages)}} {.pkg pip} requirements"
       )
     }
-    install_ok <- isTRUE(check_python(
+    check_python(
       packages = pip_packages,
       envname = envname,
       conda = conda,
@@ -407,16 +425,7 @@ PrepareEnv <- function(
       pip_options = pip_options,
       verbose = FALSE,
       ...
-    )) && install_ok
-  }
-
-  if ("cell2fate" %in% modules) {
-    install_ok <- all(exist_python_pkgs(
-      packages = packages,
-      envname = envname,
-      conda = conda,
-      verbose = FALSE
-    ))
+    )
   }
 
   if ("scvi" %in% modules) {
@@ -441,6 +450,13 @@ PrepareEnv <- function(
     verbose = verbose
   )
 
+  valid <- exist_python_pkgs(packages, envname = envname, conda = conda, verbose = FALSE)
+  if (!length(valid) || !all(valid)) {
+    stop("Python environment requirements are not satisfied: ", paste(names(valid)[!valid], collapse = ", "), call. = FALSE)
+  }
+  status <- get_namespace_fun("reticulate", "system2t")(python, c("-m", "pip", "check"))
+  if (status != 0L) stop("Python dependency conflicts remain in environment: ", envname, call. = FALSE)
+
   assert_python_runtime_switchable(
     python,
     restart_hint = python_runtime_restart_hint(envname = envname, modules = modules)
@@ -448,18 +464,11 @@ PrepareEnv <- function(
   configure_python_runtime(python)
   remember_python_environment(envname = envname, conda = conda)
 
-  if (isTRUE(install_ok)) {
-    log_message(
-      "{cli::col_green('Python environment ready')}\n",
-      "{cli::col_grey('Until next loading, the environment will be cached')}",
-      message_type = "success"
-    )
-  } else {
-    log_message(
-      "Python environment setup completed with missing packages. Review the warnings above before using modules that require them.",
-      message_type = "warning"
-    )
-  }
+  log_message(
+    "{cli::col_green('Python environment ready')}\n",
+    "{cli::col_grey('Until next loading, the environment will be cached')}",
+    message_type = "success"
+  )
 
   env_info(
     conda = conda,
@@ -575,7 +584,8 @@ default_env_modules <- function() {
   if (is_windows()) {
     excluded <- c(excluded, "scvi", "glue", "multimap")
   }
-  setdiff(supported_env_modules(), excluded)
+  isolated <- names(Filter(function(spec) !is.null(spec$environment), env_module_requirements()))
+  setdiff(supported_env_modules(), c(excluded, isolated))
 }
 
 optional_env_modules <- function() {
@@ -610,7 +620,7 @@ env_module_dependencies <- function() {
   )
 }
 
-env_python_spec <- function(packages, methods = "pip", aliases = list()) {
+env_python_spec <- function(packages, methods = "pip", aliases = list(), environment = NULL) {
   nms <- names(packages)
   if (is.null(names(methods))) {
     methods <- stats::setNames(rep(as.character(methods), length(packages)), nms)
@@ -618,8 +628,23 @@ env_python_spec <- function(packages, methods = "pip", aliases = list()) {
   list(
     packages = packages,
     install_methods = methods,
-    package_aliases = aliases
+    package_aliases = aliases,
+    environment = environment
   )
+}
+
+env_module_environment <- function(modules) {
+  specs <- env_module_requirements()
+  environments <- vapply(specs, function(spec) spec$environment %||% "", "")
+  isolated <- unique(environments[modules])
+  isolated <- isolated[nzchar(isolated)]
+  if (!length(isolated)) {
+    return(NULL)
+  }
+  if (length(isolated) != 1L) {
+    stop("These Python modules require separate environments: ", paste(modules, collapse = ", "), call. = FALSE)
+  }
+  isolated[[1L]]
 }
 
 env_module_requirements <- function() {
@@ -697,7 +722,7 @@ env_module_requirements <- function() {
     spatialdm = env_python_spec(c(
       "SpatialDM" = "git+https://github.com/StatBiomed/SpatialDM.git"
     )),
-    magic = env_python_spec(c("magic-impute" = "magic-impute==3.0.0")),
+    magic = env_python_spec(c("magic-impute" = "magic-impute==3.0.0", pandas = "pandas==2.0.3"), environment = "scprep_env"),
     scfea = env_python_spec(c(
       "torch" = "torch",
       "numpy" = "numpy",
@@ -710,9 +735,11 @@ env_module_requirements <- function() {
         "tensorflow" = "tensorflow==2.16.2",
         "tensorflow-probability" = "tensorflow-probability==0.24.0",
         "tf-keras" = "tf-keras==2.16.0",
-        "sccoda" = "sccoda==0.1.9"
+        "sccoda" = "sccoda==0.1.9",
+        "rpy2" = "rpy2==3.5.17"
       ),
-      aliases = list("sccoda" = "scCODA", "tf-keras" = "tf_keras")
+      aliases = list("sccoda" = "scCODA", "tf-keras" = "tf_keras"),
+      environment = "tensorflow_env"
     ),
     doubletdetection = env_python_spec(c(
       "doubletdetection" = "doubletdetection==4.3.0.post1",
@@ -723,7 +750,7 @@ env_module_requirements <- function() {
     cellrank = env_python_spec(c("cellrank" = "cellrank==2.3.2")),
     wot = env_python_spec(c("wot" = "wot==1.0.8.post2")),
     moscot = env_python_spec(c("moscot" = "moscot==0.5.2")),
-    phate = env_python_spec(c("phate" = "phate==1.0.11")),
+    phate = env_python_spec(c(phate = "phate==1.0.11", pandas = "pandas==2.0.3"), environment = "scprep_env"),
     pacmap = env_python_spec(c("pacmap" = "pacmap==0.8.0")),
     trimap = env_python_spec(c("trimap" = "trimap==1.1.4")),
     multimap = env_python_spec(
@@ -742,7 +769,8 @@ env_module_requirements <- function() {
         "tf-keras" = "tf_keras",
         "ml_dtypes" = "ml-dtypes",
         "ml-dtypes" = "ml_dtypes"
-      )
+      ),
+      environment = "tensorflow_env"
     ),
     scenic = env_python_spec(
       c(
@@ -1758,7 +1786,7 @@ env_info <- function(conda, envname, verbose = TRUE) {
 #' `"scmalignantfinder"`, `"secact"`, `"scpagwas"`, `"choir"`, and
 #' `"external_wrappers"`. If `NULL`, the default environment is returned. The default
 #' excludes `"cell2location"`, `"cell2fate"`, `"commot"`, `"sccoda"`, `"scomm"`, and
-#' `"scenic"` because these workflows
+#' `"scenic"`, `"phate"`, and `"magic"` because these workflows
 #' require dependency stacks that should be prepared explicitly. The
 #' `"scenic"` module is standalone and always uses Python `"3.10-1"`.
 #'
@@ -1788,6 +1816,7 @@ env_requirements <- function(
     modules = modules,
     include_optional = include_optional
   )
+  env_module_environment(modules)
   if ("scenic" %in% modules) {
     scenic_allowed <- c("scenic", "regdiffusion")
     if (length(setdiff(modules, scenic_allowed)) > 0) {
@@ -1918,9 +1947,11 @@ env_requirements <- function(
     package_install_methods[names(trajectory_packages)] <- "pip"
   }
 
-  if (all(c("scvi", "scomm") %in% modules) && "ml_dtypes" %in% names(package_versions)) {
-    package_versions[["ml_dtypes"]] <- "ml-dtypes>=0.3.2"
+  for (module in modules) {
+    spec <- module_requirements[[module]]
+    if (!is.null(spec$environment)) package_versions[names(spec$packages)] <- spec$packages
   }
+
   if ("scenic" %in% modules && "numpy" %in% names(package_versions)) {
     package_versions[["numpy"]] <- "numpy==1.23.5"
   }

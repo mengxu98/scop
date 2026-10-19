@@ -14,7 +14,8 @@ and micromamba is not available on \code{PATH}, a package-managed micromamba is
 downloaded automatically.}
 
 \item{envname}{Conda-compatible Python environment.
-If \code{NULL}, the environment name will be set to \code{"scop_env"}.}
+If \code{NULL}, use the current environment selection. \code{\link[=PrepareEnv]{PrepareEnv()}} selects
+a separate module profile when required.}
 
 \item{verbose}{Whether to print environment information.}
 }

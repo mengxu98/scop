@@ -110,6 +110,36 @@ test_that("dynamic PCA keeps numerical results and compact command text", {
   expect_lt(sum(nchar(command@call.string)), 2000)
 })
 
+test_that("nonlinear dispatch keeps graph inputs out of projection backends", {
+  object <- make_dispatch_object()
+  object <- RunPCA(object, features = rownames(object), npcs = 5, verbose = FALSE)
+  captured <- NULL
+  testthat::local_mocked_bindings(
+    invoke_fun = function(.fn, .args, ...) {
+      captured <<- .args
+      result <- .args$object
+      result[[.args$reduction.name]] <- SeuratObject::CreateDimReducObject(
+        embeddings = SeuratObject::Embeddings(object, "pca")[, 1:2],
+        key = .args$reduction.key, assay = "RNA"
+      )
+      result
+    },
+    .package = "scop"
+  )
+  for (method in c("phate", "dm", "tsne", "pacmap", "trimap", "largevis", "umap", "umap-naive", "fr")) {
+    RunDimsReduction(object, nonlinear_reduction = method,
+      reduction_use = "pca", reduction_dims = 1:5,
+      graph_use = "snn", neighbor_use = "nn", verbose = FALSE)
+    if (method %in% c("umap", "umap-naive", "fr")) {
+      expect_identical(captured$graph, "snn")
+      expect_identical(captured$neighbor, "nn")
+    } else {
+      expect_false(any(c("graph", "neighbor") %in% names(captured)))
+    }
+    expect_identical(captured$dims, 1:5)
+  }
+})
+
 test_that("RareQ neighbor dispatch keeps compact commands in both verbosity branches", {
   object <- make_dispatch_object()
   object <- RunPCA(object, features = rownames(object), npcs = 5, verbose = FALSE)

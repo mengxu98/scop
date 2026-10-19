@@ -110,7 +110,8 @@ For very large datasets, setting \code{knn_max} to a small multiple of \code{knn
 \item{backend}{PHATE backend. \code{"python"} calls the upstream \code{phate} Python
 package and \code{"cpp"} uses the native C++ helper path.
 The selected backend is stable; native arguments never trigger an implicit
-Python workflow.}
+Python workflow. When another Python environment is already initialized,
+run the Python backend in a separate process without changing the active interpreter.}
 
 \item{mds}{MDS algorithm passed to PHATE. The native backend uses its C++
 classical MDS or R's native metric MDS implementation.}

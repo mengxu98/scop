@@ -109,8 +109,14 @@ Possible values are \code{"global"} and \code{"separate"}.}
 \item{linear_reduction, linear_reduction_dims, linear_reduction_dims_use, linear_reduction_params, force_linear_reduction}{Linear reduction (\code{"pca"}, \code{"svd"}, \code{"ica"}, \code{"nmf"}, \code{"mds"}, \code{"glmpca"}).
 \code{linear_reduction_dims_use = NULL} uses estimated dimensions, else the first 50.}
 
-\item{nonlinear_reduction, nonlinear_reduction_dims, nonlinear_reduction_params, force_nonlinear_reduction}{Nonlinear reduction (\code{"umap"}, \code{"umap-naive"}, \code{"tsne"}, \code{"dm"}, \code{"phate"},
-\code{"pacmap"}, \code{"trimap"}, \code{"largevis"}, \code{"fr"}).}
+\item{nonlinear_reduction}{Nonlinear reduction (\code{"umap"}, \code{"umap-naive"}, \code{"tsne"}, \code{"dm"}, \code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"largevis"}, \code{"fr"}).}
+
+\item{nonlinear_reduction_dims}{Number(s) of nonlinear dimensions to compute.}
+
+\item{nonlinear_reduction_params}{Shared parameters, optionally overridden by
+lists named after individual nonlinear reduction methods.}
+
+\item{force_nonlinear_reduction}{Recompute nonlinear reductions even when stored results exist.}
 
 \item{neighbor_metric, neighbor_k}{Neighbor graph (\code{"euclidean"}, \code{"cosine"},
 \code{"manhattan"}, \code{"hamming"}).}
@@ -194,7 +200,8 @@ for (method in integration_methods) {
     batch = "tech",
     integration_methods = method,
     linear_reduction_dims_use = 1:50,
-    nonlinear_reduction = "umap"
+    nonlinear_reduction = "umap",
+    RunParallelDivisiveICP_params = list(L = 10L)
   )
   p_list[[method]] <- CellDimPlot(
     panc8_sub,
@@ -235,7 +242,8 @@ panc8_sub <- RunIntegration(
   batch = "tech",
   integration_methods = "Seurat",
   linear_reduction_dims_use = 1:50,
-  nonlinear_reduction = nonlinear_reductions
+  nonlinear_reduction = nonlinear_reductions,
+  nonlinear_reduction_params = list(largevis = list(n_epochs = 1000L))
 )
 for (nr in nonlinear_reductions) {
   print(

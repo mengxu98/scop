@@ -81,7 +81,7 @@ check_python <- function(
       expr = {
         conda_install(
           conda = conda,
-          packages = pkgs_to_install,
+          packages = if (pip) unname(packages) else pkgs_to_install,
           envname = envname,
           pip = pip,
           pip_options = pip_options,
@@ -226,9 +226,9 @@ exist_python_pkgs <- function(
           )
         }
 
-        packages_installed[pkg] <- version_match
+        packages_installed[i] <- version_match
       } else {
-        packages_installed[pkg] <- TRUE
+        packages_installed[i] <- TRUE
         installed_version <- unique(all_installed$version[
           all_installed$package == found_pkg_name
         ])
@@ -239,7 +239,7 @@ exist_python_pkgs <- function(
         )
       }
     } else {
-      packages_installed[pkg] <- FALSE
+      packages_installed[i] <- FALSE
       log_message(
         "{.pkg {pkg_name}} not found",
         message_type = "warning",
@@ -427,30 +427,9 @@ installed_python_pkgs <- function(
     verbose = verbose
   )
 
-  all_installed <- tryCatch(
-    {
-      all_installed <- get_namespace_fun(
-        "reticulate",
-        "conda_list_packages"
-      )(
-        conda = conda,
-        envname = envname,
-        no_pip = FALSE
-      )
-      log_message(
-        "Found {.val {nrow(all_installed)}} packages installed",
-        verbose = verbose
-      )
-      normalize_installed_package_table(all_installed)
-    },
-    error = function(e) {
-      log_message(
-        "Failed to retrieve package list via reticulate: {.val {e$message}}",
-        message_type = "warning",
-        verbose = verbose
-      )
-      NULL
-    }
+  all_installed <- installed_python_pkgs_cli(
+    envname = envname,
+    conda = conda
   )
 
   pip_installed <- installed_python_pkgs_pip(
@@ -458,16 +437,8 @@ installed_python_pkgs <- function(
     conda = conda
   )
 
+  all_installed <- merge_installed_package_tables(all_installed, pip_installed)
   if (!is.null(all_installed)) {
-    return(merge_installed_package_tables(all_installed, pip_installed))
-  }
-
-  all_installed <- installed_python_pkgs_cli(
-    envname = envname,
-    conda = conda
-  )
-  if (!is.null(all_installed)) {
-    all_installed <- merge_installed_package_tables(all_installed, pip_installed)
     log_message(
       "Found {.val {nrow(all_installed)}} packages installed",
       verbose = verbose
@@ -482,6 +453,7 @@ installed_python_pkgs <- function(
 }
 
 normalize_installed_package_table <- function(packages) {
+  if (is.list(packages) && !is.data.frame(packages)) packages <- packages[["packages"]]
   if (is.null(packages) || !is.data.frame(packages) || nrow(packages) == 0) {
     return(NULL)
   }

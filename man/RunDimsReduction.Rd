@@ -58,7 +58,8 @@ RunDimsReduction(
 
 \item{neighbor_use}{Name of neighbor to use for the \code{nonlinear_reduction}.}
 
-\item{nonlinear_reduction_params}{Other parameters passed to the \code{nonlinear_reduction} method.}
+\item{nonlinear_reduction_params}{Shared parameters, optionally overridden by
+lists named after individual nonlinear reduction methods.}
 
 \item{force_nonlinear_reduction}{Whether force to do nonlinear dimension reduction.}
 
