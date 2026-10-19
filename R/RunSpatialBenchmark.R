@@ -28,7 +28,7 @@
 #' @param keep_objects Whether to keep each successful method's full producer
 #' result. The default keeps only aligned labels and compact run metadata.
 #' @param install_missing Whether missing optional backends may enter their
-#' producer's normal `check_r()` installation path. The default records them as
+#' producer's normal `thisutils::check_r()` installation path. The default records them as
 #' unavailable without changing the R library.
 #' @param seed Seed set inside each isolated method process and forwarded to
 #' producers with a public `seed` argument unless overridden in
@@ -47,7 +47,7 @@
 #'
 #' @examples
 #' # Constructed spatial domains illustrate the benchmark, not tissue biology.
-#' if (all(unlist(check_r(
+#' if (all(unlist(thisutils::check_r(
 #'   c("BayesSpace", "Banksy", "lmweber/smoothclust"),
 #'   install = FALSE, verbose = FALSE
 #' )))) {

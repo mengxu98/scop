@@ -50,6 +50,14 @@ if (mode == "dependencies") {
       if (length(expression) == 4L) visit(expression[[4L]], expand)
       return(invisible(NULL))
     }
+    if (is.call(call) && is.symbol(call[[1L]]) &&
+      as.character(call[[1L]]) %in% c("::", ":::")) {
+      packages <<- union(packages, as.character(call[[2L]]))
+      name <- as.character(call[[3L]])
+      if (name %in% c("check_r", "get_namespace_fun") && length(expression) > 1L) {
+        packages <<- union(packages, strings(expression[[2L]]))
+      }
+    }
     if (is.symbol(call)) {
       name <- as.character(call)
       if (name %in% c("::", ":::")) packages <<- union(packages, as.character(expression[[2L]]))

@@ -45,7 +45,7 @@
 #' A Seurat object with the Monocle2 analysis results added to the @tools slot.
 #'
 #' @examples
-#' if (all(unlist(check_r("mengxu98/monocle", install = FALSE, verbose = FALSE)))) {
+#' if (all(unlist(thisutils::check_r("mengxu98/monocle", install = FALSE, verbose = FALSE)))) {
 #'   data(pancreas_sub)
 #'   pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #'   pancreas_sub <- RunMonocle2(
@@ -397,7 +397,7 @@ monocle2_reduce_dimension_args <- function(
 #' @export
 #'
 #' @examples
-#' if (all(unlist(check_r("cole-trapnell-lab/monocle3", install = FALSE, verbose = FALSE)))) {
+#' if (all(unlist(thisutils::check_r("cole-trapnell-lab/monocle3", install = FALSE, verbose = FALSE)))) {
 #'   data(pancreas_sub)
 #'   pancreas_sub <- RunStandardWorkflow(pancreas_sub, cores = 1, verbose = FALSE)
 #'   # Root this developmental example in a ductal cell; no manual selection.
@@ -427,7 +427,7 @@ monocle2_reduce_dimension_args <- function(
 #'
 #'   # Only manual branch selection requires an interactive session.
 #'   if (interactive()) {
-#'     choose_segments <- get_namespace_fun("monocle3", "choose_graph_segments")
+#'     choose_segments <- thisutils::get_namespace_fun("monocle3", "choose_graph_segments")
 #'     cds_sub <- choose_segments(pancreas_sub@tools$Monocle3$cds)
 #'   }
 #' }

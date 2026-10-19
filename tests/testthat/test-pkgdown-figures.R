@@ -27,3 +27,21 @@ test_that("website verification rejects missing results and broken image paths",
   writeLines('<main><img src="result.png"><img src="result.png"><img src="result.png"><pre class="r-err">backend failed</pre></main>', page)
   expect_error(scope$check_pages(page), "backend failed")
 })
+
+test_that("website dependency discovery includes qualified optional checks", {
+  root <- normalizePath(test_path("..", ".."), winslash = "/")
+  script <- file.path(root, ".github", "pkgdown-build.R")
+  skip_if_not(file.exists(script), "Website tooling is not included in installed packages")
+  withr::local_dir(root)
+  withr::local_envvar(c(
+    PKGDOWN_TOPICS = "RunSpatialBenchmark", PKGDOWN_ARTICLES = "",
+    GITHUB_OUTPUT = "", PKGDOWN_EXECUTE = "false"
+  ))
+  output <- system2(file.path(R.home("bin"), "Rscript"),
+    c("--vanilla", shQuote(script), "dependencies"),
+    stdout = TRUE, stderr = TRUE
+  )
+  expect_null(attr(output, "status"))
+  packages <- strsplit(sub("^extra=", "", grep("^extra=", output, value = TRUE)), ",", fixed = TRUE)[[1L]]
+  expect_true(all(c("Banksy", "BayesSpace", "github::lmweber/smoothclust") %in% packages))
+})

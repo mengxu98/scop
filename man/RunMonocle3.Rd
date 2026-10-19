@@ -93,7 +93,7 @@ will be removed in scop 1.0.0.}
 Run Monocle3 analysis
 }
 \examples{
-if (all(unlist(check_r("cole-trapnell-lab/monocle3", install = FALSE, verbose = FALSE)))) {
+if (all(unlist(thisutils::check_r("cole-trapnell-lab/monocle3", install = FALSE, verbose = FALSE)))) {
   data(pancreas_sub)
   pancreas_sub <- RunStandardWorkflow(pancreas_sub, cores = 1, verbose = FALSE)
   # Root this developmental example in a ductal cell; no manual selection.
@@ -123,7 +123,7 @@ if (all(unlist(check_r("cole-trapnell-lab/monocle3", install = FALSE, verbose = 
 
   # Only manual branch selection requires an interactive session.
   if (interactive()) {
-    choose_segments <- get_namespace_fun("monocle3", "choose_graph_segments")
+    choose_segments <- thisutils::get_namespace_fun("monocle3", "choose_graph_segments")
     cds_sub <- choose_segments(pancreas_sub@tools$Monocle3$cds)
   }
 }

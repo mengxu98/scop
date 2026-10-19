@@ -134,7 +134,7 @@ completed, skipped, failed, or not requested; an artifact that was not
 evaluated is never reported as a negative artifact call.
 }
 \examples{
-if (all(unlist(check_r("MicTott/SpotSweeper", install = FALSE, verbose = FALSE)))) {
+if (all(unlist(thisutils::check_r("MicTott/SpotSweeper", install = FALSE, verbose = FALSE)))) {
   data(visium_human_pancreas_sub)
   spatial <- RunSpotSweeper(
     visium_human_pancreas_sub,

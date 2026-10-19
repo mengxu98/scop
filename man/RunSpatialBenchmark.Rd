@@ -45,7 +45,7 @@ the result summary.}
 result. The default keeps only aligned labels and compact run metadata.}
 
 \item{install_missing}{Whether missing optional backends may enter their
-producer's normal \code{check_r()} installation path. The default records them as
+producer's normal \code{thisutils::check_r()} installation path. The default records them as
 unavailable without changing the R library.}
 
 \item{seed}{Seed set inside each isolated method process and forwarded to
@@ -78,7 +78,7 @@ corrupt the input or prevent the remaining methods from being assessed.
 }
 \examples{
 # Constructed spatial domains illustrate the benchmark, not tissue biology.
-if (all(unlist(check_r(
+if (all(unlist(thisutils::check_r(
   c("BayesSpace", "Banksy", "lmweber/smoothclust"),
   install = FALSE, verbose = FALSE
 )))) {

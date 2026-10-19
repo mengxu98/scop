@@ -104,7 +104,7 @@ A Seurat object with the Monocle2 analysis results added to the @tools slot.
 Run Monocle2 analysis
 }
 \examples{
-if (all(unlist(check_r("mengxu98/monocle", install = FALSE, verbose = FALSE)))) {
+if (all(unlist(thisutils::check_r("mengxu98/monocle", install = FALSE, verbose = FALSE)))) {
   data(pancreas_sub)
   pancreas_sub <- RunStandardWorkflow(pancreas_sub)
   pancreas_sub <- RunMonocle2(
