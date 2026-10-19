@@ -1,5 +1,7 @@
 # scop (development version)
 
+* **feat**: `GroupHeatmap()` accepts `legend_params` to customize expression and percent legends independently, including horizontal color bars and single-row dot legends.
+
 * **breaking**: Use Seurat's `SCTransform()` and native thread controls; remove
   scop's SCT methods, kernels and adapters, and the SCT-only `cores` argument
   from `CheckDataList()` and `CheckDataMerge()`. SCT integration retains all
