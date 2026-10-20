@@ -580,10 +580,12 @@ rctd_run_spacexr_new <- function(
 }
 
 rctd_require_namespaces <- function(pkgs) {
-  install_specs <- pkgs
-  install_specs[install_specs == "spacexr"] <- "dmcable/spacexr"
+  other <- setdiff(pkgs, "spacexr")
   available <- unlist(
-    check_r(install_specs, verbose = FALSE),
+    c(
+      if ("spacexr" %in% pkgs) check_r("dmcable/spacexr", verbose = FALSE),
+      if (length(other)) check_r(other, verbose = FALSE)
+    ),
     use.names = TRUE
   )
   if (

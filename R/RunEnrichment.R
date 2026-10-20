@@ -298,13 +298,8 @@ RunEnrichment <- function(
       IDtype
     )]
     TERM2NAME_tmp <- db_list[[species]][[term]][["TERM2NAME"]]
-    if (!anyNA(TERM2GENE_tmp) && !anyDuplicated(TERM2GENE_tmp)) {
-      keep_term_gene <- rep(TRUE, nrow(TERM2GENE_tmp))
-    } else {
-      keep_term_gene <- !duplicated(TERM2GENE_tmp) &
-        stats::complete.cases(TERM2GENE_tmp)
-      TERM2GENE_tmp <- TERM2GENE_tmp[keep_term_gene, , drop = FALSE]
-    }
+    TERM2GENE_tmp <- dplyr::distinct(TERM2GENE_tmp)
+    TERM2GENE_tmp <- TERM2GENE_tmp[stats::complete.cases(TERM2GENE_tmp), , drop = FALSE]
     TERM2NAME_tmp <- TERM2NAME_tmp[
       TERM2NAME_tmp[["Term"]] %in% TERM2GENE_tmp[["Term"]], ,
       drop = FALSE
@@ -367,9 +362,8 @@ RunEnrichment <- function(
         IDtype
       )]
       TERM2NAME_tmp <- db_list[[species]][[term]][["TERM2NAME"]]
-      keep_term_gene <- !duplicated(TERM2GENE_tmp) &
-        stats::complete.cases(TERM2GENE_tmp)
-      TERM2GENE_tmp <- TERM2GENE_tmp[keep_term_gene, , drop = FALSE]
+      TERM2GENE_tmp <- dplyr::distinct(TERM2GENE_tmp)
+      TERM2GENE_tmp <- TERM2GENE_tmp[stats::complete.cases(TERM2GENE_tmp), , drop = FALSE]
       TERM2NAME_tmp <- TERM2NAME_tmp[
         TERM2NAME_tmp[["Term"]] %in% TERM2GENE_tmp[["Term"]], ,
         drop = FALSE

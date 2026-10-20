@@ -53,6 +53,7 @@ test_that("RunEnrichment runs the group/database fan-out without spawning worker
 
 test_that("RunGSEA runs the group/database fan-out without spawning workers", {
   testthat::skip_if_not_installed("clusterProfiler")
+  testthat::skip_if_not_installed("fgsea")
   genes <- paste0("G", seq_len(6L))
   args <- list(
     geneID = rep(genes, 3L),

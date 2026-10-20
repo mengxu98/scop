@@ -1308,6 +1308,17 @@ RunDEtestPairedWilcox <- function(args, pairs, cell_index, cores, verbose) {
   plan_args$defer <- TRUE
   data <- GetAssayData5(args$object, assay = args$assay, layer = args$layer)
   plan_args$data.use <- data
+  features <- args$features %||% rownames(data)
+  group_stats <- if (all(features %in% rownames(data))) {
+    lapply(cell_index, function(cells) {
+      if (length(cells) < 3L) return(NULL)
+      RunDEtestSparseGroupStats(
+        object = data, features = features, cells = cells,
+        layer = args$layer, pseudocount.use = args$pseudocount.use,
+        base = args$base
+      )
+    })
+  }
   plans <- lapply(seq_len(ncol(pairs)), function(i) {
     cells1 <- cell_index[[pairs[1, i]]]
     cells2 <- cell_index[[pairs[2, i]]]
@@ -1316,6 +1327,7 @@ RunDEtestPairedWilcox <- function(args, pairs, cell_index, cores, verbose) {
     }
     plan_args$cells.1 <- cells1
     plan_args$cells.2 <- cells2
+    plan_args$group.stats <- unname(group_stats[pairs[, i]])
     do.call(RunDEtestSparseWilcoxMarkers, plan_args)
   })
   worker_plans <- lapply(plans, function(plan) {
@@ -1372,7 +1384,8 @@ RunDEtestSparseWilcoxMarkers <- function(
   verbose,
   presto_fun,
   defer = FALSE,
-  data.use = NULL
+  data.use = NULL,
+  group.stats = NULL
 ) {
   data.use <- data.use %||% GetAssayData5(
     object = srt,
@@ -1403,7 +1416,8 @@ RunDEtestSparseWilcoxMarkers <- function(
     features = features,
     layer = layer,
     pseudocount.use = pseudocount.use,
-    base = base
+    base = base,
+    group.stats = group.stats
   )
 
   alpha.min <- pmax(fc.results$pct.1, fc.results$pct.2)
@@ -1491,7 +1505,8 @@ RunDEtestSparseFoldChange <- function(
   features,
   layer,
   pseudocount.use,
-  base
+  base,
+  group.stats = NULL
 ) {
   base.text <- ifelse(base == exp(1), "", base)
   fc.name <- ifelse(
@@ -1499,7 +1514,7 @@ RunDEtestSparseFoldChange <- function(
     "avg_diff",
     paste0("avg_log", base.text, "FC")
   )
-  group1 <- RunDEtestSparseGroupStats(
+  group1 <- group.stats[[1L]] %||% RunDEtestSparseGroupStats(
     object = object,
     features = features,
     cells = cells.1,
@@ -1507,7 +1522,7 @@ RunDEtestSparseFoldChange <- function(
     pseudocount.use = pseudocount.use,
     base = base
   )
-  group2 <- RunDEtestSparseGroupStats(
+  group2 <- group.stats[[2L]] %||% RunDEtestSparseGroupStats(
     object = object,
     features = features,
     cells = cells.2,

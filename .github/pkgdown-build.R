@@ -13,10 +13,18 @@ plan <- jsonlite::read_json("pkgdown-plan.json", simplifyVector = TRUE)
 
 if (mode == "dependencies") {
   code <- expression()
-  for (topic in plan$topics) {
+  dormant <- character()
+  topics <- unique(c(plan$topics, tools::file_path_sans_ext(list.files("man", pattern = "\\.Rd$"))))
+  for (topic in topics) {
     path <- tempfile(fileext = ".R")
-    tools::Rd2ex(file.path("man", paste0(topic, ".Rd")), out = path)
-    if (file.exists(path)) code <- c(code, parse(path))
+    rd <- tools::parse_Rd(file.path("man", paste0(topic, ".Rd")))
+    tools::Rd2ex(rd, out = path)
+    expressions <- if (file.exists(path)) parse(path) else expression()
+    if (topic %in% plan$topics) code <- c(code, expressions)
+    if (!length(expressions) && any(vapply(rd, function(x) identical(attr(x, "Rd_tag"), "\\examples"), logical(1)))) {
+      aliases <- Filter(function(x) identical(attr(x, "Rd_tag"), "\\alias"), rd)
+      dormant <- c(dormant, vapply(aliases, function(x) paste(unlist(x), collapse = ""), ""))
+    }
     unlink(path)
   }
   for (article in plan$articles) {
@@ -54,6 +62,22 @@ if (mode == "dependencies") {
     if (is.call(x)) as.call(parts) else if (is.pairlist(x)) as.pairlist(parts) else as.expression(parts)
   }
   code <- noninteractive_code(code)
+  literals <- function(x) {
+    if (missing(x)) return(character())
+    if (is.character(x)) return(x)
+    if (!is.call(x) && !is.expression(x) && !is.pairlist(x)) return(character())
+    unlist(lapply(as.list(x), literals), use.names = FALSE)
+  }
+  selectors <- unique(literals(code))
+  callbacks <- function(x) {
+    if (missing(x) || (!is.call(x) && !is.expression(x) && !is.pairlist(x))) return(character())
+    parts <- as.list(x)
+    selected <- if (is.call(x) && identical(x[[1L]], quote(list))) {
+      Filter(is.symbol, parts[names(parts) %in% selectors])
+    }
+    nested <- if (is.call(x)) parts[-1L] else parts
+    unique(c(vapply(selected, as.character, ""), unlist(lapply(nested, callbacks), use.names = FALSE)))
+  }
   python <- unique(python)
   manifest <- jsonlite::read_json("pkgdown-plan.json")
   manifest$python <- lapply(python, function(x) paste(deparse(x), collapse = "\n"))
@@ -72,8 +96,29 @@ if (mode == "dependencies") {
       }
     }
   }
+  namespace <- parseNamespaceFile(".", ".")
+  methods <- namespace$S3methods
+  method_names <- ifelse(is.na(methods[, 3L]), paste(methods[, 1L], methods[, 2L], sep = "."), methods[, 3L])
+  names(method_names) <- methods[, 1L]
   called <- intersect(all.names(code), names(definitions))
-  code <- c(code, as.expression(definitions[called]))
+  dormant <- setdiff(intersect(dormant, namespace$exports), called)
+  visited <- character()
+  while (length(called)) {
+    called <- unique(c(called, unname(method_names[names(method_names) %in% called])))
+    called <- setdiff(intersect(called, names(definitions)), visited)
+    if (!length(called)) break
+    bodies <- as.expression(definitions[called])
+    code <- c(code, bodies)
+    visited <- c(visited, called)
+    selected <- callbacks(bodies)
+    dormant <- setdiff(dormant, selected)
+    calls <- unlist(lapply(bodies, function(body) {
+      fun <- function(...) NULL
+      body(fun) <- body
+      codetools::findGlobals(fun, merge = FALSE)$functions
+    }), use.names = FALSE)
+    called <- setdiff(intersect(c(calls, selected), names(definitions)), c(visited, dormant))
+  }
   strings <- function(x) {
     if (is.character(x)) return(x)
     if (is.call(x) && identical(x[[1L]], quote(c))) return(unlist(lapply(as.list(x)[-1L], strings), use.names = FALSE))

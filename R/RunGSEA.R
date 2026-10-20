@@ -9,6 +9,9 @@
 #' By default ("std") the enrichment score is computed as in the original GSEA.
 #' The "pos" and "neg" score types are intended to be used for one-tailed tests
 #' (i.e. when one is interested only in positive ("pos") or negateive ("neg") enrichment).
+#' @param nPermSimple Number of initial simple permutations used by fgsea.
+#' @param eps Lower bound for P-value estimation. Use `0` to estimate P-values
+#' without a positive lower bound.
 #'
 #' @return
 #' If input is a Seurat object, returns the modified Seurat object with the enrichment result stored in the tools slot.
@@ -48,7 +51,9 @@
 #'   geneScore = scores,
 #'   geneID_groups = rep("Cluster1", length(genes)),
 #'   TERM2GENE = term2gene,
-#'   minGSSize = 2
+#'   minGSSize = 2,
+#'   nPermSimple = 10000,
+#'   eps = 0
 #' )
 #' GSEAPlot(
 #'   res = gsea_out,
@@ -87,6 +92,8 @@ RunGSEA <- function(
   simplify_similarityCutoff = 0.7,
   verbose = TRUE,
   ...,
+  nPermSimple = 1e5,
+  eps = 0,
   srt = NULL
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
@@ -387,8 +394,8 @@ RunGSEA <- function(
         geneList = geneList,
         minGSSize = ifelse(term %in% unlimited_db, 1, minGSSize),
         maxGSSize = ifelse(term %in% unlimited_db, Inf, maxGSSize),
-        nPermSimple = 1e5,
-        eps = 0,
+        nPermSimple = nPermSimple,
+        eps = eps,
         scoreType = scoreType,
         pAdjustMethod = "BH",
         pvalueCutoff = Inf,

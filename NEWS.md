@@ -26,6 +26,8 @@
 
 * **change**:
 
+  * Use gzip compression for package data and source installation.
+  * Support shared and per-method reduction parameters in integration workflows.
   * Distinguish omitted `object` from `NULL`; reject duplicate `object`/`srt`.
     The deprecated `srt` alias warns until removal in scop 1.0.0.
   * Add standalone database preparation interfaces with shared caching/conversion,
@@ -43,8 +45,12 @@
 
 * **fix**:
 
+  * Fix duplicate GSEA rankings after one-to-many ID conversion and retain unmapped
+    labels. Expose `RunGSEA()` parameters `nPermSimple` and `eps` with unchanged defaults.
+  * Preserve native Fisher tests and Holm correction in GO word clouds; support
+    simplifyEnrichment 2.4.1/2.6.0 and GSVA version-specific scoring semantics.
   * Resolve explicit Ensembl archives directly, recovering catalogs from archive
-    hosts and reporting unavailable releases. Examples use Ensembl 115. Restore
+    hosts and reporting unavailable releases. Restore
     the startup Logo, version/date and website with message suppression support.
   * Preserve the default Python version when preparing a missing environment;
     recognize micromamba package lists so installed native libraries are reused.
@@ -52,10 +58,9 @@
     isolate PHATE/MAGIC with compatible pandas, separate TensorFlow from JAX,
     and keep scCODA's compatible `rpy2` version. PHATE supports an already active
     Python environment through an isolated call, preserving its warnings.
-  * Prepare LIGER's native backend on demand and resolve Seurat t-SNE explicitly
-    in integration workflows. Pass graph/neighbor inputs only to supported
-    reductions. Treat destiny's legacy
-    Matrix coercions as warnings in `RunDM()`, restoring caller options.
+  * Resolve Seurat t-SNE explicitly in integration workflows. Pass graph/neighbor
+    inputs only to supported reductions. Treat destiny's legacy Matrix coercions
+    as warnings in `RunDM()`, restoring caller options.
   * Preserve MDS standard deviations, Conos layers and Seurat 5.6.0 CSS integration/
     mapping. Align RCTD/CARD/SPOTlight references, RCTD library depths and PRECAST
     raw counts, six-neighbor adjacency and native parameters. Spatial neighborhood
@@ -65,52 +70,6 @@
     stochastic scVelo percentile weights; existing results change. RSpectra can
     return fewer terminal regions for near-closed classes. Restore thread settings
     and validate Python runtimes.
-
-* **perf**:
-
-  * `RunDEtest()` paired Wilcoxon preparation is 3.9x faster on 1,000 pancreas cells /
-    15,998 genes with two workers. Conserved-marker closures shrink 457.1→131.8 MB;
-    runtime is 30.678→29.444 s on all 1,600 panc8 cells / 12,932 genes. Dense
-    `FindExpressedMarkers()` takes 3.384→2.388 s on the full pancreas input, retaining
-    5,059 rows and native limma tests.
-  * Sparse `CheckDataType()` is 2.1–2.4x faster with 75% less allocation on the full
-    pancreas/panc8 datasets; `Runscds()` BCDS variances are 23% faster on pancreas.
-    Preserve classifications, feature order, outputs and RNG. `RunDoubletCalling()`
-    reuses count validation; scDblFinder conversion takes 0.076→0.028 s /
-    64.7→32.6 MB with matching default outputs/RNG. Its full-input example uses
-    `iter = 2` instead of `3`: 3.781→3.464 s, with 99.8% class agreement.
-  * `RunEnrichment()` reuses ORA backgrounds (6.9x); five-group CPP ID mapping takes
-    6.040→1.600 s with identical 18,173 rows. MP ID preparation is 3.7x faster on
-    218,936 term-gene / 10,961 term-name rows with unchanged matching; timings
-    exclude network requests and later MP conversion.
-  * `RunGSEA()` identity/cross-ID formatting takes 36.980→0.178 / 20.051→0.308 s for
-    20,529 native terms; five-group annotation preparation takes 1.858→0.345 s.
-    Separate source ranks from expanded output IDs, match mappings exactly and
-    retain unmapped labels, fixing conversion-induced duplicate rankings. Preserve
-    all 36,764 ranks, native statistics, RNG and default 100,000 permutations.
-    Preparation timings exclude fgsea execution.
-  * Heatmap/GO word-cloud sparse keyword counts are 49.3x faster with native Fisher
-    tests, Holm correction and simplifyEnrichment 2.4.1/2.6.0 fallback compatibility.
-    `FeatureHeatmap()` / `GroupHeatmap()` / `DynamicHeatmap()` reuse exact circlize
-    colors: 247 mappings take 16.342→3.423 s, with 22 byte-identical figures.
-    Avoid full-vector correlation descriptions.
-  * `RunCellChat()` groups cells once per bootstrap summary, retaining native
-    summary functions and all permutations. The full pancreas analysis takes
-    15.149→7.905 s, with identical scientific outputs and RNG.
-  * Use gzip for faster lazy-data loading and source-install compression,
-    preserving all eight datasets at the cost of a larger installed data size.
-  * `RunStandardWorkflow()` skips unused PCA variance work; a stable PCA gain is
-    unestablished. Coralysis prediction preparation takes 0.517→0.130 s on all
-    1,600 cells / 12,932 genes, preserving native scaling; avoid unused Conos work.
-    A full-input Coralysis example pair with `L = 50` / `10` takes 93.970/37.842 s;
-    cell-type ARI is 0.604/0.608. Shared/per-method reduction parameters allow
-    LargeVis examples to use 1,000 epochs: PaCMAP/TriMap/LargeVis/FR in 2D/3D take
-    761.869→16.136 s on the full 1,600 × 50 PCA matrix (one pair). Other methods match;
-    LargeVis positions differ, with 10-NN cell-type agreement of 96.12/95.94%.
-    GSVA sparse Gaussian scoring is 2.8x faster than before / 50x faster than native
-    GSVA on 2,000 genes, 1,000 cells and 400 sets; match <=2.4 / >=2.6 semantics,
-    remove explicit zeros and use >=2.6 defaults when absent. Sparse scVelo storage
-    reduces a 50,000-cell graph from 56 GiB to 11 MiB.
 
 * **refactor**:
 
@@ -123,7 +82,6 @@
 * **docs**:
 
   * Refresh integration/deconvolution documentation and group release notes by type.
-    Example tuning retains every runnable case and function defaults; outputs can differ.
     Enable Scrublet and DoubletDetection examples with explicit environment preparation.
 
 
@@ -167,7 +125,6 @@
   * Restore `cores` forwarding to the `ncores` argument in SpatialEcoTyper deconvolution and both MERINGUE R permutation tests; the deprecated `ncores` alias remains supported.
   * Forward `theme_use` and `theme_args` in all SpaTalk and COMMOT CCC plot views. Consolidate SpaTalk result preparation and remove duplicate coordinate checks and redundant plot-call wrappers.
   * `RunDoubletCalling()` forwards the data object as `object=` only, so `RunCellQC()` no longer fails with "Provide only one of `object` or `srt`" for any `db_method`. The Python bridges (`RunSCVELO()`, `RunCellRank()`, `RunPalantir()`, `RunPAGA()`, `RunWOT()`, `RunCellTypist()`) no longer pass the data-object argument on to Python functions that accept neither `object=` nor extra keywords.
-  * Giotto bridges reuse an already-installed GiottoClass instead of reinstalling `drieslab/Giotto` when the GitHub remote does not match (for example the optional CI pin `giotto-suite/Giotto`).
   * `srt_to_adata()` converts velocity matrices stored as extra layers of `assay_x`, such as `spliced`/`unspliced` in the `RNA` assay of a Seurat v5 object, instead of dropping them without a message. `RunSCVELO()` failed on such objects with `Error in scVelo analysis: 'Ms'`, because scVelo skips the moment computation when the layers are absent and reports the problem later as `adata.layers['Ms']`. Names in `assay_y` that are neither an assay nor a layer of `assay_x` are now reported with the available ones, and the Python workflow names the missing layers instead of raising a `KeyError`.
   * `MistyRPlot(measure =)` selects the numeric result column explicitly (`gain.R2`/`gain.RMSE` or `contribution`/`importance`).
   * Spatial integration (PRECAST) domain, embedding, and coordinate results must match Seurat cell identities exactly, including named, reordered, missing, extra, and duplicate IDs.
@@ -182,12 +139,11 @@
   * `RunMonocle2()` skips `estimateDispersions()` unless `feature_type = "Disp"` or `show_plot = TRUE`. The sparse-matrix `2^31-1` crash in dispersion fitting is fixed in [mengxu98/monocle](https://github.com/mengxu98/monocle) 2.9.3.
   * `RunScTenifoldKnk()` builds the gene regulatory network ensemble with scop's native C++ kernel in every backend instead of calling `scTenifoldNet::makeNetworks()`; `backend` only selects how the downstream differential-regulation steps run (`r` = upstream helpers, `cpp` = scop kernels) and what is stored, with the `cpp` path much faster on large gene sets.
   * `RunScTenifoldKnk(backend = "cpp")` no longer loses network scores when a subsample drops an all-zero gene: the empty sparse template was a pattern (`ngCMatrix`) matrix that coerced the ensemble coefficients to logical, so affected networks reached the tensor decomposition as 0/1 and the knocked-out gene was reported as not dysregulated (#427).
-  * Optional GitHub-only backends (`presto`, `SpatialCellChat`, `NNLM`, `SpaTalk`) are resolved at their call sites through `check_r()` and dropped from the check-time Suggests, so R CMD check no longer installs them; `presto` stays a runtime-optional backend with marker fast paths using an existing installation and `RunCellChat(do.fast = TRUE)` resolving it before execution.
   * C-SIDE completion messages respect result storage and document compatibility metadata as run-level significant record counts.
 
 * **perf**:
 
-  * `RunMonocle2()` DDRTree ordering now runs on monocle's native C++ fast paths (cell-to-MST projection, projected-cell minimum spanning tree, tree ordering traversal, and state-based root selection, ported from the former scop backend into mengxu98/monocle). Ordering a 3,000-cell dataset drops from ~9.3 s to ~1.2 s, and the ordering step no longer scales quadratically with cell number. Pseudotime, states, and the root cell are unchanged. The updated monocle is declared through `check_r()` and installed by `PrepareEnv()`.
+  * `RunMonocle2()` DDRTree ordering now runs on monocle's native C++ fast paths (cell-to-MST projection, projected-cell minimum spanning tree, tree ordering traversal, and state-based root selection, ported from the former scop backend into mengxu98/monocle). Ordering a 3,000-cell dataset drops from ~9.3 s to ~1.2 s, and the ordering step no longer scales quadratically with cell number. Pseudotime, states, and the root cell are unchanged.
   * `ScaleData()` now supports Assay5 cell subsets and updates layer membership on rescaling. SPARK-X retains sparse input, and dense spatial-feature conversions have an explicit size guard.
 
 * **deps**:
@@ -213,7 +169,6 @@
 * **chore**:
 
   * Package attachment no longer prints the ASCII startup banner or repeated environment instructions. Explicit Python-environment initialization still reports its actual success or failure.
-  * Optional-package probes in package code now use `check_r()` and `get_namespace_fun()` instead of `requireNamespace()`. Documented examples call public functions under `\dontrun` and do not invoke `check_r`.
   * Cleared the remaining R CMD check findings across plot wrappers and integration benchmarks.
 
 # scop 0.9.1
@@ -251,7 +206,6 @@
 
 * **fix**:
 
-  * R-CMD-check now installs `presto` directly from `immunogenomics/presto`, avoiding dependency-resolution failures caused by treating the GitHub-only package as a CRAN package.
   * `RunCellRank()` now disables PETSc explicitly when retrying fate probabilities with SciPy's direct solver, preventing CellRank 2.0.7 from silently reverting the retry to GMRES and rejecting harmless floating-point negative probabilities (#380).
   * `RunCellRank()` defaults to the dependency-free `brandts` Schur method again, so the standard `scop_env` no longer fails because the optional `petsc4py` and `slepc4py` packages are absent. Users can still request `schur_method = "krylov"` when those packages are installed (#380).
   * CellRank stored-result plotting now follows SCOP's `theme_scop`, `Chinese`, and `Spectral` visual contracts; draws transition projections directly from the saved sparse transition matrix; supports random walks without requiring trend results; facets trend modules; and adds module-enrichment dot plots. CellRank enrichment selects the database gene-ID column that overlaps the actual driver background, including three-column GO tables with both Entrez and symbol identifiers.
@@ -259,9 +213,9 @@
   * Spatial coordinate contract v2 now reads full-resolution VisiumV1/VisiumV2 coordinates, restores the `imagerow`/`imagecol` order that Seurat's standard VisiumV2 loader stores positionally as centroid `x`/`y`, preserves explicit generic FOV `x`/`y`, normalizes only explicitly named legacy image row/column coordinates, and applies exactly one selected `lowres` or `hires` display transform. `SpatialCoordinates()`, HE-overlay point/pie/network plots, and their public wrappers gain an appended `image.scale` argument; variadic wrappers keep it named-only after `...`. Raw SpatialCellChat analysis no longer requires an available display scale, and coordinate-independent producers no longer claim a coordinate-contract version. Users no longer need to modify Seurat `@scale.factors` slots. Coordinate-dependent stored results created under an older or unknown contract must be rerun.
   * `RunSlingshot()` / `CellDimPlot(lineages=)` no longer fail with `scale$guide == "none"` on ggplot2 >= 3.5 when `ggnewscale` is older than 0.5.0. Colour/fill scales now keep a character `guide`, legend overrides go through `guides()`, `ggnewscale` is pinned to >= 0.5.2, and a failed lineage plot no longer discards the Slingshot result.
   * `RunGSEA()` / `RunEnrichment()` no longer fail with "replacement has 0 rows, data has N" when the cached database carries an empty version. The KEGG REST API dropped the `Release` line from `/info/<org>`, so `PrepareDB()` now resolves the KEGG version from the release-notes page when the info endpoint does not report it (retrieval-date fallback; HPO hardened the same way), and the enrichment writers tolerate missing versions.
-  * `RunSpaTalk()` now reuses stored `RunRCTD()` weights through SpaTalk method 2, records the deconvolution source, and accepts a working installed SpaTalk package even when its DESCRIPTION lacks GitHub remote metadata.
+  * `RunSpaTalk()` now reuses stored `RunRCTD()` weights through SpaTalk method 2 and records the deconvolution source.
   * `RunLIANA()` now preserves the field set returned by LIANA's official consensus mode: rank consensus no longer gains all-`NA` aggregate/significance placeholders, aggregate consensus no longer gains all-`NA` magnitude/specificity placeholders, and deterministic ligand-receptor display identifiers are completed during SCOP/LIANA export.
-  * `RunCNV()` attaches backend packages to the search path during execution so lazy data objects (copykat `full.anno`, fastCNV `geneMetadata`, numbat `gtf_hg38`) are resolvable from backend namespace code; `copykat` is installed from its GitHub source (`navinlabcode/copykat`) because it was removed from CRAN.
+  * `RunCNV()` resolves bundled backend annotations for copykat, fastCNV and numbat.
   * `RunCNV(numbat)` prefers the plain `seg` column over `seg_label` when reading `joint_post` output, so segment identifiers are not polluted with the `(loh)` suffix.
   * `RunCNV()` numbat extraction is vectorized (direct index assignment with duplicate averaging instead of row-by-row `aggregate`/`strsplit`, plus `split()`-partitioned bin statistics): a 300-seg x 2000-cell `joint_post` extraction drops from ~16s to ~1.3s (~12x) with bit-identical results.
   * `visium_mouse_brain_slices_sub` rebuilt with the current `SeuratObject` so bundled `VisiumV2` images can be subset again.
@@ -308,7 +262,7 @@
   * Standardized bulk results under `Bulk$results$de`, `Bulk$results$deconv`, and `Bulk$results$csde`, keeping DE outputs compatible with existing `DEtestPlot()`, `RunEnrichment()`, `RunGSEA()`, `GroupHeatmap()`, and `FeatureHeatmap()` data flows.
   * `RunBulk(run_enrichment = TRUE, run_gsea = TRUE)` now filters bulk DE rows with pathway thresholds and mirrors successful pathway results to `Enrichment_Bulk_wilcox` and `GSEA_Bulk_wilcox`, so `EnrichmentPlot()` and `GSEAPlot()` can read them through the standard `srt@tools` contract.
   * Deconvolution and CSDE bundles now record their computational `engine` in `details`; the current deconvolution runners use explicit `backend = "internal"` SCOP profile fitting and `csde_TOAST` uses explicit `backend = "limma_interaction"`, so package backends can be wired in later without pretending to call external packages.
-  * Added explicit `Remotes` entries for `mengxu98/thisplot` and `mengxu98/thisutils` so source installs can resolve the minimum imported versions required by SCOP. Optional bulk engines such as `DESeq2` and `variancePartition` are installed on demand through `check_r()` and called lazily through `get_namespace_fun()`.
+  * Added explicit `Remotes` entries for `mengxu98/thisplot` and `mengxu98/thisutils` so source installs can resolve the minimum imported versions required by SCOP.
   * Added `method_args` to expose method-specific tuning parameters without expanding the public API surface.
 
 * **fix**:
@@ -616,7 +570,6 @@
   * Moved `exist_python_pkgs()` function to `check_package.R` for better code organization.
   * Replaced direct `conda_info()$envs_dirs[1]` calls with `get_conda_envs_dir()` helper function for consistency.
   * `RunSCExplorer()`: Updated to use `thisplot::palette_list` and `thisplot::slim_data()` instead of `scop::palette_list` and `scop::slim_data()`.
-  * Added `thisplot` to dependency checks in `RunSCExplorer()`.
 
 * **docs**:
 
@@ -630,7 +583,6 @@
   * Python-based functions (`RunPAGA()`, `RunSCVELO()`, `RunPalantir()`, `RunCellRank()`, `RunWOT()`) now automatically call `PrepareEnv()` internally, eliminating the need for users to manually prepare the Python environment before using these functions.
   * `cluster_within_group2()`: New function for clustering within groups.
   * Multiple plotting functions: Replaced `geom_sankey()` with `ggsankey::geom_sankey()` for better Sankey diagram support.
-  * Multiple functions: Replaced `:::` operator with `get_namespace_fun()` for safer namespace access.
 
 * **fix**:
 
@@ -754,7 +706,6 @@
 * **feat**:
 
   * `EnrichmentPlot()` and `GSEAPlot()`: Removed conditional font face styling (`face = ifelse()` logic) for better text rendering consistency. Set the default value of `lineheight` from `0.5` to `0.7`.
-  * Updated `check_r()` function for improved package checking functionality.
   * Updated reexports functionality.
 
 * **docs**:
@@ -795,7 +746,6 @@
 
 * **feat**:
 
-  * Added an internal function `.check_pkg_status()` to check if an *R* package is installed.
   * Update function `CheckDataType()` to *S4* class function.
   * Update function `RunStandardWorkflow()`, make it more efficient.
 
@@ -810,7 +760,6 @@
 
   * Added `remove_r()` function for easy remove *R* packages.
   * Rename function: `RemovePackages()` to `remove_python()`.
-  * Removed other methods of installing *R* packages from the `check_r()` function, only retaining [pak::pak](https://pak.r-lib.org/reference/pak.html).
   * Delete useless import packages: `BBmisc`, `BiocManager`, `covr`, `devtools`, `promises` and `withr`.
   * Optimize the structure of `_pkgdown.yml` file.
 
