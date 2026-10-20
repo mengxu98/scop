@@ -27,7 +27,7 @@ such as \code{"cell2fate"} and \code{"commot"}.}
 \code{"scmalignantfinder"}, \code{"secact"}, \code{"scpagwas"}, \code{"choir"}, and
 \code{"external_wrappers"}. If \code{NULL}, the default environment is returned. The default
 excludes \code{"cell2location"}, \code{"cell2fate"}, \code{"commot"}, \code{"sccoda"}, \code{"scomm"}, and
-\code{"scenic"} because these workflows
+\code{"scenic"}, \code{"phate"}, and \code{"magic"} because these workflows
 require dependency stacks that should be prepared explicitly. The
 \code{"scenic"} module is standalone and always uses Python \code{"3.10-1"}.}
 

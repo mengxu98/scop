@@ -571,7 +571,12 @@ DoCellChat <- function(
   }
   object <- do.call(identifyOverExpressedGenes, identify_args)
   object <- get_namespace_fun("CellChat", "identifyOverExpressedInteractions")(object)
-  object <- get_namespace_fun("CellChat", "computeCommunProb")(object)
+  compute_prob <- get_namespace_fun("CellChat", "computeCommunProb")
+  environment(compute_prob) <- list2env(
+    list(aggregate = cellchat_group_aggregate),
+    parent = environment(compute_prob)
+  )
+  object <- compute_prob(object)
   object <- get_namespace_fun("CellChat", "filterCommunication")(
     object,
     min.cells = min.cells
@@ -581,6 +586,26 @@ DoCellChat <- function(
   object <- get_namespace_fun("CellChat", "netAnalysis_computeCentrality")(object, thresh = thresh)
 
   object
+}
+
+cellchat_group_aggregate <- function(x, by, FUN, ...) {
+  if (!is.matrix(x) || length(by) != 1L || ncol(x) == 0L || length(list(...))) {
+    return(stats::aggregate(x, by, FUN, ...))
+  }
+  groups <- split(seq_len(nrow(x)), by[[1L]], drop = TRUE)
+  if (!length(groups)) {
+    return(stats::aggregate(x, by, FUN, ...))
+  }
+  values <- vapply(groups, function(i) {
+    apply(x[i, , drop = FALSE], 2L, FUN, ...)
+  }, numeric(ncol(x)))
+  values <- matrix(values, nrow = ncol(x), dimnames = list(colnames(x), names(groups)))
+  key <- unname(by[[1L]][match(names(groups), as.character(by[[1L]]))])
+  out <- data.frame(key)
+  names(out) <- names(by) %||% "Group.1"
+  out <- cbind(out, t(values))
+  rownames(out) <- NULL
+  out
 }
 
 cellchat_database <- function(species) {

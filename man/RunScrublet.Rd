@@ -35,7 +35,7 @@ will be removed in scop 1.0.0.}
 Run doublet-calling with Scrublet
 }
 \examples{
-\dontrun{
+PrepareEnv(modules = "scrublet")
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 pancreas_sub <- RunScrublet(pancreas_sub)
@@ -50,5 +50,4 @@ FeatureDimPlot(
   reduction = "umap",
   features = "db.Scrublet_score"
 )
-}
 }

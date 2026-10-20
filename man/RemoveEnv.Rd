@@ -8,7 +8,8 @@ RemoveEnv(envname = NULL, conda = "auto", force = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{envname}{Conda-compatible Python environment.
-If \code{NULL}, the environment name will be set to \code{"scop_env"}.}
+If \code{NULL}, use the current environment selection. \code{\link[=PrepareEnv]{PrepareEnv()}} selects
+a separate module profile when required.}
 
 \item{conda}{The path or command name of a conda-compatible executable
 (\code{conda}, \code{mamba}, or \code{micromamba}). Use \code{"auto"} to allow automatically

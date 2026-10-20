@@ -227,3 +227,20 @@ test_that("PrepareEnv reuses its managed environment cache", {
     version = "3.10-1", modules = "phate", verbose = FALSE))
   expect_identical(configured, python)
 })
+
+test_that("PrepareEnv uses the default version for a missing environment", {
+  testthat::local_mocked_bindings(
+    .package = "scop",
+    resolve_conda = function(conda) conda,
+    conda_python = function(...) NULL,
+    env_requirements = function(version, modules) {
+      expect_identical(version, if (is_windows()) "3.11-1" else "3.10-1")
+      expect_identical(modules, "phate")
+      stop("requirements resolved")
+    }
+  )
+  expect_error(
+    PrepareEnv(envname = "new-environment", conda = "test-conda", modules = "phate"),
+    "requirements resolved"
+  )
+})

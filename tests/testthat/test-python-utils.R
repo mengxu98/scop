@@ -9,7 +9,9 @@ test_that("Python logger imports and runners support both thisutils layouts", {
   system_file <- base::system.file
   scope <- new.env(parent = asNamespace("scop"))
   scope$system.file <- function(..., package, mustWork = FALSE) {
-    if (identical(package, "thisutils")) return(file.path(root, ...))
+    if (identical(package, "thisutils")) {
+      return(file.path(root, ...))
+    }
     system_file(..., package = package, mustWork = mustWork)
   }
   scope$system2 <- function(...) Sys.getenv("PYTHONPATH")
@@ -34,7 +36,8 @@ test_that("Python logger imports and runners support both thisutils layouts", {
       withr::with_envvar(c(PYTHONPATH = previous), {
         observed <- run("unused", character(), character(), TRUE, TRUE)
         expected <- paste(c(file.path(root, layout), previous[!is.na(previous)]),
-          collapse = .Platform$path.sep)
+          collapse = .Platform$path.sep
+        )
         expect_identical(observed, expected)
         expect_identical(Sys.getenv("PYTHONPATH", unset = NA_character_), previous)
       })
@@ -157,4 +160,61 @@ test_that("Python requirement parsing treats extras as distribution metadata", {
     parse("requests[socks]"),
     list(name = "requests", operator = NA_character_, version = NA_character_)
   )
+})
+
+test_that("Python package discovery accepts enveloped conda package lists", {
+  packages <- data.frame(name = c("python", "runtime-lib"), version = c("3.10.1", "2.0"))
+  expected <- data.frame(package = packages$name, version = packages$version)
+  expect_identical(normalize_installed_package_table(packages), expected)
+  expect_identical(
+    normalize_installed_package_table(list(log_history = list(), packages = packages)),
+    expected
+  )
+})
+
+test_that("Python discovery retains native conda libraries alongside pip distributions", {
+  testthat::local_mocked_bindings(
+    resolve_conda = identity,
+    ensure_conda = function(...) TRUE,
+    env_exist = function(...) TRUE,
+    log_message = function(...) NULL,
+    installed_python_pkgs_cli = function(...) data.frame(package = c("runtime-lib", "numpy"), version = c("2.0", "1.26.4")),
+    installed_python_pkgs_pip = function(...) data.frame(package = "numpy", version = "1.26.4"),
+    .package = "scop"
+  )
+  packages <- installed_python_pkgs("test", "test")
+  expect_setequal(packages$package, c("runtime-lib", "numpy"))
+  expect_identical(packages$version[packages$package == "numpy"], "1.26.4")
+})
+
+test_that("Python installation resolves all requested pip requirements together", {
+  calls <- 0L
+  installed <- NULL
+  testthat::local_mocked_bindings(
+    resolve_conda = identity,
+    conda_python = function(...) NULL,
+    env_exist = function(...) TRUE,
+    log_message = function(...) NULL,
+    exist_python_pkgs = function(packages, ...) {
+      calls <<- calls + 1L
+      stats::setNames(if (calls == 1L) c(TRUE, FALSE) else c(TRUE, TRUE), packages)
+    },
+    conda_install = function(packages, ...) installed <<- packages,
+    .package = "scop"
+  )
+  expect_true(check_python(c("numpy==1.26.4", "new-module==1.0"), conda = "test"))
+  expect_identical(installed, c("numpy==1.26.4", "new-module==1.0"))
+})
+
+test_that("Python requirement checks retain repeated constraints", {
+  testthat::local_mocked_bindings(
+    resolve_conda = identity,
+    ensure_conda = function(...) TRUE,
+    env_exist = function(...) TRUE,
+    log_message = function(...) NULL,
+    installed_python_pkgs = function(...) data.frame(package = "backend", version = "2.0"),
+    .package = "scop"
+  )
+  actual <- exist_python_pkgs(c("backend==2.0", "backend==2.0", "backend<2.0"), conda = "test")
+  expect_identical(unname(actual), c(TRUE, TRUE, FALSE))
 })

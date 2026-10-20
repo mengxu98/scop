@@ -24,3 +24,14 @@ test_that("PrepareEnv retains Imports without per-method checks", {
     "SummarizedExperiment", "S4Vectors", "thisplot"
   ) %in% packages))
 })
+
+test_that("scprep modules keep a separate compatible dependency profile", {
+  expect_false(any(c("phate", "magic") %in% default_env_modules()))
+  expect_identical(env_module_environment("sccoda"), "tensorflow_env")
+  expect_identical(env_requirements(modules = "sccoda")$packages[["rpy2"]], "rpy2==3.5.17")
+  expect_identical(env_module_environment("scomm"), "tensorflow_env")
+  expect_identical(env_module_environment(c("scvelo", "magic")), "scprep_env")
+  expect_identical(env_requirements(modules = c("scvelo", "magic"))$packages[["pandas"]], "pandas==2.0.3")
+  expect_identical(env_requirements(modules = "phate")$packages[["phate"]], "phate==1.0.11")
+  expect_identical(env_requirements(modules = "scrublet")$packages[["pandas"]], "pandas==2.2.0")
+})
