@@ -332,7 +332,9 @@ pancreas_sub <- RunGSEA(
   group.by = "CellType",
   species = "Mus_musculus",
   TERM2GENE = gsea_term2gene, TERM2NAME = gsea_term2name,
-  DE_threshold = "is.finite(avg_log2FC)"
+  DE_threshold = "is.finite(avg_log2FC)",
+  nPermSimple = 10000,
+  eps = 0
 )
 
 gsea_endocrine <- subset(

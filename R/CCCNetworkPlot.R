@@ -405,7 +405,7 @@ CCCNetworkPlot <- function(
           message_type = "error"
         )
       }
-      check_r("jinworks/SpatialCellChat", verbose = FALSE)
+      check_r(c("KlugerLab/ALRA", "JEFworks-Lab/MERINGUE", "jinworks/SpatialCellChat"), verbose = FALSE)
       native <- GetCCCObject(
         object = srt,
         method = "SpatialCellChat",

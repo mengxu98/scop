@@ -212,7 +212,9 @@ gsea_out <- RunGSEA(
   geneScore = scores,
   geneID_groups = rep("Cluster1", length(genes)),
   TERM2GENE = term2gene,
-  minGSSize = 2
+  minGSSize = 2,
+  nPermSimple = 10000,
+  eps = 0
 )
 GSEAPlot(res = gsea_out, db = "custom", plot_type = "comparison")
 GSEAPlot(res = gsea_out, db = "custom", plot_type = "bar")
