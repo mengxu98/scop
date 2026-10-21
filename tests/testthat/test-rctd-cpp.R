@@ -189,13 +189,17 @@ test_that("RCTD finalize helper matches separate normalization and metadata help
 })
 
 test_that("RCTD normalizes check_r list results without adding a backend helper", {
+  requested <- character()
   testthat::local_mocked_bindings(
     check_r = function(pkgs, verbose = FALSE) {
-      stats::setNames(as.list(rep(TRUE, length(pkgs))), c("spacexr", pkgs[-1L]))
+      requested <<- c(requested, pkgs)
+      stats::setNames(as.list(rep(TRUE, length(pkgs))), sub("^.*/", "", pkgs))
     },
     .package = "scop"
   )
   expect_invisible(rctd_require_namespaces(c("spacexr", "S4Vectors")))
+  expect_identical(requested, c("dmcable/spacexr", "S4Vectors"))
+  expect_invisible(rctd_require_namespaces(c("SpatialExperiment", "SummarizedExperiment", "S4Vectors")))
 
   testthat::local_mocked_bindings(
     check_r = function(pkgs, verbose = FALSE) list(unexpected = TRUE),
