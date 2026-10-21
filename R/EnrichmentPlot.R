@@ -22,11 +22,19 @@
 #' If provided, 'object', 'test.use' and 'group.by' are ignored.
 #' @param db The database to use for enrichment plot.
 #' @param plot_type The type of plot to generate.
-#' Options are: `"bar"`, `"dot"`, `"lollipop"`, `"network"`, `"enrichmap"`, `"wordcloud"`, `"comparison"`.
+#' Options are: `"bar"`, `"annotated_bar"`, `"dot"`, `"lollipop"`, `"network"`, `"enrichmap"`, `"wordcloud"`, `"comparison"`.
+#' `"annotated_bar"` draws horizontal bars with database bands, term labels,
+#' hit-gene labels and optional Count dots.
 #' @param split_by The splitting variable(s) for the plot.
 #' Can be `"Database"`, `"Groups"`, or both.
 #' Default is `c("Database", "Groups")` for plots.
+#' For `"annotated_bar"`, the default is `"Groups"` (database bands within
+#' each group). Including `"Database"` creates separate database panels;
+#' groups are always kept in separate panels in this mode.
 #' @param color_by The variable used for coloring.
+#' Annotated bars use `"Database"`: each database receives one palette color.
+#' As in the bar view of [GSEAPlot], significance controls opacity (0.4 to 1).
+#' Bars, Count dots and hit-gene labels share the same color and opacity per term.
 #' @param group_use The group(s) to be used for enrichment plot.
 #' @param id_use List of IDs to be used to display specific terms in the enrichment plot.
 #' Default value is `NULL`.
@@ -68,15 +76,47 @@
 #' Options are `"ellipse"` and `"hull"`.
 #' @param enrichmap_expand The expansion factor for enrichmap plot.
 #' @param character_width The maximum width of character of descriptions.
+#' @param show_genes Logical; display hit genes below each annotated bar label.
+#' Genes are taken from `geneID` as stored by [RunEnrichment]; no ID conversion
+#' is performed. Missing gene strings are displayed as blank labels.
+#' @param show_count Logical; display Count-sized dots beside annotated bars.
+#' Missing counts are omitted. Use `legend.position = "none"` to hide the legend.
+#' @param gene_width Positive integer (at least 4); maximum characters in an
+#' annotated bar's comma-separated hit-gene label, including the ellipsis.
+#' These three arguments apply only to `"annotated_bar"`.
+#' @param row_step Positive numeric row spacing for annotated bars, at least
+#' 0.8; defaults to 0.82 for a compact layout.
+#' @param db_gap Non-negative numeric extra spacing between database bands
+#' in annotated bars; defaults to 0.2.
+#' @return A ggplot for one panel, a patchwork for combined panels, or a named
+#' list of plots when `combine = FALSE`. Annotated bars select up to `topTerm`
+#' terms per database and group, ordered by the selected p-value metric.
+#' Database bands follow `db` order and panels share the same x-axis range.
+#' Zero p-values are capped at `.Machine$double.xmin` before transformation;
+#' missing p-values are omitted with a warning in this mode.
 #' @param lineheight The line height for y-axis labels.
 #' @param palette Color palette name.
 #' Available palettes can be found in [thisplot::show_palettes].
+#' @details
+#' Annotated bars place term labels inside bars and hit genes underneath, with
+#' rounded database bands. Colors map one-to-one to `db` in the requested order;
+#' named `palcolor` values must cover all selected databases. Descriptions are
+#' truncated to at most `character_width` characters, with shorter limits for
+#' shorter bars. Actual text fit also depends on export dimensions and font size.
 #'
 #' @seealso [RunEnrichment]
 #'
 #' @export
 #'
 #' @examples
+#' # Constructed results illustrating the annotated layout (not biological data).
+#' annotated_res <- list(enrichment = data.frame(
+#'   ID = c("term1", "term2"), Description = c("Response process", "Cell component"),
+#'   Database = c("GO_BP", "GO_CC"), Groups = "Example",
+#'   p.adjust = c(0.001, 0.01), geneID = c("GeneA/GeneB", "GeneC/GeneD"), Count = 2
+#' ))
+#' EnrichmentPlot(res = annotated_res, db = "GO", plot_type = "annotated_bar")
+#'
 #' data(pancreas_sub)
 #' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' pancreas_sub <- RunDEtest(
@@ -337,7 +377,7 @@ EnrichmentPlot <- function(
   group.by = NULL,
   test.use = "wilcox",
   res = NULL,
-  plot_type = c("bar", "dot", "lollipop", "network", "enrichmap", "wordcloud", "comparison"),
+  plot_type = c("bar", "annotated_bar", "dot", "lollipop", "network", "enrichmap", "wordcloud", "comparison"),
   split_by = c("Database", "Groups"),
   color_by = "Database",
   group_use = NULL,
@@ -383,7 +423,12 @@ EnrichmentPlot <- function(
   byrow = TRUE,
   seed = 11,
   verbose = TRUE,
-  srt = NULL
+  srt = NULL,
+  show_genes = TRUE,
+  show_count = TRUE,
+  gene_width = 70,
+  row_step = 0.82,
+  db_gap = 0.2
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   set.seed(seed)
@@ -391,6 +436,29 @@ EnrichmentPlot <- function(
     enrichmap_nlabel <- enrlichmap_nlabel
   }
   plot_type <- match.arg(plot_type)
+  if (plot_type == "annotated_bar") {
+    if (!is.numeric(row_step) || length(row_step) != 1L || !is.finite(row_step) || row_step < 0.8) {
+      log_message("{.arg row_step} must be a finite number of at least 0.8", message_type = "error")
+    }
+    if (!is.numeric(db_gap) || length(db_gap) != 1L || !is.finite(db_gap) || db_gap < 0) {
+      log_message("{.arg db_gap} must be a finite non-negative number", message_type = "error")
+    }
+    if (missing(split_by)) split_by <- "Groups"
+    split_by <- unique(c(split_by, "Groups"))
+    for (flag in list(show_genes = show_genes, show_count = show_count)) {
+      if (!is.logical(flag) || length(flag) != 1L || is.na(flag)) {
+        log_message("{.arg show_genes} and {.arg show_count} must be TRUE or FALSE", message_type = "error")
+      }
+    }
+    for (width in list(character_width, gene_width)) {
+      if (!is.numeric(width) || length(width) != 1L || !is.finite(width) || width < 4 || width != floor(width)) {
+        log_message("{.arg character_width} and {.arg gene_width} must be integers of at least 4", message_type = "error")
+      }
+    }
+    if (!is.numeric(topTerm) || length(topTerm) != 1L || is.na(topTerm) || topTerm < 1 || (is.finite(topTerm) && topTerm != floor(topTerm))) {
+      log_message("{.arg topTerm} must be a positive integer or Inf", message_type = "error")
+    }
+  }
   word_type <- match.arg(word_type)
   enrichmap_label <- match.arg(enrichmap_label)
   enrichmap_mark <- match.arg(enrichmap_mark)
@@ -539,6 +607,28 @@ EnrichmentPlot <- function(
   } else {
     metric <- ifelse(is.null(padjustCutoff), "pvalue", "p.adjust")
     metric_value <- ifelse(is.null(padjustCutoff), pvalueCutoff, padjustCutoff)
+  }
+
+  if (plot_type == "annotated_bar") {
+    if (length(color_by) != 1L || is.na(color_by) || color_by != "Database") {
+      log_message("For annotated bars, {.arg color_by} must be Database", message_type = "error")
+    }
+    required <- c("ID", "Description", "Database", "Groups", metric,
+      if (show_genes) "geneID", if (show_count) "Count")
+    if (!all(required %in% names(enrichment))) {
+      log_message("Missing annotated-bar columns: ", paste(setdiff(required, names(enrichment)), collapse = ", "), message_type = "error")
+    }
+    probabilities <- enrichment[[metric]]
+    if (!is.numeric(probabilities) || any(!is.na(probabilities) & (!is.finite(probabilities) | probabilities < 0 | probabilities > 1))) {
+      log_message("Annotated-bar p-values must be numeric values between 0 and 1", message_type = "error")
+    }
+    if (anyNA(probabilities)) {
+      log_message("Omitting terms with missing p-values from annotated bars", message_type = "warning", verbose = verbose)
+      enrichment <- enrichment[!is.na(probabilities), , drop = FALSE]
+    }
+    if (show_count && (!is.numeric(enrichment$Count) || any(!is.na(enrichment$Count) & (!is.finite(enrichment$Count) | enrichment$Count < 0)))) {
+      log_message("{.arg Count} must contain non-negative numeric values or NA", message_type = "error")
+    }
   }
 
   pvalueCutoff <- ifelse(is.null(pvalueCutoff), Inf, pvalueCutoff)
@@ -723,6 +813,29 @@ EnrichmentPlot <- function(
         )
       )
     plist <- list(p)
+  } else if (plot_type == "annotated_bar") {
+    if (color_by == "Database" && !is.null(names(palcolor))) {
+      if (!all(db %in% names(palcolor))) {
+        log_message("Named {.arg palcolor} must include every selected database", message_type = "error")
+      }
+      palcolor <- palcolor[db]
+    }
+    colors <- thisplot::palette_colors(db, palette = palette, palcolor = palcolor)
+    x_max <- max(1, enrichment_metric_weight(enrichment_sig[[metric]], FALSE))
+    alpha_limits <- range(enrichment_metric_weight(enrichment_sig[[metric]], FALSE))
+    count_limits <- if (show_count && any(!is.na(enrichment_sig$Count))) {
+      range(enrichment_sig$Count, na.rm = TRUE)
+    } else {
+      c(0, 1)
+    }
+    plist <- lapply(df_list, function(df) {
+      enrichment_annotated_bar(
+        df, db, metric, topTerm, colors, x_max, alpha_limits, count_limits,
+        show_genes, show_count, character_width, gene_width,
+        aspect.ratio, legend.position, legend.direction, theme_use, theme_args,
+        row_step, db_gap
+      )
+    })
   } else if (plot_type == "bar") {
     plist <- suppressWarnings(lapply(df_list, function(df) {
       df_groups <- split(df, list(df$Database, df$Groups))
@@ -1723,6 +1836,112 @@ resolve_enrichment_plot_db <- function(
   }
   unique(db)
 }
+
+enrichment_annotated_bar <- function(df, db, metric, topTerm, colors, x_max, alpha_limits, count_limits,
+  show_genes, show_count, character_width, gene_width, aspect.ratio, legend.position, legend.direction,
+  theme_use, theme_args, row_step, db_gap) {
+  present <- db[db %in% as.character(df$Database)]
+  df <- do.call(rbind, lapply(present, function(database) {
+    rows <- df[df$Database == database, , drop = FALSE]
+    rows[utils::head(order(rows[[metric]], rows$ID), topTerm), , drop = FALSE]
+  }))
+  df$Database <- factor(df$Database, levels = db)
+  df$.score <- enrichment_metric_weight(df[[metric]], FALSE)
+  df$.y <- rev(seq_len(nrow(df))) * row_step +
+    db_gap * (length(present) - match(df$Database, present)) + (1 - row_step)
+  truncate <- function(x, width) {
+    x <- gsub("[\r\n]+", " ", as.character(x))
+    x[is.na(x)] <- ""
+    long <- nchar(x) > width
+    x[long] <- paste0(substr(x[long], 1, width - 3), "...")
+    x
+  }
+  term_width <- pmax(4L, floor(character_width * pmin(1, df$.score / x_max)))
+  df$.term <- vapply(seq_len(nrow(df)), function(i) {
+    truncate(df$Description[i], term_width[i])
+  }, character(1))
+  if (show_genes) {
+    df$.genes <- truncate(gsub("/", ", ", df$geneID, fixed = TRUE), gene_width)
+  }
+  bands <- do.call(rbind, lapply(present, function(database) {
+    y <- df$.y[df$Database == database]
+    data.frame(Database = database, ymin = min(y) - 0.40, ymax = max(y) + 0.40)
+  }))
+  bands$ymid <- (bands$ymin + bands$ymax)/2
+  bands$label <- sub("^GO_", "", bands$Database)
+  dark_colors <- grDevices::col2rgb(colors) / 255 * 0.65
+  dark_colors <- stats::setNames(
+    grDevices::rgb(dark_colors[1, ], dark_colors[2, ], dark_colors[3, ]),
+    names(colors)
+  )
+  p <- ggplot2::ggplot(df) + ggplot2::layer(
+    data = bands, mapping = ggplot2::aes(ymin = .data$ymin, ymax = .data$ymax),
+    geom = enrichment_round_band, stat = "identity", position = "identity",
+    inherit.aes = FALSE, params = list(
+      xmin = -0.13 * x_max, xmax = -0.075 * x_max,
+      fill = unname(colors[bands$Database]), alpha = 0.3, colour = NA
+    )
+  ) +
+    ggplot2::geom_rect(ggplot2::aes(xmax = .data$.score, ymin = .data$.y - 0.13, ymax = .data$.y +
+      0.33, fill = .data$Database, alpha = .data$.score), xmin = 0, colour = NA)
+  if (show_count) {
+    p <- p + ggplot2::geom_point(ggplot2::aes(y = .data$.y, size = .data$Count,
+      fill = .data$Database, colour = .data$Database, alpha = .data$.score), x = -0.035 *
+      x_max, shape = 21, stroke = 0.35, na.rm = TRUE,
+      show.legend = c(size = TRUE, alpha = FALSE, fill = FALSE, colour = FALSE)) +
+      ggplot2::scale_size_continuous(name = "Count", range = c(1.8, 3.6), limits = count_limits,
+        guide = ggplot2::guide_legend(override.aes = list(fill = "grey65", colour = "grey30", alpha = 1)),
+        breaks = function(limits) {
+          ticks <- unique(round(pretty(limits, n = 3)))
+          ticks[ticks >= limits[1] & ticks <= limits[2]]
+        })
+  }
+  p <- p + ggplot2::geom_text(ggplot2::aes(y = .data$.y + 0.10, label = .data$.term), x = 0.015 * x_max, hjust = 0,
+    size = 3.2, colour = "black")
+  if (show_genes) {
+    p <- p + ggplot2::geom_text(ggplot2::aes(y = .data$.y - 0.27, label = .data$.genes,
+      colour = .data$Database, alpha = .data$.score), x = 0,
+      hjust = 0, size = 2.4, fontface = "italic", show.legend = FALSE)
+  }
+  p <- p +
+    ggplot2::scale_fill_manual(values = colors, drop = FALSE, guide = "none") +
+    ggplot2::scale_colour_manual(values = colors, drop = FALSE, guide = "none") +
+    ggplot2::scale_alpha_continuous(name = paste0("-log10(", metric, ")"),
+      range = c(0.4, 1), limits = alpha_limits, n.breaks = 3,
+      guide = ggplot2::guide_legend(override.aes = list(fill = "grey20", colour = "grey20")))
+  p + ggplot2::geom_text(data = bands, ggplot2::aes(y = .data$ymid, label = .data$label), x = -0.1025 *
+    x_max, angle = 90, size = 3.2, fontface = "bold",
+    colour = unname(dark_colors[bands$Database])) + ggplot2::scale_x_continuous(limits = c(-0.14 *
+    x_max, 1.15 * x_max), breaks = function(limits) {
+    ticks <- pretty(c(0, x_max), n = 5)
+    ticks[ticks >= 0 & ticks <= x_max]
+  }, expand = ggplot2::expansion(mult = 0)) + ggplot2::scale_y_continuous(breaks = NULL, expand = ggplot2::expansion(add = 0.5)) +
+    ggplot2::labs(title = as.character(df$Groups[[1]]), x = paste0("-log10(", metric, ")"),
+      y = NULL) + apply_plot_theme(theme_use, theme_args) + ggplot2::theme(aspect.ratio = aspect.ratio,
+    legend.position = legend.position, legend.direction = legend.direction, panel.grid = ggplot2::element_blank(),
+    panel.border = ggplot2::element_blank(), axis.line.y = ggplot2::element_blank(), axis.ticks.y = ggplot2::element_blank(),
+    axis.text.y = ggplot2::element_blank(), axis.line.x = ggplot2::element_line(linewidth = 0.4),
+    plot.title = ggplot2::element_text(hjust = 0))
+}
+
+enrichment_round_band <- ggplot2::ggproto(
+  "EnrichmentRoundBand", ggplot2::GeomRect,
+  draw_panel = function(data, panel_params, coord) {
+    coords <- coord$transform(data, panel_params)
+    grobs <- lapply(seq_len(nrow(coords)), function(i) {
+      grid::roundrectGrob(
+        x = (coords$xmin[i] + coords$xmax[i]) / 2,
+        y = (coords$ymin[i] + coords$ymax[i]) / 2,
+        width = abs(coords$xmax[i] - coords$xmin[i]),
+        height = abs(coords$ymax[i] - coords$ymin[i]),
+        default.units = "native", r = grid::unit(2, "mm"),
+        gp = grid::gpar(fill = scales::alpha(coords$fill[i], coords$alpha[i]), col = NA)
+      )
+    })
+    do.call(grid::grobTree, grobs)
+  }
+)
+
 
 enrichment_plot_db_aliases <- function() {
   list(
