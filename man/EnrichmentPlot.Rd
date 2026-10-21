@@ -10,8 +10,8 @@ EnrichmentPlot(
   group.by = NULL,
   test.use = "wilcox",
   res = NULL,
-  plot_type = c("bar", "dot", "lollipop", "network", "enrichmap", "wordcloud",
-    "comparison", "rank"),
+  plot_type = c("bar", "annotated_bar", "dot", "lollipop", "network", "enrichmap",
+    "wordcloud", "comparison", "rank"),
   split_by = c("Database", "Groups"),
   color_by = "Database",
   group_use = NULL,
@@ -64,7 +64,12 @@ EnrichmentPlot(
   rank_pt_size = c(2, 5),
   rank_pt_alpha = 0.23,
   rank_label_size = 3,
-  rank_shared_y = FALSE
+  rank_shared_y = FALSE,
+  show_genes = TRUE,
+  show_count = TRUE,
+  gene_width = 70,
+  row_step = 0.82,
+  db_gap = 0.2
 )
 }
 \arguments{
@@ -87,14 +92,22 @@ If provided, 'object', 'test.use' and 'group.by' are ignored.}
 
 \item{plot_type}{The type of plot to generate. \code{"rank"} displays existing
 enrichment results as ranked solid points, with one panel per group.
-Options are \code{"bar"}, \code{"dot"}, \code{"lollipop"}, \code{"network"}, \code{"enrichmap"},
-\code{"wordcloud"}, \code{"comparison"}, and \code{"rank"}.}
+Options are \code{"bar"}, \code{"annotated_bar"}, \code{"dot"}, \code{"lollipop"}, \code{"network"}, \code{"enrichmap"},
+\code{"wordcloud"}, \code{"comparison"}, and \code{"rank"}.
+"annotated_bar" draws horizontal bars with database bands, term labels,
+hit-gene labels and optional Count dots.}
 
 \item{split_by}{The splitting variable(s) for the plot.
 Can be \code{"Database"}, \code{"Groups"}, or both.
-Default is \code{c("Database", "Groups")} for plots.}
+Default is \code{c("Database", "Groups")} for plots.
+For \code{"annotated_bar"}, the default is \code{"Groups"} (database bands within
+each group). Including \code{"Database"} creates separate database panels;
+groups are always kept in separate panels in this mode.}
 
-\item{color_by}{The variable used for coloring.}
+\item{color_by}{The variable used for coloring.
+Annotated bars use \code{"Database"}: each database receives one palette color.
+As in the bar view of \link{GSEAPlot}, significance controls opacity (0.4 to 1).
+Bars, Count dots and hit-gene labels share the same color and opacity per term.}
 
 \item{group_use}{The group(s) to be used for enrichment plot.}
 
@@ -210,8 +223,32 @@ plots (default \code{c(2, 5)}), mapped to \code{-log10(p.adjust)}.}
 
 \item{rank_shared_y}{Whether rank panels share a y-axis range. Default is
 \code{FALSE}; compare numeric ticks when panels have independent ranges.}
+
+\item{show_genes}{Logical; display hit genes below each annotated bar label.
+Genes are taken from \code{geneID} as stored by \link{RunEnrichment}; no ID conversion
+is performed. Missing gene strings are displayed as blank labels.}
+
+\item{show_count}{Logical; display Count-sized dots beside annotated bars.
+Missing counts are omitted. Use \code{legend.position = "none"} to hide the legend.}
+
+\item{gene_width}{Positive integer (at least 4); maximum characters in an
+annotated bar's comma-separated hit-gene label, including the ellipsis.
+These three arguments apply only to \code{"annotated_bar"}.}
+
+\item{row_step}{Positive numeric row spacing for annotated bars, at least
+0.8; defaults to 0.82 for a compact layout.}
+
+\item{db_gap}{Non-negative numeric extra spacing between database bands
+in annotated bars; defaults to 0.2.}
 }
 \value{
+A ggplot for one panel, a patchwork for combined panels, or a named
+list of plots when \code{combine = FALSE}. Annotated bars select up to \code{topTerm}
+terms per database and group, ordered by the selected p-value metric.
+Database bands follow \code{db} order and panels share the same x-axis range.
+Zero p-values are capped at \code{.Machine$double.xmin} before transformation;
+missing p-values are omitted with a warning in this mode.
+
 A plot, or a list of plots when \code{combine = FALSE}. For \code{"rank"},
 the combined result is a patchwork with an \code{enrichment_data} attribute
 containing displayed terms, ranks, scores and label-selection flags; the
@@ -228,6 +265,12 @@ and one color. Missing or nonfinite rank scores/adjusted P values are omitted
 with a warning. Zero adjusted P values are capped at \code{.Machine$double.xmin}
 only for the point-size transform. Groups without retained terms have empty
 panels; if no term passes the existing enrichment filter, an error is raised.
+
+Annotated bars place term labels inside bars and hit genes underneath, with
+rounded database bands. Colors map one-to-one to \code{db} in the requested order;
+named \code{palcolor} values must cover all selected databases. Descriptions are
+truncated to at most \code{character_width} characters, with shorter limits for
+shorter bars. Actual text fit also depends on export dimensions and font size.
 }
 \examples{
 # Plot an existing ORA result without running enrichment again:
@@ -237,8 +280,18 @@ rank_result <- list(enrichment = data.frame(
   p.adjust = c(0.001, 0.01, 0.02, 0.002, 0.01, 0.03),
   FoldEnrichment = c(8, 5, 3, 7, 4, 2)
 ))
-EnrichmentPlot(res = rank_result, db = "custom", plot_type = "rank",
-  rank_pt_size = c(2, 5), rank_nlabel = 2, ncol = 2)
+EnrichmentPlot(
+  res = rank_result, db = "custom", plot_type = "rank",
+  rank_pt_size = c(2, 5), rank_nlabel = 2, ncol = 2
+)
+
+# Constructed results illustrating the annotated layout (not biological data).
+annotated_res <- list(enrichment = data.frame(
+  ID = c("term1", "term2"), Description = c("Response process", "Cell component"),
+  Database = c("GO_BP", "GO_CC"), Groups = "Example",
+  p.adjust = c(0.001, 0.01), geneID = c("GeneA/GeneB", "GeneC/GeneD"), Count = 2
+))
+EnrichmentPlot(res = annotated_res, db = "GO", plot_type = "annotated_bar")
 
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
