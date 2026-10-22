@@ -39,6 +39,8 @@ test_that("Python logger imports and runners support both thisutils layouts", {
           collapse = .Platform$path.sep
         )
         expect_identical(observed, expected)
+        isolated <- run("unused", character(), c(PYTHONPATH = ""), TRUE, TRUE)
+        expect_identical(isolated, file.path(root, layout))
         expect_identical(Sys.getenv("PYTHONPATH", unset = NA_character_), previous)
       })
     }

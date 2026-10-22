@@ -122,6 +122,9 @@ test_that("MDIC3 Python backend selects the prepared Python runtime", {
 
 test_that("SCENICPlus only prepares Python when an official object is supplied", {
   modules <- NULL
+  object <- tempfile(fileext = ".pkl")
+  file.create(object)
+  on.exit(unlink(object), add = TRUE)
   testthat::local_mocked_bindings(
     .package = "scop",
     PrepareEnv = function(modules, ...) {
@@ -135,11 +138,75 @@ test_that("SCENICPlus only prepares Python when an official object is supplied",
       srt = NULL,
       envname = "scenicplus_env",
       conda = "auto",
-      scplus_object = "result.pkl"
+      scplus_object = object
     ),
     "prepared"
   )
   expect_identical(modules, "scenicplus")
+})
+
+test_that("SCENICPlus exports objects without embedding Python or allowing duplicate OpenMP", {
+  object <- withr::local_tempfile(fileext = ".pkl")
+  python <- withr::local_tempfile()
+  file.create(object, python)
+  withr::local_envvar(KMP_DUPLICATE_LIB_OK = "FALSE")
+  seen <- NULL
+  testthat::local_mocked_bindings(
+    .package = "scop",
+    PrepareEnv = function(...) Sys.setenv(KMP_DUPLICATE_LIB_OK = "TRUE"),
+    check_python = function(...) TRUE,
+    resolve_conda = function(...) "conda",
+    conda_python = function(...) python,
+    assert_python_runtime_switchable = function(...) stop("embedded runtime checked"),
+    configure_python_runtime = function(...) stop("embedded runtime configured"),
+    scop_python_import = function(...) stop("embedded Python imported"),
+    runner_script_path = function(...) "scenicplus_runner.py",
+    runner_system2 = function(command, args, env, stdout, stderr) {
+      seen <<- list(command = command, args = args, env = env)
+      0L
+    },
+    scenicplus_read_python_result = function(...) list(imported = TRUE),
+    scenicplus_store_result = function(srt, result, ...) result
+  )
+  result <- run_scenicplus_python(NULL, "test", "conda", scplus_object = object, verbose = FALSE)
+  expect_true(result$imported)
+  expect_identical(seen$command, python)
+  expect_true("--quiet" %in% seen$args)
+  expect_identical(unname(seen$env["KMP_DUPLICATE_LIB_OK"]), "FALSE")
+  expect_identical(Sys.getenv("KMP_DUPLICATE_LIB_OK"), "FALSE")
+})
+
+test_that("SCENICPlus h5mu imports prepare only the reading environment", {
+  object <- withr::local_tempfile(fileext = ".h5mu")
+  file.create(object)
+  seen <- NULL
+  testthat::local_mocked_bindings(
+    .package = "scop",
+    PrepareEnv = function(modules, envname, configure_runtime, ...) {
+      expect_false(configure_runtime)
+      seen <<- list(module = modules, envname = envname)
+      stop("prepared")
+    }
+  )
+  expect_error(run_scenicplus_python(NULL, NULL, "auto", scplus_object = object), "prepared")
+  expect_identical(seen, list(module = "scenicplus_io", envname = "scenicplus_io_env"))
+  expect_error(run_scenicplus_python(NULL, "custom", "auto", scplus_object = object), "prepared")
+  expect_identical(seen$envname, "custom")
+})
+
+test_that("SCENICPlus subprocess errors report Python diagnostics", {
+  testthat::local_mocked_bindings(
+    .package = "scop",
+    runner_script_path = function(...) "scenicplus_runner.py",
+    runner_system2 = function(command, args, env, stdout, stderr) {
+      writeLines("controlled SCENIC+ extraction failure", stderr)
+      1L
+    }
+  )
+  expect_error(
+    scenicplus_extract_python_tables("python", "object.pkl", "output", verbose = FALSE),
+    "extraction failure"
+  )
 })
 
 test_that("CellRank fate confidence is derived from absorption probabilities", {
@@ -213,12 +280,14 @@ test_that("PrepareEnv reuses its managed environment cache", {
   on.exit(unlink(python), add = TRUE)
   withr::local_options(list(scop_env_cache = list(python = python)))
   configured <- NULL
+  checked <- NULL
   testthat::local_mocked_bindings(
     .package = "scop",
     resolve_conda = function(conda) conda,
     is_cached_env_valid = function(spec) TRUE,
     assert_python_runtime_switchable = function(...) NULL,
     configure_python_runtime = function(python_path) configured <<- python_path,
+    ensure_scipy_runtime = function(python, ...) checked <<- python,
     remember_python_environment = function(...) NULL,
     ensure_external_wrapper_r_packages = function(...) NULL,
     log_message = function(...) NULL
@@ -226,6 +295,7 @@ test_that("PrepareEnv reuses its managed environment cache", {
   expect_null(PrepareEnv(envname = "test", conda = "test-conda",
     version = "3.10-1", modules = "phate", verbose = FALSE))
   expect_identical(configured, python)
+  expect_identical(checked, python)
 })
 
 test_that("PrepareEnv uses the default version for a missing environment", {

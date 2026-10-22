@@ -15,6 +15,7 @@ PrepareEnv(
   components = "python",
   cores = NULL,
   verbose = TRUE,
+  configure_runtime = TRUE,
   ...
 )
 }
@@ -46,7 +47,7 @@ If \code{NULL} or omitted in \code{\link[=PrepareEnv]{PrepareEnv()}}, the defaul
 The default excludes \code{"phate"}, \code{"magic"}, \code{"cell2location"}, \code{"cell2fate"}, \code{"commot"}, \code{"sccoda"}, and
 \code{"scomm"} because these workflows use long-running or incompatible dependency
 stacks. Cell2fate and COMMOT are prepared in standalone \code{"cell2fate_env"}
-and \code{"commot_env"} environments with Python 3.9. \code{"scenic"} is also excluded
+and \code{"commot_env"} environments with Python 3.9. SCENIC+ uses standalone \code{"scenicplus_env"} or the smaller \code{"scenicplus_io_env"} for \code{.h5mu} imports. \code{"scenic"} is also excluded
 from the default environment and is prepared
 in \code{"scenic_env"} by default because SCENIC requires an older Python/numpy
 stack. PHATE and MAGIC are prepared explicitly in \code{"scprep_env"} with
@@ -68,6 +69,8 @@ collects packages declared through \code{check_r()} and checks/installs them,
 including optional workflow dependencies not listed in \code{DESCRIPTION}.
 CHOIR is R-only, so \code{PrepareEnv(modules = "choir")} prepares its
 optional R backend without creating a Python environment.}
+
+\item{configure_runtime}{Whether to select the prepared interpreter for embedded Python and configure the R process. Set to \code{FALSE} for subprocess-only use.}
 
 \item{cores}{Number of workers for R-package installation. Use \code{NULL} (the
 default) to let pak select its worker count automatically.}

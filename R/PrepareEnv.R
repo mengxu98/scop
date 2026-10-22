@@ -27,7 +27,7 @@
 #' The default excludes `"phate"`, `"magic"`, `"cell2location"`, `"cell2fate"`, `"commot"`, `"sccoda"`, and
 #' `"scomm"` because these workflows use long-running or incompatible dependency
 #' stacks. Cell2fate and COMMOT are prepared in standalone `"cell2fate_env"`
-#' and `"commot_env"` environments with Python 3.9. `"scenic"` is also excluded
+#' and `"commot_env"` environments with Python 3.9. SCENIC+ uses standalone `"scenicplus_env"` or the smaller `"scenicplus_io_env"` for `.h5mu` imports. `"scenic"` is also excluded
 #' from the default environment and is prepared
 #' in `"scenic_env"` by default because SCENIC requires an older Python/numpy
 #' stack. PHATE and MAGIC are prepared explicitly in `"scprep_env"` with
@@ -49,6 +49,7 @@
 #' optional R backend without creating a Python environment.
 #' @param cores Number of workers for R-package installation. Use `NULL` (the
 #' default) to let pak select its worker count automatically.
+#' @param configure_runtime Whether to select the prepared interpreter for embedded Python and configure the R process. Set to `FALSE` for subprocess-only use.
 #' @param ... Additional arguments passed to package installation functions.
 #'
 #' @export
@@ -63,9 +64,16 @@ PrepareEnv <- function(
   components = "python",
   cores = NULL,
   verbose = TRUE,
+  configure_runtime = TRUE,
   ...
 ) {
   version_missing <- missing(version)
+  if (!isTRUE(configure_runtime)) {
+    old_path <- Sys.getenv("PATH", unset = NA_character_)
+    on.exit({
+      if (is.na(old_path)) Sys.unsetenv("PATH") else Sys.setenv(PATH = old_path)
+    }, add = TRUE)
+  }
   components_missing <- missing(components)
   components <- norm_env_components(components)
   modules <- normalize_env_modules(modules = modules)
@@ -121,6 +129,9 @@ PrepareEnv <- function(
       version <- "3.9-1"
     }
   }
+  if (any(c("scenicplus", "scenicplus_io") %in% modules) && length(modules) > 1L) {
+    stop("SCENIC+ must be prepared as a standalone environment module.", call. = FALSE)
+  }
   if ("commot" %in% modules) {
     if (length(setdiff(modules, "commot")) > 0) {
       log_message(
@@ -169,6 +180,13 @@ PrepareEnv <- function(
   if (!is.null(conda)) {
     conda <- resolve_conda(conda)
   }
+  if (identical(modules, "scenicplus_io") && !isTRUE(force) && !is.null(conda)) {
+    existing_python <- tryCatch(conda_python(envname = envname, conda = conda), error = function(...) NULL)
+    if (!is.null(existing_python) && file.exists(existing_python) &&
+      isTRUE(exist_python_pkgs("scenicplus", envname = envname, conda = conda, verbose = FALSE))) {
+      modules <- "scenicplus"
+    }
+  }
   if (isTRUE(version_missing) && !is.null(conda)) {
     existing_python <- tryCatch(
       conda_python(envname = envname, conda = conda),
@@ -200,13 +218,18 @@ PrepareEnv <- function(
         error = function(...) NULL
       )
     if (!is.null(python_cached) && nzchar(python_cached) && file.exists(python_cached)) {
-      assert_python_runtime_switchable(
-        python_cached,
-        restart_hint = python_runtime_restart_hint(envname = envname, modules = modules)
-      )
-      configure_python_runtime(python_cached)
+      if (any(c("scipy", "scenicplus") %in% names(requirements$packages))) {
+        ensure_scipy_runtime(python_cached, pip_options = pip_options)
+      }
+      if (isTRUE(configure_runtime)) {
+        assert_python_runtime_switchable(
+          python_cached,
+          restart_hint = python_runtime_restart_hint(envname = envname, modules = modules)
+        )
+        configure_python_runtime(python_cached)
+      }
     }
-    remember_python_environment(envname = envname, conda = conda)
+    if (isTRUE(configure_runtime)) remember_python_environment(envname = envname, conda = conda)
     if ("scomm" %in% modules) {
       ensure_scomm_runtime_support(
         envname = envname,
@@ -259,7 +282,7 @@ PrepareEnv <- function(
       conda = conda,
       envs_dir = envs_dir
     )
-    if (!is.null(env_path)) {
+    if (!is.null(env_path) && isTRUE(configure_runtime)) {
       assert_python_runtime_switchable(
         conda_env_python_path(env_path),
         restart_hint = python_runtime_restart_hint(envname = envname, modules = modules)
@@ -454,15 +477,20 @@ PrepareEnv <- function(
   if (!length(valid) || !all(valid)) {
     stop("Python environment requirements are not satisfied: ", paste(names(valid)[!valid], collapse = ", "), call. = FALSE)
   }
+  if (any(c("scipy", "scenicplus") %in% names(packages))) {
+    ensure_scipy_runtime(python, pip_options = pip_options)
+  }
   status <- get_namespace_fun("reticulate", "system2t")(python, c("-m", "pip", "check"))
   if (status != 0L) stop("Python dependency conflicts remain in environment: ", envname, call. = FALSE)
 
-  assert_python_runtime_switchable(
-    python,
-    restart_hint = python_runtime_restart_hint(envname = envname, modules = modules)
-  )
-  configure_python_runtime(python)
-  remember_python_environment(envname = envname, conda = conda)
+  if (isTRUE(configure_runtime)) {
+    assert_python_runtime_switchable(
+      python,
+      restart_hint = python_runtime_restart_hint(envname = envname, modules = modules)
+    )
+    configure_python_runtime(python)
+    remember_python_environment(envname = envname, conda = conda)
+  }
 
   log_message(
     "{cli::col_green('Python environment ready')}\n",
@@ -552,6 +580,7 @@ supported_env_modules <- function() {
     "scenic",
     "regdiffusion",
     "scenicplus",
+    "scenicplus_io",
     "seacells",
     "tage",
     "scmalignantfinder",
@@ -795,7 +824,15 @@ env_module_requirements <- function() {
     regdiffusion = env_python_spec(c("regdiffusion" = "regdiffusion")),
     scenicplus = env_python_spec(c(
       "scenicplus" = "scenicplus @ git+https://github.com/aertslab/scenicplus.git"
-    )),
+    ), environment = "scenicplus_env"),
+    scenicplus_io = env_python_spec(c(
+      "numpy" = "numpy==1.26.4",
+      "pandas" = "pandas==2.2.0",
+      "scipy" = "scipy==1.15.3",
+      "h5py" = "h5py==3.10.0",
+      "anndata" = "anndata==0.10.5.post1",
+      "mudata" = "mudata==0.2.3"
+    ), environment = "scenicplus_io_env"),
     seacells = env_python_spec(c("SEACells" = "SEACells")),
     tage = env_python_spec(c(
       "joblib" = "joblib",
@@ -1782,7 +1819,7 @@ env_info <- function(conda, envname, verbose = TRUE) {
 #' `"cellphonedb"`, `"cell2location"`, `"cell2fate"`, `"commot"`, `"magic"`, `"scrublet"`, `"doubletdetection"`,
 #' `"sccoda"`, `"doublet"`, `"palantir"`, `"scvelo"`, `"cellrank"`, `"wot"`,
 #' `"phate"`, `"pacmap"`, `"trimap"`, `"multimap"`,
-#' `"scomm"`, `"scenic"`, `"seacells"`, `"tage"`,
+#' `"scomm"`, `"scenic"`, `"scenicplus"`, `"scenicplus_io"`, `"seacells"`, `"tage"`,
 #' `"scmalignantfinder"`, `"secact"`, `"scpagwas"`, `"choir"`, and
 #' `"external_wrappers"`. If `NULL`, the default environment is returned. The default
 #' excludes `"cell2location"`, `"cell2fate"`, `"commot"`, `"sccoda"`, `"scomm"`, and
@@ -1817,6 +1854,9 @@ env_requirements <- function(
     include_optional = include_optional
   )
   env_module_environment(modules)
+  if (any(c("scenicplus", "scenicplus_io") %in% modules) && length(modules) > 1L) {
+    stop("SCENIC+ must be used as a standalone environment module.", call. = FALSE)
+  }
   if ("scenic" %in% modules) {
     scenic_allowed <- c("scenic", "regdiffusion")
     if (length(setdiff(modules, scenic_allowed)) > 0) {
@@ -1880,7 +1920,7 @@ env_requirements <- function(
     spatialdm_core_python_requirements()
   } else if ("scmalignantfinder" %in% modules) {
     scmalignantfinder_core_python_requirements()
-  } else if (any(c("scenic", "cell2fate") %in% modules)) {{ list(
+  } else if (any(c("scenic", "scenicplus", "scenicplus_io", "cell2fate") %in% modules)) {{ list(
     packages = c(
       "setuptools" = "setuptools<81"
     ),
@@ -3103,6 +3143,49 @@ run_uv_command <- function(uv, python, args) {
   system2t(uv, shQuote(args))
 }
 
+
+ensure_scipy_runtime <- function(python, pip_options = character()) {
+  if (!is_osx()) return(invisible(NULL))
+  workdir <- tempfile("scipy_runtime_")
+  dir.create(workdir)
+  on.exit(unlink(workdir, recursive = TRUE), add = TRUE)
+  run <- function(args) {
+    output <- file.path(workdir, "output.log")
+    status <- runner_system2(
+      command = python,
+      args = shQuote(args),
+      env = c(PYTHONNOUSERSITE = "1", PYTHONPATH = "", KMP_DUPLICATE_LIB_OK = "FALSE"),
+      stdout = output,
+      stderr = output
+    )
+    list(status = status, output = paste(readLines(output, warn = FALSE), collapse = "\n"))
+  }
+  probe <- c("-I", "-c", "import platform, scipy; print(platform.machine(), scipy.__version__, flush=True); import scipy.sparse.linalg")
+  result <- run(probe)
+  if (result$status == 0L) return(invisible(NULL))
+  affected <- grepl("arm64 1.15.3", result$output, fixed = TRUE) &&
+    grepl("__thread_bss", result$output, fixed = TRUE) &&
+    grepl("zero-fill section type", result$output, fixed = TRUE)
+  if (!affected) stop("SciPy runtime import failed:\n", result$output, call. = FALSE)
+  log_message("Replacing the incompatible macOS SciPy wheel with its macOS 12 build.")
+  options <- normalize_cli_args(pip_options)
+  source_options <- c("-i", "--index-url", "--extra-index-url", "-f", "--find-links",
+    "--trusted-host", "--cert", "--client-cert", "--proxy", "--timeout", "--retries", "--cache-dir")
+  keep <- sub("=.*$", "", options) %in% c(source_options, "--no-index", "--no-cache-dir") |
+    seq_along(options) %in% (which(options %in% source_options) + 1L) |
+    grepl("^-[if].+", options)
+  result <- run(c("-I", "-m", "pip", "download", "--no-deps", "--only-binary=:all:",
+    "--platform", "macosx_12_0_arm64", "--dest", workdir,
+    options[keep], "scipy==1.15.3"))
+  if (result$status != 0L) stop("SciPy wheel download failed:\n", result$output, call. = FALSE)
+  wheel <- list.files(workdir, pattern = "^scipy-1[.]15[.]3-.*-macosx_12_0_arm64[.]whl$", full.names = TRUE)
+  if (length(wheel) != 1L) stop("Compatible SciPy wheel was not downloaded.", call. = FALSE)
+  result <- run(c("-I", "-m", "pip", "install", "--no-deps", "--force-reinstall", wheel))
+  if (result$status != 0L) stop("SciPy wheel installation failed:\n", result$output, call. = FALSE)
+  result <- run(probe)
+  if (result$status != 0L) stop("SciPy runtime import failed after wheel replacement:\n", result$output, call. = FALSE)
+  invisible(NULL)
+}
 
 install_python_packages <- function(
   packages,
