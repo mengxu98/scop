@@ -36,6 +36,9 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - uses: ./.github/actions/ubuntu-apt-mirrors
+        if: runner.os == 'Linux'
+
       - uses: r-lib/actions/setup-pandoc@v2
 
       - uses: r-lib/actions/setup-r@v2
@@ -65,6 +68,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
+
+      - uses: ./.github/actions/ubuntu-apt-mirrors
 
       - uses: r-lib/actions/setup-r@v2
         with:

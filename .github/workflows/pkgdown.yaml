@@ -62,6 +62,8 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - uses: ./.github/actions/ubuntu-apt-mirrors
+
       - uses: actions/download-artifact@v4
         with:
           name: pkgdown-plan

@@ -124,10 +124,10 @@ runner_system2 <- function(command, args, env, stdout, stderr) {
   if (length(log_message_files)) {
     python_path <- unique(c(
       dirname(log_message_files[[1L]]),
-      strsplit(Sys.getenv("PYTHONPATH", unset = ""), .Platform$path.sep, fixed = TRUE)[[1]]
+      strsplit(if ("PYTHONPATH" %in% names(env)) env[["PYTHONPATH"]] else Sys.getenv("PYTHONPATH", unset = ""), .Platform$path.sep, fixed = TRUE)[[1]]
     ))
     python_path <- python_path[nzchar(python_path)]
-    env <- c(env, PYTHONPATH = paste(python_path, collapse = .Platform$path.sep))
+    env <- c(env[names(env) != "PYTHONPATH"], PYTHONPATH = paste(python_path, collapse = .Platform$path.sep))
   }
   if (!length(env)) {
     return(system2(
