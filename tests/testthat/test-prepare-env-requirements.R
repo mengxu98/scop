@@ -42,7 +42,7 @@ test_that("macOS repairs the affected SciPy wheel and verifies the replacement",
     .package = "scop",
     is_osx = function() TRUE,
     runner_system2 = function(command, args, env, stdout, stderr) {
-      args <- gsub("^'|'$", "", args)
+      args <- gsub("^[\"']|[\"']$", "", args)
       calls[[length(calls) + 1L]] <<- list(args = args, env = env)
       if (length(calls) == 1L) {
         writeLines(c("arm64 1.15.3", "section '__DATA/__thread_bss' has a zero-fill section type, but offset field is not zero"), stdout)
@@ -50,7 +50,7 @@ test_that("macOS repairs the affected SciPy wheel and verifies the replacement",
       }
       if ("download" %in% args) {
         path <- args[match("--dest", args) + 1L]
-        file.create(file.path(gsub("^'|'$", "", path), "scipy-1.15.3-cp311-cp311-macosx_12_0_arm64.whl"))
+        file.create(file.path(path, "scipy-1.15.3-cp311-cp311-macosx_12_0_arm64.whl"))
       }
       writeLines("arm64 1.15.3", stdout)
       0L

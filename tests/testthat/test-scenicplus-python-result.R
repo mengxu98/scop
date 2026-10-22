@@ -23,7 +23,10 @@ test_that("SCENIC+ discovers objects while respecting explicit inputs", {
   expect_identical(resolved$python_result_dir, "export")
   expect_null(scenicplus_resolve_python_inputs(python_result_dir = root, auto_prepare = FALSE)$scplus_object)
   expect_identical(scenicplus_resolve_python_inputs(python_result_dir = object)$scplus_object, object)
-  file.create(file.path(root, "scplus_other.pkl"))
+  unsupported <- file.path(root, "result.rds")
+  file.create(unsupported)
+  expect_error(scenicplus_resolve_object(unsupported), "supports")
+  file.create(file.path(root, "run2.h5mu"))
   expect_error(scenicplus_resolve_object(root), "multiple")
 })
 
@@ -61,8 +64,8 @@ test_that("SCENIC+ imports a single complete directory without mixing tables", {
 
 test_that("SCENIC+ AUC preserves numeric labels and rejects unrelated labels", {
   path <- withr::local_tempfile(fileext = ".tsv")
-  for (labels in list(c("2", "1"), c("002", "001"))) {
-    writeLines(c("\tTF1", paste0(labels, "\t", c("0.2", "0.1"))), path)
+  for (header in c("", "Cell", "CELL_ID", "Barcode", "Index", "UNNAMED: 0")) for (labels in list(c("2", "1"), c("002", "001"))) {
+    writeLines(c(paste0(header, "\tTF1"), paste0(labels, "\t", c("0.2", "0.1"))), path)
     auc <- scenicplus_normalize_auc_table(scenicplus_read_delim(path), rev(labels))
     expect_identical(rownames(auc), rev(labels))
     expect_identical(colnames(auc), "TF1")

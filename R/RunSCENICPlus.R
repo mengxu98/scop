@@ -1042,7 +1042,7 @@ scenicplus_read_delim <- function(path) {
   sep <- if (grepl("\\.csv$", uncompressed, ignore.case = TRUE)) "," else "\t"
   header <- utils::read.delim(path, sep = sep, nrows = 0L, check.names = FALSE)
   col_classes <- rep(NA_character_, ncol(header))
-  if (length(col_classes) && colnames(header)[[1L]] %in% c("", "cell", "cell_id", "barcode", "index", "Unnamed: 0")) {
+  if (length(col_classes) && tolower(colnames(header)[[1L]]) %in% c("", "cell", "cell_id", "barcode", "index", "unnamed: 0")) {
     col_classes[[1L]] <- "character"
   }
   utils::read.delim(
@@ -1181,20 +1181,12 @@ scenicplus_find_object <- function(result_dir, strict = TRUE) {
 
 scenicplus_resolve_object <- function(path) {
   if (dir.exists(path)) {
-    files <- list.files(
+    candidates <- list.files(
       path,
       pattern = "\\.(pkl|pickle|h5mu)$",
       full.names = TRUE,
       ignore.case = TRUE
     )
-    named <- files[
-      grepl(
-        "(scplus|scenicplus|mdata|eregulon)",
-        basename(files),
-        ignore.case = TRUE
-      )
-    ]
-    candidates <- if (length(named) > 0L) named else files
     if (length(candidates) == 1L) {
       return(candidates[[1L]])
     }
@@ -1211,7 +1203,7 @@ scenicplus_resolve_object <- function(path) {
   if (!file.exists(path)) {
     cli::cli_abort("Cannot find {.arg scplus_object}: {.file {path}}")
   }
-  if (grepl("\\.h5ad$", path, ignore.case = TRUE)) {
+  if (!grepl("\\.(pkl|pickle|h5mu)$", path, ignore.case = TRUE)) {
     cli::cli_abort(c(
       "{.arg scplus_object} supports {.file .pkl}, {.file .pickle} and {.file .h5mu} SCENIC+ objects, not {.file {basename(path)}}.",
       "i" = "Export the eRegulon metadata and AUC matrices to {.arg python_result_dir} first."
