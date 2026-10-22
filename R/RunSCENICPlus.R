@@ -735,15 +735,12 @@ scenicplus_extract_python_tables <- function(python_path, scplus_object, output_
   on.exit(unlink(workdir, recursive = TRUE, force = TRUE), add = TRUE)
   stdout_path <- file.path(workdir, "stdout.log")
   stderr_path <- file.path(workdir, "stderr.log")
-  runner <- runner_script_path("scenicplus_runner.py", "SCENIC+")
+  python_dir <- dirname(runner_script_path("functions.py", "SCENIC+"))
+  code <- paste("import sys; sys.path.insert(0, sys.argv[1]); from functions import ExtractSCENICPlusTables;",
+    "ExtractSCENICPlusTables(sys.argv[2], sys.argv[3], verbose=sys.argv[4] == 'TRUE')")
   status <- runner_system2(
     command = python_path,
-    args = c(
-      shQuote(runner),
-      shQuote(scplus_object),
-      shQuote(output_dir),
-      if (!isTRUE(verbose)) "--quiet"
-    ),
+    args = shQuote(c("-c", code, python_dir, scplus_object, output_dir, as.character(isTRUE(verbose)))),
     env = c(
       PYTHONNOUSERSITE = "1",
       PYTHONPATH = "",

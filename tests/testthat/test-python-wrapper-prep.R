@@ -145,68 +145,22 @@ test_that("SCENICPlus only prepares Python when an official object is supplied",
   expect_identical(modules, "scenicplus")
 })
 
-test_that("SCENICPlus exports objects without embedding Python or allowing duplicate OpenMP", {
-  object <- withr::local_tempfile(fileext = ".pkl")
-  python <- withr::local_tempfile()
-  file.create(object, python)
-  withr::local_envvar(KMP_DUPLICATE_LIB_OK = "FALSE")
+test_that("SCENICPlus extraction uses an isolated subprocess", {
   seen <- NULL
   testthat::local_mocked_bindings(
     .package = "scop",
-    PrepareEnv = function(...) Sys.setenv(KMP_DUPLICATE_LIB_OK = "TRUE"),
-    check_python = function(...) TRUE,
-    resolve_conda = function(...) "conda",
-    conda_python = function(...) python,
-    assert_python_runtime_switchable = function(...) stop("embedded runtime checked"),
-    configure_python_runtime = function(...) stop("embedded runtime configured"),
-    scop_python_import = function(...) stop("embedded Python imported"),
-    runner_script_path = function(...) "scenicplus_runner.py",
+    runner_script_path = function(script, ...) file.path("python", script),
+    scop_python_import = function(...) stop("embedded Python used"),
     runner_system2 = function(command, args, env, stdout, stderr) {
       seen <<- list(command = command, args = args, env = env)
-      0L
-    },
-    scenicplus_read_python_result = function(...) list(imported = TRUE),
-    scenicplus_store_result = function(srt, result, ...) result
-  )
-  result <- run_scenicplus_python(NULL, "test", "conda", scplus_object = object, verbose = FALSE)
-  expect_true(result$imported)
-  expect_identical(seen$command, python)
-  expect_true("--quiet" %in% seen$args)
-  expect_identical(unname(seen$env["KMP_DUPLICATE_LIB_OK"]), "FALSE")
-  expect_identical(Sys.getenv("KMP_DUPLICATE_LIB_OK"), "FALSE")
-})
-
-test_that("SCENICPlus h5mu imports prepare only the reading environment", {
-  object <- withr::local_tempfile(fileext = ".h5mu")
-  file.create(object)
-  seen <- NULL
-  testthat::local_mocked_bindings(
-    .package = "scop",
-    PrepareEnv = function(modules, envname, configure_runtime, ...) {
-      expect_false(configure_runtime)
-      seen <<- list(module = modules, envname = envname)
-      stop("prepared")
-    }
-  )
-  expect_error(run_scenicplus_python(NULL, NULL, "auto", scplus_object = object), "prepared")
-  expect_identical(seen, list(module = "scenicplus_io", envname = "scenicplus_io_env"))
-  expect_error(run_scenicplus_python(NULL, "custom", "auto", scplus_object = object), "prepared")
-  expect_identical(seen$envname, "custom")
-})
-
-test_that("SCENICPlus subprocess errors report Python diagnostics", {
-  testthat::local_mocked_bindings(
-    .package = "scop",
-    runner_script_path = function(...) "scenicplus_runner.py",
-    runner_system2 = function(command, args, env, stdout, stderr) {
-      writeLines("controlled SCENIC+ extraction failure", stderr)
+      writeLines("SCENICPLUS_TEST_FAILURE", stderr)
       1L
     }
   )
-  expect_error(
-    scenicplus_extract_python_tables("python", "object.pkl", "output", verbose = FALSE),
-    "extraction failure"
-  )
+  expect_error(scenicplus_extract_python_tables("python", "input.h5mu", "output"), "SCENICPLUS_TEST_FAILURE")
+  expect_identical(seen$command, "python")
+  expect_match(seen$args[[1L]], "-c", fixed = TRUE)
+  expect_identical(unname(seen$env[c("KMP_DUPLICATE_LIB_OK", "PYTHONPATH")]), c("FALSE", ""))
 })
 
 test_that("CellRank fate confidence is derived from absorption probabilities", {
