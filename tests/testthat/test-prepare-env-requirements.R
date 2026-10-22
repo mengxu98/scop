@@ -86,6 +86,13 @@ test_that("reading an existing full SCENIC+ environment preserves its upstream p
   expect_identical(seen, "scenicplus")
   expect_error(PrepareEnv(envname = "existing", conda = "conda", modules = "scenicplus_io", version = "3.11-1", force = TRUE), "requirements captured")
   expect_identical(seen, "scenicplus_io")
+  testthat::local_mocked_bindings(.package = "scop",
+    env_requirements = function(...) list(python = "3.11.8", packages = c(scenicplus = "pinned", rust = "rust")),
+    build_env_cache_spec = function(requirements, ...) { seen <<- requirements; stop("runtime captured") }
+  )
+  expect_error(PrepareEnv(envname = "existing", conda = "conda", modules = "scenicplus_io", version = "3.11-1"), "runtime captured")
+  expect_identical(seen$python, "3.11-1")
+  expect_identical(seen$packages, c(scenicplus = "scenicplus"))
 })
 
 test_that("subprocess preparation leaves an existing embedded runtime alone", {
@@ -110,9 +117,13 @@ test_that("subprocess preparation leaves an existing embedded runtime alone", {
 
 test_that("SCENIC+ keeps its upstream dependency stack separate", {
   requirements <- env_requirements(modules = "scenicplus")
+  expect_identical(requirements$python, "3.11.8")
   expect_identical(env_module_environment("scenicplus"), "scenicplus_env")
   expect_false(any(c("scipy", "pandas", "numba") %in% names(requirements$packages)))
   expect_true("scenicplus" %in% names(requirements$packages))
+  git <- requirements$packages[grepl(" @ git\\+", requirements$packages)]
+  expect_length(git, 5L)
+  expect_true(all(grepl("@[0-9a-f]{40}$", git)))
   expect_error(env_requirements(modules = c("scenicplus", "scanpy")), "standalone")
   io <- env_requirements(modules = "scenicplus_io")
   expect_identical(env_module_environment("scenicplus_io"), "scenicplus_io_env")
@@ -120,4 +131,75 @@ test_that("SCENIC+ keeps its upstream dependency stack separate", {
   expect_true("mudata" %in% names(io$packages))
   expect_false(any(c("scenicplus", "tbb", "numba", "leidenalg") %in% names(io$packages)))
   expect_false("scenicplus_io" %in% default_env_modules())
+})
+
+test_that("native Windows rejects full SCENIC+ before creating an environment", {
+  testthat::local_mocked_bindings(.package = "scop", is_windows = function() TRUE,
+    resolve_conda = function(...) stop("environment manager touched"))
+  expect_error(PrepareEnv(modules = "scenicplus"), "full official SCENIC\\+ environment requires Linux")
+})
+
+test_that("Python preparation disables duplicate OpenMP loading by default", {
+  withr::local_envvar(c(KMP_DUPLICATE_LIB_OK = NA_character_))
+  configure_python_thread_env()
+  expect_identical(Sys.getenv("KMP_DUPLICATE_LIB_OK"), "FALSE")
+  Sys.setenv(KMP_DUPLICATE_LIB_OK = "FALSE")
+  configure_python_thread_env()
+  expect_identical(Sys.getenv("KMP_DUPLICATE_LIB_OK"), "FALSE")
+  Sys.setenv(KMP_DUPLICATE_LIB_OK = "TRUE")
+  configure_python_thread_env()
+  expect_identical(Sys.getenv("KMP_DUPLICATE_LIB_OK"), "TRUE")
+})
+
+test_that("full SCENIC+ installation activates conda and preserves dependency pins", {
+  calls <- list()
+  withr::local_envvar(c(UV_CACHE_DIR = NA_character_))
+  previous <- Sys.getenv(c("UV_BUILD_CONSTRAINT", "PIP_BUILD_CONSTRAINT", "PIP_CONSTRAINT", "UV_CACHE_DIR", "UV_HTTP_TIMEOUT", "UV_CONCURRENT_DOWNLOADS", "CFLAGS", "CPATH", "LIBRARY_PATH", "PKG_CONFIG_PATH", "CC", "CXX"), unset = NA_character_)
+  testthat::local_mocked_bindings(
+    .package = "scop",
+    find_uv = function(pip_options, ...) { expect_false("--overrides" %in% pip_options); "uv" },
+    log_message = function(...) NULL,
+    get_namespace_fun = function(...) function(command, args) {
+      calls[[length(calls) + 1L]] <<- list(command = command, args = gsub("^[\"']|[\"']$", "", args),
+        constraints = readLines(Sys.getenv("UV_BUILD_CONSTRAINT")), include = Sys.getenv("CPATH"), cache = Sys.getenv("UV_CACHE_DIR"))
+      if (length(calls) == 1L) 0L else 1L
+    }
+  )
+  expect_true(install_python_packages("scenicplus @ git+https://github.com/aertslab/scenicplus.git", "/env/bin/python", "/env", "conda"))
+  expect_error(install_python_packages("scenicplus @ git+https://github.com/aertslab/scenicplus.git", "/env/bin/python", "/env", "micromamba"), "Pinned SCENIC\\+ installation via uv failed")
+  expect_length(calls, 2L)
+  expect_identical(vapply(calls, `[[`, "", "command"), c("conda", "micromamba"))
+  expect_true(all(vapply(calls, function(x) all(c("run", "--prefix", "/env") %in% x$args), logical(1))))
+  expect_true("--no-capture-output" %in% calls[[1L]]$args)
+  expect_false("--no-capture-output" %in% calls[[2L]]$args)
+  expect_true("--overrides" %in% calls[[1L]]$args)
+  expect_true("setuptools<81" %in% calls[[1L]]$constraints)
+  expect_true(startsWith(calls[[1L]]$include, "/env/include"))
+  expect_identical(calls[[1L]]$cache, "/env/.scop-uv-cache")
+  expect_identical(Sys.getenv(names(previous), unset = NA_character_), previous)
+})
+
+test_that("full SCENIC+ preparation verifies Git pins in an existing environment", {
+  root <- withr::local_tempdir()
+  testthat::local_mocked_bindings(.package = "scop",
+    is_windows = function() FALSE,
+    resolve_conda = function(...) "conda",
+    conda_python = function(...) file.path(root, "bin", "python"),
+    python_minor_version = function(...) "3.11",
+    python_version_matches = function(...) TRUE,
+    build_env_cache_spec = function(...) list(),
+    is_cached_env_valid = function(...) FALSE,
+    get_conda_envs_dir = function(...) root,
+    conda_env_path = function(...) root,
+    env_exist = function(...) TRUE,
+    find_uv = function(...) "uv",
+    log_message = function(...) NULL,
+    installed_python_pkgs_pip = function(...) data.frame(package = character()),
+    check_python = function(pip, ...) { if (pip) stop("Git pins skipped") else TRUE },
+    install_python_packages = function(packages, ...) {
+      expect_length(packages[grepl(" @ git\\+", packages)], 5L)
+      stop("Git pins verified")
+    }
+  )
+  expect_error(PrepareEnv(envname = root, conda = "conda", modules = "scenicplus", configure_runtime = FALSE), "Git pins verified")
 })

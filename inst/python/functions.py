@@ -6186,7 +6186,7 @@ def _extract_scenicplus_tables(scplus_object, output_dir, verbose=True):
     elif hasattr(auc, "to_pandas"):
         auc = auc.to_pandas()
     auc = pd.DataFrame(auc)
-    auc.to_csv(output_dir / "auc.tsv", sep="\t")
+    auc.to_csv(output_dir / "auc.tsv", sep="\t", float_format="%.17g")
 
     auc_columns = {str(value) for value in auc.columns}
     regulon_col = None

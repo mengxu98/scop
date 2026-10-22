@@ -132,6 +132,9 @@ PrepareEnv <- function(
   if (any(c("scenicplus", "scenicplus_io") %in% modules) && length(modules) > 1L) {
     stop("SCENIC+ must be prepared as a standalone environment module.", call. = FALSE)
   }
+  if ("scenicplus" %in% modules && is_windows()) {
+    stop("The full official SCENIC+ environment requires Linux. On native Windows, use modules = 'scenicplus_io' to import official results, or run the C++ backend.", call. = FALSE)
+  }
   if ("commot" %in% modules) {
     if (length(setdiff(modules, "commot")) > 0) {
       log_message(
@@ -180,11 +183,13 @@ PrepareEnv <- function(
   if (!is.null(conda)) {
     conda <- resolve_conda(conda)
   }
+  reuse_scenicplus <- FALSE
   if (identical(modules, "scenicplus_io") && !isTRUE(force) && !is.null(conda)) {
     existing_python <- tryCatch(conda_python(envname = envname, conda = conda), error = function(...) NULL)
     if (!is.null(existing_python) && file.exists(existing_python) &&
       isTRUE(exist_python_pkgs("scenicplus", envname = envname, conda = conda, verbose = FALSE))) {
       modules <- "scenicplus"
+      reuse_scenicplus <- TRUE
     }
   }
   if (isTRUE(version_missing) && !is.null(conda)) {
@@ -201,6 +206,11 @@ PrepareEnv <- function(
     version = version,
     modules = modules
   )
+  if (reuse_scenicplus) {
+    requirements$python <- version
+    requirements$packages <- c("scenicplus" = "scenicplus")
+    requirements$install_methods <- c("scenicplus" = "pip")
+  }
   python_version <- requirements[["python"]]
 
   cache_spec <- build_env_cache_spec(
@@ -439,16 +449,23 @@ PrepareEnv <- function(
         "Checking {.val {length(pip_packages)}} {.pkg pip} requirements"
       )
     }
-    check_python(
-      packages = pip_packages,
-      envname = envname,
-      conda = conda,
-      force = if ("cell2fate" %in% modules) FALSE else force,
-      pip = TRUE,
-      pip_options = pip_options,
-      verbose = FALSE,
-      ...
-    )
+    if ("scenicplus" %in% modules && !reuse_scenicplus) {
+      install_python_packages(
+        packages = unname(pip_packages), python = python,
+        envname = envname, conda = conda, pip_options = pip_options
+      )
+    } else {
+      check_python(
+        packages = pip_packages,
+        envname = envname,
+        conda = conda,
+        force = if ("cell2fate" %in% modules) FALSE else force,
+        pip = TRUE,
+        pip_options = pip_options,
+        verbose = FALSE,
+        ...
+      )
+    }
   }
 
   if ("scvi" %in% modules) {
@@ -546,6 +563,9 @@ python_minor_version <- function(python_path) {
 python_version_matches <- function(python_path, requested_version) {
   actual <- python_minor_version(python_path)
   requested <- sub("-1$", "", as.character(requested_version))
+  if (grepl("^[0-9]+[.][0-9]+[.][0-9]+$", requested) && !is.null(actual)) {
+    actual <- sub("^Python ([0-9.]+).*$", "\\1", system2(python_path, "--version", stdout = TRUE, stderr = TRUE)[[1L]])
+  }
   !is.null(actual) && identical(actual, requested)
 }
 
@@ -684,6 +704,7 @@ env_module_requirements <- function() {
     "scMalignantFinder" = "git+https://github.com/Jonyyqn/scMalignantFinder.git"
   )
   scmalignantfinder_methods <- c("scMalignantFinder" = "pip")
+  scenicplus_build <- c("c-compiler", "cxx-compiler", "rust", "make", "pkg-config", "zlib", "bzip2", "xz", "libcurl", "openssl", "git")
   if (is_osx()) {
     scmalignantfinder_packages <- c(scmalignantfinder_packages, "libcxx" = "libcxx")
     scmalignantfinder_methods <- c(scmalignantfinder_methods, "libcxx" = "conda")
@@ -823,8 +844,15 @@ env_module_requirements <- function() {
     ),
     regdiffusion = env_python_spec(c("regdiffusion" = "regdiffusion")),
     scenicplus = env_python_spec(c(
-      "scenicplus" = "scenicplus @ git+https://github.com/aertslab/scenicplus.git"
-    ), environment = "scenicplus_env"),
+      "scenicplus" = "scenicplus @ git+https://github.com/aertslab/scenicplus.git@840dab85de3044846234c157e327b6ea0290abfb",
+      "pycistopic" = "pycistopic @ git+https://github.com/aertslab/pycisTopic@787ce422a37f5975b0ebb9e7b19eeaed44847501",
+      "pycistarget" = "pycistarget @ git+https://github.com/aertslab/pycistarget@5aa517604e4842539a7531c16905825dc7cb80fb",
+      "loomxpy" = "loomxpy @ git+https://github.com/aertslab/LoomXpy@61995ff10940968eac2cee8fe48300ab477a15d0",
+      "pyscenic" = "pyscenic @ git+https://github.com/aertslab/pySCENIC@06bafba412792f6efa5a552a23bb221cc3bdea1b",
+      stats::setNames(scenicplus_build, scenicplus_build)
+    ), methods = c(stats::setNames(rep("pip", 5L), c("scenicplus", "pycistopic", "pycistarget", "loomxpy", "pyscenic")),
+      stats::setNames(rep("conda", length(scenicplus_build)), scenicplus_build)),
+    environment = "scenicplus_env"),
     scenicplus_io = env_python_spec(c(
       "numpy" = "numpy==1.26.4",
       "pandas" = "pandas==2.2.0",
@@ -1394,7 +1422,7 @@ configure_python_thread_env <- function() {
   Sys.setenv(VECLIB_MAXIMUM_THREADS = "1")
   Sys.setenv(NUMEXPR_NUM_THREADS = "1")
   Sys.setenv(KMP_WARNINGS = "0")
-  Sys.setenv(KMP_DUPLICATE_LIB_OK = "TRUE")
+  if (!nzchar(Sys.getenv("KMP_DUPLICATE_LIB_OK"))) Sys.setenv(KMP_DUPLICATE_LIB_OK = "FALSE")
   Sys.setenv(NUMBA_NUM_THREADS = "1")
 }
 
@@ -1997,7 +2025,7 @@ env_requirements <- function(
   }
 
   requirements <- list(
-    python = version,
+    python = if ("scenicplus" %in% modules) "3.11.8" else version,
     packages = package_versions,
     install_methods = package_install_methods,
     package_aliases = package_aliases
@@ -3196,6 +3224,37 @@ install_python_packages <- function(
   pip_ignore_installed = FALSE
 ) {
   pip_options <- normalize_cli_args(pip_options)
+  scenicplus <- any(grepl("^scenicplus([ @=<>]|$)", packages, ignore.case = TRUE))
+  if (scenicplus) {
+    constraints <- tempfile("scenicplus-build-", fileext = ".txt")
+    overrides <- tempfile("scenicplus-git-", fileext = ".txt")
+    on.exit(unlink(c(constraints, overrides)), add = TRUE)
+    writeLines(c("setuptools<81", "Cython==0.29.37", "numpy==1.26.4", "rapidfuzz==3.9.7"), constraints)
+    writeLines(packages[grepl(" @ git\\+", packages)], overrides)
+    prefix <- dirname(dirname(python))
+    prepend <- function(path, variable) paste(Filter(nzchar, c(path, Sys.getenv(variable))), collapse = .Platform$path.sep)
+    build_env <- c(UV_BUILD_CONSTRAINT = constraints, PIP_BUILD_CONSTRAINT = constraints, PIP_CONSTRAINT = constraints,
+      UV_CACHE_DIR = Sys.getenv("UV_CACHE_DIR", unset = file.path(prefix, ".scop-uv-cache")),
+      UV_HTTP_TIMEOUT = Sys.getenv("UV_HTTP_TIMEOUT", unset = "300"),
+      UV_CONCURRENT_DOWNLOADS = Sys.getenv("UV_CONCURRENT_DOWNLOADS", unset = "4"),
+      CPATH = prepend(file.path(prefix, "include"), "CPATH"),
+      LIBRARY_PATH = prepend(file.path(prefix, "lib"), "LIBRARY_PATH"),
+      PKG_CONFIG_PATH = prepend(file.path(prefix, "lib", "pkgconfig"), "PKG_CONFIG_PATH"),
+      CFLAGS = paste(Sys.getenv("CFLAGS"), "-Wno-error=incompatible-pointer-types"))
+    for (compiler in c("CC", "CXX")) {
+      candidates <- Sys.glob(file.path(prefix, "bin", if (compiler == "CC") c("*-conda-*-cc", "*-apple-*-clang") else c("*-conda-*-c++", "*-apple-*-clang++")))
+      if (!nzchar(Sys.getenv(compiler)) && length(candidates)) build_env[[compiler]] <- candidates[[1L]]
+    }
+    withr::local_envvar(build_env)
+  }
+  run <- function(command, args) {
+    if (scenicplus) {
+      system2t <- get_namespace_fun("reticulate", "system2t")
+      system2t(conda, shQuote(c("run", if (conda_manager_type(conda) == "conda") "--no-capture-output", "--prefix", dirname(dirname(python)), command, args)))
+    } else if (identical(command, uv)) {
+      run_uv_command(uv, python, args)
+    }
+  }
   uv <- find_uv(
     python = python,
     envname = envname,
@@ -3203,6 +3262,8 @@ install_python_packages <- function(
     auto_install = TRUE,
     pip_options = pip_options
   )
+  if (scenicplus && is.null(uv)) stop("Preparing pinned SCENIC+ dependencies requires uv. Install uv and retry PrepareEnv().", call. = FALSE)
+  if (scenicplus) pip_options <- c(pip_options, "--overrides", overrides)
 
   if (!is.null(uv)) {
     log_message("Installing packages via {.pkg uv}...")
@@ -3219,7 +3280,11 @@ install_python_packages <- function(
     }
     args <- c(args, packages)
 
-    status <- run_uv_command(uv, python, args)
+    status <- if (scenicplus && identical(uv, "python -m uv")) {
+      run(python, c("-m", "uv", args))
+    } else {
+      run(uv, args)
+    }
     if (status == 0L) {
       log_message(
         "{.pkg uv} installation completed",
@@ -3227,6 +3292,7 @@ install_python_packages <- function(
       )
       return(invisible(TRUE))
     }
+    if (scenicplus) stop("Pinned SCENIC+ installation via uv failed [exit code ", status, "].", call. = FALSE)
 
     log_message(
       "{.pkg uv} installation failed [error code {.val {status}}], using {.pkg pip}",
