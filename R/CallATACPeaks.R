@@ -12,7 +12,7 @@
 #'   a cell type. Calls are capture-by-group, never pooled across captures.
 #' @param cells Explicit selected assay cell IDs, or NULL for all assay cells.
 #' @param assay Source ChromatinAssay; NULL selects the active assay.
-#' @param macs2.path Path to an installed MACS2 2.x executable in the current
+#' @param macs2.path Path or PATH command name of an installed MACS2 2.x executable in the current
 #'   runtime. On Windows use a prepared Linux container with explicit mounted
 #'   paths. This function does not manage containers or translate host paths.
 #' @param outdir New output directory. Existing paths are rejected. Split BEDs,
@@ -26,6 +26,9 @@
 #' Missing input, nonzero caller exit, missing output and malformed output are
 #' errors. A successful zero-byte narrowPeak file is a valid empty peak set;
 #' this is distinct from a failed call. No matrix or existing result is changed.
+#' `receipt.rds` and `groups.rds` are written before splitting/calling, and
+#' `commands.rds` is updated after each process exits. These retain selected
+#' cells, capture/group membership and resources for diagnosing failed calls.
 #' Combine the returned sets with [CombineATACPeaks()] and recount the resulting
 #' ranges with [RecountATAC()] before comparing previously different universes.
 #' Signac's splitting API is reused. The process is invoked directly so its
@@ -51,7 +54,7 @@
 #' common <- CombineATACPeaks(called$peaks, genome = "hg38")
 #' }
 CallATACPeaks <- function(object, sample.by, group.by = NULL, cells = NULL,
-                          assay = NULL, macs2.path, outdir,
+                          assay = NULL, macs2.path = "macs2", outdir,
                           effective.genome.size, qvalue = 0.05,
                           extsize = 200L, shift = -extsize / 2, verbose = TRUE) {
   report <- CheckATACData(object, assay = assay)
@@ -87,8 +90,12 @@ CallATACPeaks <- function(object, sample.by, group.by = NULL, cells = NULL,
   names(groups) <- c("sample", if (!is.null(group.by)) "group")
   groups <- data.frame(call_id = ids, groups, check.names = FALSE)
   if (!is.character(macs2.path) || length(macs2.path) != 1L ||
-    is.na(macs2.path) || !file.exists(macs2.path)) {
+    is.na(macs2.path) || !nzchar(macs2.path)) {
     log_message("macs2.path must identify an installed MACS2 executable.", message_type = "error")
+  }
+  if (!file.exists(macs2.path)) macs2.path <- unname(Sys.which(macs2.path))
+  if (!nzchar(macs2.path) || !file.exists(macs2.path) || dir.exists(macs2.path)) {
+    log_message("MACS2 was not found. Supply macs2.path as an executable path or a command on PATH; install it separately before peak calling.", message_type = "error")
   }
   macs2.path <- normalizePath(macs2.path, mustWork = TRUE)
   version <- system2(macs2.path, "--version", stdout = TRUE, stderr = TRUE)
@@ -109,6 +116,14 @@ CallATACPeaks <- function(object, sample.by, group.by = NULL, cells = NULL,
   }
   if (!dir.create(outdir)) log_message("Cannot create outdir.", message_type = "error")
   outdir <- normalizePath(outdir, mustWork = TRUE)
+  receipt <- list(
+    cells = cells, membership = stats::setNames(membership, cells),
+    assay = assay, genome = report$genome, sample.by = sample.by, group.by = group.by,
+    fragments = resources$resources, commands = list(), outdir = outdir,
+    backend = c(Signac = as.character(utils::packageVersion("Signac")), MACS2 = paste(version, collapse = " "))
+  )
+  saveRDS(receipt, file.path(outdir, "receipt.rds"))
+  saveRDS(groups, file.path(outdir, "groups.rds"))
   splitdir <- file.path(outdir, "fragments")
   dir.create(splitdir)
   temporary <- subset(object, cells = cells)
@@ -137,16 +152,11 @@ CallATACPeaks <- function(object, sample.by, group.by = NULL, cells = NULL,
       status = status, log = log, output = output
     )
     saveRDS(commands, file.path(outdir, "commands.rds"))
+    receipt$commands <- commands
+    saveRDS(receipt, file.path(outdir, "receipt.rds"))
     if (status != 0L) log_message("{paste0('MACS2 failed for ', id, ' (exit ', status, '). See ', log)}", message_type = "error")
     peaks[[id]] <- atac_read_narrowpeaks(output, report$genome)
   }
-  receipt <- list(
-    cells = cells, membership = stats::setNames(membership, cells),
-    assay = assay, genome = report$genome, sample.by = sample.by, group.by = group.by,
-    fragments = resources$resources,
-    commands = commands, outdir = outdir,
-    backend = c(Signac = as.character(utils::packageVersion("Signac")), MACS2 = paste(version, collapse = " "))
-  )
   result <- list(peaks = peaks, groups = groups, receipt = receipt)
   saveRDS(result, file.path(outdir, "peak_calls.rds"))
   result

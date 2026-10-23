@@ -10,7 +10,7 @@ CallATACPeaks(
   group.by = NULL,
   cells = NULL,
   assay = NULL,
-  macs2.path,
+  macs2.path = "macs2",
   outdir,
   effective.genome.size,
   qvalue = 0.05,
@@ -32,7 +32,7 @@ a cell type. Calls are capture-by-group, never pooled across captures.}
 
 \item{assay}{Source ChromatinAssay; NULL selects the active assay.}
 
-\item{macs2.path}{Path to an installed MACS2 2.x executable in the current
+\item{macs2.path}{Path or PATH command name of an installed MACS2 2.x executable in the current
 runtime. On Windows use a prepared Linux container with explicit mounted
 paths. This function does not manage containers or translate host paths.}
 
@@ -67,6 +67,9 @@ performed by MACS2; no caller is installed or silently substituted.
 Missing input, nonzero caller exit, missing output and malformed output are
 errors. A successful zero-byte narrowPeak file is a valid empty peak set;
 this is distinct from a failed call. No matrix or existing result is changed.
+\code{receipt.rds} and \code{groups.rds} are written before splitting/calling, and
+\code{commands.rds} is updated after each process exits. These retain selected
+cells, capture/group membership and resources for diagnosing failed calls.
 Combine the returned sets with \code{\link[=CombineATACPeaks]{CombineATACPeaks()}} and recount the resulting
 ranges with \code{\link[=RecountATAC]{RecountATAC()}} before comparing previously different universes.
 Signac's splitting API is reused. The process is invoked directly so its

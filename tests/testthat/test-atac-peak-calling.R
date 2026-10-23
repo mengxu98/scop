@@ -73,6 +73,32 @@ test_that("peak-call grouping separates metadata field names from output IDs", {
   expect_identical(result$groups$group, unname(object$sample))
   expect_identical(result$receipt$sample.by, "call_id")
   expect_identical(result$receipt$group.by, "sample")
+  expect_equal(readRDS(file.path(directory, "calls", "receipt.rds")), result$receipt)
+  expect_equal(readRDS(file.path(directory, "calls", "groups.rds")), result$groups)
+  execution$Sys.which <- function(x) stats::setNames(program, x)
+  from_path <- call(object,
+    sample.by = "call_id", group.by = "sample",
+    macs2.path = "macs2-test-command", outdir = file.path(directory, "from-path"),
+    effective.genome.size = 1000, verbose = FALSE
+  )
+  expect_equal(from_path$peaks, result$peaks)
+  execution$system2 <- function(command, args, stdout, stderr) {
+    if (identical(args, "--version")) {
+      return("macs2 2.2.9.1")
+    }
+    writeLines("Real process-boundary failure fixture", stdout)
+    7L
+  }
+  expect_error(call(object,
+    sample.by = "call_id", group.by = "sample",
+    macs2.path = program, outdir = file.path(directory, "failed"),
+    effective.genome.size = 1000, verbose = FALSE
+  ), "MACS2 failed.*exit 7")
+  failed <- readRDS(file.path(directory, "failed", "receipt.rds"))
+  expect_equal(failed$membership, result$receipt$membership)
+  expect_identical(failed$commands[[1]]$status, 7L)
+  expect_match(readLines(failed$commands[[1]]$log), "failure fixture")
+  expect_false(file.exists(file.path(directory, "failed", "peak_calls.rds")))
   expect_error(call(object,
     sample.by = "call_id", group.by = "sample",
     macs2.path = program, outdir = file.path(directory, "calls"),
