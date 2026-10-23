@@ -59,13 +59,12 @@ Known SCOP gene-activity and chromVAR assays cannot substitute for RNA.}
 \item{normalization_method}{The normalization method to be used.
 Possible values are \code{"LogNormalize"}, \code{"SCT"}, \code{"TFIDF"}, and \code{"scran"}.}
 
-\item{do_HVF_finding, HVF_method, nHVF, HVF}{Highly variable features.
-\code{HVF_method} is \code{"vst"}, \code{"mvp"}, \code{"disp"}, or \code{"scran"}.}
-
 \item{HVF_source}{The source of highly variable features.
 Possible values are \code{"global"} and \code{"separate"}.}
 
 \item{HVF_min_intersection}{The feature needs to be present in batches for a minimum number of times in order to be considered as highly variable.}
+
+\item{HVF}{Optional RNA feature names. ATAC features are selected independently.}
 
 \item{do_scaling}{Force scaling via ScaleData.}
 
@@ -76,10 +75,10 @@ Possible values are \code{"global"} and \code{"separate"}.}
 \item{scale_within_batch}{Scale within each batch. Only used by
 \code{"Uncorrected"}, \code{"Seurat"}, \code{"MNN"}, \code{"Harmony"}, \code{"BBKNN"}, \code{"CSS"}, \code{"ComBat"}.}
 
-\item{linear_reduction, linear_reduction_dims, linear_reduction_dims_use, linear_reduction_params, force_linear_reduction}{Linear reduction (\code{"pca"}, \code{"svd"}, \code{"ica"}, \code{"nmf"}, \code{"mds"}, \code{"glmpca"}).
-\code{linear_reduction_dims_use = NULL} uses estimated dimensions, else the first 50.}
+\item{linear_reduction}{RNA reduction, which must be \code{"pca"}. ATAC uses SVD.}
 
-\item{nonlinear_reduction}{Nonlinear reduction (\code{"umap"}, \code{"umap-naive"}, \code{"tsne"}, \code{"dm"}, \code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"largevis"}, \code{"fr"}).}
+\item{nonlinear_reduction}{One or more of \code{"umap"}, \code{"umap-naive"} and \code{"fr"},
+or \code{character()} for graphs and clusters without an embedding.}
 
 \item{nonlinear_reduction_dims}{Number(s) of nonlinear dimensions to compute.}
 
@@ -104,7 +103,8 @@ A Seurat object with RNA PCA and ATAC LSI reductions, \code{WNN} neighbors,
 \code{WNNKNN} and \code{WNNSNN} graphs, \code{WNNclusters} metadata and requested WNN
 embeddings. \code{Misc(object, "WNN_reduction_list")} names the retained source
 reductions; \code{WNN_dims_list} records their selected dimensions. Both return
-modes retain ATAC reductions, metadata and any existing representation receipts. The
+modes retain complete processed modality assays (including scaled RNA), ATAC
+reductions, metadata and representation receipts, with RNA as the active assay. The
 caller's random-number state is restored.
 }
 \description{
@@ -116,6 +116,13 @@ Cells must represent paired measurements. RNA and ATAC preprocessing is
 followed by native multimodal neighbor construction. This function does not
 use batch labels to correct either modality. Specify assays explicitly after
 adding derived assays, for example \code{assay = c("RNA", "peaks")}.
+Both assays must contain the same cells as the object. Subset to verified
+paired cells explicitly before running WNN. Nonlinear reductions supported
+here are \code{"umap"}, \code{"umap-naive"} and \code{"fr"}; use \code{character()} to retain
+graphs and clusters without computing an embedding.
+RNA uses the requested normalization and PCA. ATAC always uses TF-IDF and
+SVD, including when RNA uses SCT. \code{HVF} supplies RNA features; ATAC features
+are selected independently from accessibility counts.
 }
 \examples{
 # Small paired subset; no external fragments or reference downloads.

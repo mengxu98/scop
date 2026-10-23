@@ -11,16 +11,28 @@
 #' Known SCOP gene-activity and chromVAR assays cannot substitute for RNA.
 #' @param batch Accepted for integration-interface compatibility. WNN does not
 #' perform batch correction; supplying this argument emits a warning.
+#' @param linear_reduction RNA reduction, which must be `"pca"`. ATAC uses SVD.
+#' @param nonlinear_reduction One or more of `"umap"`, `"umap-naive"` and `"fr"`,
+#'   or `character()` for graphs and clusters without an embedding.
+#' @param HVF Optional RNA feature names. ATAC features are selected independently.
 #' @details
 #' Cells must represent paired measurements. RNA and ATAC preprocessing is
 #' followed by native multimodal neighbor construction. This function does not
 #' use batch labels to correct either modality. Specify assays explicitly after
 #' adding derived assays, for example `assay = c("RNA", "peaks")`.
+#' Both assays must contain the same cells as the object. Subset to verified
+#' paired cells explicitly before running WNN. Nonlinear reductions supported
+#' here are `"umap"`, `"umap-naive"` and `"fr"`; use `character()` to retain
+#' graphs and clusters without computing an embedding.
+#' RNA uses the requested normalization and PCA. ATAC always uses TF-IDF and
+#' SVD, including when RNA uses SCT. `HVF` supplies RNA features; ATAC features
+#' are selected independently from accessibility counts.
 #' @return A Seurat object with RNA PCA and ATAC LSI reductions, `WNN` neighbors,
 #' `WNNKNN` and `WNNSNN` graphs, `WNNclusters` metadata and requested WNN
 #' embeddings. `Misc(object, "WNN_reduction_list")` names the retained source
 #' reductions; `WNN_dims_list` records their selected dimensions. Both return
-#' modes retain ATAC reductions, metadata and any existing representation receipts. The
+#' modes retain complete processed modality assays (including scaled RNA), ATAC
+#' reductions, metadata and representation receipts, with RNA as the active assay. The
 #' caller's random-number state is restored.
 #' @seealso [ReadMultiomeData()], [RunStandardWorkflow()], [RunLinkPeaks()]
 #'
@@ -72,6 +84,13 @@ WNN_integrate <- function(
   seed = 11
 ) {
   cluster_algorithm_index <- resolve_cluster_algorithm_index(cluster_algorithm)
+  if (!is.character(nonlinear_reduction) || anyNA(nonlinear_reduction) ||
+    any(!nonlinear_reduction %in% c("umap", "umap-naive", "fr"))) {
+    log_message("WNN supports only umap, umap-naive and fr; use character() for graphs and clusters without an embedding.", message_type = "error")
+  }
+  if (!identical(linear_reduction, "pca")) {
+    log_message("WNN requires linear_reduction = 'pca' for RNA and computes ATAC LSI separately.", message_type = "error")
+  }
 
   atac_backend_fun("withr", "local_preserve_seed")()
   set.seed(seed)
@@ -99,38 +118,45 @@ WNN_integrate <- function(
   )
   rna_assay <- assay_pair[["rna"]]
   atac_assay <- assay_pair[["atac"]]
+  if (!setequal(colnames(srt_merge[[rna_assay]]), colnames(srt_merge)) ||
+    !setequal(colnames(srt_merge[[atac_assay]]), colnames(srt_merge))) {
+    log_message("WNN requires the same paired cells in the RNA assay, ATAC assay and object. Subset explicitly to verified paired cells before analysis.", message_type = "error")
+  }
   rna_prefix <- resolve_assay_prefix(srt = srt_merge, assay = rna_assay)
   atac_prefix <- resolve_assay_prefix(srt = srt_merge, assay = atac_assay)
 
-  srt_merge <- RunStandardWorkflow(
-    object = srt_merge,
-    prefix = "Standard",
-    assay = c(rna_assay, atac_assay),
-    do_normalization = do_normalization,
-    normalization_method = normalization_method,
-    do_HVF_finding = do_HVF_finding,
-    HVF_method = HVF_method,
-    nHVF = nHVF,
-    HVF = HVF,
-    do_scaling = do_scaling,
-    vars_to_regress = vars_to_regress,
-    regression_model = regression_model,
-    linear_reduction = linear_reduction,
-    linear_reduction_dims = linear_reduction_dims,
-    linear_reduction_dims_use = linear_reduction_dims_use,
-    linear_reduction_params = linear_reduction_params,
-    force_linear_reduction = force_linear_reduction,
-    nonlinear_reduction = nonlinear_reduction,
-    nonlinear_reduction_dims = nonlinear_reduction_dims,
-    nonlinear_reduction_params = nonlinear_reduction_params,
-    force_nonlinear_reduction = force_nonlinear_reduction,
-    neighbor_metric = neighbor_metric,
-    neighbor_k = neighbor_k,
-    cluster_algorithm = cluster_algorithm,
-    cluster_resolution = cluster_resolution,
-    verbose = verbose,
-    seed = seed
-  )
+  for (modality in c("rna", "atac")) {
+    srt_merge <- RunStandardWorkflow(
+      object = srt_merge,
+      prefix = if (modality == "rna") rna_prefix else atac_prefix,
+      assay = assay_pair[[modality]],
+      do_normalization = do_normalization,
+      normalization_method = if (modality == "rna") normalization_method else "TFIDF",
+      do_HVF_finding = do_HVF_finding,
+      HVF_method = HVF_method,
+      nHVF = nHVF,
+      HVF = if (modality == "rna") HVF else NULL,
+      do_scaling = do_scaling,
+      vars_to_regress = vars_to_regress,
+      regression_model = regression_model,
+      linear_reduction = if (modality == "rna") "pca" else "svd",
+      linear_reduction_dims = linear_reduction_dims,
+      linear_reduction_dims_use = linear_reduction_dims_use,
+      linear_reduction_params = linear_reduction_params,
+      force_linear_reduction = force_linear_reduction,
+      nonlinear_reduction = nonlinear_reduction,
+      nonlinear_reduction_dims = nonlinear_reduction_dims,
+      nonlinear_reduction_params = nonlinear_reduction_params,
+      force_nonlinear_reduction = force_nonlinear_reduction,
+      neighbor_metric = neighbor_metric,
+      neighbor_k = neighbor_k,
+      cluster_algorithm = cluster_algorithm,
+      cluster_resolution = cluster_resolution,
+      verbose = verbose,
+      seed = seed
+    )
+    if (modality == "rna") rna_assay <- SeuratObject::DefaultAssay(srt_merge)
+  }
 
   rna_reduction <- paste0(rna_prefix, "pca")
   atac_reduction <- paste0(atac_prefix, "lsi")
@@ -216,7 +242,8 @@ WNN_integrate <- function(
     cluster_algorithm_index = cluster_algorithm_index,
     cluster_resolution = cluster_resolution,
     run_find_neighbors = FALSE,
-    verbose = verbose
+    verbose = verbose,
+    stop_on_error = TRUE
   )
 
   srt_merge <- run_wnn_reduction(
@@ -249,6 +276,9 @@ WNN_integrate <- function(
   SeuratObject::DefaultAssay(srt_merge) <- rna_assay
 
   if (isTRUE(append) && !is.null(srt_merge_raw)) {
+    # Copy whole modality assays: srt_append only synchronizes selected layers.
+    for (name in c(rna_assay, atac_assay)) srt_merge_raw[[name]] <- srt_merge[[name]]
+    SeuratObject::DefaultAssay(srt_merge_raw) <- rna_assay
     srt_merge_raw <- srt_append(
       srt_raw = srt_merge_raw,
       srt_append = srt_merge,
@@ -256,6 +286,7 @@ WNN_integrate <- function(
         "^(", paste(gsub(".", "[.]", unique(c(rna_assay, atac_assay, rna_prefix, atac_prefix)), fixed = TRUE), collapse = "|"),
         "|WNN|Default_reduction)"
       ),
+      slots = setdiff(methods::slotNames(srt_merge), "assays"),
       overwrite = TRUE,
       verbose = FALSE
     )
@@ -350,25 +381,7 @@ run_wnn_reduction <- function(
   verbose,
   seed
 ) {
-  supported <- c("umap", "umap-naive", "fr")
-  unsupported <- setdiff(nonlinear_reduction, supported)
-  if (length(unsupported) > 0) {
-    log_message(
-      "WNN currently supports only {.val {supported}} nonlinear reductions. Skip {.val {unsupported}}",
-      message_type = "warning",
-      verbose = verbose
-    )
-  }
-  nonlinear_use <- intersect(nonlinear_reduction, supported)
-  if (length(nonlinear_use) == 0) {
-    log_message(
-      "No supported WNN nonlinear reduction was requested. Fall back to {.val umap}",
-      message_type = "warning",
-      verbose = verbose
-    )
-    nonlinear_use <- "umap"
-  }
-  for (nr in nonlinear_use) {
+  for (nr in nonlinear_reduction) {
     for (n in nonlinear_reduction_dims) {
       if (identical(nr, "fr")) {
         srt <- RunDimsReduction(

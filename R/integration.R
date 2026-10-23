@@ -803,9 +803,11 @@ RunIntegration <- function(
       modality_assays <- vapply(srt_integrated@misc$WNN_reduction_list, function(reduction) {
         SeuratObject::DefaultAssay(srt_integrated[[reduction]])
       }, character(1))
-      modality_prefixes <- vapply(modality_assays, function(name) {
-        resolve_assay_prefix(srt_integrated, name)
-      }, character(1))
+      # SCT can change the assay while retaining the original RNA output prefix.
+      modality_prefixes <- sub("(pca|lsi)$", "", srt_integrated@misc$WNN_reduction_list)
+      for (name in modality_assays) srt_merge_raw[[name]] <- srt_integrated[[name]]
+      SeuratObject::DefaultAssay(srt_merge_raw) <- SeuratObject::DefaultAssay(srt_integrated)
+      append_slots <- setdiff(append_slots, "assays")
       append_pattern <- paste0(
         "^(", paste(gsub(".", "[.]", unique(c(modality_assays, modality_prefixes)), fixed = TRUE), collapse = "|"),
         "|WNN|Default_reduction|LISI|integration_batch)"
