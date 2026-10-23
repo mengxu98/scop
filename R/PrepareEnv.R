@@ -6,7 +6,8 @@
 #' @md
 #' @inheritParams thisutils::log_message
 #' @param envname Conda-compatible Python environment.
-#' If `NULL`, the environment name will be set to `"scop_env"`.
+#' If `NULL`, use the current environment selection. [PrepareEnv()] selects
+#' a separate module profile when required.
 #' @param conda The path or command name of a conda-compatible executable
 #' (`conda`, `mamba`, or `micromamba`). Use `"auto"` to allow automatically
 #' finding an appropriate environment manager. If `"micromamba"` is requested
@@ -23,13 +24,16 @@
 #' @param modules Optional Python dependency modules to install in addition to
 #' the default scientific stack.
 #' If `NULL` or omitted in [PrepareEnv()], the default environment is installed.
-#' The default excludes `"cell2location"`, `"cell2fate"`, `"commot"`, `"sccoda"`, and
+#' The default excludes `"phate"`, `"magic"`, `"cell2location"`, `"cell2fate"`, `"commot"`, `"sccoda"`, and
 #' `"scomm"` because these workflows use long-running or incompatible dependency
 #' stacks. Cell2fate and COMMOT are prepared in standalone `"cell2fate_env"`
-#' and `"commot_env"` environments with Python 3.9. `"scenic"` is also excluded
+#' and `"commot_env"` environments with Python 3.9. SCENIC+ uses standalone `"scenicplus_env"` or the smaller `"scenicplus_io_env"` for `.h5mu` imports. `"scenic"` is also excluded
 #' from the default environment and is prepared
 #' in `"scenic_env"` by default because SCENIC requires an older Python/numpy
-#' stack. `"scmalignantfinder"` is prepared in a standalone
+#' stack. PHATE and MAGIC are prepared explicitly in `"scprep_env"` with
+#' pandas 2.0.3, separately from the default scientific stack. scCODA and scOMM
+#' use `"tensorflow_env"` to keep TensorFlow dependencies separate from JAX.
+#' `"scmalignantfinder"` is prepared in a standalone
 #' `"scmalignantfinder_env"` because its upstream package pins an older
 #' scanpy/anndata stack. On Windows, the
 #' default also excludes `"scvi"`, `"glue"`, and `"multimap"` because those
@@ -45,6 +49,7 @@
 #' optional R backend without creating a Python environment.
 #' @param cores Number of workers for R-package installation. Use `NULL` (the
 #' default) to let pak select its worker count automatically.
+#' @param configure_runtime Whether to select the prepared interpreter for embedded Python and configure the R process. Set to `FALSE` for subprocess-only use.
 #' @param ... Additional arguments passed to package installation functions.
 #'
 #' @export
@@ -59,12 +64,26 @@ PrepareEnv <- function(
   components = "python",
   cores = NULL,
   verbose = TRUE,
+  configure_runtime = TRUE,
   ...
 ) {
   version_missing <- missing(version)
+  if (!isTRUE(configure_runtime)) {
+    old_path <- Sys.getenv("PATH", unset = NA_character_)
+    on.exit({
+      if (is.na(old_path)) Sys.unsetenv("PATH") else Sys.setenv(PATH = old_path)
+    }, add = TRUE)
+  }
   components_missing <- missing(components)
   components <- norm_env_components(components)
+  modules <- trimws(as.character(unlist(modules, use.names = FALSE)))
   modules <- normalize_env_modules(modules = modules)
+  if ("python" %in% components && all(c("scvi", "moscot") %in% modules)) {
+    log_message(
+      "The moscot JAX profile is incompatible with scvi-tools 1.3.3 pinned to JAX 0.4.38. Prepare these modules in separate environments.",
+      message_type = "error"
+    )
+  }
   r_status <- NULL
   if ("r" %in% components) {
     r_status <- ensure_env_r_packages(
@@ -117,6 +136,12 @@ PrepareEnv <- function(
       version <- "3.9-1"
     }
   }
+  if (any(c("scenicplus", "scenicplus_io") %in% modules) && length(modules) > 1L) {
+    stop("SCENIC+ must be prepared as a standalone environment module.", call. = FALSE)
+  }
+  if ("scenicplus" %in% modules && is_windows()) {
+    stop("The full official SCENIC+ environment requires Linux. On native Windows, use modules = 'scenicplus_io' to import official results, or run the C++ backend.", call. = FALSE)
+  }
   if ("commot" %in% modules) {
     if (length(setdiff(modules, "commot")) > 0) {
       log_message(
@@ -156,11 +181,23 @@ PrepareEnv <- function(
       version <- "3.10-1"
     }
   }
-  envname <- get_envname(envname)
+  profile <- env_module_environment(modules)
+  isolated <- vapply(env_module_requirements(), function(spec) spec$environment %||% "", "")
+  if (is.null(envname) && is.null(profile) && get_envname() %in% isolated[nzchar(isolated)]) envname <- "scop_env"
+  envname <- get_envname(envname %||% profile)
   pip_options <- normalize_cli_args(pip_options)
   conda_auto <- identical(conda, "auto")
   if (!is.null(conda)) {
     conda <- resolve_conda(conda)
+  }
+  reuse_scenicplus <- FALSE
+  if (identical(modules, "scenicplus_io") && !isTRUE(force) && !is.null(conda)) {
+    existing_python <- tryCatch(conda_python(envname = envname, conda = conda), error = function(...) NULL)
+    if (!is.null(existing_python) && file.exists(existing_python) &&
+      isTRUE(exist_python_pkgs("scenicplus", envname = envname, conda = conda, verbose = FALSE))) {
+      modules <- "scenicplus"
+      reuse_scenicplus <- TRUE
+    }
   }
   if (isTRUE(version_missing) && !is.null(conda)) {
     existing_python <- tryCatch(
@@ -168,7 +205,7 @@ PrepareEnv <- function(
       error = function(...) NULL
     )
     existing_minor <- python_minor_version(existing_python)
-    if (existing_minor %in% c("3.10", "3.11", "3.12")) {
+    if (isTRUE(existing_minor %in% c("3.10", "3.11", "3.12"))) {
       version <- paste0(existing_minor, "-1")
     }
   }
@@ -176,6 +213,11 @@ PrepareEnv <- function(
     version = version,
     modules = modules
   )
+  if (reuse_scenicplus) {
+    requirements$python <- version
+    requirements$packages <- c("scenicplus" = "scenicplus")
+    requirements$install_methods <- c("scenicplus" = "pip")
+  }
   python_version <- requirements[["python"]]
 
   cache_spec <- build_env_cache_spec(
@@ -193,13 +235,18 @@ PrepareEnv <- function(
         error = function(...) NULL
       )
     if (!is.null(python_cached) && nzchar(python_cached) && file.exists(python_cached)) {
-      assert_python_runtime_switchable(
-        python_cached,
-        restart_hint = python_runtime_restart_hint(envname = envname, modules = modules)
-      )
-      configure_python_runtime(python_cached)
+      if (any(c("scipy", "scenicplus") %in% names(requirements$packages))) {
+        ensure_scipy_runtime(python_cached, pip_options = pip_options)
+      }
+      if (isTRUE(configure_runtime)) {
+        assert_python_runtime_switchable(
+          python_cached,
+          restart_hint = python_runtime_restart_hint(envname = envname, modules = modules)
+        )
+        configure_python_runtime(python_cached)
+      }
     }
-    remember_python_environment(envname = envname, conda = conda)
+    if (isTRUE(configure_runtime)) remember_python_environment(envname = envname, conda = conda)
     if ("scomm" %in% modules) {
       ensure_scomm_runtime_support(
         envname = envname,
@@ -252,7 +299,7 @@ PrepareEnv <- function(
       conda = conda,
       envs_dir = envs_dir
     )
-    if (!is.null(env_path)) {
+    if (!is.null(env_path) && isTRUE(configure_runtime)) {
       assert_python_runtime_switchable(
         conda_env_python_path(env_path),
         restart_hint = python_runtime_restart_hint(envname = envname, modules = modules)
@@ -369,15 +416,14 @@ PrepareEnv <- function(
   pip_packages <- packages[install_methods == "pip"]
 
   log_message(
-    "{.val {length(packages)}} package{?s} to install, {.val {length(conda_packages)}} conda packages and {.val {length(pip_packages)}} pip packages"
+    "{.val {length(packages)}} requirement{?s} to check, {.val {length(conda_packages)}} conda requirements and {.val {length(pip_packages)}} pip requirements"
   )
 
-  install_ok <- TRUE
   if (length(conda_packages) > 0) {
     log_message(
-      "Installing {.val {length(conda_packages)}} {.pkg conda} packages"
+      "Checking {.val {length(conda_packages)}} {.pkg conda} requirements"
     )
-    install_ok <- isTRUE(check_python(
+    check_python(
       packages = conda_packages,
       envname = envname,
       conda = conda,
@@ -385,38 +431,48 @@ PrepareEnv <- function(
       pip = FALSE,
       verbose = FALSE,
       ...
-    )) && install_ok
+    )
   }
+
+  pip_installed <- installed_python_pkgs_pip(envname = envname, conda = conda)
+  pip_names <- canonical_python_distribution_name(pip_installed$package)
+  conda_python_packages <- vapply(seq_along(conda_packages), function(i) {
+    req <- parse_python_requirement(conda_packages[[i]], fallback_name = names(conda_packages)[[i]])
+    name <- requirements$package_aliases[[req$name]] %||% req$name
+    if (!canonical_python_distribution_name(name) %in% pip_names) {
+      return("")
+    }
+    paste0(name, if (!is.na(req$version)) paste0(req$operator, req$version))
+  }, "")
+  pip_packages <- unique(c(pip_packages, conda_python_packages[nzchar(conda_python_packages)]))
 
   if (length(pip_packages) > 0) {
     if (!is.null(uv)) {
       log_message(
-        "Installing {.val {length(pip_packages)}} packages using {.pkg uv}"
+        "Checking {.val {length(pip_packages)}} requirements using {.pkg uv}"
       )
     } else {
       log_message(
-        "Installing {.val {length(pip_packages)}} {.pkg pip} packages"
+        "Checking {.val {length(pip_packages)}} {.pkg pip} requirements"
       )
     }
-    install_ok <- isTRUE(check_python(
-      packages = pip_packages,
-      envname = envname,
-      conda = conda,
-      force = if ("cell2fate" %in% modules) FALSE else force,
-      pip = TRUE,
-      pip_options = pip_options,
-      verbose = FALSE,
-      ...
-    )) && install_ok
-  }
-
-  if ("cell2fate" %in% modules) {
-    install_ok <- all(exist_python_pkgs(
-      packages = packages,
-      envname = envname,
-      conda = conda,
-      verbose = FALSE
-    ))
+    if ("scenicplus" %in% modules && !reuse_scenicplus) {
+      install_python_packages(
+        packages = unname(pip_packages), python = python,
+        envname = envname, conda = conda, pip_options = pip_options
+      )
+    } else {
+      check_python(
+        packages = pip_packages,
+        envname = envname,
+        conda = conda,
+        force = if ("cell2fate" %in% modules) FALSE else force,
+        pip = TRUE,
+        pip_options = pip_options,
+        verbose = FALSE,
+        ...
+      )
+    }
   }
 
   if ("scvi" %in% modules) {
@@ -441,25 +497,30 @@ PrepareEnv <- function(
     verbose = verbose
   )
 
-  assert_python_runtime_switchable(
-    python,
-    restart_hint = python_runtime_restart_hint(envname = envname, modules = modules)
-  )
-  configure_python_runtime(python)
-  remember_python_environment(envname = envname, conda = conda)
-
-  if (isTRUE(install_ok)) {
-    log_message(
-      "{cli::col_green('Python environment ready')}\n",
-      "{cli::col_grey('Until next loading, the environment will be cached')}",
-      message_type = "success"
-    )
-  } else {
-    log_message(
-      "Python environment setup completed with missing packages. Review the warnings above before using modules that require them.",
-      message_type = "warning"
-    )
+  valid <- exist_python_pkgs(packages, envname = envname, conda = conda, verbose = FALSE)
+  if (!length(valid) || !all(valid)) {
+    log_message("Python environment requirements are not satisfied: {.val {names(valid)[!valid]}}", message_type = "error")
   }
+  if (any(c("scipy", "scenicplus") %in% names(packages))) {
+    ensure_scipy_runtime(python, pip_options = pip_options)
+  }
+  status <- get_namespace_fun("reticulate", "system2t")(python, c("-m", "pip", "check"))
+  if (status != 0L) check_python_dependencies(python, pip_packages, envname, verbose = verbose)
+
+  if (isTRUE(configure_runtime)) {
+    assert_python_runtime_switchable(
+      python,
+      restart_hint = python_runtime_restart_hint(envname = envname, modules = modules)
+    )
+    configure_python_runtime(python)
+    remember_python_environment(envname = envname, conda = conda)
+  }
+
+  log_message(
+    "{cli::col_green('Python environment ready')}\n",
+    "{cli::col_grey('Until next loading, the environment will be cached')}",
+    message_type = "success"
+  )
 
   env_info(
     conda = conda,
@@ -509,6 +570,9 @@ python_minor_version <- function(python_path) {
 python_version_matches <- function(python_path, requested_version) {
   actual <- python_minor_version(python_path)
   requested <- sub("-1$", "", as.character(requested_version))
+  if (grepl("^[0-9]+[.][0-9]+[.][0-9]+$", requested) && !is.null(actual)) {
+    actual <- sub("^Python ([0-9.]+).*$", "\\1", system2(python_path, "--version", stdout = TRUE, stderr = TRUE)[[1L]])
+  }
   !is.null(actual) && identical(actual, requested)
 }
 
@@ -543,6 +607,7 @@ supported_env_modules <- function() {
     "scenic",
     "regdiffusion",
     "scenicplus",
+    "scenicplus_io",
     "seacells",
     "tage",
     "scmalignantfinder",
@@ -575,7 +640,8 @@ default_env_modules <- function() {
   if (is_windows()) {
     excluded <- c(excluded, "scvi", "glue", "multimap")
   }
-  setdiff(supported_env_modules(), excluded)
+  isolated <- names(Filter(function(spec) !is.null(spec$environment), env_module_requirements()))
+  setdiff(supported_env_modules(), c(excluded, isolated))
 }
 
 optional_env_modules <- function() {
@@ -610,7 +676,7 @@ env_module_dependencies <- function() {
   )
 }
 
-env_python_spec <- function(packages, methods = "pip", aliases = list()) {
+env_python_spec <- function(packages, methods = "pip", aliases = list(), environment = NULL) {
   nms <- names(packages)
   if (is.null(names(methods))) {
     methods <- stats::setNames(rep(as.character(methods), length(packages)), nms)
@@ -618,8 +684,23 @@ env_python_spec <- function(packages, methods = "pip", aliases = list()) {
   list(
     packages = packages,
     install_methods = methods,
-    package_aliases = aliases
+    package_aliases = aliases,
+    environment = environment
   )
+}
+
+env_module_environment <- function(modules) {
+  specs <- env_module_requirements()
+  environments <- vapply(specs, function(spec) spec$environment %||% "", "")
+  isolated <- unique(environments[modules])
+  isolated <- isolated[nzchar(isolated)]
+  if (!length(isolated)) {
+    return(NULL)
+  }
+  if (length(isolated) != 1L) {
+    stop("These Python modules require separate environments: ", paste(modules, collapse = ", "), call. = FALSE)
+  }
+  isolated[[1L]]
 }
 
 env_module_requirements <- function() {
@@ -630,6 +711,7 @@ env_module_requirements <- function() {
     "scMalignantFinder" = "git+https://github.com/Jonyyqn/scMalignantFinder.git"
   )
   scmalignantfinder_methods <- c("scMalignantFinder" = "pip")
+  scenicplus_build <- c("c-compiler", "cxx-compiler", "rust", "make", "pkg-config", "zlib", "bzip2", "xz", "libcurl", "openssl", "git")
   if (is_osx()) {
     scmalignantfinder_packages <- c(scmalignantfinder_packages, "libcxx" = "libcxx")
     scmalignantfinder_methods <- c(scmalignantfinder_methods, "libcxx" = "conda")
@@ -643,11 +725,11 @@ env_module_requirements <- function() {
     scvi = env_python_spec(
       c(
         "scvi-tools" = "scvi-tools==1.3.3",
-        "jax" = "jax[cpu]==0.4.38"
+        scvi_jax_requirements()
       ),
       methods = c(
         "scvi-tools" = if (is_windows()) "pip" else "conda",
-        "jax" = "pip"
+        stats::setNames(rep("pip", length(scvi_jax_requirements())), names(scvi_jax_requirements()))
       )
     ),
     glue = env_python_spec(
@@ -686,10 +768,11 @@ env_module_requirements <- function() {
     ),
     cell2fate = env_python_spec(
       c(
+        "jax" = "jax==0.4.10",
         "jaxlib" = "jaxlib==0.4.10",
         "cell2fate" = "git+https://github.com/BayraktarLab/cell2fate.git"
       ),
-      methods = c("jaxlib" = "conda", "cell2fate" = "pip")
+      methods = c("jax" = "pip", "jaxlib" = "conda", "cell2fate" = "pip")
     ),
     commot = env_python_spec(c(
       "commot" = "git+https://github.com/zcang/COMMOT.git"
@@ -697,7 +780,7 @@ env_module_requirements <- function() {
     spatialdm = env_python_spec(c(
       "SpatialDM" = "git+https://github.com/StatBiomed/SpatialDM.git"
     )),
-    magic = env_python_spec(c("magic-impute" = "magic-impute==3.0.0")),
+    magic = env_python_spec(c("magic-impute" = "magic-impute==3.0.0", pandas = "pandas==2.0.3"), environment = "scprep_env"),
     scfea = env_python_spec(c(
       "torch" = "torch",
       "numpy" = "numpy",
@@ -710,9 +793,11 @@ env_module_requirements <- function() {
         "tensorflow" = "tensorflow==2.16.2",
         "tensorflow-probability" = "tensorflow-probability==0.24.0",
         "tf-keras" = "tf-keras==2.16.0",
-        "sccoda" = "sccoda==0.1.9"
+        "sccoda" = "sccoda==0.1.9",
+        "rpy2" = "rpy2==3.5.17"
       ),
-      aliases = list("sccoda" = "scCODA", "tf-keras" = "tf_keras")
+      aliases = list("sccoda" = "scCODA", "tf-keras" = "tf_keras"),
+      environment = "tensorflow_env"
     ),
     doubletdetection = env_python_spec(c(
       "doubletdetection" = "doubletdetection==4.3.0.post1",
@@ -723,7 +808,7 @@ env_module_requirements <- function() {
     cellrank = env_python_spec(c("cellrank" = "cellrank==2.3.2")),
     wot = env_python_spec(c("wot" = "wot==1.0.8.post2")),
     moscot = env_python_spec(c("moscot" = "moscot==0.5.2")),
-    phate = env_python_spec(c("phate" = "phate==1.0.11")),
+    phate = env_python_spec(c(phate = "phate==1.0.11", pandas = "pandas==2.0.3"), environment = "scprep_env"),
     pacmap = env_python_spec(c("pacmap" = "pacmap==0.8.0")),
     trimap = env_python_spec(c("trimap" = "trimap==1.1.4")),
     multimap = env_python_spec(
@@ -742,7 +827,8 @@ env_module_requirements <- function() {
         "tf-keras" = "tf_keras",
         "ml_dtypes" = "ml-dtypes",
         "ml-dtypes" = "ml_dtypes"
-      )
+      ),
+      environment = "tensorflow_env"
     ),
     scenic = env_python_spec(
       c(
@@ -766,8 +852,23 @@ env_module_requirements <- function() {
     ),
     regdiffusion = env_python_spec(c("regdiffusion" = "regdiffusion")),
     scenicplus = env_python_spec(c(
-      "scenicplus" = "scenicplus @ git+https://github.com/aertslab/scenicplus.git"
-    )),
+      "scenicplus" = "scenicplus @ git+https://github.com/aertslab/scenicplus.git@840dab85de3044846234c157e327b6ea0290abfb",
+      "pycistopic" = "pycistopic @ git+https://github.com/aertslab/pycisTopic@787ce422a37f5975b0ebb9e7b19eeaed44847501",
+      "pycistarget" = "pycistarget @ git+https://github.com/aertslab/pycistarget@5aa517604e4842539a7531c16905825dc7cb80fb",
+      "loomxpy" = "loomxpy @ git+https://github.com/aertslab/LoomXpy@61995ff10940968eac2cee8fe48300ab477a15d0",
+      "pyscenic" = "pyscenic @ git+https://github.com/aertslab/pySCENIC@06bafba412792f6efa5a552a23bb221cc3bdea1b",
+      stats::setNames(scenicplus_build, scenicplus_build)
+    ), methods = c(stats::setNames(rep("pip", 5L), c("scenicplus", "pycistopic", "pycistarget", "loomxpy", "pyscenic")),
+      stats::setNames(rep("conda", length(scenicplus_build)), scenicplus_build)),
+    environment = "scenicplus_env"),
+    scenicplus_io = env_python_spec(c(
+      "numpy" = "numpy==1.26.4",
+      "pandas" = "pandas==2.2.0",
+      "scipy" = "scipy==1.15.3",
+      "h5py" = "h5py==3.10.0",
+      "anndata" = "anndata==0.10.5.post1",
+      "mudata" = "mudata==0.2.3"
+    ), environment = "scenicplus_io_env"),
     seacells = env_python_spec(c("SEACells" = "SEACells")),
     tage = env_python_spec(c(
       "joblib" = "joblib",
@@ -1329,7 +1430,7 @@ configure_python_thread_env <- function() {
   Sys.setenv(VECLIB_MAXIMUM_THREADS = "1")
   Sys.setenv(NUMEXPR_NUM_THREADS = "1")
   Sys.setenv(KMP_WARNINGS = "0")
-  Sys.setenv(KMP_DUPLICATE_LIB_OK = "TRUE")
+  if (!nzchar(Sys.getenv("KMP_DUPLICATE_LIB_OK"))) Sys.setenv(KMP_DUPLICATE_LIB_OK = "FALSE")
   Sys.setenv(NUMBA_NUM_THREADS = "1")
 }
 
@@ -1754,11 +1855,11 @@ env_info <- function(conda, envname, verbose = TRUE) {
 #' `"cellphonedb"`, `"cell2location"`, `"cell2fate"`, `"commot"`, `"magic"`, `"scrublet"`, `"doubletdetection"`,
 #' `"sccoda"`, `"doublet"`, `"palantir"`, `"scvelo"`, `"cellrank"`, `"wot"`,
 #' `"phate"`, `"pacmap"`, `"trimap"`, `"multimap"`,
-#' `"scomm"`, `"scenic"`, `"seacells"`, `"tage"`,
+#' `"scomm"`, `"scenic"`, `"scenicplus"`, `"scenicplus_io"`, `"seacells"`, `"tage"`,
 #' `"scmalignantfinder"`, `"secact"`, `"scpagwas"`, `"choir"`, and
 #' `"external_wrappers"`. If `NULL`, the default environment is returned. The default
 #' excludes `"cell2location"`, `"cell2fate"`, `"commot"`, `"sccoda"`, `"scomm"`, and
-#' `"scenic"` because these workflows
+#' `"scenic"`, `"phate"`, and `"magic"` because these workflows
 #' require dependency stacks that should be prepared explicitly. The
 #' `"scenic"` module is standalone and always uses Python `"3.10-1"`.
 #'
@@ -1788,6 +1889,10 @@ env_requirements <- function(
     modules = modules,
     include_optional = include_optional
   )
+  env_module_environment(modules)
+  if (any(c("scenicplus", "scenicplus_io") %in% modules) && length(modules) > 1L) {
+    stop("SCENIC+ must be used as a standalone environment module.", call. = FALSE)
+  }
   if ("scenic" %in% modules) {
     scenic_allowed <- c("scenic", "regdiffusion")
     if (length(setdiff(modules, scenic_allowed)) > 0) {
@@ -1851,7 +1956,7 @@ env_requirements <- function(
     spatialdm_core_python_requirements()
   } else if ("scmalignantfinder" %in% modules) {
     scmalignantfinder_core_python_requirements()
-  } else if (any(c("scenic", "cell2fate") %in% modules)) {{ list(
+  } else if (any(c("scenic", "scenicplus", "scenicplus_io", "cell2fate") %in% modules)) {{ list(
     packages = c(
       "setuptools" = "setuptools<81"
     ),
@@ -1918,15 +2023,17 @@ env_requirements <- function(
     package_install_methods[names(trajectory_packages)] <- "pip"
   }
 
-  if (all(c("scvi", "scomm") %in% modules) && "ml_dtypes" %in% names(package_versions)) {
-    package_versions[["ml_dtypes"]] <- "ml-dtypes>=0.3.2"
+  for (module in modules) {
+    spec <- module_requirements[[module]]
+    if (!is.null(spec$environment)) package_versions[names(spec$packages)] <- spec$packages
   }
+
   if ("scenic" %in% modules && "numpy" %in% names(package_versions)) {
     package_versions[["numpy"]] <- "numpy==1.23.5"
   }
 
   requirements <- list(
-    python = version,
+    python = if ("scenicplus" %in% modules) "3.11.8" else version,
     packages = package_versions,
     install_methods = package_install_methods,
     package_aliases = package_aliases
@@ -3073,6 +3180,49 @@ run_uv_command <- function(uv, python, args) {
 }
 
 
+ensure_scipy_runtime <- function(python, pip_options = character()) {
+  if (!is_osx()) return(invisible(NULL))
+  workdir <- tempfile("scipy_runtime_")
+  dir.create(workdir)
+  on.exit(unlink(workdir, recursive = TRUE), add = TRUE)
+  run <- function(args) {
+    output <- file.path(workdir, "output.log")
+    status <- runner_system2(
+      command = python,
+      args = shQuote(args),
+      env = c(PYTHONNOUSERSITE = "1", PYTHONPATH = "", KMP_DUPLICATE_LIB_OK = "FALSE"),
+      stdout = output,
+      stderr = output
+    )
+    list(status = status, output = paste(readLines(output, warn = FALSE), collapse = "\n"))
+  }
+  probe <- c("-I", "-c", "import platform, scipy; print(platform.machine(), scipy.__version__, flush=True); import scipy.sparse.linalg")
+  result <- run(probe)
+  if (result$status == 0L) return(invisible(NULL))
+  affected <- grepl("arm64 1.15.3", result$output, fixed = TRUE) &&
+    grepl("__thread_bss", result$output, fixed = TRUE) &&
+    grepl("zero-fill section type", result$output, fixed = TRUE)
+  if (!affected) stop("SciPy runtime import failed:\n", result$output, call. = FALSE)
+  log_message("Replacing the incompatible macOS SciPy wheel with its macOS 12 build.")
+  options <- normalize_cli_args(pip_options)
+  source_options <- c("-i", "--index-url", "--extra-index-url", "-f", "--find-links",
+    "--trusted-host", "--cert", "--client-cert", "--proxy", "--timeout", "--retries", "--cache-dir")
+  keep <- sub("=.*$", "", options) %in% c(source_options, "--no-index", "--no-cache-dir") |
+    seq_along(options) %in% (which(options %in% source_options) + 1L) |
+    grepl("^-[if].+", options)
+  result <- run(c("-I", "-m", "pip", "download", "--no-deps", "--only-binary=:all:",
+    "--platform", "macosx_12_0_arm64", "--dest", workdir,
+    options[keep], "scipy==1.15.3"))
+  if (result$status != 0L) stop("SciPy wheel download failed:\n", result$output, call. = FALSE)
+  wheel <- list.files(workdir, pattern = "^scipy-1[.]15[.]3-.*-macosx_12_0_arm64[.]whl$", full.names = TRUE)
+  if (length(wheel) != 1L) stop("Compatible SciPy wheel was not downloaded.", call. = FALSE)
+  result <- run(c("-I", "-m", "pip", "install", "--no-deps", "--force-reinstall", wheel))
+  if (result$status != 0L) stop("SciPy wheel installation failed:\n", result$output, call. = FALSE)
+  result <- run(probe)
+  if (result$status != 0L) stop("SciPy runtime import failed after wheel replacement:\n", result$output, call. = FALSE)
+  invisible(NULL)
+}
+
 install_python_packages <- function(
   packages,
   python,
@@ -3082,6 +3232,37 @@ install_python_packages <- function(
   pip_ignore_installed = FALSE
 ) {
   pip_options <- normalize_cli_args(pip_options)
+  scenicplus <- any(grepl("^scenicplus([ @=<>]|$)", packages, ignore.case = TRUE))
+  if (scenicplus) {
+    constraints <- tempfile("scenicplus-build-", fileext = ".txt")
+    overrides <- tempfile("scenicplus-git-", fileext = ".txt")
+    on.exit(unlink(c(constraints, overrides)), add = TRUE)
+    writeLines(c("setuptools<81", "Cython==0.29.37", "numpy==1.26.4", "rapidfuzz==3.9.7"), constraints)
+    writeLines(packages[grepl(" @ git\\+", packages)], overrides)
+    prefix <- dirname(dirname(python))
+    prepend <- function(path, variable) paste(Filter(nzchar, c(path, Sys.getenv(variable))), collapse = .Platform$path.sep)
+    build_env <- c(UV_BUILD_CONSTRAINT = constraints, PIP_BUILD_CONSTRAINT = constraints, PIP_CONSTRAINT = constraints,
+      UV_CACHE_DIR = Sys.getenv("UV_CACHE_DIR", unset = file.path(prefix, ".scop-uv-cache")),
+      UV_HTTP_TIMEOUT = Sys.getenv("UV_HTTP_TIMEOUT", unset = "300"),
+      UV_CONCURRENT_DOWNLOADS = Sys.getenv("UV_CONCURRENT_DOWNLOADS", unset = "4"),
+      CPATH = prepend(file.path(prefix, "include"), "CPATH"),
+      LIBRARY_PATH = prepend(file.path(prefix, "lib"), "LIBRARY_PATH"),
+      PKG_CONFIG_PATH = prepend(file.path(prefix, "lib", "pkgconfig"), "PKG_CONFIG_PATH"),
+      CFLAGS = paste(Sys.getenv("CFLAGS"), "-Wno-error=incompatible-pointer-types"))
+    for (compiler in c("CC", "CXX")) {
+      candidates <- Sys.glob(file.path(prefix, "bin", if (compiler == "CC") c("*-conda-*-cc", "*-apple-*-clang") else c("*-conda-*-c++", "*-apple-*-clang++")))
+      if (!nzchar(Sys.getenv(compiler)) && length(candidates)) build_env[[compiler]] <- candidates[[1L]]
+    }
+    withr::local_envvar(build_env)
+  }
+  run <- function(command, args) {
+    if (scenicplus) {
+      system2t <- get_namespace_fun("reticulate", "system2t")
+      system2t(conda, shQuote(c("run", if (conda_manager_type(conda) == "conda") "--no-capture-output", "--prefix", dirname(dirname(python)), command, args)))
+    } else if (identical(command, uv)) {
+      run_uv_command(uv, python, args)
+    }
+  }
   uv <- find_uv(
     python = python,
     envname = envname,
@@ -3089,6 +3270,8 @@ install_python_packages <- function(
     auto_install = TRUE,
     pip_options = pip_options
   )
+  if (scenicplus && is.null(uv)) stop("Preparing pinned SCENIC+ dependencies requires uv. Install uv and retry PrepareEnv().", call. = FALSE)
+  if (scenicplus) pip_options <- c(pip_options, "--overrides", overrides)
 
   if (!is.null(uv)) {
     log_message("Installing packages via {.pkg uv}...")
@@ -3105,7 +3288,11 @@ install_python_packages <- function(
     }
     args <- c(args, packages)
 
-    status <- run_uv_command(uv, python, args)
+    status <- if (scenicplus && identical(uv, "python -m uv")) {
+      run(python, c("-m", "uv", args))
+    } else {
+      run(uv, args)
+    }
     if (status == 0L) {
       log_message(
         "{.pkg uv} installation completed",
@@ -3113,6 +3300,7 @@ install_python_packages <- function(
       )
       return(invisible(TRUE))
     }
+    if (scenicplus) stop("Pinned SCENIC+ installation via uv failed [exit code ", status, "].", call. = FALSE)
 
     log_message(
       "{.pkg uv} installation failed [error code {.val {status}}], using {.pkg pip}",
@@ -3147,9 +3335,9 @@ ensure_windows_scvi_support <- function(
     return(invisible(FALSE))
   }
 
-  jax_requirement <- c("jax" = "jax[cpu]==0.4.38")
+  jax_requirement <- scvi_jax_requirements()
 
-  if (isTRUE(exist_python_pkgs(
+  if (all(exist_python_pkgs(
     jax_requirement,
     envname = envname,
     conda = conda

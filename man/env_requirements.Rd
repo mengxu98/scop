@@ -23,11 +23,11 @@ such as \code{"cell2fate"} and \code{"commot"}.}
 \code{"cellphonedb"}, \code{"cell2location"}, \code{"cell2fate"}, \code{"commot"}, \code{"magic"}, \code{"scrublet"}, \code{"doubletdetection"},
 \code{"sccoda"}, \code{"doublet"}, \code{"palantir"}, \code{"scvelo"}, \code{"cellrank"}, \code{"wot"},
 \code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"multimap"},
-\code{"scomm"}, \code{"scenic"}, \code{"seacells"}, \code{"tage"},
+\code{"scomm"}, \code{"scenic"}, \code{"scenicplus"}, \code{"scenicplus_io"}, \code{"seacells"}, \code{"tage"},
 \code{"scmalignantfinder"}, \code{"secact"}, \code{"scpagwas"}, \code{"choir"}, and
 \code{"external_wrappers"}. If \code{NULL}, the default environment is returned. The default
 excludes \code{"cell2location"}, \code{"cell2fate"}, \code{"commot"}, \code{"sccoda"}, \code{"scomm"}, and
-\code{"scenic"} because these workflows
+\code{"scenic"}, \code{"phate"}, and \code{"magic"} because these workflows
 require dependency stacks that should be prepared explicitly. The
 \code{"scenic"} module is standalone and always uses Python \code{"3.10-1"}.}
 

@@ -1,0 +1,13 @@
+name: Prefer Ubuntu HTTPS mirrors
+description: Use public Ubuntu archives before falling back to the Azure mirror.
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: |
+        test -f /etc/apt/apt-mirrors.txt
+        printf '%s\tpriority:%s\n' \
+          'https://archive.ubuntu.com/ubuntu/' 1 \
+          'https://security.ubuntu.com/ubuntu/' 2 \
+          'http://azure.archive.ubuntu.com/ubuntu/' 3 \
+          | sudo tee /etc/apt/apt-mirrors.txt

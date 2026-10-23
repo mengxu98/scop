@@ -105,6 +105,17 @@ def main():
     if len(sys.argv) > 1 and sys.argv[1] == "restore":
         restore(json.loads(Path("pkgdown-plan.json").read_text()))
         return
+    if len(sys.argv) > 1 and sys.argv[1] == "full":
+        plan = json.loads(Path("pkgdown-plan.json").read_text())
+        deleted, reasons = plan["deleted"], plan["reasons"]
+        plan.update(plan_changes(Path("."), [], full=True))
+        plan.update(deleted=deleted, reasons=reasons + ["R or installed dependency versions changed"])
+        Path("pkgdown-plan.json").write_text(json.dumps(plan, indent=2) + "\n")
+        with open(os.environ["GITHUB_ENV"], "a") as stream:
+            for key in ("topics", "articles"):
+                stream.write(f"PKGDOWN_{key.upper()}={','.join(plan[key])}\n")
+            stream.write("PKGDOWN_EXECUTE=true\n")
+        return
     published = None
     manifest = {}
     if fetch("gh-pages"):
@@ -114,7 +125,7 @@ def main():
         except (subprocess.CalledProcessError, ValueError):
             pass
     event = os.environ.get("PKGDOWN_EVENT", "workflow_dispatch")
-    base = os.environ.get("PKGDOWN_BASE") if event == "pull_request" else manifest.get("source")
+    base = manifest.get("source")
     full = os.environ.get("PKGDOWN_FORCE") == "true" or event in ("schedule", "release")
     changes = []
     if not base or not fetch(base):

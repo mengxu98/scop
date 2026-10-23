@@ -38,7 +38,6 @@ jobs:
         id: plan
         env:
           PKGDOWN_EVENT: ${{ github.event_name }}
-          PKGDOWN_BASE: ${{ github.event.pull_request.base.sha }}
           PKGDOWN_FORCE: ${{ inputs.full || false }}
         run: python3 .github/pkgdown-plan.py
 
@@ -63,6 +62,8 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - uses: ./.github/actions/ubuntu-apt-mirrors
+
       - uses: actions/download-artifact@v4
         with:
           name: pkgdown-plan
@@ -74,39 +75,60 @@ jobs:
           use-public-rspm: true
           Ncpus: 2
 
-      - name: Determine example and article dependencies
-        id: dependencies
-        run: Rscript --vanilla .github/pkgdown-build.R dependencies
-
       - uses: r-lib/actions/setup-r-dependencies@v2
         env:
           GITHUB_PAT: ${{ github.token }}
         with:
-          packages: ${{ steps.dependencies.outputs.packages }}
-          extra-packages: ${{ steps.dependencies.outputs.extra }}
+          packages: deps::.
+          extra-packages: any::pkgdown, any::callr, any::jsonlite, any::sessioninfo, any::xml2, any::renv
           needs: website
-          dependencies: '"hard"'
+          dependencies: ${{ needs.plan.outputs.execute == 'true' && '"hard"' || 'character()' }}
           cache: always
 
       - name: Invalidate output from a different R environment
         id: environment
         run: Rscript --vanilla .github/pkgdown-build.R environment
 
-      - name: Determine full rebuild dependencies
-        id: full-dependencies
+      - name: Expand changed environments to a full build
         if: steps.environment.outputs.changed == 'true'
-        run: Rscript --vanilla .github/pkgdown-build.R dependencies
+        run: python3 .github/pkgdown-plan.py full
+
+      - name: Discover documentation dependencies
+        id: dependencies
+        if: needs.plan.outputs.execute == 'true' || steps.environment.outputs.changed == 'true'
+        run: |
+          Rscript --vanilla .github/pkgdown-build.R dependencies
+          echo "MAMBA_ROOT_PREFIX=$RUNNER_TEMP/pkgdown-python" >> "$GITHUB_ENV"
+          echo "cpu=$(LC_ALL=C lscpu | sed -n '/Model name:/p; /Flags:/p' | sha256sum | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
 
       - uses: r-lib/actions/setup-r-dependencies@v2
-        if: steps.environment.outputs.changed == 'true'
+        if: needs.plan.outputs.execute == 'true' || steps.environment.outputs.changed == 'true'
         env:
           GITHUB_PAT: ${{ github.token }}
         with:
-          packages: ${{ steps.full-dependencies.outputs.packages }}
-          extra-packages: ${{ steps.full-dependencies.outputs.extra }}
+          packages: deps::.,local::.
+          lockfile-create-lib: .libPaths()
+          extra-packages: ${{ steps.dependencies.outputs.extra }}
           needs: website
           dependencies: '"hard"'
           cache: always
+
+      - uses: actions/cache/restore@v4
+        id: python-cache
+        if: steps.dependencies.outputs.python == 'true'
+        with:
+          path: ${{ runner.temp }}/pkgdown-python/envs
+          key: pkgdown-python-v2-${{ runner.os }}-${{ runner.arch }}-${{ steps.dependencies.outputs.cpu }}-${{ hashFiles('R/PrepareEnv.R', 'R/check_packages.R', 'R/python_utils.R') }}-${{ steps.dependencies.outputs.python_key }}
+
+      - name: Prepare Python environments
+        if: steps.dependencies.outputs.python == 'true'
+        run: Rscript --vanilla .github/pkgdown-build.R python
+
+      - uses: actions/cache/save@v4
+        if: steps.dependencies.outputs.python == 'true' && steps.python-cache.outputs.cache-hit != 'true'
+        with:
+          path: ${{ runner.temp }}/pkgdown-python/envs
+          key: ${{ steps.python-cache.outputs.cache-primary-key }}
 
       - name: Restore unchanged website pages
         run: python3 .github/pkgdown-plan.py restore

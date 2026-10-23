@@ -1,3 +1,23 @@
+heatmap_color_mapping <- function(col_fun, values) {
+  values <- unique(as.vector(values))
+  mapped <- col_fun(values)
+  fun <- function(x = NULL, return_rgb = FALSE, max_value = 1) {
+    if (is.null(x) || !is.numeric(x) || return_rgb || all(is.na(x))) {
+      return(col_fun(x, return_rgb = return_rgb, max_value = max_value))
+    }
+    index <- match(x, values)
+    result <- mapped[index]
+    unmatched <- is.na(index)
+    if (any(unmatched)) {
+      result[unmatched] <- col_fun(x[unmatched])
+    }
+    attributes(result) <- attributes(x)
+    result
+  }
+  attributes(fun) <- attributes(col_fun)
+  fun
+}
+
 prepare_heatmap_borders <- function(
   border,
   heatmap_border,
@@ -211,6 +231,45 @@ build_heatmap_feature_annotation <- function(
     params = params
   )
   list(annotation = annotation, legend = legend)
+}
+
+enrichment_go_keywords <- function(go_id) {
+  path <- system.file("extdata", "tdm_GO.rds", package = "simplifyEnrichment")
+  native <- get_namespace_fun("simplifyEnrichment", "keyword_enrichment_from_GO")
+  version <- as.character(utils::packageVersion("simplifyEnrichment"))
+  if (!nzchar(path) || !version %in% c("2.4.1", "2.6.0")) {
+    return(native(go_id))
+  }
+  tdm <- readRDS(path)
+  if (!inherits(tdm, "simple_triplet_matrix")) {
+    return(native(go_id))
+  }
+  mat <- Matrix::sparseMatrix(
+    i = tdm$i, j = tdm$j, x = tdm$v,
+    dims = c(tdm$nrow, tdm$ncol), dimnames = tdm$dimnames
+  )
+  selected <- colnames(mat) %in% go_id
+  n_selected <- sum(selected)
+  present <- mat != 0
+  n_term <- Matrix::rowSums(present[, selected, drop = FALSE])
+  n_bg <- Matrix::rowSums(present)
+  keep <- Matrix::rowSums(mat) >= 5 & n_term >= 2
+  n_term <- as.numeric(n_term[keep])
+  n_bg <- as.numeric(n_bg[keep])
+  p <- vapply(seq_along(n_term), function(i) {
+    s11 <- n_term[[i]]
+    s12 <- n_selected - s11
+    s21 <- n_bg[[i]] - s11
+    s22 <- ncol(mat) - n_selected - s21
+    stats::fisher.test(
+      cbind(c(s11, s21), c(s12, s22)), alternative = "greater"
+    )$p.value
+  }, numeric(1))
+  df <- data.frame(keyword = rownames(mat)[keep], n_term = n_term, n_bg = n_bg, p = p)
+  df$padj <- stats::p.adjust(df$p)
+  df <- df[order(df$padj, df$p), , drop = FALSE]
+  rownames(df) <- NULL
+  df
 }
 
 heatmap_enrichment <- function(
@@ -493,7 +552,7 @@ heatmap_enrichment <- function(
             check_r("simplifyEnrichment", verbose = FALSE)
             keys_list <- lapply(subdf_list, function(df) {
               if (all(df$Database %in% c("GO", "GO_BP", "GO_CC", "GO_MF"))) {
-                df0 <- simplifyEnrichment::keyword_enrichment_from_GO(df[[
+                df0 <- enrichment_go_keywords(df[[
                   "ID"
                 ]])
                 if (nrow(df0) > 0) {

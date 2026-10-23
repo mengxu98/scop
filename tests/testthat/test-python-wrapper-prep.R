@@ -122,6 +122,9 @@ test_that("MDIC3 Python backend selects the prepared Python runtime", {
 
 test_that("SCENICPlus only prepares Python when an official object is supplied", {
   modules <- NULL
+  object <- tempfile(fileext = ".pkl")
+  file.create(object)
+  on.exit(unlink(object), add = TRUE)
   testthat::local_mocked_bindings(
     .package = "scop",
     PrepareEnv = function(modules, ...) {
@@ -135,11 +138,29 @@ test_that("SCENICPlus only prepares Python when an official object is supplied",
       srt = NULL,
       envname = "scenicplus_env",
       conda = "auto",
-      scplus_object = "result.pkl"
+      scplus_object = object
     ),
     "prepared"
   )
   expect_identical(modules, "scenicplus")
+})
+
+test_that("SCENICPlus extraction uses an isolated subprocess", {
+  seen <- NULL
+  testthat::local_mocked_bindings(
+    .package = "scop",
+    runner_script_path = function(script, ...) file.path("python", script),
+    scop_python_import = function(...) stop("embedded Python used"),
+    runner_system2 = function(command, args, env, stdout, stderr) {
+      seen <<- list(command = command, args = args, env = env)
+      writeLines("SCENICPLUS_TEST_FAILURE", stderr)
+      1L
+    }
+  )
+  expect_error(scenicplus_extract_python_tables("python", "input.h5mu", "output"), "SCENICPLUS_TEST_FAILURE")
+  expect_identical(seen$command, "python")
+  expect_match(seen$args[[1L]], "-c", fixed = TRUE)
+  expect_identical(unname(seen$env[c("KMP_DUPLICATE_LIB_OK", "PYTHONPATH")]), c("FALSE", ""))
 })
 
 test_that("CellRank fate confidence is derived from absorption probabilities", {
@@ -213,12 +234,14 @@ test_that("PrepareEnv reuses its managed environment cache", {
   on.exit(unlink(python), add = TRUE)
   withr::local_options(list(scop_env_cache = list(python = python)))
   configured <- NULL
+  checked <- NULL
   testthat::local_mocked_bindings(
     .package = "scop",
     resolve_conda = function(conda) conda,
     is_cached_env_valid = function(spec) TRUE,
     assert_python_runtime_switchable = function(...) NULL,
     configure_python_runtime = function(python_path) configured <<- python_path,
+    ensure_scipy_runtime = function(python, ...) checked <<- python,
     remember_python_environment = function(...) NULL,
     ensure_external_wrapper_r_packages = function(...) NULL,
     log_message = function(...) NULL
@@ -226,4 +249,22 @@ test_that("PrepareEnv reuses its managed environment cache", {
   expect_null(PrepareEnv(envname = "test", conda = "test-conda",
     version = "3.10-1", modules = "phate", verbose = FALSE))
   expect_identical(configured, python)
+  expect_identical(checked, python)
+})
+
+test_that("PrepareEnv uses the default version for a missing environment", {
+  testthat::local_mocked_bindings(
+    .package = "scop",
+    resolve_conda = function(conda) conda,
+    conda_python = function(...) NULL,
+    env_requirements = function(version, modules) {
+      expect_identical(version, if (is_windows()) "3.11-1" else "3.10-1")
+      expect_identical(modules, "phate")
+      stop("requirements resolved")
+    }
+  )
+  expect_error(
+    PrepareEnv(envname = "new-environment", conda = "test-conda", modules = "phate"),
+    "requirements resolved"
+  )
 })

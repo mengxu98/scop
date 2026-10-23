@@ -1130,12 +1130,13 @@ WilcoxDETest <- function(
 
   data.use <- as_matrix(data.use)
   data.use[data.use <= min.expression] <- NA
+  group1_index <- match(unique(cells.1), colnames(data.use))
   check_r("limma", verbose = FALSE)
   p_val <- parallelize_fun(
     seq_len(nrow(data.use)),
     fun = function(x) {
-      keep <- colnames(data.use)[!is.na(data.use[x, ])]
-      j <- seq_len(length.out = length(intersect(cells.1, keep)))
+      keep <- !is.na(data.use[x, ])
+      j <- seq_len(sum(keep[group1_index]))
       statistics <- data.use[x, keep]
       min(
         2 *
@@ -1287,6 +1288,83 @@ RunDEtestFindAllMarkers <- function(
   ), drop = FALSE]
 }
 
+RunDEtestPairedWilcox <- function(args, pairs, cell_index, cores, verbose) {
+  if (
+    !identical(class(args$object)[[1L]], "Seurat") ||
+      !identical(args$layer, "data") || !isTRUE(args$base == 2) ||
+      !isTRUE(is.finite(args$logfc.threshold)) ||
+      !identical(args$max.cells.per.ident, Inf) ||
+      marker_assay_is_chromatin(args$object, args$assay) ||
+      !isTRUE(check_r("presto", install = FALSE, verbose = FALSE)[["presto"]])
+  ) {
+    return(NULL)
+  }
+  presto_fun <- get_namespace_fun("presto", "wilcoxauc")
+  plan_args <- args[intersect(names(args), names(formals(RunDEtestSparseWilcoxMarkers)))]
+  plan_args$srt <- args$object
+  plan_args$presto_fun <- presto_fun
+  plan_args$random.seed <- 1
+  plan_args$only.pos <- FALSE
+  plan_args$defer <- TRUE
+  data <- GetAssayData5(args$object, assay = args$assay, layer = args$layer)
+  plan_args$data.use <- data
+  features <- args$features %||% rownames(data)
+  group_stats <- if (all(features %in% rownames(data))) {
+    lapply(cell_index, function(cells) {
+      if (length(cells) < 3L) return(NULL)
+      RunDEtestSparseGroupStats(
+        object = data, features = features, cells = cells,
+        layer = args$layer, pseudocount.use = args$pseudocount.use,
+        base = args$base
+      )
+    })
+  }
+  plans <- lapply(seq_len(ncol(pairs)), function(i) {
+    cells1 <- cell_index[[pairs[1, i]]]
+    cells2 <- cell_index[[pairs[2, i]]]
+    if (length(cells1) < 3 || length(cells2) < 3) {
+      return(NULL)
+    }
+    plan_args$cells.1 <- cells1
+    plan_args$cells.2 <- cells2
+    plan_args$group.stats <- unname(group_stats[pairs[, i]])
+    do.call(RunDEtestSparseWilcoxMarkers, plan_args)
+  })
+  worker_plans <- lapply(plans, function(plan) {
+    if (is.null(plan) || is.data.frame(plan)) NULL else plan[c("features", "cells.1", "cells.2")]
+  })
+  worker <- function(i) {
+    plan <- plans[[i]]
+    if (is.null(plan)) {
+      return(NULL)
+    }
+    data_use <- data[plan$features, c(plan$cells.1, plan$cells.2), drop = FALSE]
+    group <- factor(c(
+      rep("Group1", length(plan$cells.1)), rep("Group2", length(plan$cells.2))
+    ), levels = c("Group1", "Group2"))
+    result <- presto_fun(X = data_use, y = group, verbose = FALSE)
+    result <- result[result$group == "Group1", , drop = FALSE]
+    p_val <- result$pval[match(plan$features, result$feature)]
+    names(p_val) <- plan$features
+    p_val
+  }
+  environment(worker) <- list2env(list(
+    data = data,
+    plans = worker_plans, presto_fun = presto_fun
+  ), parent = baseenv())
+  p_values <- parallelize_fun(seq_along(plans), worker, cores = cores, verbose = verbose)
+  RunDEtestStopOnParallelErrors(p_values, context = "Paired differential testing")
+  lapply(seq_along(plans), function(i) {
+    plan <- plans[[i]]
+    markers <- if (is.null(plan) || is.data.frame(plan)) {
+      plan
+    } else {
+      RunDEtestSparseWilcoxResult(p_values[[i]], plan$fc.results, plan$feature_count)
+    }
+    list(group1 = pairs[1, i], group2 = pairs[2, i], markers = markers)
+  })
+}
+
 RunDEtestSparseWilcoxMarkers <- function(
   srt,
   assay,
@@ -1304,9 +1382,12 @@ RunDEtestSparseWilcoxMarkers <- function(
   pseudocount.use,
   random.seed,
   verbose,
-  presto_fun
+  presto_fun,
+  defer = FALSE,
+  data.use = NULL,
+  group.stats = NULL
 ) {
-  data.use <- GetAssayData5(
+  data.use <- data.use %||% GetAssayData5(
     object = srt,
     assay = assay,
     layer = layer
@@ -1335,7 +1416,8 @@ RunDEtestSparseWilcoxMarkers <- function(
     features = features,
     layer = layer,
     pseudocount.use = pseudocount.use,
-    base = base
+    base = base,
+    group.stats = group.stats
   )
 
   alpha.min <- pmax(fc.results$pct.1, fc.results$pct.2)
@@ -1377,6 +1459,12 @@ RunDEtestSparseWilcoxMarkers <- function(
     }
   }
 
+  if (isTRUE(defer)) {
+    return(list(
+      features = features, cells.1 = cells.1, cells.2 = cells.2,
+      fc.results = fc.results[features, , drop = FALSE], feature_count = nrow(data.use)
+    ))
+  }
   data.de <- data.use[features, c(cells.1, cells.2), drop = FALSE]
   group <- factor(
     c(rep("Group1", length(cells.1)), rep("Group2", length(cells.2))),
@@ -1387,6 +1475,10 @@ RunDEtestSparseWilcoxMarkers <- function(
   p_val <- presto.result$pval[keep]
   names(p_val) <- presto.result$feature[keep]
   p_val <- p_val[rownames(data.de)]
+  RunDEtestSparseWilcoxResult(p_val, fc.results, nrow(data.use))
+}
+
+RunDEtestSparseWilcoxResult <- function(p_val, fc.results, feature_count) {
   de.results <- data.frame(
     p_val = p_val,
     row.names = names(p_val)
@@ -1401,7 +1493,7 @@ RunDEtestSparseWilcoxMarkers <- function(
   de.results$p_val_adj <- stats::p.adjust(
     p = de.results$p_val,
     method = "bonferroni",
-    n = nrow(data.use)
+    n = feature_count
   )
   de.results
 }
@@ -1413,7 +1505,8 @@ RunDEtestSparseFoldChange <- function(
   features,
   layer,
   pseudocount.use,
-  base
+  base,
+  group.stats = NULL
 ) {
   base.text <- ifelse(base == exp(1), "", base)
   fc.name <- ifelse(
@@ -1421,7 +1514,7 @@ RunDEtestSparseFoldChange <- function(
     "avg_diff",
     paste0("avg_log", base.text, "FC")
   )
-  group1 <- RunDEtestSparseGroupStats(
+  group1 <- group.stats[[1L]] %||% RunDEtestSparseGroupStats(
     object = object,
     features = features,
     cells = cells.1,
@@ -1429,7 +1522,7 @@ RunDEtestSparseFoldChange <- function(
     pseudocount.use = pseudocount.use,
     base = base
   )
-  group2 <- RunDEtestSparseGroupStats(
+  group2 <- group.stats[[2L]] %||% RunDEtestSparseGroupStats(
     object = object,
     features = features,
     cells = cells.2,
@@ -3250,30 +3343,33 @@ RunDEtest.Seurat <- function(
       )
       if (isTRUE(symmetric_wilcox)) {
         unordered_pair <- utils::combn(levels(cell_group), 2)
-        pair_results <- parallelize_fun(
-          seq_len(ncol(unordered_pair)),
-          function(i) {
-            group1 <- unordered_pair[1, i]
-            group2 <- unordered_pair[2, i]
-            if (
-              length(cell_index[[group1]]) < 3 ||
-                length(cell_index[[group2]]) < 3
-            ) {
-              return(list(group1 = group1, group2 = group2, markers = NULL))
-            }
-            pair_args <- args1
-            pair_args[["cells.1"]] <- cell_index[[group1]]
-            pair_args[["cells.2"]] <- cell_index[[group2]]
-            pair_args[["only.pos"]] <- FALSE
-            list(
-              group1 = group1,
-              group2 = group2,
-              markers = do.call(find_markers_fun, pair_args)
-            )
-          },
-          cores = cores,
-          verbose = verbose
-        )
+        pair_results <- RunDEtestPairedWilcox(args1, unordered_pair, cell_index, cores, verbose)
+        if (is.null(pair_results)) {
+          pair_results <- parallelize_fun(
+            seq_len(ncol(unordered_pair)),
+            function(i) {
+              group1 <- unordered_pair[1, i]
+              group2 <- unordered_pair[2, i]
+              if (
+                length(cell_index[[group1]]) < 3 ||
+                  length(cell_index[[group2]]) < 3
+              ) {
+                return(list(group1 = group1, group2 = group2, markers = NULL))
+              }
+              pair_args <- args1
+              pair_args[["cells.1"]] <- cell_index[[group1]]
+              pair_args[["cells.2"]] <- cell_index[[group2]]
+              pair_args[["only.pos"]] <- FALSE
+              list(
+                group1 = group1,
+                group2 = group2,
+                markers = do.call(find_markers_fun, pair_args)
+              )
+            },
+            cores = cores,
+            verbose = verbose
+          )
+        }
         RunDEtestStopOnParallelErrors(
           pair_results,
           context = "Paired differential testing"
@@ -3372,41 +3468,43 @@ RunDEtest.Seurat <- function(
     }
 
     if (markers_type == "conserved") {
-      ConservedMarkers <- parallelize_fun(
-        levels(cell_group),
-        function(group) {
-          cells.1 <- names(cell_group)[which(cell_group == group)]
-          cells.2 <- names(cell_group)[which(cell_group != group)]
-          if (length(cells.1) < 3 || length(cells.2) < 3) {
-            return(NULL)
-          } else {
-            conserved_args <- args1
-            conserved_args[["srt"]] <- NULL
-            conserved_args[["cells.1"]] <- cells.1
-            conserved_args[["cells.2"]] <- cells.2
-            conserved_args[["object"]] <- srt
-            conserved_args[["assay"]] <- assay
-            conserved_args[["grouping.var"]] <- grouping.var
-            conserved_args[["meta.method"]] <- meta.method
-            markers <- do.call(find_conserved_markers_fun, conserved_args)
-            if (!is.null(markers) && nrow(markers) > 0) {
-              markers[, "gene"] <- rownames(markers)
-              markers[, "group1"] <- as.character(group)
-              markers[, "group2"] <- "others"
-              if ("p_val" %in% colnames(markers)) {
-                markers[, "p_val_adj"] <- stats::p.adjust(
-                  markers[, "p_val"],
-                  method = p.adjust.method
-                )
-              }
-              return(markers)
-            } else {
-              return(NULL)
+      conserved_worker <- function(group) {
+        cells.1 <- names(cell_group)[which(cell_group == group)]
+        cells.2 <- names(cell_group)[which(cell_group != group)]
+        if (length(cells.1) < 3 || length(cells.2) < 3) {
+          return(NULL)
+        } else {
+          conserved_args <- args1
+          conserved_args[["srt"]] <- NULL
+          conserved_args[["cells.1"]] <- cells.1
+          conserved_args[["cells.2"]] <- cells.2
+          conserved_args[["grouping.var"]] <- grouping.var
+          conserved_args[["meta.method"]] <- meta.method
+          markers <- do.call(find_conserved_markers_fun, conserved_args)
+          if (!is.null(markers) && nrow(markers) > 0) {
+            markers[, "gene"] <- rownames(markers)
+            markers[, "group1"] <- as.character(group)
+            markers[, "group2"] <- "others"
+            if ("p_val" %in% colnames(markers)) {
+              markers[, "p_val_adj"] <- stats::p.adjust(
+                markers[, "p_val"],
+                method = p.adjust.method
+              )
             }
+            return(markers)
+          } else {
+            return(NULL)
           }
-        },
-        cores = cores,
-        verbose = verbose
+        }
+      }
+      environment(conserved_worker) <- list2env(list(
+        cell_group = cell_group, args1 = args1,
+        grouping.var = grouping.var, meta.method = meta.method,
+        find_conserved_markers_fun = find_conserved_markers_fun,
+        p.adjust.method = p.adjust.method
+      ), parent = baseenv())
+      ConservedMarkers <- parallelize_fun(
+        levels(cell_group), conserved_worker, cores = cores, verbose = verbose
       )
       RunDEtestStopOnParallelErrors(
         ConservedMarkers,

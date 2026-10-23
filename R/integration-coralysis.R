@@ -152,6 +152,11 @@ Coralysis_integrate <- function(
   if (is.null(run_params[["threads"]]) && !is.null(cores)) {
     run_params[["threads"]] <- as.integer(cores)
   }
+  if (is.null(run_params[["scale.by"]])) {
+    SummarizedExperiment::assay(run_params[["object"]], "logcounts") <- methods::as(
+      SummarizedExperiment::assay(run_params[["object"]], "logcounts"), "RsparseMatrix"
+    )
+  }
   set.seed(seed)
   sce <- invoke_fun(Coralysis::RunParallelDivisiveICP, run_params)
 

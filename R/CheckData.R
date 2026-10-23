@@ -55,7 +55,12 @@ CheckDataType.default <- function(
   verbose = TRUE,
   ...
 ) {
-  isfinite <- all(is.finite(range(object, na.rm = TRUE)))
+  data_range <- if (inherits(object, "dgCMatrix")) {
+    c(min(object, na.rm = TRUE), max(object, na.rm = TRUE))
+  } else {
+    range(object, na.rm = TRUE)
+  }
+  isfinite <- all(is.finite(data_range))
   if (inherits(object, "dgCMatrix")) {
     isfloat <- any(object@x %% 1 != 0, na.rm = TRUE)
   } else {
@@ -64,8 +69,12 @@ CheckDataType.default <- function(
       na.rm = TRUE
     )
   }
-  islog <- is.finite(expm1(x = max(object, na.rm = TRUE)))
-  isnegative <- any(object < 0)
+  islog <- is.finite(expm1(x = data_range[[2L]]))
+  isnegative <- if (inherits(object, "dgCMatrix") && !anyNA(object@x)) {
+    data_range[[1L]] < 0
+  } else {
+    any(object < 0)
+  }
 
   if (isFALSE(isfinite)) {
     log_message(

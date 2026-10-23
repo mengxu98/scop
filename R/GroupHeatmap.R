@@ -1089,6 +1089,8 @@ GroupHeatmap <- function(
     )
   }
 
+  colors <- heatmap_color_mapping(colors, combined_mat)
+
   cell_metadata <- cbind.data.frame(
     data.frame(row.names = cells, cells = cells),
     cbind.data.frame(

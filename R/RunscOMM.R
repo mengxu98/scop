@@ -221,12 +221,7 @@ run_scomm <- function(
   verbose = TRUE
 ) {
   if (is.null(python)) {
-    cached_modules <- tryCatch(
-      getOption("scop_env_cache", default = NULL)[["modules"]],
-      error = function(...) NULL
-    )
-    env_modules <- unique(c(cached_modules %||% character(0), "scomm"))
-    PrepareEnv(modules = env_modules)
+    PrepareEnv(modules = "scomm")
     python <- tryCatch(
       getOption("scop_env_cache", default = NULL)[["python"]],
       error = function(...) NULL

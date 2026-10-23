@@ -81,14 +81,20 @@ check_python <- function(
       expr = {
         conda_install(
           conda = conda,
-          packages = pkgs_to_install,
+          packages = if (pip) unname(packages) else pkgs_to_install,
           envname = envname,
           pip = pip,
           pip_options = pip_options,
           ...
         )
       },
-      error = identity
+      error = function(e) {
+        detail <- conditionMessage(e)
+        log_message(
+          "Python package installation failed in {.file {envname}}: {detail}",
+          message_type = "error"
+        )
+      }
     )
 
     pkg_installed <- exist_python_pkgs(
@@ -226,9 +232,9 @@ exist_python_pkgs <- function(
           )
         }
 
-        packages_installed[pkg] <- version_match
+        packages_installed[i] <- version_match
       } else {
-        packages_installed[pkg] <- TRUE
+        packages_installed[i] <- TRUE
         installed_version <- unique(all_installed$version[
           all_installed$package == found_pkg_name
         ])
@@ -239,7 +245,7 @@ exist_python_pkgs <- function(
         )
       }
     } else {
-      packages_installed[pkg] <- FALSE
+      packages_installed[i] <- FALSE
       log_message(
         "{.pkg {pkg_name}} not found",
         message_type = "warning",
@@ -285,10 +291,13 @@ resolve_requested_python_packages <- function(
   } else {
     if (is_windows()) "3.11-1" else "3.10-1"
   }
-  requirements <- env_requirements(
-    version = version,
-    include_optional = TRUE
-  )
+  requested <- vapply(packages, function(pkg) parse_python_requirement(pkg)$name, "")
+  modules <- if ("moscot" %in% requested) {
+    "moscot"
+  } else {
+    setdiff(normalize_env_modules(include_optional = TRUE), "moscot")
+  }
+  requirements <- env_requirements(version = version, modules = modules)
   package_versions <- requirements$packages
 
   resolved <- vapply(
@@ -427,30 +436,9 @@ installed_python_pkgs <- function(
     verbose = verbose
   )
 
-  all_installed <- tryCatch(
-    {
-      all_installed <- get_namespace_fun(
-        "reticulate",
-        "conda_list_packages"
-      )(
-        conda = conda,
-        envname = envname,
-        no_pip = FALSE
-      )
-      log_message(
-        "Found {.val {nrow(all_installed)}} packages installed",
-        verbose = verbose
-      )
-      normalize_installed_package_table(all_installed)
-    },
-    error = function(e) {
-      log_message(
-        "Failed to retrieve package list via reticulate: {.val {e$message}}",
-        message_type = "warning",
-        verbose = verbose
-      )
-      NULL
-    }
+  all_installed <- installed_python_pkgs_cli(
+    envname = envname,
+    conda = conda
   )
 
   pip_installed <- installed_python_pkgs_pip(
@@ -458,16 +446,8 @@ installed_python_pkgs <- function(
     conda = conda
   )
 
+  all_installed <- merge_installed_package_tables(all_installed, pip_installed)
   if (!is.null(all_installed)) {
-    return(merge_installed_package_tables(all_installed, pip_installed))
-  }
-
-  all_installed <- installed_python_pkgs_cli(
-    envname = envname,
-    conda = conda
-  )
-  if (!is.null(all_installed)) {
-    all_installed <- merge_installed_package_tables(all_installed, pip_installed)
     log_message(
       "Found {.val {nrow(all_installed)}} packages installed",
       verbose = verbose
@@ -482,6 +462,7 @@ installed_python_pkgs <- function(
 }
 
 normalize_installed_package_table <- function(packages) {
+  if (is.list(packages) && !is.data.frame(packages)) packages <- packages[["packages"]]
   if (is.null(packages) || !is.data.frame(packages) || nrow(packages) == 0) {
     return(NULL)
   }
@@ -941,4 +922,79 @@ remove_single_python_package <- function(
     verbose = verbose
   )
   FALSE
+}
+
+check_python_dependencies <- function(python, packages, envname, verbose = NULL) {
+  output <- tempfile("pip-check-")
+  on.exit(unlink(output), add = TRUE)
+  status <- get_namespace_fun("reticulate", "system2t")(
+    python, c("-m", "pip", "check"), stdout = output, stderr = output
+  )
+  if (status == 0L) {
+    return(invisible(TRUE))
+  }
+  diagnostics <- trimws(readLines(output, warn = FALSE))
+  diagnostics <- diagnostics[nzchar(diagnostics)]
+  closure <- python_dependency_closure(python, packages)
+  pattern <- "^([[:alnum:]][[:alnum:]_.-]*) [^[:space:]]+ (has requirement |requires |is not supported on this platform)"
+  recognized <- grepl(pattern, diagnostics)
+  owners <- canonical_python_distribution_name(sub(" .*", "", diagnostics))
+  relevant <- !recognized | owners %in% closure
+  detail <- paste(diagnostics, collapse = "\n")
+  if (status != 1L || !length(diagnostics) || any(relevant)) {
+    log_message(
+      "Python dependency check failed in environment {.val {envname}}; conflicts affecting the requested dependency closure or unclassified failures remain:\n{detail}",
+      message_type = "error"
+    )
+  }
+  log_message(
+    "Unrelated legacy Python dependency conflicts in environment {.val {envname}}:\n{detail}\nCreate a separate environment for the affected module, or rebuild it with PrepareEnv(force = TRUE) after preserving needed data.",
+    message_type = "warning",
+    verbose = verbose
+  )
+  invisible(TRUE)
+}
+
+python_dependency_closure <- function(python, packages) {
+  pending <- vapply(seq_along(packages), function(i) {
+    parse_python_requirement(packages[[i]], fallback_name = names(packages)[i])$name
+  }, "")
+  pending <- canonical_python_distribution_name(pending)
+  closure <- character(0)
+  system2t <- get_namespace_fun("reticulate", "system2t")
+  output <- tempfile("dependency-closure-")
+  errors <- tempfile("dependency-errors-")
+  on.exit(unlink(c(output, errors)), add = TRUE)
+  while (length(pending <- setdiff(unique(pending[nzchar(pending)]), closure))) {
+    closure <- c(closure, pending)
+    status <- system2t(
+      python, c("-m", "pip", "show", pending), stdout = output, stderr = errors
+    )
+    detail <- readLines(errors, warn = FALSE)
+    detail <- detail[nzchar(trimws(detail)) & !grepl("Package\\(s\\) not found", detail)]
+    if (status != 0L && length(detail)) {
+      log_message(
+        "Unable to determine the requested Python dependency closure:\n{paste(detail, collapse = '\n')}",
+        message_type = "error"
+      )
+    }
+    requires <- grep("^Requires:", readLines(output, warn = FALSE), value = TRUE)
+    pending <- canonical_python_distribution_name(
+      unlist(strsplit(sub("^Requires:", "", requires), ","), use.names = FALSE)
+    )
+  }
+  sort(closure)
+}
+
+scvi_jax_requirements <- function() {
+  c(
+    jax = "jax[cpu]==0.4.38",
+    jaxlib = "jaxlib==0.4.38",
+    numpyro = "numpyro==0.17.0",
+    optax = "optax==0.2.5",
+    flax = "flax==0.10.4",
+    chex = "chex==0.1.89",
+    "orbax-checkpoint" = "orbax-checkpoint==0.8.0",
+    tensorstore = "tensorstore==0.1.65"
+  )
 }

@@ -163,3 +163,40 @@ test_that("RunPHATE cpp prevents a one-landmark degenerate embedding", {
     2L
   )
 })
+
+test_that("Python PHATE isolates a different runtime and forwards warnings and arguments", {
+  captured <- NULL
+  testthat::local_mocked_bindings(
+    active_python_runtime = function() "/active/bin/python",
+    conda_python = function(...) "/phate/bin/python",
+    resolve_conda = function(...) "conda",
+    check_r = function(...) invisible(TRUE),
+    PrepareEnv = function(...) stop("Unexpected parent runtime switch"),
+    get_namespace_fun = function(package, fun) {
+      expect_identical(c(package, fun), c("callr", "r"))
+      function(func, args, ...) {
+        captured <<- args$args
+        list(value = "result", warnings = list(simpleWarning("backend warning")))
+      }
+    },
+    .package = "scop"
+  )
+  input <- matrix(seq_len(24), nrow = 6)
+  expect_warning(result <- RunPHATE(input, backend = "python", knn = 3,
+    n_components = 3, seed.use = 42, verbose = FALSE, n_jobs = 2L), "backend warning")
+  expect_identical(result, "result")
+  expect_identical(captured$object, input)
+  expect_identical(captured$seed.use, 42)
+  expect_identical(captured$n_jobs, 2L)
+})
+
+test_that("Python PHATE reuses the active target runtime", {
+  testthat::local_mocked_bindings(
+    active_python_runtime = function() "/phate/bin/python",
+    conda_python = function(...) "/phate/bin/python",
+    resolve_conda = function(...) "conda",
+    PrepareEnv = function(...) stop("Existing runtime retained"),
+    .package = "scop"
+  )
+  expect_error(RunPHATE(matrix(1, 6, 4), backend = "python"), "Existing runtime retained")
+})

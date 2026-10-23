@@ -59,8 +59,14 @@ Possible values are \code{"global"} and \code{"separate"}.}
 
 \item{scVI_dims_use}{Integrated dimensions used for downstream clustering and nonlinear reduction.}
 
-\item{nonlinear_reduction, nonlinear_reduction_dims, nonlinear_reduction_params, force_nonlinear_reduction}{Nonlinear reduction (\code{"umap"}, \code{"umap-naive"}, \code{"tsne"}, \code{"dm"}, \code{"phate"},
-\code{"pacmap"}, \code{"trimap"}, \code{"largevis"}, \code{"fr"}).}
+\item{nonlinear_reduction}{Nonlinear reduction (\code{"umap"}, \code{"umap-naive"}, \code{"tsne"}, \code{"dm"}, \code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"largevis"}, \code{"fr"}).}
+
+\item{nonlinear_reduction_dims}{Number(s) of nonlinear dimensions to compute.}
+
+\item{nonlinear_reduction_params}{Shared parameters, optionally overridden by
+lists named after individual nonlinear reduction methods.}
+
+\item{force_nonlinear_reduction}{Recompute nonlinear reductions even when stored results exist.}
 
 \item{neighbor_metric, neighbor_k}{Neighbor graph (\code{"euclidean"}, \code{"cosine"},
 \code{"manhattan"}, \code{"hamming"}).}

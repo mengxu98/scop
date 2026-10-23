@@ -53,7 +53,7 @@ LIGER_integrate <- function(
   validate_nonlinear_reductions(nonlinear_reduction)
   cluster_algorithm_index <- resolve_cluster_algorithm_index(cluster_algorithm)
 
-  check_r("rliger", verbose = FALSE)
+  check_r(c("rliger", "RcppPlanc"), verbose = FALSE)
   set.seed(seed)
 
   validate_integration_input_cells(srt_list, srt_merge)
