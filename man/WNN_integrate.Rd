@@ -59,8 +59,15 @@ Known SCOP gene-activity and chromVAR assays cannot substitute for RNA.}
 \item{normalization_method}{The normalization method to be used.
 Possible values are \code{"LogNormalize"}, \code{"SCT"}, \code{"TFIDF"}, and \code{"scran"}.}
 
+\item{do_HVF_finding}{Whether to select variable features during preprocessing.}
+
 \item{HVF_source}{The source of highly variable features.
 Possible values are \code{"global"} and \code{"separate"}.}
+
+\item{HVF_method}{RNA feature-selection method passed to \code{\link[=RunStandardWorkflow]{RunStandardWorkflow()}}.}
+
+\item{nHVF}{Maximum number of selected features, subject to modality defaults
+and the number of available features.}
 
 \item{HVF_min_intersection}{The feature needs to be present in batches for a minimum number of times in order to be considered as highly variable.}
 
@@ -76,6 +83,15 @@ Possible values are \code{"global"} and \code{"separate"}.}
 \code{"Uncorrected"}, \code{"Seurat"}, \code{"MNN"}, \code{"Harmony"}, \code{"BBKNN"}, \code{"CSS"}, \code{"ComBat"}.}
 
 \item{linear_reduction}{RNA reduction, which must be \code{"pca"}. ATAC uses SVD.}
+
+\item{linear_reduction_dims}{Number of components to compute for each modality.}
+
+\item{linear_reduction_dims_use}{Explicit component indices, or NULL for
+modality-specific selection. Inspect \code{WNN_dims_list} for the selected indices.}
+
+\item{linear_reduction_params}{Named arguments for the linear reduction backend.}
+
+\item{force_linear_reduction}{Whether to recompute existing linear reductions.}
 
 \item{nonlinear_reduction}{One or more of \code{"umap"}, \code{"umap-naive"} and \code{"fr"},
 or \code{character()} for graphs and clusters without an embedding.}
@@ -104,7 +120,8 @@ A Seurat object with RNA PCA and ATAC LSI reductions, \code{WNN} neighbors,
 embeddings. \code{Misc(object, "WNN_reduction_list")} names the retained source
 reductions; \code{WNN_dims_list} records their selected dimensions. Both return
 modes retain complete processed modality assays (including scaled RNA), ATAC
-reductions, metadata and representation receipts, with RNA as the active assay. The
+reductions, metadata and representation receipts, with the processed RNA
+assay (SCT when selected) active. The
 caller's random-number state is restored.
 }
 \description{

@@ -12,9 +12,18 @@
 #' @param batch Accepted for integration-interface compatibility. WNN does not
 #' perform batch correction; supplying this argument emits a warning.
 #' @param linear_reduction RNA reduction, which must be `"pca"`. ATAC uses SVD.
+#' @param linear_reduction_dims Number of components to compute for each modality.
+#' @param linear_reduction_dims_use Explicit component indices, or NULL for
+#'   modality-specific selection. Inspect `WNN_dims_list` for the selected indices.
+#' @param linear_reduction_params Named arguments for the linear reduction backend.
+#' @param force_linear_reduction Whether to recompute existing linear reductions.
 #' @param nonlinear_reduction One or more of `"umap"`, `"umap-naive"` and `"fr"`,
 #'   or `character()` for graphs and clusters without an embedding.
 #' @param HVF Optional RNA feature names. ATAC features are selected independently.
+#' @param do_HVF_finding Whether to select variable features during preprocessing.
+#' @param HVF_method RNA feature-selection method passed to [RunStandardWorkflow()].
+#' @param nHVF Maximum number of selected features, subject to modality defaults
+#'   and the number of available features.
 #' @details
 #' Cells must represent paired measurements. RNA and ATAC preprocessing is
 #' followed by native multimodal neighbor construction. This function does not
@@ -32,7 +41,8 @@
 #' embeddings. `Misc(object, "WNN_reduction_list")` names the retained source
 #' reductions; `WNN_dims_list` records their selected dimensions. Both return
 #' modes retain complete processed modality assays (including scaled RNA), ATAC
-#' reductions, metadata and representation receipts, with RNA as the active assay. The
+#' reductions, metadata and representation receipts, with the processed RNA
+#' assay (SCT when selected) active. The
 #' caller's random-number state is restored.
 #' @seealso [ReadMultiomeData()], [RunStandardWorkflow()], [RunLinkPeaks()]
 #'
