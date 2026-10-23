@@ -72,6 +72,29 @@ Harmony_integrate <- function(
   set.seed(seed)
 
   validate_integration_input_cells(srt_list, srt_merge)
+  assay_source <- if (is.null(srt_list)) srt_merge else srt_list[[1L]]
+  assay_use <- assay %||% SeuratObject::DefaultAssay(assay_source)
+  if (inherits(assay_source[[assay_use]], "Assay5")) {
+    joined_assay <- if (is.null(srt_list)) {
+      srt_merge[[assay_use]]
+    } else {
+      Reduce(merge, lapply(srt_list, function(srt) srt[[assay_use]]))
+    }
+    joined_assay <- SeuratObject::JoinLayers(joined_assay)
+    if (is.null(srt_list)) {
+      srt_merge[[assay_use]] <- joined_assay
+    } else {
+      srt_list <- lapply(srt_list, function(srt) {
+        variable_features <- SeuratObject::VariableFeatures(srt[[assay_use]])
+        srt[[assay_use]] <- subset(
+          joined_assay,
+          cells = colnames(srt[[assay_use]])
+        )
+        SeuratObject::VariableFeatures(srt[[assay_use]]) <- variable_features
+        srt
+      })
+    }
+  }
   srt_merge_raw <- srt_merge
   if (!is.null(srt_list)) {
     checked <- CheckDataList(
