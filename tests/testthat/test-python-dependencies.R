@@ -142,6 +142,7 @@ test_that("moscot cannot silently override the scVI JAX profile", {
 
 test_that("ordinary package lookup does not combine incompatible JAX profiles", {
   testthat::local_mocked_bindings(
+    is_windows = function() FALSE,
     resolve_conda = identity,
     ensure_conda = function(conda) TRUE,
     env_exist = function(conda, envname) TRUE,
