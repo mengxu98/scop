@@ -492,13 +492,13 @@ PrepareEnv <- function(
 
   valid <- exist_python_pkgs(packages, envname = envname, conda = conda, verbose = FALSE)
   if (!length(valid) || !all(valid)) {
-    stop("Python environment requirements are not satisfied: ", paste(names(valid)[!valid], collapse = ", "), call. = FALSE)
+    log_message("Python environment requirements are not satisfied: {.val {names(valid)[!valid]}}", message_type = "error")
   }
   if (any(c("scipy", "scenicplus") %in% names(packages))) {
     ensure_scipy_runtime(python, pip_options = pip_options)
   }
   status <- get_namespace_fun("reticulate", "system2t")(python, c("-m", "pip", "check"))
-  if (status != 0L) stop("Python dependency conflicts remain in environment: ", envname, call. = FALSE)
+  if (status != 0L) check_python_dependencies(python, pip_packages, envname)
 
   if (isTRUE(configure_runtime)) {
     assert_python_runtime_switchable(
@@ -718,11 +718,11 @@ env_module_requirements <- function() {
     scvi = env_python_spec(
       c(
         "scvi-tools" = "scvi-tools==1.3.3",
-        "jax" = "jax[cpu]==0.4.38"
+        scvi_jax_requirements()
       ),
       methods = c(
         "scvi-tools" = if (is_windows()) "pip" else "conda",
-        "jax" = "pip"
+        stats::setNames(rep("pip", length(scvi_jax_requirements())), names(scvi_jax_requirements()))
       )
     ),
     glue = env_python_spec(
@@ -761,10 +761,11 @@ env_module_requirements <- function() {
     ),
     cell2fate = env_python_spec(
       c(
+        "jax" = "jax==0.4.10",
         "jaxlib" = "jaxlib==0.4.10",
         "cell2fate" = "git+https://github.com/BayraktarLab/cell2fate.git"
       ),
-      methods = c("jaxlib" = "conda", "cell2fate" = "pip")
+      methods = c("jax" = "pip", "jaxlib" = "conda", "cell2fate" = "pip")
     ),
     commot = env_python_spec(c(
       "commot" = "git+https://github.com/zcang/COMMOT.git"
@@ -1964,6 +1965,8 @@ env_requirements <- function(
   package_aliases <- base_requirements$package_aliases
 
   module_requirements <- env_module_requirements()
+
+  assert_jax_module_compatibility(modules)
 
   for (module in modules) {
     if ("scmalignantfinder" %in% modules && identical(module, "scanpy")) {
@@ -3327,9 +3330,9 @@ ensure_windows_scvi_support <- function(
     return(invisible(FALSE))
   }
 
-  jax_requirement <- c("jax" = "jax[cpu]==0.4.38")
+  jax_requirement <- scvi_jax_requirements()
 
-  if (isTRUE(exist_python_pkgs(
+  if (all(exist_python_pkgs(
     jax_requirement,
     envname = envname,
     conda = conda

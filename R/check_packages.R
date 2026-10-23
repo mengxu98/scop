@@ -88,7 +88,13 @@ check_python <- function(
           ...
         )
       },
-      error = identity
+      error = function(e) {
+        detail <- conditionMessage(e)
+        log_message(
+          "Python package installation failed in {.file {envname}}: {detail}",
+          message_type = "error"
+        )
+      }
     )
 
     pkg_installed <- exist_python_pkgs(
@@ -104,7 +110,7 @@ check_python <- function(
     log_message(
       "Failed to install: {.pkg {failed_pkgs}} into the environment {.file {envname}}. Please install manually",
       message_type = "warning",
-      verbose = verbose
+      verbose = TRUE
     )
     return(invisible(FALSE))
   } else {
@@ -285,10 +291,13 @@ resolve_requested_python_packages <- function(
   } else {
     if (is_windows()) "3.11-1" else "3.10-1"
   }
-  requirements <- env_requirements(
-    version = version,
-    include_optional = TRUE
-  )
+  requested <- vapply(packages, function(pkg) parse_python_requirement(pkg)$name, "")
+  modules <- if ("moscot" %in% requested) {
+    "moscot"
+  } else {
+    setdiff(normalize_env_modules(include_optional = TRUE), "moscot")
+  }
+  requirements <- env_requirements(version = version, modules = modules)
   package_versions <- requirements$packages
 
   resolved <- vapply(
