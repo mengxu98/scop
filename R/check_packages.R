@@ -956,61 +956,34 @@ check_python_dependencies <- function(python, packages, envname, verbose = NULL)
 }
 
 python_dependency_closure <- function(python, packages) {
-  roots <- vapply(seq_along(packages), function(i) {
-    pkg <- packages[[i]]
-    if (grepl("^git\\+", pkg)) {
-      name <- parse_python_requirement(pkg, fallback_name = names(packages)[i])$name
-      pkg <- paste(name, "@", pkg)
-    }
-    pkg
+  pending <- vapply(seq_along(packages), function(i) {
+    parse_python_requirement(packages[[i]], fallback_name = names(packages)[i])$name
   }, "")
+  pending <- canonical_python_distribution_name(pending)
+  closure <- character(0)
+  system2t <- get_namespace_fun("reticulate", "system2t")
   output <- tempfile("dependency-closure-")
   errors <- tempfile("dependency-errors-")
   on.exit(unlink(c(output, errors)), add = TRUE)
-  script <- tempfile("dependency-closure-", fileext = ".py")
-  on.exit(unlink(script), add = TRUE)
-  writeLines(c(
-    "import sys",
-    "from importlib import metadata",
-    "from packaging.requirements import Requirement",
-    "from packaging.utils import canonicalize_name",
-    "pending = [Requirement(item) for item in sys.argv[1:]]",
-    "selected = {}",
-    "while pending:",
-    "    request = pending.pop()",
-    "    name = canonicalize_name(request.name)",
-    "    extras = set(request.extras)",
-    "    if name in selected and extras <= selected[name]:",
-    "        continue",
-    "    selected.setdefault(name, set()).update(extras)",
-    "    try:",
-    "        distribution = metadata.distribution(name)",
-    "    except metadata.PackageNotFoundError:",
-    "        continue",
-    "    for raw in distribution.requires or ():",
-    "        dependency = Requirement(raw)",
-    "        if dependency.marker is None or any(",
-    "            dependency.marker.evaluate({'extra': extra})",
-    "            for extra in selected[name] | {''}",
-    "        ):",
-    "            pending.append(dependency)",
-    "print('\\n'.join(sorted(selected)))"
-  ), script)
-  status <- get_namespace_fun("reticulate", "system2t")(
-    python, shQuote(c(script, roots)), stdout = output, stderr = errors
-  )
-  if (status != 0L) {
-    detail <- paste(readLines(errors, warn = FALSE), collapse = "\n")
-    log_message(
-      "Unable to determine the requested Python dependency closure:\n{detail}",
-      message_type = "error"
+  while (length(pending <- setdiff(unique(pending[nzchar(pending)]), closure))) {
+    closure <- c(closure, pending)
+    status <- system2t(
+      python, c("-m", "pip", "show", pending), stdout = output, stderr = errors
+    )
+    detail <- readLines(errors, warn = FALSE)
+    detail <- detail[nzchar(trimws(detail)) & !grepl("Package\\(s\\) not found", detail)]
+    if (status != 0L && length(detail)) {
+      log_message(
+        "Unable to determine the requested Python dependency closure:\n{paste(detail, collapse = '\n')}",
+        message_type = "error"
+      )
+    }
+    requires <- grep("^Requires:", readLines(output, warn = FALSE), value = TRUE)
+    pending <- canonical_python_distribution_name(
+      unlist(strsplit(sub("^Requires:", "", requires), ","), use.names = FALSE)
     )
   }
-  closure <- readLines(output, warn = FALSE)
-  if (!length(closure) || any(!grepl("^[a-z0-9][a-z0-9-]*$", closure))) {
-    log_message("Invalid Python dependency closure metadata", message_type = "error")
-  }
-  closure
+  sort(closure)
 }
 
 scvi_jax_requirements <- function() {

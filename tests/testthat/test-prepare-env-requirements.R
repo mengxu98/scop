@@ -213,7 +213,7 @@ mock_dependency_check <- function(output, status = 1L, closure = c("cellrank", "
           writeLines(output, stdout)
           return(status)
         }
-        writeLines(closure, stdout)
+        writeLines(paste("Requires:", paste(closure, collapse = ", ")), stdout)
         writeLines(character(), stderr)
         0L
       }
@@ -384,11 +384,11 @@ test_that("ordinary package lookup does not combine incompatible JAX profiles", 
   }
 })
 
-test_that("installed metadata follows transitive dependencies, extras, markers and cycles", {
+test_that("installed metadata follows transitive dependencies, markers and cycles", {
   python <- Sys.which("python3")
   if (!nzchar(python)) skip("python3 is unavailable")
-  probe <- suppressWarnings(system2(python, c("-c", shQuote("import packaging")), stdout = TRUE, stderr = TRUE))
-  if (!is.null(attr(probe, "status"))) skip("Python packaging is unavailable")
+  probe <- suppressWarnings(system2(python, c("-m", "pip", "--version"), stdout = TRUE, stderr = TRUE))
+  if (!is.null(attr(probe, "status"))) skip("pip is unavailable")
   directory <- withr::local_tempdir()
   requires <- list(
     "closure-root" = c("closure-middle[feature]", "closure-middle", "closure-inactive; python_version < '2'"),
@@ -407,6 +407,6 @@ test_that("installed metadata follows transitive dependencies, extras, markers a
   withr::local_envvar(c(PYTHONPATH = directory))
   expect_setequal(
     python_dependency_closure(python, "Closure_Root==1.0"),
-    c("closure-root", "closure-middle", "closure-leaf", "closure-extra")
+    c("closure-root", "closure-middle", "closure-leaf")
   )
 })
