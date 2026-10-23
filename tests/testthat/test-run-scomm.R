@@ -55,3 +55,15 @@ test_that("add_prediction_meta computes maximum probabilities by row", {
     tolerance = 1e-12
   )
 })
+
+test_that("scOMM preparation excludes cached modules from other workflows", {
+  withr::local_options(scop_env_cache = list(modules = "scvi"))
+  testthat::local_mocked_bindings(
+    PrepareEnv = function(modules, ...) {
+      expect_identical(modules, "scomm")
+      stop("environment selected")
+    },
+    .package = "scop"
+  )
+  expect_error(run_scomm(NULL, NULL, "RNA", "RNA", "CellType"), "environment selected")
+})

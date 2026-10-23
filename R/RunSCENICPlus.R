@@ -1,9 +1,11 @@
-#' @title Run an approximate SCENICPlus-compatible eGRN analysis
+#' @title Read SCENIC+ results or run an approximate SCENICPlus-compatible eGRN analysis
 #'
 #' @description
-#' Build an approximate eRegulon result from paired RNA and chromatin assays.
-#' The C++ workflow is not an exact re-run of the official SCENIC+ Python
-#' workflow and requires explicit opt-in.
+#' Read official SCENIC+ result tables or build an approximate eRegulon result
+#' from paired RNA and chromatin assays. `backend = "python"` reads or extracts
+#' official SCENIC+ outputs and does not run the SCENIC+ pipeline. The C++
+#' workflow is not an exact re-run of the official SCENIC+ Python workflow and
+#' requires explicit opt-in.
 #'
 #' @md
 #' @inheritParams RunStandardWorkflow
@@ -15,8 +17,9 @@
 #' @param rna_layer RNA count layer used for TF-gene inference and AUC scoring.
 #' @param atac_layer ATAC count layer used for peak-gene correlations.
 #' @param backend Runtime backend. `"python"` reads or extracts official
-#' SCENIC+ result tables and remains the default. `"cpp"` runs the approximate
-#' package workflow.
+#' SCENIC+ result tables and remains the default; it does not run the SCENIC+
+#' pipeline itself. `"cpp"` runs the approximate package workflow and requires
+#' `allow_approximate = TRUE`.
 #' @param allow_approximate Whether to allow the approximate C++ workflow. This
 #' must be `TRUE` when `backend = "cpp"`.
 #' @param grn_method GRN method used for TF-gene inference. The C++ workflow
@@ -114,13 +117,28 @@
 #' (the default) uses the process OpenMP team.
 #' @param assay_name Assay used to store eRegulon AUC scores.
 #' @param tool_name Name of the `srt@tools` result entry.
-#' @param python_result_dir Directory containing official SCENIC+ outputs already
-#' exported as `tf_gene`, `region_gene`, `tf_region`, `triplets`, `eregulons`,
-#' and `auc` tables. Used only for `backend = "python"`.
+#' @param python_result_dir Input directory containing official SCENIC+ outputs
+#' already exported as `tf_gene`, `region_gene`, `tf_region`, `triplets`,
+#' `eregulons`, and `auc` tables. Tab-separated, comma-separated and plain-text
+#' files are accepted, optionally compressed with gzip, bzip2 or xz; a table in
+#' a single subdirectory is also found. Used only for `backend = "python"`.
 #' @param scplus_object Optional official SCENIC+ Python object path
-#' (`.pkl`/`.pickle`) to extract into `python_result_dir` before
+#' (`.pkl`, `.pickle` or `.h5mu`) to extract into `work_dir` before
 #' standardization. Used only for `backend = "python"`.
-#' @param envname Python environment used when `backend = "python"`.
+#' @param auto_prepare Whether to find SCENIC+ results automatically when
+#' neither `python_result_dir` nor `scplus_object` is supplied, and to extract
+#' standardized tables from a matching `.pkl`, `.pickle` or `.h5mu` found in
+#' `python_result_dir` or a conventional location. The search checks
+#' `scenicplus`, `scplus`, `scenic`, `outs` and the current directory. Default
+#' is `TRUE`; set to `FALSE` to require explicit inputs. Used only for
+#' `backend = "python"`; the Python environment is prepared automatically when
+#' extraction is needed.
+#' @param work_dir Directory used for standardized tables extracted from
+#' `scplus_object` or an automatically discovered SCENIC+ object. Defaults to
+#' `"scenicplus_output/"`, mirroring [RunSCENIC()]. Ignored when
+#' `python_result_dir` already contains the standardized tables. Used only for
+#' `backend = "python"`.
+#' @param envname Python environment used when `backend = "python"`. By default, `.h5mu` uses `scenicplus_io_env`; pickle uses `scenicplus_env`.
 #' @param conda Conda-compatible executable used when `backend = "python"`.
 #'
 #' @details
@@ -130,6 +148,18 @@
 #' `region_regulon_list` and `region_auc` alongside gene AUC. Locally computed
 #' gene and region rankings use PCG tie-breaking with fixed seed 123; the
 #' inference and GSEA seed is controlled separately by `seed`.
+#'
+#' `backend = "python"` reads the standardized tables described for
+#' `python_result_dir` instead of running SCENIC+ itself. When only a SCENIC+
+#' object is available, pass it with `scplus_object`; the standardized tables
+#' are extracted into `work_dir` before reading. `.h5mu` objects are read with
+#' the Python `mudata` package. Missing tables are reported together with the files found
+#' in `python_result_dir` and the required columns.
+#'
+#' Neither backend downloads SCENIC+ reference databases or result tables.
+#' `backend = "python"` only reads local files (and may prepare the Python
+#' environment when `scplus_object` is supplied); `backend = "cpp"` uses motif
+#' annotations already stored in the chromatin assay.
 #'
 #' @return A Seurat object with SCENICPlus-style results.
 #' @export
@@ -207,7 +237,9 @@ RunSCENICPlus <- function(
   tool_name = "SCENICPlus",
   python_result_dir = NULL,
   scplus_object = NULL,
-  envname = "scenicplus_env",
+  auto_prepare = TRUE,
+  work_dir = "scenicplus_output/",
+  envname = NULL,
   conda = "auto",
   verbose = TRUE,
   srt = NULL,
@@ -239,6 +271,8 @@ RunSCENICPlus <- function(
       conda = conda,
       python_result_dir = python_result_dir,
       scplus_object = scplus_object,
+      auto_prepare = auto_prepare,
+      work_dir = work_dir,
       rna_assay = rna_assay,
       atac_assay = atac_assay,
       assay_name = assay_name,
@@ -597,6 +631,8 @@ run_scenicplus_python <- function(
   conda,
   python_result_dir = NULL,
   scplus_object = NULL,
+  auto_prepare = TRUE,
+  work_dir = "scenicplus_output/",
   rna_assay = "RNA",
   atac_assay = "peaks",
   assay_name = "scenicplus",
@@ -604,16 +640,37 @@ run_scenicplus_python <- function(
   group.by = NULL,
   verbose = TRUE
 ) {
+  resolved <- scenicplus_resolve_python_inputs(
+    python_result_dir = python_result_dir,
+    scplus_object = scplus_object,
+    work_dir = work_dir,
+    auto_prepare = auto_prepare,
+    verbose = verbose
+  )
+  python_result_dir <- resolved[["python_result_dir"]]
+  scplus_object <- resolved[["scplus_object"]]
   needs_python_runtime <- !is.null(scplus_object)
   if (isTRUE(needs_python_runtime)) {
+    h5mu <- grepl("[.]h5mu$", scplus_object, ignore.case = TRUE)
+    module <- if (h5mu) "scenicplus_io" else "scenicplus"
+    envname <- envname %||% env_module_environment(module)
+    old_kmp <- Sys.getenv("KMP_DUPLICATE_LIB_OK", unset = NA_character_)
+    on.exit({
+      if (is.na(old_kmp)) {
+        Sys.unsetenv("KMP_DUPLICATE_LIB_OK")
+      } else {
+        Sys.setenv(KMP_DUPLICATE_LIB_OK = old_kmp)
+      }
+    }, add = TRUE)
     PrepareEnv(
       envname = envname,
       conda = conda,
-      modules = "scenicplus",
+      modules = module,
+      configure_runtime = FALSE,
       verbose = verbose
     )
     check_python(
-      packages = "scenicplus",
+      packages = if (h5mu) "mudata" else "scenicplus",
       envname = envname,
       conda = conda,
       verbose = verbose
@@ -625,20 +682,27 @@ run_scenicplus_python <- function(
     }
     conda_resolved <- resolve_conda(conda)
     python_path <- conda_python(conda = conda_resolved, envname = envname)
-    assert_python_runtime_switchable(python_path)
-    configure_python_runtime(python_path)
-    functions <- scop_python_import("functions", convert = TRUE)
-    functions$ExtractSCENICPlusTables(
+    scenicplus_extract_python_tables(
+      python_path = python_path,
       scplus_object = scplus_object,
       output_dir = python_result_dir,
       verbose = isTRUE(verbose)
     )
   }
   if (is.null(python_result_dir)) {
-    log_message(
-      "{.arg backend = 'python'} for {.fn RunSCENICPlus} standardizes official SCENIC+ outputs only. Provide {.arg python_result_dir} with exported official tables or {.arg scplus_object} to extract them; the approximate C++ workflow is not used as a substitute.",
-      message_type = "error"
+    detail <- c(
+      "{.arg backend} = {.val python} reads official SCENIC+ results; it does not run the SCENIC+ pipeline.",
+      "i" = "Supply {.arg python_result_dir} containing the exported standardized tables ({.file tf_gene.tsv}, {.file region_gene.tsv}, {.file tf_region.tsv}, {.file triplets.tsv} and {.file auc.tsv}).",
+      "i" = "Or supply {.arg scplus_object} (a {.file .pkl}, {.file .pickle} or {.file .h5mu} SCENIC+ object) to extract those tables first.",
+      "i" = "To run scop's approximate C++ workflow instead, use {.code backend = \"cpp\"} with {.code allow_approximate = TRUE}."
     )
+    if (isTRUE(auto_prepare)) {
+      detail <- c(
+        detail,
+        "i" = "Automatic discovery checked {.file scenicplus}, {.file scplus}, {.file scenic}, {.file outs} and the current directory."
+      )
+    }
+    cli::cli_abort(detail)
   }
   result <- scenicplus_read_python_result(
     result_dir = python_result_dir,
@@ -652,6 +716,8 @@ run_scenicplus_python <- function(
       atac_assay = atac_assay,
       python_result_dir = normalizePath(python_result_dir, mustWork = FALSE),
       scplus_object = scplus_object,
+      auto_prepare = auto_prepare,
+      work_dir = normalizePath(resolved[["work_dir"]], mustWork = FALSE),
       group.by = group.by
     )
   )
@@ -661,6 +727,39 @@ run_scenicplus_python <- function(
     assay_name = assay_name,
     tool_name = tool_name
   )
+}
+
+scenicplus_extract_python_tables <- function(python_path, scplus_object, output_dir, verbose = TRUE) {
+  workdir <- tempfile("scenicplus_export_")
+  dir.create(workdir)
+  on.exit(unlink(workdir, recursive = TRUE, force = TRUE), add = TRUE)
+  stdout_path <- file.path(workdir, "stdout.log")
+  stderr_path <- file.path(workdir, "stderr.log")
+  python_dir <- dirname(runner_script_path("functions.py", "SCENIC+"))
+  code <- paste("import sys; sys.path.insert(0, sys.argv[1]); from functions import ExtractSCENICPlusTables;",
+    "ExtractSCENICPlusTables(sys.argv[2], sys.argv[3], verbose=sys.argv[4] == 'TRUE')")
+  status <- runner_system2(
+    command = python_path,
+    args = shQuote(c("-c", code, python_dir, scplus_object, output_dir, as.character(isTRUE(verbose)))),
+    env = c(
+      PYTHONNOUSERSITE = "1",
+      PYTHONPATH = "",
+      KMP_DUPLICATE_LIB_OK = "FALSE",
+      OMP_NUM_THREADS = "1",
+      OPENBLAS_NUM_THREADS = "1"
+    ),
+    stdout = stdout_path,
+    stderr = stderr_path
+  )
+  if (!identical(status, 0L)) {
+    runner_error(status, stdout_path, stderr_path, backend = "SCENIC+")
+  }
+  log_message(
+    "Exported SCENIC+ standardized tables to {.file {output_dir}}",
+    message_type = "success",
+    verbose = verbose
+  )
+  invisible(NULL)
 }
 
 scenicplus_native_auc <- function(counts, signatures, cores = 1L) {
@@ -721,6 +820,14 @@ scenicplus_read_python_result <- function(
       message_type = "error"
     )
   }
+  table_dir <- scenicplus_table_dir(result_dir)
+  if (is.null(table_dir)) {
+    cli::cli_abort(c(
+      "Missing official SCENIC+ standardized tables in a single unambiguous directory under {.file {result_dir}}.",
+      "i" = "Set {.arg python_result_dir} to one directory containing {.file tf_gene.tsv}, {.file region_gene.tsv}, {.file tf_region.tsv}, {.file triplets.tsv} and {.file auc.tsv}. Tables from different result directories are not combined."
+    ))
+  }
+  result_dir <- table_dir
   tf_gene <- scenicplus_read_required_table(
     result_dir,
     "tf_gene",
@@ -741,7 +848,7 @@ scenicplus_read_python_result <- function(
     "triplets",
     c("TF", "region", "gene", "score")
   )
-  eregulons_path <- scenicplus_table_path(result_dir, "eregulons")
+  eregulons_path <- scenicplus_table_path(result_dir, "eregulons", recursive = FALSE)
   eregulons <- if (is.null(eregulons_path)) NULL else scenicplus_read_delim(eregulons_path)
   auc <- scenicplus_read_required_table(result_dir, "auc", character())
   auc <- scenicplus_normalize_auc_table(auc, cells = cells)
@@ -783,45 +890,326 @@ scenicplus_read_python_result <- function(
   )
 }
 
-scenicplus_table_path <- function(result_dir, name) {
-  candidates <- file.path(
-    result_dir,
-    paste0(name, c(".tsv", ".csv", ".txt"))
-  )
-  hits <- candidates[file.exists(candidates)]
+scenicplus_table_path <- function(result_dir, name, recursive = TRUE) {
+  hits <- scenicplus_table_files(result_dir, name)
   if (length(hits) > 0L) {
     return(hits[[1L]])
   }
+  if (!isTRUE(recursive)) {
+    return(NULL)
+  }
+  nested <- scenicplus_table_files(result_dir, name, recursive = TRUE)
+  if (length(nested) == 1L) {
+    return(nested[[1L]])
+  }
   NULL
+}
+
+scenicplus_table_files <- function(result_dir, name, recursive = FALSE) {
+  if (!dir.exists(result_dir)) {
+    return(character())
+  }
+  pattern <- paste0("^", name, "\\.(tsv|csv|txt)(\\.(gz|bz2|xz))?$")
+  dirs <- result_dir
+  if (isTRUE(recursive)) {
+    dirs <- list.dirs(result_dir, recursive = FALSE, full.names = TRUE)
+  }
+  files <- unlist(
+    lapply(dirs, function(dir) {
+      list.files(
+        dir,
+        pattern = pattern,
+        full.names = TRUE,
+        ignore.case = TRUE
+      )
+    }),
+    use.names = FALSE
+  )
+  scenicplus_order_table_files(files)
+}
+
+scenicplus_order_table_files <- function(files) {
+  if (length(files) == 0L) {
+    return(character())
+  }
+  suffix <- tolower(basename(files))
+  suffix <- sub("\\.(gz|bz2|xz)$", "", suffix)
+  suffix <- sub("^.*\\.", "", suffix)
+  files[order(match(suffix, c("tsv", "csv", "txt")), tolower(basename(files)))]
+}
+
+scenicplus_dir_entries <- function(result_dir) {
+  if (!dir.exists(result_dir)) {
+    return(list(dirs = character(), files = character()))
+  }
+  files <- list.files(result_dir, full.names = TRUE, all.files = FALSE, no.. = TRUE)
+  files <- sort(basename(files[!dir.exists(files)]))
+  dirs <- list.dirs(result_dir, recursive = FALSE, full.names = FALSE)
+  dirs <- sort(dirs[nzchar(dirs) & !grepl("^\\.", dirs)])
+  if (length(dirs) > 0L) {
+    dirs <- paste0(dirs, "/")
+  }
+  list(dirs = dirs, files = files)
 }
 
 scenicplus_read_required_table <- function(result_dir, name, required_cols) {
   path <- scenicplus_table_path(result_dir, name)
   if (is.null(path)) {
-    log_message(
-      "Missing official SCENIC+ standardized table {.file {name}.tsv} in {.arg python_result_dir}",
-      message_type = "error"
+    detail <- scenicplus_missing_table_message(
+      result_dir = result_dir,
+      name = name,
+      required_cols = required_cols
     )
+    cli::cli_abort(detail$message, .envir = detail$envir)
   }
   out <- scenicplus_read_delim(path)
   missing_cols <- setdiff(required_cols, colnames(out))
   if (length(missing_cols) > 0L) {
-    log_message(
-      "SCENIC+ table {.file {basename(path)}} is missing column{?s} {.val {missing_cols}}",
-      message_type = "error"
-    )
+    cli::cli_abort(c(
+      "SCENIC+ table {.file {basename(path)}} is missing column{?s} {.val {missing_cols}}.",
+      "i" = "Required columns: {.val {required_cols}}."
+    ))
   }
   out
 }
 
+scenicplus_missing_table_message <- function(result_dir, name, required_cols) {
+  expected <- paste0(name, ".tsv")
+  top <- scenicplus_table_files(result_dir, name)
+  nested <- setdiff(
+    scenicplus_table_files(result_dir, name, recursive = TRUE),
+    top
+  )
+  entries <- scenicplus_dir_entries(result_dir)
+  message <- c(
+    "Missing official SCENIC+ standardized table {.file {expected}} in {.arg python_result_dir} {.file {result_dir}}."
+  )
+  if (length(nested) > 1L) {
+    message <- c(
+      message,
+      "i" = "Multiple {.file {name}} tables were found: {.file {nested}}. Set {.arg python_result_dir} to the directory holding the table to use."
+    )
+  }
+  message <- c(
+    message,
+    "i" = "The standardized tables are {.file tf_gene.tsv}, {.file region_gene.tsv}, {.file tf_region.tsv}, {.file triplets.tsv} and {.file auc.tsv}."
+  )
+  raw_files <- entries$files[
+    grepl(
+      "^(tf_to_gene_adj|region_to_gene_adj|eRegulon|AUCell|scplus.*mdata)",
+      entries$files,
+      ignore.case = TRUE
+    )
+  ]
+  if (length(raw_files) > 0L) {
+    message <- c(
+      message,
+      "i" = "This looks like raw SCENIC+ output; {.arg python_result_dir} needs the exported standardized tables, not pipeline intermediates."
+    )
+  }
+  object_files <- entries$files[
+    grepl("\\.(pkl|pickle|h5mu)$", entries$files, ignore.case = TRUE)
+  ]
+  if (length(object_files) > 0L) {
+    object_path <- file.path(result_dir, object_files[[1L]])
+    message <- c(
+      message,
+      "i" = "Found SCENIC+ object {.file {object_files[[1L]]}}; pass {.arg scplus_object} = {.file {object_path}} to extract the standardized tables first."
+    )
+  }
+  shown <- utils::head(c(entries$dirs, entries$files), 10L)
+  remaining <- length(entries$dirs) + length(entries$files) - length(shown)
+  more <- if (remaining > 0L) paste0(" (+", remaining, " more)") else ""
+  if (length(shown) > 0L) {
+    message <- c(
+      message,
+      "i" = "Directory contains: {.file {shown}}{more}."
+    )
+  } else {
+    message <- c(message, "i" = "The directory is empty.")
+  }
+  if (length(required_cols) > 0L) {
+    message <- c(
+      message,
+      "i" = "Required columns: {.val {required_cols}}."
+    )
+  }
+  list(message = message, envir = environment())
+}
+
 scenicplus_read_delim <- function(path) {
-  sep <- if (grepl("\\.csv$", path, ignore.case = TRUE)) "," else "\t"
+  uncompressed <- sub("\\.(gz|bz2|xz)$", "", path, ignore.case = TRUE)
+  sep <- if (grepl("\\.csv$", uncompressed, ignore.case = TRUE)) "," else "\t"
+  header <- utils::read.delim(path, sep = sep, nrows = 0L, check.names = FALSE)
+  col_classes <- rep(NA_character_, ncol(header))
+  if (length(col_classes) && tolower(colnames(header)[[1L]]) %in% c("", "cell", "cell_id", "barcode", "index", "unnamed: 0")) {
+    col_classes[[1L]] <- "character"
+  }
   utils::read.delim(
     path,
     sep = sep,
+    colClasses = col_classes,
     check.names = FALSE,
     stringsAsFactors = FALSE
   )
+}
+
+scenicplus_resolve_python_inputs <- function(
+  python_result_dir = NULL,
+  scplus_object = NULL,
+  work_dir = "scenicplus_output/",
+  auto_prepare = TRUE,
+  verbose = TRUE
+) {
+  extraction_dir <- if (is.null(work_dir)) {
+    file.path(tempdir(), "scenicplus_export")
+  } else {
+    work_dir
+  }
+  if (!is.null(scplus_object)) {
+    scplus_object <- scenicplus_resolve_object(scplus_object)
+  }
+  if (
+    !is.null(python_result_dir) &&
+      !dir.exists(python_result_dir) &&
+      file.exists(python_result_dir)
+  ) {
+    if (is.null(scplus_object)) {
+      scplus_object <- scenicplus_resolve_object(python_result_dir)
+    }
+    python_result_dir <- NULL
+  }
+  if (
+    is.null(python_result_dir) &&
+      is.null(scplus_object) &&
+      isTRUE(auto_prepare)
+  ) {
+    for (candidate in c("scenicplus", "scplus", "scenic", "outs", ".")) {
+      if (!dir.exists(candidate)) {
+        next
+      }
+      if (scenicplus_has_all_tables(candidate)) {
+        python_result_dir <- candidate
+        log_message(
+          "Using SCENIC+ standardized tables found in {.file {candidate}}",
+          verbose = verbose
+        )
+        break
+      }
+      object <- scenicplus_find_object(candidate)
+      if (!is.null(object)) {
+        scplus_object <- object
+        python_result_dir <- extraction_dir
+        log_message(
+          "Found SCENIC+ object {.file {basename(object)}} in {.file {candidate}}; standardized tables will be extracted to {.file {extraction_dir}}",
+          verbose = verbose
+        )
+        break
+      }
+    }
+  }
+  if (
+    !is.null(python_result_dir) &&
+      dir.exists(python_result_dir) &&
+      is.null(scplus_object) &&
+      isTRUE(auto_prepare) &&
+      !scenicplus_has_all_tables(python_result_dir)
+  ) {
+    object <- scenicplus_find_object(python_result_dir)
+    if (!is.null(object)) {
+      scplus_object <- object
+      python_result_dir <- extraction_dir
+      log_message(
+        "Found SCENIC+ object {.file {basename(object)}} in {.arg python_result_dir}; standardized tables will be extracted to {.file {extraction_dir}}",
+        verbose = verbose
+      )
+    }
+  }
+  if (!is.null(scplus_object)) {
+    python_result_dir <- extraction_dir
+  }
+  list(
+    python_result_dir = python_result_dir,
+    scplus_object = scplus_object,
+    work_dir = extraction_dir
+  )
+}
+
+scenicplus_has_all_tables <- function(result_dir) {
+  !is.null(scenicplus_table_dir(result_dir))
+}
+
+scenicplus_table_dir <- function(result_dir) {
+  required <- c("tf_gene", "region_gene", "tf_region", "triplets", "auc")
+  complete <- function(dir) {
+    all(vapply(required, function(name) {
+      length(scenicplus_table_files(dir, name)) > 0L
+    }, logical(1)))
+  }
+  if (complete(result_dir)) {
+    return(result_dir)
+  }
+  dirs <- list.dirs(result_dir, recursive = FALSE, full.names = TRUE)
+  dirs <- dirs[vapply(dirs, complete, logical(1))]
+  if (length(dirs) == 1L) {
+    return(dirs[[1L]])
+  }
+  NULL
+}
+
+scenicplus_find_object <- function(result_dir, strict = TRUE) {
+  files <- list.files(
+    result_dir,
+    pattern = "\\.(pkl|pickle|h5mu)$",
+    full.names = TRUE,
+    ignore.case = TRUE
+  )
+  if (isTRUE(strict)) {
+    files <- files[
+      grepl(
+        "(scplus|scenicplus|mdata|eregulon)",
+        basename(files),
+        ignore.case = TRUE
+      )
+    ]
+  }
+  if (length(files) != 1L) {
+    return(NULL)
+  }
+  files[[1L]]
+}
+
+scenicplus_resolve_object <- function(path) {
+  if (dir.exists(path)) {
+    candidates <- list.files(
+      path,
+      pattern = "\\.(pkl|pickle|h5mu)$",
+      full.names = TRUE,
+      ignore.case = TRUE
+    )
+    if (length(candidates) == 1L) {
+      return(candidates[[1L]])
+    }
+    if (length(candidates) == 0L) {
+      cli::cli_abort(
+        "No {.file .pkl}, {.file .pickle} or {.file .h5mu} SCENIC+ object was found in {.arg scplus_object} {.file {path}}."
+      )
+    }
+    cli::cli_abort(c(
+      "{.arg scplus_object} must point to one SCENIC+ object, but {.file {path}} contains multiple object files.",
+      "i" = "Candidates: {.file {candidates}}."
+    ))
+  }
+  if (!file.exists(path)) {
+    cli::cli_abort("Cannot find {.arg scplus_object}: {.file {path}}")
+  }
+  if (!grepl("\\.(pkl|pickle|h5mu)$", path, ignore.case = TRUE)) {
+    cli::cli_abort(c(
+      "{.arg scplus_object} supports {.file .pkl}, {.file .pickle} and {.file .h5mu} SCENIC+ objects, not {.file {basename(path)}}.",
+      "i" = "Export the eRegulon metadata and AUC matrices to {.arg python_result_dir} first."
+    ))
+  }
+  path
 }
 
 scenicplus_prepare_rna_expr <- function(rna_expr, fallback, cells) {
@@ -1204,19 +1592,21 @@ scenicplus_ereg_prior <- function(
 }
 
 scenicplus_normalize_auc_table <- function(auc, cells) {
+  unlabeled <- .row_names_info(auc, type = 1L) < 0L
   first_col <- colnames(auc)[[1L]]
   if (
     !is.null(first_col) &&
       !first_col %in% cells &&
-      !is.numeric(auc[[first_col]])
+      (!is.numeric(auc[[1L]]) || !nzchar(first_col))
   ) {
-    rownames(auc) <- as.character(auc[[first_col]])
-    auc[[first_col]] <- NULL
+    rownames(auc) <- as.character(auc[[1L]])
+    auc[[1L]] <- NULL
+    unlabeled <- FALSE
   }
   auc <- as.data.frame(auc, check.names = FALSE, stringsAsFactors = FALSE)
   auc[] <- lapply(auc, as.numeric)
   common_cells <- intersect(cells, rownames(auc))
-  if (length(common_cells) == 0L && length(cells) == nrow(auc)) {
+  if (length(common_cells) == 0L && length(cells) == nrow(auc) && isTRUE(unlabeled)) {
     rownames(auc) <- cells
     common_cells <- cells
   }

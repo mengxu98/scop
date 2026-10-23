@@ -5984,6 +5984,51 @@ def RunSCENICRegDiffusion(
 
 def ExtractSCENICPlusTables(scplus_object, output_dir, verbose=True):
     """Extract common official SCENIC+ result tables to a standardized folder."""
+    import re
+    import tempfile
+
+    output_dir = Path(str(output_dir)).expanduser()
+    output_dir.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix=".scenicplus-", dir=output_dir.parent) as temporary:
+        generated = Path(temporary) / "tables"
+        _extract_scenicplus_tables(scplus_object, generated, verbose=False)
+        output_dir.mkdir(parents=True, exist_ok=True)
+        tables = sorted(generated.iterdir())
+        for table in tables:
+            destination = output_dir / table.name
+            if destination.exists() and not destination.is_file():
+                raise ValueError(f"SCENIC+ table destination is not a file: {destination}")
+        pattern = re.compile(r"(?:tf_gene|region_gene|tf_region|triplets|auc|eregulons)\.(?:tsv|csv|txt)(?:\.(?:gz|bz2|xz))?", re.IGNORECASE)
+        previous = [p for p in output_dir.iterdir() if (p.is_file() or p.is_symlink()) and pattern.fullmatch(p.name)]
+        backup = Path(tempfile.mkdtemp(prefix=".scenicplus-backup-", dir=output_dir.parent))
+        published = []
+        try:
+            for table in previous:
+                table.replace(backup / table.name)
+            for table in tables:
+                destination = output_dir / table.name
+                table.replace(destination)
+                published.append(destination)
+        except BaseException:
+            for table in published:
+                table.unlink()
+            for table in backup.iterdir():
+                table.replace(output_dir / table.name)
+            backup.rmdir()
+            raise
+        else:
+            import shutil
+
+            shutil.rmtree(backup)
+    log_message(
+        "Exported SCENIC+ standardized tables to {.val {%s}}" % output_dir,
+        message_type="success",
+        verbose=verbose,
+    )
+    return {"output_dir": str(output_dir)}
+
+
+def _extract_scenicplus_tables(scplus_object, output_dir, verbose=True):
     import pickle
     import pandas as pd
 
@@ -5991,8 +6036,17 @@ def ExtractSCENICPlusTables(scplus_object, output_dir, verbose=True):
     output_dir = Path(str(output_dir)).expanduser()
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    with open(scplus_object, "rb") as handle:
-        obj = pickle.load(handle)
+    if scplus_object.suffix.lower() == ".h5mu":
+        try:
+            import mudata
+        except ModuleNotFoundError as error:
+            if error.name != "mudata":
+                raise
+            import muon as mudata
+        obj = mudata.read(str(scplus_object))
+    else:
+        with open(scplus_object, "rb") as handle:
+            obj = pickle.load(handle)
 
     def _get(container, key):
         if container is None:
@@ -6013,15 +6067,27 @@ def ExtractSCENICPlusTables(scplus_object, output_dir, verbose=True):
                 return value
         return None
 
-    metadata = _first_value(
+    metadata_parts = [
+        _get(uns, key)
+        for key in ("direct_e_regulon_metadata", "extended_e_regulon_metadata")
+        if _get(uns, key) is not None
+    ]
+    metadata = pd.concat(metadata_parts, ignore_index=True) if metadata_parts else _first_value(
         _get(uns, "eRegulon_metadata_filtered"),
         _get(uns, "eRegulon_metadata"),
         _get(obj, "eRegulon_metadata"),
     )
+    mods = _get(obj, "mod")
+    auc_parts = [
+        _get(mods, key).to_df()
+        for key in ("direct_gene_based_AUC", "extended_gene_based_AUC")
+        if _get(mods, key) is not None
+    ]
     auc = _first_value(
         _get(uns, "eRegulon_AUC"),
         _get(uns, "eRegulon_AUC_filtered"),
         _get(obj, "eRegulon_AUC"),
+        pd.concat(auc_parts, axis=1) if auc_parts else None,
     )
 
     if metadata is None:
@@ -6047,6 +6113,9 @@ def ExtractSCENICPlusTables(scplus_object, output_dir, verbose=True):
         "TF2G_importance_x_abs_rho",
         "TF2G_importance_x_rho",
         "TF2G_rho",
+        "importance_TF2G",
+        "importance_x_abs_rho_TF2G",
+        "importance_x_rho_TF2G",
         "importance",
         "score",
     ])
@@ -6055,6 +6124,9 @@ def ExtractSCENICPlusTables(scplus_object, output_dir, verbose=True):
         "R2G_importance",
         "R2G_importance_x_rho",
         "R2G_rho",
+        "importance_R2G",
+        "importance_x_abs_rho_R2G",
+        "importance_x_rho_R2G",
         "rho",
         "importance",
         "score",
@@ -6104,12 +6176,29 @@ def ExtractSCENICPlusTables(scplus_object, output_dir, verbose=True):
             auc.get("Region_based"),
             next(iter(auc.values())) if len(auc) > 0 else None,
         )
-    if hasattr(auc, "to_pandas"):
+    if hasattr(auc, "mod") and hasattr(auc, "obs"):
+        auc = _first_value(
+            _get(auc, "Gene_based"),
+            _get(auc, "Region_based"),
+        )
+    if hasattr(auc, "to_df"):
+        auc = auc.to_df()
+    elif hasattr(auc, "to_pandas"):
         auc = auc.to_pandas()
     auc = pd.DataFrame(auc)
-    auc.to_csv(output_dir / "auc.tsv", sep="\t")
+    auc.to_csv(output_dir / "auc.tsv", sep="\t", float_format="%.17g")
 
-    regulon_col = _first_existing(["eRegulon_name", "Regulon", "regulon", "Gene_signature_name"])
+    auc_columns = {str(value) for value in auc.columns}
+    regulon_col = None
+    for candidate in ["Gene_signature_name", "eRegulon_name", "Regulon", "regulon"]:
+        if candidate not in metadata.columns:
+            continue
+        values = {str(value) for value in metadata[candidate].dropna().unique()}
+        if values & auc_columns:
+            regulon_col = candidate
+            break
+    if regulon_col is None:
+        regulon_col = _first_existing(["Gene_signature_name", "eRegulon_name", "Regulon", "regulon"])
     if regulon_col is not None:
         if gene_col is not None:
             eregulons = (

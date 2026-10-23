@@ -145,7 +145,7 @@ GeneConvert <- function(
     )
     archives <- try_get(
       expr = {
-        biomaRt::listEnsemblArchives()
+        ensembl_archive_catalog(Ensembl_version)
       },
       max_tries = max_tries,
       error_message = "Get errors when connecting with EnsemblArchives..."
@@ -197,27 +197,12 @@ GeneConvert <- function(
         } else if (!is.null(mirror)) {
           biomaRt::useEnsembl(biomart = "ensembl", mirror = mirror)
         } else {
-          mart_try <- tryCatch(
-            biomaRt::useMart(biomart = "ensembl", host = url),
-            error = function(e) e
+          methods::new(
+            "Mart",
+            biomart = "ENSEMBL_MART_ENSEMBL",
+            vschema = "default",
+            host = paste0(url, ":443/biomart/martservice?redirect=no")
           )
-          if (inherits(mart_try, "error")) {
-            mirror_candidates <- c("useast", "uswest", "asia", "www")
-            for (mirror_i in mirror_candidates) {
-              mart_mirror <- tryCatch(
-                biomaRt::useEnsembl(biomart = "ensembl", mirror = mirror_i),
-                error = function(e) e
-              )
-              if (!inherits(mart_mirror, "error")) {
-                mart_try <- mart_mirror
-                break
-              }
-            }
-          }
-          if (inherits(mart_try, "error")) {
-            stop(mart_try)
-          }
-          mart_try
         }
       },
       max_tries = max_tries,
@@ -777,6 +762,35 @@ GeneConvert <- function(
   )
 }
 
+ensembl_archive_catalog <- function(version) {
+  tryCatch(biomaRt::listEnsemblArchives(), error = function(error) {
+    if (identical(as.character(version), "current_release")) {
+      stop(error)
+    }
+    response <- httr::GET(
+      "https://sep2025.archive.ensembl.org/info/website/archives/index.html?redirect=no",
+      httr::timeout(20)
+    )
+    httr::stop_for_status(response)
+    html <- httr::content(response, as = "text", encoding = "UTF-8")
+    links <- regmatches(html, gregexpr(
+      '<a[^>]+href="[^"]+"[^>]*>Ensembl [0-9]+:', html, perl = TRUE
+    ))[[1]]
+    if (!length(links)) {
+      stop(error)
+    }
+    archives <- data.frame(
+      url = sub("^http:", "https:", tolower(sub('.*href="([^"]+)".*', "\\1", links))),
+      version = sub(".*>Ensembl ([0-9]+):$", "\\1", links),
+      current_release = ""
+    )
+    if (!as.character(version) %in% archives$version) {
+      stop(error)
+    }
+    archives
+  })
+}
+
 search_datasets <- function(datasets, pattern, verbose = TRUE) {
   col_index <- vapply(
     datasets,
@@ -815,7 +829,10 @@ connect_biomart_dataset <- function(dataset, mart, mirror = NULL) {
   if (!inherits(dataset_try, "error")) {
     return(dataset_try)
   }
-  if (!identical(mart@biomart, "ENSEMBL_MART_ENSEMBL")) {
+  if (
+    !identical(mart@biomart, "ENSEMBL_MART_ENSEMBL") ||
+      grepl(".archive.ensembl.org", mart@host, fixed = TRUE)
+  ) {
     stop(dataset_try)
   }
   mirror_candidates <- unique(

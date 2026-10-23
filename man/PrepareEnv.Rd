@@ -15,12 +15,14 @@ PrepareEnv(
   components = "python",
   cores = NULL,
   verbose = TRUE,
+  configure_runtime = TRUE,
   ...
 )
 }
 \arguments{
 \item{envname}{Conda-compatible Python environment.
-If \code{NULL}, the environment name will be set to \code{"scop_env"}.}
+If \code{NULL}, use the current environment selection. \code{\link[=PrepareEnv]{PrepareEnv()}} selects
+a separate module profile when required.}
 
 \item{conda}{The path or command name of a conda-compatible executable
 (\code{conda}, \code{mamba}, or \code{micromamba}). Use \code{"auto"} to allow automatically
@@ -42,13 +44,16 @@ If \code{TRUE}, the existing environment will be removed and recreated.}
 \item{modules}{Optional Python dependency modules to install in addition to
 the default scientific stack.
 If \code{NULL} or omitted in \code{\link[=PrepareEnv]{PrepareEnv()}}, the default environment is installed.
-The default excludes \code{"cell2location"}, \code{"cell2fate"}, \code{"commot"}, \code{"sccoda"}, and
+The default excludes \code{"phate"}, \code{"magic"}, \code{"cell2location"}, \code{"cell2fate"}, \code{"commot"}, \code{"sccoda"}, and
 \code{"scomm"} because these workflows use long-running or incompatible dependency
 stacks. Cell2fate and COMMOT are prepared in standalone \code{"cell2fate_env"}
-and \code{"commot_env"} environments with Python 3.9. \code{"scenic"} is also excluded
+and \code{"commot_env"} environments with Python 3.9. SCENIC+ uses standalone \code{"scenicplus_env"} or the smaller \code{"scenicplus_io_env"} for \code{.h5mu} imports. \code{"scenic"} is also excluded
 from the default environment and is prepared
 in \code{"scenic_env"} by default because SCENIC requires an older Python/numpy
-stack. \code{"scmalignantfinder"} is prepared in a standalone
+stack. PHATE and MAGIC are prepared explicitly in \code{"scprep_env"} with
+pandas 2.0.3, separately from the default scientific stack. scCODA and scOMM
+use \code{"tensorflow_env"} to keep TensorFlow dependencies separate from JAX.
+\code{"scmalignantfinder"} is prepared in a standalone
 \code{"scmalignantfinder_env"} because its upstream package pins an older
 scanpy/anndata stack. On Windows, the
 default also excludes \code{"scvi"}, \code{"glue"}, and \code{"multimap"} because those
@@ -64,6 +69,8 @@ collects packages declared through \code{check_r()} and checks/installs them,
 including optional workflow dependencies not listed in \code{DESCRIPTION}.
 CHOIR is R-only, so \code{PrepareEnv(modules = "choir")} prepares its
 optional R backend without creating a Python environment.}
+
+\item{configure_runtime}{Whether to select the prepared interpreter for embedded Python and configure the R process. Set to \code{FALSE} for subprocess-only use.}
 
 \item{cores}{Number of workers for R-package installation. Use \code{NULL} (the
 default) to let pak select its worker count automatically.}

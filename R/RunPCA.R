@@ -84,6 +84,9 @@ RunPCA.default <- function(
     set.seed(seed = seed.use)
   }
   npcs <- min(npcs, nrow(object) - 1)
+  if (identical(backend, "auto") && !pca_native_auto_supported(object, npcs, dots)) {
+    return(run_seurat())
+  }
   nfeatures <- nrow(object)
   n <- ncol(object)
 

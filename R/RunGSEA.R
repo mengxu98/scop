@@ -9,6 +9,9 @@
 #' By default ("std") the enrichment score is computed as in the original GSEA.
 #' The "pos" and "neg" score types are intended to be used for one-tailed tests
 #' (i.e. when one is interested only in positive ("pos") or negateive ("neg") enrichment).
+#' @param nPermSimple Number of initial simple permutations used by fgsea.
+#' @param eps Lower bound for P-value estimation. Use `0` to estimate P-values
+#' without a positive lower bound.
 #'
 #' @return
 #' If input is a Seurat object, returns the modified Seurat object with the enrichment result stored in the tools slot.
@@ -48,7 +51,9 @@
 #'   geneScore = scores,
 #'   geneID_groups = rep("Cluster1", length(genes)),
 #'   TERM2GENE = term2gene,
-#'   minGSSize = 2
+#'   minGSSize = 2,
+#'   nPermSimple = 10000,
+#'   eps = 0
 #' )
 #' GSEAPlot(
 #'   res = gsea_out,
@@ -87,6 +92,8 @@ RunGSEA <- function(
   simplify_similarityCutoff = 0.7,
   verbose = TRUE,
   ...,
+  nPermSimple = 1e5,
+  eps = 0,
   srt = NULL
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
@@ -312,8 +319,13 @@ RunGSEA <- function(
     colnames(geneMap)[1] <- IDtype
   }
 
-  input[[IDtype]] <- geneMap[as.character(input$geneID), IDtype]
-  input[[result_IDtype]] <- geneMap[as.character(input$geneID), result_IDtype]
+  map_index <- match(as.character(input$geneID), rownames(geneMap))
+  missing_map <- is.na(map_index)
+  input[[IDtype]] <- geneMap[map_index, IDtype]
+  input[[result_IDtype]] <- geneMap[map_index, result_IDtype]
+  input[[IDtype]][missing_map] <- as.character(input$geneID[missing_map])
+  input[[result_IDtype]][missing_map] <- as.character(input$geneID[missing_map])
+  rank_input <- input[!is.na(input[[IDtype]]), , drop = FALSE]
   input <- unnest_fun(input, cols = c(IDtype, result_IDtype))
   input <- input[!is.na(input[[IDtype]]), , drop = FALSE]
   log_message(
@@ -321,11 +333,39 @@ RunGSEA <- function(
     verbose = verbose
   )
 
+  if (!identical(IDtype, result_IDtype) || !is.character(geneMap[[IDtype]])) {
+    map_gene_ids <- make_enrichment_id_mapper(
+      geneMap, IDtype, result_IDtype, known_ids = input[[IDtype]]
+    )
+  }
+
   comb <- expand.grid(
     group = levels(geneID_groups),
     term = db,
     stringsAsFactors = FALSE
   )
+
+  term_inputs <- stats::setNames(lapply(db, function(term) {
+    TERM2GENE_tmp <- db_list[[species]][[term]][["TERM2GENE"]][, c(
+      "Term",
+      IDtype
+    )]
+    TERM2NAME_tmp <- db_list[[species]][[term]][["TERM2NAME"]]
+    dup <- duplicated(TERM2GENE_tmp)
+    na <- Matrix::rowSums(is.na(TERM2GENE_tmp)) > 0
+    TERM2GENE_tmp <- TERM2GENE_tmp[!(dup | na), , drop = FALSE]
+    TERM2NAME_tmp <- TERM2NAME_tmp[
+      TERM2NAME_tmp[["Term"]] %in% TERM2GENE_tmp[["Term"]], ,
+      drop = FALSE
+    ]
+    list(
+      TERM2GENE = TERM2GENE_tmp,
+      TERM2NAME = TERM2NAME_tmp,
+      version = paste0(
+        as.character(db_list[[species]][[term]][["version"]]), collapse = ";"
+      )
+    )
+  }), db)
 
   check_r("clusterProfiler", verbose = FALSE)
   log_message(
@@ -337,9 +377,9 @@ RunGSEA <- function(
     function(i) {
       group <- comb[i, "group"]
       term <- comb[i, "term"]
-      geneList <- input[input$geneID_groups == group, "geneScore"]
-      names(geneList) <- input[input$geneID_groups == group, IDtype]
-      gene_mapid <- input[input$geneID_groups == group, result_IDtype]
+      geneList <- rank_input[rank_input$geneID_groups == group, "geneScore"]
+      names(geneList) <- rank_input[rank_input$geneID_groups == group, IDtype]
+      gene_mapid <- rank_input[rank_input$geneID_groups == group, result_IDtype]
       ord <- order(geneList, decreasing = TRUE)
       geneList <- geneList[ord]
       gene_mapid <- gene_mapid[ord]
@@ -347,24 +387,15 @@ RunGSEA <- function(
         "Running GSEA: group {.val {group}}, database {.val {term}}, genes {.val {length(geneList)}} ...",
         verbose = verbose
       )
-      TERM2GENE_tmp <- db_list[[species]][[term]][["TERM2GENE"]][, c(
-        "Term",
-        IDtype
-      )]
-      TERM2NAME_tmp <- db_list[[species]][[term]][["TERM2NAME"]]
-      dup <- duplicated(TERM2GENE_tmp)
-      na <- Matrix::rowSums(is.na(TERM2GENE_tmp)) > 0
-      TERM2GENE_tmp <- TERM2GENE_tmp[!(dup | na), , drop = FALSE]
-      TERM2NAME_tmp <- TERM2NAME_tmp[
-        TERM2NAME_tmp[["Term"]] %in% TERM2GENE_tmp[["Term"]], ,
-        drop = FALSE
-      ]
+      term_input <- term_inputs[[term]]
+      TERM2GENE_tmp <- term_input[["TERM2GENE"]]
+      TERM2NAME_tmp <- term_input[["TERM2NAME"]]
       enrich_res <- gsea_fgsea_result(
         geneList = geneList,
         minGSSize = ifelse(term %in% unlimited_db, 1, minGSSize),
         maxGSSize = ifelse(term %in% unlimited_db, Inf, maxGSSize),
-        nPermSimple = 1e5,
-        eps = 0,
+        nPermSimple = nPermSimple,
+        eps = eps,
         scoreType = scoreType,
         pAdjustMethod = "BH",
         pvalueCutoff = Inf,
@@ -377,25 +408,13 @@ RunGSEA <- function(
         result <- enrich_res@result
         result[["Groups"]] <- group
         result[["Database"]] <- term
-        result[["Version"]] <- paste0(
-          as.character(db_list[[species]][[term]][["version"]]),
-          collapse = ";"
-        )
-        IDlist <- strsplit(result$core_enrichment, "/")
-        result$core_enrichment <- unlist(lapply(IDlist, function(x) {
-          x_result <- NULL
-          for (i in x) {
-            if (i %in% input[[IDtype]]) {
-              x_result <- c(
-                x_result,
-                unique(geneMap[geneMap[[IDtype]] == i, result_IDtype])
-              )
-            } else {
-              x_result <- c(x_result, i)
-            }
-          }
-          return(paste0(x_result, collapse = "/"))
-        }))
+        result[["Version"]] <- term_input[["version"]]
+        if (identical(IDtype, result_IDtype) && is.character(geneMap[[IDtype]])) {
+          IDlist <- strsplit(result$core_enrichment, "/")
+          result$core_enrichment <- vapply(IDlist, paste0, character(1), collapse = "/")
+        } else {
+          result$core_enrichment <- map_gene_ids(result$core_enrichment)
+        }
         enrich_res@result <- result
         enrich_res@gene2Symbol <- as.character(gene_mapid)
 

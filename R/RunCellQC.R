@@ -19,9 +19,11 @@
 #' @examples
 #' data(pancreas_sub)
 #' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
+#' set.seed(11)
 #' pancreas_sub <- RunDoubletCalling(
 #'   pancreas_sub,
-#'   db_method = "scDblFinder"
+#'   db_method = "scDblFinder",
+#'   iter = 2L
 #' )
 #' table(pancreas_sub$db.scDblFinder_class)
 #' head(pancreas_sub@meta.data[, c(
@@ -85,6 +87,7 @@ RunDoubletCalling <- function(
     }
     args1 <- args1[!names(args1) %in% c("db_method", "...", "srt")]
     args1[["object"]] <- object
+    args1[["data_type"]] <- status
     tryCatch(
       expr = {
         object <- do.call(
@@ -166,7 +169,12 @@ RunscDblFinder <- function(
     )
   }
   check_r("scDblFinder", verbose = FALSE)
-  sce <- Seurat::as.SingleCellExperiment(srt, assay = assay)
+  metadata <- srt[[]]
+  metadata$ident <- SeuratObject::Idents(srt)
+  sce <- SingleCellExperiment::SingleCellExperiment(
+    assays = list(counts = GetAssayData5(srt, assay = assay, layer = "counts")),
+    colData = S4Vectors::DataFrame(metadata)
+  )
   sce <- scDblFinder::scDblFinder(sce, dbr = db_rate, verbose = FALSE, ...)
   srt[["db.scDblFinder_score"]] <- sce[["scDblFinder.score"]]
   srt[["db.scDblFinder_class"]] <- sce[["scDblFinder.class"]]
@@ -269,7 +277,7 @@ scds_bcds_xgboost_compat <- function(
   informative <- Matrix::rowSums(counts > 0) > 0.01 * ncol(sce)
   lc <- Matrix::t(log1p(counts[informative, , drop = FALSE]))
   lc <- lc / Matrix::rowMeans(lc)
-  variances <- apply(lc, 2, stats::var)
+  variances <- fast_row_vars(Matrix::t(lc))
   hvg <- head(order(variances, decreasing = TRUE, na.last = NA), ntop)
   if (length(hvg) == 0L) {
     log_message("No variable genes are available for scds bcds", message_type = "error")
@@ -432,7 +440,7 @@ scds_hybrid_xgboost_compat <- function(
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#' PrepareEnv(modules = "scrublet")
 #' data(pancreas_sub)
 #' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' pancreas_sub <- RunScrublet(pancreas_sub)
@@ -447,7 +455,6 @@ scds_hybrid_xgboost_compat <- function(
 #'   reduction = "umap",
 #'   features = "db.Scrublet_score"
 #' )
-#' }
 RunScrublet <- function(
   object,
   assay = "RNA",
@@ -561,7 +568,7 @@ RunScrublet <- function(
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#' PrepareEnv(modules = "doubletdetection")
 #' data(pancreas_sub)
 #' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' pancreas_sub <- RunDoubletDetection(pancreas_sub)
@@ -576,7 +583,6 @@ RunScrublet <- function(
 #'   reduction = "umap",
 #'   features = "db.DoubletDetection_score"
 #' )
-#' }
 RunDoubletDetection <- function(
   object,
   assay = "RNA",

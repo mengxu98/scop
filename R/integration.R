@@ -22,6 +22,10 @@
 #' metadata column; `lisi_reduction = NULL` uses [DefaultReduction()].
 #' @param compute_metrics,metrics_batch_col,metrics_celltype_col,metrics_reduction,metrics_cluster_col,metrics_tool_name,metrics_k_graph
 #' Integration summary metrics on the selected reduction.
+#' @param nonlinear_reduction_dims Number(s) of nonlinear dimensions to compute.
+#' @param force_nonlinear_reduction Recompute nonlinear reductions even when stored results exist.
+#' @param nonlinear_reduction_params Shared parameters, optionally overridden by
+#' lists named after individual nonlinear reduction methods.
 #' @param append Append integrated results to `srt_merge`.
 #' @param ... Passed to the integration method functions.
 #'
@@ -106,7 +110,8 @@
 #'     batch = "tech",
 #'     integration_methods = method,
 #'     linear_reduction_dims_use = 1:50,
-#'     nonlinear_reduction = "umap"
+#'     nonlinear_reduction = "umap",
+#'     RunParallelDivisiveICP_params = list(L = 10L)
 #'   )
 #'   p_list[[method]] <- CellDimPlot(
 #'     panc8_sub,
@@ -147,7 +152,8 @@
 #'   batch = "tech",
 #'   integration_methods = "Seurat",
 #'   linear_reduction_dims_use = 1:50,
-#'   nonlinear_reduction = nonlinear_reductions
+#'   nonlinear_reduction = nonlinear_reductions,
+#'   nonlinear_reduction_params = list(largevis = list(n_epochs = 1000L))
 #' )
 #' for (nr in nonlinear_reductions) {
 #'   print(

@@ -1,3 +1,13 @@
+test_that("annotation row lookup preserves exact and partial matching", {
+  table <- data.frame(value = letters[1:4], row.names = c("MGI:10", "MGI:11", "MGI:20", "MGI:30"))
+  for (query in list(
+    c("MGI:20", "MGI:2", "MGI:1", "MGI:missing", "MGI:missing", NA_character_, ""),
+    character(), c(4L, 2L, NA_integer_), c(TRUE, FALSE, TRUE, FALSE)
+  )) {
+    expect_identical(table[preparedb_row_index(query, rownames(table)), "value"], table[query, "value"])
+  }
+})
+
 preparedb_mock_cache <- function() {
   annotation <- function(db) {
     list(

@@ -7,6 +7,60 @@ make_dispatch_object <- function(nfeatures = 40L, ncells = 32L, seed = 511L, pre
   ScaleData(object, features = rownames(object), verbose = FALSE)
 }
 
+test_that("explicit Ensembl releases resolve when the main archive catalog is unavailable", {
+  skip_if_not_installed("biomaRt")
+  skip_if_not_installed("httr")
+  testthat::local_mocked_bindings(
+    listEnsemblArchives = function() stop("catalog unavailable"),
+    .package = "biomaRt"
+  )
+  html <- paste0(
+    '<a href="http://Sep2025.archive.ensembl.org">Ensembl 115: Sep 2025</a>',
+    '<a href="http://May2025.archive.ensembl.org">Ensembl 114: May 2025</a>'
+  )
+  testthat::local_mocked_bindings(
+    GET = function(...) structure(list(
+      status_code = 200L, content = charToRaw(html), headers = list(),
+      url = "https://sep2025.archive.ensembl.org/info/website/archives/index.html"
+    ), class = "response"),
+    .package = "httr"
+  )
+  archives <- ensembl_archive_catalog(115)
+  expect_identical(archives$version, c("115", "114"))
+  expect_identical(archives$url, c(
+    "https://sep2025.archive.ensembl.org", "https://may2025.archive.ensembl.org"
+  ))
+  expect_true(all(archives$current_release == ""))
+  expect_error(ensembl_archive_catalog("current_release"), "catalog unavailable")
+  expect_error(ensembl_archive_catalog(116), "catalog unavailable")
+  archive_mart <- NULL
+  testthat::local_mocked_bindings(
+    useMart = function(...) stop("unexpected archive catalog lookup"),
+    listDatasets = function(mart, ...) {
+      archive_mart <<- mart
+      stop("archive-offline")
+    },
+    .package = "biomaRt"
+  )
+  expect_error(suppressWarnings(GeneConvert("INS", Ensembl_version = 115, max_tries = 1, verbose = FALSE)), "archive-offline")
+  expect_s4_class(archive_mart, "Mart")
+  expect_identical(archive_mart@host, "https://sep2025.archive.ensembl.org:443/biomart/martservice?redirect=no")
+  mart <- methods::new("Mart", biomart = "ENSEMBL_MART_ENSEMBL",
+    host = "https://sep2025.archive.ensembl.org/biomart/martservice"
+  )
+  mirror_calls <- 0L
+  testthat::local_mocked_bindings(
+    useDataset = function(...) stop("archive dataset unavailable"),
+    useEnsembl = function(...) {
+      mirror_calls <<- mirror_calls + 1L
+      stop("unexpected current-release mirror")
+    },
+    .package = "biomaRt"
+  )
+  expect_error(connect_biomart_dataset("hsapiens_gene_ensembl", mart), "archive dataset unavailable")
+  expect_identical(mirror_calls, 0L)
+})
+
 test_that("Seurat fallbacks preserve distinct canonical command history", {
   object <- make_dispatch_object()
   object@commands <- list()
@@ -54,6 +108,36 @@ test_that("dynamic PCA keeps numerical results and compact command text", {
   expect_identical(SeuratObject::Loadings(actual, "pca"), SeuratObject::Loadings(expected, "pca"))
   command <- tail(actual@commands, 1L)[[1L]]
   expect_lt(sum(nchar(command@call.string)), 2000)
+})
+
+test_that("nonlinear dispatch keeps graph inputs out of projection backends", {
+  object <- make_dispatch_object()
+  object <- RunPCA(object, features = rownames(object), npcs = 5, verbose = FALSE)
+  captured <- NULL
+  testthat::local_mocked_bindings(
+    invoke_fun = function(.fn, .args, ...) {
+      captured <<- .args
+      result <- .args$object
+      result[[.args$reduction.name]] <- SeuratObject::CreateDimReducObject(
+        embeddings = SeuratObject::Embeddings(object, "pca")[, 1:2],
+        key = .args$reduction.key, assay = "RNA"
+      )
+      result
+    },
+    .package = "scop"
+  )
+  for (method in c("phate", "dm", "tsne", "pacmap", "trimap", "largevis", "umap", "umap-naive", "fr")) {
+    RunDimsReduction(object, nonlinear_reduction = method,
+      reduction_use = "pca", reduction_dims = 1:5,
+      graph_use = "snn", neighbor_use = "nn", verbose = FALSE)
+    if (method %in% c("umap", "umap-naive", "fr")) {
+      expect_identical(captured$graph, "snn")
+      expect_identical(captured$neighbor, "nn")
+    } else {
+      expect_false(any(c("graph", "neighbor") %in% names(captured)))
+    }
+    expect_identical(captured$dims, 1:5)
+  }
 })
 
 test_that("RareQ neighbor dispatch keeps compact commands in both verbosity branches", {

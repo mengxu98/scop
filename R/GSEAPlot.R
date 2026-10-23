@@ -49,7 +49,9 @@
 #'   geneScore = scores,
 #'   geneID_groups = rep("Cluster1", length(genes)),
 #'   TERM2GENE = term2gene,
-#'   minGSSize = 2
+#'   minGSSize = 2,
+#'   nPermSimple = 10000,
+#'   eps = 0
 #' )
 #' GSEAPlot(res = gsea_out, db = "custom", plot_type = "comparison")
 #' GSEAPlot(res = gsea_out, db = "custom", plot_type = "bar")
@@ -1508,7 +1510,7 @@ GSEAPlot <- function(
         for (i in seq_along(df_groups)) {
           df_sub <- df_groups[[i]]
           if (all(df_sub$Database %in% c("GO", "GO_BP", "GO_CC", "GO_MF"))) {
-            df0 <- simplifyEnrichment::keyword_enrichment_from_GO(df_sub[[
+            df0 <- enrichment_go_keywords(df_sub[[
               "ID"
             ]])
             if (nrow(df0 > 0)) {
