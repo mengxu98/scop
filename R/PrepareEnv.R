@@ -76,6 +76,13 @@ PrepareEnv <- function(
   }
   components_missing <- missing(components)
   components <- norm_env_components(components)
+  modules <- trimws(as.character(unlist(modules, use.names = FALSE)))
+  if ("python" %in% components && all(c("scvi", "moscot") %in% modules)) {
+    log_message(
+      "The moscot JAX profile is incompatible with scvi-tools 1.3.3 pinned to JAX 0.4.38. Prepare these modules in separate environments.",
+      message_type = "error"
+    )
+  }
   modules <- normalize_env_modules(modules = modules)
   r_status <- NULL
   if ("r" %in% components) {
@@ -498,7 +505,7 @@ PrepareEnv <- function(
     ensure_scipy_runtime(python, pip_options = pip_options)
   }
   status <- get_namespace_fun("reticulate", "system2t")(python, c("-m", "pip", "check"))
-  if (status != 0L) check_python_dependencies(python, pip_packages, envname)
+  if (status != 0L) check_python_dependencies(python, pip_packages, envname, verbose = verbose)
 
   if (isTRUE(configure_runtime)) {
     assert_python_runtime_switchable(
@@ -1965,8 +1972,6 @@ env_requirements <- function(
   package_aliases <- base_requirements$package_aliases
 
   module_requirements <- env_module_requirements()
-
-  assert_jax_module_compatibility(modules)
 
   for (module in modules) {
     if ("scmalignantfinder" %in% modules && identical(module, "scanpy")) {

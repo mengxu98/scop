@@ -1,4 +1,4 @@
-check_python_dependencies <- function(python, packages, envname) {
+check_python_dependencies <- function(python, packages, envname, verbose = NULL) {
   output <- tempfile("pip-check-")
   on.exit(unlink(output), add = TRUE)
   status <- get_namespace_fun("reticulate", "system2t")(
@@ -24,7 +24,7 @@ check_python_dependencies <- function(python, packages, envname) {
   log_message(
     "Unrelated legacy Python dependency conflicts in environment {.val {envname}}:\n{detail}\nCreate a separate environment for the affected module, or rebuild it with PrepareEnv(force = TRUE) after preserving needed data.",
     message_type = "warning",
-    verbose = TRUE
+    verbose = verbose
   )
   invisible(TRUE)
 }
@@ -70,14 +70,4 @@ scvi_jax_requirements <- function() {
     "orbax-checkpoint" = "orbax-checkpoint==0.8.0",
     tensorstore = "tensorstore==0.1.65"
   )
-}
-
-assert_jax_module_compatibility <- function(modules) {
-  if (all(c("scvi", "moscot") %in% modules)) {
-    log_message(
-      "The moscot JAX profile is incompatible with scvi-tools 1.3.3 pinned to JAX 0.4.38. Prepare these modules in separate environments.",
-      message_type = "error"
-    )
-  }
-  invisible(NULL)
 }

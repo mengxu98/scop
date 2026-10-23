@@ -43,8 +43,9 @@ test_that("unrelated Python conflicts warn even when a dependency is shared", {
     "scprep 1.2.3 has requirement pandas<2.1,>=0.25, but you have pandas 2.2.0."
   ))
   expect_warning(
-    result <- check_python_dependencies("python", "cellrank==2.0.7", "test-env"),
-    "numpyro[\\s\\S]*scprep[\\s\\S]*PrepareEnv\\(force = TRUE\\)"
+    result <- check_python_dependencies("python", "cellrank==2.0.7", "test-env", verbose = TRUE),
+    "(?s)numpyro.*scprep.*PrepareEnv\\(force[[:space:]]*=[[:space:]]*TRUE\\)",
+    perl = TRUE
   )
   expect_true(result)
 })
@@ -89,7 +90,7 @@ test_that("dependency metadata failures remain fatal", {
   )
   expect_error(
     python_dependency_closure("python", "cellrank"),
-    "Cannot read Requires-Dist"
+    "Cannot[[:space:]]+read[[:space:]]+Requires-Dist"
   )
 })
 
@@ -106,7 +107,7 @@ test_that("Python installation preserves original exceptions with verbose disabl
   )
   expect_error(
     check_python("jaxlib==0.4.38", envname = "test-env", conda = "conda", verbose = FALSE),
-    "Original resolver failure: incompatible jaxlib wheel"
+    "Original[[:space:]]+resolver[[:space:]]+failure:[[:space:]]+incompatible[[:space:]]+jaxlib[[:space:]]+wheel"
   )
 })
 
@@ -129,7 +130,7 @@ test_that("scVI and Cell2location share a compatible JAX profile", {
 test_that("moscot cannot silently override the scVI JAX profile", {
   for (version in c("3.10-1", "3.11-1", "3.12-1")) {
     expect_error(
-      env_requirements(version = version, modules = c("scvi", "moscot")),
+      PrepareEnv(version = version, modules = c("scvi", "moscot")),
       "separate environments"
     )
   }
@@ -142,8 +143,14 @@ test_that("moscot cannot silently override the scVI JAX profile", {
 test_that("ordinary package lookup does not combine incompatible JAX profiles", {
   testthat::local_mocked_bindings(
     resolve_conda = identity,
+    ensure_conda = function(conda) TRUE,
+    env_exist = function(conda, envname) TRUE,
     conda_python = function(envname, conda) "python",
     python_minor_version = function(python_path) "3.11",
+    installed_python_pkgs = function(envname, conda, verbose) {
+      data.frame(package = "cellrank", version = "2.0.7")
+    },
+    build_env_cache_spec = function(...) stop("requirements resolved"),
     .package = "scop"
   )
   expect_identical(
@@ -154,6 +161,16 @@ test_that("ordinary package lookup does not combine incompatible JAX profiles", 
     unname(resolve_requested_python_packages("moscot", envname = "test-env", conda = "conda")),
     "moscot==0.5.2"
   )
+  expect_identical(
+    exist_python_pkgs("cellrank==2.0.7", envname = "test-env", conda = "conda", verbose = FALSE),
+    c("cellrank==2.0.7" = TRUE)
+  )
+  for (module in c("cellrank", "scvi", "moscot")) {
+    expect_error(
+      PrepareEnv(envname = "test-env", conda = "conda", version = "3.11-1", modules = module),
+      "requirements resolved"
+    )
+  }
 })
 
 test_that("installed metadata follows transitive dependencies, extras, markers and cycles", {

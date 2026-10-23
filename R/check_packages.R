@@ -110,7 +110,7 @@ check_python <- function(
     log_message(
       "Failed to install: {.pkg {failed_pkgs}} into the environment {.file {envname}}. Please install manually",
       message_type = "warning",
-      verbose = TRUE
+      verbose = verbose
     )
     return(invisible(FALSE))
   } else {

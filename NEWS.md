@@ -60,6 +60,8 @@
     Python environment through an isolated call, preserving its warnings.
   * Scope Python conflict checks to the requested dependency closure, warn about
     unrelated legacy conflicts, pin compatible JAX companions, and retain installation errors.
+    Restrict scVI/moscot rejection to explicit environment requests and pass caller verbosity
+    through dependency checks.
   * Resolve Seurat t-SNE explicitly in integration workflows. Pass graph/neighbor
     inputs only to supported reductions. Treat destiny's legacy Matrix coercions
     as warnings in `RunDM()`, restoring caller options.
