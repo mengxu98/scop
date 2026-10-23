@@ -605,7 +605,7 @@ RunIntegration <- function(
     DefaultReduction(srt_integrated, pattern = "pca"),
     error = function(...) character(0)
   )
-  if (length(pca_reduction) == 1 && nzchar(pca_reduction)) {
+  if (length(nonlinear_reduction) > 0 && length(pca_reduction) == 1 && nzchar(pca_reduction)) {
     pca_dims_use <- tryCatch(
       resolve_linear_dims_use(
         srt = srt_integrated,

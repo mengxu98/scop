@@ -126,6 +126,7 @@ test_that("WNN normalizes RNA and chromatin independently", {
   expect_equal(SeuratObject::Embeddings(dispatched[["RNApca"]]), SeuratObject::Embeddings(result[["RNApca"]]))
   expect_equal(dispatched$RNA.weight, result$RNA.weight)
   expect_equal(dispatched[["SCT"]], result[["SCT"]])
+  expect_false(any(grepl("UMAP|FR", SeuratObject::Reductions(dispatched))))
   selected <- WNN_integrate(
     srt_merge = object, HVF = rownames(object[["RNA"]])[1:80],
     linear_reduction_dims = 6, linear_reduction_dims_use = 2:5,
