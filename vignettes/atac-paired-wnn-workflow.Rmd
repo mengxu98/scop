@@ -14,6 +14,13 @@ fragments, reference sequence or Python environment. The subset and small
 feature/dimension settings illustrate the interface; they are not recommended
 parameters for a complete biological analysis.
 
+For your own paired 10x ARC data, import with
+`scop::ReadMultiomeData("filtered_feature_bc_matrix.h5", genome = "hg38")`,
+then pass the returned object to the same WNN call below. Use the verified
+genome for your data. Both selected assays must contain the same paired cells;
+WNN reports incomplete pairing before preprocessing instead of silently
+intersecting or imputing cells.
+
 WNN combines RNA and ATAC neighborhoods. It does not correct sample batch
 effects. Supplying `batch` emits a warning rather than silently implying that
 correction occurred. Review batch effects separately before interpreting joint
@@ -41,7 +48,8 @@ accessibility deviations; neither is measured RNA.
 ## Inspect reusable outputs
 
 Both the default append mode and `append = FALSE` retain the RNA PCA, ATAC LSI,
-WNN graphs, modality weights and clustering results. The reduction receipt
+complete processed assays (including scaled RNA), WNN graphs, modality weights
+and clustering results. The RNA assay is active on return. The reduction receipt
 records the actual cells, peaks and selected dimensions at calculation time.
 
 ```{r inspect-results}
@@ -50,6 +58,7 @@ paired@misc$WNN_dims_list
 stopifnot(all(paired@misc$WNN_reduction_list %in% SeuratObject::Reductions(paired)))
 head(paired[[]][, c("RNA.weight", "ATAC.weight", "WNNclusters")])
 SeuratObject::Misc(paired[["ATAClsi"]], "scop_atac_representation")$dimensions
+stopifnot(nrow(SeuratObject::LayerData(paired, assay = "RNA", layer = "scale.data")) > 0)
 ```
 
 ```{r joint-embedding, fig.width=6, fig.height=4}
@@ -62,3 +71,9 @@ analysis parameters. Native counts remain available for a subsequent
 [RunLinkPeaks()](../reference/RunLinkPeaks.html) analysis, which additionally requires compatible gene
 coordinates and verified sequence statistics. WNN clusters and peak-gene
 associations do not by themselves establish causal regulation.
+
+Use `normalization_method = "SCT"` to normalize RNA with SCTransform; ATAC
+continues to use TF-IDF and LSI. An explicit `HVF` vector selects RNA features
+only. Set `nonlinear_reduction = character()` for graphs and clusters without
+an embedding. WNN supports UMAP and force-directed embeddings; unsupported
+methods are reported before analysis instead of being replaced silently.

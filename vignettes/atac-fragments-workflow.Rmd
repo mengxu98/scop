@@ -105,7 +105,7 @@ launcher may invoke the pinned container with known mounted paths; SCOP does
 not install containers, translate paths or choose an alternative caller.
 
 ```{r call-peaks}
-macs2_path <- "/usr/local/bin/macs2" # Or an explicitly configured container launcher.
+macs2_path <- "macs2" # A command on PATH, executable path, or configured container launcher.
 reference <- Rsamtools::FaFile(file.path(data_dir, "hg38-chr1.fa"))
 pfm <- TFBSTools::getMatrixSet(JASPAR2020::JASPAR2020, opts = list(
   ID = c("MA0139.1", "MA0080.5", "MA0105.4", "MA0107.1", "MA0039.4", "MA0466.2", "MA0098.3")))
@@ -128,6 +128,11 @@ comparison with biological replication. In the acceptance run MACS2 retained
 8,108 peaks. Each call keeps split BEDs, exact arguments, stdout/stderr, exit
 status and native outputs. A failed process cannot become a successful empty
 result. A successful empty narrowPeak file remains an empty set.
+
+If a call fails, inspect its `.log` and `commands.rds` in the output directory.
+`receipt.rds` and `groups.rds` retain the selected cells, capture/group mapping
+and source fragments even after an error. Correct the cause and use a new
+output directory for the next call; an existing result is never overwritten.
 
 With multiple captures, calls remain separate. An optional `group.by` subdivides
 captures. `CombineATACPeaks(groups = ..., min.support = ...)` applies support

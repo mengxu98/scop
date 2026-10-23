@@ -6,11 +6,33 @@ title: "ATAC from a common peak matrix"
 knitr::opts_chunk$set(eval = FALSE, error = FALSE, collapse = TRUE, comment = "#>")
 ```
 
-## Scope and resources
+## Start with packaged data
 
-This external-data recipe starts with measured counts over one common peak
+This first block executes with the installed package and Signac, without
+fragments, sequence downloads or a peak caller. It uses measured ATAC counts
+from 80 packaged multiome cells and keeps only the ATAC assay. The small subset
+illustrates the interface, not recommended biological analysis parameters.
+
+```{r quick-start, eval=TRUE, fig.width=6, fig.height=4}
+data("pbmcmultiome_sub", package = "scop")
+source <- subset(pbmcmultiome_sub, cells = colnames(pbmcmultiome_sub)[1:80])
+quick <- scop::ReadATACData(
+  SeuratObject::LayerData(source, assay = "peaks", layer = "counts"),
+  ranges = Signac::granges(source[["peaks"]]), verbose = FALSE
+)
+quick <- scop::RunStandardWorkflow(quick, assay = "peaks",
+  nHVF = 100, linear_reduction_dims = 10, linear_reduction_dims_use = 2:8,
+  neighbor_k = 10, nonlinear_reduction_dims = 2, cores = 1, verbose = FALSE)
+record <- SeuratObject::Misc(quick[["ATAClsi"]], "scop_atac_representation")
+stopifnot(identical(record$dimensions, 2:8), scop::CheckATACData(quick)$valid)
+Seurat::DimPlot(quick, reduction = "ATACUMAP2D", group.by = "ATAClsiclusters")
+```
+
+## External data and resources
+
+The remaining external-data recipe starts with measured counts over one common peak
 universe. It does not require fragments, peak calling, or recount. Website
-rendering displays the recipe without downloading data or executing its external
+rendering displays those blocks without downloading data or executing their external
 analysis. Run the blocks in a prepared R session with the listed resources.
 
 The source is the [10x PBMC ATAC v2 dataset used by Signac](https://stuartlab.org/signac/articles/pbmc_vignette.html).

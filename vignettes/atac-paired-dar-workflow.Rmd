@@ -178,20 +178,40 @@ are valid outcomes, not reasons to switch statistical engines.
 
 ## Connect DAR to motifs and export
 
-Prepare a matching hg19 reference and the desired PWM collection. Keep
+Prepare a matching hg19 reference and the desired PWM collection explicitly:
+
+```{r prepare-motif-reference}
+fasta_gz <- file.path(data_dir, "hg19-chr1.fa.gz")
+utils::download.file(
+  "https://hgdownload.soe.ucsc.edu/goldenPath/hg19/chromosomes/chr1.fa.gz",
+  fasta_gz, mode = "wb")
+fasta <- file.path(data_dir, "hg19-chr1.fa")
+Biostrings::writeXStringSet(Biostrings::readDNAStringSet(fasta_gz), fasta)
+Rsamtools::indexFa(fasta)
+hg19_reference <- Rsamtools::FaFile(fasta)
+pfm <- TFBSTools::getMatrixSet(JASPAR2020::JASPAR2020, opts = list(
+  ID = c("MA0139.1", "MA0080.5", "MA0105.4", "MA0107.1", "MA0039.4", "MA0466.2", "MA0098.3")))
+```
+
+Keep
 upregulated and downregulated foregrounds separate and use the full tested
 universe, not only significant peaks, as the eligible population.
 
 ```{r motif-connection}
-atac <- scop::AddATACMotifs(atac, hg19_reference, pfm, genome.id = "hg19")
 foreground <- rownames(complete_results)[complete_results$p_val_BH < 0.05 &
   complete_results$avg_log2FC > 0]
-enriched <- scop::RunMotifEnrichment(atac, features = foreground,
-  universe = model$tested_features, n.background = 1000, seed = 19)
-enriched$receipt
+tables <- list(DAR = complete_results, samples = model$sample_inventory)
+if (length(foreground)) {
+  atac <- scop::AddATACMotifs(atac, hg19_reference, pfm, genome.id = "hg19")
+  enriched <- scop::RunMotifEnrichment(atac, features = foreground,
+    universe = model$tested_features, n.background = 1000, seed = 19)
+  enriched$receipt
+  tables$motifs <- enriched$results
+} else {
+  message("No positive BH-significant peaks; save the complete DAR results without a motif test.")
+}
 scop::ExportATACResults(atac, outdir = "paired_DAR_export", assay = "peaks",
-  tables = list(DAR = complete_results, motifs = enriched$results,
-    samples = model$sample_inventory))
+  tables = tables)
 # In a fresh session:
 restored <- readRDS("paired_DAR_export/object.rds")
 stopifnot(scop::CheckATACData(restored)$valid)
