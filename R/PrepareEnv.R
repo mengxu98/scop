@@ -77,13 +77,13 @@ PrepareEnv <- function(
   components_missing <- missing(components)
   components <- norm_env_components(components)
   modules <- trimws(as.character(unlist(modules, use.names = FALSE)))
+  modules <- normalize_env_modules(modules = modules)
   if ("python" %in% components && all(c("scvi", "moscot") %in% modules)) {
     log_message(
       "The moscot JAX profile is incompatible with scvi-tools 1.3.3 pinned to JAX 0.4.38. Prepare these modules in separate environments.",
       message_type = "error"
     )
   }
-  modules <- normalize_env_modules(modules = modules)
   r_status <- NULL
   if ("r" %in% components) {
     r_status <- ensure_env_r_packages(

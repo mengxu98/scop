@@ -339,6 +339,10 @@ test_that("moscot cannot silently override the scVI JAX profile", {
       PrepareEnv(version = version, modules = c("scvi", "moscot")),
       "separate environments"
     )
+    expect_error(
+      PrepareEnv(version = version, modules = c("cell2location", "moscot")),
+      "separate environments"
+    )
   }
   for (version in c("3.11-1", "3.12-1")) {
     requirements <- env_requirements(version = version, modules = "moscot")$packages
