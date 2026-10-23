@@ -9,7 +9,7 @@ marker_get_data <- function(object, assay_obj, layer) {
     if (length(layer_names) != 1L) {
       return(NULL)
     }
-    data_use <- methods::slot(assay_obj, "layers")[[layer_names]]
+    data_use <- SeuratObject::LayerData(assay_obj, layer = layer_names)
   }
   if (is.null(data_use)) {
     return(NULL)
@@ -19,9 +19,6 @@ marker_get_data <- function(object, assay_obj, layer) {
       methods::as(data_use, "dgCMatrix"),
       error = function(e) NULL
     )
-  }
-  if (!is.null(data_use)) {
-    dimnames(data_use) <- list(rownames(assay_obj), colnames(assay_obj))
   }
   data_use
 }
@@ -87,7 +84,6 @@ marker_context <- function(
   if (is.null(data_use) || !inherits(data_use, "dgCMatrix")) {
     return(NULL)
   }
-  dimnames(data_use) <- list(rownames(assay_obj), colnames(assay_obj))
   if (!is.null(features)) {
     if (!all(features %in% rownames(data_use))) {
       return(NULL)
