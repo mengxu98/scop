@@ -22,6 +22,10 @@
 #' metadata column; `lisi_reduction = NULL` uses [DefaultReduction()].
 #' @param compute_metrics,metrics_batch_col,metrics_celltype_col,metrics_reduction,metrics_cluster_col,metrics_tool_name,metrics_k_graph
 #' Integration summary metrics on the selected reduction.
+#' @param nonlinear_reduction_dims Number(s) of nonlinear dimensions to compute.
+#' @param force_nonlinear_reduction Recompute nonlinear reductions even when stored results exist.
+#' @param nonlinear_reduction_params Shared parameters, optionally overridden by
+#' lists named after individual nonlinear reduction methods.
 #' @param append Append integrated results to `srt_merge`.
 #' @param ... Passed to the integration method functions.
 #'
@@ -32,6 +36,7 @@
 #' [Seurat_integrate],
 #' [scVI_integrate],
 #' [MultiMAP_integrate],
+#' [WNN_integrate],
 #' [GLUE_integrate],
 #' [MNN_integrate],
 #' [fastMNN_integrate],
@@ -105,7 +110,8 @@
 #'     batch = "tech",
 #'     integration_methods = method,
 #'     linear_reduction_dims_use = 1:50,
-#'     nonlinear_reduction = "umap"
+#'     nonlinear_reduction = "umap",
+#'     RunParallelDivisiveICP_params = list(L = 10L)
 #'   )
 #'   p_list[[method]] <- CellDimPlot(
 #'     panc8_sub,
@@ -146,7 +152,8 @@
 #'   batch = "tech",
 #'   integration_methods = "Seurat",
 #'   linear_reduction_dims_use = 1:50,
-#'   nonlinear_reduction = nonlinear_reductions
+#'   nonlinear_reduction = nonlinear_reductions,
+#'   nonlinear_reduction_params = list(largevis = list(n_epochs = 1000L))
 #' )
 #' for (nr in nonlinear_reductions) {
 #'   print(
@@ -473,7 +480,7 @@ RunIntegration <- function(
     } else if (!is.null(args[["srt_list"]]) && length(args[["srt_list"]]) > 0) {
       SeuratObject::DefaultAssay(args[["srt_list"]][[1]])
     })
-  is_assay5 <- !is.null(assay_use) &&
+  is_assay5 <- length(assay_use) == 1L &&
     inherits(assay_source, "Seurat") &&
     inherits(Seurat::GetAssay(assay_source, assay = assay_use), "Assay5")
   v5_only_methods <- c("CCA", "RPCA", "fastMNN5", "Harmony5", "scVI5")
@@ -598,7 +605,7 @@ RunIntegration <- function(
     DefaultReduction(srt_integrated, pattern = "pca"),
     error = function(...) character(0)
   )
-  if (length(pca_reduction) == 1 && nzchar(pca_reduction)) {
+  if (length(nonlinear_reduction) > 0 && length(pca_reduction) == 1 && nzchar(pca_reduction)) {
     pca_dims_use <- tryCatch(
       resolve_linear_dims_use(
         srt = srt_integrated,
@@ -792,7 +799,20 @@ RunIntegration <- function(
   if (isTRUE(append_requested) && !is.null(srt_merge_raw)) {
     assay_use <- assay %||% SeuratObject::DefaultAssay(srt_integrated)
     append_slots <- methods::slotNames(srt_integrated)
-    if (inherits(srt_integrated[[assay_use]], "ChromatinAssay")) {
+    if (identical(integration_method, "WNN")) {
+      modality_assays <- vapply(srt_integrated@misc$WNN_reduction_list, function(reduction) {
+        SeuratObject::DefaultAssay(srt_integrated[[reduction]])
+      }, character(1))
+      # SCT can change the assay while retaining the original RNA output prefix.
+      modality_prefixes <- sub("(pca|lsi)$", "", srt_integrated@misc$WNN_reduction_list)
+      for (name in modality_assays) srt_merge_raw[[name]] <- srt_integrated[[name]]
+      SeuratObject::DefaultAssay(srt_merge_raw) <- SeuratObject::DefaultAssay(srt_integrated)
+      append_slots <- setdiff(append_slots, "assays")
+      append_pattern <- paste0(
+        "^(", paste(gsub(".", "[.]", unique(c(modality_assays, modality_prefixes)), fixed = TRUE), collapse = "|"),
+        "|WNN|Default_reduction|LISI|integration_batch)"
+      )
+    } else if (inherits(srt_integrated[[assay_use]], "ChromatinAssay")) {
       append_pattern <- paste0(
         integration_method,
         "|pca|PCA|svd|SVD|lsi|LSI|UMAP2D|clusters|Default_reduction|LISI|integration_batch|ATAC_default_linear_reduction|ATAC_default_cluster_col"

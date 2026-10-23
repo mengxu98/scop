@@ -42,26 +42,36 @@ WNN_integrate(
 \arguments{
 \item{srt_merge}{A merged `Seurat` object that includes the batch information.}
 
-\item{batch}{Batch variable name.}
+\item{batch}{Accepted for integration-interface compatibility. WNN does not
+perform batch correction; supplying this argument emits a warning.}
 
 \item{append}{Append integrated results to \code{srt_merge}.}
 
 \item{srt_list}{A list of \code{Seurat} objects to be checked and preprocessed.}
 
-\item{assay}{Assay to use. \code{NULL} uses the default assay.}
+\item{assay}{One RNA assay and one chromatin assay, or one assay whose
+partner can be inferred. Automatic selection prefers an active RNA/SCT
+assay, then RNA, then SCT; custom RNA assay names must be explicit.
+Known SCOP gene-activity and chromVAR assays cannot substitute for RNA.}
 
 \item{do_normalization}{Whether data normalization should be performed.}
 
 \item{normalization_method}{The normalization method to be used.
 Possible values are \code{"LogNormalize"}, \code{"SCT"}, \code{"TFIDF"}, and \code{"scran"}.}
 
-\item{do_HVF_finding, HVF_method, nHVF, HVF}{Highly variable features.
-\code{HVF_method} is \code{"vst"}, \code{"mvp"}, \code{"disp"}, or \code{"scran"}.}
+\item{do_HVF_finding}{Whether to select variable features during preprocessing.}
 
 \item{HVF_source}{The source of highly variable features.
 Possible values are \code{"global"} and \code{"separate"}.}
 
+\item{HVF_method}{RNA feature-selection method passed to \code{\link[=RunStandardWorkflow]{RunStandardWorkflow()}}.}
+
+\item{nHVF}{Maximum number of selected features, subject to modality defaults
+and the number of available features.}
+
 \item{HVF_min_intersection}{The feature needs to be present in batches for a minimum number of times in order to be considered as highly variable.}
+
+\item{HVF}{Optional RNA feature names. ATAC features are selected independently.}
 
 \item{do_scaling}{Force scaling via ScaleData.}
 
@@ -72,11 +82,26 @@ Possible values are \code{"global"} and \code{"separate"}.}
 \item{scale_within_batch}{Scale within each batch. Only used by
 \code{"Uncorrected"}, \code{"Seurat"}, \code{"MNN"}, \code{"Harmony"}, \code{"BBKNN"}, \code{"CSS"}, \code{"ComBat"}.}
 
-\item{linear_reduction, linear_reduction_dims, linear_reduction_dims_use, linear_reduction_params, force_linear_reduction}{Linear reduction (\code{"pca"}, \code{"svd"}, \code{"ica"}, \code{"nmf"}, \code{"mds"}, \code{"glmpca"}).
-\code{linear_reduction_dims_use = NULL} uses estimated dimensions, else the first 50.}
+\item{linear_reduction}{RNA reduction, which must be \code{"pca"}. ATAC uses SVD.}
 
-\item{nonlinear_reduction, nonlinear_reduction_dims, nonlinear_reduction_params, force_nonlinear_reduction}{Nonlinear reduction (\code{"umap"}, \code{"umap-naive"}, \code{"tsne"}, \code{"dm"}, \code{"phate"},
-\code{"pacmap"}, \code{"trimap"}, \code{"largevis"}, \code{"fr"}).}
+\item{linear_reduction_dims}{Number of components to compute for each modality.}
+
+\item{linear_reduction_dims_use}{Explicit component indices, or NULL for
+modality-specific selection. Inspect \code{WNN_dims_list} for the selected indices.}
+
+\item{linear_reduction_params}{Named arguments for the linear reduction backend.}
+
+\item{force_linear_reduction}{Whether to recompute existing linear reductions.}
+
+\item{nonlinear_reduction}{One or more of \code{"umap"}, \code{"umap-naive"} and \code{"fr"},
+or \code{character()} for graphs and clusters without an embedding.}
+
+\item{nonlinear_reduction_dims}{Number(s) of nonlinear dimensions to compute.}
+
+\item{nonlinear_reduction_params}{Shared parameters, optionally overridden by
+lists named after individual nonlinear reduction methods.}
+
+\item{force_nonlinear_reduction}{Recompute nonlinear reductions even when stored results exist.}
 
 \item{neighbor_metric, neighbor_k}{Neighbor graph (\code{"euclidean"}, \code{"cosine"},
 \code{"manhattan"}, \code{"hamming"}).}
@@ -89,16 +114,46 @@ Default is \code{TRUE}.}
 
 \item{seed}{Random seed.}
 }
+\value{
+A Seurat object with RNA PCA and ATAC LSI reductions, \code{WNN} neighbors,
+\code{WNNKNN} and \code{WNNSNN} graphs, \code{WNNclusters} metadata and requested WNN
+embeddings. \code{Misc(object, "WNN_reduction_list")} names the retained source
+reductions; \code{WNN_dims_list} records their selected dimensions. Both return
+modes retain complete processed modality assays (including scaled RNA), ATAC
+reductions, metadata and representation receipts, with the processed RNA
+assay (SCT when selected) active. The
+caller's random-number state is restored.
+}
 \description{
-WNN integration function
+Combine paired RNA and ATAC representations with weighted
+nearest neighbors, retaining both modality reductions and the WNN graph.
+}
+\details{
+Cells must represent paired measurements. RNA and ATAC preprocessing is
+followed by native multimodal neighbor construction. This function does not
+use batch labels to correct either modality. Specify assays explicitly after
+adding derived assays, for example \code{assay = c("RNA", "peaks")}.
+Both assays must contain the same cells as the object. Subset to verified
+paired cells explicitly before running WNN. Nonlinear reductions supported
+here are \code{"umap"}, \code{"umap-naive"} and \code{"fr"}; use \code{character()} to retain
+graphs and clusters without computing an embedding.
+RNA uses the requested normalization and PCA. ATAC always uses TF-IDF and
+SVD, including when RNA uses SCT. \code{HVF} supplies RNA features; ATAC features
+are selected independently from accessibility counts.
 }
 \examples{
+# Small paired subset; no external fragments or reference downloads.
 data("pbmcmultiome_sub", package = "scop")
-pbmcmultiome_sub$batch <- rep(c("batch1", "batch2"), length.out = ncol(pbmcmultiome_sub))
-pbmcmultiome_sub <- WNN_integrate(
-  srt_merge = pbmcmultiome_sub,
-  batch = "batch",
-  linear_reduction_dims = 20,
-  linear_reduction_dims_use = 1:10
+paired <- subset(pbmcmultiome_sub, cells = colnames(pbmcmultiome_sub)[1:80])
+paired <- WNN_integrate(
+  srt_merge = paired, assay = c("RNA", "peaks"),
+  linear_reduction_dims = 10, linear_reduction_dims_use = 2:8,
+  nHVF = 100, neighbor_k = 10, nonlinear_reduction_dims = 2,
+  verbose = FALSE
 )
+SeuratObject::Reductions(paired)
+stopifnot(all(paired@misc$WNN_reduction_list \%in\% SeuratObject::Reductions(paired)))
+}
+\seealso{
+\code{\link[=ReadMultiomeData]{ReadMultiomeData()}}, \code{\link[=RunStandardWorkflow]{RunStandardWorkflow()}}, \code{\link[=RunLinkPeaks]{RunLinkPeaks()}}
 }

@@ -36,6 +36,8 @@ RunGSEA(
   simplify_similarityCutoff = 0.7,
   verbose = TRUE,
   ...,
+  nPermSimple = 1e+05,
+  eps = 0,
   srt = NULL
 )
 }
@@ -131,6 +133,11 @@ Default is \code{TRUE}.}
 
 \item{...}{Passed to helper functions.}
 
+\item{nPermSimple}{Number of initial simple permutations used by fgsea.}
+
+\item{eps}{Lower bound for P-value estimation. Use \code{0} to estimate P-values
+without a positive lower bound.}
+
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
 }
@@ -170,7 +177,9 @@ gsea_out <- RunGSEA(
   geneScore = scores,
   geneID_groups = rep("Cluster1", length(genes)),
   TERM2GENE = term2gene,
-  minGSSize = 2
+  minGSSize = 2,
+  nPermSimple = 10000,
+  eps = 0
 )
 GSEAPlot(
   res = gsea_out,

@@ -24,7 +24,8 @@
 #' @param backend PHATE backend. `"python"` calls the upstream `phate` Python
 #' package and `"cpp"` uses the native C++ helper path.
 #' The selected backend is stable; native arguments never trigger an implicit
-#' Python workflow.
+#' Python workflow. When another Python environment is already initialized,
+#' run the Python backend in a separate process without changing the active interpreter.
 #' @param mds MDS algorithm passed to PHATE. The native backend uses its C++
 #' classical MDS or R's native metric MDS implementation.
 #' @param mds_solver Metric MDS solver; recorded by the native backend and
@@ -219,6 +220,30 @@ RunPHATE.default <- function(
       reduction.key = reduction.key,
       native_options = list(...)
     ))
+  }
+
+  active_python <- active_python_runtime()
+  if (!is.null(active_python)) {
+    conda <- resolve_conda()
+    target_python <- tryCatch(
+      conda_python(envname = env_module_environment("phate"), conda = conda),
+      error = function(e) NULL
+    )
+    if (!same_python_runtime(active_python, target_python)) {
+      check_r("callr", verbose = FALSE)
+      args <- lapply(as.list(match.call())[-1L], eval, envir = parent.frame())
+      result <- get_namespace_fun("callr", "r")(function(args, conda) {
+        Sys.setenv(RETICULATE_CONDA = conda)
+        warnings <- list()
+        value <- withCallingHandlers(do.call(scop::RunPHATE, args), warning = function(w) {
+          warnings[[length(warnings) + 1L]] <<- w
+          invokeRestart("muffleWarning")
+        })
+        list(value = value, warnings = warnings)
+      }, args = list(args = args, conda = conda), show = TRUE, user_profile = FALSE)
+      for (w in result$warnings) warning(w)
+      return(result$value)
+    }
   }
 
   PrepareEnv(modules = "phate", verbose = verbose)

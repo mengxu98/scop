@@ -781,6 +781,152 @@ NumericMatrix aucell_auc_ranked_full(
   return scores;
 }
 
+struct OraDatabase {
+  std::unordered_map<std::string, std::unordered_set<std::string> > term_to_genes;
+  std::unordered_map<std::string, std::string> term_to_name;
+  std::vector<std::string> term_order;
+  std::unordered_set<std::string> term_seen;
+  std::unordered_set<std::string> universe;
+
+  OraDatabase(CharacterVector term_ids, CharacterVector term_genes,
+              CharacterVector term_name_ids, CharacterVector term_names) {
+    if (term_ids.size() != term_genes.size()) {
+      thisutils::log_message("term_ids and term_genes must have the same length", "error");
+    }
+
+    for (int i = 0; i < term_name_ids.size() && i < term_names.size(); ++i) {
+      if (CharacterVector::is_na(term_name_ids[i]) || CharacterVector::is_na(term_names[i])) {
+        continue;
+      }
+      term_to_name[as<std::string>(term_name_ids[i])] = as<std::string>(term_names[i]);
+    }
+
+    for (int i = 0; i < term_ids.size(); ++i) {
+      if (CharacterVector::is_na(term_ids[i]) || CharacterVector::is_na(term_genes[i])) {
+        continue;
+      }
+      const std::string term = as<std::string>(term_ids[i]);
+      const std::string gene = as<std::string>(term_genes[i]);
+      if (term.empty() || gene.empty()) {
+        continue;
+      }
+      if (term_seen.insert(term).second) {
+        term_order.push_back(term);
+      }
+      term_to_genes[term].insert(gene);
+      universe.insert(gene);
+    }
+
+  }
+
+  DataFrame test(CharacterVector genes, int min_size, int max_size) const {
+    std::vector<std::string> query_order;
+    std::unordered_set<std::string> query_seen;
+    std::unordered_map<std::string, int> query_rank;
+    query_order.reserve(genes.size());
+    for (int i = 0; i < genes.size(); ++i) {
+      if (CharacterVector::is_na(genes[i])) {
+        continue;
+      }
+      const std::string gene = as<std::string>(genes[i]);
+      if (gene.empty() || universe.find(gene) == universe.end()) {
+        continue;
+      }
+      if (query_seen.insert(gene).second) {
+        query_rank[gene] = static_cast<int>(query_order.size());
+        query_order.push_back(gene);
+      }
+    }
+
+    const int universe_size = static_cast<int>(universe.size());
+    const int query_size = static_cast<int>(query_order.size());
+    std::vector<std::string> out_id;
+    std::vector<std::string> out_description;
+    std::vector<std::string> out_gene_id;
+    std::vector<int> out_count;
+    std::vector<int> out_query_size;
+    std::vector<int> out_term_size;
+    std::vector<int> out_universe_size;
+    std::vector<double> out_pvalue;
+
+    if (universe_size <= 0 || query_size <= 0) {
+      return DataFrame::create(
+        _["ID"] = CharacterVector(0),
+        _["Description"] = CharacterVector(0),
+        _["geneID"] = CharacterVector(0),
+        _["Count"] = IntegerVector(0),
+        _["query_size"] = IntegerVector(0),
+        _["term_size"] = IntegerVector(0),
+        _["universe_size"] = IntegerVector(0),
+        _["pvalue"] = NumericVector(0),
+        _["stringsAsFactors"] = false
+      );
+    }
+
+    for (std::vector<std::string>::const_iterator term_it = term_order.begin(); term_it != term_order.end(); ++term_it) {
+      const std::string& term = *term_it;
+      const std::unordered_set<std::string>& term_set = term_to_genes.at(term);
+      const int term_size = static_cast<int>(term_set.size());
+      if (term_size < min_size || term_size > max_size || term_size <= 0 || term_size >= universe_size) {
+        continue;
+      }
+
+      std::vector<std::pair<int, std::string> > hits;
+      hits.reserve(std::min(term_size, query_size));
+      for (std::unordered_set<std::string>::const_iterator gene_it = term_set.begin(); gene_it != term_set.end(); ++gene_it) {
+        std::unordered_map<std::string, int>::const_iterator rank_it = query_rank.find(*gene_it);
+        if (rank_it != query_rank.end()) {
+          hits.push_back(std::make_pair(rank_it->second, *gene_it));
+        }
+      }
+      const int count = static_cast<int>(hits.size());
+      if (count <= 0) {
+        continue;
+      }
+      std::sort(hits.begin(), hits.end());
+
+      std::string hit_text;
+      for (std::size_t hit_i = 0; hit_i < hits.size(); ++hit_i) {
+        if (hit_i > 0) {
+          hit_text += "/";
+        }
+        hit_text += hits[hit_i].second;
+      }
+
+      const double pvalue = R::phyper(
+        static_cast<double>(count - 1),
+        static_cast<double>(term_size),
+        static_cast<double>(universe_size - term_size),
+        static_cast<double>(query_size),
+        false,
+        false
+      );
+
+      out_id.push_back(term);
+      std::unordered_map<std::string, std::string>::const_iterator name_it = term_to_name.find(term);
+      out_description.push_back(name_it == term_to_name.end() ? term : name_it->second);
+      out_gene_id.push_back(hit_text);
+      out_count.push_back(count);
+      out_query_size.push_back(query_size);
+      out_term_size.push_back(term_size);
+      out_universe_size.push_back(universe_size);
+      out_pvalue.push_back(pvalue);
+    }
+
+    return DataFrame::create(
+      _["ID"] = out_id,
+      _["Description"] = out_description,
+      _["geneID"] = out_gene_id,
+      _["Count"] = out_count,
+      _["query_size"] = out_query_size,
+      _["term_size"] = out_term_size,
+      _["universe_size"] = out_universe_size,
+      _["pvalue"] = out_pvalue,
+      _["stringsAsFactors"] = false
+    );
+  }
+};
+
 // [[Rcpp::export]]
 DataFrame ora_hypergeom(
   CharacterVector genes,
@@ -791,143 +937,27 @@ DataFrame ora_hypergeom(
   int min_size = 10,
   int max_size = 2147483647
 ) {
-  if (term_ids.size() != term_genes.size()) {
-    thisutils::log_message("term_ids and term_genes must have the same length", "error");
+  const OraDatabase database(term_ids, term_genes, term_name_ids, term_names);
+  return database.test(genes, min_size, max_size);
+}
+
+// [[Rcpp::export]]
+List ora_hypergeom_batch(
+  List genes,
+  CharacterVector term_ids,
+  CharacterVector term_genes,
+  CharacterVector term_name_ids,
+  CharacterVector term_names,
+  int min_size = 10,
+  int max_size = 2147483647
+) {
+  const OraDatabase database(term_ids, term_genes, term_name_ids, term_names);
+  List results(genes.size());
+  for (R_xlen_t i = 0; i < genes.size(); ++i) {
+    results[i] = database.test(as<CharacterVector>(genes[i]), min_size, max_size);
   }
-
-  std::unordered_map<std::string, std::unordered_set<std::string> > term_to_genes;
-  std::unordered_map<std::string, std::string> term_to_name;
-  std::vector<std::string> term_order;
-  std::unordered_set<std::string> term_seen;
-  std::unordered_set<std::string> universe;
-
-  for (int i = 0; i < term_name_ids.size() && i < term_names.size(); ++i) {
-    if (CharacterVector::is_na(term_name_ids[i]) || CharacterVector::is_na(term_names[i])) {
-      continue;
-    }
-    term_to_name[as<std::string>(term_name_ids[i])] = as<std::string>(term_names[i]);
-  }
-
-  for (int i = 0; i < term_ids.size(); ++i) {
-    if (CharacterVector::is_na(term_ids[i]) || CharacterVector::is_na(term_genes[i])) {
-      continue;
-    }
-    const std::string term = as<std::string>(term_ids[i]);
-    const std::string gene = as<std::string>(term_genes[i]);
-    if (term.empty() || gene.empty()) {
-      continue;
-    }
-    if (term_seen.insert(term).second) {
-      term_order.push_back(term);
-    }
-    term_to_genes[term].insert(gene);
-    universe.insert(gene);
-  }
-
-  std::vector<std::string> query_order;
-  std::unordered_set<std::string> query_seen;
-  std::unordered_map<std::string, int> query_rank;
-  query_order.reserve(genes.size());
-  for (int i = 0; i < genes.size(); ++i) {
-    if (CharacterVector::is_na(genes[i])) {
-      continue;
-    }
-    const std::string gene = as<std::string>(genes[i]);
-    if (gene.empty() || universe.find(gene) == universe.end()) {
-      continue;
-    }
-    if (query_seen.insert(gene).second) {
-      query_rank[gene] = static_cast<int>(query_order.size());
-      query_order.push_back(gene);
-    }
-  }
-
-  const int universe_size = static_cast<int>(universe.size());
-  const int query_size = static_cast<int>(query_order.size());
-  std::vector<std::string> out_id;
-  std::vector<std::string> out_description;
-  std::vector<std::string> out_gene_id;
-  std::vector<int> out_count;
-  std::vector<int> out_query_size;
-  std::vector<int> out_term_size;
-  std::vector<int> out_universe_size;
-  std::vector<double> out_pvalue;
-
-  if (universe_size <= 0 || query_size <= 0) {
-    return DataFrame::create(
-      _["ID"] = CharacterVector(0),
-      _["Description"] = CharacterVector(0),
-      _["geneID"] = CharacterVector(0),
-      _["Count"] = IntegerVector(0),
-      _["query_size"] = IntegerVector(0),
-      _["term_size"] = IntegerVector(0),
-      _["universe_size"] = IntegerVector(0),
-      _["pvalue"] = NumericVector(0),
-      _["stringsAsFactors"] = false
-    );
-  }
-
-  for (std::vector<std::string>::const_iterator term_it = term_order.begin(); term_it != term_order.end(); ++term_it) {
-    const std::string& term = *term_it;
-    const std::unordered_set<std::string>& term_set = term_to_genes[term];
-    const int term_size = static_cast<int>(term_set.size());
-    if (term_size < min_size || term_size > max_size || term_size <= 0 || term_size >= universe_size) {
-      continue;
-    }
-
-    std::vector<std::pair<int, std::string> > hits;
-    hits.reserve(std::min(term_size, query_size));
-    for (std::unordered_set<std::string>::const_iterator gene_it = term_set.begin(); gene_it != term_set.end(); ++gene_it) {
-      std::unordered_map<std::string, int>::const_iterator rank_it = query_rank.find(*gene_it);
-      if (rank_it != query_rank.end()) {
-        hits.push_back(std::make_pair(rank_it->second, *gene_it));
-      }
-    }
-    const int count = static_cast<int>(hits.size());
-    if (count <= 0) {
-      continue;
-    }
-    std::sort(hits.begin(), hits.end());
-
-    std::string hit_text;
-    for (std::size_t hit_i = 0; hit_i < hits.size(); ++hit_i) {
-      if (hit_i > 0) {
-        hit_text += "/";
-      }
-      hit_text += hits[hit_i].second;
-    }
-
-    const double pvalue = R::phyper(
-      static_cast<double>(count - 1),
-      static_cast<double>(term_size),
-      static_cast<double>(universe_size - term_size),
-      static_cast<double>(query_size),
-      false,
-      false
-    );
-
-    out_id.push_back(term);
-    std::unordered_map<std::string, std::string>::const_iterator name_it = term_to_name.find(term);
-    out_description.push_back(name_it == term_to_name.end() ? term : name_it->second);
-    out_gene_id.push_back(hit_text);
-    out_count.push_back(count);
-    out_query_size.push_back(query_size);
-    out_term_size.push_back(term_size);
-    out_universe_size.push_back(universe_size);
-    out_pvalue.push_back(pvalue);
-  }
-
-  return DataFrame::create(
-    _["ID"] = out_id,
-    _["Description"] = out_description,
-    _["geneID"] = out_gene_id,
-    _["Count"] = out_count,
-    _["query_size"] = out_query_size,
-    _["term_size"] = out_term_size,
-    _["universe_size"] = out_universe_size,
-    _["pvalue"] = out_pvalue,
-    _["stringsAsFactors"] = false
-  );
+  results.attr("names") = genes.attr("names");
+  return results;
 }
 
 // [[Rcpp::export]]

@@ -2,7 +2,7 @@
 % Please edit documentation in R/RunSCENICPlus.R
 \name{RunSCENICPlus}
 \alias{RunSCENICPlus}
-\title{Run an approximate SCENICPlus-compatible eGRN analysis}
+\title{Read SCENIC+ results or run an approximate SCENICPlus-compatible eGRN analysis}
 \usage{
 RunSCENICPlus(
   object,
@@ -50,7 +50,9 @@ RunSCENICPlus(
   tool_name = "SCENICPlus",
   python_result_dir = NULL,
   scplus_object = NULL,
-  envname = "scenicplus_env",
+  auto_prepare = TRUE,
+  work_dir = "scenicplus_output/",
+  envname = NULL,
   conda = "auto",
   verbose = TRUE,
   srt = NULL,
@@ -71,8 +73,9 @@ RunSCENICPlus(
 \item{atac_layer}{ATAC count layer used for peak-gene correlations.}
 
 \item{backend}{Runtime backend. \code{"python"} reads or extracts official
-SCENIC+ result tables and remains the default. \code{"cpp"} runs the approximate
-package workflow.}
+SCENIC+ result tables and remains the default; it does not run the SCENIC+
+pipeline itself. \code{"cpp"} runs the approximate package workflow and requires
+\code{allow_approximate = TRUE}.}
 
 \item{allow_approximate}{Whether to allow the approximate C++ workflow. This
 must be \code{TRUE} when \code{backend = "cpp"}.}
@@ -202,15 +205,32 @@ default matches official SCENIC+ command-line wrappers.}
 
 \item{tool_name}{Name of the \code{srt@tools} result entry.}
 
-\item{python_result_dir}{Directory containing official SCENIC+ outputs already
-exported as \code{tf_gene}, \code{region_gene}, \code{tf_region}, \code{triplets}, \code{eregulons},
-and \code{auc} tables. Used only for \code{backend = "python"}.}
+\item{python_result_dir}{Input directory containing official SCENIC+ outputs
+already exported as \code{tf_gene}, \code{region_gene}, \code{tf_region}, \code{triplets},
+\code{eregulons}, and \code{auc} tables. Tab-separated, comma-separated and plain-text files are
+accepted, optionally compressed with gzip, bzip2 or xz; a table in a single
+subdirectory is also found. Used only for \code{backend = "python"}.}
 
 \item{scplus_object}{Optional official SCENIC+ Python object path
-(\code{.pkl}/\code{.pickle}) to extract into \code{python_result_dir} before
+(\code{.pkl}, \code{.pickle} or \code{.h5mu}) to extract into \code{work_dir} before
 standardization. Used only for \code{backend = "python"}.}
 
-\item{envname}{Python environment used when \code{backend = "python"}.}
+\item{auto_prepare}{Whether to find SCENIC+ results automatically when
+neither \code{python_result_dir} nor \code{scplus_object} is supplied, and to extract
+standardized tables from a matching \code{.pkl}, \code{.pickle} or \code{.h5mu} found in
+\code{python_result_dir} or a conventional location. The search checks
+\code{scenicplus}, \code{scplus}, \code{scenic}, \code{outs} and the current directory.
+Default is \code{TRUE}; set to \code{FALSE} to require explicit inputs. Used only for
+\code{backend = "python"}; the Python environment is prepared automatically when
+extraction is needed.}
+
+\item{work_dir}{Directory used for standardized tables extracted from
+\code{scplus_object} or an automatically discovered SCENIC+ object. Defaults to
+\code{"scenicplus_output/"}, mirroring \code{\link[=RunSCENIC]{RunSCENIC()}}. Ignored when
+\code{python_result_dir} already contains the standardized tables. Used only for
+\code{backend = "python"}.}
+
+\item{envname}{Python environment used when \code{backend = "python"}. By default, \code{.h5mu} uses \code{scenicplus_io_env}; pickle uses \code{scenicplus_env}.}
 
 \item{conda}{Conda-compatible executable used when \code{backend = "python"}.}
 
@@ -233,9 +253,11 @@ region signature AUC. If absent, rankings are computed locally from ATAC.}
 A Seurat object with SCENICPlus-style results.
 }
 \description{
-Build an approximate eRegulon result from paired RNA and chromatin assays.
-The C++ workflow is not an exact re-run of the official SCENIC+ Python
-workflow and requires explicit opt-in.
+Read official SCENIC+ result tables or build an approximate eRegulon result
+from paired RNA and chromatin assays. \code{backend = "python"} reads or extracts
+official SCENIC+ outputs and does not run the SCENIC+ pipeline. The C++
+workflow is not an exact re-run of the official SCENIC+ Python workflow and
+requires explicit opt-in.
 }
 \details{
 The C++ route runs locally without importing or invoking Python. Native GSEA
@@ -244,6 +266,18 @@ when no module passes. The tool result includes module \code{gsea_statistics},
 \code{region_regulon_list} and \code{region_auc} alongside gene AUC. Locally computed
 gene and region rankings use PCG tie-breaking with fixed seed 123; the
 inference and GSEA seed is controlled separately by \code{seed}.
+
+\code{backend = "python"} reads the standardized tables described for
+\code{python_result_dir} instead of running SCENIC+ itself. When only a SCENIC+
+object is available, pass it with \code{scplus_object}; the standardized tables
+are extracted into \code{work_dir} before reading. \code{.h5mu} objects are read with
+the Python \code{mudata} package. Missing tables are reported together with the
+files found in \code{python_result_dir} and the required columns.
+
+Neither backend downloads SCENIC+ reference databases or result tables.
+\code{backend = "python"} only reads local files (and may prepare the Python
+environment when \code{scplus_object} is supplied); \code{backend = "cpp"} uses motif
+annotations already stored in the chromatin assay.
 }
 \examples{
 \dontrun{

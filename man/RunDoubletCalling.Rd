@@ -46,9 +46,11 @@ Doublet calling
 \examples{
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
+set.seed(11)
 pancreas_sub <- RunDoubletCalling(
   pancreas_sub,
-  db_method = "scDblFinder"
+  db_method = "scDblFinder",
+  iter = 2L
 )
 table(pancreas_sub$db.scDblFinder_class)
 head(pancreas_sub@meta.data[, c(

@@ -1,332 +1,188 @@
 # scop (development version)
 
-* **fix**: Retain classical MDS coordinate standard deviations so automatic
-  scree dimension selection works in standard workflows.
+* **breaking**:
 
-* **fix**: Support current Seurat layers in Conos integration and avoid unused
-  scaling and full-matrix transposes during pairwise preparation.
+  * Use native Seurat `SCTransform()` and thread controls. Remove scop's SCT methods,
+    adapters and the SCT-only `CheckDataList()` / `CheckDataMerge()` `cores` argument;
+    retain native models and shared integration features.
+  * Standardize thread arguments as `cores` in `RunLargeVis()`, `RunUMAP2()`,
+    `RunSmoothClust()`, `RunscMalignantFinder()`, `RunSecAct()`, `RunMERINGUE()`,
+    `RunSpatialEcoTyper()` and `RunCHOIR()`. Remove `n_threads`, `n_thread`, `ncores`
+    and `n_cores`, including `...` aliases in `RunCIBERSORT()` and AUCell scoring.
 
-* **fix**: Preserve CSS integration and reference mapping with Seurat 5.6.0
-  by supplying the new native SNN thread argument to simspec calls.
+* **feat**:
 
-* **fix**: Accept result tables without `object` in `DEtestPlot()`,
-  `VolcanoPlot()`, `DEtestManhattanPlot()` and `DEtestRingPlot()`.
+  * Extend `FeatureDimPlot()` density, palette and title controls. Embedding plots
+    default to `label_insitu = TRUE`; `FALSE` uses numbered labels. DE, volcano,
+    Manhattan and ring plots accept standalone tables. Honor CNV palettes, SCENIC
+    reductions and thisplot Pastel1 volcano overlays.
+  * Add ATAC/multiome reading, QC, annotation, shared peaks, native Signac recounting,
+    raw-range motifs, ChromVAR, gene activity, peak linking and complete exports.
+    Preserve capture/cell/region alignment, doublet aggregation, native ties, fragment FRiP, eligible
+    backgrounds, bias correction and measured pairing. Sample-level edgeR validates
+    replicates, pairs and covariates.
+  * Add experimental IREA analysis, plots and checksum-checked resources with
+    contrast provenance; official-portal equivalence remains unestablished.
 
-* **ci**: Execute runnable reference examples during website builds, select
-  changed pages against the last successful publication, and share one workflow
-  and two build scripts for references and articles. Rebuild stale environment
-  outputs, retain a weekly full build, and report rendering times. Python doublet
-  recipes remain explicit manual examples. Check each rendered page immediately and retain page timings,
-  installed package versions and HTML diagnostics when rendering fails.
+* **change**:
 
-* **fix**: Let `RunGSEA()` use the supported default backend in both older and
-  current clusterProfiler releases without forwarding the removed `by` argument.
-* **docs**: Use the Ensembl 115 archive explicitly in gene conversion examples.
-* **fix**: Read startup metadata from the loaded namespace so development loading preserves the Logo, version, date and website without requiring an installed copy.
+  * Use gzip compression for package data and source installation.
+  * Support shared and per-method reduction parameters in integration workflows.
+  * Distinguish omitted `object` from `NULL`; reject duplicate `object`/`srt`.
+    The deprecated `srt` alias warns until removal in scop 1.0.0.
+  * Add standalone database preparation interfaces with shared caching/conversion,
+    nested MSigDB subsets and parent resolution. Reject unknown collections,
+    normalize species names and resolve chromosomes lazily.
+  * BANKSY uses image/Spatial/RNA/default assay precedence; `sample.by` creates
+    separate, prefixed, unaligned fits. Preserve spatial cell identities and
+    provenance through subsetting/renaming; rerun unverifiable legacy results.
+    BANKSY, PRECAST, SmoothClust, CHOIR and RareQ reject invalid provenance.
+  * Milo, scCODA and Propeller require biological `sample.by`; pseudo-samples remain
+    descriptive. Preserve donor pairing, seeds, Milo SpatialFDR and scCODA references.
+    Propeller uses native speckle transformations/empirical Bayes tests, robust/trend/
+    paired controls and two samples per condition; bootstrap intervals are descriptive.
+    Preserve CytoSPACE singleton, collision and zero-cell provenance.
 
-* **refactor**: Simplify fixed-argument plotting and backend calls, and use
-  ordinary matrix binding in Scanorama integration while preserving argument
-  values, matrix names and projection results.
+* **fix**:
 
-* **feature**: `FeatureDimPlot()` supports contour-only plots with
-  `show_points = FALSE`. For unblended features, `add_density = TRUE` colors
-  density contours or smooth surfaces by local mean expression. Point values
-  and their color scale remain unchanged when adding these layers. Expression
-  surfaces inherit the feature palette unless fill colors are supplied.
-  Explicit `density_color` and blended-feature calls retain the original
-  cell-density layers, including filled bands. `CellDimPlot()` continues
-  to display cell-distribution density. Split panels and shared scales remain
-  supported.
-* **fix**: `CellDimPlot()` pads density grids beyond the cell coordinates so
-  outer contours close without clipping. Density lines use major and minor
-  widths, cell-density fills use vector bands with fine contours, and
-  feature-expression surfaces fade at low-support edges with fine contours.
+  * Fix duplicate GSEA rankings after one-to-many ID conversion and retain unmapped
+    labels. Expose `RunGSEA()` parameters `nPermSimple` and `eps` with unchanged defaults.
+  * Preserve native Fisher tests and Holm correction in GO word clouds; support
+    simplifyEnrichment 2.4.1/2.6.0 and GSVA version-specific scoring semantics.
+  * Resolve explicit Ensembl archives directly, recovering catalogs from archive
+    hosts and reporting unavailable releases. Restore
+    the startup Logo, version/date and website with message suppression support.
+  * Preserve the default Python version when preparing a missing environment;
+    recognize micromamba package lists so installed native libraries are reused.
+    Resolve Python requirements together and reject inconsistent environments;
+    isolate PHATE/MAGIC with compatible pandas, separate TensorFlow from JAX,
+    and keep scCODA's compatible `rpy2` version. PHATE supports an already active
+    Python environment through an isolated call, preserving its warnings.
+  * Scope Python conflict checks to the requested dependency closure, warn about
+    unrelated legacy conflicts, pin compatible JAX companions, and retain installation errors.
+    Restrict scVI/moscot rejection to explicit environment requests and pass caller verbosity
+    through dependency checks.
+  * Resolve Seurat t-SNE explicitly in integration workflows. Pass graph/neighbor
+    inputs only to supported reductions. Treat destiny's legacy Matrix coercions
+    as warnings in `RunDM()`, restoring caller options.
+  * Preserve MDS standard deviations, Conos layers and Seurat 5.6.0 CSS integration/
+    mapping. Align RCTD/CARD/SPOTlight references, RCTD library depths and PRECAST
+    raw counts, six-neighbor adjacency and native parameters. Spatial neighborhood
+    outputs retain deterministic order, saved coordinates and complete p-value
+    families; SpatialCellChat requires explicit Visium HD calibration/tolerance.
+  * Match native Palantir bandwidth/start pseudotime, CellRank Fisher-z p-values and
+    stochastic scVelo percentile weights; existing results change. RSpectra can
+    return fewer terminal regions for near-closed classes. Restore thread settings
+    and validate Python runtimes.
 
-* **docs**: Use direct package calls in examples, remove redundant availability
-  guards, and mark optional or external-resource recipes explicitly. Preserve
-  interactive dataset and Monocle examples and regenerate affected help topics.
+* **refactor**:
 
-* **refactor**: Remove the unused qlcMatrix dependency from CSS integration.
-  Load CytoTRACE2 models once per run without retaining package-wide model
-  state; preserve optional analysis backends and downloaded model resources.
+  * Share spatial/heatmap helpers and simplify backend/Scanorama calls; remove unused
+    helpers, bridges and compatibility code. Preserve command history, metadata names
+    and sparse `RecoverCounts(trans = "exp")`. Load CytoTRACE2 models once per call,
+    invalidate changed assets, validate managed Python environments and resolve
+    logging from thisutils `scripts/` with older-path compatibility.
 
-* **fix**: Read raw metabolism GMT files from the data mirror without requiring
-  the scMetabolism package, and perform gene conversion without a package-wide
-  result cache. Use explicit renv snapshots so optional backends outside
-  DESCRIPTION, including SpaTalk, are prepared only when needed.
+* **docs**:
 
-* **refactor**: Load Signac, ComplexHeatmap and ggforce only when ATAC
-  analysis, heatmap rendering or specialized plot layers need them. Check and
-  install optional packages on first use with `check_r()`. Remove unused
-  splines, RcppAnnoy, RcppParallel and R tensorflow dependencies and TBB build
-  flags; retain Python TensorFlow environment preparation and OpenMP support.
+  * Refresh integration/deconvolution documentation and group release notes by type.
+    Enable Scrublet and DoubletDetection examples with explicit environment preparation.
 
-* **fix**: Preserve canonical Seurat command names and separate command history
-  entries in fallback normalization, scaling, variable-feature selection and
-  integration. Keep dynamic PCA and neighbor commands compact without
-  embedding the input object in log text.
-* **fix**: Treat metadata column names as data when constructing metacell groups
-  and LIANA sample keys, including names shared with function options.
-* **perf**: Avoid expanding complete vectors into correlation-test descriptions
-  in gene-immune and SCENIC plots while retaining the same statistics.
-
-* **fix**: Restore sparse count storage after `RecoverCounts(trans = "exp")`
-  exponentiation so count recovery can handle dense Matrix results and
-  implicit zeros correctly.
-
-* **fix**: Restore the package startup Logo, version, update date and website.
-  Startup messages still respect verbosity settings and `suppressPackageStartupMessages()`.
-
-* **fix**: `RunGSEA()` preserves native fgsea computation with the new clusterProfiler interface, using enrichit's public result converter instead of passing the removed `by` argument or silently changing numerical engines.
-* **fix**: Chromatin `CheckDataList()` feature selection preserves native within-batch peak ranking when batch frequencies tie, instead of ranking tied peak IDs alphabetically.
-* **feature**: `ExportATACResults()` saves a complete ATAC object, explicit result tables, selected-assay matrix companions and an external-resource inventory with file checksums into a new directory. Matrix Market/BED3/barcode exports can be read by `ReadATACData()`; fragment resources remain external.
-* **feature**: `FilterATACPeaks()` creates a clean peak assay using explicit raw-count, interval and blacklist criteria. `AnnotateATACPeaks()` records native nearest-interval annotation hits with explicit genome-label/known-length checks, preserving unmatched peaks and existing results.
-* **feature**: `CombineATACPeaks()` constructs a shared interval universe with explicit source support, and `RecountATAC()` recounts indexed fragments through native Signac `FeatureMatrix()`. Counts preserve requested region/cell alignment without padding existing peak matrices; reference lengths, active capture mappings, and fragment availability are checked before optional new-assay writeback.
-* **feature**: `RunChromVAR()` computes native GC-corrected motif-accessibility deviations from existing aligned motif annotations and an explicit sequence reference. It preserves native scores, backgrounds and bias in a new data-only assay without changing source counts or caller RNG state.
-* **feature**: `RunGeneActivity()` wraps native Signac fragment-based gene-body/promoter counting with explicit annotation identity/reference checks and active-capture validation. Results enter a new assay with provenance; ambiguous native IDs are rejected rather than merged or reconstructed.
-- Add opt-in sample-level edgeR design/contrast models with biological-sample checks, paired/covariate designs, peak coordinates and complete tested-family provenance. Existing differential-testing defaults are unchanged.
-- Add RunLinkPeaks for native paired measured-RNA/ATAC associations with explicit pairing, reference metadata checks and protected native links.
-
-* **fix**: `CheckATACData()` determines fragment readiness from resources mapped to the selected assay cells, preserving inactive resources in its report after native subsetting.
-
-* **feature**: `ReadATACData()` and `ReadMultiomeData()` import existing raw peak and paired RNA counts through Signac/Seurat, preserving explicit feature and barcode alignment. `CheckATACData()` reports matrix/reference validity and external fragment availability without altering the object.
-* **feature**: ATAC `RunscDblFinder()` uses native feature aggregation and explicit capture/library groups, preserving RNA-only cells and recording native predictions and parameters. Input metadata comparisons ignore incidental fastmatch barcode-cache attributes, including those encountered with real multi-capture fragments.
-
-* **fix**: `CheckATACData()` determines fragment readiness from resources mapped to the selected assay cells, preserving inactive resources in its report after native subsetting.
-
-* **feature**: `RunATACQC()` supports explicit fragment-record FRiP over the current peak union and matched source columns, applies per-file barcode mappings, and rejects unavailable requested filtering metrics. Fragment totals count records rather than read support; blacklist ratios count each overlapping peak once.
-* **feature**: `AddATACMotifs()` also accepts final peak ranges without a count matrix, returning native motifs and aligned sequence statistics for reuse after recount.
-
-* **feature**: `AddATACMotifs()` matches explicit motif matrices to a supplied sequence reference through Signac/motifmatchr, and `RunMotifEnrichment()` records the eligible universe and native foreground-inclusive enrichment population. Reference identity, sequence statistics, and peak/motif alignment are checked without downloading reference data.
-
-* **fix**: `CheckATACData()` determines fragment readiness from resources mapped to the selected assay cells, preserving inactive resources in its report after native subsetting.
-
-* **feature**: `ReadATACData()` and `ReadMultiomeData()` import existing raw peak and paired RNA counts through Signac/Seurat, preserving explicit feature and barcode alignment. `CheckATACData()` reports matrix/reference validity and external fragment availability without altering the object.
-
-* **fix**: Require Rcpp >= 1.0.13 for source installation, preventing
-  CellRank compilation failures with older headers that limit
-  `List::create()` to 20 arguments.
-
-* **change**: Handwritten GitHub package installs follow the repository default branch. Backend checks accept the installed revision, and Cell2fate only reuses cached results from that revision. Automatically generated renv records are retained.
-
-* **breaking**: `SCTransform()` now comes from Seurat. scop no longer exports its own method, residual kernels, or load-time signature adapter. Preprocessing calls `Seurat::SCTransform()` and leaves thread control to `Seurat::setThreads()`. `CheckDataList()` and `CheckDataMerge()` no longer accept `cores`, which only controlled that removed path.
-
-* **fix**: SCT integration uses features present in every native layer model, completes residuals from the recorded source assay, and preserves all original models during legacy integration.
-
-* **fix**: `RunRCTD()`, `RunCARD()` and `RunSPOTlight()` align reference labels
-  and metadata to selected-assay cell IDs before filtering, including assays
-  containing only part of a Seurat object. Ambiguous IDs are rejected. RCTD
-  preserves full selected-assay library depths through analysis-gene selection;
-  zero-count filtering still uses the selected shared features.
-
-* **fix**: `GetSpatialResult()` returns current-object cells in their current
-  order and recomputes BANKSY and PRECAST count summaries after subsetting.
-  New BANKSY fits and detailed SmoothClust, CHOIR, RareQ and PRECAST results
-  retain private per-cell identities, including same-ID-set renames. SmoothClust
-  cell-column storage and CHOIR explicit cell IDs are handled correctly.
-  Missing or invalid provenance reports a clear error. Stored native fit
-  results remain unchanged, and compatible legacy metadata reads are retained.
-
-* **refactor**: Remove unused internal helpers and Rcpp bridges, share spatial
-  neighborhood filtering and heatmap border preprocessing, and drop redundant
-  Imports checks and obsolete ggplot2 compatibility code.
-
-* **change**: Migration: `RunBANKSY(assay = NULL)` now prefers the selected image's assay,
-  then `Spatial`, `RNA`, and `DefaultAssay`; set `assay` explicitly to reproduce
-  analyses that used a different assay.
-* **change**: Migration: `RunBANKSY()` now reports its actual inputs and result
-  locations and `GetSpatialResult()` reads clusters, parameters, and summaries;
-  use `verbose = FALSE` to suppress receipts or `store_results = FALSE` to omit
-  detailed stored results. A lightweight retrieval index still records custom
-  cluster columns and exact sample membership, including overlapping names such
-  as `S1` and `S1_A`. Sample-specific access to legacy metadata without an index
-  requires rerunning BANKSY; cluster labels alone cannot identify samples safely.
-* **change**: Migration: set `sample.by` to fit BANKSY separately by sample;
-  combined domain labels are sample-prefixed and are not aligned across samples.
-
-* **fix**: C++ gene-set scoring uses GSVA >= 2.6 defaults when the optional
-  GSVA package is absent, avoiding version-probe errors in sparse `RunGSVA()`
-  z-score and PLAGE scoring. Installed GSVA versions retain their existing
-  standardization and sparse-walk behavior.
-
-* **fix**: `RunDEtest()` and native spatial APIs now distinguish an omitted
-  `object` from an explicitly supplied `object = NULL` when resolving the
-  deprecated `srt=` alias. A non-`NULL` `srt=` supplied alongside `object`
-  follows the shared duplicate-input error behavior. The alias remains
-  supported with a deprecation warning until scop 1.0.0, when its removal is
-  scheduled.
-
-* **fix**: `RunGSVA()`, `CellScoring()`, `RunDynamicEnrichment()`,
-  `RunCellRankEnrichment()`, `AnnotateFeatures()` and `RunMetabolism()` normalize
-  Latin species names before database lookup. Lowercase names and space, dot or
-  hyphen separators now resolve to the same annotations as `Homo_sapiens` and
-  `Mus_musculus`, avoiding missing-input errors and silently skipped databases.
-
-* **chore**: Remove `Rfast` from `Suggests` after confirming it has no SCOP
-  source, test, documentation, native, build-script, or CI use.
-
-* **change**: `RunPropeller()` now uses speckle's transformed proportions and
-  empirical Bayes moderated tests instead of the internal logit t-test.
-  It supports `transform`, `robust`, `trend`, records backend results and
-  designs, and blocks on donor IDs for fully paired comparisons. At least
-  two samples per condition are required. SCOP bootstrap intervals remain
-  descriptive intervals for the untransformed proportion ratio.
-
-* **fix**: `RunCytoSPACE()` samples singleton reference types without selecting
-  cells from other types, preserves cell labels that collide after metadata
-  name conversion or with the total-count column, and reports no dominant type
-  for zero-cell spots. Empty assignments are supported; stored results record
-  the collision-safe metadata suffixes and total-count column name.
-
-* **change**: Database preparation now exposes independent `PrepareGO()`,
-  `PrepareKEGG()`, `PrepareMSigDB()` and other source interfaces. `PrepareDB()`
-  dispatches to these interfaces, with shared annotation caching and conversion.
-  Combined model and custom annotation requests retain their existing structure.
-  Chromosome mappings are resolved from the annotation namespace on first use.
-
-* **feat**: Add experimental IREA analysis and plots with unified object inputs,
-  explicit contrast provenance and checksum-checked reference preparation through
-  `PrepareDB(db = "IREA_<cell type>")`, alongside annotation databases. Plots
-  reuse `plot_type` and `padjustCutoff`; diagnostics use the shared logging interface.
-  Numerical equivalence to the official portal remains unestablished.
-
-* **change**: `label_insitu` now defaults to `TRUE` in `CellDimPlot()`,
-  `FeatureDimPlot()`, `PAGAPlot()`, and CCC embedding-network plots, so
-  `label = TRUE` shows group names (or cluster IDs) directly on the plot
-  instead of renumbered labels that must be matched through the legend.
-  Set `label_insitu = FALSE` to restore the numbered labels.
-* **fix**: Differential-abundance plots now project Milo neighborhoods through
-  stored member cells, use `SpatialFDR` for Milo neighborhood significance,
-  and use scCODA credibility for scCODA plots. Milo group summaries and the
-  internal Propeller-style test now report their statistical provenance.
-* **fix**: Sample-level abundance tests preserve sample-condition units and
-  support fully paired donor IDs in Milo and the internal Propeller-style
-  test. Permutation testing now honors `seed`.
-* **change**: Milo, scCODA, and Propeller require biological `sample.by` by
-  default. `allow_pseudo_samples = TRUE` retains virtual samples for
-  descriptive effects, with inferential statistics marked unavailable.
-* **fix**: `ProportionTestPlot()` accepts `result_level = "neighborhood"`
-  for stored Milo neighborhood-level results.
-* **fix**: Preserve scCODA's `"automatic"` reference-cell selection in
-  `RunscCODA()` and reject unknown explicit references instead of silently
-  using the first cell type.
-* **fix**: `PrepareDB()` returns only the requested MSigDB collections after caching the other generated subsets. A cached subset loads the base `MSigDB` database before converting gene IDs, and falls back to the normal ID conversion when that database does not contain the requested columns.
-* **fix**: `PrepareDB()` keeps nested MSigDB collections. Names such as `MSigDB_M2_CGP`, `MSigDB_M2_CP` and `MSigDB_M2_CP_BIOCARTA` select those subsets, parent names such as `MSigDB_M2` still include every nested collection, and colon forms such as `MSigDB_M2:CGP` are accepted. An unknown MSigDB name reports the available collections instead of failing in `complete.cases()`. A cached top-level collection stays usable; requesting a nested name that is not cached rebuilds MSigDB.
-* **fix**: `RunNMF()` supports the CRAN `RcppML` release: sparse input no longer needs `Matrix` attached by the caller, the attach is scoped to the call, and `check_r()` no longer replaces an installed CRAN build with the GitHub one.
-* **fix**: The native Gaussian GSVA kernel follows the sparse scoring walk of the installed `GSVA` release (<= 2.4 and >= 2.6), so `RunGSVA()` and `CellScoring()` match `backend = "r"` on either engine; explicitly stored zeros are dropped before scoring.
-* **perf**: The native Gaussian GSVA walk only evaluates the running-sum extremes at the gene-set hit positions: ~2.8x faster than the previous walk and ~50x faster than the delegated GSVA path on a 2,000 x 1,000 matrix with 400 gene sets.
-* **fix**: `RunSpatialNeighborhood()` returns observed label-pair tables in a deterministic, backend-independent row order, so the cpp and reference R backends produce `identical()` results; a backend parity regression test is added.
-* **fix**: PRECAST consumes the explicitly selected raw-count matrix and defaults to SCOP's exact distance-based six-neighbor adjacency instead of interpreting image pixels as array indices or using PRECAST's axis-restricted neighbor candidates. The matrix follows PRECAST's column-neighbor convention. Empty/invalid spatial graphs and non-finite integration outputs fail before results are written; stored parameters include the graph builder, backend arguments and edge counts.
-* **fix**: SpatialCellChat recognizes imported Visium HD and HD bin assays, requires explicit HD pixel-to-micron calibration and tolerance, and does not classify Visium spot/bin images as segmented cells merely because they inherit FOV.
-* **fix**: Spatial variable feature surfaces inherit their saved assay, layer, image and coordinate columns. Backend feature IDs and p/q ranges are validated; missing BH-adjusted values use the complete supplied p-value family.
-
-* **breaking**: Thread counts are named `cores` throughout. `RunLargeVis()`, `RunUMAP2()`, `RunSmoothClust()`, `RunscMalignantFinder()`, `RunSecAct()`, `RunMERINGUE()`, `RunSpatialEcoTyper()` and `RunCHOIR()` no longer accept the backend-specific `n_threads`, `n_thread`, `ncores` and `n_cores` argument names, and the `n_threads`/`n_thread` values that `RunCIBERSORT()` and the AUCell scoring path previously accepted through `...` are gone as well; `cores` is forwarded to each backend under the name that backend expects.
-* **feat**: `FeatureDimPlot()` defaults assay-gene headings to italic and supports `title.face` plus scalar or feature-named `title.color`, preserving numeric metadata headings and expression palettes.
-
-* **fix**: Resolve the thisutils Python logger from `scripts/`, with compatibility for older installations using `python/`, in both reticulate imports and subprocess runners.
-
-* **fix**: Dependency checks use the default `check_r()` behavior, allowing missing packages to be installed during analysis. Dependencies can also be installed ahead of time through `PrepareEnv()`.
-* **perf**: The scVelo backend builds the velocity transition, the terminal states and the pseudotime as sparse matrices instead of dense cell-by-cell ones; at 50,000 cells the velocity graph drops from about 56 GiB to 11 MiB. The terminal states and pseudotime now use iterative eigensolvers, which can return fewer regions than the previous dense implementation when the graph contains several near-closed classes, and this path requires `RSpectra`.
-* **fix**: `CNVPlot(plot_type = "heatmap")` honours its documented `heatmap_palette` through `thisplot::palette_colors()` instead of ignoring it, and `SCENICPlot()` resolves its automatic reduction through `DefaultReduction()`.
-* **docs**: `IntegrationBenchmarkPlot()` documents its real workflow, and `RunDeconvolution()` documents the MuSiC path.
-* **fix**: Align the C++ ports with their reference implementations: `RunPalantir(backend = "cpp")` uses the reference Markov-chain bandwidth and pins the start waypoint pseudotime to zero, `RunCellRank(backend = "cpp")` reports lineage-driver p-values from the Fisher z transform instead of a Cauchy tail, and `RunSCVELO(backend = "cpp", mode = "stochastic")` applies the reference 95% percentile weighting mask. Existing results for these methods change accordingly.
-* **fix**: `RunPCA()` takes `cores` and forwards it to the native backend, which bounds its BLAS calls instead of always using the process default. The bound only applies when the linked BLAS exposes a thread-count setting (OpenBLAS or MKL); the Windows reference BLAS has none.
-* **fix**: `RunscTenifoldKnk()` restores the previous OpenMP and BLAS thread counts on exit instead of leaving them changed for the rest of the session.
-* **fix**: `RunCHOIR()` checks and installs its pinned backend when needed, and reports installation failures.
-* **fix**: `RunSCENIC()` requires `arrow` for its ranking databases and reports the missing package instead of silently falling back to a rank-based approximation.
-* **refactor**: Use the thisplot Pastel1 palette for volcano enrichment overlays instead of a hard-coded palette.
-
-* **refactor**: Keep fixed method lists, resource filenames, and internal contract values at their use sites instead of package-level static constants.
-* **fix**: Restore Palantir thread settings on exit, validate Python runtime changes before applying thread configuration, invalidate CytoTRACE2 model caches when assets change, and reject conflicting `cores`/`ncores` arguments.
-* **refactor**: Trajectory Python backends call `PrepareEnv()` directly and use its managed environment validation/cache instead of bypassing preparation when modules happen to be importable.
 
 # scop 0.9.2
 
-* **fix**: Cell2location stores plotting matrices for all original spots, with NA for filtered observations, and retains the modeled IDs. Historical compact matrices are expanded only when their modeled/dropped-ID records explain the missing rows; stale or unknown IDs still fail.
-* **fix**: Long-format spatial point/jitter maps forward explicit cutoffs and quantiles without changing the default full range. Both long maps and generic dominant deconvolution maps honor `combine = FALSE`.
+* **breaking**:
 
-* **fix**: Matrix spatial plots retain explicit cutoff/quantile scales, and Cell2location dominant maps forward `combine` and layout controls. Constant topic/abundance panels use consistent default legend breaks.
-* **refactor**: Long-format spatial points and jitter reuse the standard point renderer. Spatial workflow parameter validation, stage-field updates and method-name dispatch are consolidated without removing preflight or result checks.
-* **docs**: Execute the SpatialExperiment round-trip with the correct counts layer, use merged-image auto-resolution in the PRECAST template, and render the main workflow's empty-panel and save/reload examples.
+  * `RunSpatialGradientFeatures()` now exposes only the native C++ gradient interface. The unused compatibility parameters `sample_name`, `platform`, `img_scale_fct`, `assay_modality`, `trajectory_id`, `width`, `annotation_id`, `core`, `distance`, `angle_span`, `resolution`, `model_add`, `model_subset`, `model_remove`, and `control`, plus unsupported `annotation_ids` and `...`, are removed and now fail as unused arguments. Use `image`/`coord.cols`/`coordinate_space`, the annotation metadata inputs, and the native screening controls documented by the function.
+  * `RunMonocle2()` drops the `backend = "cpp"` path and its `n_neighbors` parameter. Monocle now accelerates the DDRTree ordering hot paths natively in C++, so the separate scop implementation is no longer needed; `backend` and `n_neighbors` are accepted with a deprecation warning and ignored. The `group.by`-based `root_state` resolution that only the C++ backend supported is removed with it, and `root_state` must be a trajectory State as with the previous `"r"` backend.
+  * Public APIs take the data object as `object=` rather than `srt=`. Every exported function that took `srt=` now takes `object=`; `srt=` remains accepted as a deprecated alias that warns on use and is removed in scop 1.0.0. `RunVECTOR()`, `VECTORPlot()`, `RuntAge()`, `tAgePlot()`, `RunscTenifoldNet()`, and `PrepareSCExplorer()` take `object=` only.
+  * Remove unverified `RunSpatialDWLS()` and its plotting path rather than presenting clipped least-squares output as SpatialDWLS. Use `RunRCTD()`, `RunCARD()`, or `RunSPOTlight()` with `SpatialDeconvolutionPlot()`.
+  * Remove `SpatialEcoTyperCompositionPlot()` and `SpatialEcoTyperSpatialPlot()`. Use `CellStatPlot()` and `SpatialSpotPlot()`.
+  * `SpatialGradientPlot()` now reads only stored `summary`, `line`, and `model` views. `surface`/`combined` plot types and current-assay/layer refetch are removed.
 
-* **breaking**: `RunSpatialGradientFeatures()` now exposes only the native C++
-  gradient interface. The unused compatibility parameters `sample_name`,
-  `platform`, `img_scale_fct`, `assay_modality`, `trajectory_id`, `width`,
-  `annotation_id`, `core`, `distance`, `angle_span`, `resolution`, `model_add`,
-  `model_subset`, `model_remove`, and `control`, plus unsupported
-  `annotation_ids` and `...`, are removed and now fail as unused arguments.
-  Use `image`/`coord.cols`/`coordinate_space`, the annotation metadata inputs,
-  and the native screening controls documented by the function.
-* **fix**: Spatial proportion, topic-proportion, and q05-abundance point maps
-  share one renderer. Scale/title formatting now happens before the
-  `combine` decision, so empty panels, constant values, named colors, and
-  combined/non-combined returns have the same interpretation. Ordinary
-  benchmark summary tables use the stable bar view for `plot_type = "auto"`;
-  `funkyheatmap` remains explicit.
-* **feat**: `RunSpatialIntegration()` gains `store_object = TRUE`. Setting it
-  to `FALSE` omits the complete native PRECAST object while retaining the
-  standardized result, source, parameters, summaries, and plotting payload.
-* **docs**: Refresh the three Spatial Analysis articles around the real Visium
-  baseline, platform-specific imports and units, and separate
-  Seurat--SpatialExperiment/Giotto bridge contracts. External paths are
-  templates and optional backend examples are labeled as such.
-* **chore**: Package attachment no longer prints the ASCII startup banner or
-  repeated environment instructions. Explicit Python-environment initialization
-  still reports its actual success or failure.
+* **removed**:
 
-* **fix**: Spatial plots preserve coordinate aspect ratios, factor order and named category colors. Point, long-format and pie facets accept metadata names with spaces, constant features honor explicit color limits, and ambiguous value IDs are rejected.
-* **fix**: Spatial integration maps render every sample with its matching image; aligned views use aligned coordinates without raw-image overlays. `SpatialCellPlot()` adds named-list/layout and legend controls, with a sequential default palette for numeric features.
-* **fix**: Deconvolution summaries report assigned/unassigned spot counts without assigning zero-weight spots to the first cell type. Invalid weights fail before object mutation. Empty deconvolution panels remain plottable and constant proportion panels share comparable legends.
-* **dependencies**: Require thisutils >= 0.5.2 for the `detect_cores()` calls already used by SCOP.
-* **fix**: Restore `cores` forwarding to the `ncores` argument in SpatialEcoTyper deconvolution and both MERINGUE R permutation tests; the deprecated `ncores` alias remains supported.
-* **cleanup**: Remove the unreachable per-gene C++ branch after MERINGUE's batch kernel returns; the batch implementation and numerical behavior are unchanged.
-* **fix**: Forward `theme_use` and `theme_args` in all SpaTalk and COMMOT CCC plot views. Consolidate SpaTalk result preparation and remove duplicate coordinate checks and redundant plot-call wrappers.
+  * Removed the legacy spatial registry and result-discovery APIs (`GetSpatialResult()`, `ListSpatialMethods()`, `SpatialBackendStatus()`, and `SpatialResultInfo()`). Use each producer's documented `srt@tools` entry and, where provided, its dedicated result accessor or plotting function.
 
-* **breaking**: `RunMonocle2()` drops the `backend = "cpp"` path and its `n_neighbors` parameter. Monocle now accelerates the DDRTree ordering hot paths natively in C++, so the separate scop implementation is no longer needed; `backend` and `n_neighbors` are accepted with a deprecation warning and ignored. The `group.by`-based `root_state` resolution that only the C++ backend supported is removed with it, and `root_state` must be a trajectory State as with the previous `"r"` backend.
-* **perf**: `RunMonocle2()` DDRTree ordering now runs on monocle's native C++ fast paths (cell-to-MST projection, projected-cell minimum spanning tree, tree ordering traversal, and state-based root selection, ported from the former scop backend into mengxu98/monocle). Ordering a 3,000-cell dataset drops from ~9.3 s to ~1.2 s, and the ordering step no longer scales quadratically with cell number. Pseudotime, states, and the root cell are unchanged. The updated monocle is declared through `check_r()` and installed by `PrepareEnv()`.
-
-* **breaking**: Public APIs take the data object as `object=` rather than `srt=`. Every exported function that took `srt=` now takes `object=`; `srt=` remains accepted as a deprecated alias that warns on use and is removed in scop 1.0.0. `RunVECTOR()`, `VECTORPlot()`, `RuntAge()`, `tAgePlot()`, `RunscTenifoldNet()`, and `PrepareSCExplorer()` take `object=` only.
-* **breaking**: Remove unverified `RunSpatialDWLS()` and its plotting path rather than presenting clipped least-squares output as SpatialDWLS. Use `RunRCTD()`, `RunCARD()`, or `RunSPOTlight()` with `SpatialDeconvolutionPlot()`.
-* **breaking**: Remove `SpatialEcoTyperCompositionPlot()` and `SpatialEcoTyperSpatialPlot()`. Use `CellStatPlot()` and `SpatialSpotPlot()`.
-* **breaking**: `SpatialGradientPlot()` now reads only stored `summary`, `line`, and `model` views. `surface`/`combined` plot types and current-assay/layer refetch are removed.
-* **fix**: `RunDoubletCalling()` forwards the data object as `object=` only, so `RunCellQC()` no longer fails with "Provide only one of `object` or `srt`" for any `db_method`. The Python bridges (`RunSCVELO()`, `RunCellRank()`, `RunPalantir()`, `RunPAGA()`, `RunWOT()`, `RunCellTypist()`) no longer pass the data-object argument on to Python functions that accept neither `object=` nor extra keywords.
-* **fix**: Giotto bridges reuse an already-installed GiottoClass instead of reinstalling `drieslab/Giotto` when the GitHub remote does not match (for example the optional CI pin `giotto-suite/Giotto`). The live round-trip test uses a tiny in-process fixture instead of reloading the source tree under a 120s `callr` timeout.
-* **fix**: `srt_to_adata()` converts velocity matrices stored as extra layers of `assay_x`, such as `spliced`/`unspliced` in the `RNA` assay of a Seurat v5 object, instead of dropping them without a message. `RunSCVELO()` failed on such objects with `Error in scVelo analysis: 'Ms'`, because scVelo skips the moment computation when the layers are absent and reports the problem later as `adata.layers['Ms']`. Names in `assay_y` that are neither an assay nor a layer of `assay_x` are now reported with the available ones, and the Python workflow names the missing layers instead of raising a `KeyError`.
-* **fix**: `MistyRPlot(measure =)` selects the numeric result column explicitly (`gain.R2`/`gain.RMSE` or `contribution`/`importance`).
-* **fix**: Spatial integration (PRECAST) domain, embedding, and coordinate results must match Seurat cell identities exactly, including named, reordered, missing, extra, and duplicate IDs.
-* **fix**: `SpatialCellPlot()` fetches feature values through `GetAssayData5()` with explicit `assay`/`layer`.
-* **fix**: `StatialKontextualPlot()` draws connecting lines only when a relationship has multiple radii.
-* **fix**: Coordinate v3 accepts the empty native orientation slot introduced by newer SeuratObject versions. List integration resolves explicit image maps before merging duplicate image names. Existing coordinate-contract v2 results still require rerunning.
-* **fix**: Spatial coordinate contract v3 uses persistent image axis provenance instead of guessing from mutable metadata, parses numeric factor coordinates correctly, and records the resolved coordinate columns. `SetSpatialImageAxes()` preserves custom VisiumV2 conventions through subsetting and renaming; the bundled Visium object is migrated without changing its measurements. Coordinate-dependent results from contract v2 must be rerun.
-* **fix**: Spatial point and pie plots default to the same FOV/metadata y orientation as network and boundary plots (`flip.y = FALSE`). SpatialExperiment exports default to raw coordinates and retain transforms for reversible display-coordinate round trips.
-* **fix**: Spatial integration and SpatialEcoTyper multi discovery resolve each sample's image independently and reject incomplete image coverage. SpatialEcoTyper single discovery requires a single selected image and stores its raw coordinate source. SpotSweeper local outlier results with verified sample-prefixed IDs are restored to input order without accepting changed coordinates or expression.
-* **fix**: Gradient result storage and VariableFeatures updates are independent; explicit empty updates clear VariableFeatures and completion messages describe actual actions.
-* **fix**: Neighborhood spatial counts respect saved analysis scope and condition, distinguish zero from unevaluated cells, reject unsupported plot arguments, and support valid empty observed results.
-* **fix**: `RunMonocle2()` skips `estimateDispersions()` unless `feature_type = "Disp"` or `show_plot = TRUE`. The sparse-matrix `2^31-1` crash in dispersion fitting is fixed in [mengxu98/monocle](https://github.com/mengxu98/monocle) 2.9.3.
-* **fix**: `RunScTenifoldKnk()` builds the gene regulatory network ensemble with scop's native C++ kernel in every backend instead of calling `scTenifoldNet::makeNetworks()`; `backend` only selects how the downstream differential-regulation steps run (`r` = upstream helpers, `cpp` = scop kernels) and what is stored, with the `cpp` path much faster on large gene sets.
-* **fix**: `RunScTenifoldKnk(backend = "cpp")` no longer loses network scores when a subsample drops an all-zero gene: the empty sparse template was a pattern (`ngCMatrix`) matrix that coerced the ensemble coefficients to logical, so affected networks reached the tensor decomposition as 0/1 and the knocked-out gene was reported as not dysregulated (#427).
-* **fix**: Optional GitHub-only backends (`presto`, `SpatialCellChat`, `NNLM`, `SpaTalk`) are resolved at their call sites through `check_r()` and dropped from the check-time Suggests, so R CMD check no longer installs them; `presto` stays a runtime-optional backend with marker fast paths using an existing installation and `RunCellChat(do.fast = TRUE)` resolving it before execution.
-* **fix**: C-SIDE completion messages respect result storage and document compatibility metadata as run-level significant record counts.
 * **feat**:
+
+  * `RunSpatialIntegration()` gains `store_object = TRUE`. Setting it to `FALSE` omits the complete native PRECAST object while retaining the standardized result, source, parameters, summaries, and plotting payload.
   * `SpatialNeighborhoodProfile()` returns observed per-cell neighbor counts and fractions at multiple raw-coordinate distances, retaining the full selected tissue context for target cells without modifying the Seurat object or storing an edge table.
   * `RunDEtest()` sample-level methods gain `min.cells.sample` (default `10`) to drop pseudobulk samples whose cell count in the current `group.by` level is below a threshold, which can reverse DE direction relative to cell-level tests. Set `min.cells.sample = 1` to keep the previous unfiltered behavior.
   * `RunNichenetr()` and `RunMultiNichenetr()` gain `merged_table_file` to export a temporary merged ligand-receptor/activity/target table as CSV; an existing file is never overwritten.
-* **spatial workflows**: Add BANKSY and SmoothClust to `RunStandardWorkflow(workflow = "spatial")`, with explicit `spatial_cluster_params`. Optional SpotSweeper QC and SpaNorm normalization retain stage status and keep original counts separate from normalized downstream expression.
-* **spatial inputs**: `ReadSpatialData()` delegates Visium, Visium HD and Xenium loading to Seurat and records analysis units, assay/image resolution and coordinate units. Import and workflow entry points automatically validate the selected context.
-* **large spatial data**: `ScaleData()` now supports Assay5 cell subsets and updates layer membership on rescaling. SPARK-X retains sparse input, and dense spatial-feature conversions have an explicit size guard.
-* **normalization**: Explicit `do_normalization = FALSE` is respected by preprocessing, including externally normalized data that the heuristic cannot classify. The SpaNorm workflow retains matched original counts for library QC alongside normalized expression.
-* **dependencies**: Declare the existing direct lifecycle dependency used by PseudobulkExpression; no optional Remotes backend is promoted to Imports.
-* **data**: Remove the derivative `pbmc_celltypist_sub`, `visium_human_pancreas_results_sub`, `visium_human_pancreas_pair_sub`, and `xenium_human_pancreas_boundaries_sub` datasets and one-off data migration scripts. Examples reuse `pbmcmultiome_sub` and `visium_human_pancreas_sub`, computing results when needed; specialized workflows document their required inputs without placeholder files. Existing scripts using the removed `data()` names must be updated.
-* **chore**: Optional-package probes in package code now use `check_r()` and `get_namespace_fun()` instead of `requireNamespace()`. Documented examples call public functions under `\dontrun` and do not invoke `check_r`.
-* **chore**: Cleared the remaining R CMD check findings across plot wrappers and integration benchmarks.
-* **docs**: Synced the `RunMonocle3()` `use_partition` default and the `RunDoubletCalling()` backend default with their sources, and bolded the README headings to match the other packages.
-* **test**: Dropped the stale AUCell namespace expectation from the consistency tests.
-* **removed**:
-  * Removed the legacy spatial registry and result-discovery APIs (`GetSpatialResult()`, `ListSpatialMethods()`, `SpatialBackendStatus()`, and `SpatialResultInfo()`). Use each producer's documented `srt@tools` entry and, where provided, its dedicated result accessor or plotting function.
+  * Add BANKSY and SmoothClust to `RunStandardWorkflow(workflow = "spatial")`, with explicit `spatial_cluster_params`. Optional SpotSweeper QC and SpaNorm normalization retain stage status and keep original counts separate from normalized downstream expression.
+
+* **change**:
+
+  * `ReadSpatialData()` delegates Visium, Visium HD and Xenium loading to Seurat and records analysis units, assay/image resolution and coordinate units. Import and workflow entry points automatically validate the selected context.
+  * Explicit `do_normalization = FALSE` is respected by preprocessing, including externally normalized data that the heuristic cannot classify. The SpaNorm workflow retains matched original counts for library QC alongside normalized expression.
+
+* **fix**:
+
+  * Cell2location stores plotting matrices for all original spots, with NA for filtered observations, and retains the modeled IDs. Historical compact matrices are expanded only when their modeled/dropped-ID records explain the missing rows; stale or unknown IDs still fail.
+  * Long-format spatial point/jitter maps forward explicit cutoffs and quantiles without changing the default full range. Both long maps and generic dominant deconvolution maps honor `combine = FALSE`.
+  * Matrix spatial plots retain explicit cutoff/quantile scales, and Cell2location dominant maps forward `combine` and layout controls. Constant topic/abundance panels use consistent default legend breaks.
+  * Spatial proportion, topic-proportion, and q05-abundance point maps share one renderer. Scale/title formatting now happens before the `combine` decision, so empty panels, constant values, named colors, and combined/non-combined returns have the same interpretation. Ordinary benchmark summary tables use the stable bar view for `plot_type = "auto"`; `funkyheatmap` remains explicit.
+  * Spatial plots preserve coordinate aspect ratios, factor order and named category colors. Point, long-format and pie facets accept metadata names with spaces, constant features honor explicit color limits, and ambiguous value IDs are rejected.
+  * Spatial integration maps render every sample with its matching image; aligned views use aligned coordinates without raw-image overlays. `SpatialCellPlot()` adds named-list/layout and legend controls, with a sequential default palette for numeric features.
+  * Deconvolution summaries report assigned/unassigned spot counts without assigning zero-weight spots to the first cell type. Invalid weights fail before object mutation. Empty deconvolution panels remain plottable and constant proportion panels share comparable legends.
+  * Restore `cores` forwarding to the `ncores` argument in SpatialEcoTyper deconvolution and both MERINGUE R permutation tests; the deprecated `ncores` alias remains supported.
+  * Forward `theme_use` and `theme_args` in all SpaTalk and COMMOT CCC plot views. Consolidate SpaTalk result preparation and remove duplicate coordinate checks and redundant plot-call wrappers.
+  * `RunDoubletCalling()` forwards the data object as `object=` only, so `RunCellQC()` no longer fails with "Provide only one of `object` or `srt`" for any `db_method`. The Python bridges (`RunSCVELO()`, `RunCellRank()`, `RunPalantir()`, `RunPAGA()`, `RunWOT()`, `RunCellTypist()`) no longer pass the data-object argument on to Python functions that accept neither `object=` nor extra keywords.
+  * `srt_to_adata()` converts velocity matrices stored as extra layers of `assay_x`, such as `spliced`/`unspliced` in the `RNA` assay of a Seurat v5 object, instead of dropping them without a message. `RunSCVELO()` failed on such objects with `Error in scVelo analysis: 'Ms'`, because scVelo skips the moment computation when the layers are absent and reports the problem later as `adata.layers['Ms']`. Names in `assay_y` that are neither an assay nor a layer of `assay_x` are now reported with the available ones, and the Python workflow names the missing layers instead of raising a `KeyError`.
+  * `MistyRPlot(measure =)` selects the numeric result column explicitly (`gain.R2`/`gain.RMSE` or `contribution`/`importance`).
+  * Spatial integration (PRECAST) domain, embedding, and coordinate results must match Seurat cell identities exactly, including named, reordered, missing, extra, and duplicate IDs.
+  * `SpatialCellPlot()` fetches feature values through `GetAssayData5()` with explicit `assay`/`layer`.
+  * `StatialKontextualPlot()` draws connecting lines only when a relationship has multiple radii.
+  * Coordinate v3 accepts the empty native orientation slot introduced by newer SeuratObject versions. List integration resolves explicit image maps before merging duplicate image names. Existing coordinate-contract v2 results still require rerunning.
+  * Spatial coordinate contract v3 uses persistent image axis provenance instead of guessing from mutable metadata, parses numeric factor coordinates correctly, and records the resolved coordinate columns. `SetSpatialImageAxes()` preserves custom VisiumV2 conventions through subsetting and renaming; the bundled Visium object is migrated without changing its measurements. Coordinate-dependent results from contract v2 must be rerun.
+  * Spatial point and pie plots default to the same FOV/metadata y orientation as network and boundary plots (`flip.y = FALSE`). SpatialExperiment exports default to raw coordinates and retain transforms for reversible display-coordinate round trips.
+  * Spatial integration and SpatialEcoTyper multi discovery resolve each sample's image independently and reject incomplete image coverage. SpatialEcoTyper single discovery requires a single selected image and stores its raw coordinate source. SpotSweeper local outlier results with verified sample-prefixed IDs are restored to input order without accepting changed coordinates or expression.
+  * Gradient result storage and VariableFeatures updates are independent; explicit empty updates clear VariableFeatures and completion messages describe actual actions.
+  * Neighborhood spatial counts respect saved analysis scope and condition, distinguish zero from unevaluated cells, reject unsupported plot arguments, and support valid empty observed results.
+  * `RunMonocle2()` skips `estimateDispersions()` unless `feature_type = "Disp"` or `show_plot = TRUE`. The sparse-matrix `2^31-1` crash in dispersion fitting is fixed in [mengxu98/monocle](https://github.com/mengxu98/monocle) 2.9.3.
+  * `RunScTenifoldKnk()` builds the gene regulatory network ensemble with scop's native C++ kernel in every backend instead of calling `scTenifoldNet::makeNetworks()`; `backend` only selects how the downstream differential-regulation steps run (`r` = upstream helpers, `cpp` = scop kernels) and what is stored, with the `cpp` path much faster on large gene sets.
+  * `RunScTenifoldKnk(backend = "cpp")` no longer loses network scores when a subsample drops an all-zero gene: the empty sparse template was a pattern (`ngCMatrix`) matrix that coerced the ensemble coefficients to logical, so affected networks reached the tensor decomposition as 0/1 and the knocked-out gene was reported as not dysregulated (#427).
+  * C-SIDE completion messages respect result storage and document compatibility metadata as run-level significant record counts.
+
+* **perf**:
+
+  * `RunMonocle2()` DDRTree ordering now runs on monocle's native C++ fast paths (cell-to-MST projection, projected-cell minimum spanning tree, tree ordering traversal, and state-based root selection, ported from the former scop backend into mengxu98/monocle). Ordering a 3,000-cell dataset drops from ~9.3 s to ~1.2 s, and the ordering step no longer scales quadratically with cell number. Pseudotime, states, and the root cell are unchanged.
+  * `ScaleData()` now supports Assay5 cell subsets and updates layer membership on rescaling. SPARK-X retains sparse input, and dense spatial-feature conversions have an explicit size guard.
+
+* **deps**:
+
+  * Require thisutils >= 0.5.2 for the `detect_cores()` calls already used by SCOP.
+  * Declare the existing direct lifecycle dependency used by PseudobulkExpression; no optional Remotes backend is promoted to Imports.
+
+* **refactor**:
+
+  * Long-format spatial points and jitter reuse the standard point renderer. Spatial workflow parameter validation, stage-field updates and method-name dispatch are consolidated without removing preflight or result checks.
+  * Remove the unreachable per-gene C++ branch after MERINGUE's batch kernel returns; the batch implementation and numerical behavior are unchanged.
+
+* **docs**:
+
+  * Execute the SpatialExperiment round-trip with the correct counts layer, use merged-image auto-resolution in the PRECAST template, and render the main workflow's empty-panel and save/reload examples.
+  * Refresh the three Spatial Analysis articles around the real Visium baseline, platform-specific imports and units, and separate Seurat--SpatialExperiment/Giotto bridge contracts. External paths are templates and optional backend examples are labeled as such.
+  * Synced the `RunMonocle3()` `use_partition` default and the `RunDoubletCalling()` backend default with their sources, and bolded the README headings to match the other packages.
+
+* **data**:
+
+  * Remove the derivative `pbmc_celltypist_sub`, `visium_human_pancreas_results_sub`, `visium_human_pancreas_pair_sub`, and `xenium_human_pancreas_boundaries_sub` datasets and one-off data migration scripts. Examples reuse `pbmcmultiome_sub` and `visium_human_pancreas_sub`, computing results when needed; specialized workflows document their required inputs without placeholder files. Existing scripts using the removed `data()` names must be updated.
+
+* **chore**:
+
+  * Package attachment no longer prints the ASCII startup banner or repeated environment instructions. Explicit Python-environment initialization still reports its actual success or failure.
+  * Cleared the remaining R CMD check findings across plot wrappers and integration benchmarks.
 
 # scop 0.9.1
 
+* **removed**:
+
+  * The `CaSpER` branch of `RunCNV()` is removed: `runCaSpER()` segfaults deterministically on R >= 4.5 (HMM `manualSegment`, even on 50 cells), upstream is unmaintained since 2019, and its Bioconductor dependency set is archived. `RunCNV()` now supports `copykat`, `fastCNV`, `scevan`, `infercnv`, and `numbat`.
+
 * **feat**:
+
   * Internal preprocessing and integration workflows now use scop's Seurat-compatible entry points, enabling validated native acceleration for normalization, variable-feature selection, scaling, PCA, and neighbor search while retaining transparent Seurat fallback for unsupported paths.
   * The native `SCTransform(vst.flavor = "v2")` path now supports validated numeric and factor `vars.to.regress` designs and `latent.data`; unsupported regression designs continue to delegate to Seurat.
   * The native PCA auto path accepts smaller stable trailing eigengaps after numerical and neighborhood-parity validation, allowing more datasets to use the accelerated implementation.
@@ -339,35 +195,12 @@
   * The MERINGUE C++ permutation kernel now traverses the weight matrix sparsely (row-major edge list, bit-identical accumulation): `nperm = 200` Moran p-values at 300 spots drop from ~442s to ~14s (~30x).
   * Removed wrappers whose upstream dependencies are unavailable or uncompilable: `RunSpatialQM()`, the `RunSemla*()` wrappers, the `BASS`/`SpatialMNN` branches of `RunSpatialIntegration()` (PRECAST unaffected), and the SPATA2 `backend = "r"` path of `RunSpatialGradientFeatures()` (C++ backend only; `srt_to_spata2()`/`spata2_to_srt()` removed as well).
   * `RunMERINGUE()` gains a `backend = c("cpp", "r")` option; the C++ kernels replicate `MERINGUE::moranTest()`/`moranPermutationTest()` to machine precision (including the `sample.kind` RNG stream). `backend = "r"` retains the original calls and honors `moran_params`.
-  * Real-data consistency tests verify the wrappers against the original pipelines (CellChat, SpatialCellChat, LIANA, BayesSpace, MERINGUE, SPOTlight, SpaNorm, SpatialDWLS, RCTD, BANKSY, CARD, SpotSweeper, PRECAST).
   * `DorotheaPlot()` now follows the shared scop plot style: horizontal `"bar"`/`"lollipop"` comparison plots, `"volcano"`, `"heatmap"` via `GroupHeatmap()`, `"dim"` (activity vs expression on embeddings), `"stat"` (`FeatureStatPlot` distributions), and `"targets"` (regulon-target volcano). `RunDorothea()` examples show `FeatureDimPlot()` / `FeatureStatPlot()` on the TF-activity assay.
   * `RunIntegrationBenchmark()` compares integration methods with scIB-style iLISI/cLISI, ASW, graph connectivity, and ARI/NMI scores and returns a `Seurat` object. Tables live in `srt@tools$IntegrationBenchmark` and are printed with `thisplot::print_colored_table()`. `IntegrationBenchmarkPlot()` draws `box` (per-cell LISI), heatmap, scatter, and UMAP views. `LISIPlot()` is removed; use `IntegrationBenchmarkPlot(plot_type = "box")`.
   * `SCENICPlot()` / `SCENICPlusPlot()`: `heatmap_dotplot`, `eregulon_dim`, `coverage`, `network`, `network_graph`, `egrn`, `overlap`. `"network"` draws one hub per TF. Network plots have no title. Networks use `"Chinese"` when `palette = "RdYlBu"`. Multi-TF legends show the top RSS cell type.
-* **fixed**:
-  * R-CMD-check now installs `presto` directly from `immunogenomics/presto`, avoiding dependency-resolution failures caused by treating the GitHub-only package as a CRAN package.
-  * `RunCellRank()` now disables PETSc explicitly when retrying fate probabilities with SciPy's direct solver, preventing CellRank 2.0.7 from silently reverting the retry to GMRES and rejecting harmless floating-point negative probabilities (#380).
-  * `RunCellRank()` defaults to the dependency-free `brandts` Schur method again, so the standard `scop_env` no longer fails because the optional `petsc4py` and `slepc4py` packages are absent. Users can still request `schur_method = "krylov"` when those packages are installed (#380).
-  * CellRank stored-result plotting now follows SCOP's `theme_scop`, `Chinese`, and `Spectral` visual contracts; draws transition projections directly from the saved sparse transition matrix; supports random walks without requiring trend results; facets trend modules; and adds module-enrichment dot plots. CellRank enrichment selects the database gene-ID column that overlaps the actual driver background, including three-column GO tables with both Entrez and symbol identifiers.
-  * Linux shared-library preloading keeps a package-local `load_shared_library()` seam, so dependency-order retries can be tested without attempting to mock the base `dyn.load()` function as a SCOP namespace binding.
-  * Coordinate-contract validation now covers unified CCC plots for SpatialCellChat, COMMOT, and SpaTalk without rejecting coordinate-independent SpatialDWLS proportions. Explicit `coordinate_space = "legacy_display"` analysis preserves its historical lowres-to-hires fallback; current display plotting remains strict about the selected scale.
-  * Spatial coordinate contract v2 now reads full-resolution VisiumV1/VisiumV2 coordinates, restores the `imagerow`/`imagecol` order that Seurat's standard VisiumV2 loader stores positionally as centroid `x`/`y`, preserves explicit generic FOV `x`/`y`, normalizes only explicitly named legacy image row/column coordinates, and applies exactly one selected `lowres` or `hires` display transform. `SpatialCoordinates()`, HE-overlay point/pie/network plots, and their public wrappers gain an appended `image.scale` argument; variadic wrappers keep it named-only after `...`. Raw SpatialCellChat analysis no longer requires an available display scale, and coordinate-independent producers no longer claim a coordinate-contract version. Users no longer need to modify Seurat `@scale.factors` slots. Coordinate-dependent stored results created under an older or unknown contract must be rerun.
-  * `RunSlingshot()` / `CellDimPlot(lineages=)` no longer fail with `scale$guide == "none"` on ggplot2 >= 3.5 when `ggnewscale` is older than 0.5.0. Colour/fill scales now keep a character `guide`, legend overrides go through `guides()`, `ggnewscale` is pinned to >= 0.5.2, and a failed lineage plot no longer discards the Slingshot result.
-  * `RunGSEA()` / `RunEnrichment()` no longer fail with "replacement has 0 rows, data has N" when the cached database carries an empty version. The KEGG REST API dropped the `Release` line from `/info/<org>`, so `PrepareDB()` now resolves the KEGG version from the release-notes page when the info endpoint does not report it (retrieval-date fallback; HPO hardened the same way), and the enrichment writers tolerate missing versions.
-  * `RunSpaTalk()` now reuses stored `RunRCTD()` weights through SpaTalk method 2, records the deconvolution source, and accepts a working installed SpaTalk package even when its DESCRIPTION lacks GitHub remote metadata.
-  * `RunLIANA()` now preserves the field set returned by LIANA's official consensus mode: rank consensus no longer gains all-`NA` aggregate/significance placeholders, aggregate consensus no longer gains all-`NA` magnitude/specificity placeholders, and deterministic ligand-receptor display identifiers are completed during SCOP/LIANA export.
-  * `RunCNV()` attaches backend packages to the search path during execution so lazy data objects (copykat `full.anno`, fastCNV `geneMetadata`, numbat `gtf_hg38`) are resolvable from backend namespace code; `copykat` is installed from its GitHub source (`navinlabcode/copykat`) because it was removed from CRAN.
-  * `RunCNV(numbat)` prefers the plain `seg` column over `seg_label` when reading `joint_post` output, so segment identifiers are not polluted with the `(loh)` suffix.
-  * `RunCNV()` numbat extraction is vectorized (direct index assignment with duplicate averaging instead of row-by-row `aggregate`/`strsplit`, plus `split()`-partitioned bin statistics): a 300-seg x 2000-cell `joint_post` extraction drops from ~16s to ~1.3s (~12x) with bit-identical results.
-  * `visium_mouse_brain_slices_sub` rebuilt with the current `SeuratObject` so bundled `VisiumV2` images can be subset again.
-  * `RunRCTD()` extracts per-spot `all_weights` from `spacexr` >= 2.2 `doublet_mode = "multi"` results.
-  * `RunSpotSweeper()` detects upstream `SpotSweeper::localVariance` breakage on `SpatialExperiment` colData and degrades gracefully.
-  * `RunSpatialIntegration(PRECAST)` writes the raw coordinates expected by `CreatePRECASTObject`.
-  * `RunLIANA()` recognizes `logfc_comb` (and other liana method score columns) as the interaction score.
-  * Exported `theme_scop` / `theme_spatial` are listed in the pkgdown reference index; the `theme_scop` alias test compares function equality rather than identity so installed-package checks pass.
-  * `DorotheaPlot(plot_type = "volcano")` plots every tested TF, caps Wilcoxon underflow on the y-axis, colors points by direction, and labels significant TFs. `"targets"` labels only significant genes so leader lines no longer pile at x = 0.
-* **removed**:
-  * The `CaSpER` branch of `RunCNV()` is removed: `runCaSpER()` segfaults deterministically on R >= 4.5 (HMM `manualSegment`, even on 50 cells), upstream is unmaintained since 2019, and its Bioconductor dependency set is archived. `RunCNV()` now supports `copykat`, `fastCNV`, `scevan`, `infercnv`, and `numbat`.
-* **changed**:
+
+* **change**:
+
   * `RunBenchmark()` / `BenchmarkPlot()` are replaced by `RunSpatialBenchmark()` / `SpatialBenchmarkPlot()`. The old names are removed.
   * `RunCell2fate()` examples call `RunStandardWorkflow()` and plot time, uncertainty, module activation, and module state. `env_requirements()` also shows the standalone Cell2fate Python 3.9 stack.
   * `ListLIANAResources()` is replaced by `ListCCCDB()`, which enumerates ligand-receptor databases and prior models across all CCC backends with a unified `db`/`species`/`status` schema.
@@ -375,9 +208,32 @@
   * Database listing outputs are unified (`ListDB()` and `ListCCCDB()` return plain data frames; colored console rendering is available via `thisplot::print_colored_table()`).
   * Python-converted object interop: `PAGAPlot()`, `VelocityPlot()`/`CellDimPlot(velocity=)`, `RunPAGA(use_rna_velocity)`, `RunCellRank()`, DE consumers (`VolcanoPlot()`, `DEtestPlot()`, `RunEnrichment()`, `RunGSEA()`, ...), and `RunScissor()` now fall back to scanpy/scVelo result slots (`paga`, `rank_genes_groups`, `velocity_umap`, `dpt_pseudotime`, `connectivities`) stored by `adata_to_srt()`.
 
+* **fix**:
+
+  * `RunCellRank()` now disables PETSc explicitly when retrying fate probabilities with SciPy's direct solver, preventing CellRank 2.0.7 from silently reverting the retry to GMRES and rejecting harmless floating-point negative probabilities (#380).
+  * `RunCellRank()` defaults to the dependency-free `brandts` Schur method again, so the standard `scop_env` no longer fails because the optional `petsc4py` and `slepc4py` packages are absent. Users can still request `schur_method = "krylov"` when those packages are installed (#380).
+  * CellRank stored-result plotting now follows SCOP's `theme_scop`, `Chinese`, and `Spectral` visual contracts; draws transition projections directly from the saved sparse transition matrix; supports random walks without requiring trend results; facets trend modules; and adds module-enrichment dot plots. CellRank enrichment selects the database gene-ID column that overlaps the actual driver background, including three-column GO tables with both Entrez and symbol identifiers.
+  * Coordinate-contract validation now covers unified CCC plots for SpatialCellChat, COMMOT, and SpaTalk without rejecting coordinate-independent SpatialDWLS proportions. Explicit `coordinate_space = "legacy_display"` analysis preserves its historical lowres-to-hires fallback; current display plotting remains strict about the selected scale.
+  * Spatial coordinate contract v2 now reads full-resolution VisiumV1/VisiumV2 coordinates, restores the `imagerow`/`imagecol` order that Seurat's standard VisiumV2 loader stores positionally as centroid `x`/`y`, preserves explicit generic FOV `x`/`y`, normalizes only explicitly named legacy image row/column coordinates, and applies exactly one selected `lowres` or `hires` display transform. `SpatialCoordinates()`, HE-overlay point/pie/network plots, and their public wrappers gain an appended `image.scale` argument; variadic wrappers keep it named-only after `...`. Raw SpatialCellChat analysis no longer requires an available display scale, and coordinate-independent producers no longer claim a coordinate-contract version. Users no longer need to modify Seurat `@scale.factors` slots. Coordinate-dependent stored results created under an older or unknown contract must be rerun.
+  * `RunSlingshot()` / `CellDimPlot(lineages=)` no longer fail with `scale$guide == "none"` on ggplot2 >= 3.5 when `ggnewscale` is older than 0.5.0. Colour/fill scales now keep a character `guide`, legend overrides go through `guides()`, `ggnewscale` is pinned to >= 0.5.2, and a failed lineage plot no longer discards the Slingshot result.
+  * `RunGSEA()` / `RunEnrichment()` no longer fail with "replacement has 0 rows, data has N" when the cached database carries an empty version. The KEGG REST API dropped the `Release` line from `/info/<org>`, so `PrepareDB()` now resolves the KEGG version from the release-notes page when the info endpoint does not report it (retrieval-date fallback; HPO hardened the same way), and the enrichment writers tolerate missing versions.
+  * `RunSpaTalk()` now reuses stored `RunRCTD()` weights through SpaTalk method 2 and records the deconvolution source.
+  * `RunLIANA()` now preserves the field set returned by LIANA's official consensus mode: rank consensus no longer gains all-`NA` aggregate/significance placeholders, aggregate consensus no longer gains all-`NA` magnitude/specificity placeholders, and deterministic ligand-receptor display identifiers are completed during SCOP/LIANA export.
+  * `RunCNV()` resolves bundled backend annotations for copykat, fastCNV and numbat.
+  * `RunCNV(numbat)` prefers the plain `seg` column over `seg_label` when reading `joint_post` output, so segment identifiers are not polluted with the `(loh)` suffix.
+  * `RunCNV()` numbat extraction is vectorized (direct index assignment with duplicate averaging instead of row-by-row `aggregate`/`strsplit`, plus `split()`-partitioned bin statistics): a 300-seg x 2000-cell `joint_post` extraction drops from ~16s to ~1.3s (~12x) with bit-identical results.
+  * `visium_mouse_brain_slices_sub` rebuilt with the current `SeuratObject` so bundled `VisiumV2` images can be subset again.
+  * `RunRCTD()` extracts per-spot `all_weights` from `spacexr` >= 2.2 `doublet_mode = "multi"` results.
+  * `RunSpotSweeper()` detects upstream `SpotSweeper::localVariance` breakage on `SpatialExperiment` colData and degrades gracefully.
+  * `RunSpatialIntegration(PRECAST)` writes the raw coordinates expected by `CreatePRECASTObject`.
+  * `RunLIANA()` recognizes `logfc_comb` (and other liana method score columns) as the interaction score.
+  * Exported `theme_scop` / `theme_spatial` are listed in the pkgdown reference index.
+  * `DorotheaPlot(plot_type = "volcano")` plots every tested TF, caps Wilcoxon underflow on the y-axis, colors points by direction, and labels significant TFs. `"targets"` labels only significant genes so leader lines no longer pile at x = 0.
+
 # scop 0.9.0
 
 * **feat**:
+
   * New optional-backend wrappers: `RunCHOIR()` for significance-based hierarchical clustering and `RunCell2fate()` for RNA-velocity modeling, both with pinned backend provenance, strict result validation, metadata writeback, and resumable artifacts.
   * Added `RunCell2location()` for official Python cell2location reference-signature learning and spatial abundance mapping, with manifest-validated resume, signature reuse, and `Cell2locationPlot()` visualizations.
   * Added `RunCNV()` as a unified CNV workflow with optional `copykat`, `infercnv`, `SCEVAN`, and `fastCNV` backends, standardized `srt@tools[["CNV"]]` storage, and `CNVPlot()` visualizations; added `RunESTIMATE()` for stromal/immune/tumor-purity scoring with `EstimateScorePlot()` / `EstimateGenePlot()`.
@@ -389,36 +245,32 @@
   * Performance: C++ acceleration for the core Seurat flow — `NormalizeData()`, `FindVariableFeatures()`, `ScaleData()`, PCA and neighbor search — and for marker detection (`FindMarkers()`, `FindAllMarkers()`, `FindConservedMarkers()`); native kernels for manifold learning (UMAP, PaCMAP, TriMap, PHATE, DM), trajectory inference (PAGA, SCVELO, VECTOR), Z-score/PLAGE/ssGSEA/AUCell gene-set scoring, spatial-variable-feature statistics, cross-KNN and connectivity graphs, and integration embeddings.
   * `RunMetabolism()` now builds gene sets via `PrepareDB()` by default with species-aware conversion; `PrepareDB()` accepts local single-file database sources (MSigDB, CORUM, JASPAR, TRRUST, CellChat, and more); `RunSCENIC()` gained a `genome` parameter for hg38/hg19 reference selection.
   * `RunSpatialNeighborhood()` defaults to observed-neighborhood summaries; the standard spatial workflow records per-stage requested/completed/skipped/failed state and reports partial completion.
-* **changed**:
+
+* **change**:
+
   * Renamed `standard_scop()` to `RunStandardWorkflow()` and `integration_scop()` to `RunIntegration()` (multi-method support via `integration_methods`); renamed `db_scDblFinder()`, `db_scds()`, `db_Scrublet()`, and `db_DoubletDetection()` to `RunscDblFinder()`, `Runscds()`, `RunScrublet()`, and `RunDoubletDetection()`. Old entry points emit deprecation warnings and will be removed in version 1.0.0.
   * Spatial analysis, plotting, and framework conversion now require explicit `image` selection for multi-image objects; distance-sensitive producers default to raw acquisition coordinates (`coordinate_space = "legacy_display"` remains available).
+
 * **data**:
+
   * Added `visium_human_pancreas_sub`, a Visium human pancreas spatial example dataset ([GSE254829](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE254829)) with spatial image data and CODA-derived annotations, for spatial analysis.
   * Added a Xenium package-data import script for preparing curated Xenium example resources outside the installed package payload.
 
 # scop 0.8.9
 
-* Cell-cell communication:
-  * `RunLIANA()` now stores LIANA's official multi-method consensus from
-    `rank_aggregate()` or `liana_aggregate()` alongside the historical
-    method-stacked and scop-postprocessed tables. Human and mouse defaults use
-    the `Consensus` and `MouseConsensus` ligand-receptor resources,
-    respectively, and multiple resources are aggregated independently.
-  * Added `ListLIANAResources()`, `ListCCCMethods()`, `CCCResultInfo()`, and
-    `GetCCCResult()` for resource discovery and Seurat-centered CCC result
-    access.
-  * `RunCCC()` now registers all seven SCOP CCC producers while retaining
-    CellChat, CellPhoneDB, and LIANA as the default core run. Unified CCC
-    plotting separates backends by default and provides explicit
-    support-count and within-method percentile-rank views.
-  * Hardened unified CCC plotting and access semantics: context filters are
-    applied before cross-method support/rank combinations, CellChat cached
-    rows honor the requested significance threshold, LIANA resources remain
-    separate during export, and unified retrieval preserves backend labels.
-    `RunCCC(skip_failed = TRUE)` now records preflight failures without
-    aborting otherwise runnable methods.
+* **feat**:
+
+  * Added `loom_to_srt()` for pure-R loom-to-Seurat conversion via `rhdf5`, preserving velocity `spliced` and `unspliced` layers as assays without initializing Python, and added Python-backed `loom_to_adata()` for users who need AnnData output.
+  * Added `RunBulk()` as a unified bulk-strategy entrypoint with method-vector selection for bulk DE, deconvolution, and cell-type-specific DE workflows.
+  * Added method-specific bulk runners for `de_limma_voom`, `de_edgeR_qlf`, `de_DESeq2`, `de_dream`, `deconv_MuSiC`, `deconv_BisqueRNA`, `deconv_BayesPrism`, and `csde_TOAST`.
+  * Standardized bulk results under `Bulk$results$de`, `Bulk$results$deconv`, and `Bulk$results$csde`, keeping DE outputs compatible with existing `DEtestPlot()`, `RunEnrichment()`, `RunGSEA()`, `GroupHeatmap()`, and `FeatureHeatmap()` data flows.
+  * `RunBulk(run_enrichment = TRUE, run_gsea = TRUE)` now filters bulk DE rows with pathway thresholds and mirrors successful pathway results to `Enrichment_Bulk_wilcox` and `GSEA_Bulk_wilcox`, so `EnrichmentPlot()` and `GSEAPlot()` can read them through the standard `srt@tools` contract.
+  * Deconvolution and CSDE bundles now record their computational `engine` in `details`; the current deconvolution runners use explicit `backend = "internal"` SCOP profile fitting and `csde_TOAST` uses explicit `backend = "limma_interaction"`, so package backends can be wired in later without pretending to call external packages.
+  * Added explicit `Remotes` entries for `mengxu98/thisplot` and `mengxu98/thisutils` so source installs can resolve the minimum imported versions required by SCOP.
+  * Added `method_args` to expose method-specific tuning parameters without expanding the public API surface.
 
 * **fix**:
+
   * `RunGSVA()`: Removed redundant dense `as.matrix()` conversion in single-cell mode for `backend = "r"`; sparse expression matrices now stay sparse through row filtering, reducing peak memory and avoiding unnecessary dense materialization.
   * `RunCellQC()`: Replaced `Seurat::SplitObject()` with lazy cell-name-based subsetting, avoiding full-object duplication per split group. Added caching of `GetAssay()` gene names, `GetAssayData5()` counts, and per-cell QC metrics (`nCount` / `nFeature`) outside the species-check loop to eliminate repeated data extraction.
   * `RunDEtest()`: Pre-computed cell index mapping (`split(names(cell_group), cell_group)`) for paired-marker tests, replacing per-pair `which()` calls with O(1) list lookups.
@@ -435,25 +287,18 @@
   * `RunDimsReduction()`: Added Seurat v4 fallback for PCA centering — `SeuratObject::LayerData(…, features = …)` is Assay5-only; v4 `Assay` objects now use `GetAssayData5()` with manual feature subsetting.
   * `RunIntegration()`: Added early detection for v5-only integration methods (`CCA`, `RPCA`, `fastMNN5`, `Harmony5`, `scVI5`) to provide a clear, actionable error message when used with Seurat v4 `Assay` objects, rather than failing deep in the call stack.
 
-* **feat**:
-  * Added `loom_to_srt()` for pure-R loom-to-Seurat conversion via `rhdf5`, preserving velocity `spliced` and `unspliced` layers as assays without initializing Python, and added Python-backed `loom_to_adata()` for users who need AnnData output.
-  * Added `RunBulk()` as a unified bulk-strategy entrypoint with method-vector selection for bulk DE, deconvolution, and cell-type-specific DE workflows.
-  * Added method-specific bulk runners for `de_limma_voom`, `de_edgeR_qlf`, `de_DESeq2`, `de_dream`, `deconv_MuSiC`, `deconv_BisqueRNA`, `deconv_BayesPrism`, and `csde_TOAST`.
-  * Standardized bulk results under `Bulk$results$de`, `Bulk$results$deconv`, and `Bulk$results$csde`, keeping DE outputs compatible with existing `DEtestPlot()`, `RunEnrichment()`, `RunGSEA()`, `GroupHeatmap()`, and `FeatureHeatmap()` data flows.
-  * `RunBulk(run_enrichment = TRUE, run_gsea = TRUE)` now filters bulk DE rows with pathway thresholds and mirrors successful pathway results to `Enrichment_Bulk_wilcox` and `GSEA_Bulk_wilcox`, so `EnrichmentPlot()` and `GSEAPlot()` can read them through the standard `srt@tools` contract.
-  * Deconvolution and CSDE bundles now record their computational `engine` in `details`; the current deconvolution runners use explicit `backend = "internal"` SCOP profile fitting and `csde_TOAST` uses explicit `backend = "limma_interaction"`, so package backends can be wired in later without pretending to call external packages.
-  * Added explicit `Remotes` entries for `mengxu98/thisplot` and `mengxu98/thisutils` so source installs can resolve the minimum imported versions required by SCOP. Optional bulk engines such as `DESeq2` and `variancePartition` are installed on demand through `check_r()` and called lazily through `get_namespace_fun()`.
-  * Added `method_args` to expose method-specific tuning parameters without expanding the public API surface.
+* **None**:
+
+  * * Cell-cell communication:
+  * `RunLIANA()` now stores LIANA's official multi-method consensus from `rank_aggregate()` or `liana_aggregate()` alongside the historical method-stacked and scop-postprocessed tables. Human and mouse defaults use the `Consensus` and `MouseConsensus` ligand-receptor resources, respectively, and multiple resources are aggregated independently.
+  * Added `ListLIANAResources()`, `ListCCCMethods()`, `CCCResultInfo()`, and `GetCCCResult()` for resource discovery and Seurat-centered CCC result access.
+  * `RunCCC()` now registers all seven SCOP CCC producers while retaining CellChat, CellPhoneDB, and LIANA as the default core run. Unified CCC plotting separates backends by default and provides explicit support-count and within-method percentile-rank views.
+  * Hardened unified CCC plotting and access semantics: context filters are applied before cross-method support/rank combinations, CellChat cached rows honor the requested significance threshold, LIANA resources remain separate during export, and unified retrieval preserves backend labels. `RunCCC(skip_failed = TRUE)` now records preflight failures without aborting otherwise runnable methods.
 
 # scop 0.8.8
 
-* **deps**:
-  * Updated the minimum dependency versions to `thisplot (>= 0.3.8)` and `thisutils (>= 0.4.5)`, and removed local copies of helpers now provided upstream (`thisplot::annotate_quadrants()`, `thisplot::clip_symmetric_range()`, `thisutils::collapse_sparse_rows()`).
-
-* **docs**:
-  * Updated pkgdown reference grouping for the cell-cycle workflow.
-
 * **fix**:
+
   * Added optional wrappers for `RunDorothea()`, `RunBayesSpace()`, and experimental `RunscTenifoldKnk()`. `RunscTenifoldKnk()` keeps the upstream `scTenifoldNet` workflow but fixes the QC gene-filter assignment in the local path, uses an equivalent covariance/downdate path with direct sparse matrix construction, selection-based quantile thresholding, and controlled per-gene eigensolver parallelism for large `pcNet()` network construction, and uses C++ helpers for tensor decomposition, manifold matrix construction, directionality, and differential-regulation distance calculations. The C++ tensor-decomposition path now computes MTTKRP updates directly instead of materializing four dense unfolding matrices.
   * `PrepareEnv()`: Added explicit support for `mamba` and `micromamba` executables in addition to `conda`, including command-name resolution, automatic package-managed micromamba download when `conda = "micromamba"` is requested and the command is not on `PATH`, manager-aware logging, micromamba env path detection, and ToS handling that only runs for standard conda. Package-managed micromamba environments now use a no-space cache root to avoid `micromamba run -p` path parsing failures. `PrepareEnv()` now also stops early if reticulate has already initialized a different Python executable, avoiding unsafe in-session switches between conda and micromamba. The Python stack now also pins `setuptools < 81` so legacy packages such as `trimap` can still import `pkg_resources`.
   * `PrepareEnv()`: The default `modules = NULL` environment no longer includes `scomm`; install it explicitly with `modules = "scomm"` because the TensorFlow/scOMM stack conflicts with the default JAX/scVI stack through incompatible `ml-dtypes` requirements.
@@ -478,9 +323,18 @@
   * Refactored repeated custom database input handling by introducing shared internal helpers for normalizing and assembling user-provided `TERM2GENE` / `TERM2NAME`, and applied them across `RunEnrichment()`, `RunDynamicEnrichment()`, `RunGSEA()`, `RunGSVA()`, and `PrepareDB()` to keep behavior consistent.
   * `RunIntegration()`: Improved `ChromatinAssay` handling by standardizing ATAC reductions after integration, avoiding non-interactive small-batch blocking, clipping `TFIDF/rlsi` anchor dims to available cells, auto-switching `Harmony5` to legacy `Harmony`, and rejecting unsupported `Seurat` / `RPCA` ATAC paths with explicit messages.
 
+* **deps**:
+
+  * Updated the minimum dependency versions to `thisplot (>= 0.3.8)` and `thisutils (>= 0.4.5)`, and removed local copies of helpers now provided upstream (`thisplot::annotate_quadrants()`, `thisplot::clip_symmetric_range()`, `thisutils::collapse_sparse_rows()`).
+
+* **docs**:
+
+  * Updated pkgdown reference grouping for the cell-cycle workflow.
+
 # scop 0.8.7
 
 * **feat**:
+
   * Added `RunDimsEstimate()` and `DimsEstimatePlot()` for intrinsic dimensionality estimation from reductions, integrated into `RunDimsReduction()` and `RunStandardWorkflow()` to automatically select useful dimensions when `linear_reduction_dims_use = NULL`.
   * Renamed `RunDimReduction()` to `RunDimsReduction()` and updated downstream callers/documentation accordingly.
   * `RunStandardWorkflow()`: When `linear_reduction_dims_use = NULL`, now uses estimated dimensions stored in the reduction (via `RunDimsEstimate()`) when available, with fallback to the first 50 dimensions.
@@ -495,30 +349,33 @@
   * Remove `CellChatPlot()`.
 
 * **fix**:
+
   * `RunUMAP2()`: Fixed reduction lookup to check existing reduction names before falling back to `DefaultReduction()`, avoiding errors when the exact reduction name is already present.
 
 # scop 0.8.6
 
 * **feat**:
+
   * Added `RunGSVA()` for gene set variation analysis and `GSVAPlot()` for visualization of [GSVA](https://github.com/rcastelo/GSVA) results. Related issue #146 (@mengxu98).
-  * `RunMetabolism()`
-    * Added `RunMetabolism()` for single-cell metabolism pathway scoring with support for `AUCell`, `GSVA`, `ssGSEA`, and optional `VISION`, and `MetabolismPlot()` for visualization
-    * `RunMetabolism()` now uses [scMetabolism](https://github.com/wu-yc/scMetabolism) KEGG / Reactome metabolism pathway definitions to identify metabolism-related terms, then rebuilds pathway gene sets from updated `PrepareDB()` annotations, enabling cached database updates and cross-species metabolism scoring.
-    Related issue #146 (@mengxu98).
+  * `RunMetabolism()` * Added `RunMetabolism()` for single-cell metabolism pathway scoring with support for `AUCell`, `GSVA`, `ssGSEA`, and optional `VISION`, and `MetabolismPlot()` for visualization * `RunMetabolism()` now uses [scMetabolism](https://github.com/wu-yc/scMetabolism) KEGG / Reactome metabolism pathway definitions to identify metabolism-related terms, then rebuilds pathway gene sets from updated `PrepareDB()` annotations, enabling cached database updates and cross-species metabolism scoring. Related issue #146 (@mengxu98).
   * Added `RunDecontX()` and integrated optional `decontX` ambient RNA decontamination into `RunCellQC()`, including contamination metadata, optional decontaminated assay output, and threshold-based QC filtering. Related issue #147 (@mengxu98).
 
 * **fix**:
+
   * `FeatureStatPlot()`: Fixed duplicated X/Y axis titles and main title when `stack = TRUE` with `theme_args` or `title`. Stack assembly now strips axis and plot titles from non-edge panels and draws a single shared ylab/title via gtable; theme styling from `theme_args` (e.g. `axis.title.y`, `title`/`plot.title`) is applied to these shared grobs. Related issue #145 (@PanSX-Dr).
 
 * **docs**:
+
   * Updated the README badge/logo.
 
 * **data**:
+
   * Removed the example datasets `ifnb_sub`, `ref_scHCL`, and `ref_scZCL`.
 
 # scop 0.8.5
 
 * **feat**:
+
   * Default palette changed from `"Paired"` to `"Chinese"`. See `thisplot::ChineseColors()` for details.
   * Unified the `cores` parameter across multiple functions (`DynamicHeatmap()`, `FeatureHeatmap()`, `GroupHeatmap()`, and `heatmap_enrichment()`), ensuring `cores` is correctly threaded through to `RunEnrichment()`.
   * `RunMonocle2()` and `RunMonocle3()`: Added `xlab` and `ylab` parameters, passed through to internal `CellDimPlot()` and `FeatureDimPlot()` calls.
@@ -529,41 +386,39 @@
   * Added `find_neighbors_and_clusters()` and `run_nonlinear_reduction()` helper functions to unify operations across integration functions and reduce redundant code.
 
 * **fix**:
-  * `PrepareDB()`: 
-    * TF database now uses [AnimalTFDB4](https://github.com/mengxu98/datasets/tree/main/AnimalTFDB4) as the data source.
-    * MP database - the Web Archive URL year is now dynamically determined from the current date, and the archive snapshot date for all MP-related file downloads (`VOC_MammalianPhenotype.rpt`, `MGI_Gene_Model_Coord.rpt`, `MGI_GenePheno.rpt`) is extracted from the server index page to ensure consistent versioning.
-    * hTFtarget data download URL has been changed from `"http://bioinfo.life.hust.edu.cn/static/hTFtarget/file_download/tf-target-infomation.txt"` to `"https://guolab.wchscu.cn/static/hTFtarget/file_download/tf-target-infomation.txt"`.
-    * CSPA data download URL has been changed from `"https://wlab.ethz.ch/cspa/data/S1_File.xlsx"` to `"https://raw.githubusercontent.com/mengxu98/CSPA/main/S1_File.xlsx"`.
 
-    Related issus #76 (@hwa2Hu), #139 (@pengding774-dot), #140 (@mengxu98).
-  * `LIGER_integrate()`
-    * Migrated to the `rliger` 2.x workflow (`rliger::runIntegration()` + `rliger::quantileNorm()` on `Seurat` object) and now prepares/uses the `ligerScaleData` layer via `rliger::scaleNotCenter()` before integration.
-    * Updated argument naming from `LIGER_dims_use` to `liger_dims_use`, and removed legacy quantile-normalization parameter compatibility mapping (`ref_dataset`), keeping `reference` as the supported interface.
+  * `PrepareDB()` uses [AnimalTFDB4](https://github.com/mengxu98/datasets/tree/main/AnimalTFDB4) for TF annotations and resolves a consistent MP archive date from the server index. Update [hTFtarget](https://guolab.wchscu.cn/static/hTFtarget/file_download/tf-target-infomation.txt) and [CSPA](https://raw.githubusercontent.com/mengxu98/CSPA/main/S1_File.xlsx) download sources (#76, #139, #140).
+  * `LIGER_integrate()` * Migrated to the `rliger` 2.x workflow (`rliger::runIntegration()` + `rliger::quantileNorm()` on `Seurat` object) and now prepares/uses the `ligerScaleData` layer via `rliger::scaleNotCenter()` before integration. * Updated argument naming from `LIGER_dims_use` to `liger_dims_use`, and removed legacy quantile-normalization parameter compatibility mapping (`ref_dataset`), keeping `reference` as the supported interface.
   * Optimized the installation of some *Python* packages on Apple Silicon devices.
 
 * **docs**:
+
   * Updated README example code and visualizations. After regenerating figures, the package size was reduced by ~3 MB.
 
 # scop 0.8.4
 
 * **fix**:
-  * `FeatureStatPlot()` / `ExpressionStatPlot()`: Fixed box and violin x-axis misalignment when `add_box = TRUE` with `split.by`. Groups with fewer than 2 observations are now filtered before violin density estimation (with a warning), and the violin layer uses a consistent `position_dodge(width = 0.9)` to match the boxplot. Related issue #123 (@oranges7). 
+
+  * `FeatureStatPlot()` / `ExpressionStatPlot()`: Fixed box and violin x-axis misalignment when `add_box = TRUE` with `split.by`. Groups with fewer than 2 observations are now filtered before violin density estimation (with a warning), and the violin layer uses a consistent `position_dodge(width = 0.9)` to match the boxplot. Related issue #123 (@oranges7).
 
 # scop 0.8.3
 
 * **feat**:
+
   * `RunDynamicFeatures()`: Added [PreTSA](https://github.com/haotian-zhuang/PreTSA/) method for dynamic feature fitting. The [PreTSA](https://github.com/haotian-zhuang/PreTSA/) algorithm in `scop` has been re implemented to support parallelization for higher performance. Original research: [PreTSA: computationally efficient modeling of temporal and spatial gene expression patterns](https://doi.org/10.1186/s13059-026-03994-3). Use `fit_method = "pretsa"` for B-spline-based piecewise truncated spline analysis; `fit_method = "gam"` (default) keeps generalized additive models. PreTSA supports `knot` (`0` or `"auto"`) and `max_knot_allowed` when `knot = "auto"`. Relate issue #133.
   * `CellDimPlot()` and `FeatureDimPlot()`: Added `legend.title` parameter (default `NULL`) to control the legend title. When `NULL`, default titles are used (e.g. group name for `CellDimPlot`, feature or empty for `FeatureDimPlot`).
   * `ExpressionStatPlot()` and `FeatureStatPlot()`: Added `legend.title` parameter (default `NULL`) for single-legend plots. When `NULL`, the default title (e.g. `keynm` or feature/group name) is used. `FeatureStatPlot()` forwards `legend.title` to `ExpressionStatPlot()`.
   * Moved `StatPlot` function to `thisplot::StatPlot`.
 
 * **fix**:
+
   * Differential expression plots (`VolcanoPlot()`, `DEtestManhattanPlot()`, `DEtestRingPlot()`): added `only.pos = TRUE` for positive-only visualization. `DEtestManhattanPlot()` now keeps the cell-type track centered at y = 0 and sizes the track from the nearest point distance around zero.
   * `DynamicHeatmap()` / `heatmap_enrichment()`: Fixed incorrect `db` handling when using custom `TERM2GENE`/`TERM2NAME`. Enrichment results with `Database = "custom"` could be incorrectly filtered by default `db` values (e.g. `"GO_BP"`), causing false "No term enriched using the threshold" warnings even when enrichment succeeded. Relate issue #133 (@1228849000).
 
 # scop 0.8.2
 
 * **feat**:
+
   * Add the `DEtestPlot()` function, which calls the original `VolcanoPlot()` and adds two plot types, Manhattan and Ring, controlled by the `plot_type` parameter (`c("volcano", "manhattan", "ring")`, default `"volcano"`). Add standalone functions `DEtestManhattanPlot()` and `DEtestRingPlot()` for direct use. Relate issue #121 (@ericavalentini).
   * Differential expression visualization (`DEtestPlot()`, `VolcanoPlot()`, `DEtestManhattanPlot()`, `DEtestRingPlot()`): added `res` parameter to accept existing DE results (data.frame). When `res` is provided, `srt` is ignored. Data processing supports: (1) `group1` or `cluster` column for grouped plots; (2) no grouping column for a single panel; (3) gene names from row names when `gene` column is missing. Relate issue #129 (@mengxu98).
   * `PrepareEnv()`: Update `version` parameter to specify the *Python* version of the conda environment. Default is `"3.11-1"` on *Windows* and `"3.10-1"` on *macOS* and *Unix*. Relate issue #103 (@PanSX-Dr).
@@ -571,20 +426,24 @@
   * Removed the setting in *Python* functions that prevents drawing functions from causing *R* crashes.
 
 * **fix**:
+
   * `RunPalantir()`: Fixed unused `plot_format` parameter error. The parameter is now properly excluded from arguments passed to Python functions. Relate issue #126 (@christinejay990202-dev).
 
 # scop 0.8.1
 
 * **fix**:
+
   * `FeatureHeatmap()`: Fixed `group_palcolor` when a named vector is passed: the function previously used only the first color for all groups because `group_palcolor[[1]]` on a vector returns a single element. Now when `group.by` has length 1, a vector is automatically wrapped as a list; when `within_groups = TRUE`, `group_palcolor` is expanded in line with `group_palette`.
   * `GroupHeatmap()`: Same `group_palcolor` fix as `FeatureHeatmap()`: support for named-vector input and correct expansion when `within_groups = TRUE`.
 
 * **docs**:
+
   * `group_by` modified to `group.by` to unify documentation, involving functions: `RunCellRank()`, `RunDEtest()`, `VolcanoPlot()`, `RunEnrichment()`, `EnrichmentPlot()`, `RunGSEA()`, `GSEAPlot()`, `RunPalantir()`, `RunPAGA()`, `RunWOT()`, `RunSCVELO()`, releated to [#120](https://github.com/mengxu98/scop/issues/120).
 
 # scop 0.8.0
 
 * **feat**:
+
   * `RunMonocle2()`: New function for performing [Monocle2](https://github.com/mengxu98/monocle) trajectory analysis with support for various dimensionality reduction methods (DDRTree, ICA, tSNE, SimplePPT, L1-graph, SGL-tree). Uses the fixed version of monocle2 from [mengxu98/monocle](https://github.com/mengxu98/monocle).
   * `RunMonocle3()`: New function for performing [Monocle3](https://github.com/cole-trapnell-lab/monocle3) trajectory analysis with support for cell ordering, trajectory learning, and pseudotime computation.
   * `RunCytoTRACE()`: New `scop` implementation for running CytoTRACE 2 analysis to predict cellular potency scores and categories (Differentiated, Unipotent, Oligopotent, Multipotent, Pluripotent, Totipotent) with support for human and mouse species.
@@ -593,65 +452,78 @@
 # scop 0.7.9
 
 * **docs**:
+
   * Optimized `@inheritParams` usage to reduce redundant parameter definitions.
   * Unified parameter naming: renamed `group_by` to `group.by` for consistency with Seurat conventions in `RunMonocle3()`, `RunPalantir()`, `RunSCVELO()`, `RunWOT()`, `CellCorHeatmap()`, and `RunDynamicFeatures()`.
 
 # scop 0.7.8
 
+* **feat**:
+
+  * `adata_to_srt()`: Removed automatic removal of "X_" prefix from dimensionality reduction names in `obsm` keys. The function now preserves original reduction names as they are stored in AnnData objects.
+
 * **fix**:
+
   * `RunPalantir()`: Fixed unused `plot_format` parameter error. The parameter is now properly excluded from arguments passed to Python functions. Relate issue #114 (@Moonerss).
   * `RunSCVELO()`: Fixed PAGA computation error by replacing `scv.tl.paga` with `sc.tl.paga` (scanpy implementation) for better stability. The function now uses the same PAGA implementation as `RunPAGA()` function.
   * `RunCellRank()`: Fixed GPCCA Schur decomposition error by adding fallback mechanism. When `brandts` method fails with "subspace_angles" error, the function automatically tries `krylov` method. If both methods fail, it automatically switches to CFLARE estimator for more robust computation.
   * `RunCellRank()`: Fixed `recover_dynamics` error by ensuring `velocity_graph` and `velocity_graph_neg` are properly set before calling `scv.tl.recover_dynamics()` for latent time computation.
 
-* **feat**:
-  * `adata_to_srt()`: Removed automatic removal of "X_" prefix from dimensionality reduction names in `obsm` keys. The function now preserves original reduction names as they are stored in AnnData objects.
-
 * **data**:
+
   * Reducing the size of `pancreas_sub` example dataset.
 
 # scop 0.7.7
 
 * **feat**:
+
   * `adata_to_srt()`: Enhanced to support multiple AnnData object types including *Python* AnnData objects (from scanpy/reticulate), R6 AnnData objects from the `anndata` package (AnnDataR6), and R6 AnnData objects from the `anndataR` package (InMemoryAnnData). Added internal helper functions `get_adata_element()` and `get_adata_names()` for better compatibility. Relate issues #67 (@lisch7), #91 (@mengxu98) and [commit91#issuecomment](https://github.com/mengxu98/scop/issues/91#issuecomment-3659404993).
 
 * **fix**:
+
   * `RunDEtest()`: Fixed error when comparing one cluster against multiple clusters using `group1` and `group2` parameters. Relate issue #111 (@zhaoxiaoyan9225).
   * `AnnotateFeatures()`: Fixed bug where the function would fail when processing GTF file annotations due to column name matching issues during data naming. The function now correctly handles column name intersections when merging annotation data.
 
 # scop 0.7.6
 
 * **feat**:
+
   * `RunDM()`: Added automatic PCA-based dimensionality reduction when using many features (>1000) to speed up diffusion map computation. The `npcs` parameter can be used to control the number of principal components used for pre-processing.
 
 # scop 0.7.5
 
-* **fix**:
-  * `CellScoring()`: Fixed bug where the function failed to build results. Relate issue #98 (@SuperrNaruto).
-
 * **feat**:
+
   * `RunDEtest()`: Fixed compatibility issue with [SeuratObject](https://satijalab.github.io/seurat-object/) 5.0.0+ by replacing deprecated `Assays()` `slot` argument with `LayerData()`. Relate issue #100 (@mattizecos).
   * `RunDM()`: Added automatic PCA-based dimensionality reduction when using many features (>1000) to speed up diffusion map computation. The `npcs` parameter can be used to control the number of principal components used for pre-processing.
+
+* **fix**:
+
+  * `CellScoring()`: Fixed bug where the function failed to build results. Relate issue #98 (@SuperrNaruto).
 
 # scop 0.7.3
 
 * **feat**:
+
   * `RunCellTypist()`: New function for cell type annotation using the CellTypist method.
   * `CellTypistModels()`: New function for downloading and managing CellTypist pre-trained models.
 
 # scop 0.7.2
 
 * **feat**:
+
   * `RunCellRank()`: Performance optimizations and code improvements.
 
 # scop 0.7.1
 
 * **fix**:
+
   * `CellDimPlot()`: Fixed issue where NA values appeared in labels. Relate issue #93 (@12345nkjil).
 
 # scop 0.7.0
 
 * **feat**:
+
   * `PrepareEnv()`: Integrated `uv` as the primary *Python* package installer for improved installation speed.
   * `check_python()`: Now uses `uv` as the primary installation tool with `pip` as fallback, significantly improving package installation speed.
   * Added `find_uv()` and `install_uv()` internal functions for managing `uv` package manager installation and detection.
@@ -659,64 +531,65 @@
 # scop 0.6.6
 
 * **docs**:
-  * Unified documentation format across all R functions:
-    * Standardized return value tags: Changed all `@returns` to `@return` for consistency.
-    * Unified parameter documentation: Replaced all `\code{value}` with Markdown backticks `` `value` `` format.
-    * Standardized default value descriptions.
-    * Added `@md` tags: Added `@md` tags to all functions using Markdown syntax in documentation.
-    * Enhanced cross-references: Added `@seealso` links to related functions where appropriate.
+
+  * Standardize Roxygen return tags, Markdown parameter formatting, default descriptions and cross-references.
 
 # scop 0.6.5
 
 * **feat**:
-  * `PrepareEnv()`:
-    * Added comprehensive environment variable configuration to prevent crashes when calling *Python* functions, including setting thread limits for OMP, OPENBLAS, MKL, NUMBA, and other libraries. This improves stability on all platforms, especially Apple silicon Macs.
-    * Added `accept_conda_tos()` function to automatically accept conda Terms of Service for required channels, improving the conda environment setup process.
-    * Fixed conda Terms of Service acceptance issue in `PrepareEnv()`. The function now automatically accepts conda Terms of Service for required channels, eliminating the need for manual acceptance. This addresses the issue reported in [#85](https://github.com/mengxu98/scop/issues/85).
+
+  * `PrepareEnv()` configures Python thread limits and accepts required conda Terms of Service automatically, improving environment stability and setup ([#85](https://github.com/mengxu98/scop/issues/85)).
   * Multiple Python-based functions (`RunPAGA`, `RunSCVELO`, `RunPalantir`, `RunCellRank`, `RunWOT`, `RunPHATE`, `RunPaCMAP`, `RunTriMap`): Enhanced message formatting and code improvements.
   * `PrepareSCExplorer()`: Fixed package version dependency issues with `shiny` and `bslib` compatibility. The function now properly handles `bslib` theme configuration to work with both `shiny` 1.6.0 and 1.7.0+, addressing compatibility errors reported in [#87](https://github.com/mengxu98/scop/issues/87).
 
 * **fix**:
+
   * Improved code formatting and consistency across multiple functions.
   * Enhanced Python functions in `inst/python/functions.py` with better error handling and message formatting.
 
 * **docs**:
+
   * Updated documentation for multiple functions to reflect code improvements.
 
 # scop 0.6.2
 
 * **feat**:
+
   * `CellChatPlot()`: Adjusted the size of saved figures for better file size optimization.
 
 * **docs**:
+
   * Updated README.md to remove references to Monocle2 and Monocle3 (deprecated functions).
 
 # scop 0.6.1
 
 * **feat**:
+
   * `PrepareEnv()`: Improved message formatting and simplified log output for better user experience.
   * Added `get_conda_envs_dir()` helper function to centralize conda environment directory retrieval.
   * `RunIntegration()`: Enhanced `integration_method` parameter definition with explicit method list for better code clarity.
 
 * **fix**:
+
   * Moved `exist_python_pkgs()` function to `check_package.R` for better code organization.
   * Replaced direct `conda_info()$envs_dirs[1]` calls with `get_conda_envs_dir()` helper function for consistency.
   * `RunSCExplorer()`: Updated to use `thisplot::palette_list` and `thisplot::slim_data()` instead of `scop::palette_list` and `scop::slim_data()`.
-  * Added `thisplot` to dependency checks in `RunSCExplorer()`.
 
 * **docs**:
+
   * Updated documentation across multiple functions.
 
 # scop 0.6.0
 
 * **feat**:
+
   * `PrepareEnv()`: Enhanced with environment caching mechanism to avoid redundant environment preparation. Improved message formatting and error handling.
   * Python-based functions (`RunPAGA()`, `RunSCVELO()`, `RunPalantir()`, `RunCellRank()`, `RunWOT()`) now automatically call `PrepareEnv()` internally, eliminating the need for users to manually prepare the Python environment before using these functions.
   * `cluster_within_group2()`: New function for clustering within groups.
   * Multiple plotting functions: Replaced `geom_sankey()` with `ggsankey::geom_sankey()` for better Sankey diagram support.
-  * Multiple functions: Replaced `:::` operator with `get_namespace_fun()` for safer namespace access.
 
 * **fix**:
+
   * Removed `RunMonocle()` function and related documentation (`RunMonocle2.Rd`, `RunMonocle3.Rd`).
   * Removed `projection_functions.R` file (functions moved to other locations).
   * Replaced custom theme functions with `thisplot::theme_this()` (exported as `theme_scop()`).
@@ -724,6 +597,7 @@
   * Removed `palette_list` data object.
 
 * **deps**:
+
   * Moved `cli` from `Suggests` to `Imports` for better message formatting support.
   * Added `thisplot` to `Imports` for theme and utility functions.
   * Added `ggsankey` to `Suggests` for Sankey diagram support.
@@ -731,65 +605,78 @@
   * Removed unused dependencies: `Biobase`, `BiocGenerics`, `concaveman`, `DDRTree`, `glmGamPoi`, `hexbin`, `monocle`, `png`, `ragg`, `tidyr`.
 
 * **docs**:
+
   * Updated documentation across multiple functions to reflect code refactoring.
   * Improved code organization and maintainability.
 
 # scop 0.5.5
 
 * **fix**:
+
   * Fixed `VelocityPlot()` function error in `plot_type = "grid"` mode: replaced vectorized arrow length with fixed-length arrows (using mean length) to resolve `vapply()` error that occurred when `grid::arrow()` received a vector instead of a single value, see [#74](https://github.com/mengxu98/scop/issues/74).
 
 # scop 0.5.4
 
 * **fix**:
+
   * Fixed parameter name error in `CheckDataType()` function calls: changed `data` parameter to `object` in `RunKNNMap()`, `RunSymphonyMap()`, `RunScmap()`, `RunPCAMap()`, and `RunSingleR()` functions, see [#68](https://github.com/mengxu98/scop/issues/68).
   * Fixed `SingleCellExperiment` object creation in `RunScmap()` and `RunSingleR()` functions: changed from coercing `SummarizedExperiment` to directly constructing `SingleCellExperiment` objects.
 
 # scop 0.5.3
 
 * **feat**:
+
   * `PrepareDB()`: Changed default `Ensembl_version` parameter from `103` to `NULL` for more flexible version handling.
   * Added *Python* version `log_message()` for Python-based functions (`RunSCVELO()`, `RunPAGA()`, `RunPalantir()`, `RunCellRank()`, `RunWOT()`) and added `verbose` parameter inheritance and improved message formatting through cli formatting.
 
 * **fix**:
+
   * Delete `harmonizomeapi.py` file.
   * Move `scop_analysis.py` into a single `functions.py` file in `inst/python/` for better code organization and maintainability.
 
 * **docs**:
+
   * Improved parameter documentation consistency.
 
 # scop 0.5.1
 
 * **docs**:
+
   * Improved reference formatting and consistency across multiple functions.
   * Enhanced documentation clarity and readability.
 
 # scop 0.5.0
 
 * **feat**:
+
   * `RunCellChat()`: New function to perform CellChat analysis for investigating cell-to-cell communication with support for human, mouse, and zebrafish species.
   * `CellChatPlot()`: New function to visualize CellChat analysis results with various plot types and customization options.
   * Multiple integration functions: Improved error messages and message formatting for better user experience.
 
+* **fix**:
+
+  * Removed some example figures to optimize package installation size.
+
 * **deps**:
+
   * Added [CellChat](https://github.com/jinworks/CellChat) package dependency with remote repository `jinworks/CellChat`.
 
 * **docs**:
+
   * Updated README.md with improved code formatting and examples.
   * Enhanced documentation for cell communication analysis functions.
   * Improved error messages and user guidance across integration functions.
 
-* **fix**:
-  * Removed some example figures to optimize package installation size.
-
 # scop 0.4.0
 
 * **feat**:
+
   * `RunProportionTest()`: New function to perform Monte-carlo permutation test for quantifying cell proportion differences between conditions.
   * `ProportionTestPlot()`: New function to generate proportion test plots with customizable significance thresholds and visualization options.
   * Multiple *Python*-based functions: add `\dontrun{}` blocks for Github workfolw checking.
 
 * **docs**:
+
   * Added comprehensive documentation for new proportion testing functions.
   * Enhanced example documentation across multiple functions.
   * Updated package documentation and examples.
@@ -797,39 +684,42 @@
 # scop 0.3.4
 
 * **docs**:
+
   * Updated workflow examples and function documentation.
 
 # scop 0.3.3
 
 * **feat**:
+
   * Multiple functions: Improved parameter documentation formatting and consistency across the package.
 
 # scop 0.3.2
 
 * **feat**:
+
   * `GetFeaturesData()` and `AddFeaturesData()`: Enhanced argument clarity, added input validation, and standardized return values for `Seurat`, `Assay`, and `Assay5` objects.
-  * `CellCorHeatmap()`: 
-    - Renamed parameters: `query_cell_annotation` → `query_annotation`, `ref_cell_annotation` → `ref_annotation`.
-    - Improved error message formatting through cli formatting.
-    - Simplified variable assignments and improved readability.
+  * `CellCorHeatmap()`: - Renamed parameters: `query_cell_annotation` → `query_annotation`, `ref_cell_annotation` → `ref_annotation`. - Improved error message formatting through cli formatting. - Simplified variable assignments and improved readability.
 
 * **docs**:
+
   * Comprehensive documentation updates across multiple functions including `AnnotateFeatures`, `CellDimPlot`, `CellStatPlot`, `FeatureStatPlot`, `GroupHeatmap`, `RunCellQC`, and others.
   * Improved parameter descriptions and function clarity.
 
 # scop 0.3.1
 
 * **feat**:
+
   * `EnrichmentPlot()` and `GSEAPlot()`: Removed conditional font face styling (`face = ifelse()` logic) for better text rendering consistency. Set the default value of `lineheight` from `0.5` to `0.7`.
-  * Updated `check_r()` function for improved package checking functionality.
   * Updated reexports functionality.
 
 * **docs**:
+
   * Updated documentation formatting and consistency.
 
 # scop 0.3.0
 
 * **feat**:
+
   * Fixed `segmentation faults` and `R crashes` on *M-series* MacBook when running *Python* functions.
   * `RunPAGA()`: Enhanced with *M-series* MacBook detection and automatic environment configuration.
   * `RunSCVELO()`: Added ARM64-specific optimizations to prevent crashes and ensure stable execution.
@@ -842,80 +732,94 @@
   * `RunCellQC()`: Enhanced both scrublet and doubletdetection functions with ARM64 compatibility.
 
 * **docs**:
+
   * Updated function documentation to reflect *M-series* MacBook compatibility.
   * Added technical notes about ARM64 architecture considerations.
 
 # scop 0.2.9
 
 * **fix**:
+
   * Fix bug for `RunSCVELO()`.
 
 * **docs**:
+
   * Updated documentation for some functions.
 
 # scop 0.2.7
 
 * **feat**:
-  * Added an internal function `.check_pkg_status()` to check if an *R* package is installed.
+
   * Update function `CheckDataType()` to *S4* class function.
   * Update function `RunStandardWorkflow()`, make it more efficient.
 
 * **data**:
+
   * Delete `lifemap` data, including: `lifemap_cell`, `lifemap_compartment` and `lifemap_organ`.
   * Reconstructed the sample data for both `panc8_sub` and `pancreas_sub`, retaining only the basic `Seurat` object.
 
 # scop 0.2.6
 
 * **feat**:
+
   * Added `remove_r()` function for easy remove *R* packages.
   * Rename function: `RemovePackages()` to `remove_python()`.
-  * Removed other methods of installing *R* packages from the `check_r()` function, only retaining [pak::pak](https://pak.r-lib.org/reference/pak.html). 
   * Delete useless import packages: `BBmisc`, `BiocManager`, `covr`, `devtools`, `promises` and `withr`.
   * Optimize the structure of `_pkgdown.yml` file.
 
 * **docs**:
+
   * Updated documentation for some functions.
 
 # scop 0.2.5
 
 * **feat**:
+
   * Rename function: `palette_scop()` to `palette_colors()`.
 
 # scop 0.2.4
 
 * **feat**:
+
   * Rename functions: `check_srt_merge()` to `CheckDataMerge()`, `check_srt_list()` to `CheckDataList` and `check_data_type()` to `CheckDataType`.
 
 # scop 0.2.2
 
 * **feat**:
+
   * Replace all `BiocParallel::bplapply()` with `thisutils::parallelize_fun()`.
 
 * **fix**:
+
   * Fix bugs in `RunSingleR()`.
 
 # scop 0.2.0
 
 * **feat**:
+
   * Added `remove_python()` function for easy remove *Python* packages.
 
 * **fix**:
+
   * Corrected an issue in `py_to_r2()` function (intrinsic function), which ensures that Python-dependent functions like `RunPAGA()` and `RunSCVELO()` function run correctly.
 
 # scop 0.1.9
 
 * **feat**:
+
   * Update `CellScoring()` and `AddModuleScore2()` functions. Now, new parameters `cores` and `verbose` have been added.
   * `AddModuleScore2()` function no longer uses the `BiocParallel::bpparam()` function to enable parallelization, but `thisutils::parallelize_fun`, and the `cores` parameter is used to control the number of cores in `thisutils::parallelize_fun`.
 
 # scop 0.1.5
 
 * **fix**:
+
   * Fix error for `RunPalantir()` function, see [#23](https://github.com/mengxu98/scop/issues/23).
 
 # scop 0.1.4
 
 * **feat**:
+
   * Update `.onAttach()`, now `.onAttach()` will print more information about *conda* and *Python*.
   * Update `PrepareEnv()` function for easy add or update a conda environments and install *Python* packages.
   * Added `ListEnv()` and `RemoveEnv()` functions for easy management of *conda* environment and *Python* packages.
@@ -923,25 +827,31 @@
 # scop 0.1.3
 
 * **feat**:
+
   * Added `TACSPlot()` function for creating FACS-like plots. Please refer to [Kernfeld et al. paper](https://doi.org/10.1016/j.immuni.2018.04.015) and [Github](https://github.com/maehrlab/thymusatlastools2/blob/f8b51ad684d56b2eeda780787eb9ad4ff3003eef/R/data_handling_seurat.R#L271) for specific information.
 
 # scop 0.0.9
 
 * **fix**:
+
   * Fix a bug for `PrepareEnv()` function.
   * The default *Python* version is now set to `3.10-1`.
 
 # scop 0.0.6
 
 * **feat**:
+
   * Add `GetAssayData5()` function, a reimplementation of `GetAssayData()`, for compatibility with Seurat v5 `Assay` objects.
   * Updated `GetFeaturesData()` and `AddFeaturesData()` function to support retrieving and adding feature metadata.
 
 # scop 0.0.5
 
 * **data**:
+
   * Updated the `pancreas_sub` and `panc8_sub` test datasets to the Seurat v5 object format.
 
 # scop 0.0.1
 
-* **Initial version**
+* **feat**:
+
+  * Initial release.

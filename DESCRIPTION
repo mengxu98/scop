@@ -14,7 +14,7 @@ Description: An R package for single-cell and spatial omics analysis, integratio
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: True
-LazyDataCompression: xz
+LazyDataCompression: gzip
 Depends: 
     R (>= 4.1.0)
 Imports:

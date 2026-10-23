@@ -1,5 +1,6 @@
 test_that("RunGSEA and RunEnrichment tolerate a database with an empty version", {
   testthat::skip_if_not_installed("clusterProfiler")
+  testthat::skip_if_not_installed("fgsea")
   testthat::local_mocked_bindings(
     PrepareDB = function(species, db, db_update = FALSE, db_version = "latest",
                          db_IDtypes = "symbol", convert_species = TRUE,

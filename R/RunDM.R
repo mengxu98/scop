@@ -153,9 +153,12 @@ RunDM.default <- function(
   if (!is.null(npcs)) {
     dm_args$n_pcs <- npcs
   }
-  dm_results <- do.call(
-    get_namespace_fun("destiny", "DiffusionMap"),
-    c(dm_args, list(...))
+  dm_results <- withr::with_options(
+    list(Matrix.warnDeprecatedCoerce = 1L),
+    do.call(
+      get_namespace_fun("destiny", "DiffusionMap"),
+      c(dm_args, list(...))
+    )
   )
 
   embeddings <- dm_results@eigenvectors

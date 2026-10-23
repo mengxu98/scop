@@ -1049,7 +1049,7 @@ RunSpatialCellChat <- function(
   if (isTRUE(contact.dependent)) {
     spatialcellchat_validate_scalar(contact.range, "contact.range", positive = TRUE)
   }
-  check_r("jinworks/SpatialCellChat", verbose = FALSE)
+  check_r(c("KlugerLab/ALRA", "JEFworks-Lab/MERINGUE", "jinworks/SpatialCellChat"), verbose = FALSE)
   missing <- vapply(
     spatialcellchat_required_symbols(analysis.level),
     function(symbol) {

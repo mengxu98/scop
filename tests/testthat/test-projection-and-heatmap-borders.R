@@ -59,6 +59,26 @@ capture_heatmap_legends <- function(code) {
   )
 }
 
+test_that("heatmap color mapping preserves native interpolation and attributes", {
+  for (space in c("LAB", "RGB", "XYZ", "sRGB", "LUV", "HLS")) {
+    original <- circlize::colorRamp2(
+      c(-1, 0, 1), c("blue", "white", "red"), transparency = 0.2, space = space
+    )
+    candidate <- heatmap_color_mapping(original, c(-1, 0, 1, NA_real_))
+    for (x in list(
+      c(-Inf, -1, 0, 0, 1, Inf, NA, NaN),
+      stats::setNames(c(0, 0, 1, 1), letters[1:4]),
+      matrix(c(0, 0, 1, 1), 2, dimnames = list(c("a", "b"), c("x", "y"))),
+      matrix(NA_real_, 2, 2), numeric(), c(1L, 1L, 0L),
+      data.frame(x = c(0, 0), y = c(1, 1))
+    )) {
+      expect_identical(candidate(x), original(x))
+      expect_identical(candidate(x, return_rgb = TRUE), original(x, return_rgb = TRUE))
+    }
+    expect_identical(attributes(candidate), attributes(original))
+  }
+})
+
 test_that("discrete heatmap legends retain custom border color and width", {
   gp <- heatmap_discrete_legend_gp("red", TRUE, "navy", 2.5)
   expect_identical(gp$fill, "red")

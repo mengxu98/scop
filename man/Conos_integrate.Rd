@@ -69,10 +69,17 @@ Possible values are \code{"global"} and \code{"separate"}.}
 \item{regression_model}{\code{"linear"}, \code{"poisson"}, or \code{"negativebinomial"}.}
 
 \item{linear_reduction, linear_reduction_dims, linear_reduction_dims_use, linear_reduction_params, force_linear_reduction}{Linear reduction (\code{"pca"}, \code{"svd"}, \code{"ica"}, \code{"nmf"}, \code{"mds"}, \code{"glmpca"}).
-\code{linear_reduction_dims_use = NULL} uses estimated dimensions, else the first 50.}
+\code{linear_reduction_dims_use = NULL} uses estimated dimensions unless the method
+specifies a different default; explicit values select computed components.}
 
-\item{nonlinear_reduction, nonlinear_reduction_dims, nonlinear_reduction_params, force_nonlinear_reduction}{Nonlinear reduction (\code{"umap"}, \code{"umap-naive"}, \code{"tsne"}, \code{"dm"}, \code{"phate"},
-\code{"pacmap"}, \code{"trimap"}, \code{"largevis"}, \code{"fr"}).}
+\item{nonlinear_reduction}{Nonlinear reduction (\code{"umap"}, \code{"umap-naive"}, \code{"tsne"}, \code{"dm"}, \code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"largevis"}, \code{"fr"}).}
+
+\item{nonlinear_reduction_dims}{Number(s) of nonlinear dimensions to compute.}
+
+\item{nonlinear_reduction_params}{Shared parameters, optionally overridden by
+lists named after individual nonlinear reduction methods.}
+
+\item{force_nonlinear_reduction}{Recompute nonlinear reductions even when stored results exist.}
 
 \item{cluster_algorithm, cluster_resolution}{Clustering (\code{"louvain"}, \code{"slm"},
 \code{"leiden"}). Larger \code{cluster_resolution} yields fewer clusters.}

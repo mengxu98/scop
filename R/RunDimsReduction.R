@@ -14,7 +14,8 @@
 #' @param reduction_dims Which dimensions to use as input for `nonlinear_reduction`, used only if `features` is `NULL`.
 #' @param neighbor_use Name of neighbor to use for the `nonlinear_reduction`.
 #' @param graph_use Name of graph to use for the `nonlinear_reduction`.
-#' @param nonlinear_reduction_params Other parameters passed to the `nonlinear_reduction` method.
+#' @param nonlinear_reduction_params Shared parameters, optionally overridden by
+#' lists named after individual nonlinear reduction methods.
 #' @param force_nonlinear_reduction Whether force to do nonlinear dimension reduction.
 #'
 #' @seealso
@@ -368,11 +369,17 @@ RunDimsReduction <- function(
       }
     }
 
+    scoped <- intersect(names(nonlinear_reduction_params), nonlinear_reductions)
+    nonlinear_reduction_params <- utils::modifyList(
+      nonlinear_reduction_params[!names(nonlinear_reduction_params) %in% scoped] %||% list(),
+      nonlinear_reduction_params[[nonlinear_reduction]] %||% list(),
+      keep.null = TRUE
+    )
     fun_use <- switch(
       EXPR = nonlinear_reduction,
       "umap" = "RunUMAP2",
       "umap-naive" = "RunUMAP2",
-      "tsne" = "RunTSNE",
+      "tsne" = Seurat::RunTSNE,
       "dm" = "RunDM",
       "phate" = "RunPHATE",
       "pacmap" = "RunPaCMAP",
@@ -438,11 +445,13 @@ RunDimsReduction <- function(
       verbose = FALSE,
       seed.use = seed
     )
-    if (!is.null(neighbor_use)) {
-      params[["neighbor"]] <- neighbor_use
-    }
-    if (!is.null(graph_use)) {
-      params[["graph"]] <- graph_use
+    if (nonlinear_reduction %in% c("umap", "umap-naive", "fr")) {
+      if (!is.null(neighbor_use)) {
+        params[["neighbor"]] <- neighbor_use
+      }
+      if (!is.null(graph_use)) {
+        params[["graph"]] <- graph_use
+      }
     }
     names(params)[names(params) == "components_nm"] <- components_nm
     for (nm in names(other_params)) {

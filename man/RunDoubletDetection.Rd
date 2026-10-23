@@ -38,7 +38,7 @@ will be removed in scop 1.0.0.}
 Run doublet-calling with DoubletDetection
 }
 \examples{
-\dontrun{
+PrepareEnv(modules = "doubletdetection")
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 pancreas_sub <- RunDoubletDetection(pancreas_sub)
@@ -53,5 +53,4 @@ FeatureDimPlot(
   reduction = "umap",
   features = "db.DoubletDetection_score"
 )
-}
 }
