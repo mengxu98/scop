@@ -545,7 +545,7 @@ RunSCENICPlus <- function(
     as.data.frame(scenicplus_native_auc(atac_counts, region_sets, cores = cores), check.names = FALSE)
   }
   auc_mat <- as_matrix(auc)
-  scores <- Matrix::t(methods::as(Matrix::Matrix(auc_mat, sparse = TRUE), "dgCMatrix"))
+  scores <- Matrix::t(methods::as(methods::as(Matrix::Matrix(auc_mat, sparse = TRUE), "generalMatrix"), "CsparseMatrix"))
   rss <- scenicplus_calc_rss(
     auc = auc,
     srt = srt,
@@ -774,7 +774,7 @@ scenicplus_store_result <- function(srt, result, assay_name, tool_name) {
   if (is.null(scores)) {
     auc <- result[["auc"]]
     auc_mat <- as_matrix(auc)
-    scores <- Matrix::t(methods::as(Matrix::Matrix(auc_mat, sparse = TRUE), "dgCMatrix"))
+    scores <- Matrix::t(methods::as(methods::as(Matrix::Matrix(auc_mat, sparse = TRUE), "generalMatrix"), "CsparseMatrix"))
     result[["scores"]] <- scores
   }
   regulon_list <- result[["regulon_list"]]
@@ -874,7 +874,7 @@ scenicplus_read_python_result <- function(
     group.by = group.by
   )
   auc_mat <- as_matrix(auc)
-  scores <- Matrix::t(methods::as(Matrix::Matrix(auc_mat, sparse = TRUE), "dgCMatrix"))
+  scores <- Matrix::t(methods::as(methods::as(Matrix::Matrix(auc_mat, sparse = TRUE), "generalMatrix"), "CsparseMatrix"))
   list(
     tf_gene = tf_gene,
     region_gene = region_gene,
@@ -1219,7 +1219,7 @@ scenicplus_prepare_rna_expr <- function(rna_expr, fallback, cells) {
   if (!is.matrix(rna_expr) && !inherits(rna_expr, "Matrix")) {
     rna_expr <- as_matrix(rna_expr)
   }
-  rna_expr <- methods::as(Matrix::Matrix(rna_expr, sparse = TRUE), "dgCMatrix")
+  rna_expr <- methods::as(methods::as(Matrix::Matrix(rna_expr, sparse = TRUE), "generalMatrix"), "CsparseMatrix")
   if (is.null(rownames(rna_expr)) || is.null(colnames(rna_expr))) {
     log_message(
       "{.arg rna_expr} must have gene and cell dimnames",
@@ -1254,7 +1254,7 @@ scenicplus_prepare_atac_expr <- function(atac_expr, fallback, cells) {
   if (!is.matrix(atac_expr) && !inherits(atac_expr, "Matrix")) {
     atac_expr <- as_matrix(atac_expr)
   }
-  atac_expr <- methods::as(Matrix::Matrix(atac_expr, sparse = TRUE), "dgCMatrix")
+  atac_expr <- methods::as(methods::as(Matrix::Matrix(atac_expr, sparse = TRUE), "generalMatrix"), "CsparseMatrix")
   if (is.null(rownames(atac_expr)) || is.null(colnames(atac_expr))) {
     log_message(
       "{.arg atac_expr} must have region and cell dimnames",
@@ -1486,7 +1486,7 @@ scenicplus_prepare_auc_expr <- function(auc_expr, fallback, cells) {
   if (!is.matrix(auc_expr) && !inherits(auc_expr, "Matrix")) {
     auc_expr <- as_matrix(auc_expr)
   }
-  auc_expr <- methods::as(Matrix::Matrix(auc_expr, sparse = TRUE), "dgCMatrix")
+  auc_expr <- methods::as(methods::as(Matrix::Matrix(auc_expr, sparse = TRUE), "generalMatrix"), "CsparseMatrix")
   if (is.null(rownames(auc_expr)) || is.null(colnames(auc_expr))) {
     log_message(
       "{.arg auc_expr} must have gene and cell dimnames",

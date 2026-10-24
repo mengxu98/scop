@@ -8,17 +8,17 @@ test_that("CheckDataType preserves sparse implicit zeros and missing-value class
   withr::local_seed(11)
   rng <- .Random.seed
   for (i in seq_along(values)) {
-    x <- methods::as(Matrix::Matrix(matrix(values[[i]], 2), sparse = TRUE), "dgCMatrix")
+    x <- methods::as(methods::as(Matrix::Matrix(matrix(values[[i]], 2), sparse = TRUE), "generalMatrix"), "CsparseMatrix")
     expect_identical(CheckDataType(x, verbose = FALSE), expected[[i]])
     expect_identical(.Random.seed, rng)
   }
 })
 
 test_that("RunCellQC initializes count metrics from one counts-layer read", {
-  counts <- methods::as(Matrix::Matrix(
+  counts <- methods::as(methods::as(Matrix::Matrix(
     matrix(c(1, 0, 2, 0, 3, 0, 0, 4, 1, 2, 0, 5), nrow = 3),
     sparse = TRUE
-  ), "dgCMatrix")
+  ), "generalMatrix"), "CsparseMatrix")
   rownames(counts) <- paste0("g", seq_len(nrow(counts)))
   colnames(counts) <- paste0("c", seq_len(ncol(counts)))
   srt <- Seurat::CreateSeuratObject(counts = counts)
