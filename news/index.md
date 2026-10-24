@@ -79,6 +79,9 @@
 
 - **fix**:
 
+  - Avoid deprecated Matrix `ddiMatrix` to `dgCMatrix` coercion in
+    `scenicplus_read_python_result()` and cell QC tests so coverage runs
+    stay clean.
   - Fix duplicate GSEA rankings after one-to-many ID conversion and
     retain unmapped labels. Expose
     [`RunGSEA()`](https://mengxu98.github.io/scop/reference/RunGSEA.md)

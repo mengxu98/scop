@@ -89,7 +89,8 @@
 </ul></li>
 <li>
 <p><strong>fix</strong>:</p>
-<ul><li>Fix duplicate GSEA rankings after one-to-many ID conversion and retain unmapped labels. Expose <code><a href="../reference/RunGSEA.html">RunGSEA()</a></code> parameters <code>nPermSimple</code> and <code>eps</code> with unchanged defaults.</li>
+<ul><li>Avoid deprecated Matrix <code>ddiMatrix</code> to <code>dgCMatrix</code> coercion in <code>scenicplus_read_python_result()</code> and cell QC tests so coverage runs stay clean.</li>
+<li>Fix duplicate GSEA rankings after one-to-many ID conversion and retain unmapped labels. Expose <code><a href="../reference/RunGSEA.html">RunGSEA()</a></code> parameters <code>nPermSimple</code> and <code>eps</code> with unchanged defaults.</li>
 <li>Preserve native Fisher tests and Holm correction in GO word clouds; support simplifyEnrichment 2.4.1/2.6.0 and GSVA version-specific scoring semantics.</li>
 <li>Resolve explicit Ensembl archives directly, recovering catalogs from archive hosts and reporting unavailable releases. Restore the startup Logo, version/date and website with message suppression support.</li>
 <li>Preserve the default Python version when preparing a missing environment; recognize micromamba package lists so installed native libraries are reused. Resolve Python requirements together and reject inconsistent environments; isolate PHATE/MAGIC with compatible pandas, separate TensorFlow from JAX, and keep scCODA’s compatible <code>rpy2</code> version. PHATE supports an already active Python environment through an isolated call, preserving its warnings.</li>

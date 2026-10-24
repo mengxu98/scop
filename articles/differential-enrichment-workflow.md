@@ -541,7 +541,7 @@ data.frame(file = basename(list.files(output_dir, full.names = TRUE)),
            bytes = file.info(list.files(output_dir, full.names = TRUE))$size)
 #>                            file    bytes
 #> 1               all-markers.csv  5268635
-#> 2                  analysis.rds 50901270
+#> 2                  analysis.rds 50901273
 #> 3             cell-metadata.csv   146525
 #> 4    GO-BP-GSEA-memberships.csv 12612015
 #> 5 GO-BP-measured-background.csv 10159062
@@ -603,9 +603,9 @@ build_receipt <- data.frame(
 )
 build_receipt
 #>                            article               built_utc  scop     R
-#> 1 differential-enrichment-workflow 2026-10-24 06:45:02 UTC 0.9.2 4.6.1
+#> 1 differential-enrichment-workflow 2026-10-24 18:09:14 UTC 0.9.2 4.6.1
 #>                            source_revision source_has_local_changes
-#> 1 216ce834556ef9fb072699473975742d0bd0c103                    FALSE
+#> 1 e445500810bc982823927fdb936188657af45d7e                    FALSE
 #>                        article_md5 R_seed cells_retained genes_in_active_assay
 #> 1 89dac5c2b8583a6ebdd392f907b4f928     11           1000                 15998
 utils::write.csv(build_receipt, file.path(output_dir, "build-receipt.csv"),

@@ -263,70 +263,70 @@ and
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-10-24 06:09:58] Start standard processing workflow...
-#> ℹ [2026-10-24 06:09:58] Checking a list of <Seurat>...
-#> ! [2026-10-24 06:09:58] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-10-24 06:09:58] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-10-24 06:09:58] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-10-24 06:09:58] Use the separate HVF from `srt_list`
-#> ℹ [2026-10-24 06:09:58] Number of available HVF: 2000
-#> ℹ [2026-10-24 06:09:58] Finished check
-#> ℹ [2026-10-24 06:09:58] Perform `ScaleData()`
-#> ℹ [2026-10-24 06:09:58] Perform pca linear dimension reduction
-#> ℹ [2026-10-24 06:09:59] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-10-24 06:09:59] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-10-24 06:09:59] Reorder clusters...
-#> ℹ [2026-10-24 06:09:59] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-10-24 06:09:59] Perform umap nonlinear dimension reduction
-#> ✔ [2026-10-24 06:10:07] Standard processing workflow completed
+#> ℹ [2026-10-24 17:33:02] Start standard processing workflow...
+#> ℹ [2026-10-24 17:33:02] Checking a list of <Seurat>...
+#> ! [2026-10-24 17:33:02] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-10-24 17:33:02] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-10-24 17:33:02] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-10-24 17:33:03] Use the separate HVF from `srt_list`
+#> ℹ [2026-10-24 17:33:03] Number of available HVF: 2000
+#> ℹ [2026-10-24 17:33:03] Finished check
+#> ℹ [2026-10-24 17:33:03] Perform `ScaleData()`
+#> ℹ [2026-10-24 17:33:03] Perform pca linear dimension reduction
+#> ℹ [2026-10-24 17:33:03] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-10-24 17:33:03] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-10-24 17:33:04] Reorder clusters...
+#> ℹ [2026-10-24 17:33:04] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-10-24 17:33:04] Perform umap nonlinear dimension reduction
+#> ✔ [2026-10-24 17:33:11] Standard processing workflow completed
 
 pancreas_sub <- RunGSVA(
   pancreas_sub,
   group.by = "CellType",
   species = "Mus_musculus"
 )
-#> ℹ [2026-10-24 06:10:07] Start GSVA analysis
-#> ℹ [2026-10-24 06:10:07] Start GSVA analysis
-#> ℹ [2026-10-24 06:10:07] Species: "Mus_musculus"
-#> ℹ [2026-10-24 06:10:07] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-10-24 05:50:44
-#> ℹ [2026-10-24 06:10:07] Averaging expression by "CellType" ...
-#> ℹ [2026-10-24 06:10:07] Aggregated expression matrix: 15998 genes x 5 groups
-#> ℹ [2026-10-24 06:10:07] Processing database: "GO_BP" ...
-#> ℹ [2026-10-24 06:10:09] Initial overlap: 11277 genes out of 15998 expression genes and 16594 genes in gene sets
-#> ℹ [2026-10-24 06:10:09] Running GSVA for 5633 gene sets ...
+#> ℹ [2026-10-24 17:33:11] Start GSVA analysis
+#> ℹ [2026-10-24 17:33:11] Start GSVA analysis
+#> ℹ [2026-10-24 17:33:11] Species: "Mus_musculus"
+#> ℹ [2026-10-24 17:33:11] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-10-24 17:13:18
+#> ℹ [2026-10-24 17:33:12] Averaging expression by "CellType" ...
+#> ℹ [2026-10-24 17:33:12] Aggregated expression matrix: 15998 genes x 5 groups
+#> ℹ [2026-10-24 17:33:12] Processing database: "GO_BP" ...
+#> ℹ [2026-10-24 17:33:14] Initial overlap: 11277 genes out of 15998 expression genes and 16594 genes in gene sets
+#> ℹ [2026-10-24 17:33:14] Running GSVA for 5633 gene sets ...
 #> ℹ 45447 nonzeros (less than 2^31) and 7.96% sparsity
-#> ℹ [2026-10-24 06:10:15] GSVA results stored in `tools` slot: "GSVA_CellType_gsva"
-#> ✔ [2026-10-24 06:10:15] GSVA analysis done
-#> ℹ [2026-10-24 06:10:15] Start GSVA analysis
-#> ℹ [2026-10-24 06:10:15] Species: "Mus_musculus"
-#> ℹ [2026-10-24 06:10:15] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-10-24 05:50:44
-#> ℹ [2026-10-24 06:10:16] Averaging expression by "CellType" ...
-#> ℹ [2026-10-24 06:10:16] Aggregated expression matrix: 15998 genes x 5 groups
-#> ℹ [2026-10-24 06:10:16] Processing database: "GO_BP" ...
-#> ℹ [2026-10-24 06:10:17] Initial overlap: 11277 genes out of 15998 expression genes and 16594 genes in gene sets
-#> ℹ [2026-10-24 06:10:17] Running GSVA for 5633 gene sets ...
-#> ℹ [2026-10-24 06:10:19] GSVA results stored in `tools` slot: "GSVA_CellType_ssgsea"
-#> ✔ [2026-10-24 06:10:19] GSVA analysis done
-#> ℹ [2026-10-24 06:10:19] Start GSVA analysis
-#> ℹ [2026-10-24 06:10:19] Species: "Mus_musculus"
-#> ℹ [2026-10-24 06:10:19] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-10-24 05:50:44
-#> ℹ [2026-10-24 06:10:20] Averaging expression by "CellType" ...
-#> ℹ [2026-10-24 06:10:20] Aggregated expression matrix: 15998 genes x 5 groups
-#> ℹ [2026-10-24 06:10:20] Processing database: "GO_BP" ...
-#> ℹ [2026-10-24 06:10:21] Initial overlap: 11277 genes out of 15998 expression genes and 16594 genes in gene sets
-#> ℹ [2026-10-24 06:10:21] Running GSVA for 5633 gene sets ...
-#> ℹ [2026-10-24 06:10:23] GSVA results stored in `tools` slot: "GSVA_CellType_zscore"
-#> ✔ [2026-10-24 06:10:23] GSVA analysis done
-#> ℹ [2026-10-24 06:10:23] Start GSVA analysis
-#> ℹ [2026-10-24 06:10:23] Species: "Mus_musculus"
-#> ℹ [2026-10-24 06:10:23] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-10-24 05:50:44
-#> ℹ [2026-10-24 06:10:24] Averaging expression by "CellType" ...
-#> ℹ [2026-10-24 06:10:24] Aggregated expression matrix: 15998 genes x 5 groups
-#> ℹ [2026-10-24 06:10:24] Processing database: "GO_BP" ...
-#> ℹ [2026-10-24 06:10:25] Initial overlap: 11277 genes out of 15998 expression genes and 16594 genes in gene sets
-#> ℹ [2026-10-24 06:10:25] Running GSVA for 5633 gene sets ...
-#> ℹ [2026-10-24 06:10:27] GSVA results stored in `tools` slot: "GSVA_CellType_plage"
-#> ✔ [2026-10-24 06:10:27] GSVA analysis done
+#> ℹ [2026-10-24 17:33:20] GSVA results stored in `tools` slot: "GSVA_CellType_gsva"
+#> ✔ [2026-10-24 17:33:20] GSVA analysis done
+#> ℹ [2026-10-24 17:33:20] Start GSVA analysis
+#> ℹ [2026-10-24 17:33:20] Species: "Mus_musculus"
+#> ℹ [2026-10-24 17:33:20] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-10-24 17:13:18
+#> ℹ [2026-10-24 17:33:21] Averaging expression by "CellType" ...
+#> ℹ [2026-10-24 17:33:21] Aggregated expression matrix: 15998 genes x 5 groups
+#> ℹ [2026-10-24 17:33:21] Processing database: "GO_BP" ...
+#> ℹ [2026-10-24 17:33:22] Initial overlap: 11277 genes out of 15998 expression genes and 16594 genes in gene sets
+#> ℹ [2026-10-24 17:33:22] Running GSVA for 5633 gene sets ...
+#> ℹ [2026-10-24 17:33:24] GSVA results stored in `tools` slot: "GSVA_CellType_ssgsea"
+#> ✔ [2026-10-24 17:33:24] GSVA analysis done
+#> ℹ [2026-10-24 17:33:24] Start GSVA analysis
+#> ℹ [2026-10-24 17:33:24] Species: "Mus_musculus"
+#> ℹ [2026-10-24 17:33:24] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-10-24 17:13:18
+#> ℹ [2026-10-24 17:33:25] Averaging expression by "CellType" ...
+#> ℹ [2026-10-24 17:33:25] Aggregated expression matrix: 15998 genes x 5 groups
+#> ℹ [2026-10-24 17:33:25] Processing database: "GO_BP" ...
+#> ℹ [2026-10-24 17:33:27] Initial overlap: 11277 genes out of 15998 expression genes and 16594 genes in gene sets
+#> ℹ [2026-10-24 17:33:27] Running GSVA for 5633 gene sets ...
+#> ℹ [2026-10-24 17:33:28] GSVA results stored in `tools` slot: "GSVA_CellType_zscore"
+#> ✔ [2026-10-24 17:33:28] GSVA analysis done
+#> ℹ [2026-10-24 17:33:28] Start GSVA analysis
+#> ℹ [2026-10-24 17:33:28] Species: "Mus_musculus"
+#> ℹ [2026-10-24 17:33:28] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-10-24 17:13:18
+#> ℹ [2026-10-24 17:33:29] Averaging expression by "CellType" ...
+#> ℹ [2026-10-24 17:33:29] Aggregated expression matrix: 15998 genes x 5 groups
+#> ℹ [2026-10-24 17:33:29] Processing database: "GO_BP" ...
+#> ℹ [2026-10-24 17:33:30] Initial overlap: 11277 genes out of 15998 expression genes and 16594 genes in gene sets
+#> ℹ [2026-10-24 17:33:31] Running GSVA for 5633 gene sets ...
+#> ℹ [2026-10-24 17:33:32] GSVA results stored in `tools` slot: "GSVA_CellType_plage"
+#> ✔ [2026-10-24 17:33:32] GSVA analysis done
 ht <- GSVAPlot(
   pancreas_sub,
   group.by = "CellType",
@@ -335,7 +335,7 @@ ht <- GSVAPlot(
   width = 1,
   height = 2
 )
-#> ! [2026-10-24 06:10:27] Multiple GSVA results found for "CellType". Using "GSVA_CellType_gsva"
+#> ! [2026-10-24 17:33:32] Multiple GSVA results found for "CellType". Using "GSVA_CellType_gsva"
 
 features_all <- rownames(pancreas_sub)
 pancreas_sub <- RunGSVA(
@@ -346,24 +346,24 @@ pancreas_sub <- RunGSVA(
   ),
   method = c("gsva", "ssgsea")
 )
-#> ℹ [2026-10-24 06:10:27] Start GSVA analysis
-#> ℹ [2026-10-24 06:10:27] Start GSVA analysis
-#> ℹ [2026-10-24 06:10:27] Single-cell GSVA mode: using expression matrix directly ...
-#> ℹ [2026-10-24 06:10:27] Expression matrix: 15998 genes x 1000 cells
-#> ℹ [2026-10-24 06:10:27] Processing database: "custom" ...
-#> ℹ [2026-10-24 06:10:27] Initial overlap: 40 genes out of 15998 expression genes and 40 genes in gene sets
-#> ℹ [2026-10-24 06:10:27] Running GSVA for 2 gene sets ...
+#> ℹ [2026-10-24 17:33:33] Start GSVA analysis
+#> ℹ [2026-10-24 17:33:33] Start GSVA analysis
+#> ℹ [2026-10-24 17:33:33] Single-cell GSVA mode: using expression matrix directly ...
+#> ℹ [2026-10-24 17:33:33] Expression matrix: 15998 genes x 1000 cells
+#> ℹ [2026-10-24 17:33:33] Processing database: "custom" ...
+#> ℹ [2026-10-24 17:33:33] Initial overlap: 40 genes out of 15998 expression genes and 40 genes in gene sets
+#> ℹ [2026-10-24 17:33:33] Running GSVA for 2 gene sets ...
 #> ℹ 6826 nonzeros (less than 2^31) and 81.04% sparsity
-#> ℹ [2026-10-24 06:10:29] GSVA results stored in assay "GSVA_gsva", meta.data, and tools slot "GSVA_cell_gsva"
-#> ✔ [2026-10-24 06:10:29] GSVA analysis done
-#> ℹ [2026-10-24 06:10:29] Start GSVA analysis
-#> ℹ [2026-10-24 06:10:29] Single-cell GSVA mode: using expression matrix directly ...
-#> ℹ [2026-10-24 06:10:29] Expression matrix: 15998 genes x 1000 cells
-#> ℹ [2026-10-24 06:10:29] Processing database: "custom" ...
-#> ℹ [2026-10-24 06:10:29] Initial overlap: 40 genes out of 15998 expression genes and 40 genes in gene sets
-#> ℹ [2026-10-24 06:10:29] Running GSVA for 2 gene sets ...
-#> ℹ [2026-10-24 06:10:29] GSVA results stored in assay "GSVA_ssgsea", meta.data, and tools slot "GSVA_cell_ssgsea"
-#> ✔ [2026-10-24 06:10:29] GSVA analysis done
+#> ℹ [2026-10-24 17:33:35] GSVA results stored in assay "GSVA_gsva", meta.data, and tools slot "GSVA_cell_gsva"
+#> ✔ [2026-10-24 17:33:35] GSVA analysis done
+#> ℹ [2026-10-24 17:33:35] Start GSVA analysis
+#> ℹ [2026-10-24 17:33:35] Single-cell GSVA mode: using expression matrix directly ...
+#> ℹ [2026-10-24 17:33:35] Expression matrix: 15998 genes x 1000 cells
+#> ℹ [2026-10-24 17:33:35] Processing database: "custom" ...
+#> ℹ [2026-10-24 17:33:35] Initial overlap: 40 genes out of 15998 expression genes and 40 genes in gene sets
+#> ℹ [2026-10-24 17:33:35] Running GSVA for 2 gene sets ...
+#> ℹ [2026-10-24 17:33:35] GSVA results stored in assay "GSVA_ssgsea", meta.data, and tools slot "GSVA_cell_ssgsea"
+#> ✔ [2026-10-24 17:33:35] GSVA analysis done
 FeatureDimPlot(
   pancreas_sub,
   features = "GSVA_gsva_A",
@@ -379,5 +379,5 @@ FeatureStatPlot(
   stack = TRUE,
   flip = TRUE
 )
-#> ℹ [2026-10-24 06:10:30] Setting `group.by` to "Features" as `plot.by` is set to "feature"
+#> ℹ [2026-10-24 17:33:35] Setting `group.by` to "Features" as `plot.by` is set to "feature"
 ```

@@ -169,7 +169,7 @@ grn <- RunGNIPLR(
   max_lag = 1,
   max_edges_per_target = 2
 )
-#> ℹ [2026-10-24 06:09:55] Running GNIPLR with `backend = cpp` on 5 genes and 8 cells
+#> ℹ [2026-10-24 17:32:59] Running GNIPLR with `backend = cpp` on 5 genes and 8 cells
 head(grn)
 #>     TF target importance      pvalue
 #> 3 Iapp   Nnat  2.2454349 0.005682836

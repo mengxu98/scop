@@ -140,7 +140,7 @@ panc8_sub <- RunLISI(
   label_colnames = "tech",
   perplexity = 10
 )
-#> ℹ [2026-10-24 06:26:06] Compute LISI scores from reduction "demo"
-#> ✔ [2026-10-24 06:26:06] Stored LISI scores in metadata: "demo_tech_LISI"
+#> ℹ [2026-10-24 17:49:35] Compute LISI scores from reduction "demo"
+#> ✔ [2026-10-24 17:49:35] Stored LISI scores in metadata: "demo_tech_LISI"
 IntegrationBenchmarkPlot(panc8_sub, plot_type = "box")
 ```

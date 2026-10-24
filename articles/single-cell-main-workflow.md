@@ -361,7 +361,7 @@ stopifnot(identical(colnames(reloaded), colnames(pancreas_sub)),
 data.frame(file = basename(list.files(output_dir, full.names = TRUE)),
            bytes = file.info(list.files(output_dir, full.names = TRUE))$size)
 #>                file    bytes
-#> 1      analysis.rds 34270937
+#> 1      analysis.rds 34270940
 #> 2 cell-metadata.csv   236267
 ```
 
@@ -414,9 +414,9 @@ build_receipt <- data.frame(
 )
 build_receipt
 #>                     article               built_utc  scop     R
-#> 1 single-cell-main-workflow 2026-10-24 06:48:17 UTC 0.9.2 4.6.1
+#> 1 single-cell-main-workflow 2026-10-24 18:12:36 UTC 0.9.2 4.6.1
 #>                            source_revision source_has_local_changes
-#> 1 216ce834556ef9fb072699473975742d0bd0c103                    FALSE
+#> 1 e445500810bc982823927fdb936188657af45d7e                    FALSE
 #>                        article_md5 R_seed cells_retained genes_in_active_assay
 #> 1 e1fa3652792fa3594fa9ebdfa336c418     11           1000                 15998
 utils::write.csv(build_receipt, file.path(output_dir, "build-receipt.csv"),

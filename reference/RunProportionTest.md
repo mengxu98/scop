@@ -151,10 +151,10 @@ pancreas_sub <- RunProportionTest(
   proportion_method = "permutation",
   comparison = list(c("G2M", "G1"))
 )
-#> ℹ [2026-10-24 06:28:40] Start proportion test ("permutation")
-#> ℹ [2026-10-24 06:28:40] Running comparison: "G2M" vs "G1"
-#> ℹ [2026-10-24 06:28:40] Running comparison: "G1" vs "G2M"
-#> ✔ [2026-10-24 06:28:40] Proportion test completed ("permutation")
+#> ℹ [2026-10-24 17:52:18] Start proportion test ("permutation")
+#> ℹ [2026-10-24 17:52:18] Running comparison: "G2M" vs "G1"
+#> ℹ [2026-10-24 17:52:18] Running comparison: "G1" vs "G2M"
+#> ✔ [2026-10-24 17:52:18] Proportion test completed ("permutation")
 
 ProportionTestPlot(
   pancreas_sub
