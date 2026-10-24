@@ -1,0 +1,93 @@
+# Plot scFEA metabolite balance changes
+
+Plot scFEA metabolite balance changes
+
+## Usage
+
+``` r
+scFEABalanceBarPlot(
+  object,
+  group.by,
+  ident.1 = NULL,
+  ident.2 = NULL,
+  assay = "scFEAbalance",
+  layer = "data",
+  top_n = NULL,
+  p_adj_cutoff = 0.01,
+  palcolor = c("#D73027", "#4575B4"),
+  title = NULL,
+  theme_use = "theme_scop",
+  theme_args = list(),
+  srt = NULL
+)
+```
+
+## Arguments
+
+- object:
+
+  A Seurat object returned by \[RunscFEA()\].
+
+- group.by:
+
+  Metadata column defining groups. If \`ident.1\` and \`ident.2\` are
+  both \`NULL\`, each group is compared against all remaining cells.
+
+- ident.1, ident.2:
+
+  Group names to compare. Difference is \`mean(ident.1) -
+  mean(ident.2)\`. If both are \`NULL\`, one-vs-rest contrasts are
+  generated automatically.
+
+- assay:
+
+  Balance assay name.
+
+- layer:
+
+  Balance assay layer.
+
+- top_n:
+
+  If \`NULL\`, plot all metabolites. If positive, plot the top \`top_n\`
+  increased and top \`top_n\` decreased metabolites after the
+  adjusted-p-value filter.
+
+- p_adj_cutoff:
+
+  Adjusted p-value cutoff used when \`top_n\` is not \`NULL\`.
+
+- palcolor:
+
+  Two colors for the higher and lower group.
+
+- title:
+
+  Optional plot title.
+
+- theme_use, theme_args:
+
+  Theme name or function, plus extra theme arguments.
+
+- srt:
+
+  Deprecated alias for \`object\`; supply exactly one of the two. It
+  will be removed in scop 1.0.0.
+
+## Value
+
+For a single contrast, a list with \`plot\` and plotted \`data\`. For
+automatic one-vs-rest mode, a named list of single-contrast results is
+returned and combined statistics are stored in the outer \`"data"\`
+attribute.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+data(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
+pancreas_sub <- RunscFEA(pancreas_sub, group.by = "SubCellType")
+scFEABalanceBarPlot(pancreas_sub, group.by = "SubCellType", ident.1 = "Alpha", ident.2 = "Beta")
+} # }
+```

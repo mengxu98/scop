@@ -1,0 +1,147 @@
+# Plot spatial integration results
+
+Visualize standardized results produced by
+[`RunSpatialIntegration()`](https://mengxu98.github.io/scop/reference/RunSpatialIntegration.md).
+
+## Usage
+
+``` r
+SpatialIntegrationPlot(
+  object,
+  method = NULL,
+  plot_type = c("spatial", "embedding", "alignment", "composition"),
+  group.by = NULL,
+  sample.by = NULL,
+  reduction = NULL,
+  cluster_colname = NULL,
+  coord.cols = c("col", "row"),
+  use_aligned = FALSE,
+  tool_name = "SpatialIntegration",
+  combine = TRUE,
+  palette = "Chinese",
+  palcolor = NULL,
+  theme_use = "theme_scop",
+  theme_args = list(),
+  ...,
+  image.scale = c("lowres", "hires"),
+  srt = NULL
+)
+```
+
+## Arguments
+
+- object:
+
+  A `Seurat` object containing spatial integration results.
+
+- method:
+
+  Stored integration method. If `NULL`, the active method stored in
+  `srt@tools[[tool_name]]` is used.
+
+- plot_type:
+
+  Plot type: `"spatial"`, `"embedding"`, `"alignment"`, or
+  `"composition"`.
+
+- group.by:
+
+  Metadata column used for coloring. Defaults to the stored spatial
+  domain column.
+
+- sample.by:
+
+  Metadata column used for facets or composition grouping. Defaults to
+  the stored sample column.
+
+- reduction:
+
+  Reduction used for embedding plots. Defaults to the stored integration
+  reduction.
+
+- cluster_colname:
+
+  Backward-compatible alias for `group.by`.
+
+- coord.cols:
+
+  Metadata coordinate columns used when no image is available.
+
+- use_aligned:
+
+  Whether spatial plots should use aligned coordinates when available.
+
+- tool_name:
+
+  Name of the `srt@tools` entry created by
+  [`RunSpatialIntegration()`](https://mengxu98.github.io/scop/reference/RunSpatialIntegration.md).
+
+- combine:
+
+  Whether to combine plots when delegated plotting returns a list.
+
+- palette, palcolor:
+
+  Palette name
+  ([thisplot::show_palettes](https://mengxu98.github.io/thisplot/reference/show_palettes.html))
+  or custom colors.
+
+- theme_use:
+
+  Theme name or function.
+
+- theme_args:
+
+  Theme name or function, plus extra theme arguments.
+
+- ...:
+
+  Additional arguments passed to
+  [`SpatialSpotPlot()`](https://mengxu98.github.io/scop/reference/SpatialSpotPlot.md)
+  or
+  [`CellDimPlot()`](https://mengxu98.github.io/scop/reference/CellDimPlot.md).
+  For spatial maps, `image` can be one image or a named sample-to-image
+  vector using names in the merged object. By default, each sample uses
+  its uniquely matching image. `nrow`, `ncol` and `byrow` control the
+  layout of separate image panels.
+
+- image.scale:
+
+  Image scale factor matching the raster stored in the selected image.
+  Use `"hires"` for a hires raster; do not modify Seurat scale-factor
+  slots.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
+## Value
+
+A `ggplot`, patchwork object, or list of plots.
+
+## Details
+
+Raw spatial maps retain every sample and use consistent category colors.
+Aligned maps use the stored aligned coordinates without a raw
+tissue-image overlay. This plotting option does not perform image
+registration.
+
+## See also
+
+[`RunSpatialIntegration()`](https://mengxu98.github.io/scop/reference/RunSpatialIntegration.md)
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+# Template: visium_S1 and visium_S2 are existing spatial Seurat samples.
+spatial <- RunSpatialIntegration(
+  list(S1 = visium_S1, S2 = visium_S2),
+  method = "PRECAST",
+  assay = "Spatial",
+  image = c(S1 = "slice1", S2 = "slice1")
+)
+SpatialIntegrationPlot(spatial, method = "PRECAST", plot_type = "spatial")
+} # }
+```

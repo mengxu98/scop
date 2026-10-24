@@ -1,0 +1,215 @@
+# Transfer reference labels to query cells
+
+Standalone label-transfer workflow for query cells using a reference
+object. The current implementation is optimized for scATAC query objects
+mapped to a scRNA-seq reference via gene activity.
+
+## Usage
+
+``` r
+RunLabelTransfer(
+  object,
+  reference,
+  assay = NULL,
+  method = c("Seurat", "scOMM"),
+  prefix = "ATAC",
+  reference_assay = NULL,
+  reference_reduction = "pca",
+  reference_dims = 1:30,
+  reference_label = NULL,
+  add_gene_activity = TRUE,
+  gene_activity_assay = "ACTIVITY",
+  weight_reduction = NULL,
+  dims = 2:30,
+  features = NULL,
+  prediction_prefix = NULL,
+  k.weight = 100,
+  evaluate = FALSE,
+  truth_col = NULL,
+  tool_name = NULL,
+  rare_threshold = 0.05,
+  scomm_python = NULL,
+  scomm_hidden_nodes = c(128, 64),
+  scomm_epochs = 10,
+  scomm_batch_size = 32,
+  scomm_threshold = 0.5,
+  scomm_seed = 11,
+  verbose = TRUE,
+  srt = NULL
+)
+```
+
+## Arguments
+
+- object:
+
+  A `Seurat` object.
+
+- reference:
+
+  RNA reference `Seurat` object used for label transfer.
+
+- assay:
+
+  Assay to use. `NULL` uses the default assay.
+
+- method:
+
+  Label-transfer backend. One of `"Seurat"` or `"scOMM"`.
+
+- prefix:
+
+  Prefix used to resolve ATAC reductions.
+
+- reference_assay:
+
+  Assay used in the reference object.
+
+- reference_reduction:
+
+  Reduction used in the reference object.
+
+- reference_dims:
+
+  Dimensions used from the reference reduction.
+
+- reference_label:
+
+  Metadata column in the reference used as transfer labels.
+
+- add_gene_activity:
+
+  Whether to calculate a gene activity assay for the query. If the
+  requested activity assay is absent, an existing query assay named
+  `reference_assay` is used before attempting gene activity calculation.
+  Set `FALSE` with an explicit existing `gene_activity_assay` to avoid
+  this fallback.
+
+- gene_activity_assay:
+
+  Name of the gene activity assay used for mapping.
+
+- weight_reduction:
+
+  Reduction in `object` used to weight transferred labels. If `NULL`, an
+  ATAC linear reduction is resolved automatically from
+  `ATAC_default_linear_reduction`, `{prefix}lsi`, `{prefix}svd`, or the
+  current default reduction.
+
+- dims:
+
+  Query reduction dimensions used by `TransferData`.
+
+- features:
+
+  Features used by `FindTransferAnchors`. If `NULL`, reference variable
+  features are used.
+
+- prediction_prefix:
+
+  Prefix added to prediction metadata columns. If `NULL`, `"predicted_"`
+  is used for `method = "Seurat"` and `"scomm_"` is used for
+  `method = "scOMM"`. Seurat prefixes are literal strings. A rerun with
+  the same tool and prefix replaces only columns recorded by that prior
+  result; collisions with unrecorded metadata columns are rejected.
+
+- k.weight:
+
+  Number of neighbors used when weighting transfer anchors.
+
+- evaluate:
+
+  Whether to compute mapping metrics against a truth label.
+
+- truth_col:
+
+  Metadata column in `object` used as the truth label when
+  `evaluate = TRUE`.
+
+- tool_name:
+
+  Name used to store detailed results in `srt@tools`.
+
+- rare_threshold:
+
+  Maximum class proportion used to define rare classes when calculating
+  `rare_recall`.
+
+- scomm_python:
+
+  Optional Python binary used by the `scOMM` backend. If `NULL`,
+  `SCOP_SCOMM_PYTHON` is consulted and reticulate defaults are used
+  otherwise.
+
+- scomm_hidden_nodes, scomm_epochs, scomm_batch_size, scomm_threshold,
+  scomm_seed:
+
+  Parameters passed to the optional `scOMM` backend.
+
+- verbose:
+
+  Whether to print the message. Default is `TRUE`.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
+## Value
+
+A `Seurat` object with prediction metadata added. For the Seurat
+backend, the tool result records actual anchor features and current
+prediction columns. This is a calculation-time snapshot, not
+automatically updated by later subsetting or renaming. Caller RNG state
+and original cell IDs are preserved; temporary query IDs isolate native
+suffix handling. Predictions describe similarity to the supplied
+reference, not independently established biological accuracy.
+
+## Examples
+
+``` r
+# A small synthetic technical example with independent reference/query cells.
+# ACTIVITY below is synthetic input, not measured RNA or inferred gene activity.
+set.seed(91)
+genes <- paste0("GENE", seq_len(150))
+make_counts <- function(n, prefix) {
+  mu <- matrix(8, 150, n)
+  mu[1:30, seq_len(n / 2)] <- 24
+  mu[31:60, (n / 2 + 1):n] <- 24
+  Matrix::Matrix(matrix(rnbinom(length(mu), mu = mu, size = 10), 150,
+    dimnames = list(genes, paste0(prefix, seq_len(n)))
+  ), sparse = TRUE)
+}
+reference <- SeuratObject::CreateSeuratObject(make_counts(60, "ref"))
+reference$label <- rep(c("classA", "classB"), each = 30)
+reference <- Seurat::NormalizeData(reference, verbose = FALSE)
+reference <- Seurat::FindVariableFeatures(reference, nfeatures = 150, verbose = FALSE)
+reference <- Seurat::ScaleData(reference, features = genes, verbose = FALSE)
+reference <- Seurat::RunPCA(reference, features = genes, npcs = 10, verbose = FALSE)
+activity <- make_counts(40, "query")
+peaks <- Matrix::Matrix(matrix(rpois(200 * 40, 4), 200,
+  dimnames = list(paste0(
+    "chr1-", seq(1, by = 200, length.out = 200), "-",
+    seq(100, by = 200, length.out = 200)
+  ), colnames(activity))
+), sparse = TRUE)
+query <- SeuratObject::CreateSeuratObject(
+  Signac::CreateChromatinAssay(counts = peaks),
+  assay = "peaks"
+)
+query[["ACTIVITY"]] <- SeuratObject::CreateAssayObject(counts = activity)
+query <- Seurat::NormalizeData(query, assay = "ACTIVITY", verbose = FALSE)
+query <- Signac::RunTFIDF(query, assay = "peaks", verbose = FALSE)
+query <- Signac::FindTopFeatures(query, assay = "peaks", min.cutoff = "q0", verbose = FALSE)
+query <- Signac::RunSVD(query, assay = "peaks", n = 10, verbose = FALSE)
+query <- RunLabelTransfer(query, reference,
+  assay = "peaks",
+  reference_assay = "RNA", reference_reduction = "pca", reference_dims = 1:5,
+  reference_label = "label", add_gene_activity = FALSE,
+  gene_activity_assay = "ACTIVITY", weight_reduction = "lsi", dims = 2:5,
+  features = genes, k.weight = 5, verbose = FALSE
+)
+head(query$predicted_predicted.id)
+#>   query1   query2   query3   query4   query5   query6 
+#> "classA" "classB" "classA" "classA" "classA" "classA" 
+```

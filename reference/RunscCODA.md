@@ -1,0 +1,107 @@
+# scCODA differential abundance
+
+scCODA differential abundance
+
+## Usage
+
+``` r
+RunscCODA(
+  object,
+  group.by,
+  split.by,
+  sample.by,
+  comparison = NULL,
+  reference_cell_type = "automatic",
+  credible_effect_threshold = 0.95,
+  n_mcmc_samples = 20000L,
+  reuse_reverse_comparisons = TRUE,
+  envname = "sccoda_env",
+  conda = "auto",
+  seed = 11,
+  verbose = TRUE,
+  srt = NULL
+)
+```
+
+## Arguments
+
+- object:
+
+  A `Seurat` object.
+
+- group.by:
+
+  Metadata column(s) used to color cells.
+
+- split.by:
+
+  Metadata column that identifies the condition groups to compare. For
+  sample-level methods, if `split.by` is omitted and `sample.by` is
+  provided, `sample.by` is treated as the condition column; a separate
+  biological sample column is still required unless descriptive virtual
+  samples are explicitly enabled.
+
+- sample.by:
+
+  Metadata column identifying biological samples. Required when calling
+  `RunscCODA()` directly. Repeated donor IDs across conditions are kept
+  as separate sample-condition units; the scCODA model does not include
+  a donor pairing term.
+
+- comparison:
+
+  Optional pairs of condition labels. Each pair is `c(group1, group2)`.
+  `obs_log2FD` is `log2(group1 / group2)`, matching
+  [RunDEtest](https://mengxu98.github.io/scop/reference/RunDEtest.md) /
+  Seurat `ident.1` vs `ident.2`: positive values mean the cell type is
+  more abundant in `group1`. If `NULL`, all pairwise comparisons are
+  generated in both directions.
+
+- reference_cell_type:
+
+  Reference cell type for scCODA. The default `"automatic"` lets scCODA
+  select the cell type with the lowest relative abundance dispersion
+  among sufficiently prevalent cell types. A cell-type name can be
+  supplied to use an explicit reference.
+
+- credible_effect_threshold:
+
+  Inclusion probability threshold for credible effects.
+
+- n_mcmc_samples:
+
+  Number of MCMC samples requested in scCODA.
+
+- reuse_reverse_comparisons:
+
+  Reuse each fitted pair for the reverse direction by negating effect
+  estimates and swapping interval bounds. This avoids fitting the same
+  two-group model twice.
+
+- envname:
+
+  Name of the conda-compatible environment used by scCODA. Defaults to
+  `"sccoda_env"` to keep the TensorFlow/scCODA stack isolated from the
+  default Python environment.
+
+- conda:
+
+  The path or command name of a conda-compatible executable.
+
+- seed:
+
+  Random seed, including for permutation testing.
+
+- verbose:
+
+  Whether to print the message. Default is `TRUE`.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
+## Value
+
+A method result bundle used internally by
+[RunProportionTest](https://mengxu98.github.io/scop/reference/RunProportionTest.md).

@@ -1,0 +1,185 @@
+# RareQ rare-cell population detection
+
+RareQ rare-cell population detection
+
+## Usage
+
+``` r
+RunRareQ(
+  object,
+  assay = NULL,
+  reduction = "pca",
+  dims = 1:30,
+  k.param = 20,
+  k = 6,
+  Q_cut = 0.6,
+  ratio = 0.2,
+  max_iter = 100,
+  run_neighbors = TRUE,
+  force_recalc = FALSE,
+  neighbor_name = NULL,
+  find_neighbors_params = list(),
+  rare_threshold = 0.01,
+  prefix = "RareQ",
+  cluster_colname = paste0(prefix, "_cluster"),
+  q_colname = paste0(prefix, "_Q"),
+  size_colname = paste0(prefix, "_cluster_size"),
+  rare_colname = paste0(prefix, "_is_rare"),
+  tool_name = "RareQ",
+  verbose = TRUE,
+  srt = NULL
+)
+```
+
+## Arguments
+
+- object:
+
+  A `Seurat` object.
+
+- assay:
+
+  Assay to use. `NULL` uses the default assay.
+
+- reduction:
+
+  Reduction used to build nearest neighbors when the required
+  `{assay}.nn` neighbor slot is absent or `force_recalc = TRUE`. If
+  `NULL`,
+  [`DefaultReduction()`](https://mengxu98.github.io/scop/reference/DefaultReduction.md)
+  is used.
+
+- dims:
+
+  Dimensions from `reduction` used for nearest-neighbor search.
+
+- k.param:
+
+  Number of nearest neighbors to compute with
+  [`Seurat::FindNeighbors()`](https://satijalab.org/seurat/reference/FindNeighbors.html)
+  when neighbor search is needed.
+
+- k:
+
+  Number of nearest neighbors used by RareQ to compute Q values.
+
+- Q_cut:
+
+  Q-value threshold passed to
+  [`RareQ::FindRare()`](https://rdrr.io/pkg/RareQ/man/FindRare.html).
+
+- ratio:
+
+  Merge-ratio threshold passed to
+  [`RareQ::FindRare()`](https://rdrr.io/pkg/RareQ/man/FindRare.html).
+
+- max_iter:
+
+  Maximum number of RareQ propagation iterations.
+
+- run_neighbors:
+
+  Whether to build the required Seurat neighbor slot if it is missing.
+
+- force_recalc:
+
+  Whether to rebuild the Seurat neighbor slot before running RareQ.
+
+- neighbor_name:
+
+  Name of the Seurat `Neighbor` object to reuse or create. If `NULL`,
+  defaults to `{assay}.nn`, which is the neighbor slot required by
+  [`RareQ::ComputeQ()`](https://rdrr.io/pkg/RareQ/man/ComputeQ.html) and
+  [`RareQ::FindRare()`](https://rdrr.io/pkg/RareQ/man/FindRare.html). A
+  non-default neighbor is copied to `{assay}.nn` before running RareQ
+  because RareQ reads that slot directly.
+
+- find_neighbors_params:
+
+  Additional named parameters passed to
+  [`Seurat::FindNeighbors()`](https://satijalab.org/seurat/reference/FindNeighbors.html)
+  when neighbor search is run.
+
+- rare_threshold:
+
+  Cluster-size threshold used to mark rare clusters. A value smaller
+  than 1 is treated as a fraction of cells; a value of 1 or larger is
+  treated as a cell count. Set to `NULL` to skip rare flags.
+
+- prefix:
+
+  Prefix used for metadata columns.
+
+- cluster_colname, q_colname, size_colname, rare_colname:
+
+  Metadata column names for RareQ clusters, Q values, cluster sizes, and
+  rare-cluster flags.
+
+- tool_name:
+
+  Name of the `srt@tools` entry.
+
+- verbose:
+
+  Whether to print the message. Default is `TRUE`.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
+## Value
+
+A `Seurat` object with RareQ results in metadata and
+`srt@tools[[tool_name]]`.
+
+## Details
+
+Stored results retain a private per-cell identity metadata column for
+[`GetSpatialResult()`](https://mengxu98.github.io/scop/reference/GetSpatialResult.md).
+Preserve this column when subsetting or renaming cells. The accessor
+returns current-cell assignments; stored native results and fit
+parameters remain unchanged.
+
+## References
+
+Fa B, Huang C, Ma Y, et al. (2026). Cell neighborhood topology directs
+rare cell population identification. Nature Communications, 17, 4618.
+doi:10.1038/s41467-026-71180-x
+
+## Examples
+
+``` r
+data(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(
+  pancreas_sub,
+  verbose = FALSE
+)
+#> ℹ [2026-10-24 06:29:00] Skip `log1p()` because `layer = data` is not "counts"
+pancreas_sub <- RunRareQ(
+  pancreas_sub,
+  dims = 1:20
+)
+#> ℹ [2026-10-24 06:29:08] Build Seurat nearest neighbors for RareQ using reduction "Standardpca"
+#> Computing nearest neighbors
+#> ℹ [2026-10-24 06:29:08] Only one graph name supplied, storing nearest-neighbor graph only
+#> ℹ [2026-10-24 06:29:08] Run RareQ with `k = 6`, `Q_cut = 0.6`, and `ratio = 0.2`
+#> ℹ [2026-10-24 06:29:08] RareQ clusters stored in metadata column "RareQ_cluster"
+
+CellDimPlot(
+  pancreas_sub,
+  group.by = "RareQ_cluster"
+)
+
+
+CellDimPlot(
+  pancreas_sub,
+  group.by = "RareQ_is_rare"
+)
+
+
+FeatureDimPlot(
+  pancreas_sub,
+  features = "RareQ_Q"
+)
+```

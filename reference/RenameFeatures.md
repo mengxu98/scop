@@ -1,0 +1,61 @@
+# Rename features for the Seurat object
+
+Rename features for the Seurat object
+
+## Usage
+
+``` r
+RenameFeatures(
+  object,
+  newnames = NULL,
+  assays = NULL,
+  verbose = TRUE,
+  srt = NULL
+)
+```
+
+## Arguments
+
+- object:
+
+  A `Seurat` object.
+
+- newnames:
+
+  A vector with the same length of features in Seurat object, or
+  characters named with old features.
+
+- assays:
+
+  Assays to rename.
+
+- verbose:
+
+  Whether to print the message. Default is `TRUE`.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
+## Examples
+
+``` r
+data(panc8_sub)
+head(rownames(panc8_sub))
+#> [1] "A1CF"   "A4GALT" "AAAS"   "AACS"   "AADAC"  "AADAT" 
+# Simply convert genes from human to mouse and preprocess the data
+genenames <- make.unique(
+  thisutils::capitalize(rownames(panc8_sub),
+    force_tolower = TRUE
+  )
+)
+names(genenames) <- rownames(panc8_sub)
+panc8_rename <- RenameFeatures(
+  panc8_sub,
+  newnames = genenames
+)
+#> ℹ [2026-10-24 06:00:38] Rename features for the assay: RNA
+head(rownames(panc8_rename))
+#> [1] "A1cf"   "A4galt" "Aaas"   "Aacs"   "Aadac"  "Aadat" 
+```
