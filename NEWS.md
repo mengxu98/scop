@@ -51,6 +51,8 @@
 
 * **fix**:
 
+  * Avoid deprecated Matrix `ddiMatrix` to `dgCMatrix` coercion in
+    `scenicplus_read_python_result()` and cell QC tests so coverage runs stay clean.
   * Fix duplicate GSEA rankings after one-to-many ID conversion and retain unmapped
     labels. Expose `RunGSEA()` parameters `nPermSimple` and `eps` with unchanged defaults.
   * Preserve native Fisher tests and Holm correction in GO word clouds; support
