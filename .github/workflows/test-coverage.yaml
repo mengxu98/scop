@@ -29,8 +29,9 @@ jobs:
         env:
           GITHUB_PAT: ${{ github.token }}
         with:
-          extra-packages: any::covr, any::testthat
+          extra-packages: any::covr, any::testthat, any::callr, any::ps, any::harmony, github::immunogenomics/presto, bioc::speckle, bioc::glmGamPoi, any::Signac, bioc::ComplexHeatmap, any::ggforce
           needs: coverage
+          dependencies: '"hard"'
 
       - name: Test coverage 📊
         run: |
