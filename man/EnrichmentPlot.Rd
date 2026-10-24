@@ -10,8 +10,8 @@ EnrichmentPlot(
   group.by = NULL,
   test.use = "wilcox",
   res = NULL,
-  plot_type = c("bar", "dot", "lollipop", "network", "enrichmap", "wordcloud",
-    "comparison"),
+  plot_type = c("bar", "annotated_bar", "dot", "lollipop", "network", "enrichmap",
+    "wordcloud", "comparison"),
   split_by = c("Database", "Groups"),
   color_by = "Database",
   group_use = NULL,
@@ -57,7 +57,12 @@ EnrichmentPlot(
   byrow = TRUE,
   seed = 11,
   verbose = TRUE,
-  srt = NULL
+  srt = NULL,
+  show_genes = TRUE,
+  show_count = TRUE,
+  gene_width = 70,
+  row_step = 0.82,
+  db_gap = 0.2
 )
 }
 \arguments{
@@ -79,13 +84,21 @@ This argument is only used if \code{object} is specified.}
 If provided, 'object', 'test.use' and 'group.by' are ignored.}
 
 \item{plot_type}{The type of plot to generate.
-Options are: \code{"bar"}, \code{"dot"}, \code{"lollipop"}, \code{"network"}, \code{"enrichmap"}, \code{"wordcloud"}, \code{"comparison"}.}
+Options are: \code{"bar"}, \code{"annotated_bar"}, \code{"dot"}, \code{"lollipop"}, \code{"network"}, \code{"enrichmap"}, \code{"wordcloud"}, \code{"comparison"}.
+\code{"annotated_bar"} draws horizontal bars with database bands, term labels,
+hit-gene labels and optional Count dots.}
 
 \item{split_by}{The splitting variable(s) for the plot.
 Can be \code{"Database"}, \code{"Groups"}, or both.
-Default is \code{c("Database", "Groups")} for plots.}
+Default is \code{c("Database", "Groups")} for plots.
+For \code{"annotated_bar"}, the default is \code{"Groups"} (database bands within
+each group). Including \code{"Database"} creates separate database panels;
+groups are always kept in separate panels in this mode.}
 
-\item{color_by}{The variable used for coloring.}
+\item{color_by}{The variable used for coloring.
+Annotated bars use \code{"Database"}: each database receives one palette color.
+As in the bar view of \link{GSEAPlot}, significance controls opacity (0.4 to 1).
+Bars, Count dots and hit-gene labels share the same color and opacity per term.}
 
 \item{group_use}{The group(s) to be used for enrichment plot.}
 
@@ -172,7 +185,7 @@ Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_
 
 \item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
 
-\item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE}
+\item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork-package]{patchwork::patchwork}. \code{combine = FALSE}
 returns a list of ggplots.}
 
 \item{seed}{Random seed.}
@@ -181,11 +194,51 @@ returns a list of ggplots.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{show_genes}{Logical; display hit genes below each annotated bar label.
+Genes are taken from \code{geneID} as stored by \link{RunEnrichment}; no ID conversion
+is performed. Missing gene strings are displayed as blank labels.}
+
+\item{show_count}{Logical; display Count-sized dots beside annotated bars.
+Missing counts are omitted. Use \code{legend.position = "none"} to hide the legend.}
+
+\item{gene_width}{Positive integer (at least 4); maximum characters in an
+annotated bar's comma-separated hit-gene label, including the ellipsis.
+These three arguments apply only to \code{"annotated_bar"}.}
+
+\item{row_step}{Positive numeric row spacing for annotated bars, at least
+0.8; defaults to 0.82 for a compact layout.}
+
+\item{db_gap}{Non-negative numeric extra spacing between database bands
+in annotated bars; defaults to 0.2.}
+}
+\value{
+A ggplot for one panel, a patchwork for combined panels, or a named
+list of plots when \code{combine = FALSE}. Annotated bars select up to \code{topTerm}
+terms per database and group, ordered by the selected p-value metric.
+Database bands follow \code{db} order and panels share the same x-axis range.
+Zero p-values are capped at \code{.Machine$double.xmin} before transformation;
+missing p-values are omitted with a warning in this mode.
 }
 \description{
 Generates various types of plots for enrichment (over-representation) analysis.
 }
+\details{
+Annotated bars place term labels inside bars and hit genes underneath, with
+rounded database bands. Colors map one-to-one to \code{db} in the requested order;
+named \code{palcolor} values must cover all selected databases. Descriptions are
+truncated to at most \code{character_width} characters, with shorter limits for
+shorter bars. Actual text fit also depends on export dimensions and font size.
+}
 \examples{
+# Constructed results illustrating the annotated layout (not biological data).
+annotated_res <- list(enrichment = data.frame(
+  ID = c("term1", "term2"), Description = c("Response process", "Cell component"),
+  Database = c("GO_BP", "GO_CC"), Groups = "Example",
+  p.adjust = c(0.001, 0.01), geneID = c("GeneA/GeneB", "GeneC/GeneD"), Count = 2
+))
+EnrichmentPlot(res = annotated_res, db = "GO", plot_type = "annotated_bar")
+
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 pancreas_sub <- RunDEtest(
