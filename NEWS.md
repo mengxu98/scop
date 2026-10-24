@@ -14,6 +14,13 @@
 
 * **feat**:
 
+  * Make ATAC workflows fail on requested graph, clustering or embedding errors,
+    retain dimension/depth records, and fit default LSI dimensions to small inputs.
+    WNN preserves complete modality assays and validates paired cells, normalizes
+    SCT RNA separately from ATAC, and supports graph-only analysis. Peak calling
+    resolves MACS2 from PATH and retains capture/group records after failure.
+    Add an executable ATAC matrix quick start and complete the DAR motif recipe.
+
   * Extend `FeatureDimPlot()` density, palette and title controls. Embedding plots
     default to `label_insitu = TRUE`; `FALSE` uses numbered labels. DE, volcano,
     Manhattan and ring plots accept standalone tables. Honor CNV palettes, SCENIC
