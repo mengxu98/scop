@@ -36,6 +36,7 @@
 #' [Seurat_integrate],
 #' [scVI_integrate],
 #' [MultiMAP_integrate],
+#' [WNN_integrate],
 #' [GLUE_integrate],
 #' [MNN_integrate],
 #' [fastMNN_integrate],
@@ -479,7 +480,7 @@ RunIntegration <- function(
     } else if (!is.null(args[["srt_list"]]) && length(args[["srt_list"]]) > 0) {
       SeuratObject::DefaultAssay(args[["srt_list"]][[1]])
     })
-  is_assay5 <- !is.null(assay_use) &&
+  is_assay5 <- length(assay_use) == 1L &&
     inherits(assay_source, "Seurat") &&
     inherits(Seurat::GetAssay(assay_source, assay = assay_use), "Assay5")
   v5_only_methods <- c("CCA", "RPCA", "fastMNN5", "Harmony5", "scVI5")
@@ -604,7 +605,7 @@ RunIntegration <- function(
     DefaultReduction(srt_integrated, pattern = "pca"),
     error = function(...) character(0)
   )
-  if (length(pca_reduction) == 1 && nzchar(pca_reduction)) {
+  if (length(nonlinear_reduction) > 0 && length(pca_reduction) == 1 && nzchar(pca_reduction)) {
     pca_dims_use <- tryCatch(
       resolve_linear_dims_use(
         srt = srt_integrated,
@@ -804,7 +805,20 @@ RunIntegration <- function(
       srt_merge_raw[[assay_use]] <- srt_integrated[[assay_use]]
     }
     append_slots <- methods::slotNames(srt_integrated)
-    if (inherits(srt_integrated[[assay_use]], "ChromatinAssay")) {
+    if (identical(integration_method, "WNN")) {
+      modality_assays <- vapply(srt_integrated@misc$WNN_reduction_list, function(reduction) {
+        SeuratObject::DefaultAssay(srt_integrated[[reduction]])
+      }, character(1))
+      # SCT can change the assay while retaining the original RNA output prefix.
+      modality_prefixes <- sub("(pca|lsi)$", "", srt_integrated@misc$WNN_reduction_list)
+      for (name in modality_assays) srt_merge_raw[[name]] <- srt_integrated[[name]]
+      SeuratObject::DefaultAssay(srt_merge_raw) <- SeuratObject::DefaultAssay(srt_integrated)
+      append_slots <- setdiff(append_slots, "assays")
+      append_pattern <- paste0(
+        "^(", paste(gsub(".", "[.]", unique(c(modality_assays, modality_prefixes)), fixed = TRUE), collapse = "|"),
+        "|WNN|Default_reduction|LISI|integration_batch)"
+      )
+    } else if (inherits(srt_integrated[[assay_use]], "ChromatinAssay")) {
       append_pattern <- paste0(
         integration_method,
         "|pca|PCA|svd|SVD|lsi|LSI|UMAP2D|clusters|Default_reduction|LISI|integration_batch|ATAC_default_linear_reduction|ATAC_default_cluster_col"
