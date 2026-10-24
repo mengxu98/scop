@@ -7,14 +7,15 @@
 \usage{
 RunscTenifoldKnk(
   object,
-  gKO,
+  gKO = NULL,
   assay = NULL,
   layer = "counts",
   features = NULL,
   qc = TRUE,
   qc_mt_threshold = 0.1,
   qc_min_library_size = 1000,
-  qc_min_cells = 25,
+  qc_min_pct = 0.05,
+  qc_remove_outlier_cells = TRUE,
   nc_lambda = 0,
   nc_nNet = 10,
   nc_nCells = 500,
@@ -28,102 +29,121 @@ RunscTenifoldKnk(
   td_nDecimal = 3,
   ma_nDim = 2,
   cores = 1,
-  backend = c("r", "cpp"),
   store_networks = TRUE,
   store_manifold = TRUE,
   tool_name = "scTenifoldKnk",
   verbose = TRUE,
-  srt = NULL
+  srt = NULL,
+  nc_priorNetwork = NULL,
+  ma_method = NULL,
+  ma_heatT = 10,
+  dr_empiricalNull = FALSE,
+  dr_direction = TRUE,
+  dr_directionT = 5,
+  dr_directionRegressLibSize = FALSE,
+  transcriptomeWide = FALSE,
+  seed = 1
 )
 }
 \arguments{
 \item{object}{A \code{Seurat} object.}
 
-\item{gKO}{Gene symbol or symbols to knock out. All genes must be present
-after optional feature and QC filtering.}
+\item{gKO}{Gene symbols to knock out together. In transcriptome-wide mode,
+each gene is knocked out separately; \code{NULL} selects all retained genes.}
 
 \item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
-\item{layer}{Assay layer used as the count matrix.}
+\item{layer}{Assay layer containing raw counts.}
 
-\item{features}{Optional genes to retain before running network construction.
-If supplied, \code{gKO} is always retained when present in the input assay.}
+\item{features}{Optional genes to retain before the upstream workflow.
+Requested knockout genes are retained when present in the assay.}
 
-\item{qc}{Whether to apply scTenifoldKnk-style quality control.}
+\item{qc}{Whether to apply upstream quality control.}
 
-\item{qc_mt_threshold}{Maximum mitochondrial read fraction per cell.}
+\item{qc_mt_threshold}{Maximum mitochondrial read fraction.}
 
-\item{qc_min_library_size}{Minimum library size per cell.}
+\item{qc_min_library_size}{Minimum cell library size.}
 
-\item{qc_min_cells}{Minimum number of expressing cells required per gene.}
+\item{qc_min_pct}{Minimum fraction of retained cells expressing a gene.
+The upstream filter retains genes strictly above this fraction.}
 
-\item{nc_lambda, nc_nNet, nc_nCells, nc_nComp, nc_scaleScores, nc_symmetric, nc_q}{Network construction parameters forwarded to \code{scTenifoldNet::makeNetworks()}.}
+\item{qc_remove_outlier_cells}{Whether to remove library-size outliers.}
 
-\item{td_K, td_maxIter, td_maxError, td_nDecimal}{Tensor decomposition
-parameters forwarded to \code{scTenifoldNet::tensorDecomposition()}.}
+\item{nc_lambda, nc_nNet, nc_nCells, nc_nComp, nc_scaleScores, nc_symmetric, nc_q, nc_priorNetwork}{Network construction parameters passed to \code{scTenifoldKnk::scTenifoldKnk()}.}
 
-\item{ma_nDim}{Manifold-alignment dimension forwarded to
-\code{scTenifoldNet::manifoldAlignment()}.}
+\item{td_K, td_maxIter, td_maxError, td_nDecimal}{Tensor decomposition parameters
+passed to the upstream workflow.}
 
-\item{cores}{Number of cores used by native network-construction workers and
-forwarded to downstream linear algebra where applicable.}
+\item{ma_nDim}{Number of manifold-alignment dimensions.}
 
-\item{backend}{\code{r} runs the upstream \code{scTenifoldNet} pipeline with the
-\code{scTenifoldKnk} differential-regulation helpers and is the default
-high-consistency path. \code{cpp} runs all steps with scop's native kernels and is
-much faster on large gene sets.}
+\item{cores}{Number of cores passed upstream as \code{nCores}.}
 
-\item{store_networks}{Whether to keep WT/KO tensor networks in
-\code{object@tools}. This only controls what is stored; the network ensemble is
-always built the same way.}
+\item{store_networks}{Whether to retain the upstream WT network.}
 
-\item{store_manifold}{Whether to keep manifold-alignment coordinates in
-\code{object@tools}.}
+\item{store_manifold}{Whether to retain manifold-alignment coordinates.}
 
-\item{tool_name}{Name of the \code{srt@tools} entry.}
+\item{tool_name}{Name of the \code{object@tools} entry.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{ma_method}{Comparison method: \code{"manifold"} or \code{"heat"}. With \code{NULL},
+upstream uses manifold alignment for single or joint knockouts and heat
+alignment for transcriptome-wide screens. The two methods produce different
+distances; heat alignment has no manifold coordinates to plot.}
+
+\item{ma_heatT}{Diffusion time for heat alignment.}
+
+\item{dr_empiricalNull}{Whether to use Efron's empirical null; requires locfdr.}
+
+\item{dr_direction}{Whether to include predicted response directions.}
+
+\item{dr_directionT}{Diffusion time for direction prediction.}
+
+\item{dr_directionRegressLibSize}{Whether to regress library size out of the
+expression used for direction prediction.}
+
+\item{transcriptomeWide}{Whether to knock out each target gene separately.}
+
+\item{seed}{Random seed passed upstream. \code{NULL} uses the caller's RNG;
+otherwise the upstream workflow restores the caller's RNG state.}
 }
 \value{
-A \code{Seurat} object with scTenifoldKnk results stored in
-\code{srt@tools[[tool_name]]}.
+A Seurat object with the upstream result, parameters and package
+version stored in \code{object@tools[[tool_name]]}. Single and joint knockouts
+also expose \code{diffRegulation} directly in that entry.
 }
 \description{
-Run scTenifoldKnk in-silico knockout analysis
+Run the official scTenifoldKnk 2.0 workflow, including quality control,
+CPM normalization, network construction and perturbation analysis.
+Retain the upstream results in a Seurat object for \link{scTenifoldKnkPlot}.
+}
+\details{
+Requires scTenifoldKnk 2.0.0 or later. The former \code{backend} parameter and
+\code{qc_min_cells} count threshold have been removed; use \code{qc_min_pct} for
+upstream gene filtering. QC and statistical results can differ from earlier
+scop runs. Response directions are predictions, not measured expression
+changes. Transcriptome-wide matrices are retained in \code{result}; the existing
+plots visualize single or joint knockout differential-regulation tables.
 }
 \examples{
 data(pancreas_sub)
-gene_use <- "Pdx1"
-counts <- GetAssayData5(
-  pancreas_sub,
-  assay = "RNA",
-  layer = "counts"
-)
-detected <- names(
-  sort(Matrix::rowSums(counts > 0),
-    decreasing = TRUE
-  )
-)
-features_use <- unique(c(gene_use, head(detected, 300)))
-
+counts <- GetAssayData5(pancreas_sub, assay = "RNA", layer = "counts")
+detected <- names(sort(Matrix::rowSums(counts > 0), decreasing = TRUE))
 pancreas_sub <- RunscTenifoldKnk(
   pancreas_sub,
-  gKO = gene_use,
-  features = features_use,
+  gKO = "Pdx1",
+  features = head(detected, 300),
   qc = FALSE,
   nc_nNet = 3,
   nc_nCells = 200,
   td_maxIter = 200,
-  store_networks = FALSE,
-  store_manifold = TRUE
+  store_networks = TRUE,
+  seed = 1
 )
-
-dr <- pancreas_sub@tools$scTenifoldKnk$diffRegulation
-head(dr)
-
+head(pancreas_sub@tools$scTenifoldKnk$diffRegulation)
 scTenifoldKnkPlot(pancreas_sub, plot_type = "effect")
 }

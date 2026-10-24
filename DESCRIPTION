@@ -136,6 +136,8 @@ Suggests:
     scuttle,
     scds,
     scDblFinder,
+    scTenifoldKnk (>= 2.0.0),
+    scTenifoldNet,
     decontX,
     edgeR,
     statmod,

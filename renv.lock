@@ -927,6 +927,21 @@
       "Maintainer": "Thomas Nagler <mail@tnagler.com>",
       "Repository": "CRAN"
     },
+    "RhpcBLASctl": {
+      "Package": "RhpcBLASctl",
+      "Version": "0.23-42",
+      "Source": "Repository",
+      "Date": "2023-02-11",
+      "Title": "Control the Number of Threads on 'BLAS'",
+      "Author": "Junji NAKANO <nakanoj@ism.ac.jp> and Ei-ji Nakama <nakama@ki.rim.or.jp>",
+      "Maintainer": "Ei-ji Nakama <nakama@ki.rim.or.jp>",
+      "Description": "Control the number of threads on 'BLAS' (Aka 'GotoBLAS', 'OpenBLAS', 'ACML', 'BLIS' and 'MKL'). And possible to control the number of threads in 'OpenMP'. Get a number of logical cores and physical cores if feasible.",
+      "License": "AGPL-3",
+      "URL": "https://prs.ism.ac.jp/~nakama/Rhpc/",
+      "ByteCompile": "true",
+      "NeedsCompilation": "yes",
+      "Repository": "CRAN"
+    },
     "Rtsne": {
       "Package": "Rtsne",
       "Version": "0.17",
@@ -1428,6 +1443,27 @@
       "NeedsCompilation": "no",
       "Author": "Martin Morgan [aut], Valerie Obenchain [aut], Jim Hester [aut], Hervé Pagès [aut, cre]",
       "Maintainer": "Hervé Pagès <hpages.on.github@gmail.com>"
+    },
+    "WriteXLS": {
+      "Package": "WriteXLS",
+      "Version": "6.8.0",
+      "Source": "Repository",
+      "Date": "2025-05-22",
+      "Title": "Cross-Platform Perl Based R Function to Create Excel 2003 (XLS) and Excel 2007 (XLSX) Files",
+      "Description": "Cross-platform Perl based R function to create Excel 2003 (XLS) and Excel 2007 (XLSX) files from one or more data frames. Each data frame will be written to a separate named worksheet in the Excel spreadsheet. The worksheet name will be the name of the data frame it contains or can be specified by the user.",
+      "Authors@R": "c(person(given = \"Marc\", family = \"Schwartz\", role = c(\"aut\", \"cre\"), email = \"marc_schwartz@me.com\"), person(given = c(\"Various authors for Perl modules listed in each .pm\"), family = \"file.\", role = \"aut\"))",
+      "Copyright": "The copyright holders of the Perl files are listed in each .pm file under the Perl directory.",
+      "License": "GPL (>= 2)",
+      "SystemRequirements": "Perl",
+      "Imports": [
+        "utils"
+      ],
+      "URL": "https://github.com/marcschwartz/WriteXLS",
+      "BugReports": "https://github.com/marcschwartz/WriteXLS/issues",
+      "NeedsCompilation": "no",
+      "Author": "Marc Schwartz [aut, cre], Various authors for Perl modules listed in each .pm file. [aut]",
+      "Maintainer": "Marc Schwartz <marc_schwartz@me.com>",
+      "Repository": "CRAN"
     },
     "XVector": {
       "Package": "XVector",
@@ -2284,6 +2320,37 @@
       "NeedsCompilation": "yes",
       "Author": "Ralf Stubner [aut, cre] (<https://orcid.org/0009-0009-1908-106X>), daqana GmbH [cph], David Blackman [cph] (Xoroshiro / Xoshiro family), Melissa O'Neill [cph] (PCG family), Sebastiano Vigna [cph] (Xoroshiro / Xoshiro family), Aaron Lun [ctb], Kyle Butts [ctb], Henrik Sloot [ctb], Philippe Grosjean [ctb] (<https://orcid.org/0000-0002-2694-9471>)",
       "Maintainer": "Ralf Stubner <ralf.stubner@gmail.com>",
+      "Repository": "CRAN"
+    },
+    "enrichR": {
+      "Package": "enrichR",
+      "Version": "3.4",
+      "Source": "Repository",
+      "Title": "Provides an R Interface to 'Enrichr'",
+      "Authors@R": "person(\"Wajid\", \"Jawaid\", email = \"wajid.jawaid@gmail.com\", role = c(\"aut\", \"cre\"))",
+      "Description": "Provides an R interface to all 'Enrichr' databases. 'Enrichr' is a web-based tool for analysing gene sets and returns any enrichment of common annotated biological features. Quoting from their website 'Enrichment analysis is a computational method for inferring knowledge about an input gene set by comparing it to annotated gene sets representing prior biological knowledge.' See <https://maayanlab.cloud/Enrichr/> for further details.",
+      "Depends": [
+        "R (>= 3.5.0)"
+      ],
+      "License": "GPL (>= 2)",
+      "Encoding": "UTF-8",
+      "LazyData": "true",
+      "Imports": [
+        "httr",
+        "curl",
+        "rjson",
+        "ggplot2",
+        "WriteXLS"
+      ],
+      "RoxygenNote": "7.3.2",
+      "Suggests": [
+        "knitr",
+        "rmarkdown"
+      ],
+      "VignetteBuilder": "knitr",
+      "NeedsCompilation": "no",
+      "Author": "Wajid Jawaid [aut, cre]",
+      "Maintainer": "Wajid Jawaid <wajid.jawaid@gmail.com>",
       "Repository": "CRAN"
     },
     "evaluate": {
@@ -4977,6 +5044,23 @@
       "Maintainer": "Tomasz Kalinowski <tomasz@posit.co>",
       "Repository": "CRAN"
     },
+    "rjson": {
+      "Package": "rjson",
+      "Version": "0.2.23",
+      "Source": "Repository",
+      "Title": "JSON for R",
+      "Author": "Alex Couture-Beil [aut, cre]",
+      "Authors@R": "person(given = \"Alex\", family = \"Couture-Beil\", role = c(\"aut\", \"cre\"), email = \"rjson_pkg@mofo.ca\")",
+      "Maintainer": "Alex Couture-Beil <rjson_pkg@mofo.ca>",
+      "Depends": [
+        "R (>= 4.0.0)"
+      ],
+      "Description": "Converts R object into JSON objects and vice-versa.",
+      "URL": "https://github.com/alexcb/rjson",
+      "License": "GPL-2",
+      "Repository": "CRAN",
+      "NeedsCompilation": "yes"
+    },
     "rlang": {
       "Package": "rlang",
       "Version": "1.3.0",
@@ -5152,6 +5236,75 @@
       "NeedsCompilation": "yes",
       "Author": "Joe Cheng [aut], Timothy Mastny [aut], Richard Iannone [aut] (<https://orcid.org/0000-0003-3925-190X>), Barret Schloerke [aut] (<https://orcid.org/0000-0001-9986-114X>), Carson Sievert [aut, cre] (<https://orcid.org/0000-0002-4958-2844>), Christophe Dervieux [ctb] (<https://orcid.org/0000-0003-4474-2498>), RStudio [cph, fnd], Sass Open Source Foundation [ctb, cph] (LibSass library), Greter Marcel [ctb, cph] (LibSass library), Mifsud Michael [ctb, cph] (LibSass library), Hampton Catlin [ctb, cph] (LibSass library), Natalie Weizenbaum [ctb, cph] (LibSass library), Chris Eppstein [ctb, cph] (LibSass library), Adams Joseph [ctb, cph] (json.cpp), Trifunovic Nemanja [ctb, cph] (utf8.h)",
       "Maintainer": "Carson Sievert <carson@rstudio.com>",
+      "Repository": "CRAN"
+    },
+    "scTenifoldKnk": {
+      "Package": "scTenifoldKnk",
+      "Version": "2.0.0",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "In-Silico Knockout Experiments from Single-Cell Gene Regulatory Networks",
+      "Authors@R": "c(person(given = \"Daniel\", family = \"Osorio\", email = \"dcosorioh@gmail.com\", role = c(\"aut\",\"cre\"), comment = c(ORCID = '0000-0003-4424-8422')), person(given = \"Yan\", family = \"Zhong\", role = c(\"aut\",\"ctb\")), person(given = \"Guanxun\", family = \"Li\", role = c(\"aut\",\"ctb\")), person(given = \"Qian\", family = \"Xu\", role = c(\"aut\",\"ctb\")), person(given = \"Yongjian\", family = \"Yang\", role = c(\"aut\",\"ctb\")), person(given = \"Yanan\", family = \"Tian\", role = c(\"aut\",\"ctb\")), person(given = \"Robert\", family = \"Chapkin\", role = c(\"aut\",\"ctb\")), person(given = \"Jianhua\", family = \"Huang\", role = c(\"aut\",\"ctb\")), person(given = \"James J.\", family = \"Cai\", role = c(\"aut\", \"ctb\", \"ths\"), comment = c(ORCID = '0000-0002-8081-6725')) )",
+      "Description": "A workflow based on 'scTenifoldNet' to perform in-silico knockout experiments using single-cell RNA sequencing (scRNA-seq) data from wild-type (WT) control samples as input.  First, the package constructs a single-cell gene regulatory network (scGRN) and knocks out a target gene from the adjacency matrix of the WT scGRN by setting the gene’s outdegree edges to zero. Then, it compares the knocked out scGRN with the WT scGRN to identify differentially regulated genes, called virtual-knockout perturbed genes, which are used to assess the impact of the gene knockout and reveal the gene’s function in the analyzed cells. It also predicts the direction (up or down) of the response of each gene from the WT expression, and reads all knockouts of a network from a single heat kernel, which makes transcriptome-wide knockout screens practical.",
+      "URL": "https://github.com/cailab-tamu/scTenifoldKnk",
+      "BugReports": "https://github.com/cailab-tamu/scTenifoldKnk/issues",
+      "License": "GPL (>= 2)",
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.3.3",
+      "biocViews": "",
+      "Imports": [
+        "Matrix",
+        "methods",
+        "stats",
+        "MASS",
+        "scTenifoldNet (>= 1.4.3)",
+        "cli",
+        "enrichR",
+        "igraph",
+        "reshape2",
+        "grDevices",
+        "graphics"
+      ],
+      "Suggests": [
+        "testthat (>= 2.1.0)",
+        "locfdr"
+      ],
+      "NeedsCompilation": "no",
+      "Author": "Daniel Osorio [aut, cre] (ORCID: <https://orcid.org/0000-0003-4424-8422>), Yan Zhong [aut, ctb], Guanxun Li [aut, ctb], Qian Xu [aut, ctb], Yongjian Yang [aut, ctb], Yanan Tian [aut, ctb], Robert Chapkin [aut, ctb], Jianhua Huang [aut, ctb], James J. Cai [aut, ctb, ths] (ORCID: <https://orcid.org/0000-0002-8081-6725>)",
+      "Maintainer": "Daniel Osorio <dcosorioh@gmail.com>",
+      "Repository": "CRAN"
+    },
+    "scTenifoldNet": {
+      "Package": "scTenifoldNet",
+      "Version": "1.4.3",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Construct and Compare scGRN from Single-Cell Transcriptomic Data",
+      "Authors@R": "c(person(given = \"Daniel\", family = \"Osorio\", email = \"dcosorioh@gmail.com\", role = c(\"aut\",\"cre\"), comment = c(ORCID = '0000-0003-4424-8422')), person(given = \"Yan\", family = \"Zhong\", role = c(\"aut\",\"ctb\")), person(given = \"Guanxun\", family = \"Li\", role = c(\"aut\",\"ctb\")), person(given = \"Jianhua\", family = \"Huang\", role = c(\"aut\",\"ctb\")), person(given = \"James\", family = \"Cai\", role = c(\"aut\", \"ctb\", \"ths\"), comment = c(ORCID = '0000-0002-8081-6725')) )",
+      "Description": "A workflow based on machine learning methods to construct and compare single-cell gene regulatory networks (scGRN) using single-cell RNA-seq (scRNA-seq) data collected from different conditions. Uses principal component regression, tensor decomposition, and manifold alignment, to accurately identify even subtly shifted gene expression programs. See <doi:10.1016/j.patter.2020.100139> for more details.",
+      "URL": "https://github.com/cailab-tamu/scTenifoldNet",
+      "BugReports": "https://github.com/cailab-tamu/scTenifoldNet/issues",
+      "License": "GPL (>= 2)",
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.3.3",
+      "Imports": [
+        "RSpectra",
+        "Matrix",
+        "methods",
+        "stats",
+        "utils",
+        "MASS",
+        "cli",
+        "parallel",
+        "ps",
+        "RhpcBLASctl"
+      ],
+      "Suggests": [
+        "testthat (>= 2.1.0)"
+      ],
+      "NeedsCompilation": "no",
+      "Author": "Daniel Osorio [aut, cre] (ORCID: <https://orcid.org/0000-0003-4424-8422>), Yan Zhong [aut, ctb], Guanxun Li [aut, ctb], Jianhua Huang [aut, ctb], James Cai [aut, ctb, ths] (ORCID: <https://orcid.org/0000-0002-8081-6725>)",
+      "Maintainer": "Daniel Osorio <dcosorioh@gmail.com>",
       "Repository": "CRAN"
     },
     "scales": {

@@ -1,82 +1,89 @@
 #' @title Run scTenifoldKnk in-silico knockout analysis
 #'
+#' @description
+#' Run the official scTenifoldKnk 2.0 workflow, including quality control,
+#' CPM normalization, network construction and perturbation analysis.
+#' Retain the upstream results in a Seurat object for [scTenifoldKnkPlot].
+#'
 #' @md
 #' @name RunScTenifoldKnk
 #' @inheritParams RunStandardWorkflow
 #' @inheritParams thisutils::log_message
-#' @param layer Assay layer used as the count matrix.
-#' @param gKO Gene symbol or symbols to knock out. All genes must be present
-#' after optional feature and QC filtering.
-#' @param features Optional genes to retain before running network construction.
-#' If supplied, `gKO` is always retained when present in the input assay.
-#' @param qc Whether to apply scTenifoldKnk-style quality control.
-#' @param qc_mt_threshold Maximum mitochondrial read fraction per cell.
-#' @param qc_min_library_size Minimum library size per cell.
-#' @param qc_min_cells Minimum number of expressing cells required per gene.
-#' @param nc_lambda,nc_nNet,nc_nCells,nc_nComp,nc_scaleScores,nc_symmetric,nc_q
-#' Network construction parameters forwarded to `scTenifoldNet::makeNetworks()`.
-#' @param td_K,td_maxIter,td_maxError,td_nDecimal Tensor decomposition
-#' parameters forwarded to `scTenifoldNet::tensorDecomposition()`.
-#' @param ma_nDim Manifold-alignment dimension forwarded to
-#' `scTenifoldNet::manifoldAlignment()`.
-#' @param cores Number of cores used by native network-construction workers and
-#' forwarded to downstream linear algebra where applicable.
-#' @param backend `r` runs the upstream `scTenifoldNet` pipeline with the
-#' `scTenifoldKnk` differential-regulation helpers and is the default
-#' high-consistency path. `cpp` runs all steps with scop's native kernels and is
-#' much faster on large gene sets.
-#' @param store_networks Whether to keep WT/KO tensor networks in
-#' `object@tools`. This only controls what is stored; the network ensemble is
-#' always built the same way.
-#' @param store_manifold Whether to keep manifold-alignment coordinates in
-#' `object@tools`.
-#' @param tool_name Name of the `srt@tools` entry.
+#' @param layer Assay layer containing raw counts.
+#' @param gKO Gene symbols to knock out together. In transcriptome-wide mode,
+#' each gene is knocked out separately; `NULL` selects all retained genes.
+#' @param features Optional genes to retain before the upstream workflow.
+#' Requested knockout genes are retained when present in the assay.
+#' @param qc Whether to apply upstream quality control.
+#' @param qc_mt_threshold Maximum mitochondrial read fraction.
+#' @param qc_min_library_size Minimum cell library size.
+#' @param qc_min_pct Minimum fraction of retained cells expressing a gene.
+#' The upstream filter retains genes strictly above this fraction.
+#' @param qc_remove_outlier_cells Whether to remove library-size outliers.
+#' @param nc_lambda,nc_nNet,nc_nCells,nc_nComp,nc_scaleScores,nc_symmetric,nc_q,nc_priorNetwork
+#' Network construction parameters passed to `scTenifoldKnk::scTenifoldKnk()`.
+#' @param td_K,td_maxIter,td_maxError,td_nDecimal Tensor decomposition parameters
+#' passed to the upstream workflow.
+#' @param ma_nDim Number of manifold-alignment dimensions.
+#' @param ma_method Comparison method: `"manifold"` or `"heat"`. With `NULL`,
+#' upstream uses manifold alignment for single or joint knockouts and heat
+#' alignment for transcriptome-wide screens. The two methods produce different
+#' distances; heat alignment has no manifold coordinates to plot.
+#' @param ma_heatT Diffusion time for heat alignment.
+#' @param dr_empiricalNull Whether to use Efron's empirical null; requires locfdr.
+#' @param dr_direction Whether to include predicted response directions.
+#' @param dr_directionT Diffusion time for direction prediction.
+#' @param dr_directionRegressLibSize Whether to regress library size out of the
+#' expression used for direction prediction.
+#' @param transcriptomeWide Whether to knock out each target gene separately.
+#' @param seed Random seed passed upstream. `NULL` uses the caller's RNG;
+#' otherwise the upstream workflow restores the caller's RNG state.
+#' @param cores Number of cores passed upstream as `nCores`.
+#' @param store_networks Whether to retain the upstream WT network.
+#' @param store_manifold Whether to retain manifold-alignment coordinates.
+#' @param tool_name Name of the `object@tools` entry.
 #'
-#' @return A `Seurat` object with scTenifoldKnk results stored in
-#' `srt@tools[[tool_name]]`.
+#' @details
+#' Requires scTenifoldKnk 2.0.0 or later. The former `backend` parameter and
+#' `qc_min_cells` count threshold have been removed; use `qc_min_pct` for
+#' upstream gene filtering. QC and statistical results can differ from earlier
+#' scop runs. Response directions are predictions, not measured expression
+#' changes. Transcriptome-wide matrices are retained in `result`; the existing
+#' plots visualize single or joint knockout differential-regulation tables.
+#'
+#' @return A Seurat object with the upstream result, parameters and package
+#' version stored in `object@tools[[tool_name]]`. Single and joint knockouts
+#' also expose `diffRegulation` directly in that entry.
 #' @export
 #'
 #' @examples
 #' data(pancreas_sub)
-#' gene_use <- "Pdx1"
-#' counts <- GetAssayData5(
-#'   pancreas_sub,
-#'   assay = "RNA",
-#'   layer = "counts"
-#' )
-#' detected <- names(
-#'   sort(Matrix::rowSums(counts > 0),
-#'     decreasing = TRUE
-#'   )
-#' )
-#' features_use <- unique(c(gene_use, head(detected, 300)))
-#'
+#' counts <- GetAssayData5(pancreas_sub, assay = "RNA", layer = "counts")
+#' detected <- names(sort(Matrix::rowSums(counts > 0), decreasing = TRUE))
 #' pancreas_sub <- RunscTenifoldKnk(
 #'   pancreas_sub,
-#'   gKO = gene_use,
-#'   features = features_use,
+#'   gKO = "Pdx1",
+#'   features = head(detected, 300),
 #'   qc = FALSE,
 #'   nc_nNet = 3,
 #'   nc_nCells = 200,
 #'   td_maxIter = 200,
-#'   store_networks = FALSE,
-#'   store_manifold = TRUE
+#'   store_networks = TRUE,
+#'   seed = 1
 #' )
-#'
-#' dr <- pancreas_sub@tools$scTenifoldKnk$diffRegulation
-#' head(dr)
-#'
+#' head(pancreas_sub@tools$scTenifoldKnk$diffRegulation)
 #' scTenifoldKnkPlot(pancreas_sub, plot_type = "effect")
 RunscTenifoldKnk <- function(
   object,
-  gKO,
+  gKO = NULL,
   assay = NULL,
   layer = "counts",
   features = NULL,
   qc = TRUE,
   qc_mt_threshold = 0.1,
   qc_min_library_size = 1000,
-  qc_min_cells = 25,
+  qc_min_pct = 0.05,
+  qc_remove_outlier_cells = TRUE,
   nc_lambda = 0,
   nc_nNet = 10,
   nc_nCells = 500,
@@ -90,103 +97,56 @@ RunscTenifoldKnk <- function(
   td_nDecimal = 3,
   ma_nDim = 2,
   cores = 1,
-  backend = c("r", "cpp"),
   store_networks = TRUE,
   store_manifold = TRUE,
   tool_name = "scTenifoldKnk",
   verbose = TRUE,
-  srt = NULL
+  srt = NULL,
+  nc_priorNetwork = NULL,
+  ma_method = NULL,
+  ma_heatT = 10,
+  dr_empiricalNull = FALSE,
+  dr_direction = TRUE,
+  dr_directionT = 5,
+  dr_directionRegressLibSize = FALSE,
+  transcriptomeWide = FALSE,
+  seed = 1
 ) {
-  srt <- resolve_deprecated_srt(object, srt, missing(object))
-  if (!inherits(srt, "Seurat")) {
-    log_message(
-      "{.arg srt} must be a {.cls Seurat} object",
-      message_type = "error"
-    )
+  object <- resolve_deprecated_srt(object, srt, missing(object))
+  if (!inherits(object, "Seurat")) {
+    log_message("{.arg object} must be a {.cls Seurat} object", message_type = "error")
   }
-  if (missing(gKO) || length(gKO) == 0L || any(is.na(gKO))) {
-    log_message(
-      "{.arg gKO} must contain at least one gene symbol",
-      message_type = "error"
-    )
+  validate_scalar_flag(transcriptomeWide, "transcriptomeWide")
+  validate_scalar_flag(store_networks, "store_networks")
+  validate_scalar_flag(store_manifold, "store_manifold")
+  validate_scalar_string(tool_name, "tool_name")
+  if (!isTRUE(transcriptomeWide) && is.null(gKO)) {
+    log_message("{.arg gKO} must contain at least one gene symbol", message_type = "error")
   }
-  backend <- match.arg(backend)
-  assay <- assay %||% SeuratObject::DefaultAssay(srt)
-  gKO <- unique(as.character(gKO))
-
-  numeric_params <- list(
-    nc_lambda = c(value = nc_lambda, lower = 0, upper = 1),
-    nc_q = c(value = nc_q, lower = 0, upper = 1),
-    td_maxError = c(value = td_maxError, lower = 0, upper = 1)
-  )
-  for (param_name in names(numeric_params)) {
-    param <- numeric_params[[param_name]]
-    if (
-      length(param[["value"]]) != 1L ||
-        !is.numeric(param[["value"]]) ||
-        is.na(param[["value"]]) ||
-        param[["value"]] < param[["lower"]] ||
-        param[["value"]] > param[["upper"]]
-    ) {
-      log_message(
-        "{.arg {param_name}} must be a single number between {.val {param[['lower']]}} and {.val {param[['upper']]}}",
-        message_type = "error"
-      )
-    }
+  if (!is.null(gKO) && (!is.character(gKO) || !length(gKO) || anyNA(gKO))) {
+    log_message("{.arg gKO} must contain gene symbols", message_type = "error")
   }
-  integer_params <- list(
-    nc_nNet = c(value = nc_nNet, lower = 1),
-    nc_nCells = c(value = nc_nCells, lower = 1),
-    nc_nComp = c(value = nc_nComp, lower = 3),
-    td_K = c(value = td_K, lower = 1),
-    td_maxIter = c(value = td_maxIter, lower = 1),
-    td_nDecimal = c(value = td_nDecimal, lower = 0),
-    ma_nDim = c(value = ma_nDim, lower = 1),
-    cores = c(value = cores, lower = 1)
-  )
-  for (param_name in names(integer_params)) {
-    param <- integer_params[[param_name]]
-    if (
-      length(param[["value"]]) != 1L ||
-        !is.numeric(param[["value"]]) ||
-        is.na(param[["value"]]) ||
-        param[["value"]] < param[["lower"]] ||
-        param[["value"]] != as.integer(param[["value"]])
-    ) {
-      log_message(
-        "{.arg {param_name}} must be a single integer greater than or equal to {.val {param[['lower']]}}",
-        message_type = "error"
-      )
-    }
-  }
-
-  count_matrix <- GetAssayData5(srt, assay = assay, layer = layer)
-  if (is.null(rownames(count_matrix)) || is.null(colnames(count_matrix))) {
-    log_message(
-      "{.arg layer} must contain feature and cell names",
-      message_type = "error"
-    )
-  }
-
+  gKO <- unique(gKO)
+  assay <- assay %||% SeuratObject::DefaultAssay(object)
+  count_matrix <- GetAssayData5(object, assay = assay, layer = layer)
   missing_ko <- setdiff(gKO, rownames(count_matrix))
-  if (length(missing_ko) > 0L) {
+  if (length(missing_ko)) {
     log_message(
       "{.arg gKO} genes are absent from the selected assay/layer: {.val {missing_ko}}",
       message_type = "error"
     )
   }
-
   if (!is.null(features)) {
     features <- unique(c(as.character(features), gKO))
     missing_features <- setdiff(features, rownames(count_matrix))
     features <- intersect(features, rownames(count_matrix))
-    if (length(features) == 0L) {
+    if (!length(features)) {
       log_message(
         "No requested {.arg features} are present in the selected assay/layer",
         message_type = "error"
       )
     }
-    if (length(missing_features) > 0L) {
+    if (length(missing_features)) {
       log_message(
         "Ignoring {.val {length(missing_features)}} requested features absent from the selected assay/layer",
         message_type = "warning",
@@ -195,434 +155,71 @@ RunscTenifoldKnk <- function(
     }
     count_matrix <- count_matrix[features, , drop = FALSE]
   }
-
-  if (!inherits(count_matrix, "Matrix")) {
-    count_matrix <- Matrix::Matrix(
-      if (is.data.frame(count_matrix)) as.matrix(count_matrix) else count_matrix,
-      sparse = TRUE
+  count_matrix <- methods::as(Matrix::Matrix(count_matrix, sparse = TRUE), "dgCMatrix")
+  check_r("scTenifoldKnk", verbose = FALSE)
+  upstream_version <- get_namespace_fun("utils", "packageVersion")("scTenifoldKnk")
+  if (upstream_version < "2.0.0") {
+    log_message(
+      "Requires {.pkg scTenifoldKnk} >= 2.0.0; update with {.code remotes::install_github('cailab-tamu/scTenifoldKnk')}",
+      message_type = "error"
     )
   }
-  count_matrix <- methods::as(count_matrix, "dgCMatrix")
-  qc_summary <- list(
-    before = c(genes = nrow(count_matrix), cells = ncol(count_matrix)),
-    after = c(genes = nrow(count_matrix), cells = ncol(count_matrix)),
-    applied = FALSE
+  parameters <- list(
+    gKO = gKO,
+    transcriptomeWide = transcriptomeWide,
+    qc = qc,
+    qc_minLibSize = qc_min_library_size,
+    qc_removeOutlierCells = qc_remove_outlier_cells,
+    qc_minPCT = qc_min_pct,
+    qc_maxMTratio = qc_mt_threshold,
+    nc_lambda = nc_lambda,
+    nc_nNet = nc_nNet,
+    nc_nCells = nc_nCells,
+    nc_nComp = nc_nComp,
+    nc_scaleScores = nc_scaleScores,
+    nc_symmetric = nc_symmetric,
+    nc_q = nc_q,
+    nc_priorNetwork = nc_priorNetwork,
+    td_K = td_K,
+    td_maxIter = td_maxIter,
+    td_maxError = td_maxError,
+    td_nDecimal = td_nDecimal,
+    ma_nDim = ma_nDim,
+    ma_method = ma_method,
+    ma_heatT = ma_heatT,
+    dr_empiricalNull = dr_empiricalNull,
+    dr_direction = dr_direction,
+    dr_directionT = dr_directionT,
+    dr_directionRegressLibSize = dr_directionRegressLibSize,
+    nCores = cores,
+    seed = seed
   )
-
-  if (isTRUE(qc)) {
-    before <- c(genes = nrow(count_matrix), cells = ncol(count_matrix))
-    library_size <- Matrix::colSums(count_matrix)
-    keep_library <- library_size >= qc_min_library_size
-    count_matrix <- count_matrix[, keep_library, drop = FALSE]
-    if (ncol(count_matrix) < 3L) {
-      log_message(
-        "Fewer than three cells remain after library-size filtering",
-        message_type = "error"
-      )
-    }
-
-    library_size <- Matrix::colSums(count_matrix)
-    n_genes <- Matrix::colSums(count_matrix != 0)
-    genes_lm <- stats::lm(n_genes ~ library_size)
-    genes_pred <- as.data.frame(stats::predict(
-      genes_lm,
-      data.frame(library_size = library_size),
-      interval = "prediction"
-    ))
-
-    mt_genes <- grep("^MT-", toupper(rownames(count_matrix)))
-    if (length(mt_genes) > 0L) {
-      mt_counts <- Matrix::colSums(count_matrix[mt_genes, , drop = FALSE])
-      mt_proportion <- mt_counts / library_size
-      mt_lm <- stats::lm(mt_counts ~ library_size)
-      mt_pred <- as.data.frame(stats::predict(
-        mt_lm,
-        data.frame(library_size = library_size),
-        interval = "prediction"
-      ))
-      selected_cells <- (mt_counts > mt_pred$lwr &
-        mt_counts < mt_pred$upr &
-        n_genes > genes_pred$lwr &
-        n_genes < genes_pred$upr &
-        mt_proportion <= qc_mt_threshold &
-        library_size < 2 * mean(library_size))
-    } else {
-      selected_cells <- (n_genes > genes_pred$lwr &
-        n_genes < genes_pred$upr &
-        library_size < 2 * mean(library_size))
-    }
-
-    count_matrix <- count_matrix[, selected_cells, drop = FALSE]
-    gene_keep <- Matrix::rowSums(count_matrix != 0) >= qc_min_cells
-    count_matrix <- count_matrix[gene_keep, , drop = FALSE]
-
-    missing_ko <- setdiff(gKO, rownames(count_matrix))
-    if (length(missing_ko) > 0L) {
-      log_message(
-        "{.arg gKO} genes are absent after scTenifoldKnk QC filtering: {.val {missing_ko}}",
-        message_type = "error"
-      )
-    }
-    if (nrow(count_matrix) == 0L || ncol(count_matrix) == 0L) {
-      log_message(
-        "No genes or cells remain after scTenifoldKnk QC filtering",
-        message_type = "error"
-      )
-    }
-
-    count_matrix <- methods::as(count_matrix, "dgCMatrix")
-    qc_summary <- list(
-      before = before,
-      after = c(genes = nrow(count_matrix), cells = ncol(count_matrix)),
-      applied = TRUE,
-      mt_threshold = qc_mt_threshold,
-      min_library_size = qc_min_library_size,
-      min_cells = qc_min_cells
-    )
+  log_message("Run the upstream {.pkg scTenifoldKnk} workflow", verbose = verbose)
+  run <- get_namespace_fun("scTenifoldKnk", "scTenifoldKnk")
+  result <- if (isTRUE(verbose)) {
+    do.call(run, c(list(countMatrix = count_matrix), parameters))
+  } else {
+    suppressMessages(do.call(run, c(list(countMatrix = count_matrix), parameters)))
   }
-
-  if (!all(gKO %in% rownames(count_matrix))) {
-    log_message(
-      "{.arg gKO} must be present in the retained count matrix",
-      message_type = "error"
-    )
-  }
-  if (nrow(count_matrix) <= nc_nComp) {
-    log_message(
-      "{.arg nc_nComp} must be lower than the number of retained genes",
-      message_type = "error"
-    )
-  }
-  if (length(gKO) >= nrow(count_matrix)) {
-    log_message(
-      "{.arg gKO} cannot cover all retained genes",
-      message_type = "error"
-    )
-  }
-
-  log_message(
-    "Run {.pkg scTenifoldKnk} knockout for {.val {gKO}} using {.val {backend}} backend",
-    verbose = verbose
-  )
-
-  result <- switch(backend,
-    cpp = {
-      for (pkg in c("RSpectra", "RhpcBLASctl", "MASS")) {
-        check_r(pkg, verbose = FALSE)
-      }
-
-      log_message(
-        "Construct gene regulatory network ensemble",
-        verbose = verbose
-      )
-      wt <- sctenifold_make_networks_cpp(
-        X = count_matrix,
-        q = nc_q,
-        nNet = as.integer(nc_nNet),
-        nCells = as.integer(nc_nCells),
-        scaleScores = isTRUE(nc_scaleScores),
-        symmetric = isTRUE(nc_symmetric),
-        nComp = as.integer(nc_nComp),
-        nCores = as.integer(cores)
-      )
-      wt <- sctenifold_tensor_cpp(
-        wt,
-        k = as.integer(td_K),
-        max_iter = as.integer(td_maxIter),
-        tol = td_maxError,
-        n_decimal = as.integer(td_nDecimal),
-        verbose = verbose
-      )
-      wt <- sctenifold_strict_direction(
-        as.matrix(wt),
-        lambda = nc_lambda
-      )
-      diag(wt) <- 0
-      wt <- t(wt)
-      ko <- wt
-      ko[gKO, ] <- 0
-      ma <- sctenifold_manifold_cpp(
-        wt,
-        ko,
-        d = as.integer(ma_nDim),
-        cores = as.integer(cores)
-      )
-      dr <- sctenifold_dregulation(ma, gKO)
-
-      list(
-        tensorNetworks = if (isTRUE(store_networks)) {
-          list(
-            WT = Matrix::Matrix(wt),
-            KO = Matrix::Matrix(ko)
-          )
-        } else {
-          NULL
-        },
-        manifoldAlignment = if (isTRUE(store_manifold)) ma else NULL,
-        diffRegulation = dr
-      )
-    },
-    r = {
-      check_r(c("scTenifoldKnk", "scTenifoldNet"), verbose = FALSE)
-
-      wt <- get_namespace_fun("scTenifoldNet", "makeNetworks")(
-        X = count_matrix,
-        q = nc_q,
-        nNet = as.integer(nc_nNet),
-        nCells = as.integer(nc_nCells),
-        scaleScores = isTRUE(nc_scaleScores),
-        symmetric = isTRUE(nc_symmetric),
-        nComp = as.integer(nc_nComp),
-        nCores = as.integer(cores)
-      )
-      wt <- get_namespace_fun("scTenifoldNet", "tensorDecomposition")(
-        xList = wt,
-        K = as.integer(td_K),
-        maxError = td_maxError,
-        maxIter = as.integer(td_maxIter),
-        nDecimal = as.integer(td_nDecimal)
-      )
-      wt <- wt$X
-      wt <- getFromNamespace("strictDirection", "scTenifoldKnk")(
-        wt,
-        lambda = nc_lambda
-      )
-      wt <- as.matrix(wt)
-      diag(wt) <- 0
-      wt <- t(wt)
-
-      ko <- wt
-      ko[gKO, ] <- 0
-      ma <- get_namespace_fun("scTenifoldNet", "manifoldAlignment")(
-        wt,
-        ko,
-        d = as.integer(ma_nDim),
-        nCores = as.integer(cores)
-      )
-      dr <- getFromNamespace("dRegulation", "scTenifoldKnk")(ma, gKO)
-
-      list(
-        tensorNetworks = if (isTRUE(store_networks)) {
-          list(
-            WT = Matrix::Matrix(wt),
-            KO = Matrix::Matrix(ko)
-          )
-        } else {
-          NULL
-        },
-        manifoldAlignment = if (isTRUE(store_manifold)) ma else NULL,
-        diffRegulation = dr
-      )
-    }
-  )
-  if (!is.list(result) || is.null(result$diffRegulation)) {
-    log_message(
-      "{.pkg scTenifoldKnk} backend {.val {backend}} did not return a valid {.field diffRegulation} table",
-      message_type = "error"
-    )
-  }
-
-  if (!isTRUE(store_networks)) {
-    result$tensorNetworks <- NULL
-  }
-  if (!isTRUE(store_manifold)) {
-    result$manifoldAlignment <- NULL
-  }
-
-  srt@tools[[tool_name]] <- list(
+  if (!isTRUE(store_networks)) result$tensorNetworks <- NULL
+  if (!isTRUE(store_manifold)) result$manifoldAlignment <- NULL
+  object@tools[[tool_name]] <- list(
     diffRegulation = result$diffRegulation,
     result = result,
-    qc_summary = qc_summary,
-    parameters = list(
-      assay = assay,
-      layer = layer,
-      features = features,
-      gKO = gKO,
-      qc = qc,
-      qc_mt_threshold = qc_mt_threshold,
-      qc_min_library_size = qc_min_library_size,
-      qc_min_cells = qc_min_cells,
-      nc_lambda = nc_lambda,
-      nc_nNet = nc_nNet,
-      nc_nCells = nc_nCells,
-      nc_nComp = nc_nComp,
-      nc_scaleScores = nc_scaleScores,
-      nc_symmetric = nc_symmetric,
-      nc_q = nc_q,
-      td_K = td_K,
-      td_maxIter = td_maxIter,
-      td_maxError = td_maxError,
-      td_nDecimal = td_nDecimal,
-      ma_nDim = ma_nDim,
-      cores = cores,
-      backend = backend,
-      store_networks = store_networks,
-      store_manifold = store_manifold
+    qc_summary = list(applied = qc),
+    package_version = as.character(upstream_version),
+    parameters = c(
+      list(assay = assay, layer = layer, features = features),
+      parameters,
+      list(store_networks = store_networks, store_manifold = store_manifold)
     )
   )
-
   log_message(
-    "{.pkg scTenifoldKnk} results stored in {.code srt@tools[[{tool_name}]]}",
+    "{.pkg scTenifoldKnk} results stored in {.code object@tools[[{tool_name}]]}",
     message_type = "success",
     verbose = verbose
   )
-  srt
-}
-
-sctenifold_tensor_cpp <- function(
-  x_list,
-  k,
-  max_iter,
-  tol,
-  n_decimal,
-  verbose
-) {
-  gene_names <- rownames(x_list[[1]])
-  n_genes <- length(gene_names)
-  n_net <- length(x_list)
-  set.seed(1)
-  init_u <- list(
-    matrix(stats::rnorm(n_genes * k), nrow = n_genes, ncol = k),
-    matrix(stats::rnorm(n_genes * k), nrow = n_genes, ncol = k),
-    matrix(stats::rnorm(k), nrow = 1, ncol = k),
-    matrix(stats::rnorm(n_net * k), nrow = n_net, ncol = k)
-  )
-  tensor <- sctenifold_tensor_decomposition(
-    lapply(x_list, as.matrix),
-    init_u = init_u,
-    max_iter = as.integer(max_iter),
-    tol = tol,
-    verbose = verbose
-  )
-  tensor <- round(tensor, as.integer(n_decimal))
-  rownames(tensor) <- colnames(tensor) <- gene_names
-  methods::as(tensor, "dgCMatrix")
-}
-
-sctenifold_make_networks_cpp <- function(
-  X,
-  nNet,
-  nCells,
-  nComp,
-  scaleScores,
-  symmetric,
-  q,
-  nCores
-) {
-  gene_names <- rownames(X)
-  n_genes <- length(gene_names)
-  n_col <- ncol(X)
-  if (!n_genes || is.null(gene_names)) {
-    log_message("Gene names are required", message_type = "error")
-  }
-  lapply(seq_len(nNet), function(i) {
-    z <- sample(x = seq_len(n_col), size = nCells, replace = TRUE)
-    sampled <- as.matrix(X[, z, drop = FALSE])
-    keep <- rowSums(sampled) > 0
-    sampled <- sampled[keep, , drop = FALSE]
-    if (nComp <= 1 || nComp >= nrow(sampled)) {
-      log_message(
-        "nComp should be greater or equal than 2 and lower than the total number of genes",
-        message_type = "error"
-      )
-    }
-    net <- sctenifold_pcnet_covariance_sparse(
-      sampled,
-      n_comp = as.integer(nComp),
-      scale_scores = isTRUE(scaleScores),
-      symmetric = isTRUE(symmetric),
-      q = q,
-      cores = as.integer(nCores)
-    )
-    rownames(net) <- colnames(net) <- rownames(sampled)
-    if (nrow(net) == n_genes && identical(rownames(net), gene_names)) {
-      return(net)
-    }
-    out <- Matrix::sparseMatrix(
-      i = integer(0),
-      j = integer(0),
-      x = numeric(0),
-      dims = c(n_genes, n_genes),
-      dimnames = list(gene_names, gene_names)
-    )
-    out[rownames(net), colnames(net)] <- net
-    out
-  })
-}
-
-sctenifold_manifold_cpp <- function(x, y, d, cores) {
-  shared_genes <- intersect(rownames(x), rownames(y))
-  x <- as.matrix(x[shared_genes, shared_genes, drop = FALSE])
-  y <- as.matrix(y[shared_genes, shared_genes, drop = FALSE])
-  w <- sctenifold_manifold_matrix(x, y)
-  previous_omp <- RhpcBLASctl::omp_get_max_threads()
-  previous_blas <- RhpcBLASctl::blas_get_num_procs()
-  on.exit(
-    {
-      if (is.finite(previous_omp) && previous_omp > 0) {
-        RhpcBLASctl::omp_set_num_threads(as.integer(previous_omp))
-      }
-      if (is.finite(previous_blas) && previous_blas > 0) {
-        RhpcBLASctl::blas_set_num_threads(as.integer(previous_blas))
-      }
-    },
-    add = TRUE
-  )
-  RhpcBLASctl::omp_set_num_threads(as.integer(cores))
-  RhpcBLASctl::blas_set_num_threads(as.integer(cores))
-  eig <- suppressWarnings(RSpectra::eigs(w, as.integer(d) * 2L, "SR"))
-  eig$values <- suppressWarnings(as.numeric(eig$values))
-  eig$vectors <- suppressWarnings(apply(eig$vectors, 2, as.numeric))
-  new_order <- order(eig$values)
-  eig$values <- eig$values[new_order]
-  eig$vectors <- eig$vectors[, new_order, drop = FALSE]
-  eig$vectors <- eig$vectors[, eig$values > 1e-08, drop = FALSE]
-  aligned <- eig$vectors[, seq_len(as.integer(d)), drop = FALSE]
-  colnames(aligned) <- paste0("NLMA ", seq_len(as.integer(d)))
-  rownames(aligned) <- c(paste0("X_", shared_genes), paste0("Y_", shared_genes))
-  aligned
-}
-
-sctenifold_dregulation <- function(manifold_output, gko) {
-  gene_list <- rownames(manifold_output)
-  gene_list <- gene_list[grepl("^X_", gene_list)]
-  gene_list <- sub("^X_", "", gene_list)
-  n_genes <- length(gene_list)
-  expected <- rownames(manifold_output)
-  expected <- expected[grepl("^Y_", expected)]
-  expected <- sub("^Y_", "", expected)
-  if (n_genes != nrow(manifold_output) / 2 || !all(expected == gene_list)) {
-    log_message(
-      "Genes are not ordered as expected in manifold alignment output",
-      message_type = "error"
-    )
-  }
-  d_metric <- sctenifold_pair_distances(manifold_output)
-  lambda_values <- seq(-2, 2, length.out = 1000)
-  lambda_values <- lambda_values[lambda_values != 0]
-  bc <- try(
-    MASS::boxcox(
-      d_metric[d_metric > 0] ~ 1,
-      plot = FALSE,
-      lambda = lambda_values
-    ),
-    silent = TRUE
-  )
-  n_d <- if (inherits(bc, "try-error")) {
-    d_metric
-  } else {
-    lambda <- bc$x[which.max(bc$y)]
-    if (lambda < 0) 1 / (d_metric^lambda) else d_metric^lambda
-  }
-  z <- scale(n_d)
-  d_out <- data.frame(gene = gene_list, distance = d_metric, Z = z)
-  d_out <- d_out[order(d_out$distance, decreasing = TRUE), ]
-  fc <- (d_out$distance^2) / mean((d_out$distance[-seq_len(length(gko))]^2))
-  p_values <- stats::pchisq(q = fc, df = 1, lower.tail = FALSE)
-  d_out$FC <- fc
-  d_out$p.value <- p_values
-  d_out$p.adj <- stats::p.adjust(p_values, method = "fdr")
-  as.data.frame.array(d_out)
+  object
 }
 
 #' @title Run scTenifoldNet network comparison

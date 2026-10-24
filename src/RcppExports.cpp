@@ -1934,75 +1934,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// sctenifold_pcnet_covariance_sparse
-S4 sctenifold_pcnet_covariance_sparse(NumericMatrix x, int n_comp, bool scale_scores, bool symmetric, double q, int ncv, int maxit, double tol, int cores);
-RcppExport SEXP _scop_sctenifold_pcnet_covariance_sparse(SEXP xSEXP, SEXP n_compSEXP, SEXP scale_scoresSEXP, SEXP symmetricSEXP, SEXP qSEXP, SEXP ncvSEXP, SEXP maxitSEXP, SEXP tolSEXP, SEXP coresSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type x(xSEXP);
-    Rcpp::traits::input_parameter< int >::type n_comp(n_compSEXP);
-    Rcpp::traits::input_parameter< bool >::type scale_scores(scale_scoresSEXP);
-    Rcpp::traits::input_parameter< bool >::type symmetric(symmetricSEXP);
-    Rcpp::traits::input_parameter< double >::type q(qSEXP);
-    Rcpp::traits::input_parameter< int >::type ncv(ncvSEXP);
-    Rcpp::traits::input_parameter< int >::type maxit(maxitSEXP);
-    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
-    Rcpp::traits::input_parameter< int >::type cores(coresSEXP);
-    rcpp_result_gen = Rcpp::wrap(sctenifold_pcnet_covariance_sparse(x, n_comp, scale_scores, symmetric, q, ncv, maxit, tol, cores));
-    return rcpp_result_gen;
-END_RCPP
-}
-// sctenifold_tensor_decomposition
-NumericMatrix sctenifold_tensor_decomposition(List x_list, List init_u, int max_iter, double tol, bool verbose);
-RcppExport SEXP _scop_sctenifold_tensor_decomposition(SEXP x_listSEXP, SEXP init_uSEXP, SEXP max_iterSEXP, SEXP tolSEXP, SEXP verboseSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< List >::type x_list(x_listSEXP);
-    Rcpp::traits::input_parameter< List >::type init_u(init_uSEXP);
-    Rcpp::traits::input_parameter< int >::type max_iter(max_iterSEXP);
-    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
-    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(sctenifold_tensor_decomposition(x_list, init_u, max_iter, tol, verbose));
-    return rcpp_result_gen;
-END_RCPP
-}
-// sctenifold_strict_direction
-NumericMatrix sctenifold_strict_direction(NumericMatrix x, double lambda);
-RcppExport SEXP _scop_sctenifold_strict_direction(SEXP xSEXP, SEXP lambdaSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type x(xSEXP);
-    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
-    rcpp_result_gen = Rcpp::wrap(sctenifold_strict_direction(x, lambda));
-    return rcpp_result_gen;
-END_RCPP
-}
-// sctenifold_manifold_matrix
-NumericMatrix sctenifold_manifold_matrix(NumericMatrix x, NumericMatrix y);
-RcppExport SEXP _scop_sctenifold_manifold_matrix(SEXP xSEXP, SEXP ySEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type x(xSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type y(ySEXP);
-    rcpp_result_gen = Rcpp::wrap(sctenifold_manifold_matrix(x, y));
-    return rcpp_result_gen;
-END_RCPP
-}
-// sctenifold_pair_distances
-NumericVector sctenifold_pair_distances(NumericMatrix aligned);
-RcppExport SEXP _scop_sctenifold_pair_distances(SEXP alignedSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type aligned(alignedSEXP);
-    rcpp_result_gen = Rcpp::wrap(sctenifold_pair_distances(aligned));
-    return rcpp_result_gen;
-END_RCPP
-}
 // scibet_fit_predict
 List scibet_fit_predict(NumericMatrix ref, NumericMatrix query, IntegerVector labels, int n_labels, int n_top, int additional_per_label, bool return_probabilities);
 RcppExport SEXP _scop_scibet_fit_predict(SEXP refSEXP, SEXP querySEXP, SEXP labelsSEXP, SEXP n_labelsSEXP, SEXP n_topSEXP, SEXP additional_per_labelSEXP, SEXP return_probabilitiesSEXP) {
@@ -2583,11 +2514,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_scanpy_pseudotime_cpp", (DL_FUNC) &_scop_scanpy_pseudotime_cpp, 6},
     {"_scop_scanpy_pseudotime_graph_cpp", (DL_FUNC) &_scop_scanpy_pseudotime_graph_cpp, 10},
     {"_scop_scanpy_stochastic_embedding_cpp", (DL_FUNC) &_scop_scanpy_stochastic_embedding_cpp, 4},
-    {"_scop_sctenifold_pcnet_covariance_sparse", (DL_FUNC) &_scop_sctenifold_pcnet_covariance_sparse, 9},
-    {"_scop_sctenifold_tensor_decomposition", (DL_FUNC) &_scop_sctenifold_tensor_decomposition, 5},
-    {"_scop_sctenifold_strict_direction", (DL_FUNC) &_scop_sctenifold_strict_direction, 2},
-    {"_scop_sctenifold_manifold_matrix", (DL_FUNC) &_scop_sctenifold_manifold_matrix, 2},
-    {"_scop_sctenifold_pair_distances", (DL_FUNC) &_scop_sctenifold_pair_distances, 1},
     {"_scop_scibet_fit_predict", (DL_FUNC) &_scop_scibet_fit_predict, 7},
     {"_scop_scibet_fit_predict_sparse", (DL_FUNC) &_scop_scibet_fit_predict_sparse, 7},
     {"_scop_OmegaC", (DL_FUNC) &_scop_OmegaC, 2},

@@ -513,26 +513,6 @@ scanpy_stochastic_embedding_cpp <- function(spliced, unspliced, knn_idx, embeddi
     .Call(`_scop_scanpy_stochastic_embedding_cpp`, spliced, unspliced, knn_idx, embedding)
 }
 
-sctenifold_pcnet_covariance_sparse <- function(x, n_comp = 3L, scale_scores = TRUE, symmetric = FALSE, q = 0.0, ncv = 0L, maxit = 1000L, tol = 1e-10, cores = 1L) {
-    .Call(`_scop_sctenifold_pcnet_covariance_sparse`, x, n_comp, scale_scores, symmetric, q, ncv, maxit, tol, cores)
-}
-
-sctenifold_tensor_decomposition <- function(x_list, init_u, max_iter = 1000L, tol = 1e-5, verbose = FALSE) {
-    .Call(`_scop_sctenifold_tensor_decomposition`, x_list, init_u, max_iter, tol, verbose)
-}
-
-sctenifold_strict_direction <- function(x, lambda = 1.0) {
-    .Call(`_scop_sctenifold_strict_direction`, x, lambda)
-}
-
-sctenifold_manifold_matrix <- function(x, y) {
-    .Call(`_scop_sctenifold_manifold_matrix`, x, y)
-}
-
-sctenifold_pair_distances <- function(aligned) {
-    .Call(`_scop_sctenifold_pair_distances`, aligned)
-}
-
 scibet_fit_predict <- function(ref, query, labels, n_labels, n_top, additional_per_label = 0L, return_probabilities = TRUE) {
     .Call(`_scop_scibet_fit_predict`, ref, query, labels, n_labels, n_top, additional_per_label, return_probabilities)
 }
