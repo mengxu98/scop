@@ -414,7 +414,7 @@ build_receipt <- data.frame(
 )
 build_receipt
 #>                     article               built_utc  scop     R
-#> 1 single-cell-main-workflow 2026-10-24 18:12:36 UTC 0.9.2 4.6.1
+#> 1 single-cell-main-workflow 2026-10-25 21:52:57 UTC 0.9.2 4.6.1
 #>                            source_revision source_has_local_changes
 #> 1 e445500810bc982823927fdb936188657af45d7e                    FALSE
 #>                        article_md5 R_seed cells_retained genes_in_active_assay

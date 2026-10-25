@@ -541,7 +541,7 @@ data.frame(file = basename(list.files(output_dir, full.names = TRUE)),
            bytes = file.info(list.files(output_dir, full.names = TRUE))$size)
 #>                            file    bytes
 #> 1               all-markers.csv  5268635
-#> 2                  analysis.rds 50901273
+#> 2                  analysis.rds 50901272
 #> 3             cell-metadata.csv   146525
 #> 4    GO-BP-GSEA-memberships.csv 12612015
 #> 5 GO-BP-measured-background.csv 10159062
@@ -603,7 +603,7 @@ build_receipt <- data.frame(
 )
 build_receipt
 #>                            article               built_utc  scop     R
-#> 1 differential-enrichment-workflow 2026-10-24 18:09:14 UTC 0.9.2 4.6.1
+#> 1 differential-enrichment-workflow 2026-10-25 21:49:36 UTC 0.9.2 4.6.1
 #>                            source_revision source_has_local_changes
 #> 1 e445500810bc982823927fdb936188657af45d7e                    FALSE
 #>                        article_md5 R_seed cells_retained genes_in_active_assay

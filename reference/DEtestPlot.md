@@ -339,31 +339,31 @@ DEtestPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-10-24 17:07:12] Start standard processing workflow...
-#> ℹ [2026-10-24 17:07:12] Checking a list of <Seurat>...
-#> ! [2026-10-24 17:07:12] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-10-24 17:07:12] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-10-24 17:07:12] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-10-24 17:07:12] Use the separate HVF from `srt_list`
-#> ℹ [2026-10-24 17:07:12] Number of available HVF: 2000
-#> ℹ [2026-10-24 17:07:12] Finished check
-#> ℹ [2026-10-24 17:07:12] Perform `ScaleData()`
-#> ℹ [2026-10-24 17:07:13] Perform pca linear dimension reduction
-#> ℹ [2026-10-24 17:07:13] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-10-24 17:07:13] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-10-24 17:07:13] Reorder clusters...
-#> ℹ [2026-10-24 17:07:13] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-10-24 17:07:13] Perform umap nonlinear dimension reduction
-#> ✔ [2026-10-24 17:07:20] Standard processing workflow completed
+#> ℹ [2026-10-25 20:46:44] Start standard processing workflow...
+#> ℹ [2026-10-25 20:46:44] Checking a list of <Seurat>...
+#> ! [2026-10-25 20:46:44] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-10-25 20:46:44] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-10-25 20:46:45] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-10-25 20:46:45] Use the separate HVF from `srt_list`
+#> ℹ [2026-10-25 20:46:45] Number of available HVF: 2000
+#> ℹ [2026-10-25 20:46:45] Finished check
+#> ℹ [2026-10-25 20:46:45] Perform `ScaleData()`
+#> ℹ [2026-10-25 20:46:45] Perform pca linear dimension reduction
+#> ℹ [2026-10-25 20:46:45] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-10-25 20:46:45] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-10-25 20:46:46] Reorder clusters...
+#> ℹ [2026-10-25 20:46:46] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-10-25 20:46:46] Perform umap nonlinear dimension reduction
+#> ✔ [2026-10-25 20:46:52] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType",
   only.pos = FALSE
 )
-#> ℹ [2026-10-24 17:07:20] Data type is log-normalized
-#> ℹ [2026-10-24 17:07:20] Start differential expression test
-#> ℹ [2026-10-24 17:07:20] Find all markers(wilcox) among [1] 5 groups...
-#> ✔ [2026-10-24 17:07:20] Differential expression test completed
+#> ℹ [2026-10-25 20:46:52] Data type is log-normalized
+#> ℹ [2026-10-25 20:46:52] Start differential expression test
+#> ℹ [2026-10-25 20:46:52] Find all markers(wilcox) among [1] 5 groups...
+#> ✔ [2026-10-25 20:46:52] Differential expression test completed
 
 DEtestPlot(
   pancreas_sub,
@@ -410,15 +410,15 @@ pancreas_sub <- RunEnrichment(
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> ℹ [2026-10-24 17:07:26] Start Enrichment analysis
-#> ℹ [2026-10-24 17:07:26] Species: "Mus_musculus"
+#> ℹ [2026-10-25 20:46:59] Start Enrichment analysis
+#> ℹ [2026-10-25 20:46:59] Species: "Mus_musculus"
 #> 
 #> 
-#> ℹ [2026-10-24 17:07:58] Preparing database: GO_BP
-#> ℹ [2026-10-24 17:08:28] Convert ID types for the GO_BP database
-#> ℹ [2026-10-24 17:08:28] Converted ID types using local annotation package org.Mm.eg.db
-#> ℹ [2026-10-24 17:08:29] Permform enrichment...
-#> ✔ [2026-10-24 17:08:30] Enrichment analysis done
+#> ℹ [2026-10-25 20:47:30] Preparing database: GO_BP
+#> ℹ [2026-10-25 20:47:59] Convert ID types for the GO_BP database
+#> ℹ [2026-10-25 20:47:59] Converted ID types using local annotation package org.Mm.eg.db
+#> ℹ [2026-10-25 20:48:00] Permform enrichment...
+#> ✔ [2026-10-25 20:48:01] Enrichment analysis done
 DEtestPlot(
   pancreas_sub,
   group.by = "CellType",

@@ -213,31 +213,31 @@ A `ggplot` object.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-10-24 17:17:40] Start standard processing workflow...
-#> ℹ [2026-10-24 17:17:40] Checking a list of <Seurat>...
-#> ! [2026-10-24 17:17:40] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-10-24 17:17:40] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-10-24 17:17:40] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-10-24 17:17:40] Use the separate HVF from `srt_list`
-#> ℹ [2026-10-24 17:17:40] Number of available HVF: 2000
-#> ℹ [2026-10-24 17:17:40] Finished check
-#> ℹ [2026-10-24 17:17:40] Perform `ScaleData()`
-#> ℹ [2026-10-24 17:17:40] Perform pca linear dimension reduction
-#> ℹ [2026-10-24 17:17:41] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-10-24 17:17:41] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-10-24 17:17:41] Reorder clusters...
-#> ℹ [2026-10-24 17:17:41] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-10-24 17:17:41] Perform umap nonlinear dimension reduction
-#> ✔ [2026-10-24 17:17:48] Standard processing workflow completed
+#> ℹ [2026-10-25 20:57:16] Start standard processing workflow...
+#> ℹ [2026-10-25 20:57:16] Checking a list of <Seurat>...
+#> ! [2026-10-25 20:57:16] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-10-25 20:57:16] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-10-25 20:57:16] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-10-25 20:57:16] Use the separate HVF from `srt_list`
+#> ℹ [2026-10-25 20:57:16] Number of available HVF: 2000
+#> ℹ [2026-10-25 20:57:16] Finished check
+#> ℹ [2026-10-25 20:57:16] Perform `ScaleData()`
+#> ℹ [2026-10-25 20:57:16] Perform pca linear dimension reduction
+#> ℹ [2026-10-25 20:57:16] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-10-25 20:57:17] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-10-25 20:57:17] Reorder clusters...
+#> ℹ [2026-10-25 20:57:17] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-10-25 20:57:17] Perform umap nonlinear dimension reduction
+#> ✔ [2026-10-25 20:57:24] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType",
   only.pos = FALSE
 )
-#> ℹ [2026-10-24 17:17:48] Data type is log-normalized
-#> ℹ [2026-10-24 17:17:48] Start differential expression test
-#> ℹ [2026-10-24 17:17:48] Find all markers(wilcox) among [1] 5 groups...
-#> ✔ [2026-10-24 17:17:48] Differential expression test completed
+#> ℹ [2026-10-25 20:57:24] Data type is log-normalized
+#> ℹ [2026-10-25 20:57:24] Start differential expression test
+#> ℹ [2026-10-25 20:57:24] Find all markers(wilcox) among [1] 5 groups...
+#> ✔ [2026-10-25 20:57:24] Differential expression test completed
 
 de_df <- pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox
 de_df <- de_df[
@@ -252,11 +252,11 @@ enrich_out <- RunEnrichment(
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> ℹ [2026-10-24 17:17:48] Start Enrichment analysis
-#> ℹ [2026-10-24 17:17:48] Species: "Mus_musculus"
-#> ℹ [2026-10-24 17:17:48] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-10-24 17:13:18
-#> ℹ [2026-10-24 17:17:49] Permform enrichment...
-#> ✔ [2026-10-24 17:17:50] Enrichment analysis done
+#> ℹ [2026-10-25 20:57:24] Start Enrichment analysis
+#> ℹ [2026-10-25 20:57:24] Species: "Mus_musculus"
+#> ℹ [2026-10-25 20:57:24] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-10-25 20:52:49
+#> ℹ [2026-10-25 20:57:25] Permform enrichment...
+#> ✔ [2026-10-25 20:57:26] Enrichment analysis done
 FerrisWheelPlot(
   res = enrich_out,
   de_results = de_df

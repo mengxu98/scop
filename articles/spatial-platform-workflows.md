@@ -644,7 +644,7 @@ build_receipt <- data.frame(
 )
 build_receipt
 #>                      article               built_utc
-#> 1 spatial-platform-workflows 2026-10-24 18:14:17 UTC
+#> 1 spatial-platform-workflows 2026-10-25 21:54:38 UTC
 #>                            source_revision source_has_local_changes
 #> 1 e445500810bc982823927fdb936188657af45d7e                    FALSE
 #>                        article_md5     R  scop retained_observations genes

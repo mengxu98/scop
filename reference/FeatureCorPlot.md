@@ -218,22 +218,22 @@ FeatureCorPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-10-24 17:14:22] Start standard processing workflow...
-#> ℹ [2026-10-24 17:14:22] Checking a list of <Seurat>...
-#> ! [2026-10-24 17:14:22] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-10-24 17:14:22] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-10-24 17:14:22] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-10-24 17:14:22] Use the separate HVF from `srt_list`
-#> ℹ [2026-10-24 17:14:22] Number of available HVF: 2000
-#> ℹ [2026-10-24 17:14:22] Finished check
-#> ℹ [2026-10-24 17:14:22] Perform `ScaleData()`
-#> ℹ [2026-10-24 17:14:22] Perform pca linear dimension reduction
-#> ℹ [2026-10-24 17:14:23] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-10-24 17:14:23] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-10-24 17:14:23] Reorder clusters...
-#> ℹ [2026-10-24 17:14:23] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-10-24 17:14:23] Perform umap nonlinear dimension reduction
-#> ✔ [2026-10-24 17:14:30] Standard processing workflow completed
+#> ℹ [2026-10-25 20:53:56] Start standard processing workflow...
+#> ℹ [2026-10-25 20:53:56] Checking a list of <Seurat>...
+#> ! [2026-10-25 20:53:56] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-10-25 20:53:57] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-10-25 20:53:57] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-10-25 20:53:57] Use the separate HVF from `srt_list`
+#> ℹ [2026-10-25 20:53:57] Number of available HVF: 2000
+#> ℹ [2026-10-25 20:53:57] Finished check
+#> ℹ [2026-10-25 20:53:57] Perform `ScaleData()`
+#> ℹ [2026-10-25 20:53:57] Perform pca linear dimension reduction
+#> ℹ [2026-10-25 20:53:57] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-10-25 20:53:58] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-10-25 20:53:58] Reorder clusters...
+#> ℹ [2026-10-25 20:53:58] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-10-25 20:53:58] Perform umap nonlinear dimension reduction
+#> ✔ [2026-10-25 20:54:04] Standard processing workflow completed
 FeatureCorPlot(
   pancreas_sub,
   features = rownames(pancreas_sub)[1:5],

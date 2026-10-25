@@ -59,16 +59,16 @@ RunDoubletDetection(
 
 ``` r
 PrepareEnv(modules = "doubletdetection")
-#> ◌ [2026-10-24 17:29:57] Preparing python environment...
-#> ℹ [2026-10-24 17:29:57] Environment name: scop_env and python version: 3.10-1
-#> ℹ [2026-10-24 17:29:57] Auto-detecting conda-compatible environment manager...
-#> ℹ [2026-10-24 17:29:57] Using micromamba executable: /home/runner/.cache/R/scop/micromamba/linux-64/bin/micromamba
-#> ℹ [2026-10-24 17:29:57] Using existing environment: /home/runner/work/_temp/pkgdown-python/envs/scop_env
-#> ℹ [2026-10-24 17:29:57] 14 requirements to check, 3 conda requirements and 11 pip requirements
-#> ℹ [2026-10-24 17:29:57] Checking 3 conda requirements
-#> ℹ [2026-10-24 17:29:58] Checking 13 requirements using uv
+#> ◌ [2026-10-25 21:09:40] Preparing python environment...
+#> ℹ [2026-10-25 21:09:40] Environment name: scop_env and python version: 3.10-1
+#> ℹ [2026-10-25 21:09:40] Auto-detecting conda-compatible environment manager...
+#> ℹ [2026-10-25 21:09:40] Using micromamba executable: /home/runner/.cache/R/scop/micromamba/linux-64/bin/micromamba
+#> ℹ [2026-10-25 21:09:40] Using existing environment: /home/runner/work/_temp/pkgdown-python/envs/scop_env
+#> ℹ [2026-10-25 21:09:40] 14 requirements to check, 3 conda requirements and 11 pip requirements
+#> ℹ [2026-10-25 21:09:40] Checking 3 conda requirements
+#> ℹ [2026-10-25 21:09:42] Checking 13 requirements using uv
 #> + /home/runner/work/_temp/pkgdown-python/envs/scop_env/bin/python3.10 -m pip check
-#> ✔ [2026-10-24 17:30:00] Python environment ready
+#> ✔ [2026-10-25 21:09:44] Python environment ready
 #> ✔                       Until next loading, the environment will be cached
 #> Environment manager config:
 #>  Manager:       micromamba
@@ -79,37 +79,37 @@ PrepareEnv(modules = "doubletdetection")
 #>  version:       Python 3.10.1
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-10-24 17:30:01] Start standard processing workflow...
-#> ℹ [2026-10-24 17:30:01] Checking a list of <Seurat>...
-#> ! [2026-10-24 17:30:01] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-10-24 17:30:01] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-10-24 17:30:01] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-10-24 17:30:01] Use the separate HVF from `srt_list`
-#> ℹ [2026-10-24 17:30:01] Number of available HVF: 2000
-#> ℹ [2026-10-24 17:30:01] Finished check
-#> ℹ [2026-10-24 17:30:01] Perform `ScaleData()`
-#> ℹ [2026-10-24 17:30:01] Perform pca linear dimension reduction
-#> ℹ [2026-10-24 17:30:02] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-10-24 17:30:02] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-10-24 17:30:02] Reorder clusters...
-#> ℹ [2026-10-24 17:30:02] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-10-24 17:30:02] Perform umap nonlinear dimension reduction
-#> ✔ [2026-10-24 17:30:10] Standard processing workflow completed
+#> ℹ [2026-10-25 21:09:44] Start standard processing workflow...
+#> ℹ [2026-10-25 21:09:44] Checking a list of <Seurat>...
+#> ! [2026-10-25 21:09:44] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-10-25 21:09:44] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-10-25 21:09:44] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-10-25 21:09:45] Use the separate HVF from `srt_list`
+#> ℹ [2026-10-25 21:09:45] Number of available HVF: 2000
+#> ℹ [2026-10-25 21:09:45] Finished check
+#> ℹ [2026-10-25 21:09:45] Perform `ScaleData()`
+#> ℹ [2026-10-25 21:09:45] Perform pca linear dimension reduction
+#> ℹ [2026-10-25 21:09:45] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-10-25 21:09:45] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-10-25 21:09:46] Reorder clusters...
+#> ℹ [2026-10-25 21:09:46] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-10-25 21:09:46] Perform umap nonlinear dimension reduction
+#> ✔ [2026-10-25 21:09:53] Standard processing workflow completed
 pancreas_sub <- RunDoubletDetection(pancreas_sub)
-#> ℹ [2026-10-24 17:30:10] Running DoubletDetection
-#> ✔ [2026-10-24 17:30:10] Python environment completed
+#> ℹ [2026-10-25 21:09:53] Running DoubletDetection
+#> ✔ [2026-10-25 21:09:53] Python environment completed
 #> ✔                       Until next loading, the environment will be cached
-#> ℹ [2026-10-24 17:30:10] Data type is raw counts
-#> ℹ [2026-10-24 17:30:10] Checking 1 package in environment: scop_env
-#> ℹ [2026-10-24 17:30:10] Retrieving package list for environment: scop_env
-#> ℹ [2026-10-24 17:30:11] Found 102 packages installed
-#> ✔ [2026-10-24 17:30:11] doubletdetection == 4.3.0.post1
-#> ℹ [2026-10-24 17:30:11] Checking 1 package in environment: scop_env
-#> ℹ [2026-10-24 17:30:11] Retrieving package list for environment: scop_env
-#> ℹ [2026-10-24 17:30:12] Found 102 packages installed
-#> ✔ [2026-10-24 17:30:12] louvain == 0.8.2
-#> ! [2026-10-24 17:30:29] Found 1 cells with unexpected DoubletDetection labels; setting to "doublet"
-#> ✔ [2026-10-24 17:30:29] DoubletDetection doublet calling completed
+#> ℹ [2026-10-25 21:09:54] Data type is raw counts
+#> ℹ [2026-10-25 21:09:54] Checking 1 package in environment: scop_env
+#> ℹ [2026-10-25 21:09:54] Retrieving package list for environment: scop_env
+#> ℹ [2026-10-25 21:09:55] Found 102 packages installed
+#> ✔ [2026-10-25 21:09:55] doubletdetection == 4.3.0.post1
+#> ℹ [2026-10-25 21:09:55] Checking 1 package in environment: scop_env
+#> ℹ [2026-10-25 21:09:55] Retrieving package list for environment: scop_env
+#> ℹ [2026-10-25 21:09:56] Found 102 packages installed
+#> ✔ [2026-10-25 21:09:56] louvain == 0.8.2
+#> ! [2026-10-25 21:10:10] Found 1 cells with unexpected DoubletDetection labels; setting to "doublet"
+#> ✔ [2026-10-25 21:10:10] DoubletDetection doublet calling completed
 CellDimPlot(
   pancreas_sub,
   reduction = "umap",
