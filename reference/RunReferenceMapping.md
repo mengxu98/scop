@@ -177,7 +177,7 @@ pbmcmultiome_sub <- RunStandardWorkflow(
   linear_reduction_dims = 10,
   verbose = FALSE
 )
-#> ℹ [2026-10-25 21:33:06] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-10-26 15:18:11] Skip `log1p()` because `layer = data` is not "counts"
 reference <- subset(pbmcmultiome_sub, cells = colnames(pbmcmultiome_sub)[1:120])
 query <- subset(pbmcmultiome_sub, cells = colnames(pbmcmultiome_sub)[121:200])
 query <- RunStandardWorkflow(
@@ -187,7 +187,7 @@ query <- RunStandardWorkflow(
   linear_reduction_dims = 10,
   verbose = FALSE
 )
-#> ! [2026-10-25 21:33:14] Only one cluster found
+#> ! [2026-10-26 15:18:19] Only one cluster found
 query <- RunReferenceMapping(
   object = query,
   reference = reference,
@@ -206,10 +206,10 @@ query <- RunReferenceMapping(
 #> Finding integration vectors
 #> Finding integration vector weights
 #> Integrating data
-#> ℹ [2026-10-25 21:33:24] No UMAP model detected. Set the `projection_method` to "knn"
-#> ℹ [2026-10-25 21:33:24] Use the reduction to calculate distance metric
-#> ℹ [2026-10-25 21:33:24] Use raw method to find neighbors
-#> ℹ [2026-10-25 21:33:24] Predicting cell types based on ref_group
+#> ℹ [2026-10-26 15:18:28] No UMAP model detected. Set the `projection_method` to "knn"
+#> ℹ [2026-10-26 15:18:28] Use the reduction to calculate distance metric
+#> ℹ [2026-10-26 15:18:28] Use raw method to find neighbors
+#> ℹ [2026-10-26 15:18:28] Predicting cell types based on ref_group
 head(query[[]][, grep("^predicted_", colnames(query[[]]), value = TRUE), drop = FALSE])
 #>                    predicted_predicted.id predicted_prediction.score.NK
 #> CAAGGCCTCTAGCGTG-1                      B                    0.03359597
@@ -247,10 +247,10 @@ head(query[[]][, grep("^predicted_", colnames(query[[]]), value = TRUE), drop = 
 #> CAAGTAACAACAGGAT-1                    0.40879333                      0.5624981
 #> CAAGTAACACAACAGG-1                    0.00000000                      0.5503580
 #>                    predicted_ref_group
-#> CAAGGCCTCTAGCGTG-1                  DC
-#> CAAGGCTGTGTTTGCT-1                  NK
-#> CAAGGGAGTGGTTCCC-1                  DC
-#> CAAGGTAAGCCACATG-1                  NK
-#> CAAGTAACAACAGGAT-1                Mono
-#> CAAGTAACACAACAGG-1                  NK
+#> CAAGGCCTCTAGCGTG-1                   B
+#> CAAGGCTGTGTTTGCT-1                Mono
+#> CAAGGGAGTGGTTCCC-1               CD4 T
+#> CAAGGTAAGCCACATG-1                Mono
+#> CAAGTAACAACAGGAT-1                  NK
+#> CAAGTAACACAACAGG-1                Mono
 ```

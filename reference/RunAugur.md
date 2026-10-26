@@ -129,7 +129,7 @@ prioritization in single-cell data. *Nature Biotechnology*, 39, 30-34.
 data(panc8_sub)
 panc8_sub <- subset(panc8_sub, subset = tech %in% c("celseq", "celseq2"))
 panc8_sub <- RunStandardWorkflow(panc8_sub, verbose = FALSE)
-#> ℹ [2026-10-25 21:03:06] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-10-26 14:48:22] Skip `log1p()` because `layer = data` is not "counts"
 panc8_sub <- RunAugur(
   panc8_sub,
   celltype.by = "celltype",
@@ -149,15 +149,15 @@ panc8_sub <- RunAugur(
 #> Registered S3 method overwritten by 'yardstick':
 #>   method       from         
 #>   print.metric spatstat.geom
-#> ! [2026-10-25 21:03:16] Skipping cell type [1] delta
+#> ! [2026-10-26 14:48:31] Skipping cell type [1] delta
 #> !                       9 Levels: acinar activated-stellate alpha beta delta ductal ... macrophage: minimum number of cells ([1] 11) is less than [1] 20
-#> ! [2026-10-25 21:03:24] Skipping cell type [1] activated-stellate
+#> ! [2026-10-26 14:48:40] Skipping cell type [1] activated-stellate
 #> !                       9 Levels: acinar activated-stellate alpha beta delta ductal ... macrophage: minimum number of cells ([1] 4) is less than [1] 20
-#> ! [2026-10-25 21:03:24] Skipping cell type [1] gamma
+#> ! [2026-10-26 14:48:40] Skipping cell type [1] gamma
 #> !                       9 Levels: acinar activated-stellate alpha beta delta ductal ... macrophage: minimum number of cells ([1] 2) is less than [1] 20
-#> ! [2026-10-25 21:03:24] Skipping cell type [1] macrophage
+#> ! [2026-10-26 14:48:40] Skipping cell type [1] macrophage
 #> !                       9 Levels: acinar activated-stellate alpha beta delta ductal ... macrophage: minimum number of cells ([1] 0) is less than [1] 20
-#> ! [2026-10-25 21:03:24] Skipping cell type [1] endothelial
+#> ! [2026-10-26 14:48:40] Skipping cell type [1] endothelial
 #> !                       9 Levels: acinar activated-stellate alpha beta delta ductal ... macrophage: minimum number of cells ([1] 0) is less than [1] 20
 
 panc8_sub@tools$Augur$AUC

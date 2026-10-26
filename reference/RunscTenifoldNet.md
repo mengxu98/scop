@@ -144,7 +144,7 @@ pancreas_sub <- RunscTenifoldNet(
   store_networks = FALSE,
   store_manifold = TRUE
 )
-#> ℹ [2026-10-25 21:40:21] Run scTenifoldNet comparison using upstream implementation
+#> ℹ [2026-10-26 15:25:17] Run scTenifoldNet comparison using upstream implementation
 #> 
 #> ── scTenifoldNet Pipeline ──────────────────────────────────────────────────────
 #> ℹ Step 2/6: CPM normalization
@@ -170,17 +170,17 @@ pancreas_sub <- RunscTenifoldNet(
 #> ℹ Computing distances for 300 genes
 #> ✔ Differential regulation complete: 2/300 significant genes (FDR < 0.05)
 #> ✔ scTenifoldNet pipeline complete
-#> ✔ [2026-10-25 21:40:22] scTenifoldNet results stored in `object@tools[[scTenifoldNet]]`
+#> ✔ [2026-10-26 15:25:18] scTenifoldNet results stored in `object@tools[[scTenifoldNet]]`
 
 dr <- pancreas_sub@tools$scTenifoldNet$diffRegulation
 head(dr)
 #>         gene    distance        Z        FC      p.value       p.adj
-#> 25  Hsp90ab1 0.004510967 1.690887 20.524738 5.886555e-06 0.001765966
-#> 26      Rps2 0.004049140 1.605500 16.537272 4.770310e-05 0.007155465
-#> 125    Hspa8 0.003194686 1.424532 10.294248 1.334455e-03 0.133445509
-#> 177 Hsp90aa1 0.003058008 1.392084  9.432257 2.132018e-03 0.144242440
-#> 47      Ftl1 0.003022130 1.383375  9.212227 2.404041e-03 0.144242440
-#> 155   Sec61b 0.002831187 1.335586  8.084916 4.463519e-03 0.223175954
+#> 25  Hsp90ab1 0.004510967 1.690897 20.524738 5.886555e-06 0.001765966
+#> 26      Rps2 0.004049140 1.605509 16.537272 4.770310e-05 0.007155465
+#> 125    Hspa8 0.003194686 1.424540 10.294248 1.334455e-03 0.133445509
+#> 177 Hsp90aa1 0.003058008 1.392091  9.432257 2.132018e-03 0.144242440
+#> 47      Ftl1 0.003022130 1.383382  9.212227 2.404041e-03 0.144242440
+#> 155   Sec61b 0.002831187 1.335593  8.084916 4.463519e-03 0.223175954
 
 scTenifoldNetPlot(pancreas_sub, plot_type = "effect")
 ```

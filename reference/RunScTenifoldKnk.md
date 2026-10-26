@@ -204,7 +204,7 @@ pancreas_sub <- RunscTenifoldKnk(
   store_networks = TRUE,
   seed = 1
 )
-#> ℹ [2026-10-25 21:34:49] Run the upstream scTenifoldKnk workflow
+#> ℹ [2026-10-26 15:19:52] Run the upstream scTenifoldKnk workflow
 #> 
 #> ── scTenifoldKnk Pipeline ──────────────────────────────────────────────────────
 #> ℹ Step 2/7: CPM normalization
@@ -224,15 +224,15 @@ pancreas_sub <- RunscTenifoldKnk(
 #> ℹ Computing distances for 301 genes
 #> ✔ Differential regulation complete: 9/301 significant genes (FDR < 0.05)
 #> ✔ scTenifoldKnk pipeline complete
-#> ✔ [2026-10-25 21:34:50] scTenifoldKnk results stored in `object@tools[[scTenifoldKnk]]`
+#> ✔ [2026-10-26 15:19:52] scTenifoldKnk results stored in `object@tools[[scTenifoldKnk]]`
 head(pancreas_sub@tools$scTenifoldKnk$diffRegulation)
 #>       gene     distance        Z         FC      p.value        p.adj direction
-#> 301   Pdx1 8.963879e-05 4.420458 8999.42556 0.000000e+00 0.0000000000      down
-#> 57  Rpl18a 4.266911e-06 1.754549   20.39154 6.310812e-06 0.0009497772        up
+#> 301   Pdx1 8.963879e-05 4.420455 8999.42556 0.000000e+00 0.0000000000      down
+#> 57  Rpl18a 4.266911e-06 1.754548   20.39154 6.310812e-06 0.0009497772        up
 #> 11     Ubb 3.430468e-06 1.610412   13.18043 2.828873e-04 0.0283830220      down
 #> 44   Rpl32 3.287092e-06 1.582815   12.10171 5.037573e-04 0.0307722755        up
 #> 60   Rpl13 3.283392e-06 1.582090   12.07448 5.111674e-04 0.0307722755        up
-#> 51    Rps9 3.185577e-06 1.562663   11.36578 7.480971e-04 0.0375295391        up
+#> 51    Rps9 3.185577e-06 1.562662   11.36578 7.480971e-04 0.0375295391        up
 #>     directionScore
 #> 301             NA
 #> 57     0.003292538

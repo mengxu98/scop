@@ -197,7 +197,7 @@ pancreas_sub <- RunscTenifoldNet(
   store_networks = TRUE,
   store_manifold = TRUE
 )
-#> ℹ [2026-10-25 21:44:54] Run scTenifoldNet comparison using upstream implementation
+#> ℹ [2026-10-26 15:29:46] Run scTenifoldNet comparison using upstream implementation
 #> 
 #> ── scTenifoldNet Pipeline ──────────────────────────────────────────────────────
 #> ℹ Step 2/6: CPM normalization
@@ -223,7 +223,7 @@ pancreas_sub <- RunscTenifoldNet(
 #> ℹ Computing distances for 300 genes
 #> ✔ Differential regulation complete: 2/300 significant genes (FDR < 0.05)
 #> ✔ scTenifoldNet pipeline complete
-#> ✔ [2026-10-25 21:44:55] scTenifoldNet results stored in `object@tools[[scTenifoldNet]]`
+#> ✔ [2026-10-26 15:29:47] scTenifoldNet results stored in `object@tools[[scTenifoldNet]]`
 
 scTenifoldNetPlot(pancreas_sub, plot_type = "effect")
 

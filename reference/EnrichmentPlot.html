@@ -76,7 +76,7 @@
 <span>  test.use <span class="op">=</span> <span class="st">"wilcox"</span>,</span>
 <span>  res <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  plot_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"bar"</span>, <span class="st">"dot"</span>, <span class="st">"lollipop"</span>, <span class="st">"network"</span>, <span class="st">"enrichmap"</span>, <span class="st">"wordcloud"</span>,</span>
-<span>    <span class="st">"comparison"</span><span class="op">)</span>,</span>
+<span>    <span class="st">"comparison"</span>, <span class="st">"rank"</span><span class="op">)</span>,</span>
 <span>  split_by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Database"</span>, <span class="st">"Groups"</span><span class="op">)</span>,</span>
 <span>  color_by <span class="op">=</span> <span class="st">"Database"</span>,</span>
 <span>  group_use <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -86,7 +86,7 @@
 <span>  score_col <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  scoreCutoff <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  score_label <span class="op">=</span> <span class="st">"Score"</span>,</span>
-<span>  topTerm <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">plot_type</span> <span class="op">==</span> <span class="st">"enrichmap"</span>, <span class="fl">100</span>, <span class="fl">6</span><span class="op">)</span>,</span>
+<span>  topTerm <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">plot_type</span> <span class="op">==</span> <span class="st">"enrichmap"</span>, <span class="fl">100</span>, <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">plot_type</span> <span class="op">==</span> <span class="st">"rank"</span>, <span class="fl">80</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  compare_only_sig <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  topWord <span class="op">=</span> <span class="fl">100</span>,</span>
 <span>  word_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"term"</span>, <span class="st">"feature"</span><span class="op">)</span>,</span>
@@ -107,13 +107,13 @@
 <span>  enrichmap_show_keyword <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  enrichmap_mark <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ellipse"</span>, <span class="st">"hull"</span><span class="op">)</span>,</span>
 <span>  enrichmap_expand <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">0.5</span><span class="op">)</span>,</span>
-<span>  character_width <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>  character_width <span class="op">=</span> <span class="kw">if</span> <span class="op">(</span><span class="va">plot_type</span> <span class="op">==</span> <span class="st">"rank"</span><span class="op">)</span> <span class="fl">34</span> <span class="kw">else</span> <span class="fl">50</span>,</span>
 <span>  lineheight <span class="op">=</span> <span class="fl">0.7</span>,</span>
-<span>  palette <span class="op">=</span> <span class="st">"Spectral"</span>,</span>
+<span>  palette <span class="op">=</span> <span class="kw">if</span> <span class="op">(</span><span class="va">plot_type</span> <span class="op">==</span> <span class="st">"rank"</span><span class="op">)</span> <span class="st">"Chinese"</span> <span class="kw">else</span> <span class="st">"Spectral"</span>,</span>
 <span>  palcolor <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  aspect.ratio <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  legend.position <span class="op">=</span> <span class="st">"right"</span>,</span>
-<span>  legend.direction <span class="op">=</span> <span class="st">"vertical"</span>,</span>
+<span>  legend.position <span class="op">=</span> <span class="kw">if</span> <span class="op">(</span><span class="va">plot_type</span> <span class="op">==</span> <span class="st">"rank"</span><span class="op">)</span> <span class="st">"bottom"</span> <span class="kw">else</span> <span class="st">"right"</span>,</span>
+<span>  legend.direction <span class="op">=</span> <span class="kw">if</span> <span class="op">(</span><span class="va">plot_type</span> <span class="op">==</span> <span class="st">"rank"</span><span class="op">)</span> <span class="st">"horizontal"</span> <span class="kw">else</span> <span class="st">"vertical"</span>,</span>
 <span>  theme_use <span class="op">=</span> <span class="st">"theme_scop"</span>,</span>
 <span>  theme_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  combine <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -122,7 +122,14 @@
 <span>  byrow <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  seed <span class="op">=</span> <span class="fl">11</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  srt <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  srt <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  rank_by <span class="op">=</span> <span class="st">"FoldEnrichment"</span>,</span>
+<span>  rank_nlabel <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  rank_label_terms <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  rank_pt_size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">5</span><span class="op">)</span>,</span>
+<span>  rank_pt_alpha <span class="op">=</span> <span class="fl">0.23</span>,</span>
+<span>  rank_label_size <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  rank_shared_y <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -158,8 +165,10 @@ If provided, 'object', 'test.use' and 'group.by' are ignored.</p></dd>
 
 
 <dt id="arg-plot-type">plot_type<a class="anchor" aria-label="anchor" href="#arg-plot-type"></a></dt>
-<dd><p>The type of plot to generate.
-Options are: <code>"bar"</code>, <code>"dot"</code>, <code>"lollipop"</code>, <code>"network"</code>, <code>"enrichmap"</code>, <code>"wordcloud"</code>, <code>"comparison"</code>.</p></dd>
+<dd><p>The type of plot to generate. <code>"rank"</code> displays existing
+enrichment results as ranked solid points, with one panel per group.
+Options are <code>"bar"</code>, <code>"dot"</code>, <code>"lollipop"</code>, <code>"network"</code>, <code>"enrichmap"</code>,
+<code>"wordcloud"</code>, <code>"comparison"</code>, and <code>"rank"</code>.</p></dd>
 
 
 <dt id="arg-split-by">split_by<a class="anchor" aria-label="anchor" href="#arg-split-by"></a></dt>
@@ -206,7 +215,8 @@ This is intended for activity or importance results such as pathway scores.</p><
 
 <dt id="arg-topterm">topTerm<a class="anchor" aria-label="anchor" href="#arg-topterm"></a></dt>
 <dd><p>The number of top terms to display.
-Default is <code>6</code>, or <code>100</code> if <code>plot_type</code> is <code>"enrichmap"</code>.</p></dd>
+Default is <code>6</code>, <code>100</code> for <code>"enrichmap"</code>, or <code>80</code> for <code>"rank"</code>.
+Rank plots select the highest <code>rank_by</code> values after significance filtering.</p></dd>
 
 
 <dt id="arg-compare-only-sig">compare_only_sig<a class="anchor" aria-label="anchor" href="#arg-compare-only-sig"></a></dt>
@@ -306,6 +316,7 @@ Options are <code>"ellipse"</code> and <code>"hull"</code>.</p></dd>
 
 <dt id="arg-palette">palette<a class="anchor" aria-label="anchor" href="#arg-palette"></a></dt>
 <dd><p>Color palette name.
+Defaults to <code>"Chinese"</code> for rank plots and <code>"Spectral"</code> otherwise.
 Available palettes can be found in <a href="https://mengxu98.github.io/thisplot/reference/show_palettes.html" class="external-link">thisplot::show_palettes</a>.</p></dd>
 
 
@@ -330,7 +341,7 @@ Available palettes can be found in <a href="https://mengxu98.github.io/thisplot/
 
 
 <dt id="arg-combine-nrow-ncol-byrow">combine, nrow, ncol, byrow<a class="anchor" aria-label="anchor" href="#arg-combine-nrow-ncol-byrow"></a></dt>
-<dd><p>Combine plots with <a href="https://patchwork.data-imaginist.com/reference/patchwork-package.html" class="external-link">patchwork</a>. <code>combine = FALSE</code>
+<dd><p>Combine plots with <a href="https://patchwork.data-imaginist.com/reference/patchwork-package.html" class="external-link">patchwork::patchwork</a>. <code>combine = FALSE</code>
 returns a list of ggplots.</p></dd>
 
 
@@ -346,7 +357,56 @@ returns a list of ggplots.</p></dd>
 <dd><p>Deprecated alias for <code>object</code>; supply exactly one of the two. It
 will be removed in scop 1.0.0.</p></dd>
 
+
+<dt id="arg-rank-by">rank_by<a class="anchor" aria-label="anchor" href="#arg-rank-by"></a></dt>
+<dd><p>Numeric enrichment column used for descending rank and the
+y-axis in rank plots. Default is <code>"FoldEnrichment"</code>.</p></dd>
+
+
+<dt id="arg-rank-nlabel">rank_nlabel<a class="anchor" aria-label="anchor" href="#arg-rank-nlabel"></a></dt>
+<dd><p>Number of leading terms to label per rank panel (default 5).</p></dd>
+
+
+<dt id="arg-rank-label-terms">rank_label_terms<a class="anchor" aria-label="anchor" href="#arg-rank-label-terms"></a></dt>
+<dd><p>Optional term IDs or descriptions to label, or a named
+list by group. Only displayed terms are labeled; this does not select terms.</p></dd>
+
+
+<dt id="arg-rank-pt-size">rank_pt_size<a class="anchor" aria-label="anchor" href="#arg-rank-pt-size"></a></dt>
+<dd><p>Positive increasing length-two point-size range for rank
+plots (default <code>c(2, 5)</code>), mapped to <code>-log10(p.adjust)</code>.</p></dd>
+
+
+<dt id="arg-rank-pt-alpha">rank_pt_alpha<a class="anchor" aria-label="anchor" href="#arg-rank-pt-alpha"></a></dt>
+<dd><p>Background-point opacity in rank plots, from 0 to 1.</p></dd>
+
+
+<dt id="arg-rank-label-size">rank_label_size<a class="anchor" aria-label="anchor" href="#arg-rank-label-size"></a></dt>
+<dd><p>Text size for rank labels with black text and a white halo.</p></dd>
+
+
+<dt id="arg-rank-shared-y">rank_shared_y<a class="anchor" aria-label="anchor" href="#arg-rank-shared-y"></a></dt>
+<dd><p>Whether rank panels share a y-axis range. Default is
+<code>FALSE</code>; compare numeric ticks when panels have independent ranges.</p></dd>
+
 </dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>A plot, or a list of plots when <code>combine = FALSE</code>. For <code>"rank"</code>,
+the combined result is a patchwork with an <code>enrichment_data</code> attribute
+containing displayed terms, ranks, scores and label-selection flags; the
+uncombined result is a named list of ggplots with these columns in plot data.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>Rank plots require one database and adjusted P values in 0, 1.
+They compare stored ORA results, not between-group differential significance.
+<code>split_by</code> and <code>color_by</code> do not change rank panels: each group has one panel
+and one color. Missing or nonfinite rank scores/adjusted P values are omitted
+with a warning. Zero adjusted P values are capped at <code>.Machine$double.xmin</code>
+only for the point-size transform. Groups without retained terms have empty
+panels; if no term passes the existing enrichment filter, an error is raised.</p>
+    </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><a href="RunEnrichment.html">RunEnrichment</a></p></div>
@@ -354,32 +414,43 @@ will be removed in scop 1.0.0.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Plot an existing ORA result without running enrichment again:</span></span></span>
+<span class="r-in"><span><span class="va">rank_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>enrichment <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  ID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"term"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span>, Description <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Pathway"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  Groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>, Database <span class="op">=</span> <span class="st">"custom"</span>,</span></span>
+<span class="r-in"><span>  p.adjust <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.001</span>, <span class="fl">0.01</span>, <span class="fl">0.02</span>, <span class="fl">0.002</span>, <span class="fl">0.01</span>, <span class="fl">0.03</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  FoldEnrichment <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">8</span>, <span class="fl">5</span>, <span class="fl">3</span>, <span class="fl">7</span>, <span class="fl">4</span>, <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span>res <span class="op">=</span> <span class="va">rank_result</span>, db <span class="op">=</span> <span class="st">"custom"</span>, plot_type <span class="op">=</span> <span class="st">"rank"</span>,</span></span>
+<span class="r-in"><span>  rank_pt_size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">5</span><span class="op">)</span>, rank_nlabel <span class="op">=</span> <span class="fl">2</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="EnrichmentPlot-1.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-25 20:51:55] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-25 20:51:55] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-10-25 20:51:55] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-25 20:51:55] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-25 20:51:55] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-25 20:51:55] Use the separate HVF from `srt_list`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-25 20:51:55] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-25 20:51:55] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-25 20:51:55] Perform `ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-25 20:51:56] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-25 20:51:56] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-25 20:51:56] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-25 20:51:56] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-25 20:51:56] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-25 20:51:56] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-10-25 20:52:03] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-26 14:37:13] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-26 14:37:13] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-10-26 14:37:13] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-26 14:37:13] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-26 14:37:13] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-26 14:37:13] Use the separate HVF from `srt_list`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-26 14:37:13] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-26 14:37:13] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-26 14:37:13] Perform `ScaleData()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-26 14:37:13] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-26 14:37:14] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-26 14:37:14] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-26 14:37:14] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-26 14:37:14] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-26 14:37:14] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-10-26 14:37:21] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunDEtest.html">RunDEtest</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-25 20:52:03] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-25 20:52:03] Start differential expression test</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-25 20:52:03] Find all markers(wilcox) among [1] 5 groups...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-10-25 20:52:04] Differential expression test completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-26 14:37:21] Data type is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-26 14:37:21] Start differential expression test</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-26 14:37:21] Find all markers(wilcox) among [1] 5 groups...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-10-26 14:37:21] Differential expression test completed</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunEnrichment.html">RunEnrichment</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -387,17 +458,17 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
 <span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-25 20:52:04] Start <span style="color: #0000BB;">Enrichment</span> analysis</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-25 20:52:04] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-25 20:52:04] Loading cached: <span style="color: #0000BB;">GO_BP</span> version: <span style="color: #0000BB;">3.23.0 nterm:14957</span> created: <span style="color: #0000BB;">2026-10-25 20:48:00</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-25 20:52:32] Preparing database: <span style="color: #0000BB;">GO_BP</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-25 20:52:43] Preparing database: <span style="color: #0000BB;">GO_CC</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-25 20:52:48] Convert ID types for the <span style="color: #0000BB;">GO_BP</span> database</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-25 20:52:48] Converted ID types using local annotation package <span style="color: #0000BB;">org.Mm.eg.db</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-25 20:52:49] Convert ID types for the <span style="color: #0000BB;">GO_CC</span> database</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-25 20:52:50] Converted ID types using local annotation package <span style="color: #0000BB;">org.Mm.eg.db</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-25 20:52:50] Permform enrichment...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-10-25 20:52:51] <span style="color: #0000BB;">Enrichment</span> analysis done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-26 14:37:21] Start <span style="color: #0000BB;">Enrichment</span> analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-26 14:37:21] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-26 14:37:21] Loading cached: <span style="color: #0000BB;">GO_BP</span> version: <span style="color: #0000BB;">3.23.0 nterm:14957</span> created: <span style="color: #0000BB;">2026-10-26 14:33:29</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-26 14:37:50] Preparing database: <span style="color: #0000BB;">GO_BP</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-26 14:38:02] Preparing database: <span style="color: #0000BB;">GO_CC</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-26 14:38:06] Convert ID types for the <span style="color: #0000BB;">GO_BP</span> database</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-26 14:38:06] Converted ID types using local annotation package <span style="color: #0000BB;">org.Mm.eg.db</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-26 14:38:08] Convert ID types for the <span style="color: #0000BB;">GO_CC</span> database</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-26 14:38:08] Converted ID types using local annotation package <span style="color: #0000BB;">org.Mm.eg.db</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-26 14:38:09] Permform enrichment...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-10-26 14:38:10] <span style="color: #0000BB;">Enrichment</span> analysis done</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -406,7 +477,7 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-in"><span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"bar"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="EnrichmentPlot-1.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="EnrichmentPlot-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -416,7 +487,7 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-in"><span>  color_by <span class="op">=</span> <span class="st">"Groups"</span>,</span></span>
 <span class="r-in"><span>  ncol <span class="op">=</span> <span class="fl">2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="EnrichmentPlot-2.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="EnrichmentPlot-3.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -442,7 +513,7 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-in"><span>    <span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="EnrichmentPlot-3.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="EnrichmentPlot-4.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -451,7 +522,7 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-in"><span>  topTerm <span class="op">=</span> <span class="fl">3</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"comparison"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="EnrichmentPlot-4.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="EnrichmentPlot-5.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -461,7 +532,7 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"comparison"</span>,</span></span>
 <span class="r-in"><span>  compare_only_sig <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="EnrichmentPlot-5.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="EnrichmentPlot-6.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -470,7 +541,7 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-in"><span>  group_use <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ductal"</span>, <span class="st">"Endocrine"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"comparison"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="EnrichmentPlot-6.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="EnrichmentPlot-7.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -480,7 +551,7 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"bar"</span>,</span></span>
 <span class="r-in"><span>  split_by <span class="op">=</span> <span class="st">"Groups"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="EnrichmentPlot-7.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="EnrichmentPlot-8.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -491,7 +562,7 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-in"><span>  split_by <span class="op">=</span> <span class="st">"Database"</span>,</span></span>
 <span class="r-in"><span>  color_by <span class="op">=</span> <span class="st">"Groups"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="EnrichmentPlot-8.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="EnrichmentPlot-9.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -501,7 +572,7 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"bar"</span>,</span></span>
 <span class="r-in"><span>  split_by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Database"</span>, <span class="st">"Groups"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="EnrichmentPlot-9.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="EnrichmentPlot-10.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -512,7 +583,7 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-in"><span>  color_by <span class="op">=</span> <span class="st">"Groups"</span>,</span></span>
 <span class="r-in"><span>  palette <span class="op">=</span> <span class="st">"Set1"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="EnrichmentPlot-10.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="EnrichmentPlot-11.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -522,7 +593,7 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"dot"</span>,</span></span>
 <span class="r-in"><span>  palette <span class="op">=</span> <span class="st">"GdRd"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="EnrichmentPlot-11.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="EnrichmentPlot-12.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -532,7 +603,7 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"lollipop"</span>,</span></span>
 <span class="r-in"><span>  palette <span class="op">=</span> <span class="st">"GdRd"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="EnrichmentPlot-12.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="EnrichmentPlot-13.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -541,7 +612,7 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-in"><span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"wordcloud"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="EnrichmentPlot-13.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="EnrichmentPlot-14.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -551,7 +622,7 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"wordcloud"</span>,</span></span>
 <span class="r-in"><span>  word_type <span class="op">=</span> <span class="st">"feature"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="EnrichmentPlot-14.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="EnrichmentPlot-15.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -564,8 +635,8 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Also defined by ‘BiocGenerics’</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Found more than one class "dist" in cache; using the first, from namespace 'spam'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Also defined by ‘BiocGenerics’</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-10-25 20:53:03] <span style="color: #0000BB;">shadowtext</span> installed successfully</span>
-<span class="r-plt img"><img src="EnrichmentPlot-15.png" alt="" width="700" height="433"></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-10-26 14:38:22] <span style="color: #0000BB;">shadowtext</span> installed successfully</span>
+<span class="r-plt img"><img src="EnrichmentPlot-16.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -580,8 +651,8 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-in"><span>    <span class="st">"GO:0030073"</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-10-25 20:53:04] <span style="color: #0000BB;">shadowtext</span> installed successfully</span>
-<span class="r-plt img"><img src="EnrichmentPlot-16.png" alt="" width="700" height="433"></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-10-26 14:38:23] <span style="color: #0000BB;">shadowtext</span> installed successfully</span>
+<span class="r-plt img"><img src="EnrichmentPlot-17.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -591,8 +662,8 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"network"</span>,</span></span>
 <span class="r-in"><span>  network_layoutadjust <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-10-25 20:53:05] <span style="color: #0000BB;">shadowtext</span> installed successfully</span>
-<span class="r-plt img"><img src="EnrichmentPlot-17.png" alt="" width="700" height="433"></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-10-26 14:38:23] <span style="color: #0000BB;">shadowtext</span> installed successfully</span>
+<span class="r-plt img"><img src="EnrichmentPlot-18.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -605,8 +676,8 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-in"><span>  theme_use <span class="op">=</span> <span class="st">"theme_blank"</span>,</span></span>
 <span class="r-in"><span>  theme_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>add_coord <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">thisplot</span><span class="fu">::</span><span class="fu"><a href="https://mengxu98.github.io/thisplot/reference/panel_fix.html" class="external-link">panel_fix</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-10-25 20:53:07] <span style="color: #0000BB;">shadowtext</span> installed successfully</span>
-<span class="r-plt img"><img src="EnrichmentPlot-18.png" alt="" width="700" height="433"></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-10-26 14:38:25] <span style="color: #0000BB;">shadowtext</span> installed successfully</span>
+<span class="r-plt img"><img src="EnrichmentPlot-19.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -615,7 +686,7 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-in"><span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"enrichmap"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="EnrichmentPlot-19.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="EnrichmentPlot-20.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -625,7 +696,7 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"enrichmap"</span>,</span></span>
 <span class="r-in"><span>  enrichmap_expand <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="EnrichmentPlot-20.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="EnrichmentPlot-21.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -636,7 +707,7 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-in"><span>  enrichmap_show_keyword <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  character_width <span class="op">=</span> <span class="fl">10</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="EnrichmentPlot-21.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="EnrichmentPlot-22.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -652,7 +723,7 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-in"><span>  theme_use <span class="op">=</span> <span class="st">"theme_blank"</span>,</span></span>
 <span class="r-in"><span>  theme_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>add_coord <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">thisplot</span><span class="fu">::</span><span class="fu"><a href="https://mengxu98.github.io/thisplot/reference/panel_fix.html" class="external-link">panel_fix</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="EnrichmentPlot-22.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="EnrichmentPlot-23.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunEnrichment.html">RunEnrichment</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -661,13 +732,13 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-in"><span>  convert_species <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-25 20:53:11] Start <span style="color: #0000BB;">Enrichment</span> analysis</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-25 20:53:11] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-25 20:53:11] Preparing <span style="color: #0000BB;">MP</span> database</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-25 20:53:19] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-25 20:53:19] Preparing <span style="color: #0000BB;">DO</span> database</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-25 20:53:24] Permform enrichment...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-10-25 20:53:24] <span style="color: #0000BB;">Enrichment</span> analysis done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-26 14:38:28] Start <span style="color: #0000BB;">Enrichment</span> analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-26 14:38:28] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-26 14:38:28] Preparing <span style="color: #0000BB;">MP</span> database</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-26 14:38:41] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-26 14:38:41] Preparing <span style="color: #0000BB;">DO</span> database</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-26 14:38:45] Permform enrichment...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-10-26 14:38:45] <span style="color: #0000BB;">Enrichment</span> analysis done</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -676,7 +747,7 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-in"><span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span></span>
 <span class="r-in"><span>  ncol <span class="op">=</span> <span class="fl">1</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="EnrichmentPlot-23.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="EnrichmentPlot-24.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

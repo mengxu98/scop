@@ -13,7 +13,7 @@ EnrichmentPlot(
   test.use = "wilcox",
   res = NULL,
   plot_type = c("bar", "dot", "lollipop", "network", "enrichmap", "wordcloud",
-    "comparison"),
+    "comparison", "rank"),
   split_by = c("Database", "Groups"),
   color_by = "Database",
   group_use = NULL,
@@ -23,7 +23,7 @@ EnrichmentPlot(
   score_col = NULL,
   scoreCutoff = NULL,
   score_label = "Score",
-  topTerm = ifelse(plot_type == "enrichmap", 100, 6),
+  topTerm = ifelse(plot_type == "enrichmap", 100, ifelse(plot_type == "rank", 80, 6)),
   compare_only_sig = FALSE,
   topWord = 100,
   word_type = c("term", "feature"),
@@ -44,13 +44,13 @@ EnrichmentPlot(
   enrichmap_show_keyword = FALSE,
   enrichmap_mark = c("ellipse", "hull"),
   enrichmap_expand = c(0.5, 0.5),
-  character_width = 50,
+  character_width = if (plot_type == "rank") 34 else 50,
   lineheight = 0.7,
-  palette = "Spectral",
+  palette = if (plot_type == "rank") "Chinese" else "Spectral",
   palcolor = NULL,
   aspect.ratio = 1,
-  legend.position = "right",
-  legend.direction = "vertical",
+  legend.position = if (plot_type == "rank") "bottom" else "right",
+  legend.direction = if (plot_type == "rank") "horizontal" else "vertical",
   theme_use = "theme_scop",
   theme_args = list(),
   combine = TRUE,
@@ -59,7 +59,14 @@ EnrichmentPlot(
   byrow = TRUE,
   seed = 11,
   verbose = TRUE,
-  srt = NULL
+  srt = NULL,
+  rank_by = "FoldEnrichment",
+  rank_nlabel = 5,
+  rank_label_terms = NULL,
+  rank_pt_size = c(2, 5),
+  rank_pt_alpha = 0.23,
+  rank_label_size = 3,
+  rank_shared_y = FALSE
 )
 ```
 
@@ -97,9 +104,10 @@ EnrichmentPlot(
 
 - plot_type:
 
-  The type of plot to generate. Options are: `"bar"`, `"dot"`,
-  `"lollipop"`, `"network"`, `"enrichmap"`, `"wordcloud"`,
-  `"comparison"`.
+  The type of plot to generate. `"rank"` displays existing enrichment
+  results as ranked solid points, with one panel per group. Options are
+  `"bar"`, `"dot"`, `"lollipop"`, `"network"`, `"enrichmap"`,
+  `"wordcloud"`, `"comparison"`, and `"rank"`.
 
 - split_by:
 
@@ -143,8 +151,9 @@ EnrichmentPlot(
 
 - topTerm:
 
-  The number of top terms to display. Default is `6`, or `100` if
-  `plot_type` is `"enrichmap"`.
+  The number of top terms to display. Default is `6`, `100` for
+  `"enrichmap"`, or `80` for `"rank"`. Rank plots select the highest
+  `rank_by` values after significance filtering.
 
 - compare_only_sig:
 
@@ -249,7 +258,8 @@ EnrichmentPlot(
 
 - palette:
 
-  Color palette name. Available palettes can be found in
+  Color palette name. Defaults to `"Chinese"` for rank plots and
+  `"Spectral"` otherwise. Available palettes can be found in
   [thisplot::show_palettes](https://mengxu98.github.io/thisplot/reference/show_palettes.html).
 
 - palcolor:
@@ -276,7 +286,7 @@ EnrichmentPlot(
 - combine, nrow, ncol, byrow:
 
   Combine plots with
-  [patchwork](https://patchwork.data-imaginist.com/reference/patchwork-package.html).
+  [patchwork::patchwork](https://patchwork.data-imaginist.com/reference/patchwork-package.html).
   `combine = FALSE` returns a list of ggplots.
 
 - seed:
@@ -292,6 +302,57 @@ EnrichmentPlot(
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
 
+- rank_by:
+
+  Numeric enrichment column used for descending rank and the y-axis in
+  rank plots. Default is `"FoldEnrichment"`.
+
+- rank_nlabel:
+
+  Number of leading terms to label per rank panel (default 5).
+
+- rank_label_terms:
+
+  Optional term IDs or descriptions to label, or a named list by group.
+  Only displayed terms are labeled; this does not select terms.
+
+- rank_pt_size:
+
+  Positive increasing length-two point-size range for rank plots
+  (default `c(2, 5)`), mapped to `-log10(p.adjust)`.
+
+- rank_pt_alpha:
+
+  Background-point opacity in rank plots, from 0 to 1.
+
+- rank_label_size:
+
+  Text size for rank labels with black text and a white halo.
+
+- rank_shared_y:
+
+  Whether rank panels share a y-axis range. Default is `FALSE`; compare
+  numeric ticks when panels have independent ranges.
+
+## Value
+
+A plot, or a list of plots when `combine = FALSE`. For `"rank"`, the
+combined result is a patchwork with an `enrichment_data` attribute
+containing displayed terms, ranks, scores and label-selection flags; the
+uncombined result is a named list of ggplots with these columns in plot
+data.
+
+## Details
+
+Rank plots require one database and adjusted P values in 0, 1. They
+compare stored ORA results, not between-group differential significance.
+`split_by` and `color_by` do not change rank panels: each group has one
+panel and one color. Missing or nonfinite rank scores/adjusted P values
+are omitted with a warning. Zero adjusted P values are capped at
+`.Machine$double.xmin` only for the point-size transform. Groups without
+retained terms have empty panels; if no term passes the existing
+enrichment filter, an error is raised.
+
 ## See also
 
 [RunEnrichment](https://mengxu98.github.io/scop/reference/RunEnrichment.md)
@@ -299,32 +360,43 @@ EnrichmentPlot(
 ## Examples
 
 ``` r
+# Plot an existing ORA result without running enrichment again:
+rank_result <- list(enrichment = data.frame(
+  ID = paste0("term", 1:6), Description = paste("Pathway", 1:6),
+  Groups = rep(c("A", "B"), each = 3), Database = "custom",
+  p.adjust = c(0.001, 0.01, 0.02, 0.002, 0.01, 0.03),
+  FoldEnrichment = c(8, 5, 3, 7, 4, 2)
+))
+EnrichmentPlot(res = rank_result, db = "custom", plot_type = "rank",
+  rank_pt_size = c(2, 5), rank_nlabel = 2, ncol = 2)
+
+
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-10-25 20:51:55] Start standard processing workflow...
-#> ℹ [2026-10-25 20:51:55] Checking a list of <Seurat>...
-#> ! [2026-10-25 20:51:55] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-10-25 20:51:55] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-10-25 20:51:55] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-10-25 20:51:55] Use the separate HVF from `srt_list`
-#> ℹ [2026-10-25 20:51:55] Number of available HVF: 2000
-#> ℹ [2026-10-25 20:51:55] Finished check
-#> ℹ [2026-10-25 20:51:55] Perform `ScaleData()`
-#> ℹ [2026-10-25 20:51:56] Perform pca linear dimension reduction
-#> ℹ [2026-10-25 20:51:56] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-10-25 20:51:56] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-10-25 20:51:56] Reorder clusters...
-#> ℹ [2026-10-25 20:51:56] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-10-25 20:51:56] Perform umap nonlinear dimension reduction
-#> ✔ [2026-10-25 20:52:03] Standard processing workflow completed
+#> ℹ [2026-10-26 14:37:13] Start standard processing workflow...
+#> ℹ [2026-10-26 14:37:13] Checking a list of <Seurat>...
+#> ! [2026-10-26 14:37:13] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-10-26 14:37:13] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-10-26 14:37:13] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-10-26 14:37:13] Use the separate HVF from `srt_list`
+#> ℹ [2026-10-26 14:37:13] Number of available HVF: 2000
+#> ℹ [2026-10-26 14:37:13] Finished check
+#> ℹ [2026-10-26 14:37:13] Perform `ScaleData()`
+#> ℹ [2026-10-26 14:37:13] Perform pca linear dimension reduction
+#> ℹ [2026-10-26 14:37:14] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-10-26 14:37:14] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-10-26 14:37:14] Reorder clusters...
+#> ℹ [2026-10-26 14:37:14] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-10-26 14:37:14] Perform umap nonlinear dimension reduction
+#> ✔ [2026-10-26 14:37:21] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"
 )
-#> ℹ [2026-10-25 20:52:03] Data type is log-normalized
-#> ℹ [2026-10-25 20:52:03] Start differential expression test
-#> ℹ [2026-10-25 20:52:03] Find all markers(wilcox) among [1] 5 groups...
-#> ✔ [2026-10-25 20:52:04] Differential expression test completed
+#> ℹ [2026-10-26 14:37:21] Data type is log-normalized
+#> ℹ [2026-10-26 14:37:21] Start differential expression test
+#> ℹ [2026-10-26 14:37:21] Find all markers(wilcox) among [1] 5 groups...
+#> ✔ [2026-10-26 14:37:21] Differential expression test completed
 
 pancreas_sub <- RunEnrichment(
   pancreas_sub,
@@ -332,17 +404,17 @@ pancreas_sub <- RunEnrichment(
   group.by = "CellType",
   species = "Mus_musculus"
 )
-#> ℹ [2026-10-25 20:52:04] Start Enrichment analysis
-#> ℹ [2026-10-25 20:52:04] Species: "Mus_musculus"
-#> ℹ [2026-10-25 20:52:04] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-10-25 20:48:00
-#> ℹ [2026-10-25 20:52:32] Preparing database: GO_BP
-#> ℹ [2026-10-25 20:52:43] Preparing database: GO_CC
-#> ℹ [2026-10-25 20:52:48] Convert ID types for the GO_BP database
-#> ℹ [2026-10-25 20:52:48] Converted ID types using local annotation package org.Mm.eg.db
-#> ℹ [2026-10-25 20:52:49] Convert ID types for the GO_CC database
-#> ℹ [2026-10-25 20:52:50] Converted ID types using local annotation package org.Mm.eg.db
-#> ℹ [2026-10-25 20:52:50] Permform enrichment...
-#> ✔ [2026-10-25 20:52:51] Enrichment analysis done
+#> ℹ [2026-10-26 14:37:21] Start Enrichment analysis
+#> ℹ [2026-10-26 14:37:21] Species: "Mus_musculus"
+#> ℹ [2026-10-26 14:37:21] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-10-26 14:33:29
+#> ℹ [2026-10-26 14:37:50] Preparing database: GO_BP
+#> ℹ [2026-10-26 14:38:02] Preparing database: GO_CC
+#> ℹ [2026-10-26 14:38:06] Convert ID types for the GO_BP database
+#> ℹ [2026-10-26 14:38:06] Converted ID types using local annotation package org.Mm.eg.db
+#> ℹ [2026-10-26 14:38:08] Convert ID types for the GO_CC database
+#> ℹ [2026-10-26 14:38:08] Converted ID types using local annotation package org.Mm.eg.db
+#> ℹ [2026-10-26 14:38:09] Permform enrichment...
+#> ✔ [2026-10-26 14:38:10] Enrichment analysis done
 
 EnrichmentPlot(
   pancreas_sub,
@@ -509,7 +581,7 @@ EnrichmentPlot(
 #> Also defined by ‘BiocGenerics’
 #> Found more than one class "dist" in cache; using the first, from namespace 'spam'
 #> Also defined by ‘BiocGenerics’
-#> ✔ [2026-10-25 20:53:03] shadowtext installed successfully
+#> ✔ [2026-10-26 14:38:22] shadowtext installed successfully
 
 
 EnrichmentPlot(
@@ -525,7 +597,7 @@ EnrichmentPlot(
     "GO:0030073"
   )
 )
-#> ✔ [2026-10-25 20:53:04] shadowtext installed successfully
+#> ✔ [2026-10-26 14:38:23] shadowtext installed successfully
 
 
 EnrichmentPlot(
@@ -536,7 +608,7 @@ EnrichmentPlot(
   plot_type = "network",
   network_layoutadjust = FALSE
 )
-#> ✔ [2026-10-25 20:53:05] shadowtext installed successfully
+#> ✔ [2026-10-26 14:38:23] shadowtext installed successfully
 
 
 EnrichmentPlot(
@@ -550,7 +622,7 @@ EnrichmentPlot(
   theme_use = "theme_blank",
   theme_args = list(add_coord = FALSE)
 ) |> thisplot::panel_fix(height = 5)
-#> ✔ [2026-10-25 20:53:07] shadowtext installed successfully
+#> ✔ [2026-10-26 14:38:25] shadowtext installed successfully
 
 
 EnrichmentPlot(
@@ -606,13 +678,13 @@ pancreas_sub <- RunEnrichment(
   convert_species = TRUE,
   species = "Mus_musculus"
 )
-#> ℹ [2026-10-25 20:53:11] Start Enrichment analysis
-#> ℹ [2026-10-25 20:53:11] Species: "Mus_musculus"
-#> ℹ [2026-10-25 20:53:11] Preparing MP database
-#> ℹ [2026-10-25 20:53:19] Species: "Mus_musculus"
-#> ℹ [2026-10-25 20:53:19] Preparing DO database
-#> ℹ [2026-10-25 20:53:24] Permform enrichment...
-#> ✔ [2026-10-25 20:53:24] Enrichment analysis done
+#> ℹ [2026-10-26 14:38:28] Start Enrichment analysis
+#> ℹ [2026-10-26 14:38:28] Species: "Mus_musculus"
+#> ℹ [2026-10-26 14:38:28] Preparing MP database
+#> ℹ [2026-10-26 14:38:41] Species: "Mus_musculus"
+#> ℹ [2026-10-26 14:38:41] Preparing DO database
+#> ℹ [2026-10-26 14:38:45] Permform enrichment...
+#> ✔ [2026-10-26 14:38:45] Enrichment analysis done
 
 EnrichmentPlot(
   pancreas_sub,

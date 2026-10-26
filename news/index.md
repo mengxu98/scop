@@ -2,6 +2,11 @@
 
 ## scop (development version)
 
+- `EnrichmentPlot(plot_type = "rank")` plots stored ORA terms by
+  enrichment magnitude, with group colors, adjustable solid-point sizes,
+  and halo labels. Rank views default to 80 terms per group and do not
+  rerun enrichment.
+
 - **breaking**:
 
   - [`RunscTenifoldKnk()`](https://mengxu98.github.io/scop/reference/RunScTenifoldKnk.md)

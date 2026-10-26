@@ -289,11 +289,11 @@ stopifnot(identical(colnames(reloaded), colnames(query)),
 data.frame(file = basename(list.files(output_dir, full.names = TRUE)),
            bytes = file.info(list.files(output_dir, full.names = TRUE))$size)
 #>                               file    bytes
-#> 1                     analysis.rds  8030269
+#> 1                     analysis.rds  8030151
 #> 2                cell-metadata.csv    30269
 #> 3 log-scale-reference-profiles.csv  2562291
 #> 4         prediction-agreement.csv      134
-#> 5                    reference.rds 36647943
+#> 5                    reference.rds 36647959
 #> 6   shared-prediction-features.txt     4005
 ```
 
@@ -346,9 +346,9 @@ build_receipt <- data.frame(
 )
 build_receipt
 #>                    article               built_utc  scop     R
-#> 1 cell-annotation-workflow 2026-10-25 21:45:45 UTC 0.9.2 4.6.1
+#> 1 cell-annotation-workflow 2026-10-26 15:30:35 UTC 0.9.2 4.6.1
 #>                            source_revision source_has_local_changes
-#> 1 e445500810bc982823927fdb936188657af45d7e                    FALSE
+#> 1 799930e97b8b7a8f42ae03464fcd816ff1ada845                    FALSE
 #>                        article_md5 R_seed cells_retained genes_in_active_assay
 #> 1 5a1752550a5b3fddd49b38832edbe149     11            200                 12932
 utils::write.csv(build_receipt, file.path(output_dir, "build-receipt.csv"),

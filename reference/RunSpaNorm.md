@@ -130,34 +130,34 @@ spatial <- RunSpaNorm(
 #> iter:  1, iter: 10, log-likelihood: -654745.935523
 #> iter:  1, iter: 11, log-likelihood: -654745.935523 (converged)
 #> iter:  2, estimating gene-wise dispersion
-#> iter:  2, log-likelihood: -645042.838569
+#> iter:  2, log-likelihood: -645042.838570
 #> iter:  2, fitting NB model
-#> iter:  2, iter:  1, log-likelihood: -645042.838569
-#> iter:  2, iter:  2, log-likelihood: -642726.403731
-#> iter:  2, iter:  2, log-likelihood: -642726.403731
-#> iter:  2, iter:  2, log-likelihood: -642726.403731
-#> iter:  2, iter:  3, log-likelihood: -642726.403731 (converged)
+#> iter:  2, iter:  1, log-likelihood: -645042.838570
+#> iter:  2, iter:  2, log-likelihood: -642726.403732
+#> iter:  2, iter:  2, log-likelihood: -642726.403732
+#> iter:  2, iter:  2, log-likelihood: -642726.403732
+#> iter:  2, iter:  3, log-likelihood: -642726.403732 (converged)
 #> iter:  3, estimating gene-wise dispersion
-#> iter:  3, log-likelihood: -642054.487043
+#> iter:  3, log-likelihood: -642054.487044
 #> iter:  3, fitting NB model
-#> iter:  3, iter:  1, log-likelihood: -642054.487043
-#> iter:  3, iter:  1, log-likelihood: -642054.487043
-#> iter:  3, iter:  1, log-likelihood: -642054.487043
-#> iter:  3, iter:  2, log-likelihood: -642054.487043
-#> iter:  3, iter:  2, log-likelihood: -642054.487043
-#> iter:  3, iter:  2, log-likelihood: -642054.487043
-#> iter:  3, iter:  3, log-likelihood: -642054.487043 (converged)
+#> iter:  3, iter:  1, log-likelihood: -642054.487044
+#> iter:  3, iter:  1, log-likelihood: -642054.487044
+#> iter:  3, iter:  1, log-likelihood: -642054.487044
+#> iter:  3, iter:  2, log-likelihood: -642054.487044
+#> iter:  3, iter:  2, log-likelihood: -642054.487044
+#> iter:  3, iter:  2, log-likelihood: -642054.487044
+#> iter:  3, iter:  3, log-likelihood: -642054.487044 (converged)
 #> iter:  4, estimating gene-wise dispersion
-#> iter:  4, log-likelihood: -642054.487043
+#> iter:  4, log-likelihood: -642054.487044
 #> iter:  4, fitting NB model
-#> iter:  4, iter:  1, log-likelihood: -642054.487043
-#> iter:  4, iter:  1, log-likelihood: -642054.487043
-#> iter:  4, iter:  1, log-likelihood: -642054.487043
-#> iter:  4, iter:  2, log-likelihood: -642054.487043
-#> iter:  4, iter:  2, log-likelihood: -642054.487043
-#> iter:  4, iter:  2, log-likelihood: -642054.487043
-#> iter:  4, iter:  3, log-likelihood: -642054.487043 (converged)
-#> iter:  5, log-likelihood: -642054.487043 (converged)
+#> iter:  4, iter:  1, log-likelihood: -642054.487044
+#> iter:  4, iter:  1, log-likelihood: -642054.487044
+#> iter:  4, iter:  1, log-likelihood: -642054.487044
+#> iter:  4, iter:  2, log-likelihood: -642054.487044
+#> iter:  4, iter:  2, log-likelihood: -642054.487044
+#> iter:  4, iter:  2, log-likelihood: -642054.487044
+#> iter:  4, iter:  3, log-likelihood: -642054.487044 (converged)
+#> iter:  5, log-likelihood: -642054.487044 (converged)
 #> (2/2) Normalising data
 SpatialSpotPlot(
   spatial,
