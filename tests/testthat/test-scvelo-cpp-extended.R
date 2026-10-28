@@ -1,5 +1,3 @@
-
-
 make_scanpy_data <- function(
   n_genes = 20,
   n_cells = 30,

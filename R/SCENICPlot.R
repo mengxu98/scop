@@ -2591,16 +2591,6 @@ scenic_resolve_expression_layer <- function(srt, assay, layer = "data") {
   layer
 }
 
-scenic_assay_feature <- function(feature, assay_features) {
-  hit <- scenic_match_feature(feature, assay_features)
-  if (!is.na(hit)) {
-    return(hit)
-  }
-  scenic_match_feature(
-    gsub("_", "-", as.character(feature), fixed = TRUE),
-    assay_features
-  )
-}
 
 scenic_make_assay_feature_map <- function(features) {
   features <- as.character(features)

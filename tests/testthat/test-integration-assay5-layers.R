@@ -24,7 +24,8 @@ test_that("Harmony retains complete RNA expression across different library feat
   })
   expected_hvf <- Seurat::SelectIntegrationFeatures(cached, nfeatures = 40)
   standard <- suppressWarnings(RunStandardWorkflow(
-    merged, assay = "RNA", nHVF = 20, linear_reduction_dims = 5,
+    merged,
+    assay = "RNA", nHVF = 20, linear_reduction_dims = 5,
     linear_reduction_dims_use = 1:5, nonlinear_reduction = "umap",
     nonlinear_reduction_params = list(n.epochs = 20, cores = 1),
     neighbor_k = 5, cluster_resolution = 0.6, seed = 1234, verbose = FALSE
@@ -36,10 +37,16 @@ test_that("Harmony retains complete RNA expression across different library feat
     args <- if (input == "list") {
       list(srt_list = libraries, append = FALSE)
     } else if (input == "cached") {
-      list(srt_list = cached, append = FALSE,
-        do_HVF_finding = FALSE, do_normalization = FALSE)
+      list(
+        srt_list = cached, append = FALSE,
+        do_HVF_finding = FALSE, do_normalization = FALSE
+      )
     } else {
-      list(srt_merge = switch(input, merged = merged, normalized = normalized, standard = standard))
+      list(srt_merge = switch(input,
+        merged = merged,
+        normalized = normalized,
+        standard = standard
+      ))
     }
     result <- suppressWarnings(do.call(RunIntegration, c(args, list(
       batch = "sample", assay = "RNA", integration_methods = "Harmony",
@@ -70,8 +77,10 @@ test_that("Harmony retains complete RNA expression across different library feat
       expect_true(all(c("Harmony", "HarmonyUMAP2D") %in% SeuratObject::Reductions(result)))
     }
     expect_identical(as.character(SeuratObject::Idents(result)), as.character(result$Harmonyclusters))
-    args <- list(object = result, assay = "RNA",
-      min.pct = 0, logfc.threshold = 0, return.thresh = Inf, verbose = FALSE)
+    args <- list(
+      object = result, assay = "RNA",
+      min.pct = 0, logfc.threshold = 0, return.thresh = Inf, verbose = FALSE
+    )
     actual <- do.call(scop::FindAllMarkers, args)
     expect_gt(nrow(actual), 0)
     expect_equal(actual, do.call(seurat_reference_find_all_markers, args), tolerance = 1e-10)

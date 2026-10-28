@@ -329,8 +329,10 @@ RunSmoothClust <- function(
         seed = seed
       )
     )
-    srt@tools[[tool_name]]$result_index <- list(method = "SmoothClust",
-      cluster_colname = cluster_colname, cells = names(clusters))
+    srt@tools[[tool_name]]$result_index <- list(
+      method = "SmoothClust",
+      cluster_colname = cluster_colname, cells = names(clusters)
+    )
     srt <- spatial_record_cell_identity(srt, tool_name, previous_index)
     srt@tools[[tool_name]] <- spatial_tag_coordinate_contract(srt@tools[[tool_name]])
     if (isTRUE(store_smoothed)) {

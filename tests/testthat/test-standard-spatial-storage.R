@@ -503,7 +503,7 @@ test_that("malformed explicit-empty sentinels do not satisfy the workflow", {
     testthat::local_mocked_bindings(
       RunStandardWorkflow = function(object, ...) object,
       RunSpatialVariableFeatures = function(object, assay, ...) {
-      srt <- object
+        srt <- object
         assay_object <- srt[[assay]]
         labels <- rep(FALSE, nrow(assay_object))
         names(labels) <- rownames(assay_object)
@@ -960,7 +960,7 @@ test_that("malformed SVF tools cannot certify an empty selection", {
     testthat::local_mocked_bindings(
       RunStandardWorkflow = function(object, ...) object,
       RunSpatialVariableFeatures = function(object, assay, ...) {
-      srt <- object
+        srt <- object
         expect_null(srt@tools[["SpatialVariableFeatures"]])
         expect_length(
           suppressWarnings(SeuratObject::VariableFeatures(srt, assay = assay)),

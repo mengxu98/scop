@@ -1,4 +1,3 @@
-
 real_ccc_input <- function(n_cells = 300, seed = 42) {
   data(pancreas_sub)
   set.seed(seed)

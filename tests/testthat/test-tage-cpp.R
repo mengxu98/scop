@@ -1,5 +1,3 @@
-
-
 test_that("tage_elastic_net_predict_cpp returns correct structure", {
   n_samples <- 5
   n_features <- 3

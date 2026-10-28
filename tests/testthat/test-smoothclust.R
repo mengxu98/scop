@@ -192,10 +192,12 @@ test_that("SmoothClust clusters are directly plottable with SpatialSpotPlot", {
 
 test_that("SmoothClust cell-column results follow current Seurat identities", {
   with_mock_smoothclust({
-    out <- RunSmoothClust(make_smoothclust_seurat(), layer = "counts",
+    out <- RunSmoothClust(make_smoothclust_seurat(),
+      layer = "counts",
       coord.cols = c("x", "y"), features = c("Gene1", "Gene2", "Gene4"),
       min_spots = 1, k = 2, n_clusters = 2, n_pcs = 2,
-      cluster_colname = "custom_domains", tool_name = "custom_smooth", verbose = FALSE)
+      cluster_colname = "custom_domains", tool_name = "custom_smooth", verbose = FALSE
+    )
   })
   expect_spatial_result_lifecycle(out, "custom_smooth", "custom_domains", explicit_cell = TRUE)
   # Older producer outputs used automatic row names, with the IDs in cell.

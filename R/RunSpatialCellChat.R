@@ -1,4 +1,3 @@
-
 spatialcellchat_required_symbols <- function(analysis.level = c("cell", "spot", "composition")) {
   analysis.level <- match.arg(analysis.level)
   common <- c(
@@ -160,7 +159,7 @@ spatialcellchat_detect_level <- function(srt, analysis.level, technology, compos
     image %in% tryCatch(SeuratObject::Images(srt), error = function(e) character()) &&
     (
       "segmentation" %in% tryCatch(SeuratObject::Boundaries(srt[[image]]), error = function(e) character()) ||
-      (inherits(srt[[image]], "FOV") && !inherits(srt[[image]], c("VisiumV1", "VisiumV2")))
+        (inherits(srt[[image]], "FOV") && !inherits(srt[[image]], c("VisiumV1", "VisiumV2")))
     )
   if (has_segmentation || technology %in% c("xenium", "cosmx", "merfish")) {
     return("cell")
@@ -1376,8 +1375,10 @@ SpatialCellChatPlot <- function(
 ) {
   plot_type <- match.arg(plot_type)
   if (!is.null(point.size)) {
-    .Deprecated(msg = paste0("`point.size` is deprecated; use `pt.size` instead. ",
-      "It will be removed in scop 1.0.0."))
+    .Deprecated(msg = paste0(
+      "`point.size` is deprecated; use `pt.size` instead. ",
+      "It will be removed in scop 1.0.0."
+    ))
     pt.size <- point.size
   }
   point.size <- pt.size

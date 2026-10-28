@@ -141,7 +141,9 @@ test_that("RunMERINGUE maps cores to the MERINGUE argument at both permutation b
     pkg_version_safe = function(...) "mock",
     get_namespace_fun = function(package, fun) {
       original <- mock_meringue_get_fun(fun)
-      if (!fun %in% c("moranPermutationTest", "spatialCrossCorTest")) return(original)
+      if (!fun %in% c("moranPermutationTest", "spatialCrossCorTest")) {
+        return(original)
+      }
       function(..., ncores = 1) {
         seen[[length(seen) + 1L]] <<- list(fun = fun, ncores = ncores, extra = names(list(...)))
         original(..., ncores = ncores)

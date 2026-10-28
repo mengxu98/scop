@@ -11,4 +11,3 @@ run_sparse_wilcox <- function(x, n_group1, min.expression = 0, cores = NULL) {
   names(p_val) <- rownames(x)
   p_val
 }
-

@@ -1,4 +1,3 @@
-
 quiver_autoscale_ref <- function(embedding, velocity_embedding) {
   rx <- diff(range(embedding[, 1L]))
   ry <- diff(range(embedding[, 2L]))

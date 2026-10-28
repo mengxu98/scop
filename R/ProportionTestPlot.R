@@ -321,13 +321,17 @@ prepare_proportion_plot_data <- function(
     stat_p <- ifelse(is.finite(plot_data$FDR), plot_data$FDR, plot_data$pval)
   }
   plot_data$significance <- ifelse(not_tested, "Not tested",
-    ifelse(significant, sig_label, "n.s."))
+    ifelse(significant, sig_label, "n.s.")
+  )
   plot_data$significance <- factor(plot_data$significance,
-    levels = c(sig_label, "n.s.", "Not tested"))
+    levels = c(sig_label, "n.s.", "Not tested")
+  )
 
   plot_data$direction <- ifelse(not_tested, "Not tested",
     ifelse(significant & plot_data$obs_log2FD > 0, "Increased",
-      ifelse(significant & plot_data$obs_log2FD < 0, "Decreased", "NS")))
+      ifelse(significant & plot_data$obs_log2FD < 0, "Decreased", "NS")
+    )
+  )
   plot_data$direction <- factor(
     plot_data$direction,
     levels = c("Increased", "Decreased", "NS", "Not tested")
@@ -426,8 +430,10 @@ plot_proportion_effect <- function(
       scale_color_manual(
         name = legend.title %||% "Significance",
         labels = c(sig_label, "n.s.", "Not tested"),
-        values = stats::setNames(c(cols.sig, cols.ns, cols.ns),
-          c(sig_label, "n.s.", "Not tested")),
+        values = stats::setNames(
+          c(cols.sig, cols.ns, cols.ns),
+          c(sig_label, "n.s.", "Not tested")
+        ),
         drop = FALSE
       )
   } else {
@@ -462,10 +468,13 @@ plot_proportion_effect <- function(
       )
   }
 
-  thresholds <- if (identical(unique(as.character(df$method)), "sccoda")) 0 else
+  thresholds <- if (identical(unique(as.character(df$method)), "sccoda")) {
+    0
+  } else {
     c(-log2FD_threshold, 0, log2FD_threshold)
+  }
   subtitle <- if ("inference_valid" %in% colnames(df) &&
-      any(!is.na(df$inference_valid) & !as.logical(df$inference_valid))) {
+    any(!is.na(df$inference_valid) & !as.logical(df$inference_valid))) {
     "Descriptive virtual samples; no inferential test"
   } else if (identical(unique(as.character(df$method)), "milo")) {
     if (any(!is.na(df$neighborhood))) {
@@ -485,9 +494,11 @@ plot_proportion_effect <- function(
     NULL
   }
   p +
-    geom_hline(yintercept = thresholds,
+    geom_hline(
+      yintercept = thresholds,
       linetype = if (length(thresholds) == 1L) 1 else c(2, 1, 2),
-      color = if (length(thresholds) == 1L) "black" else c("grey", "black", "grey")) +
+      color = if (length(thresholds) == 1L) "black" else c("grey", "black", "grey")
+    ) +
     labs(
       title = proportion_title(df),
       subtitle = subtitle,
@@ -535,7 +546,7 @@ plot_proportion_umap <- function(
     group.by <- method_bundle[["parameters"]][["group.by"]] %||%
       srt@tools[["ProportionTest"]][["parameters"]][["group.by"]]
     if (is.null(group.by) || !nzchar(group.by) ||
-        !group.by %in% colnames(srt@meta.data)) {
+      !group.by %in% colnames(srt@meta.data)) {
       log_message(
         "Cannot determine a valid {.arg group.by} from proportion test metadata for {.val plot_type = 'umap'}",
         message_type = "error"
@@ -607,13 +618,17 @@ plot_proportion_umap <- function(
           group.by = direction_col,
           reduction = reduction_use,
           palette = "Set1",
-          palcolor = c(cols.increase, cols.decrease, "#7b3294", cols.ns,
-            "grey65", "grey95"),
+          palcolor = c(
+            cols.increase, cols.decrease, "#7b3294", cols.ns,
+            "grey65", "grey95"
+          ),
           show_stat = FALSE,
           title = title_use,
           subtitle = if (identical(result_level, "neighborhood")) {
             "Overlapping Milo neighborhoods projected to member cells"
-          } else NULL,
+          } else {
+            NULL
+          },
           xlab = xlab,
           ylab = ylab,
           legend.title = legend_discrete,
@@ -640,7 +655,9 @@ plot_proportion_umap <- function(
           title = title_use,
           subtitle = if (identical(result_level, "neighborhood")) {
             "Mean effect of overlapping Milo neighborhoods"
-          } else NULL,
+          } else {
+            NULL
+          },
           xlab = xlab,
           ylab = ylab,
           legend.title = legend_continuous,
@@ -748,10 +765,7 @@ summarize_proportion_projection <- function(
     lapply(split(tmp, tmp$clusters), function(x) {
       effect <- if (all(is.na(x$obs_log2FD))) NA_real_ else mean(x$obs_log2FD, na.rm = TRUE)
       fdr <- if (all(is.na(x$FDR))) NA_real_ else min(x$FDR, na.rm = TRUE)
-      direction <- if (all(c("Increased", "Decreased") %in% x$direction)) "Mixed" else
-        if ("Increased" %in% x$direction) "Increased" else
-          if ("Decreased" %in% x$direction) "Decreased" else
-            if ("Not tested" %in% x$direction) "Not tested" else "NS"
+      direction <- if (all(c("Increased", "Decreased") %in% x$direction)) "Mixed" else if ("Increased" %in% x$direction) "Increased" else if ("Decreased" %in% x$direction) "Decreased" else if ("Not tested" %in% x$direction) "Not tested" else "NS"
 
       data.frame(
         clusters = x$clusters[1],
@@ -767,7 +781,8 @@ summarize_proportion_projection <- function(
   merged <- merged[order(merged$clusters), , drop = FALSE]
   merged$clusters <- as.character(merged$clusters)
   merged$direction <- factor(merged$direction,
-    levels = c("Increased", "Decreased", "Mixed", "NS", "Not tested", "Uncovered"))
+    levels = c("Increased", "Decreased", "Mixed", "NS", "Not tested", "Uncovered")
+  )
   rownames(merged) <- NULL
   merged
 }

@@ -70,9 +70,12 @@ PrepareEnv <- function(
   version_missing <- missing(version)
   if (!isTRUE(configure_runtime)) {
     old_path <- Sys.getenv("PATH", unset = NA_character_)
-    on.exit({
-      if (is.na(old_path)) Sys.unsetenv("PATH") else Sys.setenv(PATH = old_path)
-    }, add = TRUE)
+    on.exit(
+      {
+        if (is.na(old_path)) Sys.unsetenv("PATH") else Sys.setenv(PATH = old_path)
+      },
+      add = TRUE
+    )
   }
   components_missing <- missing(components)
   components <- norm_env_components(components)
@@ -851,16 +854,21 @@ env_module_requirements <- function() {
       )
     ),
     regdiffusion = env_python_spec(c("regdiffusion" = "regdiffusion")),
-    scenicplus = env_python_spec(c(
-      "scenicplus" = "scenicplus @ git+https://github.com/aertslab/scenicplus.git@840dab85de3044846234c157e327b6ea0290abfb",
-      "pycistopic" = "pycistopic @ git+https://github.com/aertslab/pycisTopic@787ce422a37f5975b0ebb9e7b19eeaed44847501",
-      "pycistarget" = "pycistarget @ git+https://github.com/aertslab/pycistarget@5aa517604e4842539a7531c16905825dc7cb80fb",
-      "loomxpy" = "loomxpy @ git+https://github.com/aertslab/LoomXpy@61995ff10940968eac2cee8fe48300ab477a15d0",
-      "pyscenic" = "pyscenic @ git+https://github.com/aertslab/pySCENIC@06bafba412792f6efa5a552a23bb221cc3bdea1b",
-      stats::setNames(scenicplus_build, scenicplus_build)
-    ), methods = c(stats::setNames(rep("pip", 5L), c("scenicplus", "pycistopic", "pycistarget", "loomxpy", "pyscenic")),
-      stats::setNames(rep("conda", length(scenicplus_build)), scenicplus_build)),
-    environment = "scenicplus_env"),
+    scenicplus = env_python_spec(
+      c(
+        "scenicplus" = "scenicplus @ git+https://github.com/aertslab/scenicplus.git@840dab85de3044846234c157e327b6ea0290abfb",
+        "pycistopic" = "pycistopic @ git+https://github.com/aertslab/pycisTopic@787ce422a37f5975b0ebb9e7b19eeaed44847501",
+        "pycistarget" = "pycistarget @ git+https://github.com/aertslab/pycistarget@5aa517604e4842539a7531c16905825dc7cb80fb",
+        "loomxpy" = "loomxpy @ git+https://github.com/aertslab/LoomXpy@61995ff10940968eac2cee8fe48300ab477a15d0",
+        "pyscenic" = "pyscenic @ git+https://github.com/aertslab/pySCENIC@06bafba412792f6efa5a552a23bb221cc3bdea1b",
+        stats::setNames(scenicplus_build, scenicplus_build)
+      ),
+      methods = c(
+        stats::setNames(rep("pip", 5L), c("scenicplus", "pycistopic", "pycistarget", "loomxpy", "pyscenic")),
+        stats::setNames(rep("conda", length(scenicplus_build)), scenicplus_build)
+      ),
+      environment = "scenicplus_env"
+    ),
     scenicplus_io = env_python_spec(c(
       "numpy" = "numpy==1.26.4",
       "pandas" = "pandas==2.2.0",
@@ -3181,7 +3189,9 @@ run_uv_command <- function(uv, python, args) {
 
 
 ensure_scipy_runtime <- function(python, pip_options = character()) {
-  if (!is_osx()) return(invisible(NULL))
+  if (!is_osx()) {
+    return(invisible(NULL))
+  }
   workdir <- tempfile("scipy_runtime_")
   dir.create(workdir)
   on.exit(unlink(workdir, recursive = TRUE), add = TRUE)
@@ -3198,21 +3208,27 @@ ensure_scipy_runtime <- function(python, pip_options = character()) {
   }
   probe <- c("-I", "-c", "import platform, scipy; print(platform.machine(), scipy.__version__, flush=True); import scipy.sparse.linalg")
   result <- run(probe)
-  if (result$status == 0L) return(invisible(NULL))
+  if (result$status == 0L) {
+    return(invisible(NULL))
+  }
   affected <- grepl("arm64 1.15.3", result$output, fixed = TRUE) &&
     grepl("__thread_bss", result$output, fixed = TRUE) &&
     grepl("zero-fill section type", result$output, fixed = TRUE)
   if (!affected) stop("SciPy runtime import failed:\n", result$output, call. = FALSE)
   log_message("Replacing the incompatible macOS SciPy wheel with its macOS 12 build.")
   options <- normalize_cli_args(pip_options)
-  source_options <- c("-i", "--index-url", "--extra-index-url", "-f", "--find-links",
-    "--trusted-host", "--cert", "--client-cert", "--proxy", "--timeout", "--retries", "--cache-dir")
+  source_options <- c(
+    "-i", "--index-url", "--extra-index-url", "-f", "--find-links",
+    "--trusted-host", "--cert", "--client-cert", "--proxy", "--timeout", "--retries", "--cache-dir"
+  )
   keep <- sub("=.*$", "", options) %in% c(source_options, "--no-index", "--no-cache-dir") |
     seq_along(options) %in% (which(options %in% source_options) + 1L) |
     grepl("^-[if].+", options)
-  result <- run(c("-I", "-m", "pip", "download", "--no-deps", "--only-binary=:all:",
+  result <- run(c(
+    "-I", "-m", "pip", "download", "--no-deps", "--only-binary=:all:",
     "--platform", "macosx_12_0_arm64", "--dest", workdir,
-    options[keep], "scipy==1.15.3"))
+    options[keep], "scipy==1.15.3"
+  ))
   if (result$status != 0L) stop("SciPy wheel download failed:\n", result$output, call. = FALSE)
   wheel <- list.files(workdir, pattern = "^scipy-1[.]15[.]3-.*-macosx_12_0_arm64[.]whl$", full.names = TRUE)
   if (length(wheel) != 1L) stop("Compatible SciPy wheel was not downloaded.", call. = FALSE)
@@ -3241,14 +3257,16 @@ install_python_packages <- function(
     writeLines(packages[grepl(" @ git\\+", packages)], overrides)
     prefix <- dirname(dirname(python))
     prepend <- function(path, variable) paste(Filter(nzchar, c(path, Sys.getenv(variable))), collapse = .Platform$path.sep)
-    build_env <- c(UV_BUILD_CONSTRAINT = constraints, PIP_BUILD_CONSTRAINT = constraints, PIP_CONSTRAINT = constraints,
+    build_env <- c(
+      UV_BUILD_CONSTRAINT = constraints, PIP_BUILD_CONSTRAINT = constraints, PIP_CONSTRAINT = constraints,
       UV_CACHE_DIR = Sys.getenv("UV_CACHE_DIR", unset = file.path(prefix, ".scop-uv-cache")),
       UV_HTTP_TIMEOUT = Sys.getenv("UV_HTTP_TIMEOUT", unset = "300"),
       UV_CONCURRENT_DOWNLOADS = Sys.getenv("UV_CONCURRENT_DOWNLOADS", unset = "4"),
       CPATH = prepend(file.path(prefix, "include"), "CPATH"),
       LIBRARY_PATH = prepend(file.path(prefix, "lib"), "LIBRARY_PATH"),
       PKG_CONFIG_PATH = prepend(file.path(prefix, "lib", "pkgconfig"), "PKG_CONFIG_PATH"),
-      CFLAGS = paste(Sys.getenv("CFLAGS"), "-Wno-error=incompatible-pointer-types"))
+      CFLAGS = paste(Sys.getenv("CFLAGS"), "-Wno-error=incompatible-pointer-types")
+    )
     for (compiler in c("CC", "CXX")) {
       candidates <- Sys.glob(file.path(prefix, "bin", if (compiler == "CC") c("*-conda-*-cc", "*-apple-*-clang") else c("*-conda-*-c++", "*-apple-*-clang++")))
       if (!nzchar(Sys.getenv(compiler)) && length(candidates)) build_env[[compiler]] <- candidates[[1L]]

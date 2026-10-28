@@ -182,8 +182,10 @@ test_that("Python PHATE isolates a different runtime and forwards warnings and a
     .package = "scop"
   )
   input <- matrix(seq_len(24), nrow = 6)
-  expect_warning(result <- RunPHATE(input, backend = "python", knn = 3,
-    n_components = 3, seed.use = 42, verbose = FALSE, n_jobs = 2L), "backend warning")
+  expect_warning(result <- RunPHATE(input,
+    backend = "python", knn = 3,
+    n_components = 3, seed.use = 42, verbose = FALSE, n_jobs = 2L
+  ), "backend warning")
   expect_identical(result, "result")
   expect_identical(captured$object, input)
   expect_identical(captured$seed.use, 42)

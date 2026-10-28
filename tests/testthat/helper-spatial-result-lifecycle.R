@@ -15,12 +15,15 @@ expect_spatial_result_lifecycle <- function(object, method, cluster_colname,
   current <- variants$permuted
   variants$reordered <- Seurat::CreateSeuratObject(
     counts = Seurat::GetAssayData(current, layer = "counts")[, cells, drop = FALSE],
-    meta.data = current[[]][cells, , drop = FALSE])
+    meta.data = current[[]][cells, , drop = FALSE]
+  )
   variants$reordered@tools <- current@tools
   permuted_expected <- stats::setNames(expected, rev(colnames(object)))
-  expected_values <- list(full = expected,
+  expected_values <- list(
+    full = expected,
     subset = expected[c(1, ncol(object))], renamed = expected,
-    permuted = expected, reordered = unname(permuted_expected[cells]))
+    permuted = expected, reordered = unname(permuted_expected[cells])
+  )
   for (name in names(variants)) {
     variant <- variants[[name]]
     before <- variant@tools

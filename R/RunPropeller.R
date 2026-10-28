@@ -46,7 +46,7 @@ RunPropeller <- function(
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   transform <- match.arg(transform)
   if (length(n_bootstrap) != 1L || is.na(n_bootstrap) || !is.finite(n_bootstrap) ||
-      n_bootstrap < 0 || n_bootstrap != as.integer(n_bootstrap)) {
+    n_bootstrap < 0 || n_bootstrap != as.integer(n_bootstrap)) {
     log_message("{.emph n_bootstrap} must be a non-negative integer.", message_type = "error")
   }
   meta_data <- validate_proportion_inputs(
@@ -198,9 +198,11 @@ run_propeller_speckle <- function(
           idx <- sample.int(length(v1), length(v1), replace = TRUE)
           log2((mean(v1[idx]) + pseudocount) / (mean(v2[idx]) + pseudocount))
         })
-        list(boot_mean_log2FD = mean(boot),
+        list(
+          boot_mean_log2FD = mean(boot),
           boot_CI_2.5 = as.numeric(stats::quantile(boot, 0.025)),
-          boot_CI_97.5 = as.numeric(stats::quantile(boot, 0.975)))
+          boot_CI_97.5 = as.numeric(stats::quantile(boot, 0.975))
+        )
       } else {
         proportion_bootstrap_stats(v1, v2, n_bootstrap, pseudocount, verbose)
       }

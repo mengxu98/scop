@@ -1,6 +1,6 @@
 spatial_input_info <- function(object, assay = NULL, image = NULL,
-                            coord.cols = c("col", "row"), data_type = "auto",
-                            coordinate_units = NULL) {
+                               coord.cols = c("col", "row"), data_type = "auto",
+                               coordinate_units = NULL) {
   if (!inherits(object, "Seurat")) log_message("{.emph object} must be a Seurat object", message_type = "error")
   assay <- assay %||% SeuratObject::DefaultAssay(object)
   validate_scalar_string(assay, "assay")
@@ -21,7 +21,9 @@ spatial_input_info <- function(object, assay = NULL, image = NULL,
   }
   record <- object@misc$scop_spatial_input[[image %||% assay]]
   if (!is.null(record) && (!identical(record$assay, assay) ||
-      !all(ids %in% record$cells))) record <- NULL
+    !all(ids %in% record$cells))) {
+    record <- NULL
+  }
   inferred <- record$data_type %||% "unknown"
   units <- record$coordinate_units %||% "unknown"
   evidence <- if (is.null(record)) "unknown" else "import"
@@ -53,11 +55,13 @@ spatial_input_info <- function(object, assay = NULL, image = NULL,
     }
     units <- coordinate_units
   }
-  list(assay = assay, image = image, data_type = inferred, coordinate_units = units,
+  list(
+    assay = assay, image = image, data_type = inferred, coordinate_units = units,
     evidence = evidence, resolution_um = record$resolution_um %||% NA_real_,
     cells = ids, n_observations = length(ids), n_features = nrow(object[[assay]]),
     estimated_dense_bytes = 8 * as.double(length(ids)) * nrow(object[[assay]]),
-    layers = SeuratObject::Layers(object[[assay]]), source = resolved$source)
+    layers = SeuratObject::Layers(object[[assay]]), source = resolved$source
+  )
 }
 
 #' Load and validate Visium, Visium HD, or Xenium data
@@ -87,16 +91,20 @@ ReadSpatialData <- function(data.dir, technology = c("visium", "visium_hd", "xen
   validate_named_list(extra, "...")
   standard_spatial_fixed_args(extra, c("data.dir", "bin.size"))
   if (technology == "visium_hd" && (!is.numeric(bin.size) || !length(bin.size) ||
-      any(!is.finite(bin.size)) || any(bin.size <= 0 | bin.size != as.integer(bin.size)) || anyDuplicated(bin.size))) {
+    any(!is.finite(bin.size)) || any(bin.size <= 0 | bin.size != as.integer(bin.size)) || anyDuplicated(bin.size))) {
     log_message("{.emph bin.size} must contain unique positive integers", message_type = "error")
   }
   if (technology == "xenium") {
-    args <- merge_call_args(list(data.dir = data.dir, segmentations = "cell",
-      molecule.coordinates = FALSE), extra)
+    args <- merge_call_args(list(
+      data.dir = data.dir, segmentations = "cell",
+      molecule.coordinates = FALSE
+    ), extra)
     out <- do.call(Seurat::LoadXenium, args)
   } else {
-    args <- merge_call_args(list(data.dir = data.dir,
-      bin.size = if (technology == "visium_hd") bin.size else NULL), extra)
+    args <- merge_call_args(list(
+      data.dir = data.dir,
+      bin.size = if (technology == "visium_hd") bin.size else NULL
+    ), extra)
     out <- do.call(Seurat::Load10X_Spatial, args)
   }
   images <- SeuratObject::Images(out)
@@ -108,14 +116,22 @@ ReadSpatialData <- function(data.dir, technology = c("visium", "visium_hd", "xen
     resolution <- if (technology == "visium_hd") {
       if (!grepl("[.]\\d+um$", assay)) log_message("HD assay has no explicit bin resolution", message_type = "error")
       as.numeric(sub(".*[.](\\d+)um$", "\\1", assay))
-    } else NA_real_
-    records[[image]] <- list(technology = technology, assay = assay, image = image,
-      data_type = switch(technology, visium = "spot", visium_hd = "bin", xenium = "cell"),
+    } else {
+      NA_real_
+    }
+    records[[image]] <- list(
+      technology = technology, assay = assay, image = image,
+      data_type = switch(technology,
+        visium = "spot",
+        visium_hd = "bin",
+        xenium = "cell"
+      ),
       coordinate_units = if (technology == "xenium") "micron" else "pixel",
       resolution_um = resolution, cells = info$cells, sample_id = sample_id,
       loader = if (technology == "xenium") "Seurat::LoadXenium" else "Seurat::Load10X_Spatial",
       loader_version = as.character(utils::packageVersion("Seurat")),
-      data.dir = normalizePath(data.dir, winslash = "/", mustWork = TRUE))
+      data.dir = normalizePath(data.dir, winslash = "/", mustWork = TRUE)
+    )
   }
   if (technology == "visium_hd" && !setequal(vapply(records, `[[`, numeric(1), "resolution_um"), bin.size)) {
     log_message("Loader did not return every requested HD resolution", message_type = "error")

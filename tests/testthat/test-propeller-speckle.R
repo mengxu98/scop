@@ -4,13 +4,17 @@ make_propeller_reference_srt <- function(paired = FALSE) {
     c(15, 55, 20, 10), c(10, 60, 20, 0), c(0, 60, 25, 15), c(20, 40, 35, 5)
   )
   dat <- do.call(rbind, lapply(seq_len(nrow(tab)), function(i) {
-    data.frame(CellType = rep(c("T", "B", "Mono", "Rare"), tab[i, ]),
+    data.frame(
+      CellType = rep(c("T", "B", "Mono", "Rare"), tab[i, ]),
       Condition = if (i <= 4L) "A" else "B",
-      Sample = if (paired) paste0("donor", (i - 1L) %% 4L + 1L) else paste0("sample", i))
+      Sample = if (paired) paste0("donor", (i - 1L) %% 4L + 1L) else paste0("sample", i)
+    )
   }))
-  counts <- Matrix::sparseMatrix(i = rep(1L, nrow(dat)), j = seq_len(nrow(dat)), x = 1,
+  counts <- Matrix::sparseMatrix(
+    i = rep(1L, nrow(dat)), j = seq_len(nrow(dat)), x = 1,
     dims = c(2L, nrow(dat)),
-    dimnames = list(c("gene1", "gene2"), paste0("cell", seq_len(nrow(dat)))))
+    dimnames = list(c("gene1", "gene2"), paste0("cell", seq_len(nrow(dat))))
+  )
   srt <- SeuratObject::CreateSeuratObject(counts)
   rownames(dat) <- colnames(srt)
   SeuratObject::AddMetaData(srt, dat)
@@ -27,10 +31,13 @@ test_that("SCOP propeller matches upstream with zeros, ones, and unequal totals"
       for (trend in c(FALSE, TRUE)) {
         bundle <- RunPropeller(srt, "CellType", "Condition", "Sample",
           comparison = list(c("A", "B")), n_bootstrap = 0L,
-          transform = transform, robust = robust, trend = trend, verbose = FALSE)
-        ref <- upstream(clusters = factor(srt$CellType), sample = factor(srt$Sample),
+          transform = transform, robust = robust, trend = trend, verbose = FALSE
+        )
+        ref <- upstream(
+          clusters = factor(srt$CellType), sample = factor(srt$Sample),
           group = factor(srt$Condition, levels = c("A", "B")),
-          transform = transform, robust = robust, trend = trend)
+          transform = transform, robust = robust, trend = trend
+        )
         result <- bundle$results$A_vs_B
         ref <- ref[match(result$clusters, rownames(ref)), , drop = FALSE]
         expect_equal(result$pval, ref$P.Value, tolerance = 1e-12)
@@ -48,9 +55,11 @@ test_that("SCOP propeller matches upstream with zeros, ones, and unequal totals"
 test_that("speckle comparison reversal preserves significance and flips direction", {
   skip_if_not_installed("speckle")
   srt <- make_propeller_reference_srt()
-  out <- RunProportionTest(srt, group.by = "CellType", split.by = "Condition",
+  out <- RunProportionTest(srt,
+    group.by = "CellType", split.by = "Condition",
     sample.by = "Sample", proportion_method = "propeller", n_bootstrap = 0L,
-    verbose = FALSE)
+    verbose = FALSE
+  )
   result <- out@tools$ProportionTest$results
   a <- result$A_vs_B
   b <- result$B_vs_A[match(a$clusters, result$B_vs_A$clusters), , drop = FALSE]
@@ -78,9 +87,12 @@ test_that("speckle comparison reversal preserves significance and flips directio
 test_that("independent sample bootstrap is reproducible and leaves speckle tests unchanged", {
   skip_if_not_installed("speckle")
   srt <- make_propeller_reference_srt()
-  run <- function(n) RunPropeller(srt, "CellType", "Condition", "Sample",
-    comparison = list(c("A", "B")), n_bootstrap = n,
-    seed = 19L, verbose = FALSE)$results$A_vs_B
+  run <- function(n) {
+    RunPropeller(srt, "CellType", "Condition", "Sample",
+      comparison = list(c("A", "B")), n_bootstrap = n,
+      seed = 19L, verbose = FALSE
+    )$results$A_vs_B
+  }
   result <- run(30L)
   expect_true(all(is.finite(result$boot_CI_2.5)))
   expect_true(all(is.finite(result$boot_CI_97.5)))
@@ -93,7 +105,8 @@ test_that("paired propeller matches an upstream donor-blocked design", {
   skip_if_not_installed("speckle")
   srt <- make_propeller_reference_srt(paired = TRUE)
   bundle <- RunPropeller(srt, "CellType", "Condition", "Sample",
-    comparison = list(c("A", "B")), n_bootstrap = 30L, verbose = FALSE)
+    comparison = list(c("A", "B")), n_bootstrap = 30L, verbose = FALSE
+  )
   backend <- bundle$details$backend_results$A_vs_B
   expect_true(backend$paired)
   expect_equal(nrow(backend$design), 8L)
@@ -116,11 +129,13 @@ test_that("paired propeller matches an upstream donor-blocked design", {
   expect_equal(result$Tstatistic, ref$Tstatistic, tolerance = 1e-12)
   expect_true(all(is.finite(result$boot_CI_2.5)))
   again <- RunPropeller(srt, "CellType", "Condition", "Sample",
-    comparison = list(c("A", "B")), n_bootstrap = 30L, verbose = FALSE)
+    comparison = list(c("A", "B")), n_bootstrap = 30L, verbose = FALSE
+  )
   expect_identical(result$boot_CI_2.5, again$results$A_vs_B$boot_CI_2.5)
-  shuffled <- srt[, rev(seq_len(ncol(srt))) ]
+  shuffled <- srt[, rev(seq_len(ncol(srt)))]
   again <- RunPropeller(shuffled, "CellType", "Condition", "Sample",
-    comparison = list(c("A", "B")), n_bootstrap = 30L, verbose = FALSE)
+    comparison = list(c("A", "B")), n_bootstrap = 30L, verbose = FALSE
+  )
   expect_equal(result, again$results$A_vs_B)
 })
 
@@ -129,30 +144,37 @@ test_that("propeller rejects insufficient replication and partial pairing", {
   srt <- make_propeller_reference_srt(paired = TRUE)
   partial <- srt[, !(srt$Sample == "donor4" & srt$Condition == "B")]
   expect_error(RunPropeller(partial, "CellType", "Condition", "Sample",
-    comparison = list(c("A", "B")), n_bootstrap = 0L), "fully paired")
+    comparison = list(c("A", "B")), n_bootstrap = 0L
+  ), "fully paired")
   srt <- make_propeller_reference_srt()
   single <- srt[, srt$Sample %in% c("sample1", "sample5", "sample6")]
   expect_error(RunPropeller(single, "CellType", "Condition", "Sample",
-    comparison = list(c("A", "B")), n_bootstrap = 0L), "at least two biological")
+    comparison = list(c("A", "B")), n_bootstrap = 0L
+  ), "at least two biological")
   srt$CellType[1] <- NA_character_
   expect_error(RunPropeller(srt, "CellType", "Condition", "Sample",
-    comparison = list(c("A", "B")), n_bootstrap = 0L), "cell type labels")
+    comparison = list(c("A", "B")), n_bootstrap = 0L
+  ), "cell type labels")
 })
 
 test_that("propeller reports unavailable speckle without substituting another test", {
   testthat::local_mocked_bindings(
-    check_r = function(...) list(speckle = FALSE), .package = "scop")
+    check_r = function(...) list(speckle = FALSE), .package = "scop"
+  )
   srt <- make_propeller_reference_srt()
   expect_error(RunPropeller(srt, "CellType", "Condition", "Sample",
-    n_bootstrap = 0L), "requires the optional Bioconductor package 'speckle'")
+    n_bootstrap = 0L
+  ), "requires the optional Bioconductor package 'speckle'")
 })
 
 test_that("virtual propeller samples mask upstream statistics too", {
   skip_if_not_installed("speckle")
   srt <- make_propeller_reference_srt()
-  out <- suppressWarnings(RunProportionTest(srt, group.by = "CellType",
+  out <- suppressWarnings(RunProportionTest(srt,
+    group.by = "CellType",
     split.by = "Condition", proportion_method = "propeller",
-    allow_pseudo_samples = TRUE, n_bootstrap = 0L, verbose = FALSE))
+    allow_pseudo_samples = TRUE, n_bootstrap = 0L, verbose = FALSE
+  ))
   bundle <- out@tools$ProportionTest$methods$propeller
   expect_false(bundle$inference_valid)
   expect_true(all(is.na(bundle$results$A_vs_B$pval)))
@@ -170,12 +192,16 @@ make_propeller_robust_srt <- function() {
   tab[, 29L] <- rep(c(1L, 400L, 5L, 300L, 2L, 500L), 2L)
   tab[, 30L] <- rep(c(350L, 2L, 450L, 1L, 250L, 3L), 2L)
   dat <- do.call(rbind, lapply(seq_len(nrow(tab)), function(i) {
-    data.frame(CellType = rep(sprintf("type%02d", seq_len(ncol(tab))), tab[i, ]),
-      Condition = if (i <= 6L) "A" else "B", Sample = sprintf("sample%02d", i))
+    data.frame(
+      CellType = rep(sprintf("type%02d", seq_len(ncol(tab))), tab[i, ]),
+      Condition = if (i <= 6L) "A" else "B", Sample = sprintf("sample%02d", i)
+    )
   }))
-  counts <- Matrix::sparseMatrix(i = rep(1L, nrow(dat)), j = seq_len(nrow(dat)), x = 1,
+  counts <- Matrix::sparseMatrix(
+    i = rep(1L, nrow(dat)), j = seq_len(nrow(dat)), x = 1,
     dims = c(2L, nrow(dat)),
-    dimnames = list(c("gene1", "gene2"), paste0("cell", seq_len(nrow(dat)))))
+    dimnames = list(c("gene1", "gene2"), paste0("cell", seq_len(nrow(dat))))
+  )
   srt <- SeuratObject::CreateSeuratObject(counts)
   rownames(dat) <- colnames(srt)
   SeuratObject::AddMetaData(srt, dat)
@@ -195,7 +221,8 @@ test_that("propeller exercises limma robust estimation with variance outliers", 
       fit <- real_fit(...)
       fits[[length(fits) + 1L]] <<- fit
       fit
-    }, .package = "limma")
+    }, .package = "limma"
+  )
   upstream <- thisutils::get_namespace_fun("speckle", "propeller")
   for (transform in c("logit", "asin")) {
     for (trend in c(FALSE, TRUE)) {
@@ -203,7 +230,8 @@ test_that("propeller exercises limma robust estimation with variance outliers", 
       result <- RunPropeller(srt, "CellType", "Condition", "Sample",
         comparison = list(c("A", "B")), n_bootstrap = 0L,
         transform = transform, robust = TRUE, trend = trend,
-        verbose = FALSE)$results$A_vs_B
+        verbose = FALSE
+      )$results$A_vs_B
       # RunPropeller also evaluates the reverse comparison.
       expect_length(fits, 2L)
       fit <- fits[[1L]]
@@ -211,9 +239,11 @@ test_that("propeller exercises limma robust estimation with variance outliers", 
       expect_true(all(is.finite(fit$tail.p.value)))
       expect_true(any(fit$tail.p.value < 0.01))
       expect_gt(length(unique(fit$df2.shrunk)), 1L)
-      ref <- upstream(clusters = factor(srt$CellType), sample = factor(srt$Sample),
+      ref <- upstream(
+        clusters = factor(srt$CellType), sample = factor(srt$Sample),
         group = factor(srt$Condition, levels = c("A", "B")),
-        transform = transform, robust = TRUE, trend = trend)
+        transform = transform, robust = TRUE, trend = trend
+      )
       ref <- ref[match(result$clusters, rownames(ref)), , drop = FALSE]
       expect_equal(result$pval, ref$P.Value, tolerance = 1e-12)
       expect_equal(result$FDR, ref$FDR, tolerance = 1e-12)
@@ -221,7 +251,8 @@ test_that("propeller exercises limma robust estimation with variance outliers", 
       nonrobust <- RunPropeller(srt, "CellType", "Condition", "Sample",
         comparison = list(c("A", "B")), n_bootstrap = 0L,
         transform = transform, robust = FALSE, trend = trend,
-        verbose = FALSE)$results$A_vs_B
+        verbose = FALSE
+      )$results$A_vs_B
       expect_gt(max(abs(result$pval - nonrobust$pval)), 1e-6)
     }
   }

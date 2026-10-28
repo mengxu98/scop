@@ -692,15 +692,18 @@ cell2location_plot_align <- function(values, tool, spot_ids) {
     log_message("Cell2location plotting values have invalid or unknown spot IDs", message_type = "error")
   }
   missing <- setdiff(spot_ids, ids)
-  if (!length(missing)) return(values[spot_ids, , drop = FALSE])
+  if (!length(missing)) {
+    return(values[spot_ids, , drop = FALSE])
+  }
   dropped <- tool$input_summary$dropped_spots
   if (!valid_ids(tool$cells) || !setequal(tool$cells, ids) ||
-      !valid_ids(dropped) || length(intersect(dropped, ids)) ||
-      !setequal(missing, intersect(dropped, spot_ids))) {
+    !valid_ids(dropped) || length(intersect(dropped, ids)) ||
+    !setequal(missing, intersect(dropped, spot_ids))) {
     log_message("Cell2location plotting values are incomplete: missing spots are not accounted for by modeled and dropped IDs", message_type = "error")
   }
   full <- matrix(NA_real_, length(spot_ids), ncol(values),
-    dimnames = list(spot_ids, colnames(values)))
+    dimnames = list(spot_ids, colnames(values))
+  )
   full[ids, ] <- values
   full
 }

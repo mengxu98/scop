@@ -156,8 +156,10 @@ backend. It is not a biological inference and must not be reported as one.
 ```{r composition-layout, fig.width=10, fig.height=4.5}
 display_object <- spatial[, unique(round(seq(1, ncol(spatial), length.out = 120)))]
 fraction <- seq(0, 1, length.out = ncol(display_object))
-demo_proportions <- cbind(component_A = fraction, component_B = 1 - fraction,
-                         unmeasured = NA_real_)
+demo_proportions <- cbind(
+  component_A = fraction, component_B = 1 - fraction,
+  unmeasured = NA_real_
+)
 rownames(demo_proportions) <- colnames(display_object)
 display_object@tools$display_only_proportions <- list(proportions = demo_proportions)
 
@@ -220,8 +222,10 @@ result_file <- tempfile(fileext = ".rds")
 saveRDS(spatial, result_file)
 reloaded <- readRDS(result_file)
 stopifnot(identical(colnames(reloaded), colnames(spatial)))
-stopifnot(identical(reloaded@tools$SpatialVariableFeatures,
-                    spatial@tools$SpatialVariableFeatures))
+stopifnot(identical(
+  reloaded@tools$SpatialVariableFeatures,
+  spatial@tools$SpatialVariableFeatures
+))
 SpatialSpotPlot(reloaded, group.by = "SpotQC", image = "slice1")
 unlink(result_file)
 ```

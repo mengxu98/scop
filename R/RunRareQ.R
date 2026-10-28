@@ -186,8 +186,10 @@ RunRareQ <- function(
   }
 
   previous_index <- srt@tools[[tool_name]]$result_index
-  spatial_check_identity_columns(srt, tool_name,
-    c(cluster_colname, q_colname, size_colname, rare_colname))
+  spatial_check_identity_columns(
+    srt, tool_name,
+    c(cluster_colname, q_colname, size_colname, rare_colname)
+  )
   check_r("fabotao/RareQ", verbose = FALSE)
 
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
@@ -385,10 +387,13 @@ RunRareQ <- function(
     )
   )
 
-  srt@tools[[tool_name]]$result_index <- list(method = "RareQ",
-    cluster_colname = cluster_colname, cells = names(clusters))
+  srt@tools[[tool_name]]$result_index <- list(
+    method = "RareQ",
+    cluster_colname = cluster_colname, cells = names(clusters)
+  )
   srt <- spatial_record_cell_identity(srt, tool_name, previous_index,
-    protected_columns = c(q_colname, size_colname, rare_colname))
+    protected_columns = c(q_colname, size_colname, rare_colname)
+  )
 
   SeuratObject::DefaultAssay(srt) <- old_assay
   log_message(

@@ -175,8 +175,10 @@ test_that("SpatialIntegrationPlot reuses SCOP plot helpers", {
 
 
 test_that("PRECAST receives selected features and its SelectModel object argument", {
-  input <- spatial_integration_prepare_input(make_spatial_integration_seurat(),
-    "sample", "RNA", "counts", c("Gene1", "Gene2"), NULL, c("col", "row"))
+  input <- spatial_integration_prepare_input(
+    make_spatial_integration_seurat(),
+    "sample", "RNA", "counts", c("Gene1", "Gene2"), NULL, c("col", "row")
+  )
   observed <- list()
   testthat::local_mocked_bindings(
     check_r = function(...) invisible(TRUE),
@@ -217,10 +219,12 @@ test_that("PRECAST receives selected features and its SelectModel object argumen
 test_that("PRECAST accessor counts describe current assignments and preserve raw fits", {
   for (store_object in c(TRUE, FALSE)) {
     mock_spatial_integration_backend({
-      out <- RunSpatialIntegration(make_spatial_integration_seurat(), sample.by = "sample",
+      out <- RunSpatialIntegration(make_spatial_integration_seurat(),
+        sample.by = "sample",
         assay = "RNA", layer = "counts", coord.cols = c("col", "row"),
         cluster_colname = "custom_domains", tool_name = "custom_integration",
-        store_object = store_object, verbose = FALSE)
+        store_object = store_object, verbose = FALSE
+      )
     })
     expect_spatial_result_lifecycle(out, "custom_integration", "custom_domains", integration = TRUE)
     expect_identical(GetSpatialResult(out, "PRECAST"), GetSpatialResult(out, "custom_integration"))
@@ -239,9 +243,11 @@ test_that("PRECAST accessor counts describe current assignments and preserve raw
     expect_error(GetSpatialResult(ambiguous, "PRECAST"), "Multiple stored results")
   }
   mock_spatial_integration_backend({
-    named_banksy <- RunSpatialIntegration(make_spatial_integration_seurat(), sample.by = "sample",
+    named_banksy <- RunSpatialIntegration(make_spatial_integration_seurat(),
+      sample.by = "sample",
       assay = "RNA", layer = "counts", coord.cols = c("col", "row"),
-      tool_name = "BANKSY", verbose = FALSE)
+      tool_name = "BANKSY", verbose = FALSE
+    )
   })
   expect_identical(GetSpatialResult(named_banksy, "BANKSY"), GetSpatialResult(named_banksy, "PRECAST"))
   expect_equal(GetSpatialResult(named_banksy, "BANKSY")$summary$n_cells, 6L)
@@ -253,8 +259,10 @@ test_that("PRECAST excludes unfitted zero-count spots from current count summari
   counts[, "Spot1"] <- 0
   input <- Seurat::CreateSeuratObject(counts, meta.data = input[[]])
   mock_spatial_integration_backend({
-    out <- RunSpatialIntegration(input, sample.by = "sample", assay = "RNA",
-      layer = "counts", coord.cols = c("col", "row"), verbose = FALSE)
+    out <- RunSpatialIntegration(input,
+      sample.by = "sample", assay = "RNA",
+      layer = "counts", coord.cols = c("col", "row"), verbose = FALSE
+    )
   })
   before <- out@tools
   result <- GetSpatialResult(out, "PRECAST")
@@ -274,6 +282,8 @@ test_that("PRECAST excludes unfitted zero-count spots from current count summari
   result <- GetSpatialResult(legacy, "PRECAST")
   expect_equal(result$summary$n_cells, 5L)
   assigned <- as.character(legacy$SpatialIntegration_PRECAST_domain)
-  expect_identical(result$clusters$SpatialIntegration_PRECAST_domain,
-    unname(assigned[!is.na(assigned)]))
+  expect_identical(
+    result$clusters$SpatialIntegration_PRECAST_domain,
+    unname(assigned[!is.na(assigned)])
+  )
 })

@@ -1,6 +1,7 @@
 plot_contract_object <- function() {
   object <- SeuratObject::CreateSeuratObject(Matrix::Matrix(
-    matrix(1:24, 3, dimnames = list(paste0("g", 1:3), paste0("c", 1:8))), sparse = TRUE
+    matrix(1:24, 3, dimnames = list(paste0("g", 1:3), paste0("c", 1:8))),
+    sparse = TRUE
   ))
   object$x <- rep(c(0, 10, 0, 10), 2)
   object$y <- rep(c(0, 0, 1, 1), 2)
@@ -41,8 +42,10 @@ test_that("spatial facets accept metadata names with spaces in point long and pi
   p <- SpatialSpotPlot(object, group.by = "type", split.by = "sample label")
   expect_equal(nrow(ggplot2::ggplot_build(p)$layout$layout), 2)
   long <- data.frame(spot = colnames(object), label = object$type)
-  p <- SpatialSpotPlot(object, plot.data = long, spot.by = "spot", color.by = "label",
-    split.by = "sample label", legend.position = "bottom")
+  p <- SpatialSpotPlot(object,
+    plot.data = long, spot.by = "spot", color.by = "label",
+    split.by = "sample label", legend.position = "bottom"
+  )
   expect_equal(nrow(ggplot2::ggplot_build(p)$layout$layout), 2)
   expect_identical(p$theme$legend.position, "bottom")
   skip_if_not_installed("scatterpie")
@@ -68,7 +71,9 @@ test_that("constant spatial features respect explicit limits and ambiguous value
 test_that("deconvolution empty panels and constant maps remain composable", {
   object <- plot_contract_object()
   object@tools$Custom <- list(proportions = matrix(c(rep(NA_real_, 8), rep(0, 8), seq(0, 1, length.out = 8)),
-    8, dimnames = list(colnames(object), c("Missing", "Absent", "Measured"))))
+    8,
+    dimnames = list(colnames(object), c("Missing", "Absent", "Measured"))
+  ))
   p <- SpatialDeconvolutionPlot(object, "Custom", combine = FALSE)
   expect_named(p, c("Missing", "Absent", "Measured"))
   expect_match(p$Missing$data$label, "No values")
@@ -81,11 +86,15 @@ test_that("deconvolution empty panels and constant maps remain composable", {
 })
 
 test_that("cell polygons support named lists layout and explicit legend controls", {
-  boundaries <- data.frame(cell_id = rep(c("a", "b"), each = 4),
+  boundaries <- data.frame(
+    cell_id = rep(c("a", "b"), each = 4),
     x = c(0, 1, 1, 0, 2, 3, 3, 2), y = rep(c(0, 0, 1, 1), 2),
-    gene1 = rep(c(0, 1), each = 4), gene2 = 0)
-  p <- SpatialCellPlot(boundaries = boundaries, features = c("gene1", "gene2"),
-    combine = FALSE, legend.position = "bottom", legend.title = "Expression")
+    gene1 = rep(c(0, 1), each = 4), gene2 = 0
+  )
+  p <- SpatialCellPlot(
+    boundaries = boundaries, features = c("gene1", "gene2"),
+    combine = FALSE, legend.position = "bottom", legend.title = "Expression"
+  )
   expect_named(p, c("gene1", "gene2"))
   expect_identical(p$gene1$theme$legend.position, "bottom")
   expect_identical(p$gene1$labels$fill, "Expression")
@@ -94,8 +103,10 @@ test_that("cell polygons support named lists layout and explicit legend controls
 })
 
 test_that("unassigned deconvolution spots are excluded from dominant summaries", {
-  weights <- matrix(c(0, 0, .2, .8), 2, byrow = TRUE,
-    dimnames = list(c("unassigned", "assigned"), c("A", "B")))
+  weights <- matrix(c(0, 0, .2, .8), 2,
+    byrow = TRUE,
+    dimnames = list(c("unassigned", "assigned"), c("A", "B"))
+  )
   finalized <- spatial_finalize_weights(weights, rownames(weights))
   summary <- spatial_weight_summary(finalized$weights)
   expect_identical(unname(finalized$dominant), c(NA_character_, "B"))
@@ -120,14 +131,17 @@ test_that("invalid RCTD backend weights fail before committing object changes", 
   invalid <- NA_real_
   testthat::local_mocked_bindings(rctd_run_spacexr = function(st_counts, ...) {
     weights <- matrix(.5, ncol(st_counts), 2,
-      dimnames = list(colnames(st_counts), c("A", "B")))
+      dimnames = list(colnames(st_counts), c("A", "B"))
+    )
     weights[1, 1] <- invalid
     list(weights = weights, metadata = list(), api = "test", object = list())
   })
   for (value in c(NA_real_, Inf, -1)) {
     invalid <- value
-    expect_error(RunRCTD(object, reference = object, reference_label = "type", min_cells = 1, verbose = FALSE),
-      "finite|non-negative")
+    expect_error(
+      RunRCTD(object, reference = object, reference_label = "type", min_cells = 1, verbose = FALSE),
+      "finite|non-negative"
+    )
     expect_identical(object, before)
   }
 })
@@ -138,14 +152,19 @@ integration_plot_contract_object <- function() {
     cells <- colnames(object)[object[["sample label", drop = TRUE]] == paste0("S", i)]
     object[[paste0("slice", i)]] <- SeuratObject::CreateFOV(
       data.frame(x = c(10, 20, 30, 40), y = c(30, 40, 60, 50), row.names = cells),
-      type = "centroids", assay = "RNA", key = paste0("v", i, "_"))
+      type = "centroids", assay = "RNA", key = paste0("v", i, "_")
+    )
   }
   object$aligned_x <- seq_len(8) + 100
   object$aligned_y <- seq_len(8) / 10
-  parameters <- list(sample.by = "sample label", cluster_colname = "type",
-    coord.cols = c("x", "y"), aligned_coord_cols = c("aligned_x", "aligned_y"), coordinate_space = "raw")
-  object@tools$SpatialIntegration <- list(active_method = "PRECAST", parameters = parameters,
-    methods = list(PRECAST = spatial_tag_coordinate_contract(list(parameters = parameters))))
+  parameters <- list(
+    sample.by = "sample label", cluster_colname = "type",
+    coord.cols = c("x", "y"), aligned_coord_cols = c("aligned_x", "aligned_y"), coordinate_space = "raw"
+  )
+  object@tools$SpatialIntegration <- list(
+    active_method = "PRECAST", parameters = parameters,
+    methods = list(PRECAST = spatial_tag_coordinate_contract(list(parameters = parameters)))
+  )
   object
 }
 

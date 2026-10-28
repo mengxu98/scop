@@ -1,4 +1,3 @@
-
 #' @title Shared parameters
 #'
 #' @md

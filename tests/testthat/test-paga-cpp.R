@@ -1,5 +1,3 @@
-
-
 make_paga_mock <- function(
   n_cells = 20,
   n_groups = 3,

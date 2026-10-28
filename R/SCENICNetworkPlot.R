@@ -272,24 +272,27 @@ scenic_plot_one_network <- function(
 
 scenic_network_display_data <- function(edge_data, focal_tfs, layout = "fr", target_limit = 6) {
   if (!is.numeric(target_limit) || length(target_limit) != 1L ||
-      is.na(target_limit) || target_limit <= 0 ||
-      (is.finite(target_limit) && target_limit != floor(target_limit))) {
+    is.na(target_limit) || target_limit <= 0 ||
+    (is.finite(target_limit) && target_limit != floor(target_limit))) {
     log_message("{.emph network_display_targets} must be a positive integer or Inf.", message_type = "error")
   }
   if (is.infinite(target_limit)) {
     return(scenic_network_plot_data(edge_data, layout))
   }
   direct <- which(edge_data$from %in% focal_tfs &
-                    edge_data$edge_type %in% c("tf_gene", "tf_region"))
+    edge_data$edge_type %in% c("tf_gene", "tf_region"))
   if (!length(direct)) {
     return(scenic_network_plot_data(edge_data, layout))
   }
   pairs <- unique(edge_data[direct, c("from", "to"), drop = FALSE])
   shared <- names(which(table(pairs$to) > 1L))
-  ranked <- direct[order(-abs(edge_data$weight[direct]),
-                         edge_data$from[direct], edge_data$to[direct])]
+  ranked <- direct[order(
+    -abs(edge_data$weight[direct]),
+    edge_data$from[direct], edge_data$to[direct]
+  )]
   top <- unlist(lapply(split(ranked, edge_data$from[ranked]), utils::head,
-                       n = target_limit), use.names = FALSE)
+    n = target_limit
+  ), use.names = FALSE)
   # Retain weak shared-target and TF-to-TF connections as well as top targets.
   keep <- union(top, direct[edge_data$to[direct] %in% c(shared, focal_tfs)])
   regions <- edge_data$to[keep][edge_data$edge_type[keep] == "tf_region"]
@@ -842,8 +845,8 @@ scenic_network_label_data <- function(
     tf_nodes <- tf_nodes[order(-tf_nodes[["degree"]], tf_nodes[["name"]]), , drop = FALSE]
     tf_nodes <- utils::head(tf_nodes, top_n)
     targets <- node_data[
-      as.character(node_data[["node_type"]]) == "gene" & node_data[["in_degree"]] > 1,
-      , drop = FALSE
+      as.character(node_data[["node_type"]]) == "gene" & node_data[["in_degree"]] > 1, ,
+      drop = FALSE
     ]
     targets <- targets[order(-targets[["in_degree"]], -targets[["degree"]], targets[["name"]]), , drop = FALSE]
     target_n <- min(6, max(0, top_n - nrow(tf_nodes)))

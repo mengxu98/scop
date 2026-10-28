@@ -1,4 +1,3 @@
-
 spatial_resolve_object <- function(object, srt, object_missing) {
   input_arg <- if (object_missing) "srt" else "object"
   resolved <- resolve_deprecated_srt(object, srt, object_missing)
@@ -333,7 +332,7 @@ spatial_finalize_weights <- function(weights, all_spots) {
   weights <- spatial_normalize_weights(weights)
   valid_names <- function(x) !is.null(x) && !anyNA(x) && all(nzchar(x)) && !anyDuplicated(x)
   if (any(dim(weights) == 0L) || !valid_names(rownames(weights)) ||
-      !valid_names(colnames(weights)) || !valid_names(all_spots)) {
+    !valid_names(colnames(weights)) || !valid_names(all_spots)) {
     log_message("Deconvolution weights must be non-empty with unique row and column names", message_type = "error")
   }
   if (length(setdiff(rownames(weights), all_spots))) {

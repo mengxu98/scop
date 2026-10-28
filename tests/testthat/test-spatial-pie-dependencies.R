@@ -1,7 +1,9 @@
 spatial_pie_dependency_object <- function() {
   counts <- Matrix::Matrix(
-    matrix(1, nrow = 2, ncol = 3,
-      dimnames = list(c("Gene1", "Gene2"), paste0("Spot", 1:3))),
+    matrix(1,
+      nrow = 2, ncol = 3,
+      dimnames = list(c("Gene1", "Gene2"), paste0("Spot", 1:3))
+    ),
     sparse = TRUE
   )
   object <- SeuratObject::CreateSeuratObject(counts)
@@ -28,7 +30,8 @@ test_that("empty pies render without looking up the optional backend", {
   for (value in values) {
     dimnames(value) <- list(colnames(object), c("A", "B"))
     plot <- scop::SpatialSpotPlot(
-      object, values = value, plot_type = "pie", overlay_image = FALSE,
+      object,
+      values = value, plot_type = "pie", overlay_image = FALSE,
       legend.title = "Empty proportions", theme_use = NULL
     )
     expect_s3_class(plot, "ggplot")
@@ -50,9 +53,11 @@ test_that("pie filtering respects selected cells before requiring a backend", {
     .package = "scop"
   )
   values <- matrix(c(1, 0, 0, 0, 0, 0), 3, 2,
-    dimnames = list(colnames(object), c("A", "B")))
+    dimnames = list(colnames(object), c("A", "B"))
+  )
   plot <- scop::SpatialSpotPlot(
-    object, values = values, cells = c("Spot2", "Spot3"),
+    object,
+    values = values, cells = c("Spot2", "Spot3"),
     plot_type = "pie", overlay_image = FALSE, theme_use = NULL
   )
   expect_identical(plot$data$label, "No spots with positive pie values")
@@ -72,11 +77,13 @@ test_that("invalid pie values fail validation before a dependency lookup", {
   )
   for (invalid in c(-1, Inf, -Inf)) {
     values <- matrix(NA_real_, 3, 2,
-      dimnames = list(colnames(object), c("A", "B")))
+      dimnames = list(colnames(object), c("A", "B"))
+    )
     values[1, 1] <- invalid
     expect_error(
       scop::SpatialSpotPlot(
-        object, values = values, plot_type = "pie", overlay_image = FALSE
+        object,
+        values = values, plot_type = "pie", overlay_image = FALSE
       ),
       "Pie values must be non-negative and cannot be infinite"
     )
@@ -96,11 +103,13 @@ test_that("nonempty pies still require the scatterpie backend", {
     .package = "scop"
   )
   values <- matrix(0, 3, 2,
-    dimnames = list(colnames(object), c("A", "B")))
+    dimnames = list(colnames(object), c("A", "B"))
+  )
   values[2, ] <- c(2, 3)
   expect_error(
     scop::SpatialSpotPlot(
-      object, values = values, plot_type = "pie", overlay_image = FALSE
+      object,
+      values = values, plot_type = "pie", overlay_image = FALSE
     ),
     "Pie backend is unavailable"
   )
