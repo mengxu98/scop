@@ -49,9 +49,11 @@ coordinates.
 ``` r
 
 library(scop)
-stopifnot(all(unlist(thisutils::check_r("slingshot", install = FALSE, verbose = FALSE))),
-          all(unlist(thisutils::check_r("cole-trapnell-lab/monocle3", install = FALSE, verbose = FALSE))),
-          "fit_trends" %in% getNamespaceExports("thisutils"))
+stopifnot(
+  all(unlist(thisutils::check_r("slingshot", install = FALSE, verbose = FALSE))),
+  all(unlist(thisutils::check_r("cole-trapnell-lab/monocle3", install = FALSE, verbose = FALSE))),
+  "fit_trends" %in% getNamespaceExports("thisutils")
+)
 set.seed(11)
 
 data(pancreas_sub)
@@ -67,8 +69,10 @@ pancreas_sub <- RunStandardWorkflow(
   verbose = FALSE
 )
 
-pancreas_sub <- RunCellQC(pancreas_sub, assay = "RNA",
-  qc_metrics = c("umi", "gene", "mito"), return_filtered = FALSE, verbose = FALSE)
+pancreas_sub <- RunCellQC(pancreas_sub,
+  assay = "RNA",
+  qc_metrics = c("umi", "gene", "mito"), return_filtered = FALSE, verbose = FALSE
+)
 stopifnot(identical(colnames(pancreas_sub), input_cells))
 
 data.frame(

@@ -271,7 +271,7 @@ plots visualize single or joint knockout differential-regulation tables.</p>
 <span class="r-in"><span>  store_networks <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  seed <span class="op">=</span> <span class="fl">1</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-26 15:19:52] Run the upstream <span style="color: #0000BB;">scTenifoldKnk</span> workflow</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-28 08:45:19] Run the upstream <span style="color: #0000BB;">scTenifoldKnk</span> workflow</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">scTenifoldKnk Pipeline</span> <span style="color: #00BBBB;">──────────────────────────────────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Step 2/7: CPM normalization</span>
@@ -291,15 +291,15 @@ plots visualize single or joint knockout differential-regulation tables.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Computing distances for 301 genes</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Differential regulation complete: 9/301 significant genes (FDR &lt; 0.05)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> scTenifoldKnk pipeline complete</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-10-26 15:19:52] <span style="color: #0000BB;">scTenifoldKnk</span> results stored in `object@tools[[scTenifoldKnk]]`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-10-28 08:45:19] <span style="color: #0000BB;">scTenifoldKnk</span> results stored in `object@tools[[scTenifoldKnk]]`</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">scTenifoldKnk</span><span class="op">$</span><span class="va">diffRegulation</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       gene     distance        Z         FC      p.value        p.adj direction</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 301   Pdx1 8.963879e-05 4.420455 8999.42556 0.000000e+00 0.0000000000      down</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 57  Rpl18a 4.266911e-06 1.754548   20.39154 6.310812e-06 0.0009497772        up</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 301   Pdx1 8.963879e-05 4.420458 8999.42556 0.000000e+00 0.0000000000      down</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 57  Rpl18a 4.266911e-06 1.754549   20.39154 6.310812e-06 0.0009497772        up</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 11     Ubb 3.430468e-06 1.610412   13.18043 2.828873e-04 0.0283830220      down</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 44   Rpl32 3.287092e-06 1.582815   12.10171 5.037573e-04 0.0307722755        up</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 60   Rpl13 3.283392e-06 1.582090   12.07448 5.111674e-04 0.0307722755        up</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 51    Rps9 3.185577e-06 1.562662   11.36578 7.480971e-04 0.0375295391        up</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 51    Rps9 3.185577e-06 1.562663   11.36578 7.480971e-04 0.0375295391        up</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     directionScore</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 301             NA</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 57     0.003292538</span>

@@ -27,7 +27,7 @@ library(scop)
 #>                                   /_/
 #>       ⬢               .      ⬡        .          ⬢
 #> ------------------------------------------------------------
-#> Version: 0.9.2 (2026-10-16 update)
+#> Version: 0.9.2 (2026-10-28 update)
 #> Website: https://mengxu98.github.io/scop/
 #> ------------------------------------------------------------
 
@@ -151,7 +151,7 @@ spatial <- RunStandardWorkflow(
   do_deconvolution = FALSE,
   verbose = FALSE
 )
-#> ℹ [2026-10-26 15:38:49] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-10-28 09:05:03] Skip `log1p()` because `layer = data` is not "counts"
 ```
 
 ## Inspect stored results before plotting
@@ -282,8 +282,10 @@ display_object <- spatial[, unique(round(seq(1, ncol(spatial), length.out = 120)
 #> Not validating FOV objects
 #> Warning: Not validating Seurat objects
 fraction <- seq(0, 1, length.out = ncol(display_object))
-demo_proportions <- cbind(component_A = fraction, component_B = 1 - fraction,
-                         unmeasured = NA_real_)
+demo_proportions <- cbind(
+  component_A = fraction, component_B = 1 - fraction,
+  unmeasured = NA_real_
+)
 rownames(demo_proportions) <- colnames(display_object)
 display_object@tools$display_only_proportions <- list(proportions = demo_proportions)
 
@@ -358,8 +360,10 @@ result_file <- tempfile(fileext = ".rds")
 saveRDS(spatial, result_file)
 reloaded <- readRDS(result_file)
 stopifnot(identical(colnames(reloaded), colnames(spatial)))
-stopifnot(identical(reloaded@tools$SpatialVariableFeatures,
-                    spatial@tools$SpatialVariableFeatures))
+stopifnot(identical(
+  reloaded@tools$SpatialVariableFeatures,
+  spatial@tools$SpatialVariableFeatures
+))
 SpatialSpotPlot(reloaded, group.by = "SpotQC", image = "slice1")
 ```
 

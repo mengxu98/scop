@@ -38,10 +38,14 @@ pancreas_sub
 #>  2 other assays present: spliced, unspliced
 input_cells <- colnames(pancreas_sub)
 counts <- GetAssayData5(pancreas_sub, assay = "RNA", layer = "counts")
-stopifnot(identical(colnames(counts), rownames(pancreas_sub@meta.data)),
-          !anyDuplicated(colnames(counts)), all(counts@x >= 0))
-data.frame(genes = nrow(counts), cells = ncol(counts),
-           mitochondrial_genes = sum(grepl("^mt-", rownames(counts))))
+stopifnot(
+  identical(colnames(counts), rownames(pancreas_sub@meta.data)),
+  !anyDuplicated(colnames(counts)), all(counts@x >= 0)
+)
+data.frame(
+  genes = nrow(counts), cells = ncol(counts),
+  mitochondrial_genes = sum(grepl("^mt-", rownames(counts)))
+)
 #>   genes cells mitochondrial_genes
 #> 1 15998  1000                  10
 ```
@@ -140,7 +144,8 @@ preprocessing after any filtering.
 ``` r
 
 pancreas_sub <- RunCellQC(
-  pancreas_sub, assay = "RNA",
+  pancreas_sub,
+  assay = "RNA",
   qc_metrics = c("umi", "gene", "mito"),
   UMI_threshold = 3000, gene_threshold = 1000, mito_threshold = 20,
   return_filtered = FALSE, verbose = FALSE
@@ -155,8 +160,10 @@ names(pancreas_sub@tools)
 #> NULL
 data.frame(
   criterion = c("umi_qc", "gene_qc", "mito_qc"),
-  failures = vapply(pancreas_sub@meta.data[c("umi_qc", "gene_qc", "mito_qc")],
-                    function(x) sum(x == "Fail", na.rm = TRUE), integer(1))
+  failures = vapply(
+    pancreas_sub@meta.data[c("umi_qc", "gene_qc", "mito_qc")],
+    function(x) sum(x == "Fail", na.rm = TRUE), integer(1)
+  )
 )
 #>         criterion failures
 #> umi_qc     umi_qc        0
@@ -183,16 +190,22 @@ CellDimPlot(
 
 qc_failures <- data.frame(
   metric = c("UMI", "Genes", "Mitochondrial fraction"),
-  failures = vapply(pancreas_sub@meta.data[c("umi_qc", "gene_qc", "mito_qc")],
-                    function(x) sum(x == "Fail", na.rm = TRUE), integer(1))
+  failures = vapply(
+    pancreas_sub@meta.data[c("umi_qc", "gene_qc", "mito_qc")],
+    function(x) sum(x == "Fail", na.rm = TRUE), integer(1)
+  )
 )
 ggplot2::ggplot(qc_failures, ggplot2::aes(metric, failures)) +
   ggplot2::geom_col() +
   ggplot2::geom_text(ggplot2::aes(label = failures), vjust = -0.5) +
-  ggplot2::scale_y_continuous(limits = c(0, max(1, qc_failures$failures) * 1.1),
-                            breaks = scales::breaks_pretty(n = 4)) +
-  ggplot2::labs(x = NULL, y = "Cells flagged",
-                subtitle = "Zero means no cell failed that criterion") +
+  ggplot2::scale_y_continuous(
+    limits = c(0, max(1, qc_failures$failures) * 1.1),
+    breaks = scales::breaks_pretty(n = 4)
+  ) +
+  ggplot2::labs(
+    x = NULL, y = "Cells flagged",
+    subtitle = "Zero means no cell failed that criterion"
+  ) +
   ggplot2::theme_minimal(base_size = 12)
 ```
 
@@ -354,14 +367,20 @@ result_file <- file.path(output_dir, "analysis.rds")
 saveRDS(pancreas_sub, result_file)
 utils::write.csv(pancreas_sub@meta.data, file.path(output_dir, "cell-metadata.csv"))
 reloaded <- readRDS(result_file)
-stopifnot(identical(colnames(reloaded), colnames(pancreas_sub)),
-          identical(reloaded@meta.data, pancreas_sub@meta.data),
-          identical(SeuratObject::Reductions(reloaded),
-                    SeuratObject::Reductions(pancreas_sub)))
-data.frame(file = basename(list.files(output_dir, full.names = TRUE)),
-           bytes = file.info(list.files(output_dir, full.names = TRUE))$size)
+stopifnot(
+  identical(colnames(reloaded), colnames(pancreas_sub)),
+  identical(reloaded@meta.data, pancreas_sub@meta.data),
+  identical(
+    SeuratObject::Reductions(reloaded),
+    SeuratObject::Reductions(pancreas_sub)
+  )
+)
+data.frame(
+  file = basename(list.files(output_dir, full.names = TRUE)),
+  bytes = file.info(list.files(output_dir, full.names = TRUE))$size
+)
 #>                file    bytes
-#> 1      analysis.rds 34271006
+#> 1      analysis.rds 34270939
 #> 2 cell-metadata.csv   236267
 ```
 
@@ -394,8 +413,10 @@ alter numerical results. Keep this receipt with the exported object.
 
 source_revision <- Sys.getenv("GITHUB_SHA")
 if (!nzchar(source_revision) && nzchar(Sys.which("git"))) {
-  source_revision <- tryCatch(system2("git", c("rev-parse", "HEAD"), stdout = TRUE,
-                                      stderr = FALSE)[1], error = function(e) NA_character_)
+  source_revision <- tryCatch(system2("git", c("rev-parse", "HEAD"),
+    stdout = TRUE,
+    stderr = FALSE
+  )[1], error = function(e) NA_character_)
 }
 article_source <- knitr::current_input(dir = TRUE)
 build_receipt <- data.frame(
@@ -404,8 +425,11 @@ build_receipt <- data.frame(
   scop = as.character(utils::packageVersion("scop")),
   R = as.character(getRversion()),
   source_revision = source_revision,
-  source_has_local_changes = if (nzchar(Sys.which("git")))
-    length(system2("git", c("status", "--porcelain"), stdout = TRUE, stderr = FALSE)) > 0 else NA,
+  source_has_local_changes = if (nzchar(Sys.which("git"))) {
+    length(system2("git", c("status", "--porcelain"), stdout = TRUE, stderr = FALSE)) > 0
+  } else {
+    NA
+  },
   article_md5 = unname(tools::md5sum(article_source)),
   R_seed = 11,
   cells_retained = ncol(pancreas_sub),
@@ -414,13 +438,14 @@ build_receipt <- data.frame(
 )
 build_receipt
 #>                     article               built_utc  scop     R
-#> 1 single-cell-main-workflow 2026-10-26 15:37:42 UTC 0.9.2 4.6.1
+#> 1 single-cell-main-workflow 2026-10-28 09:03:52 UTC 0.9.2 4.6.1
 #>                            source_revision source_has_local_changes
-#> 1 799930e97b8b7a8f42ae03464fcd816ff1ada845                    FALSE
+#> 1 896e55b929953f0b1e16ebccd54e591ef3474b8f                    FALSE
 #>                        article_md5 R_seed cells_retained genes_in_active_assay
-#> 1 e1fa3652792fa3594fa9ebdfa336c418     11           1000                 15998
+#> 1 2c5a3d3c700eb7db8ec2b44b16fcceda     11           1000                 15998
 utils::write.csv(build_receipt, file.path(output_dir, "build-receipt.csv"),
-                 row.names = FALSE)
+  row.names = FALSE
+)
 writeLines(capture.output(sessionInfo()), file.path(output_dir, "session-info.txt"))
 ```
 

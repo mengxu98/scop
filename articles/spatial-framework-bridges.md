@@ -47,7 +47,7 @@ library(scop)
 #>                                   /_/
 #>       ⬢               .      ⬡        .          ⬢
 #> ------------------------------------------------------------
-#> Version: 0.9.2 (2026-10-16 update)
+#> Version: 0.9.2 (2026-10-28 update)
 #> Website: https://mengxu98.github.io/scop/
 #> ------------------------------------------------------------
 data(visium_human_pancreas_sub)
@@ -119,7 +119,8 @@ coordinates by row position.
 ``` r
 
 spe <- srt_to_spe(
-  spatial, assay = assay_name, layer = "counts", image = image_name,
+  spatial,
+  assay = assay_name, layer = "counts", image = image_name,
   include_meta = TRUE, coordinate_space = "raw"
 )
 spatial_roundtrip <- spe_to_srt(spe, assay = assay_name, layer = "scop_input")
@@ -170,7 +171,8 @@ you need them.
 
 stopifnot("GCG" %in% rownames(counts_after))
 SpatialSpotPlot(
-  spatial_roundtrip, image = NULL, coord.cols = c("x", "y"),
+  spatial_roundtrip,
+  image = NULL, coord.cols = c("x", "y"),
   features = "GCG", assay = assay_name, layer = "counts",
   overlay_image = FALSE, palette = "YlGnBu", legend.title = "GCG counts"
 )
@@ -192,7 +194,8 @@ and vertically flipped coordinates.
 ``` r
 
 spe_display <- srt_to_spe(
-  spatial, assay = assay_name, layer = "counts", image = image_name,
+  spatial,
+  assay = assay_name, layer = "counts", image = image_name,
   coordinate_space = "legacy_display"
 )
 display_provenance <- S4Vectors::metadata(spe_display)$scop_spatial_coordinates
@@ -297,15 +300,19 @@ native <- srt_to_giotto(giotto_input, image = image_name)
 restored <- giotto_to_srt(native)
 restored_assay <- SeuratObject::DefaultAssay(restored)
 restored_counts <- GetAssayData5(restored, assay = restored_assay, layer = "counts")
-stopifnot(setequal(colnames(restored_counts), colnames(counts_before)),
-          setequal(rownames(restored_counts), rownames(counts_before)))
+stopifnot(
+  setequal(colnames(restored_counts), colnames(counts_before)),
+  setequal(rownames(restored_counts), rownames(counts_before))
+)
 restored_counts <- restored_counts[rownames(counts_before), colnames(counts_before)]
 restored_xy <- SpatialCoordinates(restored, space = "raw")$data
 checks <- c(
   counts = isTRUE(all.equal(restored_counts, counts_before)),
   coda_annotation = "coda_label" %in% colnames(restored@meta.data) &&
-    identical(as.character(restored@meta.data[colnames(counts_before), "coda_label"]),
-              as.character(spatial$coda_label)),
+    identical(
+      as.character(restored@meta.data[colnames(counts_before), "coda_label"]),
+      as.character(spatial$coda_label)
+    ),
   coordinates = isTRUE(all.equal(
     as.matrix(restored_xy[colnames(counts_before), c("x", "y")]), raw_xy,
     check.attributes = FALSE
@@ -349,8 +356,10 @@ reload_checks <- c(
   counts = isTRUE(all.equal(
     GetAssayData5(reloaded$seurat, assay = assay_name, layer = "counts"), counts_before
   )),
-  coordinates = identical(SpatialExperiment::spatialCoords(reloaded$spatial_experiment),
-                         SpatialExperiment::spatialCoords(spe)),
+  coordinates = identical(
+    SpatialExperiment::spatialCoords(reloaded$spatial_experiment),
+    SpatialExperiment::spatialCoords(spe)
+  ),
   receipt = identical(reloaded$checks, spe_checks)
 )
 data.frame(check = names(reload_checks), passed = unname(reload_checks))
@@ -401,8 +410,10 @@ a model.
 
 data.frame(
   package = c("scop", "Seurat", "SeuratObject", "SpatialExperiment"),
-  version = vapply(c("scop", "Seurat", "SeuratObject", "SpatialExperiment"),
-                   function(p) as.character(utils::packageVersion(p)), character(1))
+  version = vapply(
+    c("scop", "Seurat", "SeuratObject", "SpatialExperiment"),
+    function(p) as.character(utils::packageVersion(p)), character(1)
+  )
 )
 #>                             package version
 #> scop                           scop   0.9.2
@@ -419,26 +430,33 @@ Save the analysis provenance beside the exported object.
 
 source_revision <- Sys.getenv("GITHUB_SHA")
 if (!nzchar(source_revision) && nzchar(Sys.which("git"))) {
-  source_revision <- system2("git", c("rev-parse", "HEAD"), stdout = TRUE,
-                             stderr = FALSE)[1]
+  source_revision <- system2("git", c("rev-parse", "HEAD"),
+    stdout = TRUE,
+    stderr = FALSE
+  )[1]
 }
 build_receipt <- data.frame(
   article = "spatial-framework-bridges", built_utc = format(Sys.time(), tz = "UTC", usetz = TRUE),
   source_revision = source_revision,
-  source_has_local_changes = if (nzchar(Sys.which("git")))
-    length(system2("git", c("status", "--porcelain"), stdout = TRUE,
-                   stderr = FALSE)) > 0 else NA,
+  source_has_local_changes = if (nzchar(Sys.which("git"))) {
+    length(system2("git", c("status", "--porcelain"),
+      stdout = TRUE,
+      stderr = FALSE
+    )) > 0
+  } else {
+    NA
+  },
   article_md5 = unname(tools::md5sum(knitr::current_input(dir = TRUE))),
   R = as.character(getRversion()), scop = as.character(utils::packageVersion("scop")),
   retained_observations = ncol(spatial_roundtrip), genes = nrow(spatial_roundtrip)
 )
 build_receipt
 #>                     article               built_utc
-#> 1 spatial-framework-bridges 2026-10-26 15:38:35 UTC
+#> 1 spatial-framework-bridges 2026-10-28 09:04:49 UTC
 #>                            source_revision source_has_local_changes
-#> 1 799930e97b8b7a8f42ae03464fcd816ff1ada845                    FALSE
+#> 1 896e55b929953f0b1e16ebccd54e591ef3474b8f                    FALSE
 #>                        article_md5     R  scop retained_observations genes
-#> 1 f7d8e04695d2490e0d5558c3b84abe23 4.6.1 0.9.2                  1986  5000
+#> 1 f32a1d03fe7aebfd50780d0c15703cba 4.6.1 0.9.2                  1986  5000
 utils::write.csv(build_receipt, file.path(output_dir, "build-receipt.csv"), row.names = FALSE)
 writeLines(capture.output(sessionInfo()), file.path(output_dir, "session-info.txt"))
 ```

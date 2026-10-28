@@ -28,7 +28,7 @@ library(scop)
 #>                                   /_/
 #>       ⬢               .      ⬡        .          ⬢
 #> ------------------------------------------------------------
-#> Version: 0.9.2 (2026-10-16 update)
+#> Version: 0.9.2 (2026-10-28 update)
 #> Website: https://mengxu98.github.io/scop/
 #> ------------------------------------------------------------
 
@@ -80,13 +80,13 @@ bench <- RunSpatialBenchmark(
 
 bench$summary
 #>        method      workflow ARI NMI purity runtime_s baseline_memory_mb
-#> 1  BayesSpace SpatialDomain   1   1      1    14.248           291.1406
+#> 1  BayesSpace SpatialDomain   1   1      1    14.633           291.1250
 #> 2      BANKSY SpatialDomain  NA  NA     NA        NA                 NA
-#> 3 SmoothClust SpatialDomain   1   1      1     5.920           291.1133
+#> 3 SmoothClust SpatialDomain   1   1      1     6.474           291.1133
 #>   peak_memory_mb memory_delta_mb n_evaluated n_clusters      status
-#> 1      1074.5039        783.3633          36          3     success
+#> 1      1074.8750        783.7500          36          3     success
 #> 2             NA              NA           0         NA unavailable
-#> 3       980.1641        689.0508          36          3     success
+#> 3       982.2031        691.0898          36          3     success
 #>            error
 #> 1               
 #> 2 Banksy=missing
@@ -111,10 +111,10 @@ str(bench$summary, max.level = 1)
 #>  $ ARI               : num  1 NA 1
 #>  $ NMI               : num  1 NA 1
 #>  $ purity            : num  1 NA 1
-#>  $ runtime_s         : num  14.25 NA 5.92
+#>  $ runtime_s         : num  14.63 NA 6.47
 #>  $ baseline_memory_mb: num  291 NA 291
-#>  $ peak_memory_mb    : num  1075 NA 980
-#>  $ memory_delta_mb   : num  783 NA 689
+#>  $ peak_memory_mb    : num  1075 NA 982
+#>  $ memory_delta_mb   : num  784 NA 691
 #>  $ n_evaluated       : int  36 0 36
 #>  $ n_clusters        : int  3 NA 3
 #>  $ status            : chr  "success" "unavailable" "success"

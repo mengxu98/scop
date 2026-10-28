@@ -39,15 +39,19 @@ and RNA velocity.
 ``` r
 
 library(scop)
-stopifnot(all(unlist(thisutils::check_r("slingshot", install = FALSE, verbose = FALSE))),
-          all(unlist(thisutils::check_r("cole-trapnell-lab/monocle3", install = FALSE, verbose = FALSE))),
-          "fit_trends" %in% getNamespaceExports("thisutils"))
+stopifnot(
+  all(unlist(thisutils::check_r("slingshot", install = FALSE, verbose = FALSE))),
+  all(unlist(thisutils::check_r("cole-trapnell-lab/monocle3", install = FALSE, verbose = FALSE))),
+  "fit_trends" %in% getNamespaceExports("thisutils")
+)
 set.seed(11)
 
 data(pancreas_sub)
 input_cells <- colnames(pancreas_sub)
-pancreas_sub <- RunStandardWorkflow(pancreas_sub, assay = "RNA", seed = 11,
-                                   cores = 1, verbose = FALSE)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub,
+  assay = "RNA", seed = 11,
+  cores = 1, verbose = FALSE
+)
 stopifnot(identical(colnames(pancreas_sub), input_cells))
 
 SeuratObject::Assays(pancreas_sub)
@@ -244,8 +248,10 @@ genes that vary along one or more lineages.
 pancreas_sub <- RunDynamicFeatures(
   pancreas_sub,
   lineages = c("Lineage1", "Lineage2"),
-  features = unique(c(head(SeuratObject::VariableFeatures(pancreas_sub), 200),
-                      "Plk1", "Hes1", "Neurod2", "Ghrl", "Gcg", "Ins2")),
+  features = unique(c(
+    head(SeuratObject::VariableFeatures(pancreas_sub), 200),
+    "Plk1", "Hes1", "Neurod2", "Ghrl", "Gcg", "Ins2"
+  )),
   fit_method = "gam", cores = 1, seed = 11
 )
 ```
@@ -304,8 +310,10 @@ dir.create(output_dir)
 saveRDS(pancreas_sub, file.path(output_dir, "analysis.rds"))
 utils::write.csv(pancreas_sub@meta.data, file.path(output_dir, "cell-metadata.csv"))
 writeLines(capture.output(sessionInfo()), file.path(output_dir, "session-info.txt"))
-data.frame(cells = ncol(pancreas_sub), genes = nrow(pancreas_sub),
-           velocity_backend = "cpp", paga_backend = "cpp")
+data.frame(
+  cells = ncol(pancreas_sub), genes = nrow(pancreas_sub),
+  velocity_backend = "cpp", paga_backend = "cpp"
+)
 #>   cells genes velocity_backend paga_backend
 #> 1  1000 15998              cpp          cpp
 names(pancreas_sub@tools)

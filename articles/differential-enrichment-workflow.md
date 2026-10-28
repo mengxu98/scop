@@ -44,8 +44,10 @@ set.seed(11)
 
 data(pancreas_sub)
 input_cells <- colnames(pancreas_sub)
-pancreas_sub <- RunStandardWorkflow(pancreas_sub, assay = "RNA",
-                                   seed = 11, cores = 1, verbose = FALSE)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub,
+  assay = "RNA",
+  seed = 11, cores = 1, verbose = FALSE
+)
 stopifnot(identical(colnames(pancreas_sub), input_cells))
 data.frame(cells = ncol(pancreas_sub), genes = nrow(pancreas_sub))
 #>   cells genes
@@ -79,8 +81,10 @@ pancreas_sub <- RunDEtest(
 
 de <- pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox
 stopifnot(nrow(de) > 0, all(c("gene", "group1", "avg_log2FC", "p_val_adj") %in% names(de)))
-data.frame(rows = nrow(de), unique_genes = length(unique(de$gene)),
-           contrasts = length(unique(de$group1)))
+data.frame(
+  rows = nrow(de), unique_genes = length(unique(de$gene)),
+  contrasts = length(unique(de$group1))
+)
 #>    rows unique_genes contrasts
 #> 1 36764         8465         5
 head(de)
@@ -187,26 +191,36 @@ downloads or invented pathway memberships occur during this step.
 tested_by_group <- split(de$gene, de$group1)
 measured_genes <- Reduce(intersect, tested_by_group)
 stopifnot(length(measured_genes) > 0)
-valid_symbols <- intersect(measured_genes,
-                           AnnotationDbi::keys(org.Mm.eg.db::org.Mm.eg.db, keytype = "SYMBOL"))
+valid_symbols <- intersect(
+  measured_genes,
+  AnnotationDbi::keys(org.Mm.eg.db::org.Mm.eg.db, keytype = "SYMBOL")
+)
 go_map <- AnnotationDbi::select(org.Mm.eg.db::org.Mm.eg.db,
-                                keys = valid_symbols, keytype = "SYMBOL",
-                                columns = c("GOALL", "ONTOLOGYALL"))
-go_term2gene <- unique(go_map[!is.na(go_map$GOALL) & go_map$ONTOLOGYALL == "BP",
-                               c("GOALL", "SYMBOL")])
+  keys = valid_symbols, keytype = "SYMBOL",
+  columns = c("GOALL", "ONTOLOGYALL")
+)
+go_term2gene <- unique(go_map[
+  !is.na(go_map$GOALL) & go_map$ONTOLOGYALL == "BP",
+  c("GOALL", "SYMBOL")
+])
 colnames(go_term2gene) <- c("Term", "symbol")
 go_term2name <- AnnotationDbi::select(GO.db::GO.db,
-                                      keys = unique(go_term2gene$Term),
-                                      keytype = "GOID", columns = "TERM")
+  keys = unique(go_term2gene$Term),
+  keytype = "GOID", columns = "TERM"
+)
 go_term2name <- unique(go_term2name[stats::complete.cases(go_term2name), ])
 colnames(go_term2name) <- c("Term", "Name")
-go_version <- paste("org.Mm.eg.db", utils::packageVersion("org.Mm.eg.db"),
-                     "; GO.db", utils::packageVersion("GO.db"))
+go_version <- paste(
+  "org.Mm.eg.db", utils::packageVersion("org.Mm.eg.db"),
+  "; GO.db", utils::packageVersion("GO.db")
+)
 stopifnot(nrow(go_term2gene) > 0)
-data.frame(database = "GO_BP", version = go_version,
-           genes_tested_in_every_group = length(measured_genes),
-           GO_annotated_background = length(unique(go_term2gene$symbol)),
-           terms = length(unique(go_term2gene$Term)))
+data.frame(
+  database = "GO_BP", version = go_version,
+  genes_tested_in_every_group = length(measured_genes),
+  GO_annotated_background = length(unique(go_term2gene$symbol)),
+  terms = length(unique(go_term2gene$Term))
+)
 #>   database                            version genes_tested_in_every_group
 #> 1    GO_BP org.Mm.eg.db 3.23.0 ; GO.db 3.23.1                        6770
 #>   GO_annotated_background terms
@@ -342,8 +356,12 @@ head(ora)
 #> 5    59 Ductal   custom  custom
 #> 6    99 Ductal   custom  custom
 data.frame(group = unique(ora$Groups), significant_terms = vapply(
-  unique(ora$Groups), function(g) sum(ora$p.adjust[ora$Groups == g] < 0.05,
-                                    na.rm = TRUE), integer(1)))
+  unique(ora$Groups), function(g) {
+    sum(ora$p.adjust[ora$Groups == g] < 0.05,
+      na.rm = TRUE
+    )
+  }, integer(1)
+))
 #>                       group significant_terms
 #> Ductal               Ductal               363
 #> Ngn3-high-EP   Ngn3-high-EP                50
@@ -424,16 +442,22 @@ ranking.
 
 ``` r
 
-gsea_symbols <- intersect(unique(de$gene),
-                          AnnotationDbi::keys(org.Mm.eg.db::org.Mm.eg.db, keytype = "SYMBOL"))
+gsea_symbols <- intersect(
+  unique(de$gene),
+  AnnotationDbi::keys(org.Mm.eg.db::org.Mm.eg.db, keytype = "SYMBOL")
+)
 gsea_map <- AnnotationDbi::select(org.Mm.eg.db::org.Mm.eg.db,
-                                 keys = gsea_symbols, keytype = "SYMBOL",
-                                 columns = c("GOALL", "ONTOLOGYALL"))
-gsea_term2gene <- unique(gsea_map[!is.na(gsea_map$GOALL) & gsea_map$ONTOLOGYALL == "BP",
-                                c("GOALL", "SYMBOL")])
+  keys = gsea_symbols, keytype = "SYMBOL",
+  columns = c("GOALL", "ONTOLOGYALL")
+)
+gsea_term2gene <- unique(gsea_map[
+  !is.na(gsea_map$GOALL) & gsea_map$ONTOLOGYALL == "BP",
+  c("GOALL", "SYMBOL")
+])
 colnames(gsea_term2gene) <- c("Term", "symbol")
 gsea_term2name <- AnnotationDbi::select(GO.db::GO.db,
-  keys = unique(gsea_term2gene$Term), keytype = "GOID", columns = "TERM")
+  keys = unique(gsea_term2gene$Term), keytype = "GOID", columns = "TERM"
+)
 gsea_term2name <- unique(gsea_term2name[stats::complete.cases(gsea_term2name), ])
 colnames(gsea_term2name) <- c("Term", "Name")
 stopifnot(all(go_term2gene$symbol %in% gsea_term2gene$symbol))
@@ -452,8 +476,10 @@ gsea_endocrine <- subset(
   Groups == "Endocrine" & Database == "custom"
 )
 gsea_id <- gsea_endocrine$ID[which.min(gsea_endocrine$p.adjust)]
-print(head(gsea_endocrine[order(gsea_endocrine$p.adjust),
-                         c("ID", "Description", "NES", "p.adjust")], 5))
+print(head(gsea_endocrine[
+  order(gsea_endocrine$p.adjust),
+  c("ID", "Description", "NES", "p.adjust")
+], 5))
 #>              ID                                                   Description
 #> 8228 GO:0009306                                             protein secretion
 #> 8229 GO:0051046                                       regulation of secretion
@@ -521,32 +547,50 @@ utils::write.csv(go_term2gene, file.path(output_dir, "GO-BP-measured-background.
 utils::write.csv(gsea_term2gene, file.path(output_dir, "GO-BP-GSEA-memberships.csv"), row.names = FALSE)
 writeLines(paste("GO_BP", go_version), file.path(output_dir, "GO-source.txt"))
 utils::write.csv(pancreas_sub@tools$Enrichment_CellType_wilcox$enrichment,
-                 file.path(output_dir, "ORA.csv"), row.names = FALSE)
+  file.path(output_dir, "ORA.csv"),
+  row.names = FALSE
+)
 utils::write.csv(pancreas_sub@tools$GSEA_CellType_wilcox$enrichment,
-                 file.path(output_dir, "GSEA.csv"), row.names = FALSE)
+  file.path(output_dir, "GSEA.csv"),
+  row.names = FALSE
+)
 utils::write.csv(pancreas_sub@meta.data, file.path(output_dir, "cell-metadata.csv"))
 reloaded <- readRDS(result_file)
-stopifnot(identical(colnames(reloaded), colnames(pancreas_sub)),
-          identical(reloaded@meta.data, pancreas_sub@meta.data),
-          identical(SeuratObject::Reductions(reloaded),
-                    SeuratObject::Reductions(pancreas_sub)),
-          identical(GetAssayData5(reloaded, assay = "RNA", layer = "counts"),
-                    GetAssayData5(pancreas_sub, assay = "RNA", layer = "counts")))
-stopifnot(identical(reloaded@tools$DEtest_CellType$AllMarkers_wilcox, de),
-          identical(reloaded@tools$Enrichment_CellType_wilcox$enrichment,
-                    pancreas_sub@tools$Enrichment_CellType_wilcox$enrichment),
-          identical(reloaded@tools$GSEA_CellType_wilcox$enrichment,
-                    pancreas_sub@tools$GSEA_CellType_wilcox$enrichment))
-data.frame(file = basename(list.files(output_dir, full.names = TRUE)),
-           bytes = file.info(list.files(output_dir, full.names = TRUE))$size)
+stopifnot(
+  identical(colnames(reloaded), colnames(pancreas_sub)),
+  identical(reloaded@meta.data, pancreas_sub@meta.data),
+  identical(
+    SeuratObject::Reductions(reloaded),
+    SeuratObject::Reductions(pancreas_sub)
+  ),
+  identical(
+    GetAssayData5(reloaded, assay = "RNA", layer = "counts"),
+    GetAssayData5(pancreas_sub, assay = "RNA", layer = "counts")
+  )
+)
+stopifnot(
+  identical(reloaded@tools$DEtest_CellType$AllMarkers_wilcox, de),
+  identical(
+    reloaded@tools$Enrichment_CellType_wilcox$enrichment,
+    pancreas_sub@tools$Enrichment_CellType_wilcox$enrichment
+  ),
+  identical(
+    reloaded@tools$GSEA_CellType_wilcox$enrichment,
+    pancreas_sub@tools$GSEA_CellType_wilcox$enrichment
+  )
+)
+data.frame(
+  file = basename(list.files(output_dir, full.names = TRUE)),
+  bytes = file.info(list.files(output_dir, full.names = TRUE))$size
+)
 #>                            file    bytes
 #> 1               all-markers.csv  5268635
-#> 2                  analysis.rds 50898950
+#> 2                  analysis.rds 50901271
 #> 3             cell-metadata.csv   146525
 #> 4    GO-BP-GSEA-memberships.csv 12612015
 #> 5 GO-BP-measured-background.csv 10159062
 #> 6                 GO-source.txt       41
-#> 7                      GSEA.csv  6702564
+#> 7                      GSEA.csv  6702982
 #> 8                       ORA.csv  3986172
 ```
 
@@ -583,8 +627,10 @@ alter numerical results. Keep this receipt with the exported object.
 
 source_revision <- Sys.getenv("GITHUB_SHA")
 if (!nzchar(source_revision) && nzchar(Sys.which("git"))) {
-  source_revision <- tryCatch(system2("git", c("rev-parse", "HEAD"), stdout = TRUE,
-                                      stderr = FALSE)[1], error = function(e) NA_character_)
+  source_revision <- tryCatch(system2("git", c("rev-parse", "HEAD"),
+    stdout = TRUE,
+    stderr = FALSE
+  )[1], error = function(e) NA_character_)
 }
 article_source <- knitr::current_input(dir = TRUE)
 build_receipt <- data.frame(
@@ -593,8 +639,11 @@ build_receipt <- data.frame(
   scop = as.character(utils::packageVersion("scop")),
   R = as.character(getRversion()),
   source_revision = source_revision,
-  source_has_local_changes = if (nzchar(Sys.which("git")))
-    length(system2("git", c("status", "--porcelain"), stdout = TRUE, stderr = FALSE)) > 0 else NA,
+  source_has_local_changes = if (nzchar(Sys.which("git"))) {
+    length(system2("git", c("status", "--porcelain"), stdout = TRUE, stderr = FALSE)) > 0
+  } else {
+    NA
+  },
   article_md5 = unname(tools::md5sum(article_source)),
   R_seed = 11,
   cells_retained = ncol(pancreas_sub),
@@ -603,13 +652,14 @@ build_receipt <- data.frame(
 )
 build_receipt
 #>                            article               built_utc  scop     R
-#> 1 differential-enrichment-workflow 2026-10-26 15:34:19 UTC 0.9.2 4.6.1
+#> 1 differential-enrichment-workflow 2026-10-28 09:00:27 UTC 0.9.2 4.6.1
 #>                            source_revision source_has_local_changes
-#> 1 799930e97b8b7a8f42ae03464fcd816ff1ada845                    FALSE
+#> 1 896e55b929953f0b1e16ebccd54e591ef3474b8f                    FALSE
 #>                        article_md5 R_seed cells_retained genes_in_active_assay
-#> 1 89dac5c2b8583a6ebdd392f907b4f928     11           1000                 15998
+#> 1 1c730bbafc9f5f0c6783a90f73de724d     11           1000                 15998
 utils::write.csv(build_receipt, file.path(output_dir, "build-receipt.csv"),
-                 row.names = FALSE)
+  row.names = FALSE
+)
 writeLines(capture.output(sessionInfo()), file.path(output_dir, "session-info.txt"))
 ```
 
@@ -696,7 +746,7 @@ sessionInfo()
 #> [154] parallel_4.6.1          listenv_1.1.0           ggrepel_0.9.8          
 #> [157] deldir_2.0-4            Biostrings_2.80.2       splines_4.6.1          
 #> [160] tensor_1.5.1            circlize_0.4.18         ps_1.9.3               
-#> [163] igraph_2.3.4            spatstat.geom_3.8-3     enrichit_0.2.6         
+#> [163] igraph_2.3.4            spatstat.geom_3.8-3     enrichit_0.2.7         
 #> [166] RcppHNSW_0.7.0          reshape2_1.4.5          stats4_4.6.1           
 #> [169] evaluate_1.0.5          SeuratObject_5.4.0      foreach_1.5.2          
 #> [172] tweenr_2.0.3            httpuv_1.6.17           RANN_2.6.3             

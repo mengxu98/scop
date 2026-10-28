@@ -18,8 +18,10 @@ not evidence of cell fate.
 library(scop)
 data(pancreas_sub)
 input_cells <- colnames(pancreas_sub)
-pancreas_sub <- RunStandardWorkflow(pancreas_sub, assay = "RNA", seed = 11,
-                                   cores = 1, verbose = FALSE)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub,
+  assay = "RNA", seed = 11,
+  cores = 1, verbose = FALSE
+)
 stopifnot(identical(colnames(pancreas_sub), input_cells))
 table(pancreas_sub$SubCellType)
 ```
@@ -39,8 +41,10 @@ CellDimPlot(pancreas_sub, group.by = "SubCellType", reduction = "UMAP", label = 
 
 ``` r
 
-FeatureDimPlot(pancreas_sub, features = c("Sox9", "Neurog3", "Gcg", "Ins2"),
-               reduction = "UMAP", ncol = 2)
+FeatureDimPlot(pancreas_sub,
+  features = c("Sox9", "Neurog3", "Gcg", "Ins2"),
+  reduction = "UMAP", ncol = 2
+)
 ```
 
 ![](cellrank-palantir-fate-workflow_files/figure-html/setup-2.png)

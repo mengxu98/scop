@@ -35,7 +35,7 @@ library(scop)
 #>                                   /_/
 #>       ⬢               .      ⬡        .          ⬢
 #> ------------------------------------------------------------
-#> Version: 0.9.2 (2026-10-16 update)
+#> Version: 0.9.2 (2026-10-28 update)
 #> Website: https://mengxu98.github.io/scop/
 #> ------------------------------------------------------------
 data(visium_human_pancreas_sub)
@@ -121,8 +121,10 @@ choose thresholds after examining its distributions and tissue image.
 
 ``` r
 
-qc_parameters <- list(qc_metrics = c("umi", "gene"), UMI_threshold = 500,
-                      gene_threshold = 200, return_filtered = FALSE)
+qc_parameters <- list(
+  qc_metrics = c("umi", "gene"), UMI_threshold = 500,
+  gene_threshold = 200, return_filtered = FALSE
+)
 visium_qc <- do.call(RunSpotQC, c(
   list(object = visium, assay = assay_name, verbose = FALSE), qc_parameters
 ))
@@ -164,7 +166,8 @@ SpatialSpotPlot(visium_qc, group.by = "SpotQC", image = image_name)
 ``` r
 
 visium_normalized <- Seurat::NormalizeData(
-  visium_qc, assay = assay_name, normalization.method = "LogNormalize",
+  visium_qc,
+  assay = assay_name, normalization.method = "LogNormalize",
   scale.factor = 10000, verbose = FALSE
 )
 stopifnot(isTRUE(all.equal(
@@ -175,18 +178,22 @@ SeuratObject::Layers(visium_normalized[[assay_name]])
 feature <- "GCG"
 stopifnot(feature %in% rownames(counts))
 feature_values <- GetAssayData5(visium_normalized, assay = assay_name, layer = "data")[feature, ]
-data.frame(feature = feature, spots_with_counts = sum(counts[feature, ] > 0),
-           minimum_log_expression = min(feature_values),
-           maximum_log_expression = max(feature_values))
+data.frame(
+  feature = feature, spots_with_counts = sum(counts[feature, ] > 0),
+  minimum_log_expression = min(feature_values),
+  maximum_log_expression = max(feature_values)
+)
 #>   feature spots_with_counts minimum_log_expression maximum_log_expression
 #> 1     GCG              1861                      0               7.154526
 ```
 
 ``` r
 
-SpatialSpotPlot(visium_normalized, features = feature, assay = assay_name,
-                layer = "data", image = image_name, palette = "YlGnBu",
-                legend.title = "Log-normalized GCG")
+SpatialSpotPlot(visium_normalized,
+  features = feature, assay = assay_name,
+  layer = "data", image = image_name, palette = "YlGnBu",
+  legend.title = "Log-normalized GCG"
+)
 ```
 
 ![](spatial-platform-workflows_files/figure-html/platform-expression-map-1.png)
@@ -205,17 +212,21 @@ confirms that the raw source was preserved.
 output_dir <- Sys.getenv("SCOP_PLATFORM_OUTPUT_DIR", file.path(tempdir(), "scop-platform"))
 dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
 result_file <- file.path(output_dir, "panin-input-qc-normalized.rds")
-saveRDS(list(object = visium_normalized, input = input_receipt,
-             qc_parameters = qc_parameters, qc_summary = qc_summary,
-             coordinates = raw_coordinates, session = utils::sessionInfo()), result_file)
+saveRDS(list(
+  object = visium_normalized, input = input_receipt,
+  qc_parameters = qc_parameters, qc_summary = qc_summary,
+  coordinates = raw_coordinates, session = utils::sessionInfo()
+), result_file)
 reloaded <- readRDS(result_file)
 reload_checks <- c(
   observations = identical(colnames(reloaded$object), colnames(visium)),
   counts = isTRUE(all.equal(
-    GetAssayData5(reloaded$object, assay = assay_name, layer = "counts"), counts)),
+    GetAssayData5(reloaded$object, assay = assay_name, layer = "counts"), counts
+  )),
   qc_labels = identical(reloaded$object$SpotQC, visium_normalized$SpotQC),
   coordinates = identical(
-    SpatialCoordinates(reloaded$object, image = image_name, space = "raw"), raw_coordinates)
+    SpatialCoordinates(reloaded$object, image = image_name, space = "raw"), raw_coordinates
+  )
 )
 data.frame(check = names(reload_checks), passed = unname(reload_checks))
 #>          check passed
@@ -396,7 +407,7 @@ normalized@tools$run_standard_spatial_workflow$stages
 # A separate count-dependent method; q is a required choice, not an inferred truth.
 bayesspace <- RunBayesSpace(
   normalized,
-  assay = "Spatial",  # this assay must retain the original counts
+  assay = "Spatial", # this assay must retain the original counts
   image = "slice1",
   q = 4,
   store_sce = FALSE
@@ -473,8 +484,10 @@ running.
 
 ``` r
 
-sample_files <- c(S1 = Sys.getenv("SCOP_SPATIAL_S1_RDS"),
-                  S2 = Sys.getenv("SCOP_SPATIAL_S2_RDS"))
+sample_files <- c(
+  S1 = Sys.getenv("SCOP_SPATIAL_S1_RDS"),
+  S2 = Sys.getenv("SCOP_SPATIAL_S2_RDS")
+)
 stopifnot(length(unique(normalizePath(sample_files))) == 2L)
 visium_S1 <- readRDS(sample_files[["S1"]])
 visium_S2 <- readRDS(sample_files[["S2"]])
@@ -611,8 +624,10 @@ For a new dataset, preserve the following in the analysis receipt:
 
 data.frame(
   package = c("scop", "Seurat", "SeuratObject", "Matrix"),
-  version = vapply(c("scop", "Seurat", "SeuratObject", "Matrix"),
-                   function(p) as.character(utils::packageVersion(p)), character(1))
+  version = vapply(
+    c("scop", "Seurat", "SeuratObject", "Matrix"),
+    function(p) as.character(utils::packageVersion(p)), character(1)
+  )
 )
 #>                   package version
 #> scop                 scop   0.9.2
@@ -629,26 +644,33 @@ Save the analysis provenance beside the exported object.
 
 source_revision <- Sys.getenv("GITHUB_SHA")
 if (!nzchar(source_revision) && nzchar(Sys.which("git"))) {
-  source_revision <- system2("git", c("rev-parse", "HEAD"), stdout = TRUE,
-                             stderr = FALSE)[1]
+  source_revision <- system2("git", c("rev-parse", "HEAD"),
+    stdout = TRUE,
+    stderr = FALSE
+  )[1]
 }
 build_receipt <- data.frame(
   article = "spatial-platform-workflows", built_utc = format(Sys.time(), tz = "UTC", usetz = TRUE),
   source_revision = source_revision,
-  source_has_local_changes = if (nzchar(Sys.which("git")))
-    length(system2("git", c("status", "--porcelain"), stdout = TRUE,
-                   stderr = FALSE)) > 0 else NA,
+  source_has_local_changes = if (nzchar(Sys.which("git"))) {
+    length(system2("git", c("status", "--porcelain"),
+      stdout = TRUE,
+      stderr = FALSE
+    )) > 0
+  } else {
+    NA
+  },
   article_md5 = unname(tools::md5sum(knitr::current_input(dir = TRUE))),
   R = as.character(getRversion()), scop = as.character(utils::packageVersion("scop")),
   retained_observations = ncol(visium_normalized), genes = nrow(visium_normalized)
 )
 build_receipt
 #>                      article               built_utc
-#> 1 spatial-platform-workflows 2026-10-26 15:39:18 UTC
+#> 1 spatial-platform-workflows 2026-10-28 09:05:35 UTC
 #>                            source_revision source_has_local_changes
-#> 1 799930e97b8b7a8f42ae03464fcd816ff1ada845                    FALSE
+#> 1 896e55b929953f0b1e16ebccd54e591ef3474b8f                    FALSE
 #>                        article_md5     R  scop retained_observations genes
-#> 1 346283ac9d5ac1235f49576d8047da53 4.6.1 0.9.2                  1986  5000
+#> 1 eac3a9d4491ccb8b103d855602ed0f7e 4.6.1 0.9.2                  1986  5000
 utils::write.csv(build_receipt, file.path(output_dir, "build-receipt.csv"), row.names = FALSE)
 writeLines(capture.output(sessionInfo()), file.path(output_dir, "session-info.txt"))
 ```

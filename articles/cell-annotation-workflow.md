@@ -29,21 +29,31 @@ data(panc8_sub)
 stopifnot(!anyNA(panc8_sub$tech), !anyNA(panc8_sub$celltype))
 query_ids <- colnames(panc8_sub)[panc8_sub$tech == "celseq2"]
 reference_ids <- setdiff(colnames(panc8_sub), query_ids)
-stopifnot(length(intersect(query_ids, reference_ids)) == 0,
-          length(query_ids) + length(reference_ids) == ncol(panc8_sub))
+stopifnot(
+  length(intersect(query_ids, reference_ids)) == 0,
+  length(query_ids) + length(reference_ids) == ncol(panc8_sub)
+)
 query <- panc8_sub[, query_ids]
 reference <- panc8_sub[, reference_ids]
-query <- RunStandardWorkflow(query, assay = "RNA", seed = 11, cores = 1,
-                             verbose = FALSE)
-reference <- RunStandardWorkflow(reference, assay = "RNA", seed = 11, cores = 1,
-                                 verbose = FALSE)
+query <- RunStandardWorkflow(query,
+  assay = "RNA", seed = 11, cores = 1,
+  verbose = FALSE
+)
+reference <- RunStandardWorkflow(reference,
+  assay = "RNA", seed = 11, cores = 1,
+  verbose = FALSE
+)
 query$heldout_label <- query$celltype
-shared_features <- intersect(SeuratObject::VariableFeatures(query),
-                             SeuratObject::VariableFeatures(reference))
+shared_features <- intersect(
+  SeuratObject::VariableFeatures(query),
+  SeuratObject::VariableFeatures(reference)
+)
 stopifnot(length(shared_features) > 30)
-data.frame(input = c("query", "reference"),
-           cells = c(ncol(query), ncol(reference)),
-           species = "Homo sapiens")
+data.frame(
+  input = c("query", "reference"),
+  cells = c(ncol(query), ncol(reference)),
+  species = "Homo sapiens"
+)
 #>       input cells      species
 #> 1     query   200 Homo sapiens
 #> 2 reference  1400 Homo sapiens
@@ -87,8 +97,10 @@ query <- RunKNNPredict(
   ref_collapsing = FALSE, k = 30, filter_lowfreq = 0,
   prefix = "CellKNN", verbose = FALSE
 )
-stopifnot(identical(colnames(query), query_ids),
-          "CellKNN_classification" %in% colnames(query@meta.data))
+stopifnot(
+  identical(colnames(query), query_ids),
+  "CellKNN_classification" %in% colnames(query@meta.data)
+)
 table(observed = query$heldout_label, predicted = query$CellKNN_classification)
 #>                     predicted
 #> observed             acinar activated-stellate alpha beta delta ductal
@@ -112,9 +124,11 @@ table(observed = query$heldout_label, predicted = query$CellKNN_classification)
 #>   endothelial                  2     0
 #>   gamma                        0     7
 #>   macrophage                   0     0
-CellDimPlot(query, group.by = c("heldout_label", "CellKNN_classification"),
-            reduction = "UMAP", label = FALSE, theme_use = "theme_blank",
-            palcolor = label_colors)
+CellDimPlot(query,
+  group.by = c("heldout_label", "CellKNN_classification"),
+  reduction = "UMAP", label = FALSE, theme_use = "theme_blank",
+  palcolor = label_colors
+)
 ```
 
 ![](cell-annotation-workflow_files/figure-html/single-cell-reference-1.png)
@@ -140,16 +154,20 @@ parameter.
 
 ``` r
 
-profiles <- Seurat::AverageExpression(reference, assays = "RNA", layer = "data",
-                                      group.by = "celltype", verbose = FALSE)$RNA
+profiles <- Seurat::AverageExpression(reference,
+  assays = "RNA", layer = "data",
+  group.by = "celltype", verbose = FALSE
+)$RNA
 profiles <- log1p(profiles)
 query <- RunKNNPredict(
   srt_query = query, bulk_ref = profiles,
   query_assay = "RNA", features = shared_features,
   k = 1, filter_lowfreq = 0, prefix = "ProfileKNN", verbose = FALSE
 )
-table(cell_reference = query$CellKNN_classification,
-      profile_reference = query$ProfileKNN_classification)
+table(
+  cell_reference = query$CellKNN_classification,
+  profile_reference = query$ProfileKNN_classification
+)
 #>                     profile_reference
 #> cell_reference       acinar activated-stellate alpha beta delta ductal
 #>   acinar                 25                  0     0    0     0      1
@@ -172,8 +190,10 @@ table(cell_reference = query$CellKNN_classification,
 #>   gamma                        0     7          0
 names(query@tools)
 #> [1] "CellKNN_classification"    "ProfileKNN_classification"
-CellDimPlot(query, group.by = "ProfileKNN_classification", reduction = "UMAP",
-            theme_use = "theme_blank", palcolor = label_colors)
+CellDimPlot(query,
+  group.by = "ProfileKNN_classification", reduction = "UMAP",
+  theme_use = "theme_blank", palcolor = label_colors
+)
 ```
 
 ![](cell-annotation-workflow_files/figure-html/bulk-reference-1.png)
@@ -183,8 +203,10 @@ CellDimPlot(query, group.by = "ProfileKNN_classification", reduction = "UMAP",
 comparison <- data.frame(
   method = c("30 individual neighbors", "1 log-scale mean profile"),
   cells = ncol(query),
-  matches_supplied_label = c(sum(query$heldout_label == query$CellKNN_classification),
-                            sum(query$heldout_label == query$ProfileKNN_classification))
+  matches_supplied_label = c(
+    sum(query$heldout_label == query$CellKNN_classification),
+    sum(query$heldout_label == query$ProfileKNN_classification)
+  )
 )
 comparison$agreement <- comparison$matches_supplied_label / comparison$cells
 comparison
@@ -208,13 +230,17 @@ evidence of successful batch correction.
 ``` r
 
 ref_umap <- DefaultReduction(reference, pattern = "UMAP")
-query <- RunKNNMap(srt_query = query, srt_ref = reference,
-                   features = shared_features, ref_umap = ref_umap,
-                   projection_method = "knn", verbose = FALSE)
-ProjectionPlot(srt_query = query, srt_ref = reference,
-                query_group = "CellKNN_classification", ref_group = "celltype",
-                query_param = list(palcolor = label_colors, cells.highlight = TRUE),
-                ref_param = list(palcolor = label_colors))
+query <- RunKNNMap(
+  srt_query = query, srt_ref = reference,
+  features = shared_features, ref_umap = ref_umap,
+  projection_method = "knn", verbose = FALSE
+)
+ProjectionPlot(
+  srt_query = query, srt_ref = reference,
+  query_group = "CellKNN_classification", ref_group = "celltype",
+  query_param = list(palcolor = label_colors, cells.highlight = TRUE),
+  ref_param = list(palcolor = label_colors)
+)
 ```
 
 ![](cell-annotation-workflow_files/figure-html/projection-1.png)
@@ -228,8 +254,10 @@ data.frame(marker = markers, present = markers %in% rownames(query))
 #> 2    GCG    TRUE
 #> 3    SST    TRUE
 #> 4  KRT19    TRUE
-FeatureDimPlot(query, features = intersect(markers, rownames(query)),
-                reduction = "UMAP", ncol = 2)
+FeatureDimPlot(query,
+  features = intersect(markers, rownames(query)),
+  reduction = "UMAP", ncol = 2
+)
 ```
 
 ![](cell-annotation-workflow_files/figure-html/projection-2.png)
@@ -280,20 +308,28 @@ utils::write.csv(comparison, file.path(output_dir, "prediction-agreement.csv"), 
 utils::write.csv(query@meta.data, file.path(output_dir, "cell-metadata.csv"))
 reloaded <- readRDS(result_file)
 reloaded_reference <- readRDS(reference_file)
-stopifnot(identical(colnames(reloaded_reference), reference_ids),
-          identical(reloaded_reference@meta.data, reference@meta.data))
-stopifnot(identical(colnames(reloaded), colnames(query)),
-          identical(reloaded@meta.data, query@meta.data),
-          identical(SeuratObject::Reductions(reloaded),
-                    SeuratObject::Reductions(query)))
-data.frame(file = basename(list.files(output_dir, full.names = TRUE)),
-           bytes = file.info(list.files(output_dir, full.names = TRUE))$size)
+stopifnot(
+  identical(colnames(reloaded_reference), reference_ids),
+  identical(reloaded_reference@meta.data, reference@meta.data)
+)
+stopifnot(
+  identical(colnames(reloaded), colnames(query)),
+  identical(reloaded@meta.data, query@meta.data),
+  identical(
+    SeuratObject::Reductions(reloaded),
+    SeuratObject::Reductions(query)
+  )
+)
+data.frame(
+  file = basename(list.files(output_dir, full.names = TRUE)),
+  bytes = file.info(list.files(output_dir, full.names = TRUE))$size
+)
 #>                               file    bytes
-#> 1                     analysis.rds  8030151
+#> 1                     analysis.rds  8030267
 #> 2                cell-metadata.csv    30269
 #> 3 log-scale-reference-profiles.csv  2562291
 #> 4         prediction-agreement.csv      134
-#> 5                    reference.rds 36647959
+#> 5                    reference.rds 36647943
 #> 6   shared-prediction-features.txt     4005
 ```
 
@@ -326,8 +362,10 @@ alter numerical results. Keep this receipt with the exported object.
 
 source_revision <- Sys.getenv("GITHUB_SHA")
 if (!nzchar(source_revision) && nzchar(Sys.which("git"))) {
-  source_revision <- tryCatch(system2("git", c("rev-parse", "HEAD"), stdout = TRUE,
-                                      stderr = FALSE)[1], error = function(e) NA_character_)
+  source_revision <- tryCatch(system2("git", c("rev-parse", "HEAD"),
+    stdout = TRUE,
+    stderr = FALSE
+  )[1], error = function(e) NA_character_)
 }
 article_source <- knitr::current_input(dir = TRUE)
 build_receipt <- data.frame(
@@ -336,8 +374,11 @@ build_receipt <- data.frame(
   scop = as.character(utils::packageVersion("scop")),
   R = as.character(getRversion()),
   source_revision = source_revision,
-  source_has_local_changes = if (nzchar(Sys.which("git")))
-    length(system2("git", c("status", "--porcelain"), stdout = TRUE, stderr = FALSE)) > 0 else NA,
+  source_has_local_changes = if (nzchar(Sys.which("git"))) {
+    length(system2("git", c("status", "--porcelain"), stdout = TRUE, stderr = FALSE)) > 0
+  } else {
+    NA
+  },
   article_md5 = unname(tools::md5sum(article_source)),
   R_seed = 11,
   cells_retained = ncol(query),
@@ -346,13 +387,14 @@ build_receipt <- data.frame(
 )
 build_receipt
 #>                    article               built_utc  scop     R
-#> 1 cell-annotation-workflow 2026-10-26 15:30:35 UTC 0.9.2 4.6.1
+#> 1 cell-annotation-workflow 2026-10-28 08:56:34 UTC 0.9.2 4.6.1
 #>                            source_revision source_has_local_changes
-#> 1 799930e97b8b7a8f42ae03464fcd816ff1ada845                    FALSE
+#> 1 896e55b929953f0b1e16ebccd54e591ef3474b8f                    FALSE
 #>                        article_md5 R_seed cells_retained genes_in_active_assay
-#> 1 5a1752550a5b3fddd49b38832edbe149     11            200                 12932
+#> 1 fb85a2913df817dbe406011c397667b4     11            200                 12932
 utils::write.csv(build_receipt, file.path(output_dir, "build-receipt.csv"),
-                 row.names = FALSE)
+  row.names = FALSE
+)
 writeLines(capture.output(sessionInfo()), file.path(output_dir, "session-info.txt"))
 ```
 

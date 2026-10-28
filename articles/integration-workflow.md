@@ -51,11 +51,15 @@ not as a target to force during integration.
 library(scop)
 set.seed(11)
 harmony_source <- utils::packageDescription("harmony")
-stopifnot(identical(harmony_source$RemoteUsername, "immunogenomics"),
-          identical(harmony_source$RemoteRepo, "harmony"))
-data.frame(package = "harmony", version = harmony_source$Version,
-           source = paste(harmony_source$RemoteUsername, harmony_source$RemoteRepo, sep = "/"),
-           revision = harmony_source$RemoteSha)
+stopifnot(
+  identical(harmony_source$RemoteUsername, "immunogenomics"),
+  identical(harmony_source$RemoteRepo, "harmony")
+)
+data.frame(
+  package = "harmony", version = harmony_source$Version,
+  source = paste(harmony_source$RemoteUsername, harmony_source$RemoteRepo, sep = "/"),
+  revision = harmony_source$RemoteSha
+)
 #>   package version                 source
 #> 1 harmony   2.1.0 immunogenomics/harmony
 #>                                   revision
@@ -89,8 +93,10 @@ without erasing cell-type structure.
 
 ``` r
 
-panc8_sub <- RunStandardWorkflow(panc8_sub, assay = "RNA", seed = 11, cores = 1,
-                                 verbose = FALSE)
+panc8_sub <- RunStandardWorkflow(panc8_sub,
+  assay = "RNA", seed = 11, cores = 1,
+  verbose = FALSE
+)
 
 CellDimPlot(
   panc8_sub,
@@ -250,14 +256,20 @@ result_file <- file.path(output_dir, "analysis.rds")
 saveRDS(panc8_harmony, result_file)
 utils::write.csv(panc8_harmony@meta.data, file.path(output_dir, "cell-metadata.csv"))
 reloaded <- readRDS(result_file)
-stopifnot(identical(colnames(reloaded), colnames(panc8_harmony)),
-          identical(reloaded@meta.data, panc8_harmony@meta.data),
-          identical(SeuratObject::Reductions(reloaded),
-                    SeuratObject::Reductions(panc8_harmony)))
-data.frame(file = basename(list.files(output_dir, full.names = TRUE)),
-           bytes = file.info(list.files(output_dir, full.names = TRUE))$size)
+stopifnot(
+  identical(colnames(reloaded), colnames(panc8_harmony)),
+  identical(reloaded@meta.data, panc8_harmony@meta.data),
+  identical(
+    SeuratObject::Reductions(reloaded),
+    SeuratObject::Reductions(panc8_harmony)
+  )
+)
+data.frame(
+  file = basename(list.files(output_dir, full.names = TRUE)),
+  bytes = file.info(list.files(output_dir, full.names = TRUE))$size
+)
 #>                file    bytes
-#> 1      analysis.rds 48008781
+#> 1      analysis.rds 48007419
 #> 2 cell-metadata.csv   186170
 ```
 
@@ -290,8 +302,10 @@ alter numerical results. Keep this receipt with the exported object.
 
 source_revision <- Sys.getenv("GITHUB_SHA")
 if (!nzchar(source_revision) && nzchar(Sys.which("git"))) {
-  source_revision <- tryCatch(system2("git", c("rev-parse", "HEAD"), stdout = TRUE,
-                                      stderr = FALSE)[1], error = function(e) NA_character_)
+  source_revision <- tryCatch(system2("git", c("rev-parse", "HEAD"),
+    stdout = TRUE,
+    stderr = FALSE
+  )[1], error = function(e) NA_character_)
 }
 article_source <- knitr::current_input(dir = TRUE)
 build_receipt <- data.frame(
@@ -300,8 +314,11 @@ build_receipt <- data.frame(
   scop = as.character(utils::packageVersion("scop")),
   R = as.character(getRversion()),
   source_revision = source_revision,
-  source_has_local_changes = if (nzchar(Sys.which("git")))
-    length(system2("git", c("status", "--porcelain"), stdout = TRUE, stderr = FALSE)) > 0 else NA,
+  source_has_local_changes = if (nzchar(Sys.which("git"))) {
+    length(system2("git", c("status", "--porcelain"), stdout = TRUE, stderr = FALSE)) > 0
+  } else {
+    NA
+  },
   article_md5 = unname(tools::md5sum(article_source)),
   R_seed = 11,
   cells_retained = ncol(panc8_harmony),
@@ -310,13 +327,14 @@ build_receipt <- data.frame(
 )
 build_receipt
 #>                article               built_utc  scop     R
-#> 1 integration-workflow 2026-10-26 15:35:46 UTC 0.9.2 4.6.1
+#> 1 integration-workflow 2026-10-28 09:01:58 UTC 0.9.2 4.6.1
 #>                            source_revision source_has_local_changes
-#> 1 799930e97b8b7a8f42ae03464fcd816ff1ada845                    FALSE
+#> 1 896e55b929953f0b1e16ebccd54e591ef3474b8f                    FALSE
 #>                        article_md5 R_seed cells_retained genes_in_active_assay
-#> 1 dc5b02b3ebf14cb8a5a1954529fecaa0     11           1600                 12932
+#> 1 258fa719de827f5739c0606e0dfd1e7c     11           1600                 12932
 utils::write.csv(build_receipt, file.path(output_dir, "build-receipt.csv"),
-                 row.names = FALSE)
+  row.names = FALSE
+)
 writeLines(capture.output(sessionInfo()), file.path(output_dir, "session-info.txt"))
 ```
 
