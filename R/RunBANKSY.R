@@ -549,48 +549,49 @@ banksy_run_by_sample <- function(
     sample_srt <- srt[, cells]
     image_use <- image_map[[sample_name]]
     if (is.na(image_use)) image_use <- NULL
-    sample_output <- tryCatch({
-      assay_info <- banksy_resolve_assay(sample_srt, assay = assay, image = image_use)
-      coords <- resolve_spatial_spot_coords(
-        srt = sample_srt,
-        spot_ids = cells,
-        image = image_use,
-        coord.cols = coord.cols,
-        coordinate_space = coordinate_space
-      )
-      result <- RunBANKSY(
-        object = sample_srt,
-        assay = assay,
-        layer = layer,
-        features = features,
-        image = image_use,
-        coord.cols = coord.cols,
-        lambda = lambda,
-        k_geom = k_geom,
-        M = M,
-        npcs = npcs,
-        use_agf = use_agf,
-        algo = algo,
-        k_neighbors = k_neighbors,
-        resolution = resolution,
-        group = group,
-        seed = seed,
-        compute_banksy_params = compute_banksy_params,
-        run_pca_params = run_pca_params,
-        cluster_banksy_params = cluster_banksy_params,
-        cluster_source = cluster_source,
-        cluster_colname = cluster_colname,
-        tool_name = tool_name,
-        store_results = store_results,
-        verbose = FALSE,
-        coordinate_space = coordinate_space
-      )
-      list(
-        result = result,
-        assay = assay_info$assay,
-        coordinate_source = attr(coords, "spatial_source", exact = TRUE)
-      )
-    },
+    sample_output <- tryCatch(
+      {
+        assay_info <- banksy_resolve_assay(sample_srt, assay = assay, image = image_use)
+        coords <- resolve_spatial_spot_coords(
+          srt = sample_srt,
+          spot_ids = cells,
+          image = image_use,
+          coord.cols = coord.cols,
+          coordinate_space = coordinate_space
+        )
+        result <- RunBANKSY(
+          object = sample_srt,
+          assay = assay,
+          layer = layer,
+          features = features,
+          image = image_use,
+          coord.cols = coord.cols,
+          lambda = lambda,
+          k_geom = k_geom,
+          M = M,
+          npcs = npcs,
+          use_agf = use_agf,
+          algo = algo,
+          k_neighbors = k_neighbors,
+          resolution = resolution,
+          group = group,
+          seed = seed,
+          compute_banksy_params = compute_banksy_params,
+          run_pca_params = run_pca_params,
+          cluster_banksy_params = cluster_banksy_params,
+          cluster_source = cluster_source,
+          cluster_colname = cluster_colname,
+          tool_name = tool_name,
+          store_results = store_results,
+          verbose = FALSE,
+          coordinate_space = coordinate_space
+        )
+        list(
+          result = result,
+          assay = assay_info$assay,
+          coordinate_source = attr(coords, "spatial_source", exact = TRUE)
+        )
+      },
       error = function(e) {
         log_message(
           paste0("BANKSY failed for sample ", shQuote(sample_name), ": ", conditionMessage(e)),

@@ -15,20 +15,22 @@ test_that("prep_ref aligns an Assay5 subset before metadata filtering", {
 })
 
 test_that("prep_ref retains full-reference behavior", {
-  counts <- matrix(1:12, 3, dimnames = list(paste0("g",1:3), paste0("c",1:4)))
+  counts <- matrix(1:12, 3, dimnames = list(paste0("g", 1:3), paste0("c", 1:4)))
   srt <- SeuratObject::CreateSeuratObject(counts = Matrix::Matrix(counts, sparse = TRUE))
-  srt$label <- c("MG", NA, "OL", "MG"); srt$sample <- "a"
+  srt$label <- c("MG", NA, "OL", "MG")
+  srt$sample <- "a"
   out <- prep_ref(srt, group.by = "label", sample.by = "sample")
-  expect_equal(out$counts, counts[, c(1,3,4), drop = FALSE])
+  expect_equal(out$counts, counts[, c(1, 3, 4), drop = FALSE])
   expect_identical(rownames(out$meta), colnames(out$counts))
 })
 
 
 test_that("prep_ref filters shuffled counts using barcode metadata", {
-  counts <- matrix(1:12, 3, dimnames = list(paste0("g",1:3), paste0("c",1:4)))
+  counts <- matrix(1:12, 3, dimnames = list(paste0("g", 1:3), paste0("c", 1:4)))
   srt <- SeuratObject::CreateSeuratObject(counts = Matrix::Matrix(counts, sparse = TRUE))
-  srt$label <- c("MG", NA, "OL", "MG"); srt$sample <- c("a", "b", "c", "d")
-  testthat::local_mocked_bindings(GetAssayData5 = function(...) counts[, c(4,2,1), drop = FALSE])
+  srt$label <- c("MG", NA, "OL", "MG")
+  srt$sample <- c("a", "b", "c", "d")
+  testthat::local_mocked_bindings(GetAssayData5 = function(...) counts[, c(4, 2, 1), drop = FALSE])
   out <- prep_ref(srt, group.by = "label", sample.by = "sample")
   expect_identical(colnames(out$counts), c("c4", "c1"))
   expect_identical(out$meta$sample_scop, c("d", "a"))

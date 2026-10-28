@@ -20,7 +20,9 @@ mock_sctenifold_knk_upstream <- function(run, version = "2.0.0") {
       if (pkg == "utils" && fun == "packageVersion") {
         return(function(...) numeric_version(version))
       }
-      if (pkg == "scTenifoldKnk" && fun == "scTenifoldKnk") return(run)
+      if (pkg == "scTenifoldKnk" && fun == "scTenifoldKnk") {
+        return(run)
+      }
       stop("Unexpected upstream call: ", pkg, "::", fun)
     }
   )
@@ -40,7 +42,8 @@ test_that("RunscTenifoldKnk passes raw selected counts to the official workflow"
     result
   })
   out <- RunscTenifoldKnk(
-    srt, gKO = c("g1", "g1"), features = c("g5", "g3"),
+    srt,
+    gKO = c("g1", "g1"), features = c("g5", "g3"),
     qc_min_library_size = 12, qc_min_pct = 0.2,
     qc_remove_outlier_cells = FALSE, qc_mt_threshold = 0.3,
     nc_priorNetwork = data.frame(regulators = "g1", targets = "g3"),
@@ -81,7 +84,8 @@ test_that("RunscTenifoldKnk storage flags only trim requested upstream fields", 
   )
   mock_sctenifold_knk_upstream(function(...) result)
   out <- RunscTenifoldKnk(
-    srt, gKO = "g1", store_networks = FALSE, store_manifold = FALSE,
+    srt,
+    gKO = "g1", store_networks = FALSE, store_manifold = FALSE,
     verbose = FALSE
   )
   expect_null(out@tools$scTenifoldKnk$result$tensorNetworks)
@@ -129,16 +133,24 @@ test_that("RunscTenifoldKnk matches scTenifoldKnk 2.0 across supported modes", {
       upstream = list(gKO = c("g1", "g2"), dr_direction = FALSE)
     ),
     qc = list(
-      wrapper = list(qc = TRUE, qc_min_library_size = 0, qc_min_pct = 0.2,
-                     qc_remove_outlier_cells = FALSE, qc_mt_threshold = 0.4),
-      upstream = list(qc = TRUE, qc_minLibSize = 0, qc_minPCT = 0.2,
-                      qc_removeOutlierCells = FALSE, qc_maxMTratio = 0.4)
+      wrapper = list(
+        qc = TRUE, qc_min_library_size = 0, qc_min_pct = 0.2,
+        qc_remove_outlier_cells = FALSE, qc_mt_threshold = 0.4
+      ),
+      upstream = list(
+        qc = TRUE, qc_minLibSize = 0, qc_minPCT = 0.2,
+        qc_removeOutlierCells = FALSE, qc_maxMTratio = 0.4
+      )
     ),
     heat = list(
-      wrapper = list(gKO = c("g1", "g2"), ma_method = "heat",
-                     dr_directionRegressLibSize = TRUE),
-      upstream = list(gKO = c("g1", "g2"), ma_method = "heat",
-                      dr_directionRegressLibSize = TRUE)
+      wrapper = list(
+        gKO = c("g1", "g2"), ma_method = "heat",
+        dr_directionRegressLibSize = TRUE
+      ),
+      upstream = list(
+        gKO = c("g1", "g2"), ma_method = "heat",
+        dr_directionRegressLibSize = TRUE
+      )
     ),
     screen = list(
       wrapper = list(gKO = c("g1", "g2", "g3"), transcriptomeWide = TRUE),
@@ -170,20 +182,24 @@ test_that("RunscTenifoldKnk preserves feature selection and upstream QC errors",
   srt <- make_sctenifold_knk_srt()
   testthat::local_mocked_bindings(check_r = function(...) invisible(TRUE), .package = "scop")
   out <- RunscTenifoldKnk(
-    srt, "g1", features = paste0("g", 2:30), qc = FALSE,
+    srt, "g1",
+    features = paste0("g", 2:30), qc = FALSE,
     nc_nNet = 3, nc_nCells = 40, td_maxIter = 50, verbose = FALSE
   )
   counts <- GetAssayData5(srt, assay = "RNA", layer = "counts")[c(paste0("g", 2:30), "g1"), ]
   expected <- suppressMessages(scTenifoldKnk::scTenifoldKnk(
-    counts, "g1", qc = FALSE, nc_nNet = 3, nc_nCells = 40,
+    counts, "g1",
+    qc = FALSE, nc_nNet = 3, nc_nCells = 40,
     td_maxIter = 50, nCores = 1
   ))
   expect_equal(out@tools$scTenifoldKnk$result, expected, tolerance = 1e-12)
   counts["g1", ] <- 0
   filtered <- Seurat::CreateSeuratObject(counts = counts)
   expect_error(
-    RunscTenifoldKnk(filtered, "g1", qc_min_library_size = 0,
-                    qc_remove_outlier_cells = FALSE, verbose = FALSE),
+    RunscTenifoldKnk(filtered, "g1",
+      qc_min_library_size = 0,
+      qc_remove_outlier_cells = FALSE, verbose = FALSE
+    ),
     "after quality control"
   )
 })
@@ -193,7 +209,8 @@ test_that("scTenifoldKnk 2.0 outputs retain all existing single-knockout plots",
   srt <- make_sctenifold_knk_srt()
   testthat::local_mocked_bindings(check_r = function(...) invisible(TRUE), .package = "scop")
   out <- RunscTenifoldKnk(
-    srt, "g1", qc = FALSE, nc_nNet = 3, nc_nCells = 40,
+    srt, "g1",
+    qc = FALSE, nc_nNet = 3, nc_nCells = 40,
     td_maxIter = 50, verbose = FALSE
   )
   expect_true(all(c("direction", "directionScore") %in% names(out@tools$scTenifoldKnk$diffRegulation)))

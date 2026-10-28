@@ -204,7 +204,8 @@ SpatialCellPlot <- function(
     p <- ggplot2::ggplot() + polygon_layer
     if (is.numeric(dat$.value)) {
       p <- p + spatial_dim_continuous_scale(
-        dat$.value, aesthetic = "fill",
+        dat$.value,
+        aesthetic = "fill",
         colors = spatial_palette_colors(type = "continuous", palette = palette %||% "YlGnBu", palcolor = palcolor)
       ) + ggplot2::guides(fill = spatial_colorbar_guide(legend.direction))
     } else {
@@ -215,8 +216,10 @@ SpatialCellPlot <- function(
       )
     }
     p <- p +
-      ggplot2::labs(x = NULL, y = NULL, fill = legend.title %||% value_name,
-                    title = if (length(value_tables) > 1L) value_name else NULL) +
+      ggplot2::labs(
+        x = NULL, y = NULL, fill = legend.title %||% value_name,
+        title = if (length(value_tables) > 1L) value_name else NULL
+      ) +
       apply_plot_theme(theme_use = theme_use, theme_args = theme_args) +
       ggplot2::theme(legend.position = legend.position, legend.direction = legend.direction)
     if (isTRUE(crop)) {

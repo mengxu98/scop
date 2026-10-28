@@ -78,14 +78,18 @@ tAgePlot <- function(
 ) {
   plot_type <- match.arg(plot_type)
   if (!is.null(point_alpha)) {
-    .Deprecated(msg = paste0("`point_alpha` is deprecated; use `pt.alpha` instead. ",
-      "It will be removed in scop 1.0.0."))
+    .Deprecated(msg = paste0(
+      "`point_alpha` is deprecated; use `pt.alpha` instead. ",
+      "It will be removed in scop 1.0.0."
+    ))
     pt.alpha <- point_alpha
   }
   point_alpha <- pt.alpha
   if (!is.null(point_size)) {
-    .Deprecated(msg = paste0("`point_size` is deprecated; use `pt.size` instead. ",
-      "It will be removed in scop 1.0.0."))
+    .Deprecated(msg = paste0(
+      "`point_size` is deprecated; use `pt.size` instead. ",
+      "It will be removed in scop 1.0.0."
+    ))
     pt.size <- point_size
   }
   point_size <- pt.size

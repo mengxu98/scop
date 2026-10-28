@@ -1311,7 +1311,9 @@ RunDEtestPairedWilcox <- function(args, pairs, cell_index, cores, verbose) {
   features <- args$features %||% rownames(data)
   group_stats <- if (all(features %in% rownames(data))) {
     lapply(cell_index, function(cells) {
-      if (length(cells) < 3L) return(NULL)
+      if (length(cells) < 3L) {
+        return(NULL)
+      }
       RunDEtestSparseGroupStats(
         object = data, features = features, cells = cells,
         layer = args$layer, pseudocount.use = args$pseudocount.use,
@@ -3504,7 +3506,8 @@ RunDEtest.Seurat <- function(
         p.adjust.method = p.adjust.method
       ), parent = baseenv())
       ConservedMarkers <- parallelize_fun(
-        levels(cell_group), conserved_worker, cores = cores, verbose = verbose
+        levels(cell_group), conserved_worker,
+        cores = cores, verbose = verbose
       )
       RunDEtestStopOnParallelErrors(
         ConservedMarkers,

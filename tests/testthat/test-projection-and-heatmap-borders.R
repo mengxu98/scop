@@ -62,7 +62,8 @@ capture_heatmap_legends <- function(code) {
 test_that("heatmap color mapping preserves native interpolation and attributes", {
   for (space in c("LAB", "RGB", "XYZ", "sRGB", "LUV", "HLS")) {
     original <- circlize::colorRamp2(
-      c(-1, 0, 1), c("blue", "white", "red"), transparency = 0.2, space = space
+      c(-1, 0, 1), c("blue", "white", "red"),
+      transparency = 0.2, space = space
     )
     candidate <- heatmap_color_mapping(original, c(-1, 0, 1, NA_real_))
     for (x in list(

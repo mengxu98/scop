@@ -258,8 +258,10 @@
 #'   pt.alpha = 0,
 #'   density_filled = TRUE,
 #'   density_color = "#355D71",
-#'   density_filled_palcolor = c("#F2F7F5", "#C5DFD8", "#89BDB5",
-#'                              "#4A969E", "#286B87", "#253D63"),
+#'   density_filled_palcolor = c(
+#'     "#F2F7F5", "#C5DFD8", "#89BDB5",
+#'     "#4A969E", "#286B87", "#253D63"
+#'   ),
 #'   theme_use = "theme_blank",
 #'   xlab = "UMAP_1",
 #'   ylab = "UMAP_2",
@@ -932,13 +934,17 @@ CellDimPlot <- function(
   dim_names <- paste0(reduction_key, dims[1:2])
   plot_limits <- lapply(dim_names, function(d) range(dat_dim[, d], na.rm = TRUE))
   if (isTRUE(add_density)) {
-    panels <- if (isFALSE(show_na)) lapply(seq_len(nrow(comb)), function(i) {
-      dat_use[which(dat_use[[split.by]] == comb$split[i] &
-                      !is.na(dat_use[[comb$group[i]]])), , drop = FALSE]
-    }) else list(dat_use)
+    panels <- if (isFALSE(show_na)) {
+      lapply(seq_len(nrow(comb)), function(i) {
+        dat_use[which(dat_use[[split.by]] == comb$split[i] &
+          !is.na(dat_use[[comb$group[i]]])), , drop = FALSE]
+      })
+    } else {
+      list(dat_use)
+    }
     for (panel in panels) {
       panel <- panel[is.finite(panel[[dim_names[1]]]) &
-                       is.finite(panel[[dim_names[2]]]), , drop = FALSE]
+        is.finite(panel[[dim_names[2]]]), , drop = FALSE]
       if (nrow(panel) < 2L) next
       for (j in seq_along(dim_names)) {
         values <- panel[[dim_names[j]]]
@@ -1610,15 +1616,19 @@ dim_plot_density_layers <- function(
     return(NULL)
   }
   lines <- geom_density_2d(
-    aes(x = .data[["x"]], y = .data[["y"]],
-        linewidth = after_stat(I(ifelse(
-          round((.data[["level"]] - 0.08) / 0.105) %% 3 == 0, 0.75, 0.32
-        )))),
+    aes(
+      x = .data[["x"]], y = .data[["y"]],
+      linewidth = after_stat(I(ifelse(
+        round((.data[["level"]] - 0.08) / 0.105) %% 3 == 0, 0.75, 0.32
+      )))
+    ),
     n = 240L, contour_var = "ndensity", breaks = seq(0.08, 0.92, length.out = 9L),
     color = density_color, lineend = "round", linejoin = "round",
     inherit.aes = FALSE, show.legend = line_show_legend
   )
-  if (!isTRUE(density_filled)) return(lines)
+  if (!isTRUE(density_filled)) {
+    return(lines)
+  }
   filled_color <- palette_colors(
     palette = density_filled_palette,
     palcolor = density_filled_palcolor
@@ -1630,8 +1640,10 @@ dim_plot_density_layers <- function(
       breaks = c(0.02, seq(0.08, 0.92, length.out = 9L), 1 + 1e-8),
       inherit.aes = FALSE, show.legend = FALSE
     ),
-    ggplot2::scale_fill_stepsn(name = "Density", colours = filled_color, limits = c(0, 1),
-                             guide = ggplot2::guide_coloursteps()),
+    ggplot2::scale_fill_stepsn(
+      name = "Density", colours = filled_color, limits = c(0, 1),
+      guide = ggplot2::guide_coloursteps()
+    ),
     ggnewscale::new_scale_fill(),
     geom_density_2d(
       aes(x = .data[["x"]], y = .data[["y"]]),

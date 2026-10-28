@@ -283,8 +283,8 @@ RunSCENICPlus <- function(
   }
   egrn_method <- match.arg(egrn_method)
   if (length(egrn_n_perm) != 1L || !is.finite(egrn_n_perm) ||
-      egrn_n_perm < 1 || egrn_n_perm > .Machine$integer.max ||
-      egrn_n_perm != as.integer(egrn_n_perm)) {
+    egrn_n_perm < 1 || egrn_n_perm > .Machine$integer.max ||
+    egrn_n_perm != as.integer(egrn_n_perm)) {
     stop("egrn_n_perm must be a positive integer", call. = FALSE)
   }
   if (!rna_assay %in% names(srt@assays)) {
@@ -467,7 +467,9 @@ RunSCENICPlus <- function(
         as_matrix(Matrix::t(atac_counts[acc_regions, , drop = FALSE])),
         as_matrix(Matrix::t(rna_counts[rna_genes, , drop = FALSE])),
         match(region_gene[["region"]], acc_regions),
-        match(region_gene[["gene"]], rna_genes), cores = cores)
+        match(region_gene[["gene"]], rna_genes),
+        cores = cores
+      )
     }
   }
   tf_region <- motif_links[
@@ -655,13 +657,16 @@ run_scenicplus_python <- function(
     module <- if (h5mu) "scenicplus_io" else "scenicplus"
     envname <- envname %||% env_module_environment(module)
     old_kmp <- Sys.getenv("KMP_DUPLICATE_LIB_OK", unset = NA_character_)
-    on.exit({
-      if (is.na(old_kmp)) {
-        Sys.unsetenv("KMP_DUPLICATE_LIB_OK")
-      } else {
-        Sys.setenv(KMP_DUPLICATE_LIB_OK = old_kmp)
-      }
-    }, add = TRUE)
+    on.exit(
+      {
+        if (is.na(old_kmp)) {
+          Sys.unsetenv("KMP_DUPLICATE_LIB_OK")
+        } else {
+          Sys.setenv(KMP_DUPLICATE_LIB_OK = old_kmp)
+        }
+      },
+      add = TRUE
+    )
     PrepareEnv(
       envname = envname,
       conda = conda,
@@ -736,8 +741,10 @@ scenicplus_extract_python_tables <- function(python_path, scplus_object, output_
   stdout_path <- file.path(workdir, "stdout.log")
   stderr_path <- file.path(workdir, "stderr.log")
   python_dir <- dirname(runner_script_path("functions.py", "SCENIC+"))
-  code <- paste("import sys; sys.path.insert(0, sys.argv[1]); from functions import ExtractSCENICPlusTables;",
-    "ExtractSCENICPlusTables(sys.argv[2], sys.argv[3], verbose=sys.argv[4] == 'TRUE')")
+  code <- paste(
+    "import sys; sys.path.insert(0, sys.argv[1]); from functions import ExtractSCENICPlusTables;",
+    "ExtractSCENICPlusTables(sys.argv[2], sys.argv[3], verbose=sys.argv[4] == 'TRUE')"
+  )
   status <- runner_system2(
     command = python_path,
     args = shQuote(c("-c", code, python_dir, scplus_object, output_dir, as.character(isTRUE(verbose)))),
@@ -763,8 +770,10 @@ scenicplus_extract_python_tables <- function(python_path, scplus_object, output_
 }
 
 scenicplus_native_auc <- function(counts, signatures, cores = 1L) {
-  rankings <- scenicplus_rank_cpp(as_matrix(counts), random_seed = 123L,
-                                  cores = scop_n_threads(cores))
+  rankings <- scenicplus_rank_cpp(as_matrix(counts),
+    random_seed = 123L,
+    cores = scop_n_threads(cores)
+  )
   dimnames(rankings) <- list(colnames(counts), rownames(counts))
   run_aucell_scores_from_rankings(rankings, signatures)
 }
@@ -2007,16 +2016,21 @@ scenicplus_std_search <- function(search_space) {
 
 scenicplus_edge_spearman <- function(accessibility, expression, edge_regions, edge_genes, cores = 1L) {
   if (all(is.finite(accessibility)) && all(is.finite(expression))) {
-    ranked <- cbind(apply(accessibility, 2L, rank, ties.method = "average"),
-                    apply(expression, 2L, rank, ties.method = "average"))
+    ranked <- cbind(
+      apply(accessibility, 2L, rank, ties.method = "average"),
+      apply(expression, 2L, rank, ties.method = "average")
+    )
     scenic_edge_correlation_cpp(
       expr = ranked, tf_index = as.integer(edge_regions),
       target_index = as.integer(ncol(accessibility) + edge_genes),
-      n_threads = scop_n_threads(cores))
+      n_threads = scop_n_threads(cores)
+    )
   } else {
     vapply(seq_along(edge_regions), function(index) {
       suppressWarnings(stats::cor(accessibility[, edge_regions[index]],
-        expression[, edge_genes[index]], method = "spearman", use = "complete.obs"))
+        expression[, edge_genes[index]],
+        method = "spearman", use = "complete.obs"
+      ))
     }, numeric(1))
   }
 }
@@ -2063,7 +2077,9 @@ scenicplus_rg_gbm <- function(
   edge_regions <- unlist(candidates, use.names = FALSE)
   edge_genes <- rep(seq_along(genes), lengths(candidates))
   rho_all <- scenicplus_edge_spearman(accessibility, expression,
-                                       edge_regions, edge_genes, cores = cores)
+    edge_regions, edge_genes,
+    cores = cores
+  )
   rho_by_gene <- split(rho_all, factor(edge_genes, levels = seq_along(genes)))
   rows <- lapply(seq_along(groups), function(index) {
     df <- groups[[index]]
@@ -2439,8 +2455,10 @@ scenicplus_eregulon_build <- function(
     drop = FALSE
   ])
   rownames(filtered_triplets) <- NULL
-  list(triplets = filtered_triplets, regulon_list = genes_by_key,
-       statistics = statistics, used_fallback = used_fallback)
+  list(
+    triplets = filtered_triplets, regulon_list = genes_by_key,
+    statistics = statistics, used_fallback = used_fallback
+  )
 }
 
 scenicplus_le_triplets <- function(
@@ -2533,8 +2551,10 @@ scenicplus_le_triplets <- function(
       if (tf %in% names(tf_pos)) {
         ranking <- tf_pos[[tf]]
         if (identical(method, "gsea")) {
-          jobs[[length(jobs) + 1L]] <- list(tf = tf, sign = "+", module = module,
-            ranking = ranking, hits = which(names(ranking) %in% gene_set))
+          jobs[[length(jobs) + 1L]] <- list(
+            tf = tf, sign = "+", module = module,
+            ranking = ranking, hits = which(names(ranking) %in% gene_set)
+          )
           leading_edge <- character()
         } else {
           leading_edge <- scenicplus_gsea_leading_edge(ranking, gene_set)
@@ -2552,8 +2572,10 @@ scenicplus_le_triplets <- function(
       if (tf %in% names(tf_neg)) {
         ranking <- tf_neg[[tf]]
         if (identical(method, "gsea")) {
-          jobs[[length(jobs) + 1L]] <- list(tf = tf, sign = "-", module = module,
-            ranking = ranking, hits = which(names(ranking) %in% gene_set))
+          jobs[[length(jobs) + 1L]] <- list(
+            tf = tf, sign = "-", module = module,
+            ranking = ranking, hits = which(names(ranking) %in% gene_set)
+          )
           leading_edge <- character()
         } else {
           leading_edge <- scenicplus_gsea_leading_edge(ranking, gene_set)
@@ -2595,7 +2617,8 @@ scenicplus_le_triplets <- function(
       if (length(leading_edge) >= min_target_genes) {
         emodule <- job$module$data[job$module$data$region %in% tf_regions[[job$tf]], , drop = FALSE]
         out[[length(out) + 1L]] <- scenicplus_fmt_le_tri(
-          job$tf, job$sign, job$module$sign, emodule, leading_edge)
+          job$tf, job$sign, job$module$sign, emodule, leading_edge
+        )
       }
     }
   }

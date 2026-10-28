@@ -279,8 +279,8 @@ RunCellRank <- function(
       time_values <- as.list(time_values)
     }
     if (!isTRUE(use_connectivity_kernel) ||
-        !isTRUE(all.equal(as.numeric(velocity_weight), 0.8)) ||
-         !isTRUE(all.equal(as.numeric(connectivity_weight), 0.2))) {
+      !isTRUE(all.equal(as.numeric(velocity_weight), 0.8)) ||
+      !isTRUE(all.equal(as.numeric(connectivity_weight), 0.2))) {
       log_message(
         "{.arg velocity_weight}, {.arg connectivity_weight}, and {.arg use_connectivity_kernel} do not control moscot; use {.arg realtime_args$transition}",
         message_type = "warning",

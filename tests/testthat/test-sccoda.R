@@ -31,7 +31,8 @@ test_that("scCODA Python helpers accept structured comparisons and quoted groups
   for (candidate in python) {
     probe <- tryCatch(
       suppressWarnings(system2(candidate, c("-c", shQuote("pass")),
-        stdout = TRUE, stderr = TRUE)),
+        stdout = TRUE, stderr = TRUE
+      )),
       error = function(e) structure(character(), status = 1L)
     )
     if (identical(as.integer(attr(probe, "status") %||% 0L), 0L)) {

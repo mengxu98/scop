@@ -464,7 +464,7 @@ CellRankPlot <- function(
     if (!length(start_cells)) log_message("{.arg start_cells} does not match stored CellRank cells", message_type = "error")
     starts <- match(start_cells, cells)
   } else if (!is.null(srt@tools$CellRank$temporal$time_key) &&
-             srt@tools$CellRank$temporal$time_key %in% colnames(srt@meta.data)) {
+    srt@tools$CellRank$temporal$time_key %in% colnames(srt@meta.data)) {
     time_values <- suppressWarnings(as.numeric(as.character(srt@meta.data[[srt@tools$CellRank$temporal$time_key]])))
     if (any(is.finite(time_values))) starts <- which(time_values == min(time_values, na.rm = TRUE))
   } else if (!is.null(group.by) && group.by %in% colnames(srt@meta.data)) {

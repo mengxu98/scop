@@ -6,7 +6,8 @@ make_real_deconv_smoke_pair <- function(reverse_order = FALSE, full_depth = FALS
   ref_ids <- paste0("ref", seq_len(40))
   labels <- stats::setNames(rep(c("A", "B"), each = 20), ref_ids)
   ref <- matrix(stats::rpois(80 * 40, 2), 80,
-    dimnames = list(genes, ref_ids))
+    dimnames = list(genes, ref_ids)
+  )
   ref[1:25, 1:20] <- ref[1:25, 1:20] + matrix(stats::rpois(25 * 20, 60), 25)
   ref[26:50, 21:40] <- ref[26:50, 21:40] + matrix(stats::rpois(25 * 20, 60), 25)
   st <- round(3 * cbind(
@@ -30,13 +31,17 @@ make_real_deconv_smoke_pair <- function(reverse_order = FALSE, full_depth = FALS
   reference$celltype <- labels[colnames(reference)]
   spatial$x <- as.integer(sub("spot", "", colnames(spatial)))
   spatial$y <- spatial$x
-  ref_subset <- c("ref39", "ref3", "ref28", "ref9", "ref25", "ref5",
-    "ref32", "ref18", "ref37", "ref12", "ref23", "ref2")
+  ref_subset <- c(
+    "ref39", "ref3", "ref28", "ref9", "ref25", "ref5",
+    "ref32", "ref18", "ref37", "ref12", "ref23", "ref2"
+  )
   spot_subset <- c("spot5", "spot2", "spot6", "spot1", "spot4")
   spatial[["ALT"]] <- SeuratObject::CreateAssay5Object(
-    counts = Matrix::Matrix(st[, spot_subset, drop = FALSE], sparse = TRUE))
+    counts = Matrix::Matrix(st[, spot_subset, drop = FALSE], sparse = TRUE)
+  )
   reference[["ALT"]] <- SeuratObject::CreateAssay5Object(
-    counts = Matrix::Matrix(ref[, ref_subset, drop = FALSE], sparse = TRUE))
+    counts = Matrix::Matrix(ref[, ref_subset, drop = FALSE], sparse = TRUE)
+  )
   list(spatial = spatial, reference = reference, features = genes[1:60])
 }
 
@@ -63,10 +68,12 @@ test_that("real SPOTlight matches explicitly aligned inputs for subset assays", 
       expect_identical(colnames(reference), paste0("ref", 40:1))
     }
     set.seed(813)
-    wrapped <- RunSPOTlight(spatial, reference = reference,
+    wrapped <- RunSPOTlight(spatial,
+      reference = reference,
       reference_label = "celltype", assay = assay, reference_assay = assay,
       features = pair$features, marker_top_n = 20, min_prop = 0,
-      threads = 1, maxit = 100, verbose = FALSE)
+      threads = 1, maxit = 100, verbose = FALSE
+    )
 
     ref <- GetAssayData5(reference, assay = assay, layer = "counts")[pair$features, , drop = FALSE]
     st <- GetAssayData5(spatial, assay = assay, layer = "counts")[pair$features, , drop = FALSE]
@@ -78,16 +85,19 @@ test_that("real SPOTlight matches explicitly aligned inputs for subset assays", 
     labels <- as.character(reference[[]][colnames(ref), "celltype"])
 
     set.seed(813)
-    direct <- SPOTlight::SPOTlight(x = ref, y = st, groups = labels,
+    direct <- SPOTlight::SPOTlight(
+      x = ref, y = st, groups = labels,
       mgs = wrapped@tools$SPOTlight$marker_genes,
       gene_id = "gene", group_id = "cluster", weight_id = "weight",
       min_prop = 0, scale = TRUE, threads = 1, maxit = 100,
-      verbose = FALSE)$mat
+      verbose = FALSE
+    )$mat
     direct <- direct / rowSums(direct)
     weights <- wrapped@tools$SPOTlight$weights
     expect_identical(rownames(weights), colnames(st))
     expect_equal(weights, direct[rownames(weights), colnames(weights), drop = FALSE],
-      tolerance = 1e-8)
+      tolerance = 1e-8
+    )
     expect_true(all(is.finite(weights)))
     expect_true(all(weights >= 0))
     expect_equal(unname(rowSums(weights)), rep(1, nrow(weights)), tolerance = 1e-8)
@@ -106,8 +116,10 @@ test_that("real spacexr preprocessing preserves full-assay depths and identity",
   skip_if_not_installed("SpatialExperiment")
   skip_if_not_installed("SummarizedExperiment")
   skip_if_not_installed("S4Vectors")
-  skip_if_not("createRctd" %in% getNamespaceExports("spacexr"),
-    "Requires the SummarizedExperiment spacexr API")
+  skip_if_not(
+    "createRctd" %in% getNamespaceExports("spacexr"),
+    "Requires the SummarizedExperiment spacexr API"
+  )
   pair <- make_real_deconv_smoke_pair(reverse_order = TRUE, full_depth = TRUE)
   spatial <- pair$spatial
   reference <- pair$reference
@@ -124,7 +136,9 @@ test_that("real spacexr preprocessing preserves full-assay depths and identity",
     check_r = deconv_smoke_check_installed,
     get_namespace_fun = function(pkg, fun) {
       original <- namespace_fun(pkg, fun)
-      if (!identical(pkg, "spacexr") || !identical(fun, "createRctd")) return(original)
+      if (!identical(pkg, "spacexr") || !identical(fun, "createRctd")) {
+        return(original)
+      }
       function(spatial_experiment, reference_experiment, ...) {
         st <- SummarizedExperiment::assay(spatial_experiment, "counts")
         ref <- SummarizedExperiment::assay(reference_experiment, "counts")
@@ -143,7 +157,8 @@ test_that("real spacexr preprocessing preserves full-assay depths and identity",
         result <- original(spatial_experiment, reference_experiment, ...)
         result_numi <- stats::setNames(
           as.numeric(SummarizedExperiment::colData(result$spatial_experiment)$nUMI),
-          colnames(result$spatial_experiment))
+          colnames(result$spatial_experiment)
+        )
         expect_identical(result_numi, spatial_depth[colnames(result$spatial_experiment)])
         profiles <- result$cell_type_info$info[[1]]
         normalized <- sweep(as.matrix(ref), 2, ref_numi, "/")
@@ -159,11 +174,15 @@ test_that("real spacexr preprocessing preserves full-assay depths and identity",
     },
     .package = "scop"
   )
-  expect_error(RunRCTD(spatial, reference = reference,
-    reference_label = "celltype", assay = "ALT", reference_assay = "ALT",
-    features = pair$features, min_cells = 2, max_cores = 1,
-    rctd_mode = "full", verbose = FALSE,
-    create_rctd_params = list(ref_n_cells_min = 2, ref_UMI_min = 5000, UMI_min = 10000)),
-    "Completed genuine spacexr preprocessing smoke")
+  expect_error(
+    RunRCTD(spatial,
+      reference = reference,
+      reference_label = "celltype", assay = "ALT", reference_assay = "ALT",
+      features = pair$features, min_cells = 2, max_cores = 1,
+      rctd_mode = "full", verbose = FALSE,
+      create_rctd_params = list(ref_n_cells_min = 2, ref_UMI_min = 5000, UMI_min = 10000)
+    ),
+    "Completed genuine spacexr preprocessing smoke"
+  )
   expect_true(preprocessing_verified)
 })

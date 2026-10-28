@@ -657,14 +657,18 @@ cytospace_build_assignment_table <- function(
   cell_index <- result[["cell_index"]]
   spot_index <- result[["spot_index"]]
   assigned <- data.frame(
-    UniqueCID = if (length(cell_index) > 0L) paste0(
-      "UCID",
-      formatC(
-        seq_along(cell_index) - 1L,
-        width = nchar(length(cell_index)),
-        flag = "0"
+    UniqueCID = if (length(cell_index) > 0L) {
+      paste0(
+        "UCID",
+        formatC(
+          seq_along(cell_index) - 1L,
+          width = nchar(length(cell_index)),
+          flag = "0"
+        )
       )
-    ) else character(),
+    } else {
+      character()
+    },
     OriginalCID = sampled_cells[cell_index],
     CellType = sampled_labels[cell_index],
     SpotID = spot_ids[spot_index],

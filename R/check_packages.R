@@ -968,7 +968,8 @@ python_dependency_closure <- function(python, packages) {
   while (length(pending <- setdiff(unique(pending[nzchar(pending)]), closure))) {
     closure <- c(closure, pending)
     status <- system2t(
-      python, c("-m", "pip", "show", pending), stdout = output, stderr = errors
+      python, c("-m", "pip", "show", pending),
+      stdout = output, stderr = errors
     )
     detail <- readLines(errors, warn = FALSE)
     detail <- detail[nzchar(trimws(detail)) & !grepl("Package\\(s\\) not found", detail)]

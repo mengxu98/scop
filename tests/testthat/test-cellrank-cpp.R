@@ -1,5 +1,3 @@
-
-
 make_transition_matrix <- function(n = 30, seed = 1) {
   set.seed(seed)
   T <- matrix(runif(n * n), n, n)

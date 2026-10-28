@@ -180,10 +180,12 @@ RunRCTD <- function(
     verbose = verbose
   )
   reference_input <- deconv_align_reference(
-    ref_counts, reference, reference_label, verbose = verbose
+    ref_counts, reference, reference_label,
+    verbose = verbose
   )
   labels <- rctd_filter_labels_by_min_cells(
-    reference_input$labels, min_cells = min_cells, verbose = verbose
+    reference_input$labels,
+    min_cells = min_cells, verbose = verbose
   )
   dropped_cell_types <- attr(labels, "dropped_cell_types")
   labels <- droplevels(labels)

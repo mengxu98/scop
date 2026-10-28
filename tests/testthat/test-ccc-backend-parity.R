@@ -1249,8 +1249,10 @@ test_that("ccc_pair_table accepts backend parameter", {
 })
 
 test_that("CellChat grouping preserves scalar summaries and group/feature identities", {
-  x <- matrix(c(0, 1, 1, 4, 2, 0, 3, 8, 0, 0, 2, 6), nrow = 4,
-    dimnames = list(NULL, c("a-b", "1x", "gene")))
+  x <- matrix(c(0, 1, 1, 4, 2, 0, 3, 8, 0, 0, 2, 6),
+    nrow = 4,
+    dimnames = list(NULL, c("a-b", "1x", "gene"))
+  )
   groups <- list(
     factor(c("B", "A", "B", "A")),
     factor(c("B", "A", NA, "A"), levels = c("B", "unused", "A")),
@@ -1259,10 +1261,14 @@ test_that("CellChat grouping preserves scalar summaries and group/feature identi
   summary <- function(x) mean(stats::quantile(x, c(0.25, 0.5, 0.5, 0.75)))
   for (group in groups) {
     for (data in list(x, x[, 1L, drop = FALSE])) {
-      expect_identical(cellchat_group_aggregate(data, list(label = group), summary),
-        stats::aggregate(data, list(label = group), summary))
+      expect_identical(
+        cellchat_group_aggregate(data, list(label = group), summary),
+        stats::aggregate(data, list(label = group), summary)
+      )
     }
   }
-  expect_identical(cellchat_group_aggregate(as.data.frame(x), list(groups[[1L]]), mean),
-    stats::aggregate(as.data.frame(x), list(groups[[1L]]), mean))
+  expect_identical(
+    cellchat_group_aggregate(as.data.frame(x), list(groups[[1L]]), mean),
+    stats::aggregate(as.data.frame(x), list(groups[[1L]]), mean)
+  )
 })

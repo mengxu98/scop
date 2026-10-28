@@ -262,7 +262,8 @@ enrichment_go_keywords <- function(go_id) {
     s21 <- n_bg[[i]] - s11
     s22 <- ncol(mat) - n_selected - s21
     stats::fisher.test(
-      cbind(c(s11, s21), c(s12, s22)), alternative = "greater"
+      cbind(c(s11, s21), c(s12, s22)),
+      alternative = "greater"
     )$p.value
   }, numeric(1))
   df <- data.frame(keyword = rownames(mat)[keep], n_term = n_term, n_bg = n_bg, p = p)

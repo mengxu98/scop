@@ -1,4 +1,3 @@
-
 cellchat_consistency_input <- function(n_cells = 120) {
   data(pancreas_sub)
   set.seed(42)

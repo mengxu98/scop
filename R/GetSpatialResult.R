@@ -70,11 +70,14 @@ GetSpatialResult <- function(object, method, sample = NULL) {
   # Integration producers nest each method under a named tool. Resolve only
   # an exact, unique method entry; never guess a metadata column by prefix.
   if (is.null(bundle)) {
-    matches <- Filter(function(x) is.list(x) && is.list(x$methods) && !is.null(x$methods[[method]]),
-      object@tools)
+    matches <- Filter(
+      function(x) is.list(x) && is.list(x$methods) && !is.null(x$methods[[method]]),
+      object@tools
+    )
     if (length(matches) > 1L) {
       log_message("Multiple stored results match {.val {method}}; use the exact tool name",
-        message_type = "error")
+        message_type = "error"
+      )
     }
     if (length(matches) == 1L) bundle <- matches[[1L]]$methods[[method]]
   } else if (!is.null(bundle$active_method) && is.list(bundle$methods)) {
@@ -182,13 +185,17 @@ GetSpatialResult <- function(object, method, sample = NULL) {
   } else if (identical(producer_method, "PRECAST")) {
     # Fit parameters/native results remain untouched in tools. Only descriptive
     # counts that can be derived from the returned cells belong in this view.
-    summary <- list(n_cells = length(cells),
-      domains = spatial_domain_summary(spatial_result_cluster_labels(clusters)))
+    summary <- list(
+      n_cells = length(cells),
+      domains = spatial_domain_summary(spatial_result_cluster_labels(clusters))
+    )
     sample_col <- parameters$sample.by
     if (!is.null(sample_col) && sample_col %in% colnames(object@meta.data)) {
       counts <- table(as.character(object@meta.data[cells, sample_col]))
-      samples <- data.frame(sample = as.character(names(counts)),
-        count = as.integer(counts), stringsAsFactors = FALSE)
+      samples <- data.frame(
+        sample = as.character(names(counts)),
+        count = as.integer(counts), stringsAsFactors = FALSE
+      )
       summary$samples <- samples
     }
   } else if (!is.null(original_cells) &&
@@ -200,13 +207,16 @@ GetSpatialResult <- function(object, method, sample = NULL) {
 }
 
 spatial_result_cell_ids <- function(clusters) {
-  if (is.null(clusters)) return(NULL)
+  if (is.null(clusters)) {
+    return(NULL)
+  }
   ids <- if (spatial_result_has_cell_column(clusters)) {
     cell_ids <- as.character(clusters$cell)
     if (.row_names_info(clusters, type = 1L) > 0L &&
       !identical(rownames(clusters), cell_ids)) {
       log_message("Stored spatial cell columns and row names disagree; rerun the spatial method",
-        message_type = "error")
+        message_type = "error"
+      )
     }
     cell_ids
   } else if (is.data.frame(clusters) || is.matrix(clusters)) {
@@ -245,18 +255,28 @@ spatial_result_cell_map <- function(object, bundle, cluster_colname, method) {
   if (!is.null(index$cell_id_colname) || !is.null(index$object_cells)) {
     column <- index$cell_id_colname
     if (!is.character(column) || length(column) != 1L || is.na(column) ||
-      !column %in% colnames(object@meta.data)) fail()
+      !column %in% colnames(object@meta.data)) {
+      fail()
+    }
     ids <- as.character(object@meta.data[cells, column, drop = TRUE])
     if (is.null(index$object_cells) || anyNA(index$object_cells) ||
-      any(!nzchar(index$object_cells)) || anyDuplicated(index$object_cells)) fail()
-    for (fitted in list(index$cells, names(index$samples),
-      spatial_result_cell_ids(bundle$clusters), names(bundle$domains))) {
+      any(!nzchar(index$object_cells)) || anyDuplicated(index$object_cells)) {
+      fail()
+    }
+    for (fitted in list(
+      index$cells, names(index$samples),
+      spatial_result_cell_ids(bundle$clusters), names(bundle$domains)
+    )) {
       if (!is.null(fitted) && (anyNA(fitted) || any(!nzchar(fitted)) ||
-        anyDuplicated(fitted) || any(!fitted %in% index$object_cells))) fail()
+        anyDuplicated(fitted) || any(!fitted %in% index$object_cells))) {
+        fail()
+      }
     }
     if (length(ids) != length(cells) || anyNA(ids) || any(!nzchar(ids)) ||
       anyDuplicated(ids) ||
-      any(!ids %in% index$object_cells)) fail()
+      any(!ids %in% index$object_cells)) {
+      fail()
+    }
     return(stats::setNames(ids, cells))
   }
 
@@ -342,6 +362,7 @@ spatial_other_identity_columns <- function(srt, tool_name) {
 spatial_check_identity_columns <- function(srt, tool_name, columns) {
   if (any(columns %in% spatial_other_identity_columns(srt, tool_name))) {
     log_message("An output column is an identity metadata column for another stored result; choose a different output column",
-      message_type = "error")
+      message_type = "error"
+    )
   }
 }

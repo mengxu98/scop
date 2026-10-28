@@ -160,14 +160,18 @@ CellScoringPlot <- function(
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!is.null(point.alpha)) {
-    .Deprecated(msg = paste0("`point.alpha` is deprecated; use `pt.alpha` instead. ",
-      "It will be removed in scop 1.0.0."))
+    .Deprecated(msg = paste0(
+      "`point.alpha` is deprecated; use `pt.alpha` instead. ",
+      "It will be removed in scop 1.0.0."
+    ))
     pt.alpha <- point.alpha
   }
   point.alpha <- pt.alpha
   if (!is.null(point.size)) {
-    .Deprecated(msg = paste0("`point.size` is deprecated; use `pt.size` instead. ",
-      "It will be removed in scop 1.0.0."))
+    .Deprecated(msg = paste0(
+      "`point.size` is deprecated; use `pt.size` instead. ",
+      "It will be removed in scop 1.0.0."
+    ))
     pt.size <- point.size
   }
   point.size <- pt.size

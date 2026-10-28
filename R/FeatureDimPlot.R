@@ -139,7 +139,8 @@
 #' )
 #'
 #' FeatureDimPlot(
-#'   pancreas_sub, features = c("Rbp4", "Sst"), reduction = "UMAP",
+#'   pancreas_sub,
+#'   features = c("Rbp4", "Sst"), reduction = "UMAP",
 #'   title.color = c(Rbp4 = "#2A6F97", Sst = "#B14B28")
 #' )
 #'
@@ -153,8 +154,10 @@
 #'   theme_use = "theme_blank",
 #'   xlab = "UMAP_1",
 #'   ylab = "UMAP_2",
-#'   palcolor = c("#345C96", "#349AA4", "#91C6B0", "#DDBF63",
-#'                "#D77A52", "#AC4968", "#753858")
+#'   palcolor = c(
+#'     "#345C96", "#349AA4", "#91C6B0", "#DDBF63",
+#'     "#D77A52", "#AC4968", "#753858"
+#'   )
 #' )
 #'
 #' FeatureDimPlot(
@@ -176,8 +179,10 @@
 #'   theme_use = "theme_blank",
 #'   xlab = "UMAP_1",
 #'   ylab = "UMAP_2",
-#'   density_filled_palcolor = c("#F2F7F5", "#C5DFD8", "#89BDB5",
-#'                              "#4A969E", "#286B87", "#253D63")
+#'   density_filled_palcolor = c(
+#'     "#F2F7F5", "#C5DFD8", "#89BDB5",
+#'     "#4A969E", "#286B87", "#253D63"
+#'   )
 #' )
 #'
 #' # Chane the plot type from point to the hexagonal bin
@@ -446,10 +451,10 @@ FeatureDimPlot <- function(
   }
   if (!is.null(title.color)) {
     if (!is.character(title.color) || !length(title.color) || anyNA(title.color) ||
-        (is.null(names(title.color)) && length(title.color) != 1L) ||
-        (!is.null(names(title.color)) &&
-          (anyNA(names(title.color)) || any(!nzchar(names(title.color))) ||
-            anyDuplicated(names(title.color))))) {
+      (is.null(names(title.color)) && length(title.color) != 1L) ||
+      (!is.null(names(title.color)) &&
+        (anyNA(names(title.color)) || any(!nzchar(names(title.color))) ||
+          anyDuplicated(names(title.color))))) {
       log_message(
         "{.emph title.color} must be one unnamed color or a uniquely named feature-color vector.",
         message_type = "error"
@@ -1319,7 +1324,9 @@ FeatureDimPlot <- function(
       names(density_data) <- rownames(comb)
       density_coordinates <- if (isTRUE(density_filled)) {
         lapply(density_data, attr, "grid")
-      } else density_data
+      } else {
+        density_data
+      }
       x_limits <- range(x_limits, unlist(lapply(density_coordinates, `[[`, "x")))
       y_limits <- range(y_limits, unlist(lapply(density_coordinates, `[[`, "y")))
     }
@@ -1378,14 +1385,20 @@ FeatureDimPlot <- function(
           subtitle_use <- subtitle[f]
         }
         density_values <- if (expression_density) {
-          selected <- if (is.null(keep_scale)) i else if (keep_scale == "feature") {
+          selected <- if (is.null(keep_scale)) {
+            i
+          } else if (keep_scale == "feature") {
             rownames(comb)[comb$feature == f]
-          } else names(density_data)
+          } else {
+            names(density_data)
+          }
           values <- unlist(lapply(density_data[selected], function(d) {
             if (isTRUE(density_filled)) attr(d, "grid")$value else d$value
           }), use.names = FALSE)
           values[is.finite(values)]
-        } else numeric()
+        } else {
+          numeric()
+        }
         missing_point_values <- all(is.na(dat[["value"]]))
         if (expression_density && show_points && !is.null(keep_scale)) {
           point_values <- if (keep_scale == "feature") dat_exp[, f] else as_matrix(dat_exp[, features])
@@ -1473,33 +1486,47 @@ FeatureDimPlot <- function(
           grid$features <- rep(f, nrow(grid))
           grid[[split.by]] <- rep(s, nrow(grid))
           list(
-            ggplot2::geom_raster(data = grid, aes(x = .data[["x"]], y = .data[["y"]],
-                                                 fill = .data[["value"]], alpha = I(.data[["alpha"]])),
-                                 interpolate = TRUE, inherit.aes = FALSE, na.rm = TRUE),
+            ggplot2::geom_raster(
+              data = grid, aes(
+                x = .data[["x"]], y = .data[["y"]],
+                fill = .data[["value"]], alpha = I(.data[["alpha"]])
+              ),
+              interpolate = TRUE, inherit.aes = FALSE, na.rm = TRUE
+            ),
             scale_fill_gradientn(
               name = legend.title %||% "Expression",
-              colours = palette_colors(palette = density_filled_palette,
-                                       palcolor = density_filled_palcolor),
+              colours = palette_colors(
+                palette = density_filled_palette,
+                palcolor = density_filled_palcolor
+              ),
               limits = range(colors_value), oob = scales::squish, na.value = NA
             ),
             ggnewscale::new_scale_fill(),
-            geom_path(data = density_data[[i]],
-                      aes(x = .data[["x"]], y = .data[["y"]], group = .data[["path"]]),
-                      color = "#355D71", alpha = 0.42, linewidth = 0.24,
-                      lineend = "round", linejoin = "round", inherit.aes = FALSE)
+            geom_path(
+              data = density_data[[i]],
+              aes(x = .data[["x"]], y = .data[["y"]], group = .data[["path"]]),
+              color = "#355D71", alpha = 0.42, linewidth = 0.24,
+              lineend = "round", linejoin = "round", inherit.aes = FALSE
+            )
           )
-        } else if (expression_density) geom_path(
-          data = density_data[[i]],
-          mapping = aes(x = .data[["x"]], y = .data[["y"]],
-                        color = .data[["value"]], group = .data[["path"]],
-                        linewidth = I(.data[["width"]])), lineend = "round", linejoin = "round", inherit.aes = FALSE
-        ) else dim_plot_density_layers(
-          add_density = add_density,
-          density_filled = density_filled,
-          density_color = density_color,
-          density_filled_palette = density_filled_palette,
-          density_filled_palcolor = density_filled_palcolor
-        )
+        } else if (expression_density) {
+          geom_path(
+            data = density_data[[i]],
+            mapping = aes(
+              x = .data[["x"]], y = .data[["y"]],
+              color = .data[["value"]], group = .data[["path"]],
+              linewidth = I(.data[["width"]])
+            ), lineend = "round", linejoin = "round", inherit.aes = FALSE
+          )
+        } else {
+          dim_plot_density_layers(
+            add_density = add_density,
+            density_filled = density_filled,
+            density_color = density_color,
+            density_filled_palette = density_filled_palette,
+            density_filled_palcolor = density_filled_palcolor
+          )
+        }
         p <- ggplot(dat) +
           net +
           density +
@@ -1840,13 +1867,18 @@ feature_dim_expression_density <- function(dat) {
   }
   z <- weighted / pmax(support, .Machine$double.xmin)
   contours <- grDevices::contourLines(
-    gx, gy, support, levels = max(support) * seq(0.08, 0.92, length.out = 9L)
+    gx, gy, support,
+    levels = max(support) * seq(0.08, 0.92, length.out = 9L)
   )
-  if (!length(contours)) return(empty)
+  if (!length(contours)) {
+    return(empty)
+  }
   paths <- do.call(rbind, lapply(seq_along(contours), function(i) {
     index <- which.min(abs(seq(0.08, 0.92, length.out = 9L) - contours[[i]]$level / max(support)))
-    data.frame(x = contours[[i]]$x, y = contours[[i]]$y, path = i,
-               width = if (index %in% c(1L, 4L, 7L)) 0.75 else 0.32)
+    data.frame(
+      x = contours[[i]]$x, y = contours[[i]]$y, path = i,
+      width = if (index %in% c(1L, 4L, 7L)) 0.75 else 0.32
+    )
   }))
   ix <- findInterval(paths$x, gx, all.inside = TRUE)
   iy <- findInterval(paths$y, gy, all.inside = TRUE)

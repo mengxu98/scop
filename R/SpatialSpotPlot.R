@@ -341,8 +341,7 @@ spatial_matrix_point_plot <- function(
   scale_args <- intersect(names(plot_args), c("lower_cutoff", "upper_cutoff", "lower_quantile", "upper_quantile"))
   custom_scale <- any(!vapply(plot_args[scale_args], is.null, logical(1)))
   limits <- if (!custom_scale) spatial_matrix_plot_limits(values, value_kind) else NULL
-  legend_title <- legend_title %||% switch(
-    value_kind,
+  legend_title <- legend_title %||% switch(value_kind,
     proportion = "Proportion",
     `topic-proportion` = "Proportion",
     abundance = "Abundance"
@@ -561,7 +560,8 @@ spatial_dim_long_plot <- function(
     title = NULL, drop = TRUE
   )
   combine_plot_list(stats::setNames(list(plot), color.by),
-    combine = combine, nrow = nrow, ncol = ncol, byrow = byrow)
+    combine = combine, nrow = nrow, ncol = ncol, byrow = byrow
+  )
 }
 
 spatial_dim_pie_plot <- function(
@@ -921,8 +921,8 @@ spatial_dim_value_items <- function(values) {
     return("value")
   }
   if ((!is.matrix(values) && !inherits(values, "Matrix") && !is.data.frame(values)) ||
-      is.null(rownames(values)) || anyNA(rownames(values)) ||
-      any(!nzchar(rownames(values))) || anyDuplicated(rownames(values))) {
+    is.null(rownames(values)) || anyNA(rownames(values)) ||
+    any(!nzchar(rownames(values))) || anyDuplicated(rownames(values))) {
     log_message("{.arg values} must be a matrix/data.frame with unique non-empty spot row names", message_type = "error")
   }
   values <- as.data.frame(values, check.names = FALSE)
@@ -1178,7 +1178,7 @@ spatial_dim_continuous_scale <- function(
   }
   quantiles <- c(lower_quantile %||% 0, upper_quantile %||% 1)
   if (!is.numeric(quantiles) || length(quantiles) != 2L || any(!is.finite(quantiles)) ||
-      any(quantiles < 0 | quantiles > 1) || quantiles[1L] > quantiles[2L]) {
+    any(quantiles < 0 | quantiles > 1) || quantiles[1L] > quantiles[2L]) {
     log_message("Quantiles must satisfy 0 <= lower_quantile <= upper_quantile <= 1", message_type = "error")
   }
   finite <- values[is.finite(values)]

@@ -461,7 +461,7 @@ mistyr_resolve_targets <- function(target_subset, feature_map) {
     return(target_subset)
   }
   if (!is.character(target_subset) || anyNA(target_subset) ||
-      any(!target_subset %in% unname(feature_map))) {
+    any(!target_subset %in% unname(feature_map))) {
     log_message("{.arg target_subset} must name selected original features or use numeric indices", message_type = "error")
   }
   unname(names(feature_map)[match(target_subset, unname(feature_map))])

@@ -1,4 +1,3 @@
-
 spatalk_package_version <- function() {
   desc <- tryCatch(utils::packageDescription("SpaTalk"), error = function(e) NULL)
   if (is.null(desc)) NA_character_ else as.character(desc$Version %||% NA_character_)

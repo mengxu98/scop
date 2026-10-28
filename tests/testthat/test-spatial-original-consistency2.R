@@ -1,4 +1,3 @@
-
 real_visium_subset2 <- function(n = 150, seed = 42, assay = NULL) {
   data(visium_human_pancreas_sub)
   srt <- visium_human_pancreas_sub
@@ -401,8 +400,10 @@ test_that("RunSpatialIntegration PRECAST domains match the original PRECAST pipe
   precast@AdjList <- lapply(precast@seulist, function(sample) {
     coords <- data.frame(cell_id = colnames(sample), x = sample$col, y = sample$row)
     graph <- spatial_graph_compute(coords, method = "knn", k = 6, directed = TRUE)
-    Matrix::sparseMatrix(i = graph$edges$to, j = graph$edges$from, x = 1,
-      dims = c(ncol(sample), ncol(sample)))
+    Matrix::sparseMatrix(
+      i = graph$edges$to, j = graph$edges$from, x = 1,
+      dims = c(ncol(sample), ncol(sample))
+    )
   })
   precast <- get_namespace_fun("PRECAST", "AddParSetting")(precast)
   precast <- get_namespace_fun("PRECAST", "PRECAST")(precast)

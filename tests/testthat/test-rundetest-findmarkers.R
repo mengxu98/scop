@@ -11,14 +11,19 @@ test_that("FindAllMarkers respects the feature and cell maps of a partial RNA la
   data <- SeuratObject::LayerData(object, assay = "RNA", layer = "data")
   data <- data[60:1, c(35:21, 15:1)]
   object <- suppressWarnings(SeuratObject::SetAssayData(
-    object, assay = "RNA", layer = "data", new.data = data
+    object,
+    assay = "RNA", layer = "data", new.data = data
   ))
   expect_true(methods::validObject(object))
-  expect_equal(marker_get_data(object, object[["RNA"]], "data"),
-    SeuratObject::LayerData(object, assay = "RNA", layer = "data"))
-  args <- list(object = object, assay = "RNA", group.by = "group",
+  expect_equal(
+    marker_get_data(object, object[["RNA"]], "data"),
+    SeuratObject::LayerData(object, assay = "RNA", layer = "data")
+  )
+  args <- list(
+    object = object, assay = "RNA", group.by = "group",
     features = rownames(data), min.pct = 0, logfc.threshold = 0,
-    return.thresh = Inf, verbose = FALSE)
+    return.thresh = Inf, verbose = FALSE
+  )
   actual <- do.call(scop::FindAllMarkers, args)
   expect_gt(nrow(actual), 0)
   args$object <- subset(object, cells = colnames(data))

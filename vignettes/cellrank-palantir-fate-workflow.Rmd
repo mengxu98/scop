@@ -17,8 +17,10 @@ results from this website build. Run them in a prepared Python environment in
 the order shown; the overview embedding alone is not evidence of cell fate.
 
 ```{r options, include=FALSE}
-knitr::opts_chunk$set(error = FALSE, message = FALSE, fig.align = "center",
-                     dpi = 144, out.width = "92%")
+knitr::opts_chunk$set(
+  error = FALSE, message = FALSE, fig.align = "center",
+  dpi = 144, out.width = "92%"
+)
 ```
 
 ## Inspect the input
@@ -27,13 +29,17 @@ knitr::opts_chunk$set(error = FALSE, message = FALSE, fig.align = "center",
 library(scop)
 data(pancreas_sub)
 input_cells <- colnames(pancreas_sub)
-pancreas_sub <- RunStandardWorkflow(pancreas_sub, assay = "RNA", seed = 11,
-                                   cores = 1, verbose = FALSE)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub,
+  assay = "RNA", seed = 11,
+  cores = 1, verbose = FALSE
+)
 stopifnot(identical(colnames(pancreas_sub), input_cells))
 table(pancreas_sub$SubCellType)
 CellDimPlot(pancreas_sub, group.by = "SubCellType", reduction = "UMAP", label = TRUE)
-FeatureDimPlot(pancreas_sub, features = c("Sox9", "Neurog3", "Gcg", "Ins2"),
-               reduction = "UMAP", ncol = 2)
+FeatureDimPlot(pancreas_sub,
+  features = c("Sox9", "Neurog3", "Gcg", "Ins2"),
+  reduction = "UMAP", ncol = 2
+)
 ```
 
 ## Palantir direction and MAGIC layer

@@ -14,8 +14,10 @@ make_recovery_object <- function(values, storage = c("sparse", "dense", "legacy"
 }
 
 test_that("RecoverCounts exp recovers sparse and dense assay inputs", {
-  counts <- matrix(c(1, 2, 3, 1, 3, 5, 1, 4, 2), nrow = 3,
-    dimnames = list(paste0("g", 1:3), paste0("c", 1:3)))
+  counts <- matrix(c(1, 2, 3, 1, 3, 5, 1, 4, 2),
+    nrow = 3,
+    dimnames = list(paste0("g", 1:3), paste0("c", 1:3))
+  )
   normalized <- sweep(counts, 2, colSums(counts), "/") * 10000
   for (storage in c("sparse", "dense", "legacy")) {
     for (sf in list(10000, NULL)) {
@@ -35,8 +37,10 @@ test_that("RecoverCounts exp recovers sparse and dense assay inputs", {
 })
 
 test_that("RecoverCounts exp expands implicit zeros to positive counts", {
-  counts <- matrix(c(1, 2, 7, 1, 3, 6, 1, 4, 5), nrow = 3,
-    dimnames = list(paste0("g", 1:3), paste0("c", 1:3)))
+  counts <- matrix(c(1, 2, 7, 1, 3, 6, 1, 4, 5),
+    nrow = 3,
+    dimnames = list(paste0("g", 1:3), paste0("c", 1:3))
+  )
   object <- make_recovery_object(log(counts))
   input <- GetAssayData5(object, layer = "counts")
   expect_lt(length(input@x), length(counts))
@@ -62,8 +66,10 @@ test_that("RecoverCounts preserves single-cell dimensions and other assays", {
 })
 
 test_that("RecoverCounts preserves expm1, none and raw-count behavior", {
-  counts <- matrix(c(1, 0, 3, 1, 3, 0, 1, 4, 2), nrow = 3,
-    dimnames = list(paste0("g", 1:3), paste0("c", 1:3)))
+  counts <- matrix(c(1, 0, 3, 1, 3, 0, 1, 4, 2),
+    nrow = 3,
+    dimnames = list(paste0("g", 1:3), paste0("c", 1:3))
+  )
   normalized <- sweep(counts, 2, colSums(counts), "/") * 10000
   for (trans in c("expm1", "none")) {
     values <- if (trans == "expm1") log1p(normalized) else normalized
@@ -78,8 +84,10 @@ test_that("RecoverCounts preserves expm1, none and raw-count behavior", {
 })
 
 test_that("RecoverCounts keeps validation and unsuccessful recovery non-mutating", {
-  counts <- matrix(c(1, 2, 3, 1, 3, 5, 1, 4, 2), nrow = 3,
-    dimnames = list(paste0("g", 1:3), paste0("c", 1:3)))
+  counts <- matrix(c(1, 2, 3, 1, 3, 5, 1, 4, 2),
+    nrow = 3,
+    dimnames = list(paste0("g", 1:3), paste0("c", 1:3))
+  )
   normalized <- sweep(counts, 2, colSums(counts), "/") * 10000
   object <- make_recovery_object(log(normalized))
   expect_error(RecoverCounts(object, trans = "invalid", verbose = FALSE), "arg")
