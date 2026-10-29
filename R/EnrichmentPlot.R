@@ -36,6 +36,7 @@
 #' @param rank_label_size Text size for rank labels with black text and a white halo.
 #' @param rank_shared_y Whether rank panels share a y-axis range. Default is
 #' `FALSE`; compare numeric ticks when panels have independent ranges.
+#' @param grid_major Whether to show major panel grid lines for rank plots (default TRUE).
 #' @param split_by The splitting variable(s) for the plot.
 #' Can be `"Database"`, `"Groups"`, or both.
 #' Default is `c("Database", "Groups")` for plots.
@@ -86,7 +87,7 @@
 #' @param palette Color palette name.
 #' Defaults to `"Chinese"` for rank plots and `"Spectral"` otherwise.
 #' Available palettes can be found in [thisplot::show_palettes].
-#' @details Rank plots require one database and adjusted P values in [0, 1].
+#' @details Rank plots require one database and adjusted P values in `[0, 1]`.
 #' They compare stored ORA results, not between-group differential significance.
 #' `split_by` and `color_by` do not change rank panels: each group has one panel
 #' and one color. Missing or nonfinite rank scores/adjusted P values are omitted
@@ -406,13 +407,13 @@ EnrichmentPlot <- function(
   enrichmap_show_keyword = FALSE,
   enrichmap_mark = c("ellipse", "hull"),
   enrichmap_expand = c(0.5, 0.5),
-  character_width = if (plot_type == "rank") 34 else 50,
+  character_width = if (plot_type == "rank") 26 else 50,
   lineheight = 0.7,
   palette = if (plot_type == "rank") "Chinese" else "Spectral",
   palcolor = NULL,
   aspect.ratio = 1,
-  legend.position = if (plot_type == "rank") "bottom" else "right",
-  legend.direction = if (plot_type == "rank") "horizontal" else "vertical",
+  legend.position = "right",
+  legend.direction = "vertical",
   theme_use = "theme_scop",
   theme_args = list(),
   combine = TRUE,
@@ -427,7 +428,8 @@ EnrichmentPlot <- function(
   rank_label_terms = NULL,
   rank_pt_size = c(2, 5),
   rank_pt_alpha = 0.23,
-  rank_label_size = 3,
+  rank_label_size = 3.2,
+  grid_major = TRUE,
   rank_shared_y = FALSE
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
@@ -640,9 +642,10 @@ EnrichmentPlot <- function(
       label_terms = rank_label_terms, palcolor = palcolor, palette = palette,
       point_size = rank_pt_size, point_alpha = rank_pt_alpha,
       label_size = rank_label_size, label_width = character_width,
-      shared_y = rank_shared_y, theme_use = theme_use, theme_args = theme_args,
-      combine = combine, nrow = nrow, ncol = ncol, byrow = byrow, seed = seed,
-      legend.position = legend.position, legend.direction = legend.direction
+      shared_y = rank_shared_y, grid_major = grid_major, theme_use = theme_use,
+      theme_args = theme_args, combine = combine, nrow = nrow, ncol = ncol,
+      byrow = byrow, seed = seed, legend.position = legend.position,
+      legend.direction = legend.direction
     ))
   }
   df_list <- split(

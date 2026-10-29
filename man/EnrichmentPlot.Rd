@@ -42,13 +42,13 @@ EnrichmentPlot(
   enrichmap_show_keyword = FALSE,
   enrichmap_mark = c("ellipse", "hull"),
   enrichmap_expand = c(0.5, 0.5),
-  character_width = if (plot_type == "rank") 34 else 50,
+  character_width = if (plot_type == "rank") 26 else 50,
   lineheight = 0.7,
   palette = if (plot_type == "rank") "Chinese" else "Spectral",
   palcolor = NULL,
   aspect.ratio = 1,
-  legend.position = if (plot_type == "rank") "bottom" else "right",
-  legend.direction = if (plot_type == "rank") "horizontal" else "vertical",
+  legend.position = "right",
+  legend.direction = "vertical",
   theme_use = "theme_scop",
   theme_args = list(),
   combine = TRUE,
@@ -63,7 +63,8 @@ EnrichmentPlot(
   rank_label_terms = NULL,
   rank_pt_size = c(2, 5),
   rank_pt_alpha = 0.23,
-  rank_label_size = 3,
+  rank_label_size = 3.2,
+  grid_major = TRUE,
   rank_shared_y = FALSE
 )
 }
@@ -208,6 +209,8 @@ plots (default \code{c(2, 5)}), mapped to \code{-log10(p.adjust)}.}
 
 \item{rank_label_size}{Text size for rank labels with black text and a white halo.}
 
+\item{grid_major}{Whether to show major panel grid lines for rank plots (default TRUE).}
+
 \item{rank_shared_y}{Whether rank panels share a y-axis range. Default is
 \code{FALSE}; compare numeric ticks when panels have independent ranges.}
 }
@@ -221,7 +224,7 @@ uncombined result is a named list of ggplots with these columns in plot data.
 Generates various types of plots for enrichment (over-representation) analysis.
 }
 \details{
-Rank plots require one database and adjusted P values in \link{0, 1}.
+Rank plots require one database and adjusted P values in \code{[0, 1]}.
 They compare stored ORA results, not between-group differential significance.
 \code{split_by} and \code{color_by} do not change rank panels: each group has one panel
 and one color. Missing or nonfinite rank scores/adjusted P values are omitted

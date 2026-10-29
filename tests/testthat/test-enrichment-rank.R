@@ -105,3 +105,22 @@ test_that("rank shares axes and respects colors and raw P filtering", {
     plot_type = "rank"
   ), "exactly one database")
 })
+
+test_that("rank supports grid_major toggle, topTerm, right legend and capital labels", {
+  res <- rank_fixture()
+  p_default <- EnrichmentPlot(res = res, db = "custom", plot_type = "rank", combine = FALSE)
+  expect_true(inherits(p_default$A$theme$panel.grid.major, "element_line"))
+  expect_identical(p_default$A$theme$panel.grid.major$linetype, 2)
+  expect_true(grepl("^[A-Z]", p_default$A$data$.label[1]))
+
+  # Test grid_major = FALSE
+  p_nogrid <- EnrichmentPlot(res = res, db = "custom", plot_type = "rank", grid_major = FALSE, combine = FALSE)
+  expect_true(inherits(p_nogrid$A$theme$panel.grid, "element_blank"))
+
+  # Test topTerm
+  p_term <- EnrichmentPlot(res = res, db = "custom", plot_type = "rank", topTerm = 1, combine = FALSE)
+  expect_equal(nrow(p_term$A$data), 1)
+
+  p_comb <- EnrichmentPlot(res = res, db = "custom", plot_type = "rank")
+  expect_identical(p_comb$theme$legend.position, "right")
+})
