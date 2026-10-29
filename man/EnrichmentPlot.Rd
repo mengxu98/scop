@@ -258,7 +258,7 @@ uncombined result is a named list of ggplots with these columns in plot data.
 Generates various types of plots for enrichment (over-representation) analysis.
 }
 \details{
-Rank plots require one database and adjusted P values in \link{0, 1}.
+Rank plots require one database and adjusted P values in \verb{[0, 1]}.
 They compare stored ORA results, not between-group differential significance.
 \code{split_by} and \code{color_by} do not change rank panels: each group has one panel
 and one color. Missing or nonfinite rank scores/adjusted P values are omitted

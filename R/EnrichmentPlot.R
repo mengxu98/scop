@@ -112,7 +112,7 @@
 #' @param palette Color palette name.
 #' Defaults to `"Chinese"` for rank plots and `"Spectral"` otherwise.
 #' Available palettes can be found in [thisplot::show_palettes].
-#' @details Rank plots require one database and adjusted P values in [0, 1].
+#' @details Rank plots require one database and adjusted P values in `[0, 1]`.
 #' They compare stored ORA results, not between-group differential significance.
 #' `split_by` and `color_by` do not change rank panels: each group has one panel
 #' and one color. Missing or nonfinite rank scores/adjusted P values are omitted
