@@ -7,6 +7,12 @@
   and halo labels. Rank views default to 80 terms per group and do not
   rerun enrichment.
 
+- **feat**:
+  [`GroupHeatmap()`](https://mengxu98.github.io/scop/reference/GroupHeatmap.md)
+  accepts `legend_params` to customize expression and percent legends
+  independently, including horizontal color bars and single-row dot
+  legends.
+
 - **breaking**:
 
   - [`RunscTenifoldKnk()`](https://mengxu98.github.io/scop/reference/RunScTenifoldKnk.md)

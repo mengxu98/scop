@@ -160,7 +160,8 @@ GroupHeatmap(
   ht_params = list(),
   verbose = TRUE,
   ...,
-  srt = NULL
+  srt = NULL,
+  legend_params = list()
 )
 ```
 
@@ -434,6 +435,20 @@ GroupHeatmap(
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
 
+- legend_params:
+
+  Named list with optional `expression` and `percent` entries, each a
+  named list of arguments passed to
+  [ComplexHeatmap::Legend](https://rdrr.io/pkg/ComplexHeatmap/man/Legend.html),
+  overriding that legend's defaults. Use
+  `expression = list(direction = "horizontal", legend_width = grid::unit(35, "mm"), title_position = "topcenter")`
+  and
+  `percent = list(direction = "horizontal", nrow = 1, title_position = "topcenter")`
+  for horizontal legends. `legend.position` controls their placement
+  independently. The percent entry is used only when `add_dot = TRUE`;
+  other annotation legends are unchanged. Default:
+  [`list()`](https://rdrr.io/r/base/list.html).
+
 ## Value
 
 A list with `plot`, `matrix_list`, `feature_split`, `cell_metadata`,
@@ -450,22 +465,22 @@ when term/key/feature annotations are requested).
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-10-28 08:07:59] Start standard processing workflow...
-#> ℹ [2026-10-28 08:07:59] Checking a list of <Seurat>...
-#> ! [2026-10-28 08:07:59] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-10-28 08:07:59] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-10-28 08:07:59] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-10-28 08:07:59] Use the separate HVF from `srt_list`
-#> ℹ [2026-10-28 08:07:59] Number of available HVF: 2000
-#> ℹ [2026-10-28 08:07:59] Finished check
-#> ℹ [2026-10-28 08:07:59] Perform `ScaleData()`
-#> ℹ [2026-10-28 08:07:59] Perform pca linear dimension reduction
-#> ℹ [2026-10-28 08:08:00] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-10-28 08:08:00] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-10-28 08:08:00] Reorder clusters...
-#> ℹ [2026-10-28 08:08:00] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-10-28 08:08:00] Perform umap nonlinear dimension reduction
-#> ✔ [2026-10-28 08:08:07] Standard processing workflow completed
+#> ℹ [2026-10-29 12:07:42] Start standard processing workflow...
+#> ℹ [2026-10-29 12:07:42] Checking a list of <Seurat>...
+#> ! [2026-10-29 12:07:42] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-10-29 12:07:42] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-10-29 12:07:42] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-10-29 12:07:42] Use the separate HVF from `srt_list`
+#> ℹ [2026-10-29 12:07:42] Number of available HVF: 2000
+#> ℹ [2026-10-29 12:07:42] Finished check
+#> ℹ [2026-10-29 12:07:42] Perform `ScaleData()`
+#> ℹ [2026-10-29 12:07:42] Perform pca linear dimension reduction
+#> ℹ [2026-10-29 12:07:43] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-10-29 12:07:43] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-10-29 12:07:43] Reorder clusters...
+#> ℹ [2026-10-29 12:07:43] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-10-29 12:07:43] Perform umap nonlinear dimension reduction
+#> ✔ [2026-10-29 12:07:51] Standard processing workflow completed
 ht1 <- GroupHeatmap(
   pancreas_sub,
   features = c(
@@ -495,18 +510,18 @@ pancreas_sub <- AnnotateFeatures(
   species = "Mus_musculus",
   db = c("CSPA", "TF")
 )
-#> ℹ [2026-10-28 08:08:08] Species: "Mus_musculus"
-#> ℹ [2026-10-28 08:08:08] Loading cached: TF version: AnimalTFDB4 nterm:2 created: 2026-10-28 07:48:52
-#> ℹ [2026-10-28 08:08:08] Species: "Mus_musculus"
-#> ℹ [2026-10-28 08:08:08] Loading cached: CSPA version: CSPA nterm:1 created: 2026-10-28 08:00:29
+#> ℹ [2026-10-29 12:07:52] Species: "Mus_musculus"
+#> ℹ [2026-10-29 12:07:52] Loading cached: TF version: AnimalTFDB4 nterm:2 created: 2026-10-29 11:48:22
+#> ℹ [2026-10-29 12:07:52] Species: "Mus_musculus"
+#> ℹ [2026-10-29 12:07:52] Loading cached: CSPA version: CSPA nterm:1 created: 2026-10-29 12:00:06
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"
 )
-#> ℹ [2026-10-28 08:08:09] Data type is log-normalized
-#> ℹ [2026-10-28 08:08:09] Start differential expression test
-#> ℹ [2026-10-28 08:08:09] Find all markers(wilcox) among [1] 5 groups...
-#> ✔ [2026-10-28 08:08:09] Differential expression test completed
+#> ℹ [2026-10-29 12:07:53] Data type is log-normalized
+#> ℹ [2026-10-29 12:07:53] Start differential expression test
+#> ℹ [2026-10-29 12:07:53] Find all markers(wilcox) among [1] 5 groups...
+#> ✔ [2026-10-29 12:07:53] Differential expression test completed
 de_filter <- dplyr::filter(
   pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox,
   p_val_adj < 0.05 & avg_log2FC > 1
@@ -540,14 +555,14 @@ ht3 <- GroupHeatmap(
   anno_keys = TRUE,
   anno_features = TRUE
 )
-#> ℹ [2026-10-28 08:08:16] Start Enrichment analysis
-#> ℹ [2026-10-28 08:08:16] Species: "Mus_musculus"
-#> ℹ [2026-10-28 08:08:16] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-10-28 08:02:13
-#> ℹ [2026-10-28 08:08:17] Permform enrichment...
-#> ✔ [2026-10-28 08:08:18] Enrichment analysis done
-#> ℹ [2026-10-28 08:08:19] The size of the heatmap is fixed because certain elements are not scalable.
-#> ℹ [2026-10-28 08:08:19] The width and height of the heatmap are determined by the size of the current viewport.
-#> ℹ [2026-10-28 08:08:19] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
+#> ℹ [2026-10-29 12:07:59] Start Enrichment analysis
+#> ℹ [2026-10-29 12:07:59] Species: "Mus_musculus"
+#> ℹ [2026-10-29 12:08:00] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-10-29 12:01:51
+#> ℹ [2026-10-29 12:08:00] Permform enrichment...
+#> ✔ [2026-10-29 12:08:01] Enrichment analysis done
+#> ℹ [2026-10-29 12:08:03] The size of the heatmap is fixed because certain elements are not scalable.
+#> ℹ [2026-10-29 12:08:03] The width and height of the heatmap are determined by the size of the current viewport.
+#> ℹ [2026-10-29 12:08:03] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
 ht3$plot
 
 

@@ -160,7 +160,7 @@ panc8_sub <- RunStandardWorkflow(
   panc8_sub,
   verbose = FALSE, linear_reduction_dims = 10
 )
-#> ℹ [2026-10-28 08:39:29] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-10-29 12:42:42] Skip `log1p()` because `layer = data` is not "counts"
 srt_ref <- panc8_sub[, panc8_sub$tech != "fluidigmc1"]
 srt_query <- panc8_sub[, panc8_sub$tech == "fluidigmc1"]
 srt_query <- RunKNNMap(
@@ -170,8 +170,8 @@ srt_query <- RunKNNMap(
   k = 10,
   verbose = FALSE
 )
-#> ℹ [2026-10-28 08:39:38] Data type is log-normalized
-#> ℹ [2026-10-28 08:39:38] Data type is log-normalized
+#> ℹ [2026-10-29 12:42:52] Data type is log-normalized
+#> ℹ [2026-10-29 12:42:53] Data type is log-normalized
 ProjectionPlot(
   srt_query = srt_query,
   srt_ref = srt_ref,

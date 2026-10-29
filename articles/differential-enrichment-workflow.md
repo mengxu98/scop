@@ -585,7 +585,7 @@ data.frame(
 )
 #>                            file    bytes
 #> 1               all-markers.csv  5268635
-#> 2                  analysis.rds 50901271
+#> 2                  analysis.rds 50901270
 #> 3             cell-metadata.csv   146525
 #> 4    GO-BP-GSEA-memberships.csv 12612015
 #> 5 GO-BP-measured-background.csv 10159062
@@ -652,9 +652,9 @@ build_receipt <- data.frame(
 )
 build_receipt
 #>                            article               built_utc  scop     R
-#> 1 differential-enrichment-workflow 2026-10-28 09:00:27 UTC 0.9.2 4.6.1
+#> 1 differential-enrichment-workflow 2026-10-29 13:04:45 UTC 0.9.2 4.6.1
 #>                            source_revision source_has_local_changes
-#> 1 896e55b929953f0b1e16ebccd54e591ef3474b8f                    FALSE
+#> 1 ad4b555307ddafe827a0748effa2efa29dc934c1                    FALSE
 #>                        article_md5 R_seed cells_retained genes_in_active_assay
 #> 1 1c730bbafc9f5f0c6783a90f73de724d     11           1000                 15998
 utils::write.csv(build_receipt, file.path(output_dir, "build-receipt.csv"),
