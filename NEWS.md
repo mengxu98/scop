@@ -1,5 +1,9 @@
 # scop (development version)
 
+* `EnrichmentMirrorPlot()` compares two saved group-wise enrichment rankings with
+  mirrored bars, full pathway labels, matching gene colors, adaptive axis extents,
+  rounded database bands and configurable group colors, text and spacing.
+
 * `EnrichmentPlot(plot_type = "rank")` plots stored ORA terms by enrichment magnitude,
   with group colors, solid-point sizes, bold halo labels, `grid_major` reference grids,
   and zero-void panel bounds.
