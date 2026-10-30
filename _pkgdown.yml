@@ -261,6 +261,7 @@ reference:
   contents:
   - RunEnrichment
   - EnrichmentPlot
+  - EnrichmentMirrorPlot
   - FerrisWheelPlot
   - RunGSEA
   - GSEAPlot
