@@ -39,6 +39,8 @@
 #' default also excludes `"scvi"`, `"glue"`, and `"multimap"` because those
 #' upstream stacks are more reliable when requested explicitly for
 #' method-specific workflows.
+#' CellOracle uses an explicit standalone `"celloracle_env"` profile with Python
+#' 3.10 and official CellOracle 0.20.0; native Windows is unsupported.
 #' @param pip_options Additional command line arguments to be passed to `uv`/`pip` when installing pip packages.
 #' @param components Components to prepare. Supported values are `"python"`,
 #' `"r"`, and `"all"`; `"all"` expands to both Python and R. The default,
@@ -97,6 +99,12 @@ PrepareEnv <- function(
   }
   if (!"python" %in% components) {
     return(invisible(r_status))
+  }
+  if ("celloracle" %in% modules) {
+    if (is_windows()) {
+      log_message("Official CellOracle requires Linux/macOS; native Windows is unsupported", message_type = "error")
+    }
+    version <- "3.10-1"
   }
   if ("scenic" %in% modules) {
     scenic_allowed <- c("scenic", "regdiffusion")
@@ -189,6 +197,9 @@ PrepareEnv <- function(
   if (is.null(envname) && is.null(profile) && get_envname() %in% isolated[nzchar(isolated)]) envname <- "scop_env"
   envname <- get_envname(envname %||% profile)
   pip_options <- normalize_cli_args(pip_options)
+  if ("celloracle" %in% modules && !"--no-build-isolation" %in% pip_options) {
+    pip_options <- c(pip_options, "--no-build-isolation")
+  }
   conda_auto <- identical(conda, "auto")
   if (!is.null(conda)) {
     conda <- resolve_conda(conda)
@@ -449,6 +460,15 @@ PrepareEnv <- function(
   }, "")
   pip_packages <- unique(c(pip_packages, conda_python_packages[nzchar(conda_python_packages)]))
 
+  if ("celloracle" %in% modules) {
+    # Velocyto's legacy source build imports NumPy and Cython during setup.
+    check_python(
+      packages = requirements$packages[c("numpy", "cython", "wheel", "setuptools")],
+      envname = envname, conda = conda, pip = TRUE,
+      pip_options = pip_options, verbose = FALSE
+    )
+  }
+
   if (length(pip_packages) > 0) {
     if (!is.null(uv)) {
       log_message(
@@ -590,6 +610,7 @@ supported_env_modules <- function() {
     "cellphonedb",
     "cell2location",
     "cell2fate",
+    "celloracle",
     "commot",
     "spatialdm",
     "magic",
@@ -626,6 +647,7 @@ default_env_modules <- function() {
     "scfea",
     "cell2location",
     "cell2fate",
+    "celloracle",
     "commot",
     "spatialdm",
     "moscot",
@@ -853,6 +875,15 @@ env_module_requirements <- function() {
         "pyarrow" = "pip"
       )
     ),
+    celloracle = env_python_spec(
+      c("celloracle" = "celloracle==0.20.0",
+        "cython" = "cython==0.29.37", "wheel" = "wheel",
+        "numpy" = "numpy==1.26.4", "pandas" = "pandas==1.5.3",
+        "matplotlib" = "matplotlib==3.6.3", "anndata" = "anndata==0.10.8",
+        "scanpy" = "scanpy==1.9.8", "scipy" = "scipy==1.11.4",
+        "scikit-learn" = "scikit-learn==1.2.2"),
+      environment = "celloracle_env"
+    ),
     regdiffusion = env_python_spec(c("regdiffusion" = "regdiffusion")),
     scenicplus = env_python_spec(
       c(
@@ -926,6 +957,9 @@ normalize_env_modules <- function(modules = NULL, include_optional = FALSE) {
     )
   }
 
+  if ("celloracle" %in% modules && length(modules) != 1L) {
+    log_message("CellOracle must be prepared as a standalone environment module", message_type = "error")
+  }
   if ("cell2fate" %in% modules && length(setdiff(modules, "cell2fate")) > 0) {
     log_message(
       "{.arg modules = 'cell2fate'} must be used as a standalone environment module.",
@@ -1863,13 +1897,14 @@ env_info <- function(conda, envname, verbose = TRUE) {
 #' `"cellphonedb"`, `"cell2location"`, `"cell2fate"`, `"commot"`, `"magic"`, `"scrublet"`, `"doubletdetection"`,
 #' `"sccoda"`, `"doublet"`, `"palantir"`, `"scvelo"`, `"cellrank"`, `"wot"`,
 #' `"phate"`, `"pacmap"`, `"trimap"`, `"multimap"`,
-#' `"scomm"`, `"scenic"`, `"scenicplus"`, `"scenicplus_io"`, `"seacells"`, `"tage"`,
+#' `"celloracle"`, `"scomm"`, `"scenic"`, `"scenicplus"`, `"scenicplus_io"`, `"seacells"`, `"tage"`,
 #' `"scmalignantfinder"`, `"secact"`, `"scpagwas"`, `"choir"`, and
 #' `"external_wrappers"`. If `NULL`, the default environment is returned. The default
 #' excludes `"cell2location"`, `"cell2fate"`, `"commot"`, `"sccoda"`, `"scomm"`, and
 #' `"scenic"`, `"phate"`, and `"magic"` because these workflows
 #' require dependency stacks that should be prepared explicitly. The
-#' `"scenic"` module is standalone and always uses Python `"3.10-1"`.
+#' `"celloracle"` module uses standalone Python 3.10 with official CellOracle 0.20.0.
+#' The `"scenic"` module is standalone and always uses Python `"3.10-1"`.
 #'
 #' @return
 #' A list containing:
@@ -1897,6 +1932,7 @@ env_requirements <- function(
     modules = modules,
     include_optional = include_optional
   )
+  if ("celloracle" %in% modules) version <- "3.10-1"
   env_module_environment(modules)
   if (any(c("scenicplus", "scenicplus_io") %in% modules) && length(modules) > 1L) {
     stop("SCENIC+ must be used as a standalone environment module.", call. = FALSE)
@@ -1964,7 +2000,7 @@ env_requirements <- function(
     spatialdm_core_python_requirements()
   } else if ("scmalignantfinder" %in% modules) {
     scmalignantfinder_core_python_requirements()
-  } else if (any(c("scenic", "scenicplus", "scenicplus_io", "cell2fate") %in% modules)) {{ list(
+  } else if (any(c("scenic", "scenicplus", "scenicplus_io", "cell2fate", "celloracle") %in% modules)) {{ list(
     packages = c(
       "setuptools" = "setuptools<81"
     ),
