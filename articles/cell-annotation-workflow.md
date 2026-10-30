@@ -325,7 +325,7 @@ data.frame(
   bytes = file.info(list.files(output_dir, full.names = TRUE))$size
 )
 #>                               file    bytes
-#> 1                     analysis.rds  8030269
+#> 1                     analysis.rds  8030268
 #> 2                cell-metadata.csv    30269
 #> 3 log-scale-reference-profiles.csv  2562291
 #> 4         prediction-agreement.csv      134
@@ -387,9 +387,9 @@ build_receipt <- data.frame(
 )
 build_receipt
 #>                    article               built_utc  scop     R
-#> 1 cell-annotation-workflow 2026-10-29 13:00:46 UTC 0.9.2 4.6.1
+#> 1 cell-annotation-workflow 2026-10-30 06:54:08 UTC 0.9.2 4.6.2
 #>                            source_revision source_has_local_changes
-#> 1 ad4b555307ddafe827a0748effa2efa29dc934c1                    FALSE
+#> 1 8288c84cc97261b547b7847031f1f2e5a8fcdbe7                    FALSE
 #>                        article_md5 R_seed cells_retained genes_in_active_assay
 #> 1 fb85a2913df817dbe406011c397667b4     11            200                 12932
 utils::write.csv(build_receipt, file.path(output_dir, "build-receipt.csv"),
@@ -403,7 +403,7 @@ Show the complete R session used for this page
 ``` r
 
 sessionInfo()
-#> R version 4.6.1 (2026-06-24)
+#> R version 4.6.2 (2026-10-29)
 #> Platform: x86_64-pc-linux-gnu
 #> Running under: Ubuntu 24.04.5 LTS
 #> 
@@ -433,7 +433,7 @@ sessionInfo()
 #>  [10] ragg_1.5.2             vctrs_0.7.3            ROCR_1.0-12           
 #>  [13] spatstat.explore_3.8-3 htmltools_0.5.9        sass_0.4.10           
 #>  [16] thisutils_0.5.3        sctransform_0.4.3      parallelly_1.48.0     
-#>  [19] KernSmooth_2.23-26     bslib_0.12.0           htmlwidgets_1.6.4     
+#>  [19] KernSmooth_2.23-27     bslib_0.12.0           htmlwidgets_1.6.4     
 #>  [22] desc_1.4.3             ica_1.0-3              plyr_1.8.9            
 #>  [25] plotly_4.12.1          zoo_1.9-1              cachem_1.1.0          
 #>  [28] igraph_2.3.4           iterators_1.0.14       mime_0.13             
@@ -445,31 +445,31 @@ sessionInfo()
 #>  [46] Seurat_5.6.0           tensor_1.5.1           RSpectra_0.16-2       
 #>  [49] irlba_2.4.1            textshaping_1.0.5      labeling_0.4.3        
 #>  [52] progressr_1.1.0        spatstat.sparse_3.2-0  httr_1.4.9            
-#>  [55] polyclip_1.10-7        abind_1.4-8            compiler_4.6.1        
+#>  [55] polyclip_1.10-7        abind_1.4-8            compiler_4.6.2        
 #>  [58] doParallel_1.0.17      withr_3.0.3            S7_0.2.2              
 #>  [61] fastDummies_1.7.6      MASS_7.3-66            proxyC_0.5.2          
-#>  [64] rjson_0.2.23           tools_4.6.1            lmtest_0.9-40         
+#>  [64] rjson_0.2.23           tools_4.6.2            lmtest_0.9-40         
 #>  [67] otel_0.2.0             httpuv_1.6.17          future.apply_1.21.0   
-#>  [70] goftest_1.2-3          glue_1.8.1             nlme_3.1-169          
-#>  [73] promises_1.5.0         grid_4.6.1             Rtsne_0.17            
+#>  [70] goftest_1.2-3          glue_1.8.1             nlme_3.1-171          
+#>  [73] promises_1.5.0         grid_4.6.2             Rtsne_0.17            
 #>  [76] cluster_2.1.8.3        reshape2_1.4.5         generics_0.1.4        
 #>  [79] gtable_0.3.6           spatstat.data_3.1-9    tidyr_1.3.2           
 #>  [82] data.table_1.18.6.1    sp_2.2-4               BiocGenerics_0.58.1   
 #>  [85] spatstat.geom_3.8-3    RcppAnnoy_0.0.23       foreach_1.5.2         
 #>  [88] ggrepel_0.9.8          RANN_2.6.3             pillar_1.11.1         
 #>  [91] stringr_1.6.0          spam_2.11-4            RcppHNSW_0.7.0        
-#>  [94] later_1.4.8            circlize_0.4.18        splines_4.6.1         
-#>  [97] dplyr_1.2.1            lattice_0.22-9         survival_3.8-6        
+#>  [94] later_1.4.8            circlize_0.4.18        splines_4.6.2         
+#>  [97] dplyr_1.2.1            lattice_0.23-1         survival_3.8-12       
 #> [100] deldir_2.0-4           tidyselect_1.2.1       ComplexHeatmap_2.28.0 
 #> [103] miniUI_0.1.2           pbapply_1.7-5          knitr_1.52            
 #> [106] gridExtra_2.3.1        IRanges_2.46.0         scattermore_1.2       
-#> [109] stats4_4.6.1           xfun_0.62              matrixStats_1.5.0     
+#> [109] stats4_4.6.2           xfun_0.62              matrixStats_1.5.0     
 #> [112] stringi_1.8.9          yaml_2.3.12            evaluate_1.0.5        
 #> [115] codetools_0.2-20       tibble_3.3.1           cli_3.6.6             
 #> [118] uwot_0.2.5             xtable_1.8-8           reticulate_1.47.0     
 #> [121] systemfonts_1.3.2      jquerylib_0.1.4        dichromat_2.0-1       
 #> [124] Rcpp_1.1.2             globals_0.20.0         spatstat.random_3.5-2 
-#> [127] png_0.1-9              spatstat.univar_3.2-0  parallel_4.6.1        
+#> [127] png_0.1-9              spatstat.univar_3.2-0  parallel_4.6.2        
 #> [130] pkgdown_2.2.1          ggplot2_4.0.3          dotCall64_1.2         
 #> [133] listenv_1.1.0          viridisLite_0.4.3      scales_1.4.0          
 #> [136] ggridges_0.5.7         crayon_1.5.3           SeuratObject_5.4.0    

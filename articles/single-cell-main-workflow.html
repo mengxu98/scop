@@ -440,7 +440,7 @@ reproduce the analysis. No cells are sampled for this export.</p>
 <span>  bytes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.info.html" class="external-link">file.info</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">output_dir</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">size</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;                file    bytes</span></span>
-<span><span class="co">#&gt; 1      analysis.rds 34270940</span></span>
+<span><span class="co">#&gt; 1      analysis.rds 34270939</span></span>
 <span><span class="co">#&gt; 2 cell-metadata.csv   236267</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -500,9 +500,9 @@ object.</p>
 <span><span class="op">)</span></span>
 <span><span class="va">build_receipt</span></span>
 <span><span class="co">#&gt;                     article               built_utc  scop     R</span></span>
-<span><span class="co">#&gt; 1 single-cell-main-workflow 2026-10-29 13:08:24 UTC 0.9.2 4.6.1</span></span>
+<span><span class="co">#&gt; 1 single-cell-main-workflow 2026-10-30 07:01:58 UTC 0.9.2 4.6.2</span></span>
 <span><span class="co">#&gt;                            source_revision source_has_local_changes</span></span>
-<span><span class="co">#&gt; 1 ad4b555307ddafe827a0748effa2efa29dc934c1                    FALSE</span></span>
+<span><span class="co">#&gt; 1 8288c84cc97261b547b7847031f1f2e5a8fcdbe7                    FALSE</span></span>
 <span><span class="co">#&gt;                        article_md5 R_seed cells_retained genes_in_active_assay</span></span>
 <span><span class="co">#&gt; 1 2c5a3d3c700eb7db8ec2b44b16fcceda     11           1000                 15998</span></span>
 <span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">build_receipt</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">output_dir</span>, <span class="st">"build-receipt.csv"</span><span class="op">)</span>,</span>
@@ -513,7 +513,7 @@ object.</p>
 Show the complete R session used for this page
 </summary><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; R version 4.6.1 (2026-06-24)</span></span>
+<span><span class="co">#&gt; R version 4.6.2 (2026-10-29)</span></span>
 <span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu</span></span>
 <span><span class="co">#&gt; Running under: Ubuntu 24.04.5 LTS</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -543,7 +543,7 @@ Show the complete R session used for this page
 <span><span class="co">#&gt;  [10] ragg_1.5.2             vctrs_0.7.3            ROCR_1.0-12           </span></span>
 <span><span class="co">#&gt;  [13] spatstat.explore_3.8-3 htmltools_0.5.9        sass_0.4.10           </span></span>
 <span><span class="co">#&gt;  [16] thisutils_0.5.3        sctransform_0.4.3      parallelly_1.48.0     </span></span>
-<span><span class="co">#&gt;  [19] KernSmooth_2.23-26     bslib_0.12.0           htmlwidgets_1.6.4     </span></span>
+<span><span class="co">#&gt;  [19] KernSmooth_2.23-27     bslib_0.12.0           htmlwidgets_1.6.4     </span></span>
 <span><span class="co">#&gt;  [22] desc_1.4.3             ica_1.0-3              plyr_1.8.9            </span></span>
 <span><span class="co">#&gt;  [25] plotly_4.12.1          zoo_1.9-1              cachem_1.1.0          </span></span>
 <span><span class="co">#&gt;  [28] igraph_2.3.4           mime_0.13              lifecycle_1.0.5       </span></span>
@@ -555,31 +555,31 @@ Show the complete R session used for this page
 <span><span class="co">#&gt;  [46] Seurat_5.6.0           tensor_1.5.1           RSpectra_0.16-2       </span></span>
 <span><span class="co">#&gt;  [49] irlba_2.4.1            textshaping_1.0.5      labeling_0.4.3        </span></span>
 <span><span class="co">#&gt;  [52] progressr_1.1.0        spatstat.sparse_3.2-0  httr_1.4.9            </span></span>
-<span><span class="co">#&gt;  [55] polyclip_1.10-7        abind_1.4-8            compiler_4.6.1        </span></span>
+<span><span class="co">#&gt;  [55] polyclip_1.10-7        abind_1.4-8            compiler_4.6.2        </span></span>
 <span><span class="co">#&gt;  [58] withr_3.0.3            doParallel_1.0.17      S7_0.2.2              </span></span>
 <span><span class="co">#&gt;  [61] fastDummies_1.7.6      MASS_7.3-66            proxyC_0.5.2          </span></span>
-<span><span class="co">#&gt;  [64] rjson_0.2.23           tools_4.6.1            lmtest_0.9-40         </span></span>
+<span><span class="co">#&gt;  [64] rjson_0.2.23           tools_4.6.2            lmtest_0.9-40         </span></span>
 <span><span class="co">#&gt;  [67] otel_0.2.0             httpuv_1.6.17          future.apply_1.21.0   </span></span>
-<span><span class="co">#&gt;  [70] goftest_1.2-3          glue_1.8.1             nlme_3.1-169          </span></span>
-<span><span class="co">#&gt;  [73] promises_1.5.0         grid_4.6.1             Rtsne_0.17            </span></span>
+<span><span class="co">#&gt;  [70] goftest_1.2-3          glue_1.8.1             nlme_3.1-171          </span></span>
+<span><span class="co">#&gt;  [73] promises_1.5.0         grid_4.6.2             Rtsne_0.17            </span></span>
 <span><span class="co">#&gt;  [76] cluster_2.1.8.3        reshape2_1.4.5         generics_0.1.4        </span></span>
 <span><span class="co">#&gt;  [79] gtable_0.3.6           spatstat.data_3.1-9    tidyr_1.3.2           </span></span>
 <span><span class="co">#&gt;  [82] data.table_1.18.6.1    sp_2.2-4               BiocGenerics_0.58.1   </span></span>
 <span><span class="co">#&gt;  [85] spatstat.geom_3.8-3    RcppAnnoy_0.0.23       ggrepel_0.9.8         </span></span>
 <span><span class="co">#&gt;  [88] RANN_2.6.3             foreach_1.5.2          pillar_1.11.1         </span></span>
 <span><span class="co">#&gt;  [91] stringr_1.6.0          spam_2.11-4            RcppHNSW_0.7.0        </span></span>
-<span><span class="co">#&gt;  [94] later_1.4.8            circlize_0.4.18        splines_4.6.1         </span></span>
-<span><span class="co">#&gt;  [97] dplyr_1.2.1            lattice_0.22-9         survival_3.8-6        </span></span>
+<span><span class="co">#&gt;  [94] later_1.4.8            circlize_0.4.18        splines_4.6.2         </span></span>
+<span><span class="co">#&gt;  [97] dplyr_1.2.1            lattice_0.23-1         survival_3.8-12       </span></span>
 <span><span class="co">#&gt; [100] deldir_2.0-4           tidyselect_1.2.1       ComplexHeatmap_2.28.0 </span></span>
 <span><span class="co">#&gt; [103] miniUI_0.1.2           pbapply_1.7-5          knitr_1.52            </span></span>
 <span><span class="co">#&gt; [106] gridExtra_2.3.1        IRanges_2.46.0         scattermore_1.2       </span></span>
-<span><span class="co">#&gt; [109] stats4_4.6.1           xfun_0.62              matrixStats_1.5.0     </span></span>
+<span><span class="co">#&gt; [109] stats4_4.6.2           xfun_0.62              matrixStats_1.5.0     </span></span>
 <span><span class="co">#&gt; [112] stringi_1.8.9          yaml_2.3.12            evaluate_1.0.5        </span></span>
 <span><span class="co">#&gt; [115] codetools_0.2-20       tibble_3.3.1           cli_3.6.6             </span></span>
 <span><span class="co">#&gt; [118] uwot_0.2.5             xtable_1.8-8           reticulate_1.47.0     </span></span>
 <span><span class="co">#&gt; [121] systemfonts_1.3.2      jquerylib_0.1.4        dichromat_2.0-1       </span></span>
 <span><span class="co">#&gt; [124] Rcpp_1.1.2             globals_0.20.0         spatstat.random_3.5-2 </span></span>
-<span><span class="co">#&gt; [127] png_0.1-9              spatstat.univar_3.2-0  parallel_4.6.1        </span></span>
+<span><span class="co">#&gt; [127] png_0.1-9              spatstat.univar_3.2-0  parallel_4.6.2        </span></span>
 <span><span class="co">#&gt; [130] pkgdown_2.2.1          ggplot2_4.0.3          dotCall64_1.2         </span></span>
 <span><span class="co">#&gt; [133] listenv_1.1.0          viridisLite_0.4.3      scales_1.4.0          </span></span>
 <span><span class="co">#&gt; [136] ggridges_0.5.7         crayon_1.5.3           SeuratObject_5.4.0    </span></span>

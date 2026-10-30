@@ -49,6 +49,6 @@ A string indicating the type of data. Possible values are:
 ``` r
 data(pancreas_sub)
 CheckDataType(pancreas_sub)
-#> ! [2026-10-29 11:53:48] Infinite values detected
+#> ! [2026-10-30 05:45:21] Infinite values detected
 #> [1] "unknown"
 ```

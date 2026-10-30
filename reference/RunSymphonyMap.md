@@ -116,22 +116,22 @@ RunSymphonyMap(
 ``` r
 data(panc8_sub)
 panc8_sub <- RunStandardWorkflow(panc8_sub)
-#> ℹ [2026-10-29 12:53:37] Start standard processing workflow...
-#> ℹ [2026-10-29 12:53:37] Checking a list of <Seurat>...
-#> ! [2026-10-29 12:53:37] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-10-29 12:53:37] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-10-29 12:53:37] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-10-29 12:53:37] Use the separate HVF from `srt_list`
-#> ℹ [2026-10-29 12:53:37] Number of available HVF: 2000
-#> ℹ [2026-10-29 12:53:37] Finished check
-#> ℹ [2026-10-29 12:53:37] Perform `ScaleData()`
-#> ℹ [2026-10-29 12:53:37] Perform pca linear dimension reduction
-#> ℹ [2026-10-29 12:53:38] Use stored estimated dimensions 1:26 for Standardpca
-#> ℹ [2026-10-29 12:53:38] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-10-29 12:53:38] Reorder clusters...
-#> ℹ [2026-10-29 12:53:38] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-10-29 12:53:38] Perform umap nonlinear dimension reduction
-#> ✔ [2026-10-29 12:53:48] Standard processing workflow completed
+#> ℹ [2026-10-30 06:46:29] Start standard processing workflow...
+#> ℹ [2026-10-30 06:46:29] Checking a list of <Seurat>...
+#> ! [2026-10-30 06:46:29] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-10-30 06:46:29] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-10-30 06:46:29] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-10-30 06:46:29] Use the separate HVF from `srt_list`
+#> ℹ [2026-10-30 06:46:29] Number of available HVF: 2000
+#> ℹ [2026-10-30 06:46:29] Finished check
+#> ℹ [2026-10-30 06:46:29] Perform `ScaleData()`
+#> ℹ [2026-10-30 06:46:29] Perform pca linear dimension reduction
+#> ℹ [2026-10-30 06:46:30] Use stored estimated dimensions 1:26 for Standardpca
+#> ℹ [2026-10-30 06:46:31] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-10-30 06:46:31] Reorder clusters...
+#> ℹ [2026-10-30 06:46:31] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-10-30 06:46:31] Perform umap nonlinear dimension reduction
+#> ✔ [2026-10-30 06:46:42] Standard processing workflow completed
 srt_ref <- panc8_sub[, panc8_sub$tech != "fluidigmc1"]
 srt_query <- panc8_sub[, panc8_sub$tech == "fluidigmc1"]
 srt_ref <- RunIntegration(
@@ -139,32 +139,32 @@ srt_ref <- RunIntegration(
   batch = "tech",
   integration_method = "Harmony"
 )
-#> ◌ [2026-10-29 12:53:49] Run integration workflow...
-#> ℹ [2026-10-29 12:53:49] Split `srt_merge` into `srt_list` by "tech"
-#> ℹ [2026-10-29 12:53:50] Checking a list of <Seurat>...
-#> ℹ [2026-10-29 12:53:50] Data 1/4 of the `srt_list` has been log-normalized
-#> ℹ [2026-10-29 12:53:50] Perform `FindVariableFeatures()` on 1/4 of `srt_list`...
-#> ℹ [2026-10-29 12:53:50] Data 2/4 of the `srt_list` has been log-normalized
-#> ℹ [2026-10-29 12:53:50] Perform `FindVariableFeatures()` on 2/4 of `srt_list`...
-#> ℹ [2026-10-29 12:53:51] Data 3/4 of the `srt_list` has been log-normalized
-#> ℹ [2026-10-29 12:53:51] Perform `FindVariableFeatures()` on 3/4 of `srt_list`...
-#> ℹ [2026-10-29 12:53:51] Data 4/4 of the `srt_list` has been log-normalized
-#> ℹ [2026-10-29 12:53:51] Perform `FindVariableFeatures()` on 4/4 of `srt_list`...
-#> ℹ [2026-10-29 12:53:51] Use the separate HVF from `srt_list`
-#> ℹ [2026-10-29 12:53:51] Number of available HVF: 2000
-#> ℹ [2026-10-29 12:53:51] Finished check
-#> ℹ [2026-10-29 12:53:51] Perform `Seurat::ScaleData()`
-#> ℹ [2026-10-29 12:53:51] Perform linear dimension reduction("pca")
-#> ℹ [2026-10-29 12:53:52] Perform Harmony integration
-#> ℹ [2026-10-29 12:53:52] Using "Harmonypca" (1:20) as input
-#> ℹ [2026-10-29 12:53:52] Adjust neighbor k from 20 to 20 for small-sample clustering
-#> ℹ [2026-10-29 12:53:53] Perform `Seurat::FindClusters()` with "louvain"
-#> ℹ [2026-10-29 12:53:53] Reorder clusters...
-#> ℹ [2026-10-29 12:53:53] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-10-29 12:53:53] Perform umap nonlinear dimension reduction using Harmony (1:20)
-#> ℹ [2026-10-29 12:53:59] Perform umap nonlinear dimension reduction using Harmony (1:20)
-#> ℹ [2026-10-29 12:54:06] Perform umap nonlinear dimension reduction using Harmonypca (1:20)
-#> ✔ [2026-10-29 12:54:13] Harmony integration completed
+#> ◌ [2026-10-30 06:46:43] Run integration workflow...
+#> ℹ [2026-10-30 06:46:44] Split `srt_merge` into `srt_list` by "tech"
+#> ℹ [2026-10-30 06:46:44] Checking a list of <Seurat>...
+#> ℹ [2026-10-30 06:46:44] Data 1/4 of the `srt_list` has been log-normalized
+#> ℹ [2026-10-30 06:46:44] Perform `FindVariableFeatures()` on 1/4 of `srt_list`...
+#> ℹ [2026-10-30 06:46:45] Data 2/4 of the `srt_list` has been log-normalized
+#> ℹ [2026-10-30 06:46:45] Perform `FindVariableFeatures()` on 2/4 of `srt_list`...
+#> ℹ [2026-10-30 06:46:45] Data 3/4 of the `srt_list` has been log-normalized
+#> ℹ [2026-10-30 06:46:45] Perform `FindVariableFeatures()` on 3/4 of `srt_list`...
+#> ℹ [2026-10-30 06:46:45] Data 4/4 of the `srt_list` has been log-normalized
+#> ℹ [2026-10-30 06:46:45] Perform `FindVariableFeatures()` on 4/4 of `srt_list`...
+#> ℹ [2026-10-30 06:46:45] Use the separate HVF from `srt_list`
+#> ℹ [2026-10-30 06:46:45] Number of available HVF: 2000
+#> ℹ [2026-10-30 06:46:45] Finished check
+#> ℹ [2026-10-30 06:46:45] Perform `Seurat::ScaleData()`
+#> ℹ [2026-10-30 06:46:46] Perform linear dimension reduction("pca")
+#> ℹ [2026-10-30 06:46:46] Perform Harmony integration
+#> ℹ [2026-10-30 06:46:46] Using "Harmonypca" (1:20) as input
+#> ℹ [2026-10-30 06:46:47] Adjust neighbor k from 20 to 20 for small-sample clustering
+#> ℹ [2026-10-30 06:46:47] Perform `Seurat::FindClusters()` with "louvain"
+#> ℹ [2026-10-30 06:46:47] Reorder clusters...
+#> ℹ [2026-10-30 06:46:47] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-10-30 06:46:47] Perform umap nonlinear dimension reduction using Harmony (1:20)
+#> ℹ [2026-10-30 06:46:55] Perform umap nonlinear dimension reduction using Harmony (1:20)
+#> ℹ [2026-10-30 06:47:03] Perform umap nonlinear dimension reduction using Harmonypca (1:20)
+#> ✔ [2026-10-30 06:47:12] Harmony integration completed
 CellDimPlot(srt_ref, group.by = c("celltype", "tech"))
 
 
@@ -176,31 +176,31 @@ srt_query <- RunSymphonyMap(
   ref_harmony = "Harmony",
   ref_umap = "HarmonyUMAP2D"
 )
-#> ℹ [2026-10-29 12:54:14] Data type is log-normalized
-#> ℹ [2026-10-29 12:54:14] Detected `srt_query` data type: "log_normalized_counts"
-#> ℹ [2026-10-29 12:54:14] Data type is log-normalized
-#> ℹ [2026-10-29 12:54:14] Detected `srt_ref` data type: "log_normalized_counts"
-#> ℹ [2026-10-29 12:54:14] Build reference
-#> ℹ [2026-10-29 12:54:14] Saved embeddings
-#> ℹ [2026-10-29 12:54:14] Saved soft cluster assignments
-#> ℹ [2026-10-29 12:54:14] Saved variable gene information for 2000 genes
-#> ℹ [2026-10-29 12:54:14] Saved PCA loadings
-#> ℹ [2026-10-29 12:54:14] Saved metadata
-#> ℹ [2026-10-29 12:54:14] Calculate final L2 normalized reference centroids (Y_cos)
-#> ! [2026-10-29 12:54:14] Function "cosine_normalize" not found in symphony namespace
-#> ℹ [2026-10-29 12:54:14] Calculate reference compression terms (Nr and C)
-#> ℹ [2026-10-29 12:54:14] Run mapQuery
-#> ℹ [2026-10-29 12:54:15] Scaling and synchronizing query gene expression
-#> ℹ [2026-10-29 12:54:15] Found 2000 reference variable genes in query object
-#> ℹ [2026-10-29 12:54:15] Project query cells using reference gene loadings
-#> ℹ [2026-10-29 12:54:15] Clustering query cells to reference centroids
-#> ! [2026-10-29 12:54:15] Function "cosine_normalize" not found in symphony namespace
-#> ℹ [2026-10-29 12:54:15] Correcting query batch effects
-#> ℹ [2026-10-29 12:54:15] Run UMAP projection
-#> ℹ [2026-10-29 12:54:15] Use the reduction to calculate distance metric
-#> ℹ [2026-10-29 12:54:15] Use raw method to find neighbors
-#> ℹ [2026-10-29 12:54:15] Running UMAP projection
-#> ℹ [2026-10-29 12:54:15] Run SymphonyMap finished
+#> ℹ [2026-10-30 06:47:12] Data type is log-normalized
+#> ℹ [2026-10-30 06:47:12] Detected `srt_query` data type: "log_normalized_counts"
+#> ℹ [2026-10-30 06:47:13] Data type is log-normalized
+#> ℹ [2026-10-30 06:47:13] Detected `srt_ref` data type: "log_normalized_counts"
+#> ℹ [2026-10-30 06:47:13] Build reference
+#> ℹ [2026-10-30 06:47:13] Saved embeddings
+#> ℹ [2026-10-30 06:47:13] Saved soft cluster assignments
+#> ℹ [2026-10-30 06:47:13] Saved variable gene information for 2000 genes
+#> ℹ [2026-10-30 06:47:13] Saved PCA loadings
+#> ℹ [2026-10-30 06:47:13] Saved metadata
+#> ℹ [2026-10-30 06:47:13] Calculate final L2 normalized reference centroids (Y_cos)
+#> ! [2026-10-30 06:47:13] Function "cosine_normalize" not found in symphony namespace
+#> ℹ [2026-10-30 06:47:13] Calculate reference compression terms (Nr and C)
+#> ℹ [2026-10-30 06:47:13] Run mapQuery
+#> ℹ [2026-10-30 06:47:13] Scaling and synchronizing query gene expression
+#> ℹ [2026-10-30 06:47:13] Found 2000 reference variable genes in query object
+#> ℹ [2026-10-30 06:47:13] Project query cells using reference gene loadings
+#> ℹ [2026-10-30 06:47:13] Clustering query cells to reference centroids
+#> ! [2026-10-30 06:47:13] Function "cosine_normalize" not found in symphony namespace
+#> ℹ [2026-10-30 06:47:13] Correcting query batch effects
+#> ℹ [2026-10-30 06:47:13] Run UMAP projection
+#> ℹ [2026-10-30 06:47:13] Use the reduction to calculate distance metric
+#> ℹ [2026-10-30 06:47:13] Use raw method to find neighbors
+#> ℹ [2026-10-30 06:47:13] Running UMAP projection
+#> ℹ [2026-10-30 06:47:13] Run SymphonyMap finished
 ProjectionPlot(
   srt_query = srt_query,
   srt_ref = srt_ref,

@@ -189,22 +189,22 @@ A `Seurat` object with QC results in `meta.data`.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-10-29 12:16:27] Start standard processing workflow...
-#> ℹ [2026-10-29 12:16:27] Checking a list of <Seurat>...
-#> ! [2026-10-29 12:16:27] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-10-29 12:16:27] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-10-29 12:16:27] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-10-29 12:16:27] Use the separate HVF from `srt_list`
-#> ℹ [2026-10-29 12:16:27] Number of available HVF: 2000
-#> ℹ [2026-10-29 12:16:27] Finished check
-#> ℹ [2026-10-29 12:16:27] Perform `ScaleData()`
-#> ℹ [2026-10-29 12:16:27] Perform pca linear dimension reduction
-#> ℹ [2026-10-29 12:16:28] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-10-29 12:16:28] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-10-29 12:16:28] Reorder clusters...
-#> ℹ [2026-10-29 12:16:28] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-10-29 12:16:28] Perform umap nonlinear dimension reduction
-#> ✔ [2026-10-29 12:16:37] Standard processing workflow completed
+#> ℹ [2026-10-30 06:06:56] Start standard processing workflow...
+#> ℹ [2026-10-30 06:06:56] Checking a list of <Seurat>...
+#> ! [2026-10-30 06:06:57] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-10-30 06:06:57] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-10-30 06:06:57] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-10-30 06:06:57] Use the separate HVF from `srt_list`
+#> ℹ [2026-10-30 06:06:57] Number of available HVF: 2000
+#> ℹ [2026-10-30 06:06:57] Finished check
+#> ℹ [2026-10-30 06:06:57] Perform `ScaleData()`
+#> ℹ [2026-10-30 06:06:57] Perform pca linear dimension reduction
+#> ℹ [2026-10-30 06:06:57] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-10-30 06:06:58] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-10-30 06:06:58] Reorder clusters...
+#> ℹ [2026-10-30 06:06:58] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-10-30 06:06:58] Perform umap nonlinear dimension reduction
+#> ✔ [2026-10-30 06:07:08] Standard processing workflow completed
 pancreas_sub <- RunCellQC(
   pancreas_sub,
   qc_metrics = c("umi", "gene", "example_set"),
@@ -215,9 +215,9 @@ pancreas_sub <- RunCellQC(
     )
   )
 )
-#> ◌ [2026-10-29 12:16:37] Running cell-level quality control
-#> ℹ [2026-10-29 12:16:37] Data type is raw counts
-#> ✔ [2026-10-29 12:16:37] ● Total cells: 1000
+#> ◌ [2026-10-30 06:07:08] Running cell-level quality control
+#> ℹ [2026-10-30 06:07:08] Data type is raw counts
+#> ✔ [2026-10-30 06:07:08] ● Total cells: 1000
 #> ✔                       ◉ 849 cells remained
 #> ✔                       ◯ 151 cells filtered out:
 #> ✔                       ◯   0 low-UMI cells
@@ -242,7 +242,7 @@ CellStatPlot(
   plot_type = "upset",
   stat_level = "Fail"
 )
-#> ! [2026-10-29 12:16:37] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+#> ! [2026-10-30 06:07:08] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
 #> `geom_line()`: Each group consists of only one observation.
 #> ℹ Do you need to adjust the group aesthetic?
 #> `geom_line()`: Each group consists of only one observation.
