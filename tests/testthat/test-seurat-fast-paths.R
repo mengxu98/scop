@@ -868,7 +868,8 @@ test_that("Conos matrix preparation preserves native layer values", {
   reference <- original
   body(reference) <- parse(text = gsub(
     "slot = slot", "layer = slot",
-    paste(deparse(body(reference)), collapse = "\n"), fixed = TRUE
+    paste(deparse(body(reference)), collapse = "\n"),
+    fixed = TRUE
   ))[[1L]]
   genes <- Reduce(intersect, lapply(samples, function(so) {
     rownames(GetAssayData5(so, layer = "scale.data"))

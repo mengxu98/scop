@@ -246,8 +246,10 @@ test_that("PrepareEnv reuses its managed environment cache", {
     ensure_external_wrapper_r_packages = function(...) NULL,
     log_message = function(...) NULL
   )
-  expect_null(PrepareEnv(envname = "test", conda = "test-conda",
-    version = "3.10-1", modules = "phate", verbose = FALSE))
+  expect_null(PrepareEnv(
+    envname = "test", conda = "test-conda",
+    version = "3.10-1", modules = "phate", verbose = FALSE
+  ))
   expect_identical(configured, python)
   expect_identical(checked, python)
 })

@@ -3,8 +3,10 @@ title: "Spatial framework bridges"
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.align = "center",
-                      dpi = 144, out.width = "92%")
+knitr::opts_chunk$set(
+  collapse = TRUE, comment = "#>", fig.align = "center",
+  dpi = 144, out.width = "92%"
+)
 ```
 
 Use this page when an analysis needs a different data container. You will
@@ -71,7 +73,8 @@ and resolve any mismatch instead of assigning coordinates by row position.
 
 ```{r spe-roundtrip}
 spe <- srt_to_spe(
-  spatial, assay = assay_name, layer = "counts", image = image_name,
+  spatial,
+  assay = assay_name, layer = "counts", image = image_name,
   include_meta = TRUE, coordinate_space = "raw"
 )
 spatial_roundtrip <- spe_to_srt(spe, assay = assay_name, layer = "scop_input")
@@ -111,7 +114,8 @@ this bridge's contract; keep the original object if you need them.
 ```{r spe-map, fig.height=4.5}
 stopifnot("GCG" %in% rownames(counts_after))
 SpatialSpotPlot(
-  spatial_roundtrip, image = NULL, coord.cols = c("x", "y"),
+  spatial_roundtrip,
+  image = NULL, coord.cols = c("x", "y"),
   features = "GCG", assay = assay_name, layer = "counts",
   overlay_image = FALSE, palette = "YlGnBu", legend.title = "GCG counts"
 )
@@ -129,7 +133,8 @@ vertically flipped coordinates.
 
 ```{r spe-display-roundtrip}
 spe_display <- srt_to_spe(
-  spatial, assay = assay_name, layer = "counts", image = image_name,
+  spatial,
+  assay = assay_name, layer = "counts", image = image_name,
   coordinate_space = "legacy_display"
 )
 display_provenance <- S4Vectors::metadata(spe_display)$scop_spatial_coordinates
@@ -165,15 +170,19 @@ native <- srt_to_giotto(giotto_input, image = image_name)
 restored <- giotto_to_srt(native)
 restored_assay <- SeuratObject::DefaultAssay(restored)
 restored_counts <- GetAssayData5(restored, assay = restored_assay, layer = "counts")
-stopifnot(setequal(colnames(restored_counts), colnames(counts_before)),
-          setequal(rownames(restored_counts), rownames(counts_before)))
+stopifnot(
+  setequal(colnames(restored_counts), colnames(counts_before)),
+  setequal(rownames(restored_counts), rownames(counts_before))
+)
 restored_counts <- restored_counts[rownames(counts_before), colnames(counts_before)]
 restored_xy <- SpatialCoordinates(restored, space = "raw")$data
 checks <- c(
   counts = isTRUE(all.equal(restored_counts, counts_before)),
   coda_annotation = "coda_label" %in% colnames(restored@meta.data) &&
-    identical(as.character(restored@meta.data[colnames(counts_before), "coda_label"]),
-              as.character(spatial$coda_label)),
+    identical(
+      as.character(restored@meta.data[colnames(counts_before), "coda_label"]),
+      as.character(spatial$coda_label)
+    ),
   coordinates = isTRUE(all.equal(
     as.matrix(restored_xy[colnames(counts_before), c("x", "y")]), raw_xy,
     check.attributes = FALSE
@@ -214,8 +223,10 @@ reload_checks <- c(
   counts = isTRUE(all.equal(
     GetAssayData5(reloaded$seurat, assay = assay_name, layer = "counts"), counts_before
   )),
-  coordinates = identical(SpatialExperiment::spatialCoords(reloaded$spatial_experiment),
-                         SpatialExperiment::spatialCoords(spe)),
+  coordinates = identical(
+    SpatialExperiment::spatialCoords(reloaded$spatial_experiment),
+    SpatialExperiment::spatialCoords(spe)
+  ),
   receipt = identical(reloaded$checks, spe_checks)
 )
 data.frame(check = names(reload_checks), passed = unname(reload_checks))
@@ -252,8 +263,10 @@ Reloading or plotting does not rerun conversion, normalization, or a model.
 ```{r bridge-session}
 data.frame(
   package = c("scop", "Seurat", "SeuratObject", "SpatialExperiment"),
-  version = vapply(c("scop", "Seurat", "SeuratObject", "SpatialExperiment"),
-                   function(p) as.character(utils::packageVersion(p)), character(1))
+  version = vapply(
+    c("scop", "Seurat", "SeuratObject", "SpatialExperiment"),
+    function(p) as.character(utils::packageVersion(p)), character(1)
+  )
 )
 ```
 
@@ -264,15 +277,22 @@ Save the analysis provenance beside the exported object.
 ```{r build-provenance}
 source_revision <- Sys.getenv("GITHUB_SHA")
 if (!nzchar(source_revision) && nzchar(Sys.which("git"))) {
-  source_revision <- system2("git", c("rev-parse", "HEAD"), stdout = TRUE,
-                             stderr = FALSE)[1]
+  source_revision <- system2("git", c("rev-parse", "HEAD"),
+    stdout = TRUE,
+    stderr = FALSE
+  )[1]
 }
 build_receipt <- data.frame(
   article = "spatial-framework-bridges", built_utc = format(Sys.time(), tz = "UTC", usetz = TRUE),
   source_revision = source_revision,
-  source_has_local_changes = if (nzchar(Sys.which("git")))
-    length(system2("git", c("status", "--porcelain"), stdout = TRUE,
-                   stderr = FALSE)) > 0 else NA,
+  source_has_local_changes = if (nzchar(Sys.which("git"))) {
+    length(system2("git", c("status", "--porcelain"),
+      stdout = TRUE,
+      stderr = FALSE
+    )) > 0
+  } else {
+    NA
+  },
   article_md5 = unname(tools::md5sum(knitr::current_input(dir = TRUE))),
   R = as.character(getRversion()), scop = as.character(utils::packageVersion("scop")),
   retained_observations = ncol(spatial_roundtrip), genes = nrow(spatial_roundtrip)

@@ -429,18 +429,6 @@ grnboost_tree_profile <- function(expr, regulator_idx, target_idx, n_rounds = 50
     .Call(`_scop_grnboost_tree_profile`, expr, regulator_idx, target_idx, n_rounds, learning_rate, max_edges_per_target, max_depth, max_features, subsample, early_stop_window_length, random_seed, exclude_self)
 }
 
-grnboost_tree_round_trace <- function(expr, regulator_idx, target_idx, trace_regulator_idx, n_rounds = 5000L, learning_rate = 0.01, max_depth = 3L, max_features = 0.1, subsample = 0.9, early_stop_window_length = 25L, random_seed = 1234L, exclude_self = TRUE) {
-    .Call(`_scop_grnboost_tree_round_trace`, expr, regulator_idx, target_idx, trace_regulator_idx, n_rounds, learning_rate, max_depth, max_features, subsample, early_stop_window_length, random_seed, exclude_self)
-}
-
-grnboost_tree_round_nodes <- function(expr, regulator_idx, target_idx, trace_round, n_rounds = 5000L, learning_rate = 0.01, max_depth = 3L, max_features = 0.1, subsample = 0.9, early_stop_window_length = 25L, random_seed = 1234L, exclude_self = TRUE) {
-    .Call(`_scop_grnboost_tree_round_nodes`, expr, regulator_idx, target_idx, trace_round, n_rounds, learning_rate, max_depth, max_features, subsample, early_stop_window_length, random_seed, exclude_self)
-}
-
-grnboost_tree_node_candidates <- function(expr, regulator_idx, target_idx, trace_round, trace_node, n_rounds = 5000L, learning_rate = 0.01, max_depth = 3L, max_features = 0.1, subsample = 0.9, early_stop_window_length = 25L, random_seed = 1234L, exclude_self = TRUE) {
-    .Call(`_scop_grnboost_tree_node_candidates`, expr, regulator_idx, target_idx, trace_round, trace_node, n_rounds, learning_rate, max_depth, max_features, subsample, early_stop_window_length, random_seed, exclude_self)
-}
-
 scenic_ctx_recovery <- function(ranks, weights, rank_threshold) {
     .Call(`_scop_scenic_ctx_recovery`, ranks, weights, rank_threshold)
 }
@@ -511,26 +499,6 @@ scanpy_pseudotime_graph_cpp <- function(graph_rows, graph_cols, graph_vals, grap
 
 scanpy_stochastic_embedding_cpp <- function(spliced, unspliced, knn_idx, embedding) {
     .Call(`_scop_scanpy_stochastic_embedding_cpp`, spliced, unspliced, knn_idx, embedding)
-}
-
-sctenifold_pcnet_covariance_sparse <- function(x, n_comp = 3L, scale_scores = TRUE, symmetric = FALSE, q = 0.0, ncv = 0L, maxit = 1000L, tol = 1e-10, cores = 1L) {
-    .Call(`_scop_sctenifold_pcnet_covariance_sparse`, x, n_comp, scale_scores, symmetric, q, ncv, maxit, tol, cores)
-}
-
-sctenifold_tensor_decomposition <- function(x_list, init_u, max_iter = 1000L, tol = 1e-5, verbose = FALSE) {
-    .Call(`_scop_sctenifold_tensor_decomposition`, x_list, init_u, max_iter, tol, verbose)
-}
-
-sctenifold_strict_direction <- function(x, lambda = 1.0) {
-    .Call(`_scop_sctenifold_strict_direction`, x, lambda)
-}
-
-sctenifold_manifold_matrix <- function(x, y) {
-    .Call(`_scop_sctenifold_manifold_matrix`, x, y)
-}
-
-sctenifold_pair_distances <- function(aligned) {
-    .Call(`_scop_sctenifold_pair_distances`, aligned)
 }
 
 scibet_fit_predict <- function(ref, query, labels, n_labels, n_top, additional_per_label = 0L, return_probabilities = TRUE) {

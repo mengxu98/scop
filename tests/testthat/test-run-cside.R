@@ -201,8 +201,10 @@ test_that("RunCSIDE single mode excludes missing conditions before backend dispa
     mock_cside_result()
   }), {
     out <- RunCSIDE(srt, condition.by = "condition", verbose = FALSE)
-    expect_error(RunCSIDE(srt, explanatory.variable = c(0, NA, Inf, NaN), verbose = FALSE),
-      "at least two finite values")
+    expect_error(
+      RunCSIDE(srt, explanatory.variable = c(0, NA, Inf, NaN), verbose = FALSE),
+      "at least two finite values"
+    )
   })
   expect_identical(out@tools$CSIDE$barcodes, c("Spot1", "Spot3", "Spot4"))
   expect_identical(out@tools$CSIDE$parameters$condition_levels, c("A", "B"))

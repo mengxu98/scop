@@ -192,7 +192,7 @@ RunProportionTest <- function(
   if (isTRUE(pseudo_sample_info$enabled)) {
     method_bundle$results <- lapply(method_bundle$results, mask_pseudo_sample_inference)
     if (identical(proportion_method, "propeller") &&
-        !is.null(method_bundle$details$backend_results)) {
+      !is.null(method_bundle$details$backend_results)) {
       method_bundle$details$backend_results <- lapply(
         method_bundle$details$backend_results, function(x) {
           x$results <- mask_pseudo_sample_inference(x$results)

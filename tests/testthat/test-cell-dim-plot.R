@@ -25,24 +25,32 @@ make_cell_dim_plot_srt <- function(n_cells = 10L) {
 test_that("CellDimPlot density contours close within shared panel limits", {
   srt <- make_cell_dim_plot_srt(40L)
   for (show_na in c(FALSE, TRUE)) {
-    plots <- CellDimPlot(srt, group.by = "celltype", split.by = "major_type",
-                        reduction = "umap", add_density = TRUE, show_na = show_na,
-                        raster = FALSE, combine = FALSE, verbose = FALSE)
+    plots <- CellDimPlot(srt,
+      group.by = "celltype", split.by = "major_type",
+      reduction = "umap", add_density = TRUE, show_na = show_na,
+      raster = FALSE, combine = FALSE, verbose = FALSE
+    )
     for (p in plots) {
       layer <- which(vapply(p$layers, function(l) inherits(l$stat, "StatDensity2d"), logical(1)))
       paths <- ggplot2::ggplot_build(p)$data[[layer]]
       expect_gt(nrow(paths), 0L)
       closed <- vapply(split(paths, paths$group), function(d) {
         isTRUE(all.equal(as.numeric(d[1L, c("x", "y")]),
-                         as.numeric(d[nrow(d), c("x", "y")]), tolerance = 1e-8))
+          as.numeric(d[nrow(d), c("x", "y")]),
+          tolerance = 1e-8
+        ))
       }, logical(1))
       expect_true(all(closed))
       expect_no_warning(ggplot2::ggplotGrob(p))
     }
-    expect_equal(plots[[1L]]$scales$get_scales("x")$limits,
-                 plots[[2L]]$scales$get_scales("x")$limits)
-    expect_equal(plots[[1L]]$scales$get_scales("y")$limits,
-                 plots[[2L]]$scales$get_scales("y")$limits)
+    expect_equal(
+      plots[[1L]]$scales$get_scales("x")$limits,
+      plots[[2L]]$scales$get_scales("x")$limits
+    )
+    expect_equal(
+      plots[[1L]]$scales$get_scales("y")$limits,
+      plots[[2L]]$scales$get_scales("y")$limits
+    )
   }
 })
 
@@ -690,7 +698,8 @@ test_that("FeatureDimPlot styles feature headings by identity across reordered s
   srt <- make_cell_dim_plot_srt()
   srt$score <- seq_len(ncol(srt))
   plots <- FeatureDimPlot(
-    srt, features = c("gene2", "score", "gene1"), layer = "counts",
+    srt,
+    features = c("gene2", "score", "gene1"), layer = "counts",
     split.by = "major_type", reduction = "umap", show_stat = FALSE,
     title.color = c(gene1 = "#B14B28", gene2 = "#2A6F97"), combine = FALSE,
     verbose = FALSE
@@ -699,13 +708,21 @@ test_that("FeatureDimPlot styles feature headings by identity across reordered s
   for (p in plots) {
     f <- unique(p$data$features)
     expect_identical(p$theme$strip.text.x$face, if (f == "score") "plain" else "italic")
-    expect_identical(p$theme$strip.text.x$colour,
-      switch(f, gene1 = "#B14B28", gene2 = "#2A6F97", score = NULL))
+    expect_identical(
+      p$theme$strip.text.x$colour,
+      switch(f,
+        gene1 = "#B14B28",
+        gene2 = "#2A6F97",
+        score = NULL
+      )
+    )
     expect_equal(nrow(p$data), sum(srt$major_type == unique(p$data$major_type)))
     expect_no_error(ggplot2::ggplotGrob(p))
   }
-  p <- FeatureDimPlot(srt, "gene1", layer = "counts", reduction = "umap",
-    title.color = "red", title.face = "bold", combine = FALSE, verbose = FALSE)[[1]]
+  p <- FeatureDimPlot(srt, "gene1",
+    layer = "counts", reduction = "umap",
+    title.color = "red", title.face = "bold", combine = FALSE, verbose = FALSE
+  )[[1]]
   expect_identical(p$theme$strip.text.x$face, "bold")
   expect_identical(p$theme$strip.text.x$colour, "red")
   expect_error(FeatureDimPlot(srt, "gene1", title.color = c("red", "blue")), "title.color")
@@ -716,9 +733,11 @@ test_that("FeatureDimPlot styles feature headings by identity across reordered s
 test_that("cell density bands render without losing point colours", {
   srt <- make_cell_dim_plot_srt()
   plain <- CellDimPlot(srt, "major_type", reduction = "umap", raster = FALSE, verbose = FALSE)
-  filled <- CellDimPlot(srt, "major_type", reduction = "umap", raster = FALSE,
-                        add_density = TRUE, density_filled = TRUE,
-                        density_color = "tomato", verbose = FALSE)
+  filled <- CellDimPlot(srt, "major_type",
+    reduction = "umap", raster = FALSE,
+    add_density = TRUE, density_filled = TRUE,
+    density_color = "tomato", verbose = FALSE
+  )
   expect_no_warning(built <- ggplot2::ggplot_build(filled))
   bands <- which(vapply(filled$layers, function(l) inherits(l$geom, "GeomDensity2dFilled"), logical(1)))
   expect_length(bands, 1L)

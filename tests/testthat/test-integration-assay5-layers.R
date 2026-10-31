@@ -1,3 +1,92 @@
+test_that("Harmony retains complete RNA expression across different library feature sets", {
+  skip_if_not_installed("Seurat", "5.0.0")
+  skip_if_not_installed("harmony")
+  skip_if_not_installed("uwot")
+
+  set.seed(1234)
+  libraries <- lapply(seq_len(4), function(i) {
+    counts <- Matrix::Matrix(matrix(rpois(60 * 20, 2), 60, 20), sparse = TRUE)
+    rownames(counts) <- c(paste0("shared", seq_len(50)), paste0("private", i, "g", seq_len(10)))
+    colnames(counts) <- paste0("s", i, "c", seq_len(20))
+    object <- Seurat::CreateSeuratObject(counts)
+    object$sample <- paste0("s", i)
+    object
+  })
+  merged <- Reduce(merge, libraries)
+  expected <- SeuratObject::JoinLayers(merged[["RNA"]])
+  counts <- SeuratObject::LayerData(expected, layer = "counts")
+  normalized <- NormalizeData(merged, verbose = FALSE)
+  expected_data <- GetAssayData5(normalized, assay = "RNA", layer = "data")
+  cached <- lapply(seq_along(libraries), function(i) {
+    object <- NormalizeData(libraries[[i]], verbose = FALSE)
+    SeuratObject::VariableFeatures(object) <- paste0("shared", rev(seq.int((i - 1) * 10 + 1, i * 10)))
+    object
+  })
+  expected_hvf <- Seurat::SelectIntegrationFeatures(cached, nfeatures = 40)
+  standard <- suppressWarnings(RunStandardWorkflow(
+    merged,
+    assay = "RNA", nHVF = 20, linear_reduction_dims = 5,
+    linear_reduction_dims_use = 1:5, nonlinear_reduction = "umap",
+    nonlinear_reduction_params = list(n.epochs = 20, cores = 1),
+    neighbor_k = 5, cluster_resolution = 0.6, seed = 1234, verbose = FALSE
+  ))
+  expect_true(all(c("Standardpca", "StandardpcaUMAP2D") %in% SeuratObject::Reductions(standard)))
+  expect_true("scale.data" %in% SeuratObject::Layers(standard[["RNA"]]))
+
+  for (input in c("cached", "merged", "normalized", "list", "standard")) {
+    args <- if (input == "list") {
+      list(srt_list = libraries, append = FALSE)
+    } else if (input == "cached") {
+      list(
+        srt_list = cached, append = FALSE,
+        do_HVF_finding = FALSE, do_normalization = FALSE
+      )
+    } else {
+      list(srt_merge = switch(input,
+        merged = merged,
+        normalized = normalized,
+        standard = standard
+      ))
+    }
+    result <- suppressWarnings(do.call(RunIntegration, c(args, list(
+      batch = "sample", assay = "RNA", integration_methods = "Harmony",
+      nHVF = if (input == "cached") 40 else 20,
+      linear_reduction_dims = 5, linear_reduction_dims_use = 1:5,
+      nonlinear_reduction = if (input == "standard") "umap" else NULL,
+      nonlinear_reduction_params = list(n.epochs = 20, cores = 1),
+      neighbor_k = 5, seed = 1234, verbose = FALSE
+    ))))
+    expect_true(methods::validObject(result))
+    expect_identical(SeuratObject::Layers(result[["RNA"]], search = "counts"), "counts")
+    expect_identical(SeuratObject::Layers(result[["RNA"]], search = "data"), "data")
+    actual_counts <- SeuratObject::LayerData(result, assay = "RNA", layer = "counts")
+    expect_setequal(rownames(actual_counts), rownames(counts))
+    expect_setequal(colnames(actual_counts), colnames(counts))
+    expect_equal(actual_counts[rownames(counts), colnames(counts)], counts)
+    actual_data <- SeuratObject::LayerData(result, assay = "RNA", layer = "data")
+    expect_equal(actual_data[rownames(expected_data), colnames(expected_data)], expected_data)
+    if (input == "cached") {
+      expect_identical(result@misc$Harmony_HVF, expected_hvf)
+      expect_identical(SeuratObject::VariableFeatures(result), expected_hvf)
+    }
+    if (input == "standard") {
+      for (reduction in SeuratObject::Reductions(standard)) {
+        expect_equal(Seurat::Embeddings(result[[reduction]]), Seurat::Embeddings(standard[[reduction]]))
+      }
+      expect_identical(result$Standardclusters, standard$Standardclusters)
+      expect_true(all(c("Harmony", "HarmonyUMAP2D") %in% SeuratObject::Reductions(result)))
+    }
+    expect_identical(as.character(SeuratObject::Idents(result)), as.character(result$Harmonyclusters))
+    args <- list(
+      object = result, assay = "RNA",
+      min.pct = 0, logfc.threshold = 0, return.thresh = Inf, verbose = FALSE
+    )
+    actual <- do.call(scop::FindAllMarkers, args)
+    expect_gt(nrow(actual), 0)
+    expect_equal(actual, do.call(seurat_reference_find_all_markers, args), tolerance = 1e-10)
+  }
+})
+
 test_that("legacy integration scaling handles split Assay5 data layers", {
   skip_if_not_installed("Seurat")
   skip_if_not_installed("SeuratObject")

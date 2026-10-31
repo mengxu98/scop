@@ -323,7 +323,8 @@ Conos_integrate <- function(
 conos_scaled_matrices <- function(so.objs, data.type, od.genes, var.scale,
                                   neighborhood.average) {
   layer <- switch(data.type,
-    scaled = "scale.data", counts = "data",
+    scaled = "scale.data",
+    counts = "data",
     stop("Unknown Seurat data type: ", data.type)
   )
   x.data <- lapply(so.objs, function(so) {

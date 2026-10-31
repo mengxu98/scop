@@ -39,6 +39,8 @@
 #' default also excludes `"scvi"`, `"glue"`, and `"multimap"` because those
 #' upstream stacks are more reliable when requested explicitly for
 #' method-specific workflows.
+#' CellOracle uses an explicit standalone `"celloracle_env"` profile with Python
+#' 3.10 and official CellOracle 0.20.0; native Windows is unsupported.
 #' @param pip_options Additional command line arguments to be passed to `uv`/`pip` when installing pip packages.
 #' @param components Components to prepare. Supported values are `"python"`,
 #' `"r"`, and `"all"`; `"all"` expands to both Python and R. The default,
@@ -70,9 +72,12 @@ PrepareEnv <- function(
   version_missing <- missing(version)
   if (!isTRUE(configure_runtime)) {
     old_path <- Sys.getenv("PATH", unset = NA_character_)
-    on.exit({
-      if (is.na(old_path)) Sys.unsetenv("PATH") else Sys.setenv(PATH = old_path)
-    }, add = TRUE)
+    on.exit(
+      {
+        if (is.na(old_path)) Sys.unsetenv("PATH") else Sys.setenv(PATH = old_path)
+      },
+      add = TRUE
+    )
   }
   components_missing <- missing(components)
   components <- norm_env_components(components)
@@ -94,6 +99,12 @@ PrepareEnv <- function(
   }
   if (!"python" %in% components) {
     return(invisible(r_status))
+  }
+  if ("celloracle" %in% modules) {
+    if (is_windows()) {
+      log_message("Official CellOracle requires Linux/macOS; native Windows is unsupported", message_type = "error")
+    }
+    version <- "3.10-1"
   }
   if ("scenic" %in% modules) {
     scenic_allowed <- c("scenic", "regdiffusion")
@@ -186,6 +197,9 @@ PrepareEnv <- function(
   if (is.null(envname) && is.null(profile) && get_envname() %in% isolated[nzchar(isolated)]) envname <- "scop_env"
   envname <- get_envname(envname %||% profile)
   pip_options <- normalize_cli_args(pip_options)
+  if ("celloracle" %in% modules && !"--no-build-isolation" %in% pip_options) {
+    pip_options <- c(pip_options, "--no-build-isolation")
+  }
   conda_auto <- identical(conda, "auto")
   if (!is.null(conda)) {
     conda <- resolve_conda(conda)
@@ -446,6 +460,15 @@ PrepareEnv <- function(
   }, "")
   pip_packages <- unique(c(pip_packages, conda_python_packages[nzchar(conda_python_packages)]))
 
+  if ("celloracle" %in% modules) {
+    # Velocyto's legacy source build imports NumPy and Cython during setup.
+    check_python(
+      packages = requirements$packages[c("numpy", "cython", "wheel", "setuptools")],
+      envname = envname, conda = conda, pip = TRUE,
+      pip_options = pip_options, verbose = FALSE
+    )
+  }
+
   if (length(pip_packages) > 0) {
     if (!is.null(uv)) {
       log_message(
@@ -587,6 +610,7 @@ supported_env_modules <- function() {
     "cellphonedb",
     "cell2location",
     "cell2fate",
+    "celloracle",
     "commot",
     "spatialdm",
     "magic",
@@ -623,6 +647,7 @@ default_env_modules <- function() {
     "scfea",
     "cell2location",
     "cell2fate",
+    "celloracle",
     "commot",
     "spatialdm",
     "moscot",
@@ -850,17 +875,31 @@ env_module_requirements <- function() {
         "pyarrow" = "pip"
       )
     ),
+    celloracle = env_python_spec(
+      c("celloracle" = "celloracle==0.20.0",
+        "cython" = "cython==0.29.37", "wheel" = "wheel",
+        "numpy" = "numpy==1.26.4", "pandas" = "pandas==1.5.3",
+        "matplotlib" = "matplotlib==3.6.3", "anndata" = "anndata==0.10.8",
+        "scanpy" = "scanpy==1.9.8", "scipy" = "scipy==1.11.4",
+        "scikit-learn" = "scikit-learn==1.2.2"),
+      environment = "celloracle_env"
+    ),
     regdiffusion = env_python_spec(c("regdiffusion" = "regdiffusion")),
-    scenicplus = env_python_spec(c(
-      "scenicplus" = "scenicplus @ git+https://github.com/aertslab/scenicplus.git@840dab85de3044846234c157e327b6ea0290abfb",
-      "pycistopic" = "pycistopic @ git+https://github.com/aertslab/pycisTopic@787ce422a37f5975b0ebb9e7b19eeaed44847501",
-      "pycistarget" = "pycistarget @ git+https://github.com/aertslab/pycistarget@5aa517604e4842539a7531c16905825dc7cb80fb",
-      "loomxpy" = "loomxpy @ git+https://github.com/aertslab/LoomXpy@61995ff10940968eac2cee8fe48300ab477a15d0",
-      "pyscenic" = "pyscenic @ git+https://github.com/aertslab/pySCENIC@06bafba412792f6efa5a552a23bb221cc3bdea1b",
-      stats::setNames(scenicplus_build, scenicplus_build)
-    ), methods = c(stats::setNames(rep("pip", 5L), c("scenicplus", "pycistopic", "pycistarget", "loomxpy", "pyscenic")),
-      stats::setNames(rep("conda", length(scenicplus_build)), scenicplus_build)),
-    environment = "scenicplus_env"),
+    scenicplus = env_python_spec(
+      c(
+        "scenicplus" = "scenicplus @ git+https://github.com/aertslab/scenicplus.git@840dab85de3044846234c157e327b6ea0290abfb",
+        "pycistopic" = "pycistopic @ git+https://github.com/aertslab/pycisTopic@787ce422a37f5975b0ebb9e7b19eeaed44847501",
+        "pycistarget" = "pycistarget @ git+https://github.com/aertslab/pycistarget@5aa517604e4842539a7531c16905825dc7cb80fb",
+        "loomxpy" = "loomxpy @ git+https://github.com/aertslab/LoomXpy@61995ff10940968eac2cee8fe48300ab477a15d0",
+        "pyscenic" = "pyscenic @ git+https://github.com/aertslab/pySCENIC@06bafba412792f6efa5a552a23bb221cc3bdea1b",
+        stats::setNames(scenicplus_build, scenicplus_build)
+      ),
+      methods = c(
+        stats::setNames(rep("pip", 5L), c("scenicplus", "pycistopic", "pycistarget", "loomxpy", "pyscenic")),
+        stats::setNames(rep("conda", length(scenicplus_build)), scenicplus_build)
+      ),
+      environment = "scenicplus_env"
+    ),
     scenicplus_io = env_python_spec(c(
       "numpy" = "numpy==1.26.4",
       "pandas" = "pandas==2.2.0",
@@ -918,6 +957,9 @@ normalize_env_modules <- function(modules = NULL, include_optional = FALSE) {
     )
   }
 
+  if ("celloracle" %in% modules && length(modules) != 1L) {
+    log_message("CellOracle must be prepared as a standalone environment module", message_type = "error")
+  }
   if ("cell2fate" %in% modules && length(setdiff(modules, "cell2fate")) > 0) {
     log_message(
       "{.arg modules = 'cell2fate'} must be used as a standalone environment module.",
@@ -1855,13 +1897,14 @@ env_info <- function(conda, envname, verbose = TRUE) {
 #' `"cellphonedb"`, `"cell2location"`, `"cell2fate"`, `"commot"`, `"magic"`, `"scrublet"`, `"doubletdetection"`,
 #' `"sccoda"`, `"doublet"`, `"palantir"`, `"scvelo"`, `"cellrank"`, `"wot"`,
 #' `"phate"`, `"pacmap"`, `"trimap"`, `"multimap"`,
-#' `"scomm"`, `"scenic"`, `"scenicplus"`, `"scenicplus_io"`, `"seacells"`, `"tage"`,
+#' `"celloracle"`, `"scomm"`, `"scenic"`, `"scenicplus"`, `"scenicplus_io"`, `"seacells"`, `"tage"`,
 #' `"scmalignantfinder"`, `"secact"`, `"scpagwas"`, `"choir"`, and
 #' `"external_wrappers"`. If `NULL`, the default environment is returned. The default
 #' excludes `"cell2location"`, `"cell2fate"`, `"commot"`, `"sccoda"`, `"scomm"`, and
 #' `"scenic"`, `"phate"`, and `"magic"` because these workflows
 #' require dependency stacks that should be prepared explicitly. The
-#' `"scenic"` module is standalone and always uses Python `"3.10-1"`.
+#' `"celloracle"` module uses standalone Python 3.10 with official CellOracle 0.20.0.
+#' The `"scenic"` module is standalone and always uses Python `"3.10-1"`.
 #'
 #' @return
 #' A list containing:
@@ -1889,6 +1932,7 @@ env_requirements <- function(
     modules = modules,
     include_optional = include_optional
   )
+  if ("celloracle" %in% modules) version <- "3.10-1"
   env_module_environment(modules)
   if (any(c("scenicplus", "scenicplus_io") %in% modules) && length(modules) > 1L) {
     stop("SCENIC+ must be used as a standalone environment module.", call. = FALSE)
@@ -1956,7 +2000,7 @@ env_requirements <- function(
     spatialdm_core_python_requirements()
   } else if ("scmalignantfinder" %in% modules) {
     scmalignantfinder_core_python_requirements()
-  } else if (any(c("scenic", "scenicplus", "scenicplus_io", "cell2fate") %in% modules)) {{ list(
+  } else if (any(c("scenic", "scenicplus", "scenicplus_io", "cell2fate", "celloracle") %in% modules)) {{ list(
     packages = c(
       "setuptools" = "setuptools<81"
     ),
@@ -3181,7 +3225,9 @@ run_uv_command <- function(uv, python, args) {
 
 
 ensure_scipy_runtime <- function(python, pip_options = character()) {
-  if (!is_osx()) return(invisible(NULL))
+  if (!is_osx()) {
+    return(invisible(NULL))
+  }
   workdir <- tempfile("scipy_runtime_")
   dir.create(workdir)
   on.exit(unlink(workdir, recursive = TRUE), add = TRUE)
@@ -3198,21 +3244,27 @@ ensure_scipy_runtime <- function(python, pip_options = character()) {
   }
   probe <- c("-I", "-c", "import platform, scipy; print(platform.machine(), scipy.__version__, flush=True); import scipy.sparse.linalg")
   result <- run(probe)
-  if (result$status == 0L) return(invisible(NULL))
+  if (result$status == 0L) {
+    return(invisible(NULL))
+  }
   affected <- grepl("arm64 1.15.3", result$output, fixed = TRUE) &&
     grepl("__thread_bss", result$output, fixed = TRUE) &&
     grepl("zero-fill section type", result$output, fixed = TRUE)
   if (!affected) stop("SciPy runtime import failed:\n", result$output, call. = FALSE)
   log_message("Replacing the incompatible macOS SciPy wheel with its macOS 12 build.")
   options <- normalize_cli_args(pip_options)
-  source_options <- c("-i", "--index-url", "--extra-index-url", "-f", "--find-links",
-    "--trusted-host", "--cert", "--client-cert", "--proxy", "--timeout", "--retries", "--cache-dir")
+  source_options <- c(
+    "-i", "--index-url", "--extra-index-url", "-f", "--find-links",
+    "--trusted-host", "--cert", "--client-cert", "--proxy", "--timeout", "--retries", "--cache-dir"
+  )
   keep <- sub("=.*$", "", options) %in% c(source_options, "--no-index", "--no-cache-dir") |
     seq_along(options) %in% (which(options %in% source_options) + 1L) |
     grepl("^-[if].+", options)
-  result <- run(c("-I", "-m", "pip", "download", "--no-deps", "--only-binary=:all:",
+  result <- run(c(
+    "-I", "-m", "pip", "download", "--no-deps", "--only-binary=:all:",
     "--platform", "macosx_12_0_arm64", "--dest", workdir,
-    options[keep], "scipy==1.15.3"))
+    options[keep], "scipy==1.15.3"
+  ))
   if (result$status != 0L) stop("SciPy wheel download failed:\n", result$output, call. = FALSE)
   wheel <- list.files(workdir, pattern = "^scipy-1[.]15[.]3-.*-macosx_12_0_arm64[.]whl$", full.names = TRUE)
   if (length(wheel) != 1L) stop("Compatible SciPy wheel was not downloaded.", call. = FALSE)
@@ -3241,14 +3293,16 @@ install_python_packages <- function(
     writeLines(packages[grepl(" @ git\\+", packages)], overrides)
     prefix <- dirname(dirname(python))
     prepend <- function(path, variable) paste(Filter(nzchar, c(path, Sys.getenv(variable))), collapse = .Platform$path.sep)
-    build_env <- c(UV_BUILD_CONSTRAINT = constraints, PIP_BUILD_CONSTRAINT = constraints, PIP_CONSTRAINT = constraints,
+    build_env <- c(
+      UV_BUILD_CONSTRAINT = constraints, PIP_BUILD_CONSTRAINT = constraints, PIP_CONSTRAINT = constraints,
       UV_CACHE_DIR = Sys.getenv("UV_CACHE_DIR", unset = file.path(prefix, ".scop-uv-cache")),
       UV_HTTP_TIMEOUT = Sys.getenv("UV_HTTP_TIMEOUT", unset = "300"),
       UV_CONCURRENT_DOWNLOADS = Sys.getenv("UV_CONCURRENT_DOWNLOADS", unset = "4"),
       CPATH = prepend(file.path(prefix, "include"), "CPATH"),
       LIBRARY_PATH = prepend(file.path(prefix, "lib"), "LIBRARY_PATH"),
       PKG_CONFIG_PATH = prepend(file.path(prefix, "lib", "pkgconfig"), "PKG_CONFIG_PATH"),
-      CFLAGS = paste(Sys.getenv("CFLAGS"), "-Wno-error=incompatible-pointer-types"))
+      CFLAGS = paste(Sys.getenv("CFLAGS"), "-Wno-error=incompatible-pointer-types")
+    )
     for (compiler in c("CC", "CXX")) {
       candidates <- Sys.glob(file.path(prefix, "bin", if (compiler == "CC") c("*-conda-*-cc", "*-apple-*-clang") else c("*-conda-*-c++", "*-apple-*-clang++")))
       if (!nzchar(Sys.getenv(compiler)) && length(candidates)) build_env[[compiler]] <- candidates[[1L]]

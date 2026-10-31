@@ -335,7 +335,8 @@ RunGSEA <- function(
 
   if (!identical(IDtype, result_IDtype) || !is.character(geneMap[[IDtype]])) {
     map_gene_ids <- make_enrichment_id_mapper(
-      geneMap, IDtype, result_IDtype, known_ids = input[[IDtype]]
+      geneMap, IDtype, result_IDtype,
+      known_ids = input[[IDtype]]
     )
   }
 
@@ -362,7 +363,8 @@ RunGSEA <- function(
       TERM2GENE = TERM2GENE_tmp,
       TERM2NAME = TERM2NAME_tmp,
       version = paste0(
-        as.character(db_list[[species]][[term]][["version"]]), collapse = ";"
+        as.character(db_list[[species]][[term]][["version"]]),
+        collapse = ";"
       )
     )
   }), db)

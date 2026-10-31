@@ -1,7 +1,9 @@
 make_dispatch_object <- function(nfeatures = 40L, ncells = 32L, seed = 511L, prefix = "c") {
   set.seed(seed)
-  counts <- matrix(rpois(nfeatures * ncells, 5) + 1, nrow = nfeatures,
-    dimnames = list(paste0("g", seq_len(nfeatures)), paste0(prefix, seq_len(ncells))))
+  counts <- matrix(rpois(nfeatures * ncells, 5) + 1,
+    nrow = nfeatures,
+    dimnames = list(paste0("g", seq_len(nfeatures)), paste0(prefix, seq_len(ncells)))
+  )
   object <- SeuratObject::CreateSeuratObject(Matrix::Matrix(counts, sparse = TRUE))
   object <- NormalizeData(object, verbose = FALSE)
   ScaleData(object, features = rownames(object), verbose = FALSE)
@@ -19,10 +21,12 @@ test_that("explicit Ensembl releases resolve when the main archive catalog is un
     '<a href="http://May2025.archive.ensembl.org">Ensembl 114: May 2025</a>'
   )
   testthat::local_mocked_bindings(
-    GET = function(...) structure(list(
-      status_code = 200L, content = charToRaw(html), headers = list(),
-      url = "https://sep2025.archive.ensembl.org/info/website/archives/index.html"
-    ), class = "response"),
+    GET = function(...) {
+      structure(list(
+        status_code = 200L, content = charToRaw(html), headers = list(),
+        url = "https://sep2025.archive.ensembl.org/info/website/archives/index.html"
+      ), class = "response")
+    },
     .package = "httr"
   )
   archives <- ensembl_archive_catalog(115)
@@ -45,7 +49,8 @@ test_that("explicit Ensembl releases resolve when the main archive catalog is un
   expect_error(suppressWarnings(GeneConvert("INS", Ensembl_version = 115, max_tries = 1, verbose = FALSE)), "archive-offline")
   expect_s4_class(archive_mart, "Mart")
   expect_identical(archive_mart@host, "https://sep2025.archive.ensembl.org:443/biomart/martservice?redirect=no")
-  mart <- methods::new("Mart", biomart = "ENSEMBL_MART_ENSEMBL",
+  mart <- methods::new("Mart",
+    biomart = "ENSEMBL_MART_ENSEMBL",
     host = "https://sep2025.archive.ensembl.org/biomart/martservice"
   )
   mirror_calls <- 0L
@@ -101,8 +106,10 @@ test_that("nonlinear ScaleData fallback keeps canonical history and values", {
 test_that("dynamic PCA keeps numerical results and compact command text", {
   object <- make_dispatch_object()
   testthat::local_mocked_bindings(RunDimsEstimate = function(...) seq_len(5L), .package = "scop")
-  actual <- RunDimsReduction(object, features = rownames(object), linear_reduction = "pca",
-    linear_reduction_dims = 5, linear_reduction_params = list(npcs = 5), verbose = FALSE)
+  actual <- RunDimsReduction(object,
+    features = rownames(object), linear_reduction = "pca",
+    linear_reduction_dims = 5, linear_reduction_params = list(npcs = 5), verbose = FALSE
+  )
   expected <- RunPCA(object, features = rownames(object), npcs = 5, slot = "data", seed.use = 11, verbose = FALSE)
   expect_identical(SeuratObject::Embeddings(actual, "pca"), SeuratObject::Embeddings(expected, "pca"))
   expect_identical(SeuratObject::Loadings(actual, "pca"), SeuratObject::Loadings(expected, "pca"))
@@ -127,9 +134,11 @@ test_that("nonlinear dispatch keeps graph inputs out of projection backends", {
     .package = "scop"
   )
   for (method in c("phate", "dm", "tsne", "pacmap", "trimap", "largevis", "umap", "umap-naive", "fr")) {
-    RunDimsReduction(object, nonlinear_reduction = method,
+    RunDimsReduction(object,
+      nonlinear_reduction = method,
       reduction_use = "pca", reduction_dims = 1:5,
-      graph_use = "snn", neighbor_use = "nn", verbose = FALSE)
+      graph_use = "snn", neighbor_use = "nn", verbose = FALSE
+    )
     if (method %in% c("umap", "umap-naive", "fr")) {
       expect_identical(captured$graph, "snn")
       expect_identical(captured$neighbor, "nn")
@@ -152,10 +161,12 @@ test_that("RareQ neighbor dispatch keeps compact commands in both verbosity bran
         return(switch(fun,
           ComputeQ = function(...) rep(0.1, n),
           FindRare = function(...) rep(c("A", "B"), length.out = n),
-          stop("Unexpected RareQ backend function")))
+          stop("Unexpected RareQ backend function")
+        ))
       }
       original_get(package, fun)
-    }, .package = "scop")
+    }, .package = "scop"
+  )
   for (verbose in c(FALSE, TRUE)) {
     actual <- suppressMessages(RunRareQ(object, dims = 1:5, k.param = 3, k = 2, verbose = verbose))
     expect_length(actual@tools$RareQ$clusters, n)
@@ -168,8 +179,11 @@ test_that("RareQ neighbor dispatch keeps compact commands in both verbosity bran
 test_that("metacell grouping treats metadata names as data", {
   object <- make_dispatch_object(nfeatures = 12L, ncells = 4L)
   object[["pca"]] <- SeuratObject::CreateDimReducObject(
-    embeddings = matrix(seq_len(8), nrow = 4L,
-      dimnames = list(colnames(object), c("PC_1", "PC_2"))), key = "PC_", assay = "RNA")
+    embeddings = matrix(seq_len(8),
+      nrow = 4L,
+      dimnames = list(colnames(object), c("PC_1", "PC_2"))
+    ), key = "PC_", assay = "RNA"
+  )
   counts <- GetAssayData5(object, layer = "counts")
   original_get <- get_namespace_fun
   testthat::local_mocked_bindings(
@@ -182,10 +196,12 @@ test_that("metacell grouping treats metadata names as data", {
         return(switch(fun,
           SCimplify = function(ge, ...) list(membership = rep(1L, ncol(ge))),
           supercell_GE = function(ge, membership) metacell_aggregate_counts(ge, membership),
-          stop("Unexpected SuperCell backend function")))
+          stop("Unexpected SuperCell backend function")
+        ))
       }
       original_get(package, fun)
-    }, .package = "scop")
+    }, .package = "scop"
+  )
   groups <- data.frame(condition = c("A", "A", "B", "B"), row.names = colnames(object))
   runners <- list(
     function(group_df) metacell_supercell(counts, gamma = 2, group_df = group_df, verbose = FALSE),
@@ -212,9 +228,11 @@ test_that("LIANA sample columns cannot consume paste options in either backend",
     native_results[[length(native_results) + 1L]] <<- result
     result
   }, .package = "scop")
-  tab <- data.frame(source = "A", target = "B", ligand_complex = "L", receptor_complex = "R",
+  tab <- data.frame(
+    source = "A", target = "B", ligand_complex = "L", receptor_complex = "R",
     score = rep(c(1, 2), each = 500L), pvalue = 0.1,
-    sample_id = rep(c("s1", "s2"), each = 500L), stringsAsFactors = FALSE)
+    sample_id = rep(c("s1", "s2"), each = 500L), stringsAsFactors = FALSE
+  )
   for (backend in c("r", "cpp")) {
     expected <- ccc_aggregate_liana_table(tab, sample_col = "sample_id", backend = backend)
     for (name in c("sep", "collapse", "recycle0")) {
@@ -253,7 +271,8 @@ test_that("Seurat integration retains canonical anchor and integration commands"
       HVF = rownames(first), do_scaling = TRUE, linear_reduction_dims = 5,
       linear_reduction_dims_use = 1:5, nonlinear_reduction = NULL, neighbor_k = 5,
       FindIntegrationAnchors_params = list(dims = 1:5, k.anchor = 3, k.filter = NA, k.score = 5),
-      IntegrateData_params = list(dims = 1:5, k.weight = 5, normalization.method = method), verbose = FALSE)))
+      IntegrateData_params = list(dims = 1:5, k.weight = 5, normalization.method = method), verbose = FALSE
+    )))
     expect_identical(SeuratObject::Command(actual, "FindIntegrationAnchors")@name, "FindIntegrationAnchors")
     expect_identical(SeuratObject::Command(actual, "IntegrateData")@name, "IntegrateData")
     expect_match(paste(SeuratObject::Command(actual, "IntegrateData")@call.string, collapse = " "), "^IntegrateData\\(")
@@ -267,8 +286,10 @@ test_that("TFIDF integration retains its canonical anchor command", {
   peaks <- paste0("chr1-", seq(1001, by = 1000, length.out = 120), "-", seq(1500, by = 1000, length.out = 120))
   make_object <- function(seed, prefix) {
     set.seed(seed)
-    counts <- matrix(rbinom(120 * 60, 2, 0.3), nrow = 120,
-      dimnames = list(peaks, paste0(prefix, seq_len(60))))
+    counts <- matrix(rbinom(120 * 60, 2, 0.3),
+      nrow = 120,
+      dimnames = list(peaks, paste0(prefix, seq_len(60)))
+    )
     assay <- Signac::CreateChromatinAssay(Matrix::Matrix(counts, sparse = TRUE), min.cells = 0, min.features = 0)
     SeuratObject::CreateSeuratObject(assay, assay = "ATAC")
   }
@@ -278,7 +299,8 @@ test_that("TFIDF integration retains its canonical anchor command", {
     HVF = peaks, do_scaling = FALSE, linear_reduction_dims = 5, linear_reduction_dims_use = 2:5,
     nonlinear_reduction = NULL, neighbor_k = 5,
     FindIntegrationAnchors_params = list(dims = 2:5, k.anchor = 3, k.filter = NA, k.score = 5),
-    IntegrateEmbeddings_params = list(dims.to.integrate = 1:5, k.weight = 5), verbose = FALSE)))
+    IntegrateEmbeddings_params = list(dims.to.integrate = 1:5, k.weight = 5), verbose = FALSE
+  )))
   expect_identical(SeuratObject::Command(actual, "FindIntegrationAnchors")@name, "FindIntegrationAnchors")
   expect_identical(dim(SeuratObject::Embeddings(actual, "Seuratlsi")), c(120L, 5L))
   expect_false(".fn" %in% names(actual@commands))
@@ -296,8 +318,10 @@ test_that("classical MDS preserves coordinates and supplies scree variances", {
   dims <- RunDimsEstimate(actual, reduction = "mds", reduction_method = "mds", use_stored = FALSE, verbose = FALSE)
   expect_true(length(dims) >= 5L)
   expect_true(all(dims %in% seq_len(ncol(embeddings))))
-  pipeline <- RunDimsReduction(object, features = rownames(object),
-    linear_reduction = "mds", linear_reduction_dims = 8, verbose = FALSE)
+  pipeline <- RunDimsReduction(object,
+    features = rownames(object),
+    linear_reduction = "mds", linear_reduction_dims = 8, verbose = FALSE
+  )
   expect_equal(SeuratObject::Embeddings(pipeline, "mds"), embeddings, tolerance = 1e-12)
   expect_identical(pipeline[["mds"]]@misc$dims_estimate, dims)
 })

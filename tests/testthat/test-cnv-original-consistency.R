@@ -1,4 +1,3 @@
-
 cnv_real_breast_seurat <- function() {
   data(exp.rawdata, package = "copykat")
   srt <- Seurat::CreateSeuratObject(counts = as.matrix(exp.rawdata))

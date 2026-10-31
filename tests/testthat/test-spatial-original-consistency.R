@@ -1,4 +1,3 @@
-
 real_visium_subset <- function(n = 200, seed = 42) {
   data(visium_human_pancreas_sub)
   srt <- visium_human_pancreas_sub

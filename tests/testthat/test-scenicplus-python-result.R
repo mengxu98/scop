@@ -64,12 +64,14 @@ test_that("SCENIC+ imports a single complete directory without mixing tables", {
 
 test_that("SCENIC+ AUC preserves numeric labels and rejects unrelated labels", {
   path <- withr::local_tempfile(fileext = ".tsv")
-  for (header in c("", "Cell", "CELL_ID", "Barcode", "Index", "UNNAMED: 0")) for (labels in list(c("2", "1"), c("002", "001"))) {
-    writeLines(c(paste0(header, "\tTF1"), paste0(labels, "\t", c("0.2", "0.1"))), path)
-    auc <- scenicplus_normalize_auc_table(scenicplus_read_delim(path), rev(labels))
-    expect_identical(rownames(auc), rev(labels))
-    expect_identical(colnames(auc), "TF1")
-    expect_equal(auc$TF1, c(0.1, 0.2))
+  for (header in c("", "Cell", "CELL_ID", "Barcode", "Index", "UNNAMED: 0")) {
+    for (labels in list(c("2", "1"), c("002", "001"))) {
+      writeLines(c(paste0(header, "\tTF1"), paste0(labels, "\t", c("0.2", "0.1"))), path)
+      auc <- scenicplus_normalize_auc_table(scenicplus_read_delim(path), rev(labels))
+      expect_identical(rownames(auc), rev(labels))
+      expect_identical(colnames(auc), "TF1")
+      expect_equal(auc$TF1, c(0.1, 0.2))
+    }
   }
   expect_error(scenicplus_normalize_auc_table(data.frame(TF1 = 1:2, row.names = c("wrongA", "wrongB")), c("c1", "c2")), "cell row names")
 })

@@ -1,6 +1,8 @@
 make_network_sample_guard_object <- function() {
   object <- SeuratObject::CreateSeuratObject(Matrix::Matrix(
-    matrix(1, 2, 4, dimnames = list(c("g1", "g2"), letters[1:4])), sparse = TRUE))
+    matrix(1, 2, 4, dimnames = list(c("g1", "g2"), letters[1:4])),
+    sparse = TRUE
+  ))
   object$col <- c(0, 1, 0, 1)
   object$row <- c(0, 0, 0, 0)
   object$sample <- c("S1", "S1", "S2", "S2")
@@ -38,15 +40,20 @@ test_that("spatial network sample guard uses selected image nodes and stores its
   object <- make_network_sample_guard_object()
   object[["slice1"]] <- SeuratObject::CreateFOV(
     data.frame(x = c(0, 1), y = c(0, 0), row.names = c("a", "b")),
-    type = "centroids", assay = SeuratObject::DefaultAssay(object), key = "guard_")
+    type = "centroids", assay = SeuratObject::DefaultAssay(object), key = "guard_"
+  )
   testthat::local_mocked_bindings(spatial_graph_compute = function(coords, method, k, ...) {
     expect_identical(coords$cell_id, c("a", "b"))
-    list(nodes = coords,
+    list(
+      nodes = coords,
       edges = data.frame(from = 1L, to = 2L, distance = 1, weight = 1),
-      parameters = list(method = method, k = k))
+      parameters = list(method = method, k = k)
+    )
   }, .package = "scop")
-  out <- RunSpatialNetwork(object, image = "slice1", k = 1,
-    sample.by = "sample", verbose = FALSE)
+  out <- RunSpatialNetwork(object,
+    image = "slice1", k = 1,
+    sample.by = "sample", verbose = FALSE
+  )
   graph <- out@tools$SpatialNetwork$graphs[[out@tools$SpatialNetwork$active_graph]]
   expect_identical(graph$nodes$cell_id, c("a", "b"))
   expect_identical(graph$edges$from, "a")

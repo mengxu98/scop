@@ -1,5 +1,3 @@
-
-
 make_scanpy_mock <- function(
   n_genes = 10,
   n_cells = 20,

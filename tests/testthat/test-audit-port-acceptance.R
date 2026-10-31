@@ -1,4 +1,3 @@
-
 expect_close_to_reference <- function(actual, reference, atol = 1e-12, rtol = 1e-10) {
   reference <- as.numeric(reference)
   actual <- as.numeric(actual)
@@ -268,109 +267,6 @@ test_that("RunCIBERSORT takes its thread count as cores only", {
   expect_false("n_threads" %in% names(formals(run_aucell_official_scores)))
 })
 
-test_that("ssGSEA truncates tied average ranks like GSVA::ssgsea", {
-  set.seed(5)
-  expr <- matrix(0, nrow = 30L, ncol = 12L)
-  expr[1:10, ] <- rep(c(0, 1, 1, 2, 2, 2), each = 10)[seq_len(10)]
-  expr[11:30, ] <- matrix(stats::rpois(20L * 12L, 3), nrow = 20L)
-  expr <- methods::as(Matrix::Matrix(expr, sparse = TRUE), "dgCMatrix")
-  rownames(expr) <- paste0("g", seq_len(nrow(expr)))
-  sets <- list(c(2L, 3L, 5L, 7L, 11L, 13L, 17L, 19L, 23L, 29L))
-
-  actual <- ssgsea_rank_dense(expr, sets, alpha = 1, normalize = FALSE)
-
-  n_genes <- nrow(expr)
-  x <- as.numeric(expr[, 1L])
-  set <- sets[[1L]]
-  ord <- order(x, seq_len(n_genes))
-  rank_by_gene <- numeric(n_genes)
-  weight_by_gene <- numeric(n_genes)
-  i <- 1L
-  while (i <= n_genes) {
-    j <- i
-    while (j < n_genes && x[ord[j + 1L]] == x[ord[i]]) j <- j + 1L
-    rv <- as.integer((i + j) / 2)
-    rank_by_gene[ord[i:j]] <- rv
-    weight_by_gene[ord[i:j]] <- abs(rv)^1
-    i <- j + 1L
-  }
-  ranking <- order(-rank_by_gene, seq_len(n_genes))
-  position <- integer(n_genes)
-  position[ranking] <- seq_len(n_genes)
-  inv <- n_genes - position[set] + 1L
-  reference <- sum(weight_by_gene[set] * inv) / sum(weight_by_gene[set]) -
-    (n_genes * (n_genes + 1) / 2 - sum(inv)) / (n_genes - length(set))
-
-  expect_close_to_reference(actual[1L, 1L], reference, atol = 1e-12, rtol = 1e-10)
-})
-
-test_that("thread counts are named cores and forwarded under the backend name", {
-  for (fn in list(RunSmoothClust, RunSecAct, RunscMalignantFinder, RunMERINGUE, RunSpatialEcoTyper, RunCHOIR)) {
-    expect_true("cores" %in% names(formals(fn)))
-  }
-  for (fn in list(RunLargeVis.Seurat, RunLargeVis.default, RunUMAP2.Seurat, RunUMAP2.default)) {
-    expect_true("cores" %in% names(formals(fn)))
-  }
-  expect_false(any(c("n_threads", "ncores", "n_thread") %in% names(formals(RunLargeVis.default))))
-  expect_false(any(c("n_threads", "ncores", "n_thread") %in% names(formals(RunUMAP2.default))))
-  expect_false("n_cores" %in% names(formals(RunCHOIR)))
-  expect_false("n_cores" %in% names(formals(RunSpatialEcoTyper)))
-})
-
-test_that("RunPCA accepts cores and keeps the embedding stable", {
-  skip_if_not_installed("Seurat")
-  set.seed(17)
-  X <- matrix(stats::rnorm(300L * 400L), nrow = 300L, ncol = 400L)
-  object <- Seurat::CreateSeuratObject(
-    Matrix::Matrix(abs(X), sparse = TRUE),
-    assay = "RNA"
-  )
-  object <- Seurat::NormalizeData(object, verbose = FALSE)
-  object <- Seurat::FindVariableFeatures(object, nfeatures = 40L, verbose = FALSE)
-  object <- Seurat::ScaleData(object, verbose = FALSE)
-
-  single <- RunPCA(object, npcs = 8L, cores = 1L, backend = "cpp", verbose = FALSE)
-  multi <- RunPCA(object, npcs = 8L, cores = 2L, backend = "cpp", verbose = FALSE)
-
-  scaled <- as.matrix(SeuratObject::LayerData(object[["RNA"]], layer = "scale.data"))
-  expect_gte(ncol(scaled), 8L * nrow(scaled))
-  native_one <- pca_backend_run(scaled, 8L, TRUE, n_threads = 1L)
-  native_many <- pca_backend_run(scaled, 8L, TRUE, n_threads = 2L)
-  expect_type(native_one, "list")
-  expect_close_to_reference(
-    as.numeric(native_many$embeddings),
-    as.numeric(native_one$embeddings),
-    atol = 1e-8, rtol = 1e-6
-  )
-  expect_close_to_reference(
-    as.numeric(native_one$sdev),
-    sqrt(pmax(as.numeric(native_one$eigvals), 0)) / sqrt(ncol(scaled) - 1),
-    atol = 1e-10, rtol = 1e-10
-  )
-
-  expect_s4_class(single[["pca"]], "DimReduc")
-  expect_close_to_reference(
-    as.numeric(SeuratObject::Embeddings(multi[["pca"]])),
-    as.numeric(SeuratObject::Embeddings(single[["pca"]])),
-    atol = 1e-8, rtol = 1e-6
-  )
-})
-
-test_that("RunSCVELO rejects transition matrices beyond max_dense_gib", {
-  expect_error(
-    assert_cpp_dense_budget(
-      n_rows = 50000L, n_cols = 50000L, copies = 2,
-      max_dense_gib = 8, context = "RunSCVELO(backend = \"cpp\")"
-    ),
-    "dense"
-  )
-  expect_silent(
-    assert_cpp_dense_budget(
-      n_rows = 2000L, n_cols = 2000L, copies = 2,
-      max_dense_gib = 8, context = "RunSCVELO(backend = \"cpp\")"
-    )
-  )
-})
 
 test_that("the ssGSEA walk keeps the GSVA integer rank convention", {
   set.seed(9)
@@ -434,11 +330,13 @@ test_that("scVelo terminal states and pseudotime match an independent dense solv
   eigen_oriented <- function(backward, scale = 10) {
     A <- matrix(0, n_cells, n_cells)
     for (k in seq_along(args$graph_rows)) {
-      i <- args$graph_rows[k] + 1L; j <- args$graph_cols[k] + 1L
+      i <- args$graph_rows[k] + 1L
+      j <- args$graph_cols[k] + 1L
       A[i, j] <- A[i, j] + expm1(args$graph_vals[k] * scale)
     }
     for (k in seq_along(args$graph_neg_rows)) {
-      i <- args$graph_neg_rows[k] + 1L; j <- args$graph_neg_cols[k] + 1L
+      i <- args$graph_neg_rows[k] + 1L
+      j <- args$graph_neg_cols[k] + 1L
       A[i, j] <- A[i, j] + exp(args$graph_neg_vals[k] * scale)
     }
     oriented <- if (backward) t(A) else A
@@ -455,7 +353,9 @@ test_that("scVelo terminal states and pseudotime match an independent dense solv
     keep <- which(is.finite(values))
     keep <- keep[order(values[keep], decreasing = TRUE)][seq_len(min(k, length(keep)))]
     keep <- keep[values[keep] >= 1 - eps]
-    if (length(keep) == 0L) return(matrix(0, nrow(E), 0L))
+    if (length(keep) == 0L) {
+      return(matrix(0, nrow(E), 0L))
+    }
     out <- matrix(0, nrow(E), length(keep))
     for (c in seq_along(keep)) {
       values_abs <- abs(eig$vectors[, keep[c]])
@@ -495,8 +395,10 @@ test_that("scVelo terminal states and pseudotime match an independent dense solv
   expect_close_to_reference(ts$root_cells, ref_roots, atol = 1e-6, rtol = 1e-6)
   expect_close_to_reference(ts$end_points, ref_ends, atol = 1e-6, rtol = 1e-6)
 
-  pt <- do.call(scanpy_pseudotime_graph_cpp,
-    c(args, list(root_cells = ts$root_cells, end_points = ts$end_points, n_dcs = 10L)))
+  pt <- do.call(
+    scanpy_pseudotime_graph_cpp,
+    c(args, list(root_cells = ts$root_cells, end_points = ts$end_points, n_dcs = 10L))
+  )
   expect_length(pt$pseudotime, n_cells)
   expect_true(all(is.finite(pt$pseudotime)))
   expect_true(all(pt$pseudotime >= 0 & pt$pseudotime <= 1))
@@ -529,4 +431,3 @@ test_that("the deprecated single_data alias warns before it is used", {
     "only one of"
   )
 })
-

@@ -1,24 +1,28 @@
 test_that("CheckDataType preserves sparse implicit zeros and missing-value classification", {
-  values <- list(c(0, 1, 2, 3), c(0, 0.5, 1, 2), c(0, 1000.5, 1, 2),
+  values <- list(
+    c(0, 1, 2, 3), c(0, 0.5, 1, 2), c(0, 1000.5, 1, 2),
     c(0, -1, 1, 2), c(0, Inf, 1, 2), c(0, NA, 1, 2),
-    c(0, NA, 0.5, 2), c(0, NA, 1000.5, 2), rep(0, 4), rep(1, 4))
-  expected <- c("raw_counts", "log_normalized_counts", "raw_normalized_counts",
+    c(0, NA, 0.5, 2), c(0, NA, 1000.5, 2), rep(0, 4), rep(1, 4)
+  )
+  expected <- c(
+    "raw_counts", "log_normalized_counts", "raw_normalized_counts",
     "unknown", "unknown", "raw_counts", "log_normalized_counts", "unknown",
-    "raw_counts", "raw_counts")
+    "raw_counts", "raw_counts"
+  )
   withr::local_seed(11)
   rng <- .Random.seed
   for (i in seq_along(values)) {
-    x <- methods::as(Matrix::Matrix(matrix(values[[i]], 2), sparse = TRUE), "dgCMatrix")
+    x <- methods::as(methods::as(Matrix::Matrix(matrix(values[[i]], 2), sparse = TRUE), "generalMatrix"), "CsparseMatrix")
     expect_identical(CheckDataType(x, verbose = FALSE), expected[[i]])
     expect_identical(.Random.seed, rng)
   }
 })
 
 test_that("RunCellQC initializes count metrics from one counts-layer read", {
-  counts <- methods::as(Matrix::Matrix(
+  counts <- methods::as(methods::as(Matrix::Matrix(
     matrix(c(1, 0, 2, 0, 3, 0, 0, 4, 1, 2, 0, 5), nrow = 3),
     sparse = TRUE
-  ), "dgCMatrix")
+  ), "generalMatrix"), "CsparseMatrix")
   rownames(counts) <- paste0("g", seq_len(nrow(counts)))
   colnames(counts) <- paste0("c", seq_len(ncol(counts)))
   srt <- Seurat::CreateSeuratObject(counts = counts)
@@ -76,8 +80,10 @@ test_that("RunCellQC forwards doublet arguments and retains both methods' result
     RunScrublet = backend("Scrublet"),
     .package = "scop"
   )
-  actual <- RunCellQC(object, qc_metrics = "doublets", db_method = c("scDblFinder", "Scrublet"),
-    db_rate = 0.1, verbose = FALSE)
+  actual <- RunCellQC(object,
+    qc_metrics = "doublets", db_method = c("scDblFinder", "Scrublet"),
+    db_rate = 0.1, verbose = FALSE
+  )
   expect_named(calls, c("scDblFinder", "Scrublet"))
   for (call in calls) {
     expect_identical(call$rate, 0.1)

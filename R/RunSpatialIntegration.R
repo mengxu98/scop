@@ -129,8 +129,11 @@ RunSpatialIntegration <- function(
     store_object = store_object
   )
   log_message(
-    if (store_results) "{.pkg {method}} spatial integration results stored in {.code srt@tools[[{tool_name}]]}" else
-      "{.pkg {method}} spatial integration completed; detailed results were not stored",
+    if (store_results) {
+      "{.pkg {method}} spatial integration results stored in {.code srt@tools[[{tool_name}]]}"
+    } else {
+      "{.pkg {method}} spatial integration completed; detailed results were not stored"
+    },
     message_type = "success",
     verbose = verbose
   )
@@ -280,7 +283,9 @@ SpatialIntegrationPlot <- function(
       plots <- lapply(names(image_map), function(sample) {
         sample_cells <- colnames(srt)[as.character(srt@meta.data[[sample.by]]) == sample]
         sample_cells <- intersect(sample_cells, requested_cells)
-        if (!length(sample_cells)) return(NULL)
+        if (!length(sample_cells)) {
+          return(NULL)
+        }
         do.call(SpatialSpotPlot, c(list(
           object = srt, group.by = group.by, image = image_map[[sample]],
           cells = sample_cells, coord.cols = coord_use, image.scale = image.scale,
@@ -291,8 +296,12 @@ SpatialIntegrationPlot <- function(
       names(plots) <- names(image_map)
       plots <- Filter(Negate(is.null), plots)
       if (!length(plots)) log_message("No samples remain for spatial plotting", message_type = "error")
-      if (!isTRUE(combine)) return(plots)
-      if (length(plots) == 1L) return(plots[[1L]])
+      if (!isTRUE(combine)) {
+        return(plots)
+      }
+      if (length(plots) == 1L) {
+        return(plots[[1L]])
+      }
       combined <- do.call(patchwork::wrap_plots, c(list(plotlist = plots, guides = "collect"), layout_args))
       return(combined & ggplot2::theme(
         legend.position = dots$legend.position %||% "right",
@@ -378,7 +387,9 @@ spatial_integration_plot_images <- function(srt, sample.by, parameters, image = 
   if (is.null(sample.by) || !sample.by %in% names(srt@meta.data)) {
     log_message("A valid {.arg sample.by} is required for spatial image panels", message_type = "error")
   }
-  if (length(SeuratObject::Images(srt)) == 0L) return(NULL)
+  if (length(SeuratObject::Images(srt)) == 0L) {
+    return(NULL)
+  }
   samples <- unique(as.character(srt@meta.data[[sample.by]]))
   sources <- parameters$coordinate_sources %||% list()
   preferred <- stats::setNames(rep(NA_character_, length(samples)), samples)
@@ -445,7 +456,7 @@ spatial_integration_prepare_input <- function(
   expr <- GetAssayData5(srt, assay = assay, layer = layer)
   count_values <- if (inherits(expr, "sparseMatrix")) expr@x else as.vector(expr)
   if (!is.numeric(count_values) || any(!is.finite(count_values)) ||
-      any(count_values < 0 | abs(count_values - round(count_values)) > 1e-8)) {
+    any(count_values < 0 | abs(count_values - round(count_values)) > 1e-8)) {
     log_message("PRECAST requires finite non-negative integer counts in the selected assay/layer", message_type = "error")
   }
   features_use <- if (is.null(srt_list)) {
@@ -683,7 +694,7 @@ spatial_integration_run_backend <- function(method, input, verbose = TRUE, ...) 
     adj_params$number <- adj_params$number %||% 6L
     number <- adj_params$number
     if (!is.numeric(number) || length(number) != 1L || !is.finite(number) ||
-        number < 1 || number != floor(number)) {
+      number < 1 || number != floor(number)) {
       log_message("{.emph adj_params$number} must be a positive integer", message_type = "error")
     }
   } else if (tolower(adj_params$platform %||% "Visium") %in% c("visium", "st")) {
@@ -703,8 +714,10 @@ spatial_integration_run_backend <- function(method, input, verbose = TRUE, ...) 
     counts <- input$expr_list[[sample]]
     cd <- input$coords_list[[sample]][colnames(counts), , drop = FALSE]
     metadata <- data.frame(row = cd$y, col = cd$x, row.names = colnames(counts))
-    SeuratObject::CreateSeuratObject(counts = counts, assay = input$assay,
-      meta.data = metadata, project = sample)
+    SeuratObject::CreateSeuratObject(
+      counts = counts, assay = input$assay,
+      meta.data = metadata, project = sample
+    )
   })
   names(backend_samples) <- input$samples
   obj <- spatial_integration_call(
@@ -737,10 +750,13 @@ spatial_integration_run_backend <- function(method, input, verbose = TRUE, ...) 
   result$backend_parameters <- utils::modifyList(params, list(adj_params = adj_params))
   result$adjacency_builder <- if (adj_params$type == "fixed_number") {
     "scop::spatial_graph_compute"
-  } else "PRECAST::AddAdjList"
+  } else {
+    "PRECAST::AddAdjList"
+  }
   result$adjacency_summary <- edge_counts
   result$backend_version <- tryCatch(as.character(utils::packageVersion("PRECAST")),
-    error = function(e) NA_character_)
+    error = function(e) NA_character_
+  )
   result
 }
 
@@ -756,8 +772,10 @@ spatial_integration_validate_neighbor_count <- function(object, adj_params) {
 
 spatial_integration_set_precast_adjacency <- function(object, input, adj_params) {
   if (adj_params$type != "fixed_number") {
-    return(spatial_integration_call(get_namespace_fun("PRECAST", "AddAdjList"),
-      c(list(PRECASTObj = object), adj_params)))
+    return(spatial_integration_call(
+      get_namespace_fun("PRECAST", "AddAdjList"),
+      c(list(PRECASTObj = object), adj_params)
+    ))
   }
   if (length(setdiff(names(adj_params), c("type", "number", "platform")))) {
     log_message("{.emph fixed_number} adjacency accepts only type, number and platform", message_type = "error")
@@ -770,11 +788,15 @@ spatial_integration_set_precast_adjacency <- function(object, input, adj_params)
     if (anyNA(coords$cell_id) || !identical(as.character(coords$cell_id), cells)) {
       log_message("PRECAST graph coordinates must align with retained spot IDs", message_type = "error")
     }
-    graph <- spatial_graph_compute(coords, method = "knn", k = adj_params$number,
-      directed = TRUE, weight = "binary")
+    graph <- spatial_graph_compute(coords,
+      method = "knn", k = adj_params$number,
+      directed = TRUE, weight = "binary"
+    )
     # PRECAST consumes the neighbors of spot i from column i, not row i.
-    Matrix::sparseMatrix(i = graph$edges$to, j = graph$edges$from, x = 1,
-      dims = c(length(cells), length(cells)), dimnames = list(cells, cells))
+    Matrix::sparseMatrix(
+      i = graph$edges$to, j = graph$edges$from, x = 1,
+      dims = c(length(cells), length(cells)), dimnames = list(cells, cells)
+    )
   })
   names(object@AdjList) <- names(object@seulist)
   object
@@ -791,8 +813,8 @@ spatial_integration_validate_adjacency <- function(object) {
     n <- ncol(samples[[i]])
     values <- if (inherits(graph, "sparseMatrix")) graph@x else as.vector(graph)
     if (!(is.matrix(graph) || inherits(graph, "Matrix")) ||
-        !all(dim(graph) == c(n, n)) || n < 2L ||
-        !is.numeric(values) || any(!is.finite(values)) || any(values < 0) || any(Matrix::diag(graph) != 0)) {
+      !all(dim(graph) == c(n, n)) || n < 2L ||
+      !is.numeric(values) || any(!is.finite(values)) || any(values < 0) || any(Matrix::diag(graph) != 0)) {
       log_message("PRECAST returned an invalid adjacency matrix", message_type = "error")
     }
     count <- Matrix::nnzero(graph)
@@ -1028,8 +1050,10 @@ spatial_integration_apply_result <- function(
   coordinate_sources = NULL
 ) {
   previous_index <- srt@tools[[tool_name]]$result_index
-  spatial_check_identity_columns(srt, tool_name,
-    c(cluster_colname, paste0(reduction.name, c("_aligned_x", "_aligned_y"))))
+  spatial_check_identity_columns(
+    srt, tool_name,
+    c(cluster_colname, paste0(reduction.name, c("_aligned_x", "_aligned_y")))
+  )
   all_cells <- colnames(srt)
   if (!is.null(result$domains)) {
     domain_full <- rep(NA_character_, length(all_cells))
@@ -1115,10 +1139,13 @@ spatial_integration_apply_result <- function(
       samples = unique(as.character(srt@meta.data[[sample.by]])),
       cells = all_cells
     )
-    srt@tools[[tool_name]]$result_index <- list(method = method,
-      cluster_colname = cluster_colname, cells = names(result$domains))
+    srt@tools[[tool_name]]$result_index <- list(
+      method = method,
+      cluster_colname = cluster_colname, cells = names(result$domains)
+    )
     srt <- spatial_record_cell_identity(srt, tool_name, previous_index,
-      protected_columns = aligned_coord_cols)
+      protected_columns = aligned_coord_cols
+    )
     srt@tools[[tool_name]]$methods[[method]]$result_index <- srt@tools[[tool_name]]$result_index
     srt@tools[[tool_name]] <- spatial_tag_coordinate_contract(srt@tools[[tool_name]])
   }
@@ -1198,8 +1225,10 @@ spatial_integration_alignment_plot <- function(
   }
   meta <- srt@meta.data
   image_map <- spatial_integration_plot_images(srt, sample.by, parameters)
-  raw <- spatial_sample_coords(srt, sample.by, image = image_map,
-    coord.cols = parameters$coord.cols, coordinate_space = parameters$coordinate_space %||% "raw")$data
+  raw <- spatial_sample_coords(srt, sample.by,
+    image = image_map,
+    coord.cols = parameters$coord.cols, coordinate_space = parameters$coordinate_space %||% "raw"
+  )$data
   dat_raw <- data.frame(
     x = raw$x,
     y = raw$y,

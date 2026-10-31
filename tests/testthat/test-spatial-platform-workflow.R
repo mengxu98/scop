@@ -1,7 +1,8 @@
 make_platform_object <- function(n = 12L) {
   set.seed(421)
   counts <- matrix(rpois(40L * n, 3), 40L,
-    dimnames = list(paste0("gene", 1:40), paste0("cell", seq_len(n))))
+    dimnames = list(paste0("gene", 1:40), paste0("cell", seq_len(n)))
+  )
   object <- SeuratObject::CreateSeuratObject(Matrix::Matrix(counts, sparse = TRUE))
   object$x <- rep(seq_len(ceiling(n / 3)), length.out = n)
   object$y <- rep(1:3, length.out = n)
@@ -30,8 +31,10 @@ test_that("spatial context is explicit and units are never guessed from metadata
 
 test_that("Seurat plural segmentations are read as real cell polygons", {
   object <- make_platform_object()
-  b <- data.frame(cell = rep(colnames(object), each = 4),
-    x = rep(c(0, 2, 2, 0), ncol(object)), y = rep(c(0, 0, 2, 2), ncol(object)))
+  b <- data.frame(
+    cell = rep(colnames(object), each = 4),
+    x = rep(c(0, 2, 2, 0), ncol(object)), y = rep(c(0, 0, 2, 2), ncol(object))
+  )
   fov <- SeuratObject::CreateFOV(object[[]][, c("x", "y")], type = "centroids", assay = "RNA")
   fov[["segmentations"]] <- SeuratObject::CreateSegmentation(b)
   object[["fov"]] <- fov
@@ -64,46 +67,63 @@ test_that("BANKSY and SmoothClust route to their own producers and reject stale 
     srt@tools[[tool_name]] <- list(status = "completed")
     srt
   }
-  testthat::local_mocked_bindings(.package = "scop",
+  testthat::local_mocked_bindings(
+    .package = "scop",
     RunStandardWorkflow = function(object, ...) object,
     RunBANKSY = producer,
-    RunSmoothClust = function(object, ..., tool_name = "SmoothClust") producer(object, ..., tool_name = tool_name))
+    RunSmoothClust = function(object, ..., tool_name = "SmoothClust") producer(object, ..., tool_name = tool_name)
+  )
   for (method in c("BANKSY", "SmoothClust")) {
-    out <- original(make_platform_object(), assay = "RNA", do_spot_qc = FALSE,
+    out <- original(make_platform_object(),
+      assay = "RNA", do_spot_qc = FALSE,
       do_spatial_variable_features = FALSE, do_deconvolution = FALSE,
       do_spatial_cluster = TRUE, spatial_cluster_method = method,
-      spatial_q = if (method == "SmoothClust") 3L else NULL, verbose = FALSE)
+      spatial_q = if (method == "SmoothClust") 3L else NULL, verbose = FALSE
+    )
     st <- out@tools$run_standard_spatial_workflow$stages
     expect_identical(st$actual_method[st$stage == "spatial_clustering"], paste0("Run", method))
     expect_identical(st$status[st$stage == "spatial_clustering"], "completed")
     if (method == "SmoothClust") expect_equal(seen$n_clusters, 3)
   }
-  expect_error(original(make_platform_object(), assay = "RNA", do_spatial_cluster = TRUE,
-    spatial_cluster_method = "BANKSY", spatial_q = 3, verbose = FALSE), "resolution")
+  expect_error(original(make_platform_object(),
+    assay = "RNA", do_spatial_cluster = TRUE,
+    spatial_cluster_method = "BANKSY", spatial_q = 3, verbose = FALSE
+  ), "resolution")
   testthat::local_mocked_bindings(.package = "scop", RunBANKSY = function(object, ...) object)
-  x <- make_platform_object(); x$BANKSY_cluster <- "old"; x@tools$BANKSY <- list(old = TRUE)
-  expect_error(original(x, assay = "RNA", do_spot_qc = FALSE, do_spatial_variable_features = FALSE,
-    do_spatial_cluster = TRUE, spatial_cluster_method = "BANKSY", verbose = FALSE))
+  x <- make_platform_object()
+  x$BANKSY_cluster <- "old"
+  x@tools$BANKSY <- list(old = TRUE)
+  expect_error(original(x,
+    assay = "RNA", do_spot_qc = FALSE, do_spatial_variable_features = FALSE,
+    do_spatial_cluster = TRUE, spatial_cluster_method = "BANKSY", verbose = FALSE
+  ))
   expect_true(all(x$BANKSY_cluster == "old"))
 })
 
 test_that("SpaNorm routes normalized data separately and QC partial is not success", {
   original <- getFromNamespace("run_standard_spatial_workflow", "scop")
   seen <- list()
-  testthat::local_mocked_bindings(.package = "scop",
+  testthat::local_mocked_bindings(
+    .package = "scop",
     RunSpaNorm = function(object, assay, layer, ...) {
       srt <- object
       seen$counts <<- GetAssayData5(srt, assay = assay, layer = layer)
       suppressWarnings(srt[["SpaNorm"]] <- SeuratObject::CreateAssayObject(data = log1p(seen$counts)))
-      srt@tools$SpaNorm <- list(cells = colnames(srt)); srt
+      srt@tools$SpaNorm <- list(cells = colnames(srt))
+      srt
     },
     RunStandardWorkflow = function(object, assay, do_normalization, HVF_method, ...) {
       srt <- object
-      seen$assay <<- assay; seen$normalize <<- do_normalization; seen$hvf <<- HVF_method; srt
+      seen$assay <<- assay
+      seen$normalize <<- do_normalization
+      seen$hvf <<- HVF_method
+      srt
     },
     RunSpatialVariableFeatures = function(object, assay, ...) {
       srt <- object
-      seen$svf <<- assay; srt@tools$SpatialVariableFeatures <- list(result = data.frame(feature = rownames(srt))); srt
+      seen$svf <<- assay
+      srt@tools$SpatialVariableFeatures <- list(result = data.frame(feature = rownames(srt)))
+      srt
     },
     RunSpotSweeper = function(object, ...) {
       srt <- object
@@ -119,38 +139,50 @@ test_that("SpaNorm routes normalized data separately and QC partial is not succe
   expect_false(seen$normalize)
   expect_equal(GetAssayData5(out, assay = "RNA"), GetAssayData5(x))
   expect_equal(GetAssayData5(out, assay = "SpaNorm"), GetAssayData5(x))
-  error <- tryCatch(original(x, assay = "RNA", do_spot_qc = FALSE,
-    do_spatial_qc = TRUE, verbose = FALSE), error = identity)
+  error <- tryCatch(original(x,
+    assay = "RNA", do_spot_qc = FALSE,
+    do_spatial_qc = TRUE, verbose = FALSE
+  ), error = identity)
   expect_s3_class(error, "error")
   st <- attr(error, "standard_spatial_stages")
   expect_identical(st$status[st$stage == "spatial_quality_control"], "failed")
-  expect_error(original(x, assay = "RNA", spatial_data_type = "cell",
-    do_spatial_cluster = TRUE, verbose = FALSE), "BayesSpace requires")
+  expect_error(original(x,
+    assay = "RNA", spatial_data_type = "cell",
+    do_spatial_cluster = TRUE, verbose = FALSE
+  ), "BayesSpace requires")
 })
 
 test_that("an explicit normalization refusal preserves externally normalized data", {
   x <- make_platform_object()
   x <- SeuratObject::SetAssayData(x, layer = "data", new.data = GetAssayData5(x) / 7)
   before <- GetAssayData5(x, layer = "data")
-  testthat::local_mocked_bindings(.package = "scop",
+  testthat::local_mocked_bindings(
+    .package = "scop",
     CheckDataType = function(...) "unknown",
-    NormalizeData = function(...) stop("normalization must not run"))
-  out <- CheckDataList(list(x), batch = "", assay = "RNA", do_normalization = FALSE,
-    do_HVF_finding = FALSE, HVF = rownames(x)[1:5], nHVF = 5, verbose = FALSE)
+    NormalizeData = function(...) stop("normalization must not run")
+  )
+  out <- CheckDataList(list(x),
+    batch = "", assay = "RNA", do_normalization = FALSE,
+    do_HVF_finding = FALSE, HVF = rownames(x)[1:5], nHVF = 5, verbose = FALSE
+  )
   expect_equal(GetAssayData5(out$srt_list[[1]], layer = "data"), before)
 })
 
 test_that("SPARKX keeps sparse inputs and dense paths have a preflight bound", {
   x <- make_platform_object()
-  testthat::local_mocked_bindings(.package = "scop",
+  testthat::local_mocked_bindings(
+    .package = "scop",
     spatial_variable_run_sparkx = function(expr, ...) {
       expect_s4_class(expr, "dgCMatrix")
       data.frame(feature = rownames(expr), p_value = .2, q_value = .2, statistic = 1)
-    })
+    }
+  )
   out <- RunSpatialVariableFeatures(x, method = "SPARKX", layer = "counts", verbose = FALSE)
   expect_true(length(out@tools$SpatialVariableFeatures$result$feature) > 0)
-  expect_error(RunSpatialVariableFeatures(x, layer = "counts", backend = "r",
-    max_dense_gb = 1e-12, verbose = FALSE), "max_dense_gb")
+  expect_error(RunSpatialVariableFeatures(x,
+    layer = "counts", backend = "r",
+    max_dense_gb = 1e-12, verbose = FALSE
+  ), "max_dense_gb")
 })
 
 test_that("Assay5 scaling matches Seurat for sketch cells and repeated scaling", {
@@ -163,15 +195,20 @@ test_that("Assay5 scaling matches Seurat for sketch cells and repeated scaling",
   reference <- original(object, assay = "sketch", features = features, verbose = FALSE)
   out <- ScaleData(object, assay = "sketch", features = features, verbose = FALSE)
   expect_equal(GetAssayData5(out, assay = "sketch", layer = "scale.data"),
-    GetAssayData5(reference, assay = "sketch", layer = "scale.data"), tolerance = 1e-8)
+    GetAssayData5(reference, assay = "sketch", layer = "scale.data"),
+    tolerance = 1e-8
+  )
   expect_identical(colnames(GetAssayData5(out, assay = "sketch", layer = "scale.data")), colnames(object[["sketch"]]))
   out <- suppressWarnings(ScaleData(out, assay = "sketch", features = features[1:6], verbose = FALSE))
   expect_identical(rownames(GetAssayData5(out, assay = "sketch", layer = "scale.data")), features[1:6])
   expect_true(isTRUE(methods::validObject(out[["sketch"]])))
   object$batch <- rep(c("A", "B"), length.out = ncol(object))
   reference <- original(subset(object, cells = colnames(object[["sketch"]])),
-    assay = "sketch", features = features, split.by = "batch", verbose = FALSE)
+    assay = "sketch", features = features, split.by = "batch", verbose = FALSE
+  )
   out <- ScaleData(object, assay = "sketch", features = features, split.by = "batch", verbose = FALSE)
   expect_equal(GetAssayData5(out, assay = "sketch", layer = "scale.data"),
-    GetAssayData5(reference, assay = "sketch", layer = "scale.data"), tolerance = 1e-8)
+    GetAssayData5(reference, assay = "sketch", layer = "scale.data"),
+    tolerance = 1e-8
+  )
 })

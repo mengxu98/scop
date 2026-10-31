@@ -1,6 +1,7 @@
 followup_spatial_object <- function() {
   object <- SeuratObject::CreateSeuratObject(Matrix::Matrix(
-    matrix(1:12, 3, dimnames = list(paste0("g", 1:3), letters[1:4])), sparse = TRUE
+    matrix(1:12, 3, dimnames = list(paste0("g", 1:3), letters[1:4])),
+    sparse = TRUE
   ))
   object$x <- c(0, 1, 0, 1)
   object$y <- c(0, 0, 1, 1)
@@ -20,8 +21,10 @@ test_that("matrix point plots honor explicit scales in both return forms", {
     p <- Cell2locationPlot(object, plot_type = "abundance", upper_cutoff = 10, combine = combine)
     expect_equal(p[[1]]$scales$get_scales("colour")$limits, c(1, 10))
     expect_equal(p[[2]]$scales$get_scales("colour")$limits, c(2, 10))
-    q <- Cell2locationPlot(object, plot_type = "abundance", lower_cutoff = 0,
-      upper_cutoff = 10, combine = combine)
+    q <- Cell2locationPlot(object,
+      plot_type = "abundance", lower_cutoff = 0,
+      upper_cutoff = 10, combine = combine
+    )
     expect_equal(q[[1]]$scales$get_scales("colour")$limits, c(0, 10))
     expect_equal(q[[2]]$scales$get_scales("colour")$limits, c(0, 10))
   }
@@ -52,8 +55,10 @@ test_that("long points share geometry and named colors with ordinary points", {
   expect_equal(long_data[, c("x", "y", "fill")], point_data[, c("x", "y", "fill")])
   expect_null(p$labels$title)
   long <- long[c(1, 1, 3, 2), ]
-  p <- SpatialSpotPlot(object, plot.data = long, spot.by = "spot", color.by = "label",
-    split.by = "sample label", palcolor = colors, cells = c("a", "c"))
+  p <- SpatialSpotPlot(object,
+    plot.data = long, spot.by = "spot", color.by = "label",
+    split.by = "sample label", palcolor = colors, cells = c("a", "c")
+  )
   expect_equal(unname(p$data$x), unname(object$x[c(1, 1, 3)]))
   expect_equal(nrow(p$data), 3)
   expect_equal(nrow(ggplot2::ggplot_build(p)$layout$layout), 2)
@@ -62,8 +67,10 @@ test_that("long points share geometry and named colors with ordinary points", {
 test_that("numeric long plots retain jitter and original color values", {
   object <- followup_spatial_object()
   long <- data.frame(spot = colnames(object), x = c(10, 20, 30, 40))
-  p <- SpatialSpotPlot(object, plot.data = long, spot.by = "spot", color.by = "x",
-    geom = "jitter", jitter_width = .2, jitter_height = .1)
+  p <- SpatialSpotPlot(object,
+    plot.data = long, spot.by = "spot", color.by = "x",
+    geom = "jitter", jitter_width = .2, jitter_height = .1
+  )
   expect_equal(p$data$.value, long$x)
   set.seed(1)
   built <- ggplot2::ggplot_build(p)$data[[1]]
@@ -74,9 +81,12 @@ test_that("numeric long plots retain jitter and original color values", {
 
 test_that("constant topic panels share default breaks and keep empty panels", {
   object <- followup_spatial_object()
-  object@tools$STdeconvolve <- list(theta = matrix(c(rep(0, 4), rep(.5, 4), rep(NA_real_, 4)), 4,
-    dimnames = list(colnames(object), c("Absent", "Constant", "Missing"))),
-    parameters = list(prefix = "STdeconvolve"))
+  object@tools$STdeconvolve <- list(
+    theta = matrix(c(rep(0, 4), rep(.5, 4), rep(NA_real_, 4)), 4,
+      dimnames = list(colnames(object), c("Absent", "Constant", "Missing"))
+    ),
+    parameters = list(prefix = "STdeconvolve")
+  )
   p <- STdeconvolvePlot(object, combine = FALSE)
   expect_equal(p[[1]]$scales$get_scales("colour")$limits, c(0, .5))
   expect_equal(p[[2]]$scales$get_scales("colour")$limits, c(0, .5))
@@ -97,7 +107,8 @@ test_that("documented bridge counts and merged image auto-resolution work", {
     list(domains = stats::setNames(rep("D1", length(input$cells)), input$cells), raw_result = list())
   })
   integrated <- suppressWarnings(RunSpatialIntegration(
-    list(S1 = object[, 1:8], S2 = object[, 9:16]), assay = "Spatial", layer = "counts",
+    list(S1 = object[, 1:8], S2 = object[, 9:16]),
+    assay = "Spatial", layer = "counts",
     image = c(S1 = "slice1", S2 = "slice1"), store_object = FALSE, verbose = FALSE
   ))
   plots <- SpatialIntegrationPlot(integrated, combine = FALSE)

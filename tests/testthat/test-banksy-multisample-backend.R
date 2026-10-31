@@ -8,8 +8,10 @@ test_that("real BANKSY independent sample fits match standalone fits in both sto
   counts <- matrix(rpois(30L * n_per_sample * 2L, lambda = 4), nrow = 30L)
   counts[1:10, rep(seq_len(n_per_sample) <= 24L, 2L)] <-
     counts[1:10, rep(seq_len(n_per_sample) <= 24L, 2L)] + 6L
-  dimnames(counts) <- list(paste0("Gene", seq_len(nrow(counts))),
-    paste0("Spot", seq_len(ncol(counts))))
+  dimnames(counts) <- list(
+    paste0("Gene", seq_len(nrow(counts))),
+    paste0("Spot", seq_len(ncol(counts)))
+  )
   srt <- Seurat::CreateSeuratObject(
     counts = methods::as(Matrix::Matrix(counts, sparse = TRUE), "dgCMatrix")
   )
@@ -18,16 +20,22 @@ test_that("real BANKSY independent sample fits match standalone fits in both sto
   srt$col <- rep(rep(seq_len(8L), 6L), 2L)
   srt$row <- rep(rep(seq_len(6L), each = 8L), 2L)
   srt$BANKSY_cluster <- "old"
-  args <- list(layer = "counts", k_geom = 4L, npcs = 5L, k_neighbors = 5L,
+  args <- list(
+    layer = "counts", k_geom = 4L, npcs = 5L, k_neighbors = 5L,
     algo = "leiden", resolution = 0.6, seed = 1L, cluster_colname = "domains",
-    tool_name = "custom_fit", verbose = FALSE)
+    tool_name = "custom_fit", verbose = FALSE
+  )
   detailed <- do.call(RunBANKSY, c(list(object = srt, sample.by = "sample"), args))
-  compact <- do.call(RunBANKSY, c(list(object = detailed, sample.by = "sample",
-    store_results = FALSE), args))
+  compact <- do.call(RunBANKSY, c(list(
+    object = detailed, sample.by = "sample",
+    store_results = FALSE
+  ), args))
 
   expect_named(compact@tools$custom_fit, "result_index")
-  expect_equal(GetSpatialResult(compact, "custom_fit")$clusters,
-    GetSpatialResult(detailed, "custom_fit")$clusters)
+  expect_equal(
+    GetSpatialResult(compact, "custom_fit")$clusters,
+    GetSpatialResult(detailed, "custom_fit")$clusters
+  )
   for (sample_name in c("S1", "S1_A")) {
     cells <- colnames(srt)[srt$sample == sample_name]
     standalone <- do.call(RunBANKSY, c(list(object = srt[, cells]), args))
@@ -39,13 +47,16 @@ test_that("real BANKSY independent sample fits match standalone fits in both sto
     expect_equal(observed$summary, stored$summary)
     expect_false(anyNA(observed$clusters$domains))
     expect_gt(length(unique(observed$clusters$domains)), 0L)
-    expect_identical(as.character(compact$domains[cells]),
-      paste0(sample_name, "_", observed$clusters$domains))
+    expect_identical(
+      as.character(compact$domains[cells]),
+      paste0(sample_name, "_", observed$clusters$domains)
+    )
   }
   # Sample selection still uses exact fitted membership after a rename and
   # arbitrary current-object ordering, including an absent sample.
   renamed <- lapply(list(detailed, compact), SeuratObject::RenameCells,
-    new.names = rev(colnames(srt)))
+    new.names = rev(colnames(srt))
+  )
   positions <- c(70L, 2L, 53L, 10L)
   renamed <- lapply(renamed, function(x) x[, colnames(x)[positions]])
   for (sample_name in c("S1", "S1_A")) {
@@ -73,13 +84,17 @@ test_that("real BANKSY results survive subsets and exact renamed-cell mapping", 
   skip_if_not_installed("BiocNeighbors")
 
   set.seed(7)
-  counts <- matrix(rpois(12L * 36L, lambda = 5), nrow = 12L,
-    dimnames = list(paste0("Gene", 1:12), paste0("Spot", 1:36)))
+  counts <- matrix(rpois(12L * 36L, lambda = 5),
+    nrow = 12L,
+    dimnames = list(paste0("Gene", 1:12), paste0("Spot", 1:36))
+  )
   srt <- Seurat::CreateSeuratObject(counts = methods::as(Matrix::Matrix(counts, sparse = TRUE), "dgCMatrix"))
   srt$x <- rep(1:6, 6)
   srt$y <- rep(1:6, each = 6)
-  args <- list(layer = "counts", k_geom = 4L, npcs = 4L, k_neighbors = 4L,
-    seed = 1L, verbose = FALSE)
+  args <- list(
+    layer = "counts", k_geom = 4L, npcs = 4L, k_neighbors = 4L,
+    seed = 1L, verbose = FALSE
+  )
   detailed <- do.call(RunBANKSY, c(list(object = srt), args))
   compact <- do.call(RunBANKSY, c(list(object = srt, store_results = FALSE), args))
   baseline <- GetSpatialResult(detailed, "BANKSY")
@@ -108,8 +123,10 @@ test_that("real BANKSY results survive subsets and exact renamed-cell mapping", 
         expect_equal(result$summary$n_spots, ncol(current[[i]]))
         expect_equal(sum(result$summary$domains$count), ncol(current[[i]]))
         expected_counts <- table(expected_labels)
-        expect_equal(result$summary$domains$count,
-          unname(as.integer(expected_counts[result$summary$domains$domain])))
+        expect_equal(
+          result$summary$domains$count,
+          unname(as.integer(expected_counts[result$summary$domains$domain]))
+        )
         expect_identical(GetSpatialResult(current[[i]], "BANKSY"), result)
       }
     }

@@ -58,11 +58,15 @@ to force during integration.
 library(scop)
 set.seed(11)
 harmony_source <- utils::packageDescription("harmony")
-stopifnot(identical(harmony_source$RemoteUsername, "immunogenomics"),
-          identical(harmony_source$RemoteRepo, "harmony"))
-data.frame(package = "harmony", version = harmony_source$Version,
-           source = paste(harmony_source$RemoteUsername, harmony_source$RemoteRepo, sep = "/"),
-           revision = harmony_source$RemoteSha)
+stopifnot(
+  identical(harmony_source$RemoteUsername, "immunogenomics"),
+  identical(harmony_source$RemoteRepo, "harmony")
+)
+data.frame(
+  package = "harmony", version = harmony_source$Version,
+  source = paste(harmony_source$RemoteUsername, harmony_source$RemoteRepo, sep = "/"),
+  revision = harmony_source$RemoteSha
+)
 
 data(panc8_sub)
 input_cells <- colnames(panc8_sub)
@@ -77,8 +81,10 @@ baseline for deciding whether integration removes technical structure without
 erasing cell-type structure.
 
 ```{r unintegrated-check}
-panc8_sub <- RunStandardWorkflow(panc8_sub, assay = "RNA", seed = 11, cores = 1,
-                                 verbose = FALSE)
+panc8_sub <- RunStandardWorkflow(panc8_sub,
+  assay = "RNA", seed = 11, cores = 1,
+  verbose = FALSE
+)
 
 CellDimPlot(
   panc8_sub,
@@ -211,12 +217,18 @@ result_file <- file.path(output_dir, "analysis.rds")
 saveRDS(panc8_harmony, result_file)
 utils::write.csv(panc8_harmony@meta.data, file.path(output_dir, "cell-metadata.csv"))
 reloaded <- readRDS(result_file)
-stopifnot(identical(colnames(reloaded), colnames(panc8_harmony)),
-          identical(reloaded@meta.data, panc8_harmony@meta.data),
-          identical(SeuratObject::Reductions(reloaded),
-                    SeuratObject::Reductions(panc8_harmony)))
-data.frame(file = basename(list.files(output_dir, full.names = TRUE)),
-           bytes = file.info(list.files(output_dir, full.names = TRUE))$size)
+stopifnot(
+  identical(colnames(reloaded), colnames(panc8_harmony)),
+  identical(reloaded@meta.data, panc8_harmony@meta.data),
+  identical(
+    SeuratObject::Reductions(reloaded),
+    SeuratObject::Reductions(panc8_harmony)
+  )
+)
+data.frame(
+  file = basename(list.files(output_dir, full.names = TRUE)),
+  bytes = file.info(list.files(output_dir, full.names = TRUE))$size
+)
 ```
 
 ## Use your own data and recover common errors
@@ -244,8 +256,10 @@ this receipt with the exported object.
 ```{r provenance}
 source_revision <- Sys.getenv("GITHUB_SHA")
 if (!nzchar(source_revision) && nzchar(Sys.which("git"))) {
-  source_revision <- tryCatch(system2("git", c("rev-parse", "HEAD"), stdout = TRUE,
-                                      stderr = FALSE)[1], error = function(e) NA_character_)
+  source_revision <- tryCatch(system2("git", c("rev-parse", "HEAD"),
+    stdout = TRUE,
+    stderr = FALSE
+  )[1], error = function(e) NA_character_)
 }
 article_source <- knitr::current_input(dir = TRUE)
 build_receipt <- data.frame(
@@ -254,8 +268,11 @@ build_receipt <- data.frame(
   scop = as.character(utils::packageVersion("scop")),
   R = as.character(getRversion()),
   source_revision = source_revision,
-  source_has_local_changes = if (nzchar(Sys.which("git")))
-    length(system2("git", c("status", "--porcelain"), stdout = TRUE, stderr = FALSE)) > 0 else NA,
+  source_has_local_changes = if (nzchar(Sys.which("git"))) {
+    length(system2("git", c("status", "--porcelain"), stdout = TRUE, stderr = FALSE)) > 0
+  } else {
+    NA
+  },
   article_md5 = unname(tools::md5sum(article_source)),
   R_seed = 11,
   cells_retained = ncol(panc8_harmony),
@@ -264,7 +281,8 @@ build_receipt <- data.frame(
 )
 build_receipt
 utils::write.csv(build_receipt, file.path(output_dir, "build-receipt.csv"),
-                 row.names = FALSE)
+  row.names = FALSE
+)
 writeLines(capture.output(sessionInfo()), file.path(output_dir, "session-info.txt"))
 ```
 

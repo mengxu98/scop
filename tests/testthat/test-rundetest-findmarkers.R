@@ -1,3 +1,35 @@
+test_that("FindAllMarkers respects the feature and cell maps of a partial RNA layer", {
+  skip_if_not_installed("Seurat", "5.0.0")
+  skip_if_not_installed("presto")
+
+  set.seed(1234)
+  counts <- Matrix::Matrix(matrix(rpois(80 * 40, 2), 80, 40), sparse = TRUE)
+  dimnames(counts) <- list(paste0("g", seq_len(80)), paste0("c", seq_len(40)))
+  object <- Seurat::CreateSeuratObject(counts)
+  object <- NormalizeData(object, verbose = FALSE)
+  object$group <- rep(c("A", "B"), each = 20)
+  data <- SeuratObject::LayerData(object, assay = "RNA", layer = "data")
+  data <- data[60:1, c(35:21, 15:1)]
+  object <- suppressWarnings(SeuratObject::SetAssayData(
+    object,
+    assay = "RNA", layer = "data", new.data = data
+  ))
+  expect_true(methods::validObject(object))
+  expect_equal(
+    marker_get_data(object, object[["RNA"]], "data"),
+    SeuratObject::LayerData(object, assay = "RNA", layer = "data")
+  )
+  args <- list(
+    object = object, assay = "RNA", group.by = "group",
+    features = rownames(data), min.pct = 0, logfc.threshold = 0,
+    return.thresh = Inf, verbose = FALSE
+  )
+  actual <- do.call(scop::FindAllMarkers, args)
+  expect_gt(nrow(actual), 0)
+  args$object <- subset(object, cells = colnames(data))
+  expect_equal(actual, do.call(seurat_reference_find_all_markers, args), tolerance = 1e-10)
+})
+
 test_that("RunDEtest uses scop FindMarkers-compatible sparse Wilcoxon path", {
   skip_if_not_installed("Seurat")
   skip_if_not_installed("Matrix")

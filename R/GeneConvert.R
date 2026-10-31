@@ -774,7 +774,8 @@ ensembl_archive_catalog <- function(version) {
     httr::stop_for_status(response)
     html <- httr::content(response, as = "text", encoding = "UTF-8")
     links <- regmatches(html, gregexpr(
-      '<a[^>]+href="[^"]+"[^>]*>Ensembl [0-9]+:', html, perl = TRUE
+      '<a[^>]+href="[^"]+"[^>]*>Ensembl [0-9]+:', html,
+      perl = TRUE
     ))[[1]]
     if (!length(links)) {
       stop(error)

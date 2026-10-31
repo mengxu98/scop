@@ -137,7 +137,8 @@ RunCARD <- function(
     verbose = verbose
   )
   reference_input <- deconv_align_reference(
-    ref_counts, reference, reference_label, verbose = verbose
+    ref_counts, reference, reference_label,
+    verbose = verbose
   )
   ref_counts <- reference_input$counts
   labels <- reference_input$labels

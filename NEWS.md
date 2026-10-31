@@ -1,7 +1,19 @@
 # scop (development version)
 
+* Add `RunCellOracle()` and `CellOraclePlot()` for the official CellOracle 0.20.0
+  workflow, saved-model reuse, original displacement/randomized controls and
+  a standalone Linux/macOS Python environment profile.
+
+* `EnrichmentPlot(plot_type = "rank")` plots stored ORA terms by enrichment magnitude,
+  with group colors, solid-point sizes, bold halo labels, `grid_major` reference grids,
+  and zero-void panel bounds.
+
+* **feat**: `GroupHeatmap()` accepts `legend_params` to customize expression and percent legends independently, including horizontal color bars and single-row dot legends.
+
 * **breaking**:
 
+  * `RunscTenifoldKnk()` removes `backend` and replaces `qc_min_cells` with
+    the upstream expression-fraction parameter `qc_min_pct`.
   * Use native Seurat `SCTransform()` and thread controls. Remove scop's SCT methods,
     adapters and the SCT-only `CheckDataList()` / `CheckDataMerge()` `cores` argument;
     retain native models and shared integration features.
@@ -26,6 +38,10 @@
 
 * **change**:
 
+  * Adapt `RunscTenifoldKnk()` to scTenifoldKnk 2.0. Use the official workflow
+    for QC, CPM normalization and knockout analysis, with heat alignment,
+    response directions, transcriptome-wide screens and reproducible seeds.
+    Retain the Seurat interface, result storage and plotting functions.
   * Use gzip compression for package data and source installation.
   * Support shared and per-method reduction parameters in integration workflows.
   * Distinguish omitted `object` from `NULL`; reject duplicate `object`/`srt`.
@@ -45,6 +61,8 @@
 
 * **fix**:
 
+  * Avoid deprecated Matrix `ddiMatrix` to `dgCMatrix` coercion in
+    `scenicplus_read_python_result()` and cell QC tests so coverage runs stay clean.
   * Fix duplicate GSEA rankings after one-to-many ID conversion and retain unmapped
     labels. Expose `RunGSEA()` parameters `nPermSimple` and `eps` with unchanged defaults.
   * Preserve native Fisher tests and Holm correction in GO word clouds; support
@@ -141,8 +159,6 @@
   * Gradient result storage and VariableFeatures updates are independent; explicit empty updates clear VariableFeatures and completion messages describe actual actions.
   * Neighborhood spatial counts respect saved analysis scope and condition, distinguish zero from unevaluated cells, reject unsupported plot arguments, and support valid empty observed results.
   * `RunMonocle2()` skips `estimateDispersions()` unless `feature_type = "Disp"` or `show_plot = TRUE`. The sparse-matrix `2^31-1` crash in dispersion fitting is fixed in [mengxu98/monocle](https://github.com/mengxu98/monocle) 2.9.3.
-  * `RunScTenifoldKnk()` builds the gene regulatory network ensemble with scop's native C++ kernel in every backend instead of calling `scTenifoldNet::makeNetworks()`; `backend` only selects how the downstream differential-regulation steps run (`r` = upstream helpers, `cpp` = scop kernels) and what is stored, with the `cpp` path much faster on large gene sets.
-  * `RunScTenifoldKnk(backend = "cpp")` no longer loses network scores when a subsample drops an all-zero gene: the empty sparse template was a pattern (`ngCMatrix`) matrix that coerced the ensemble coefficients to logical, so affected networks reached the tensor decomposition as 0/1 and the knocked-out gene was reported as not dysregulated (#427).
   * C-SIDE completion messages respect result storage and document compatibility metadata as run-level significant record counts.
 
 * **perf**:
@@ -299,7 +315,7 @@
 
 * **fix**:
 
-  * Added optional wrappers for `RunDorothea()`, `RunBayesSpace()`, and experimental `RunscTenifoldKnk()`. `RunscTenifoldKnk()` keeps the upstream `scTenifoldNet` workflow but fixes the QC gene-filter assignment in the local path, uses an equivalent covariance/downdate path with direct sparse matrix construction, selection-based quantile thresholding, and controlled per-gene eigensolver parallelism for large `pcNet()` network construction, and uses C++ helpers for tensor decomposition, manifold matrix construction, directionality, and differential-regulation distance calculations. The C++ tensor-decomposition path now computes MTTKRP updates directly instead of materializing four dense unfolding matrices.
+  * Added optional wrappers for `RunDorothea()`, `RunBayesSpace()`, and `RunscTenifoldKnk()`.
   * `PrepareEnv()`: Added explicit support for `mamba` and `micromamba` executables in addition to `conda`, including command-name resolution, automatic package-managed micromamba download when `conda = "micromamba"` is requested and the command is not on `PATH`, manager-aware logging, micromamba env path detection, and ToS handling that only runs for standard conda. Package-managed micromamba environments now use a no-space cache root to avoid `micromamba run -p` path parsing failures. `PrepareEnv()` now also stops early if reticulate has already initialized a different Python executable, avoiding unsafe in-session switches between conda and micromamba. The Python stack now also pins `setuptools < 81` so legacy packages such as `trimap` can still import `pkg_resources`.
   * `PrepareEnv()`: The default `modules = NULL` environment no longer includes `scomm`; install it explicitly with `modules = "scomm"` because the TensorFlow/scOMM stack conflicts with the default JAX/scVI stack through incompatible `ml-dtypes` requirements.
   * `CheckDataList()` / `RunStandardWorkflow()`: Removed an unnecessary all-feature `ScaleData()` call immediately after `LogNormalize`. Downstream workflows still scale the selected HVFs before PCA, but large raw-count inputs no longer create a dense all-gene `scale.data` intermediate during checking.

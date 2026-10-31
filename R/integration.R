@@ -797,6 +797,12 @@ RunIntegration <- function(
 
   if (isTRUE(append_requested) && !is.null(srt_merge_raw)) {
     assay_use <- assay %||% SeuratObject::DefaultAssay(srt_integrated)
+    if (
+      identical(integration_method, "Harmony") &&
+        inherits(srt_integrated[[assay_use]], "Assay5")
+    ) {
+      srt_merge_raw[[assay_use]] <- srt_integrated[[assay_use]]
+    }
     append_slots <- methods::slotNames(srt_integrated)
     if (inherits(srt_integrated[[assay_use]], "ChromatinAssay")) {
       append_pattern <- paste0(

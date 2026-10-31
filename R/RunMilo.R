@@ -46,7 +46,7 @@ RunMilo <- function(
   if (identical(backend, "r")) {
     check_r(
       c("miloR", "SingleCellExperiment", "SummarizedExperiment"),
-    verbose = FALSE
+      verbose = FALSE
     )
   } else {
     check_r(c("edgeR", "limma", "BiocNeighbors"), verbose = FALSE)

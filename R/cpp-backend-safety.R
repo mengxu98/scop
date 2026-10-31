@@ -67,4 +67,3 @@ assert_cpp_approximation_opt_in <- function(
   }
   invisible(TRUE)
 }
-

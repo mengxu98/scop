@@ -1,4 +1,3 @@
-
 spatial_run_receipt_lines <- function(x, name) {
   if (is.null(x)) {
     return(character())

@@ -70,10 +70,14 @@ test_that("RunCSSMap preserves the real simspec projection", {
   skip_if_not_installed("simspec")
   objects <- make_cssmap_cache_objects()
   query_data <- GetAssayData5(objects$query, layer = "data")
-  profiles <- matrix(c(1, 4, 2, 3, 4, 1, 3, 2), nrow = 4,
-    dimnames = list(rownames(query_data), c("p1", "p2")))
-  model <- list(model = list(spectrum_type = "corr_raw", profiles = list(batch = profiles),
-    args = c(corr_method = "pearson")))
+  profiles <- matrix(c(1, 4, 2, 3, 4, 1, 3, 2),
+    nrow = 4,
+    dimnames = list(rownames(query_data), c("p1", "p2"))
+  )
+  model <- list(model = list(
+    spectrum_type = "corr_raw", profiles = list(batch = profiles),
+    args = c(corr_method = "pearson")
+  ))
   objects$reference[["css"]]@misc$model <- model
   expected <- invoke_fun(simspec::css_project, list(object = query_data, model = model))
   rownames(expected) <- colnames(objects$query)
@@ -83,8 +87,10 @@ test_that("RunCSSMap preserves the real simspec projection", {
     RunKNNMap = function(srt_query, ...) srt_query,
     .package = "scop"
   )
-  actual <- RunCSSMap(objects$query, objects$reference, ref_css = "css", ref_umap = "umap",
-    projection_method = "knn", verbose = FALSE)
+  actual <- RunCSSMap(objects$query, objects$reference,
+    ref_css = "css", ref_umap = "umap",
+    projection_method = "knn", verbose = FALSE
+  )
   expect_true(all(is.finite(expected)))
   expect_identical(SeuratObject::Embeddings(actual, "css_proj"), expected)
 })
@@ -92,8 +98,10 @@ test_that("RunCSSMap preserves the real simspec projection", {
 test_that("CSS integration preserves the Seurat SNN model", {
   skip_if_not_installed("simspec")
   set.seed(11)
-  counts <- matrix(stats::rpois(60 * 100, lambda = 1), nrow = 60,
-    dimnames = list(paste0("Gene", seq_len(60)), paste0("Cell", seq_len(100))))
+  counts <- matrix(stats::rpois(60 * 100, lambda = 1),
+    nrow = 60,
+    dimnames = list(paste0("Gene", seq_len(60)), paste0("Cell", seq_len(100)))
+  )
   object <- Seurat::CreateSeuratObject(Matrix::Matrix(counts, sparse = TRUE))
   object <- Seurat::NormalizeData(object, verbose = FALSE)
   object <- Seurat::ScaleData(object, features = rownames(object), verbose = FALSE)
@@ -126,18 +134,22 @@ test_that("CSS integration preserves the Seurat SNN model", {
     dimnames(snn) <- list(cells, cells)
     expect_equal(graph(t(dr), k = 5, verbose = FALSE), snn, tolerance = 1e-15)
     clusters[cells] <- as.character(Seurat::FindClusters(
-      SeuratObject::as.Graph(snn), resolution = 0.6, verbose = FALSE
+      SeuratObject::as.Graph(snn),
+      resolution = 0.6, verbose = FALSE
     )[, 1])
   }
   expected$css_test_cluster <- clusters[colnames(expected)]
   expected <- simspec::cluster_sim_spectrum(
-    expected, label_tag = "batch", cluster_col = "css_test_cluster",
+    expected,
+    label_tag = "batch", cluster_col = "css_test_cluster",
     var_genes = rownames(object), use_dr = "CSSpca", dims_use = seq_len(5),
     k = 5, min_cluster_num = 1, reduction.name = "CSS", reduction.key = "CSS_",
     verbose = FALSE
   )
   expect_equal(SeuratObject::Embeddings(actual, "CSS"),
-    SeuratObject::Embeddings(expected, "CSS"), tolerance = 1e-12)
+    SeuratObject::Embeddings(expected, "CSS"),
+    tolerance = 1e-12
+  )
   expect_equal(actual[["CSS"]]@misc$model, expected[["CSS"]]@misc$model, tolerance = 1e-12)
   expect_identical(colnames(actual), colnames(object))
   expect_identical(getFromNamespace("build_knn_graph", "simspec"), original_graph)

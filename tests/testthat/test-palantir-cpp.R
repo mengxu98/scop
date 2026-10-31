@@ -1,5 +1,3 @@
-
-
 make_palantir_mock <- function(
   n_cells = 30,
   n_dims = 5,

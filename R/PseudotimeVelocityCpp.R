@@ -1,4 +1,3 @@
-
 run_pseudotime_velocity_knn <- function(x_emb, pseudotime, neighbors, normalize = TRUE) {
   if (!is.matrix(x_emb)) {
     x_emb <- as.matrix(x_emb)

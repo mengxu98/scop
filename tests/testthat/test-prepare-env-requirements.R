@@ -86,9 +86,13 @@ test_that("reading an existing full SCENIC+ environment preserves its upstream p
   expect_identical(seen, "scenicplus")
   expect_error(PrepareEnv(envname = "existing", conda = "conda", modules = "scenicplus_io", version = "3.11-1", force = TRUE), "requirements captured")
   expect_identical(seen, "scenicplus_io")
-  testthat::local_mocked_bindings(.package = "scop",
+  testthat::local_mocked_bindings(
+    .package = "scop",
     env_requirements = function(...) list(python = "3.11.8", packages = c(scenicplus = "pinned", rust = "rust")),
-    build_env_cache_spec = function(requirements, ...) { seen <<- requirements; stop("runtime captured") }
+    build_env_cache_spec = function(requirements, ...) {
+      seen <<- requirements
+      stop("runtime captured")
+    }
   )
   expect_error(PrepareEnv(envname = "existing", conda = "conda", modules = "scenicplus_io", version = "3.11-1"), "runtime captured")
   expect_identical(seen$python, "3.11-1")
@@ -104,7 +108,10 @@ test_that("subprocess preparation leaves an existing embedded runtime alone", {
     .package = "scop",
     resolve_conda = function(conda) conda,
     is_cached_env_valid = function(...) TRUE,
-    ensure_scipy_runtime = function(...) { Sys.setenv(PATH = "installer-path"); NULL },
+    ensure_scipy_runtime = function(...) {
+      Sys.setenv(PATH = "installer-path")
+      NULL
+    },
     assert_python_runtime_switchable = function(...) stop("embedded runtime touched"),
     configure_python_runtime = function(...) stop("embedded runtime touched"),
     remember_python_environment = function(...) stop("embedded runtime touched"),
@@ -134,8 +141,10 @@ test_that("SCENIC+ keeps its upstream dependency stack separate", {
 })
 
 test_that("native Windows rejects full SCENIC+ before creating an environment", {
-  testthat::local_mocked_bindings(.package = "scop", is_windows = function() TRUE,
-    resolve_conda = function(...) stop("environment manager touched"))
+  testthat::local_mocked_bindings(
+    .package = "scop", is_windows = function() TRUE,
+    resolve_conda = function(...) stop("environment manager touched")
+  )
   expect_error(PrepareEnv(modules = "scenicplus"), "full official SCENIC\\+ environment requires Linux")
 })
 
@@ -157,12 +166,19 @@ test_that("full SCENIC+ installation activates conda and preserves dependency pi
   previous <- Sys.getenv(c("UV_BUILD_CONSTRAINT", "PIP_BUILD_CONSTRAINT", "PIP_CONSTRAINT", "UV_CACHE_DIR", "UV_HTTP_TIMEOUT", "UV_CONCURRENT_DOWNLOADS", "CFLAGS", "CPATH", "LIBRARY_PATH", "PKG_CONFIG_PATH", "CC", "CXX"), unset = NA_character_)
   testthat::local_mocked_bindings(
     .package = "scop",
-    find_uv = function(pip_options, ...) { expect_false("--overrides" %in% pip_options); "uv" },
+    find_uv = function(pip_options, ...) {
+      expect_false("--overrides" %in% pip_options)
+      "uv"
+    },
     log_message = function(...) NULL,
-    get_namespace_fun = function(...) function(command, args) {
-      calls[[length(calls) + 1L]] <<- list(command = command, args = gsub("^[\"']|[\"']$", "", args),
-        constraints = readLines(Sys.getenv("UV_BUILD_CONSTRAINT")), include = Sys.getenv("CPATH"), cache = Sys.getenv("UV_CACHE_DIR"))
-      if (length(calls) == 1L) 0L else 1L
+    get_namespace_fun = function(...) {
+      function(command, args) {
+        calls[[length(calls) + 1L]] <<- list(
+          command = command, args = gsub("^[\"']|[\"']$", "", args),
+          constraints = readLines(Sys.getenv("UV_BUILD_CONSTRAINT")), include = Sys.getenv("CPATH"), cache = Sys.getenv("UV_CACHE_DIR")
+        )
+        if (length(calls) == 1L) 0L else 1L
+      }
     }
   )
   expect_true(install_python_packages("scenicplus @ git+https://github.com/aertslab/scenicplus.git", "/env/bin/python", "/env", "conda"))
@@ -181,7 +197,8 @@ test_that("full SCENIC+ installation activates conda and preserves dependency pi
 
 test_that("full SCENIC+ preparation verifies Git pins in an existing environment", {
   root <- withr::local_tempdir()
-  testthat::local_mocked_bindings(.package = "scop",
+  testthat::local_mocked_bindings(
+    .package = "scop",
     is_windows = function() FALSE,
     resolve_conda = function(...) "conda",
     conda_python = function(...) file.path(root, "bin", "python"),
@@ -195,7 +212,9 @@ test_that("full SCENIC+ preparation verifies Git pins in an existing environment
     find_uv = function(...) "uv",
     log_message = function(...) NULL,
     installed_python_pkgs_pip = function(...) data.frame(package = character()),
-    check_python = function(pip, ...) { if (pip) stop("Git pins skipped") else TRUE },
+    check_python = function(pip, ...) {
+      if (pip) stop("Git pins skipped") else TRUE
+    },
     install_python_packages = function(packages, ...) {
       expect_length(packages[grepl(" @ git\\+", packages)], 5L)
       stop("Git pins verified")

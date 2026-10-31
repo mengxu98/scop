@@ -153,8 +153,10 @@ test_that("RunSpaTalk stores official single-cell results and unified CCC rows",
 
 test_that("SpaTalkPlot forwards theme controls through all CCC views", {
   mock_spatalk_bindings()
-  out <- RunSpaTalk(make_spatalk_test_object(), group.by = "celltype", mode = "single_cell",
-    coord.cols = c("col", "row"), backend = "r", verbose = FALSE)
+  out <- RunSpaTalk(make_spatalk_test_object(),
+    group.by = "celltype", mode = "single_cell",
+    coord.cols = c("col", "row"), backend = "r", verbose = FALSE
+  )
   out@tools$SpaTalk$results$default$long_table$pathway_name <- "P1"
   before <- out@tools
   seen <- character()
@@ -168,8 +170,10 @@ test_that("SpaTalkPlot forwards theme controls through all CCC views", {
   }
   testthat::local_mocked_bindings(CCCNetworkPlot = plot_fun, CCCHeatmap = plot_fun)
   for (view in c("network", "bubble", "pathway")) {
-    SpaTalkPlot(out, plot_type = view, theme_use = "theme_void",
-      theme_args = list(base_size = 17), show_title = FALSE)
+    SpaTalkPlot(out,
+      plot_type = view, theme_use = "theme_void",
+      theme_args = list(base_size = 17), show_title = FALSE
+    )
   }
   expect_identical(seen, c("circle", "bubble", "pathway_bubble"))
   expect_identical(out@tools, before)

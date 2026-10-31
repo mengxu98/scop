@@ -1,4 +1,3 @@
-
 spatialcellchat_real_input <- function(n = 80, seed = 42) {
   data(visium_human_pancreas_sub)
   srt <- visium_human_pancreas_sub

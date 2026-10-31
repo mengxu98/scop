@@ -201,7 +201,8 @@ test_that("CytoSPACE public workflow preserves cell types and zero-capacity spot
   expect_equal(
     unname(results$assigned_expression),
     unname(as.matrix(GetAssayData5(objects$reference, layer = "counts"))[
-      , assignments$OriginalCID, drop = FALSE
+      , assignments$OriginalCID,
+      drop = FALSE
     ])
   )
 })
