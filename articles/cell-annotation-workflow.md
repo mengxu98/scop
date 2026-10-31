@@ -325,11 +325,11 @@ data.frame(
   bytes = file.info(list.files(output_dir, full.names = TRUE))$size
 )
 #>                               file    bytes
-#> 1                     analysis.rds  8030268
+#> 1                     analysis.rds  8030262
 #> 2                cell-metadata.csv    30269
 #> 3 log-scale-reference-profiles.csv  2562291
 #> 4         prediction-agreement.csv      134
-#> 5                    reference.rds 36647945
+#> 5                    reference.rds 36647943
 #> 6   shared-prediction-features.txt     4005
 ```
 
@@ -387,9 +387,9 @@ build_receipt <- data.frame(
 )
 build_receipt
 #>                    article               built_utc  scop     R
-#> 1 cell-annotation-workflow 2026-10-30 06:54:08 UTC 0.9.2 4.6.2
+#> 1 cell-annotation-workflow 2026-10-31 18:51:52 UTC 0.9.2 4.6.2
 #>                            source_revision source_has_local_changes
-#> 1 8288c84cc97261b547b7847031f1f2e5a8fcdbe7                    FALSE
+#> 1 2f44f8c52c247c5a5b42a8a2cb3a7c9800ae24cb                    FALSE
 #>                        article_md5 R_seed cells_retained genes_in_active_assay
 #> 1 fb85a2913df817dbe406011c397667b4     11            200                 12932
 utils::write.csv(build_receipt, file.path(output_dir, "build-receipt.csv"),
@@ -447,7 +447,7 @@ sessionInfo()
 #>  [52] progressr_1.1.0        spatstat.sparse_3.2-0  httr_1.4.9            
 #>  [55] polyclip_1.10-7        abind_1.4-8            compiler_4.6.2        
 #>  [58] doParallel_1.0.17      withr_3.0.3            S7_0.2.2              
-#>  [61] fastDummies_1.7.6      MASS_7.3-66            proxyC_0.5.2          
+#>  [61] fastDummies_1.7.6      MASS_7.3-66            proxyC_0.6.0          
 #>  [64] rjson_0.2.23           tools_4.6.2            lmtest_0.9-40         
 #>  [67] otel_0.2.0             httpuv_1.6.17          future.apply_1.21.0   
 #>  [70] goftest_1.2-3          glue_1.8.1             nlme_3.1-171          

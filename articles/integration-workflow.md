@@ -327,9 +327,9 @@ build_receipt <- data.frame(
 )
 build_receipt
 #>                article               built_utc  scop     R
-#> 1 integration-workflow 2026-10-30 06:59:57 UTC 0.9.2 4.6.2
+#> 1 integration-workflow 2026-10-31 18:57:28 UTC 0.9.2 4.6.2
 #>                            source_revision source_has_local_changes
-#> 1 8288c84cc97261b547b7847031f1f2e5a8fcdbe7                    FALSE
+#> 1 2f44f8c52c247c5a5b42a8a2cb3a7c9800ae24cb                    FALSE
 #>                        article_md5 R_seed cells_retained genes_in_active_assay
 #> 1 258fa719de827f5739c0606e0dfd1e7c     11           1600                 12932
 utils::write.csv(build_receipt, file.path(output_dir, "build-receipt.csv"),
@@ -398,7 +398,7 @@ sessionInfo()
 #>  [85] thisutils_0.5.3        RcppHNSW_0.7.0         sp_2.2-4              
 #>  [88] ggplot2_4.0.3          scales_1.4.0           globals_0.20.0        
 #>  [91] xtable_1.8-8           RhpcBLASctl_0.23-42    glue_1.8.1            
-#>  [94] proxyC_0.5.2           tools_4.6.2            data.table_1.18.6.1   
+#>  [94] proxyC_0.6.0           tools_4.6.2            data.table_1.18.6.1   
 #>  [97] RSpectra_0.16-2        RANN_2.6.3             fs_2.1.0              
 #> [100] dotCall64_1.2          cowplot_1.2.0          grid_4.6.2            
 #> [103] tidyr_1.3.2            nlme_3.1-171           patchwork_1.3.2       

@@ -545,22 +545,22 @@ RunLargeVis(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-10-30 06:35:45] Start standard processing workflow...
-#> ℹ [2026-10-30 06:35:45] Checking a list of <Seurat>...
-#> ! [2026-10-30 06:35:45] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-10-30 06:35:45] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-10-30 06:35:45] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-10-30 06:35:45] Use the separate HVF from `srt_list`
-#> ℹ [2026-10-30 06:35:45] Number of available HVF: 2000
-#> ℹ [2026-10-30 06:35:45] Finished check
-#> ℹ [2026-10-30 06:35:45] Perform `ScaleData()`
-#> ℹ [2026-10-30 06:35:45] Perform pca linear dimension reduction
-#> ℹ [2026-10-30 06:35:46] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-10-30 06:35:46] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-10-30 06:35:46] Reorder clusters...
-#> ℹ [2026-10-30 06:35:46] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-10-30 06:35:46] Perform umap nonlinear dimension reduction
-#> ✔ [2026-10-30 06:35:57] Standard processing workflow completed
+#> ℹ [2026-10-31 18:34:44] Start standard processing workflow...
+#> ℹ [2026-10-31 18:34:44] Checking a list of <Seurat>...
+#> ! [2026-10-31 18:34:44] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-10-31 18:34:44] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-10-31 18:34:44] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-10-31 18:34:45] Use the separate HVF from `srt_list`
+#> ℹ [2026-10-31 18:34:45] Number of available HVF: 2000
+#> ℹ [2026-10-31 18:34:45] Finished check
+#> ℹ [2026-10-31 18:34:45] Perform `ScaleData()`
+#> ℹ [2026-10-31 18:34:45] Perform pca linear dimension reduction
+#> ℹ [2026-10-31 18:34:45] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-10-31 18:34:46] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-10-31 18:34:46] Reorder clusters...
+#> ℹ [2026-10-31 18:34:46] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-10-31 18:34:46] Perform umap nonlinear dimension reduction
+#> ✔ [2026-10-31 18:34:55] Standard processing workflow completed
 pancreas_sub <- RunLargeVis(
   object = pancreas_sub,
   features = head(SeuratObject::VariableFeatures(pancreas_sub), 200),
@@ -568,14 +568,14 @@ pancreas_sub <- RunLargeVis(
   n_neighbors = 50,
   perplexity = 10
 )
-#> 06:35:57 Read 1000 rows and found 200 numeric columns
-#> 06:35:57 Normalizing by max-abs
-#> 06:35:57 Using FNN for neighbor search, n_neighbors = 50
-#> 06:35:59 Commencing calibration for perplexity = 10 using 2 threads
-#> 06:36:04 Initializing from random Gaussian with sd = 1e-4
-#> 06:36:04 Commencing optimization for 50 epochs, with 13770 positive edges
-#> 06:36:04 Using rng type: pcg
-#> 06:36:06 Optimization finished
+#> 18:34:55 Read 1000 rows and found 200 numeric columns
+#> 18:34:55 Normalizing by max-abs
+#> 18:34:55 Using FNN for neighbor search, n_neighbors = 50
+#> 18:34:57 Commencing calibration for perplexity = 10 using 2 threads
+#> 18:35:00 Initializing from random Gaussian with sd = 1e-4
+#> 18:35:00 Commencing optimization for 50 epochs, with 13770 positive edges
+#> 18:35:00 Using rng type: pcg
+#> 18:35:02 Optimization finished
 
 CellDimPlot(
   pancreas_sub,

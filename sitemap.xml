@@ -39,6 +39,7 @@
 <url><loc>https://mengxu98.github.io/scop/reference/CellDensityPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/CellDimPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/CellDimPlot3D.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/CellOraclePlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/CellRankPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/CellScoring.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/CellScoringPlot.html</loc></url>
@@ -184,6 +185,7 @@
 <url><loc>https://mengxu98.github.io/scop/reference/RunCell2location.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunCellChat.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunCellCycle.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunCellOracle.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunCellQC.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunCellRank.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunCellRankEnrichment.html</loc></url>

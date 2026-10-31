@@ -138,7 +138,9 @@ use <code>"tensorflow_env"</code> to keep TensorFlow dependencies separate from 
 scanpy/anndata stack. On Windows, the
 default also excludes <code>"scvi"</code>, <code>"glue"</code>, and <code>"multimap"</code> because those
 upstream stacks are more reliable when requested explicitly for
-method-specific workflows.</p></dd>
+method-specific workflows.
+CellOracle uses an explicit standalone <code>"celloracle_env"</code> profile with Python
+3.10 and official CellOracle 0.20.0; native Windows is unsupported.</p></dd>
 
 
 <dt id="arg-pip-options">pip_options<a class="anchor" aria-label="anchor" href="#arg-pip-options"></a></dt>
@@ -155,10 +157,6 @@ CHOIR is R-only, so <code>PrepareEnv(modules = "choir")</code> prepares its
 optional R backend without creating a Python environment.</p></dd>
 
 
-<dt id="arg-configure-runtime">configure_runtime<a class="anchor" aria-label="anchor" href="#arg-configure-runtime"></a></dt>
-<dd><p>Whether to select the prepared interpreter for embedded Python and configure the R process. Set to <code>FALSE</code> for subprocess-only use.</p></dd>
-
-
 <dt id="arg-cores">cores<a class="anchor" aria-label="anchor" href="#arg-cores"></a></dt>
 <dd><p>Number of workers for R-package installation. Use <code>NULL</code> (the
 default) to let pak select its worker count automatically.</p></dd>
@@ -167,6 +165,10 @@ default) to let pak select its worker count automatically.</p></dd>
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
 <dd><p>Whether to print the message.
 Default is <code>TRUE</code>.</p></dd>
+
+
+<dt id="arg-configure-runtime">configure_runtime<a class="anchor" aria-label="anchor" href="#arg-configure-runtime"></a></dt>
+<dd><p>Whether to select the prepared interpreter for embedded Python and configure the R process. Set to <code>FALSE</code> for subprocess-only use.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>

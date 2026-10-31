@@ -1742,6 +1742,10 @@ etc.
 
 ### Network Perturbation
 
+- [`RunCellOracle()`](https://mengxu98.github.io/scop/reference/RunCellOracle.md)
+  : Run official CellOracle perturbation analysis
+- [`CellOraclePlot()`](https://mengxu98.github.io/scop/reference/CellOraclePlot.md)
+  : Plot stored CellOracle results
 - [`RunscTenifoldKnk()`](https://mengxu98.github.io/scop/reference/RunScTenifoldKnk.md)
   : Run scTenifoldKnk in-silico knockout analysis
 - [`scTenifoldKnkPlot()`](https://mengxu98.github.io/scop/reference/scTenifoldKnkPlot.md)

@@ -76,6 +76,9 @@ PrepareEnv(
   scanpy/anndata stack. On Windows, the default also excludes `"scvi"`,
   `"glue"`, and `"multimap"` because those upstream stacks are more
   reliable when requested explicitly for method-specific workflows.
+  CellOracle uses an explicit standalone `"celloracle_env"` profile with
+  Python 3.10 and official CellOracle 0.20.0; native Windows is
+  unsupported.
 
 - pip_options:
 
@@ -93,11 +96,6 @@ PrepareEnv(
   `PrepareEnv(modules = "choir")` prepares its optional R backend
   without creating a Python environment.
 
-- configure_runtime:
-
-  Whether to select the prepared interpreter for embedded Python and
-  configure the R process. Set to `FALSE` for subprocess-only use.
-
 - cores:
 
   Number of workers for R-package installation. Use `NULL` (the default)
@@ -106,6 +104,11 @@ PrepareEnv(
 - verbose:
 
   Whether to print the message. Default is `TRUE`.
+
+- configure_runtime:
+
+  Whether to select the prepared interpreter for embedded Python and
+  configure the R process. Set to `FALSE` for subprocess-only use.
 
 - ...:
 

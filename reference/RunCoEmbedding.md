@@ -129,8 +129,8 @@ pbmcmultiome_sub <- RunStandardWorkflow(
   linear_reduction_dims = 10,
   verbose = FALSE
 )
-#> ℹ [2026-10-30 06:07:14] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-10-30 06:07:24] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-10-31 18:07:48] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-10-31 18:07:56] Skip `log1p()` because `layer = data` is not "counts"
 coembed <- RunCoEmbedding(
   object = pbmcmultiome_sub,
   reference = pbmcmultiome_sub,

@@ -80,13 +80,13 @@ bench <- RunSpatialBenchmark(
 
 bench$summary
 #>        method      workflow ARI NMI purity runtime_s baseline_memory_mb
-#> 1  BayesSpace SpatialDomain   1   1      1    15.308           291.6719
+#> 1  BayesSpace SpatialDomain   1   1      1    14.502           291.7539
 #> 2      BANKSY SpatialDomain  NA  NA     NA        NA                 NA
-#> 3 SmoothClust SpatialDomain   1   1      1     6.767           291.8828
+#> 3 SmoothClust SpatialDomain   1   1      1     6.488           291.7578
 #>   peak_memory_mb memory_delta_mb n_evaluated n_clusters      status
-#> 1       1071.891        780.2188          36          3     success
+#> 1      1072.2031        780.4492          36          3     success
 #> 2             NA              NA           0         NA unavailable
-#> 3        955.793        663.9102          36          3     success
+#> 3       956.0547        664.2969          36          3     success
 #>            error
 #> 1               
 #> 2 Banksy=missing
@@ -111,7 +111,7 @@ str(bench$summary, max.level = 1)
 #>  $ ARI               : num  1 NA 1
 #>  $ NMI               : num  1 NA 1
 #>  $ purity            : num  1 NA 1
-#>  $ runtime_s         : num  15.31 NA 6.77
+#>  $ runtime_s         : num  14.5 NA 6.49
 #>  $ baseline_memory_mb: num  292 NA 292
 #>  $ peak_memory_mb    : num  1072 NA 956
 #>  $ memory_delta_mb   : num  780 NA 664

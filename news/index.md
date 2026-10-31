@@ -2,6 +2,14 @@
 
 ## scop (development version)
 
+- Add
+  [`RunCellOracle()`](https://mengxu98.github.io/scop/reference/RunCellOracle.md)
+  and
+  [`CellOraclePlot()`](https://mengxu98.github.io/scop/reference/CellOraclePlot.md)
+  for the official CellOracle 0.20.0 workflow, saved-model reuse,
+  original displacement/randomized controls and a standalone Linux/macOS
+  Python environment profile.
+
 - `EnrichmentPlot(plot_type = "rank")` plots stored ORA terms by
   enrichment magnitude, with group colors, solid-point sizes, bold halo
   labels, `grid_major` reference grids, and zero-void panel bounds.

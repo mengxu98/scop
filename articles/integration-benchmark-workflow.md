@@ -133,8 +133,8 @@ batch scores; the metrics view lists every metric per method.
 bench <- panc8_sub@tools$IntegrationBenchmark
 bench$runs
 #>        method  status error runtime_s         latent              umap
-#> 1 Uncorrected success          16.367 Uncorrectedpca UncorrectedUMAP2D
-#> 2     Harmony success          11.130        Harmony     HarmonyUMAP2D
+#> 1 Uncorrected success          15.070 Uncorrectedpca UncorrectedUMAP2D
+#> 2     Harmony success          10.243        Harmony     HarmonyUMAP2D
 stopifnot(all(bench$runs$status == "success"))
 
 thisplot::print_colored_table(
@@ -143,8 +143,8 @@ thisplot::print_colored_table(
   palette = "Chinese"
 )
 #> method       status   overall    bio        batch      iLISI       cLISI      celltype_ASW  batch_ASW_mixing  celltype_graph_connectivity  celltype_ARI  celltype_NMI  runtime_s  latent          umap             
-#> Uncorrected  success  0.6711161  0.7850665  0.5001905  0.05974077  0.9906647  0.6055206     0.9406402         0.9464146                    0.4699072     0.7378917     16.367     Uncorrectedpca  UncorrectedUMAP2D
-#> Harmony      success  0.7792839  0.8673961  0.6471157  0.37244914  0.9939972  0.6688506     0.9217823         0.9457216                    0.7628313     0.8654756     11.130     Harmony         HarmonyUMAP2D    
+#> Uncorrected  success  0.6711161  0.7850665  0.5001905  0.05974077  0.9906647  0.6055206     0.9406402         0.9464146                    0.4699072     0.7378917     15.070     Uncorrectedpca  UncorrectedUMAP2D
+#> Harmony      success  0.7792839  0.8673961  0.6471157  0.37244914  0.9939972  0.6688506     0.9217823         0.9457216                    0.7628313     0.8654756     10.243     Harmony         HarmonyUMAP2D    
 
 metrics <- bench$metrics
 metrics <- metrics[
@@ -275,7 +275,7 @@ data.frame(
   bytes = file.info(list.files(output_dir, full.names = TRUE))$size
 )
 #>                    file    bytes
-#> 1          analysis.rds 47321158
+#> 1          analysis.rds 47321157
 #> 2 benchmark-metrics.csv     1599
 #> 3    benchmark-runs.csv      180
 #> 4 benchmark-summary.csv      656
@@ -336,9 +336,9 @@ build_receipt <- data.frame(
 )
 build_receipt
 #>                          article               built_utc  scop     R
-#> 1 integration-benchmark-workflow 2026-10-30 06:59:11 UTC 0.9.2 4.6.2
+#> 1 integration-benchmark-workflow 2026-10-31 18:56:45 UTC 0.9.2 4.6.2
 #>                            source_revision source_has_local_changes
-#> 1 8288c84cc97261b547b7847031f1f2e5a8fcdbe7                    FALSE
+#> 1 2f44f8c52c247c5a5b42a8a2cb3a7c9800ae24cb                    FALSE
 #>                        article_md5 R_seed cells_retained genes_in_active_assay
 #> 1 8fe304a2e6bb06793cb671d232710b92     11           1600                 12932
 utils::write.csv(build_receipt, file.path(output_dir, "build-receipt.csv"),
@@ -407,7 +407,7 @@ sessionInfo()
 #>  [85] thisutils_0.5.3        RcppHNSW_0.7.0         sp_2.2-4              
 #>  [88] ggplot2_4.0.3          scales_1.4.0           globals_0.20.0        
 #>  [91] xtable_1.8-8           RhpcBLASctl_0.23-42    glue_1.8.1            
-#>  [94] proxyC_0.5.2           tools_4.6.2            BiocNeighbors_2.6.0   
+#>  [94] proxyC_0.6.0           tools_4.6.2            BiocNeighbors_2.6.0   
 #>  [97] data.table_1.18.6.1    RSpectra_0.16-2        RANN_2.6.3            
 #> [100] fs_2.1.0               dotCall64_1.2          cowplot_1.2.0         
 #> [103] grid_4.6.2             tidyr_1.3.2            nlme_3.1-171          

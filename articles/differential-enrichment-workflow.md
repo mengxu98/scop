@@ -585,7 +585,7 @@ data.frame(
 )
 #>                            file    bytes
 #> 1               all-markers.csv  5268635
-#> 2                  analysis.rds 50901266
+#> 2                  analysis.rds 50901269
 #> 3             cell-metadata.csv   146525
 #> 4    GO-BP-GSEA-memberships.csv 12612015
 #> 5 GO-BP-measured-background.csv 10159062
@@ -652,9 +652,9 @@ build_receipt <- data.frame(
 )
 build_receipt
 #>                            article               built_utc  scop     R
-#> 1 differential-enrichment-workflow 2026-10-30 06:58:17 UTC 0.9.2 4.6.2
+#> 1 differential-enrichment-workflow 2026-10-31 18:55:54 UTC 0.9.2 4.6.2
 #>                            source_revision source_has_local_changes
-#> 1 8288c84cc97261b547b7847031f1f2e5a8fcdbe7                    FALSE
+#> 1 2f44f8c52c247c5a5b42a8a2cb3a7c9800ae24cb                    FALSE
 #>                        article_md5 R_seed cells_retained genes_in_active_assay
 #> 1 1c730bbafc9f5f0c6783a90f73de724d     11           1000                 15998
 utils::write.csv(build_receipt, file.path(output_dir, "build-receipt.csv"),
@@ -723,12 +723,12 @@ sessionInfo()
 #>  [85] cachem_1.1.0            xfun_0.62               mime_0.13              
 #>  [88] Seqinfo_1.2.0           survival_3.8-12         aisdk_1.4.12           
 #>  [91] iterators_1.0.14        thisutils_0.5.3         fitdistrplus_1.2-6     
-#>  [94] ROCR_1.0-12             nlme_3.1-171            ggtree_4.2.0           
+#>  [94] ROCR_1.0-12             nlme_3.1-171            ggtree_4.2.1           
 #>  [97] bit64_4.8.6             fontquiver_0.2.1        RcppAnnoy_0.0.23       
 #> [100] bslib_0.12.0            irlba_2.4.1             KernSmooth_2.23-27     
 #> [103] otel_0.2.0              colorspace_2.1-4        BiocGenerics_0.58.1    
 #> [106] DBI_1.3.0               tidyselect_1.2.1        processx_3.9.0         
-#> [109] proxyC_0.5.2            bit_4.6.0               compiler_4.6.2         
+#> [109] proxyC_0.6.0            bit_4.6.0               compiler_4.6.2         
 #> [112] geomtextpath_0.2.0      httr2_1.3.0             desc_1.4.3             
 #> [115] fontBitstreamVera_0.1.1 plotly_4.12.1           shadowtext_0.1.6       
 #> [118] scales_1.4.0            lmtest_0.9-40           callr_3.8.0            

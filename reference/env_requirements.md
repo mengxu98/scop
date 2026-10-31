@@ -35,15 +35,17 @@ env_requirements(
   `"cellphonedb"`, `"cell2location"`, `"cell2fate"`, `"commot"`,
   `"magic"`, `"scrublet"`, `"doubletdetection"`, `"sccoda"`,
   `"doublet"`, `"palantir"`, `"scvelo"`, `"cellrank"`, `"wot"`,
-  `"phate"`, `"pacmap"`, `"trimap"`, `"multimap"`, `"scomm"`,
-  `"scenic"`, `"scenicplus"`, `"scenicplus_io"`, `"seacells"`, `"tage"`,
-  `"scmalignantfinder"`, `"secact"`, `"scpagwas"`, `"choir"`, and
-  `"external_wrappers"`. If `NULL`, the default environment is returned.
-  The default excludes `"cell2location"`, `"cell2fate"`, `"commot"`,
-  `"sccoda"`, `"scomm"`, and `"scenic"`, `"phate"`, and `"magic"`
-  because these workflows require dependency stacks that should be
-  prepared explicitly. The `"scenic"` module is standalone and always
-  uses Python `"3.10-1"`.
+  `"phate"`, `"pacmap"`, `"trimap"`, `"multimap"`, `"celloracle"`,
+  `"scomm"`, `"scenic"`, `"scenicplus"`, `"scenicplus_io"`,
+  `"seacells"`, `"tage"`, `"scmalignantfinder"`, `"secact"`,
+  `"scpagwas"`, `"choir"`, and `"external_wrappers"`. If `NULL`, the
+  default environment is returned. The default excludes
+  `"cell2location"`, `"cell2fate"`, `"commot"`, `"sccoda"`, `"scomm"`,
+  and `"scenic"`, `"phate"`, and `"magic"` because these workflows
+  require dependency stacks that should be prepared explicitly. The
+  `"celloracle"` module uses standalone Python 3.10 with official
+  CellOracle 0.20.0. The `"scenic"` module is standalone and always uses
+  Python `"3.10-1"`.
 
 - verbose:
 
