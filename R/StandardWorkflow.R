@@ -47,7 +47,8 @@
 #' @param regression_model `"linear"`, `"poisson"`, or `"negativebinomial"`.
 #' @param linear_reduction,linear_reduction_dims,linear_reduction_dims_use,linear_reduction_params,force_linear_reduction
 #' Linear reduction (`"pca"`, `"svd"`, `"ica"`, `"nmf"`, `"mds"`, `"glmpca"`).
-#' `linear_reduction_dims_use = NULL` uses estimated dimensions, else the first 50.
+#' `linear_reduction_dims_use = NULL` uses estimated dimensions unless the method
+#' specifies a different default; explicit values select computed components.
 #' @param nonlinear_reduction,nonlinear_reduction_dims,nonlinear_reduction_params,force_nonlinear_reduction
 #' Nonlinear reduction (`"umap"`, `"umap-naive"`, `"tsne"`, `"dm"`, `"phate"`,
 #' `"pacmap"`, `"trimap"`, `"largevis"`, `"fr"`).
@@ -62,6 +63,15 @@
 #' including the effective `set_variable_features` value, `result_stored`, and
 #' `result_location`. A failed stage signals an error with the same table in
 #' attribute `standard_spatial_stages`.
+#'
+#' @details
+#' ATAC defaults select the available dimensions from 2:30. Explicit ATAC
+#' dimensions must exist in the computed reduction.
+#' ATAC workflows record selected dimensions, cells, features and Pearson
+#' correlations with raw library depth in
+#' `Misc(reduction, "scop_atac_representation")`. Undefined correlations remain
+#' NA. A requested ATAC graph, clustering or nonlinear-reduction failure stops
+#' the workflow; a partially processed object is not returned as successful.
 #'
 #' @export
 #'
@@ -347,7 +357,15 @@ RunStandardWorkflow <- function(
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   is_atac_assay <- inherits(srt[[assay]], "ChromatinAssay")
 
+  atac_auto_dims <- is_atac_assay && is.null(linear_reduction_dims_use)
   if (is_atac_assay) {
+    if (!is.null(linear_reduction_dims_use) &&
+      (!is.numeric(linear_reduction_dims_use) || !length(linear_reduction_dims_use) ||
+        anyNA(linear_reduction_dims_use) || any(!is.finite(linear_reduction_dims_use)) ||
+        any(linear_reduction_dims_use < 1 | linear_reduction_dims_use %% 1 != 0) ||
+        anyDuplicated(linear_reduction_dims_use))) {
+      log_message("ATAC linear_reduction_dims_use must contain unique positive integer dimensions.", message_type = "error")
+    }
     atac_args <- atac_defaults(
       prefix = prefix,
       do_normalization = do_normalization,
@@ -481,6 +499,7 @@ RunStandardWorkflow <- function(
     }
   }
 
+  atac_dimensions <- list()
   for (lr in linear_reduction) {
     log_message(
       "Perform {.pkg {lr}} linear dimension reduction",
@@ -530,6 +549,18 @@ RunStandardWorkflow <- function(
       )
     } else {
       linear_reduction_dims_use_current <- linear_reduction_dims_use
+    }
+
+    if (is_atac_assay) {
+      available <- seq_len(ncol(SeuratObject::Embeddings(srt[[paste0(prefix, lr)]])))
+      if (atac_auto_dims) {
+        linear_reduction_dims_use_current <- intersect(linear_reduction_dims_use_current, available)
+      }
+      if (!length(linear_reduction_dims_use_current) ||
+        !all(linear_reduction_dims_use_current %in% available)) {
+        log_message("Requested ATAC dimensions are unavailable in {.val {paste0(prefix, lr)}}; available dimensions are {.val {available}}. Select valid dimensions or compute a larger reduction.", message_type = "error")
+      }
+      atac_dimensions[[lr]] <- as.integer(linear_reduction_dims_use_current)
     }
 
     srt <- tryCatch(
@@ -586,6 +617,7 @@ RunStandardWorkflow <- function(
         srt
       },
       error = function(error) {
+        if (is_atac_assay) stop(error)
         err_msg <- conditionMessage(error)
         err_msg <- gsub("{", "{{", err_msg, fixed = TRUE)
         err_msg <- gsub("}", "}}", err_msg, fixed = TRUE)
@@ -651,6 +683,7 @@ RunStandardWorkflow <- function(
         srt
       },
       error = function(error) {
+        if (is_atac_assay) stop(error)
         err_msg <- conditionMessage(error)
         err_msg <- gsub("{", "{{", err_msg, fixed = TRUE)
         err_msg <- gsub("}", "}}", err_msg, fixed = TRUE)
@@ -665,6 +698,26 @@ RunStandardWorkflow <- function(
     )
   }
 
+  if (is_atac_assay) {
+    for (lr in linear_reduction) {
+      reduction <- paste0(prefix, lr)
+      embeddings <- SeuratObject::Embeddings(srt[[reduction]])
+      depth <- Matrix::colSums(SeuratObject::LayerData(srt[[assay]], layer = "counts"))[rownames(embeddings)]
+      correlations <- vapply(seq_len(ncol(embeddings)), function(i) {
+        if (stats::sd(depth) == 0 || stats::sd(embeddings[, i]) == 0) {
+          return(NA_real_)
+        }
+        stats::cor(embeddings[, i], depth)
+      }, numeric(1))
+      SeuratObject::Misc(srt[[reduction]], "scop_atac_representation") <- list(
+        assay = assay, cells = rownames(embeddings),
+        features = rownames(SeuratObject::Loadings(srt[[reduction]])),
+        dimensions = atac_dimensions[[lr]],
+        depth_correlation = stats::setNames(correlations, colnames(embeddings)),
+        depth = depth, correlation_method = "Pearson, raw count library totals", seed = seed
+      )
+    }
+  }
   cluster_name <- paste0(prefix, linear_reduction[1], "clusters")
   if (cluster_name %in% colnames(srt@meta.data)) {
     srt[[paste0(prefix, "clusters")]] <- srt[[cluster_name]]
