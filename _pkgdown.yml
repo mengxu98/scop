@@ -416,6 +416,8 @@ reference:
 
 - subtitle: "Network Perturbation"
   contents:
+  - RunCellOracle
+  - CellOraclePlot
   - RunscTenifoldKnk
   - scTenifoldKnkPlot
   - RunscTenifoldNet

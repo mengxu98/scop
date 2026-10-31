@@ -58,7 +58,9 @@ use \code{"tensorflow_env"} to keep TensorFlow dependencies separate from JAX.
 scanpy/anndata stack. On Windows, the
 default also excludes \code{"scvi"}, \code{"glue"}, and \code{"multimap"} because those
 upstream stacks are more reliable when requested explicitly for
-method-specific workflows.}
+method-specific workflows.
+CellOracle uses an explicit standalone \code{"celloracle_env"} profile with Python
+3.10 and official CellOracle 0.20.0; native Windows is unsupported.}
 
 \item{pip_options}{Additional command line arguments to be passed to \code{uv}/\code{pip} when installing pip packages.}
 
@@ -70,13 +72,13 @@ including optional workflow dependencies not listed in \code{DESCRIPTION}.
 CHOIR is R-only, so \code{PrepareEnv(modules = "choir")} prepares its
 optional R backend without creating a Python environment.}
 
-\item{configure_runtime}{Whether to select the prepared interpreter for embedded Python and configure the R process. Set to \code{FALSE} for subprocess-only use.}
-
 \item{cores}{Number of workers for R-package installation. Use \code{NULL} (the
 default) to let pak select its worker count automatically.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{configure_runtime}{Whether to select the prepared interpreter for embedded Python and configure the R process. Set to \code{FALSE} for subprocess-only use.}
 
 \item{...}{Additional arguments passed to package installation functions.}
 }
