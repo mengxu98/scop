@@ -1,3 +1,7 @@
+# Development: ATAC coaccessibility
+
+- Add `RunATACCoaccessibility()` with explicit assay/reference contracts and focused native/backend tests.
+
 # scop (development version)
 
 * Add `RunCellOracle()` and `CellOraclePlot()` for the official CellOracle 0.20.0

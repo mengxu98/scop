@@ -445,6 +445,7 @@ reference:
 
 - subtitle: "Gene Activity and Peak-Gene Associations"
   contents:
+  - RunATACCoaccessibility
   - RunGeneActivity
   - RunLinkPeaks
 
