@@ -429,6 +429,9 @@ reference:
   contents:
   - RunATACQC
   - CoverageTrackPlot
+  - RunATACRegionMatrix
+  - ATACRegionHeatmap
+  - ATACRegionPlot
 
 - subtitle: "Peak Definition and Annotation"
   contents:
