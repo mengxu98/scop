@@ -434,6 +434,7 @@ reference:
   contents:
   - CombineATACPeaks
   - RecountATAC
+  - RunGenomeTiles
   - FilterATACPeaks
   - AnnotateATACPeaks
 

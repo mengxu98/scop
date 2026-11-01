@@ -1,5 +1,7 @@
 # scop (development version)
 
+* Add fixed-width genome tile counting through the validated sparse ATAC recount workflow, with reference checks and tile provenance.
+
 * Add `RunCellOracle()` and `CellOraclePlot()` for the official CellOracle 0.20.0
   workflow, saved-model reuse, original displacement/randomized controls and
   a standalone Linux/macOS Python environment profile.
