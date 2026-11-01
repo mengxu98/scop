@@ -577,3 +577,6 @@ importFrom(utils,
   read.csv
 )
 useDynLib(scop, .registration = TRUE)
+
+export(RunATACFootprint)
+export(ATACFootprintPlot)
