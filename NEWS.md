@@ -1,5 +1,7 @@
 # scop (development version)
 
+* Add `ATACDepthCorPlot()` for depth/component correlations using fresh count-layer totals by default.
+
 * Add `RunCellOracle()` and `CellOraclePlot()` for the official CellOracle 0.20.0
   workflow, saved-model reuse, original displacement/randomized controls and
   a standalone Linux/macOS Python environment profile.
