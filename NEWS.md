@@ -6,6 +6,7 @@
 
 # scop (development version)
 
+* Add grouped ATAC region endpoint matrices, heatmaps and aggregate profiles with explicit strand, coordinate and normalization semantics.
 * Add `ATACDepthCorPlot()` for depth/component correlations using fresh count-layer totals by default.
 * Add `ATACTSSPlot()` for precomputed positional TSS enrichment profiles with assay-cell alignment.
 * Add `ATACFragmentPlot()` for regional fragment-length diagnostics with explicit barcode mappings.
