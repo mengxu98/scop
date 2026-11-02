@@ -1,10 +1,14 @@
-# Development: ATAC motif
+# Development: ATAC footprint
 
+- Add `RunATACFootprint()`, `ATACFootprintPlot()` with explicit assay/reference contracts and focused native/backend tests.
+# Development: ATAC motif
 - Add `ATACMotifPlot()` with explicit assay/reference contracts and focused native/backend tests.
 
 # scop (development version)
 
 * Add grouped ATAC region endpoint matrices, heatmaps and aggregate profiles with explicit strand, coordinate and normalization semantics.
+* Add `ATACDepthCorPlot()` for depth/component correlations using fresh count-layer totals by default.
+* Add `ATACTSSPlot()` for precomputed positional TSS enrichment profiles with assay-cell alignment.
 * Add `ATACFragmentPlot()` for regional fragment-length diagnostics with explicit barcode mappings.
 
 * Add `RunCellOracle()` and `CellOraclePlot()` for the official CellOracle 0.20.0

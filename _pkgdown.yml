@@ -436,6 +436,8 @@ reference:
 - subtitle: "Accessibility Quality and Coverage"
   contents:
   - RunATACQC
+  - ATACDepthCorPlot
+  - ATACTSSPlot
   - ATACFragmentPlot
   - CoverageTrackPlot
   - RunATACRegionMatrix
@@ -452,6 +454,8 @@ reference:
 
 - subtitle: "Motifs and Accessibility Deviations"
   contents:
+  - RunATACFootprint
+  - ATACFootprintPlot
   - ATACMotifPlot
   - AddATACMotifs
   - RunMotifEnrichment
