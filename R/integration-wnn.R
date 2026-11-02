@@ -1,17 +1,64 @@
 #' @title WNN integration function
 #'
+#' @md
 #' @inheritParams RunIntegration
+#'
+#' @description Combine paired RNA and ATAC representations with weighted
+#' nearest neighbors, retaining both modality reductions and the WNN graph.
+#' @param assay One RNA assay and one chromatin assay, or one assay whose
+#' partner can be inferred. Automatic selection prefers an active RNA/SCT
+#' assay, then RNA, then SCT; custom RNA assay names must be explicit.
+#' Known SCOP gene-activity and chromVAR assays cannot substitute for RNA.
+#' @param batch Accepted for integration-interface compatibility. WNN does not
+#' perform batch correction; supplying this argument emits a warning.
+#' @param linear_reduction RNA reduction, which must be `"pca"`. ATAC uses SVD.
+#' @param linear_reduction_dims Number of components to compute for each modality.
+#' @param linear_reduction_dims_use Explicit component indices, or NULL for
+#'   modality-specific selection. Inspect `WNN_dims_list` for the selected indices.
+#' @param linear_reduction_params Named arguments for the linear reduction backend.
+#' @param force_linear_reduction Whether to recompute existing linear reductions.
+#' @param nonlinear_reduction One or more of `"umap"`, `"umap-naive"` and `"fr"`,
+#'   or `character()` for graphs and clusters without an embedding.
+#' @param HVF Optional RNA feature names. ATAC features are selected independently.
+#' @param do_HVF_finding Whether to select variable features during preprocessing.
+#' @param HVF_method RNA feature-selection method passed to [RunStandardWorkflow()].
+#' @param nHVF Maximum number of selected features, subject to modality defaults
+#'   and the number of available features.
+#' @details
+#' Cells must represent paired measurements. RNA and ATAC preprocessing is
+#' followed by native multimodal neighbor construction. This function does not
+#' use batch labels to correct either modality. Specify assays explicitly after
+#' adding derived assays, for example `assay = c("RNA", "peaks")`.
+#' Both assays must contain the same cells as the object. Subset to verified
+#' paired cells explicitly before running WNN. Nonlinear reductions supported
+#' here are `"umap"`, `"umap-naive"` and `"fr"`; use `character()` to retain
+#' graphs and clusters without computing an embedding.
+#' RNA uses the requested normalization and PCA. ATAC always uses TF-IDF and
+#' SVD, including when RNA uses SCT. `HVF` supplies RNA features; ATAC features
+#' are selected independently from accessibility counts.
+#' @return A Seurat object with RNA PCA and ATAC LSI reductions, `WNN` neighbors,
+#' `WNNKNN` and `WNNSNN` graphs, `WNNclusters` metadata and requested WNN
+#' embeddings. `Misc(object, "WNN_reduction_list")` names the retained source
+#' reductions; `WNN_dims_list` records their selected dimensions. Both return
+#' modes retain complete processed modality assays (including scaled RNA), ATAC
+#' reductions, metadata and representation receipts, with the processed RNA
+#' assay (SCT when selected) active. The
+#' caller's random-number state is restored.
+#' @seealso [ReadMultiomeData()], [RunStandardWorkflow()], [RunLinkPeaks()]
 #'
 #' @export
 #' @examples
+#' # Small paired subset; no external fragments or reference downloads.
 #' data("pbmcmultiome_sub", package = "scop")
-#' pbmcmultiome_sub$batch <- rep(c("batch1", "batch2"), length.out = ncol(pbmcmultiome_sub))
-#' pbmcmultiome_sub <- WNN_integrate(
-#'   srt_merge = pbmcmultiome_sub,
-#'   batch = "batch",
-#'   linear_reduction_dims = 20,
-#'   linear_reduction_dims_use = 1:10
+#' paired <- subset(pbmcmultiome_sub, cells = colnames(pbmcmultiome_sub)[1:80])
+#' paired <- WNN_integrate(
+#'   srt_merge = paired, assay = c("RNA", "peaks"),
+#'   linear_reduction_dims = 10, linear_reduction_dims_use = 2:8,
+#'   nHVF = 100, neighbor_k = 10, nonlinear_reduction_dims = 2,
+#'   verbose = FALSE
 #' )
+#' SeuratObject::Reductions(paired)
+#' stopifnot(all(paired@misc$WNN_reduction_list %in% SeuratObject::Reductions(paired)))
 WNN_integrate <- function(
   srt_merge = NULL,
   batch = NULL,
@@ -47,8 +94,23 @@ WNN_integrate <- function(
   seed = 11
 ) {
   cluster_algorithm_index <- resolve_cluster_algorithm_index(cluster_algorithm)
+  if (!is.character(nonlinear_reduction) || anyNA(nonlinear_reduction) ||
+    any(!nonlinear_reduction %in% c("umap", "umap-naive", "fr"))) {
+    log_message("WNN supports only umap, umap-naive and fr; use character() for graphs and clusters without an embedding.", message_type = "error")
+  }
+  if (!identical(linear_reduction, "pca")) {
+    log_message("WNN requires linear_reduction = 'pca' for RNA and computes ATAC LSI separately.", message_type = "error")
+  }
 
+  atac_backend_fun("withr", "local_preserve_seed")()
   set.seed(seed)
+  if (!is.null(batch)) {
+    # Supported thisutils releases silence warnings when verbose is FALSE.
+    log_message(
+      "WNN combines modalities but does not perform batch correction; batch is not used to correct the input representations.",
+      message_type = "warning", verbose = TRUE
+    )
+  }
   if (is.null(srt_merge) && is.null(srt_list)) {
     log_message(
       "{.arg srt_list} or {.arg srt_merge} must be provided",
@@ -66,38 +128,45 @@ WNN_integrate <- function(
   )
   rna_assay <- assay_pair[["rna"]]
   atac_assay <- assay_pair[["atac"]]
+  if (!setequal(colnames(srt_merge[[rna_assay]]), colnames(srt_merge)) ||
+    !setequal(colnames(srt_merge[[atac_assay]]), colnames(srt_merge))) {
+    log_message("WNN requires the same paired cells in the RNA assay, ATAC assay and object. Subset explicitly to verified paired cells before analysis.", message_type = "error")
+  }
   rna_prefix <- resolve_assay_prefix(srt = srt_merge, assay = rna_assay)
   atac_prefix <- resolve_assay_prefix(srt = srt_merge, assay = atac_assay)
 
-  srt_merge <- RunStandardWorkflow(
-    object = srt_merge,
-    prefix = "Standard",
-    assay = c(rna_assay, atac_assay),
-    do_normalization = do_normalization,
-    normalization_method = normalization_method,
-    do_HVF_finding = do_HVF_finding,
-    HVF_method = HVF_method,
-    nHVF = nHVF,
-    HVF = HVF,
-    do_scaling = do_scaling,
-    vars_to_regress = vars_to_regress,
-    regression_model = regression_model,
-    linear_reduction = linear_reduction,
-    linear_reduction_dims = linear_reduction_dims,
-    linear_reduction_dims_use = linear_reduction_dims_use,
-    linear_reduction_params = linear_reduction_params,
-    force_linear_reduction = force_linear_reduction,
-    nonlinear_reduction = nonlinear_reduction,
-    nonlinear_reduction_dims = nonlinear_reduction_dims,
-    nonlinear_reduction_params = nonlinear_reduction_params,
-    force_nonlinear_reduction = force_nonlinear_reduction,
-    neighbor_metric = neighbor_metric,
-    neighbor_k = neighbor_k,
-    cluster_algorithm = cluster_algorithm,
-    cluster_resolution = cluster_resolution,
-    verbose = verbose,
-    seed = seed
-  )
+  for (modality in c("rna", "atac")) {
+    srt_merge <- RunStandardWorkflow(
+      object = srt_merge,
+      prefix = if (modality == "rna") rna_prefix else atac_prefix,
+      assay = assay_pair[[modality]],
+      do_normalization = do_normalization,
+      normalization_method = if (modality == "rna") normalization_method else "TFIDF",
+      do_HVF_finding = do_HVF_finding,
+      HVF_method = HVF_method,
+      nHVF = nHVF,
+      HVF = if (modality == "rna") HVF else NULL,
+      do_scaling = do_scaling,
+      vars_to_regress = vars_to_regress,
+      regression_model = regression_model,
+      linear_reduction = if (modality == "rna") "pca" else "svd",
+      linear_reduction_dims = linear_reduction_dims,
+      linear_reduction_dims_use = linear_reduction_dims_use,
+      linear_reduction_params = linear_reduction_params,
+      force_linear_reduction = force_linear_reduction,
+      nonlinear_reduction = nonlinear_reduction,
+      nonlinear_reduction_dims = nonlinear_reduction_dims,
+      nonlinear_reduction_params = nonlinear_reduction_params,
+      force_nonlinear_reduction = force_nonlinear_reduction,
+      neighbor_metric = neighbor_metric,
+      neighbor_k = neighbor_k,
+      cluster_algorithm = cluster_algorithm,
+      cluster_resolution = cluster_resolution,
+      verbose = verbose,
+      seed = seed
+    )
+    if (modality == "rna") rna_assay <- SeuratObject::DefaultAssay(srt_merge)
+  }
 
   rna_reduction <- paste0(rna_prefix, "pca")
   atac_reduction <- paste0(atac_prefix, "lsi")
@@ -183,7 +252,8 @@ WNN_integrate <- function(
     cluster_algorithm_index = cluster_algorithm_index,
     cluster_resolution = cluster_resolution,
     run_find_neighbors = FALSE,
-    verbose = verbose
+    verbose = verbose,
+    stop_on_error = TRUE
   )
 
   srt_merge <- run_wnn_reduction(
@@ -216,10 +286,17 @@ WNN_integrate <- function(
   SeuratObject::DefaultAssay(srt_merge) <- rna_assay
 
   if (isTRUE(append) && !is.null(srt_merge_raw)) {
+    # Copy whole modality assays: srt_append only synchronizes selected layers.
+    for (name in c(rna_assay, atac_assay)) srt_merge_raw[[name]] <- srt_merge[[name]]
+    SeuratObject::DefaultAssay(srt_merge_raw) <- rna_assay
     srt_merge_raw <- srt_append(
       srt_raw = srt_merge_raw,
       srt_append = srt_merge,
-      pattern = paste0(rna_assay, "|", atac_assay, "|WNN|Default_reduction"),
+      pattern = paste0(
+        "^(", paste(gsub(".", "[.]", unique(c(rna_assay, atac_assay, rna_prefix, atac_prefix)), fixed = TRUE), collapse = "|"),
+        "|WNN|Default_reduction)"
+      ),
+      slots = setdiff(methods::slotNames(srt_merge), "assays"),
       overwrite = TRUE,
       verbose = FALSE
     )
@@ -238,40 +315,39 @@ wnn_assays <- function(srt, assay = NULL) {
     logical(1)
   )]
   rna_assays <- setdiff(assays_available, chrom_assays)
+  derived <- vapply(rna_assays, function(name) {
+    name %in% c("ACTIVITY", "chromvar") ||
+      !is.null(SeuratObject::Misc(srt[[name]], "scop_gene_activity")) ||
+      !is.null(SeuratObject::Misc(srt[[name]], "scop_chromvar"))
+  }, logical(1))
+  rna_assays <- rna_assays[!derived]
   if (length(chrom_assays) == 0 || length(rna_assays) == 0) {
     log_message(
       "WNN requires at least one RNA assay and one {.cls ChromatinAssay}",
       message_type = "error"
     )
   }
-  if (is.null(assay)) {
-    assay_default <- SeuratObject::DefaultAssay(srt)
-    rna_assay <- if (assay_default %in% rna_assays) assay_default else rna_assays[[1]]
-    atac_assay <- if ("peaks" %in% chrom_assays) "peaks" else chrom_assays[[1]]
-    return(list(rna = rna_assay, atac = atac_assay))
-  }
-
-  assay <- unique(as.character(assay))
-  if (length(assay) == 1) {
-    if (assay %in% chrom_assays) {
-      return(list(
-        rna = if ("RNA" %in% rna_assays) "RNA" else rna_assays[[1]],
-        atac = assay
-      ))
-    }
-    if (assay %in% rna_assays) {
-      return(list(
-        rna = assay,
-        atac = if ("peaks" %in% chrom_assays) "peaks" else chrom_assays[[1]]
-      ))
-    }
-  }
-
-  rna_assay <- assay[assay %in% rna_assays][[1]] %||% NULL
-  atac_assay <- assay[assay %in% chrom_assays][[1]] %||% NULL
-  if (is.null(rna_assay) || is.null(atac_assay)) {
+  if (!is.null(assay) && (!is.character(assay) || !length(assay) ||
+    length(assay) > 2L || anyNA(assay) || anyDuplicated(assay) ||
+    !all(assay %in% c(rna_assays, chrom_assays)))) {
     log_message(
-      "{.arg assay} for WNN must include one RNA assay and one {.cls ChromatinAssay}",
+      "assay for WNN must select measured RNA and chromatin assays; derived scores and unknown or duplicate assay names are not supported.",
+      message_type = "error"
+    )
+  }
+  rna_assay <- assay[assay %in% rna_assays]
+  atac_assay <- assay[assay %in% chrom_assays]
+  if (!length(rna_assay)) {
+    preferred <- unique(c(SeuratObject::DefaultAssay(srt), "RNA", "SCT"))
+    preferred <- preferred[preferred %in% intersect(rna_assays, c("RNA", "SCT"))]
+    rna_assay <- utils::head(preferred, 1L)
+  }
+  if (!length(atac_assay)) {
+    atac_assay <- if ("peaks" %in% chrom_assays) "peaks" else chrom_assays
+  }
+  if (length(rna_assay) != 1L || length(atac_assay) != 1L) {
+    log_message(
+      "WNN requires one RNA assay and one ChromatinAssay; specify assay = c('RNA_assay', 'ATAC_assay') when selection is ambiguous or RNA uses a custom name.",
       message_type = "error"
     )
   }
@@ -315,25 +391,7 @@ run_wnn_reduction <- function(
   verbose,
   seed
 ) {
-  supported <- c("umap", "umap-naive", "fr")
-  unsupported <- setdiff(nonlinear_reduction, supported)
-  if (length(unsupported) > 0) {
-    log_message(
-      "WNN currently supports only {.val {supported}} nonlinear reductions. Skip {.val {unsupported}}",
-      message_type = "warning",
-      verbose = verbose
-    )
-  }
-  nonlinear_use <- intersect(nonlinear_reduction, supported)
-  if (length(nonlinear_use) == 0) {
-    log_message(
-      "No supported WNN nonlinear reduction was requested. Fall back to {.val umap}",
-      message_type = "warning",
-      verbose = verbose
-    )
-    nonlinear_use <- "umap"
-  }
-  for (nr in nonlinear_use) {
+  for (nr in nonlinear_reduction) {
     for (n in nonlinear_reduction_dims) {
       if (identical(nr, "fr")) {
         srt <- RunDimsReduction(
