@@ -5,6 +5,7 @@
 # scop (development version)
 
 * Add `ATACDepthCorPlot()` for depth/component correlations using fresh count-layer totals by default.
+* Add `ATACTSSPlot()` for precomputed positional TSS enrichment profiles with assay-cell alignment.
 * Add `ATACFragmentPlot()` for regional fragment-length diagnostics with explicit barcode mappings.
 
 * Add `RunCellOracle()` and `CellOraclePlot()` for the official CellOracle 0.20.0

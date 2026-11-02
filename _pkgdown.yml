@@ -437,6 +437,7 @@ reference:
   contents:
   - RunATACQC
   - ATACDepthCorPlot
+  - ATACTSSPlot
   - ATACFragmentPlot
   - CoverageTrackPlot
 
