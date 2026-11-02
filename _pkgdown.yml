@@ -436,6 +436,8 @@ reference:
 - subtitle: "Accessibility Quality and Coverage"
   contents:
   - RunATACQC
+  - ATACDepthCorPlot
+  - ATACTSSPlot
   - ATACFragmentPlot
   - CoverageTrackPlot
 
