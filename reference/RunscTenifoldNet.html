@@ -37,6 +37,12 @@
     <li><a class="dropdown-item" href="../articles/spatial-platform-workflows.html">Spatial imports and standard workflow methods</a></li>
     <li><a class="dropdown-item" href="../articles/spatial-framework-bridges.html">Spatial framework bridges</a></li>
     <li><a class="dropdown-item" href="../articles/spatial-benchmark-workflow.html">Spatial domain benchmark workflow</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>ATAC and Multiome</h6></li>
+    <li><a class="dropdown-item" href="../articles/atac-matrix-workflow.html">ATAC from a common peak matrix</a></li>
+    <li><a class="dropdown-item" href="../articles/atac-fragments-workflow.html">ATAC fragments, peak calling and recount</a></li>
+    <li><a class="dropdown-item" href="../articles/atac-paired-dar-workflow.html">ATAC DAR with paired biological samples</a></li>
+    <li><a class="dropdown-item" href="../articles/atac-paired-wnn-workflow.html">Paired RNA and ATAC with WNN</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -209,7 +215,7 @@ with results stored in <code>object@tools[[tool_name]]</code>.</p>
 <span class="r-in"><span>  store_networks <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span>  store_manifold <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-01 23:44:16] Run <span style="color: #0000BB;">scTenifoldNet</span> comparison using upstream implementation</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-02 15:29:41] Run <span style="color: #0000BB;">scTenifoldNet</span> comparison using upstream implementation</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">scTenifoldNet Pipeline</span> <span style="color: #00BBBB;">──────────────────────────────────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Step 2/6: CPM normalization</span>
@@ -235,7 +241,7 @@ with results stored in <code>object@tools[[tool_name]]</code>.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Computing distances for 300 genes</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Differential regulation complete: 2/300 significant genes (FDR &lt; 0.05)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> scTenifoldNet pipeline complete</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-11-01 23:44:17] <span style="color: #0000BB;">scTenifoldNet</span> results stored in `object@tools[[scTenifoldNet]]`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-11-02 15:29:42] <span style="color: #0000BB;">scTenifoldNet</span> results stored in `object@tools[[scTenifoldNet]]`</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">dr</span> <span class="op">&lt;-</span> <span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">scTenifoldNet</span><span class="op">$</span><span class="va">diffRegulation</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">dr</span><span class="op">)</span></span></span>

@@ -35,3 +35,14 @@
   bridges](https://mengxu98.github.io/scop/articles/spatial-framework-bridges.md):
 - [Spatial domain benchmark
   workflow](https://mengxu98.github.io/scop/articles/spatial-benchmark-workflow.md):
+
+### ATAC and paired multiome workflows
+
+- [ATAC from a common peak
+  matrix](https://mengxu98.github.io/scop/articles/atac-matrix-workflow.md):
+- [ATAC fragments, peak calling and
+  recount](https://mengxu98.github.io/scop/articles/atac-fragments-workflow.md):
+- [ATAC DAR with paired biological
+  samples](https://mengxu98.github.io/scop/articles/atac-paired-dar-workflow.md):
+- [Paired RNA and ATAC with
+  WNN](https://mengxu98.github.io/scop/articles/atac-paired-wnn-workflow.md):

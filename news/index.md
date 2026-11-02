@@ -3,6 +3,11 @@
 ## scop (development version)
 
 - Add
+  [`ATACFragmentPlot()`](https://mengxu98.github.io/scop/reference/ATACFragmentPlot.md)
+  for regional fragment-length diagnostics with explicit barcode
+  mappings.
+
+- Add
   [`RunCellOracle()`](https://mengxu98.github.io/scop/reference/RunCellOracle.md)
   and
   [`CellOraclePlot()`](https://mengxu98.github.io/scop/reference/CellOraclePlot.md)
@@ -49,18 +54,29 @@
 
 - **feat**:
 
+  - Make ATAC workflows fail on requested graph, clustering or embedding
+    errors, retain dimension/depth records, and fit default LSI
+    dimensions to small inputs. WNN preserves complete modality assays
+    and validates paired cells, normalizes SCT RNA separately from ATAC,
+    and supports graph-only analysis. Peak calling resolves MACS2 from
+    PATH and retains capture/group records after failure. Add an
+    executable ATAC matrix quick start and complete the DAR motif
+    recipe.
+
   - Extend
     [`FeatureDimPlot()`](https://mengxu98.github.io/scop/reference/FeatureDimPlot.md)
     density, palette and title controls. Embedding plots default to
     `label_insitu = TRUE`; `FALSE` uses numbered labels. DE, volcano,
     Manhattan and ring plots accept standalone tables. Honor CNV
     palettes, SCENIC reductions and thisplot Pastel1 volcano overlays.
+
   - Add ATAC/multiome reading, QC, annotation, shared peaks, native
     Signac recounting, raw-range motifs, ChromVAR, gene activity, peak
     linking and complete exports. Preserve capture/cell/region
     alignment, doublet aggregation, native ties, fragment FRiP, eligible
     backgrounds, bias correction and measured pairing. Sample-level
     edgeR validates replicates, pairs and covariates.
+
   - Add experimental IREA analysis, plots and checksum-checked resources
     with contrast provenance; official-portal equivalence remains
     unestablished.

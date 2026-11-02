@@ -52,6 +52,12 @@
     <li><a class="dropdown-item" href="../articles/spatial-platform-workflows.html">Spatial imports and standard workflow methods</a></li>
     <li><a class="dropdown-item" href="../articles/spatial-framework-bridges.html">Spatial framework bridges</a></li>
     <li><a class="dropdown-item" href="../articles/spatial-benchmark-workflow.html">Spatial domain benchmark workflow</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>ATAC and Multiome</h6></li>
+    <li><a class="dropdown-item" href="../articles/atac-matrix-workflow.html">ATAC from a common peak matrix</a></li>
+    <li><a class="dropdown-item" href="../articles/atac-fragments-workflow.html">ATAC fragments, peak calling and recount</a></li>
+    <li><a class="dropdown-item" href="../articles/atac-paired-dar-workflow.html">ATAC DAR with paired biological samples</a></li>
+    <li><a class="dropdown-item" href="../articles/atac-paired-wnn-workflow.html">Paired RNA and ATAC with WNN</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
@@ -170,13 +176,13 @@ tissue.</p>
 <span></span>
 <span><span class="va">bench</span><span class="op">$</span><span class="va">summary</span></span>
 <span><span class="co">#&gt;        method      workflow ARI NMI purity runtime_s baseline_memory_mb</span></span>
-<span><span class="co">#&gt; 1  BayesSpace SpatialDomain   1   1      1    14.617           291.6914</span></span>
+<span><span class="co">#&gt; 1  BayesSpace SpatialDomain   1   1      1    14.497           291.5586</span></span>
 <span><span class="co">#&gt; 2      BANKSY SpatialDomain  NA  NA     NA        NA                 NA</span></span>
-<span><span class="co">#&gt; 3 SmoothClust SpatialDomain   1   1      1     6.414           291.6211</span></span>
+<span><span class="co">#&gt; 3 SmoothClust SpatialDomain   1   1      1     6.370           291.4258</span></span>
 <span><span class="co">#&gt;   peak_memory_mb memory_delta_mb n_evaluated n_clusters      status</span></span>
-<span><span class="co">#&gt; 1      1071.4336        779.7422          36          3     success</span></span>
+<span><span class="co">#&gt; 1      1071.4180        779.8594          36          3     success</span></span>
 <span><span class="co">#&gt; 2             NA              NA           0         NA unavailable</span></span>
-<span><span class="co">#&gt; 3       955.7852        664.1641          36          3     success</span></span>
+<span><span class="co">#&gt; 3       955.7383        664.3125          36          3     success</span></span>
 <span><span class="co">#&gt;            error</span></span>
 <span><span class="co">#&gt; 1               </span></span>
 <span><span class="co">#&gt; 2 Banksy=missing</span></span>
@@ -203,8 +209,8 @@ tissue.</p>
 <span><span class="co">#&gt;  $ ARI               : num  1 NA 1</span></span>
 <span><span class="co">#&gt;  $ NMI               : num  1 NA 1</span></span>
 <span><span class="co">#&gt;  $ purity            : num  1 NA 1</span></span>
-<span><span class="co">#&gt;  $ runtime_s         : num  14.62 NA 6.41</span></span>
-<span><span class="co">#&gt;  $ baseline_memory_mb: num  292 NA 292</span></span>
+<span><span class="co">#&gt;  $ runtime_s         : num  14.5 NA 6.37</span></span>
+<span><span class="co">#&gt;  $ baseline_memory_mb: num  292 NA 291</span></span>
 <span><span class="co">#&gt;  $ peak_memory_mb    : num  1071 NA 956</span></span>
 <span><span class="co">#&gt;  $ memory_delta_mb   : num  780 NA 664</span></span>
 <span><span class="co">#&gt;  $ n_evaluated       : int  36 0 36</span></span>

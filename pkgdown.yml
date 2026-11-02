@@ -2,6 +2,10 @@ pandoc: 3.8.3
 pkgdown: 2.2.1
 pkgdown_sha: ~
 articles:
+  atac-fragments-workflow: atac-fragments-workflow.html
+  atac-matrix-workflow: atac-matrix-workflow.html
+  atac-paired-dar-workflow: atac-paired-dar-workflow.html
+  atac-paired-wnn-workflow: atac-paired-wnn-workflow.html
   cell-annotation-workflow: cell-annotation-workflow.html
   cellrank-palantir-fate-workflow: cellrank-palantir-fate-workflow.html
   differential-enrichment-workflow: differential-enrichment-workflow.html
@@ -14,7 +18,7 @@ articles:
   spatial-main-workflow: spatial-main-workflow.html
   spatial-platform-workflows: spatial-platform-workflows.html
   trajectory-dynamic-workflow: trajectory-dynamic-workflow.html
-last_built: 2026-11-01T22:38Z
+last_built: 2026-11-02T14:25Z
 urls:
   reference: https://mengxu98.github.io/scop/reference
   article: https://mengxu98.github.io/scop/articles

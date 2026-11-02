@@ -1,6 +1,7 @@
 # WNN integration function
 
-WNN integration function
+Combine paired RNA and ATAC representations with weighted nearest
+neighbors, retaining both modality reductions and the WNN graph.
 
 ## Usage
 
@@ -49,7 +50,8 @@ WNN_integrate(
 
 - batch:
 
-  Batch variable name.
+  Accepted for integration-interface compatibility. WNN does not perform
+  batch correction; supplying this argument emits a warning.
 
 - append:
 
@@ -61,7 +63,10 @@ WNN_integrate(
 
 - assay:
 
-  Assay to use. `NULL` uses the default assay.
+  One RNA assay and one chromatin assay, or one assay whose partner can
+  be inferred. Automatic selection prefers an active RNA/SCT assay, then
+  RNA, then SCT; custom RNA assay names must be explicit. Known SCOP
+  gene-activity and chromVAR assays cannot substitute for RNA.
 
 - do_normalization:
 
@@ -72,20 +77,33 @@ WNN_integrate(
   The normalization method to be used. Possible values are
   `"LogNormalize"`, `"SCT"`, `"TFIDF"`, and `"scran"`.
 
-- do_HVF_finding, HVF_method, nHVF, HVF:
+- do_HVF_finding:
 
-  Highly variable features. `HVF_method` is `"vst"`, `"mvp"`, `"disp"`,
-  or `"scran"`.
+  Whether to select variable features during preprocessing.
 
 - HVF_source:
 
   The source of highly variable features. Possible values are `"global"`
   and `"separate"`.
 
+- HVF_method:
+
+  RNA feature-selection method passed to
+  [`RunStandardWorkflow()`](https://mengxu98.github.io/scop/reference/RunStandardWorkflow.md).
+
+- nHVF:
+
+  Maximum number of selected features, subject to modality defaults and
+  the number of available features.
+
 - HVF_min_intersection:
 
   The feature needs to be present in batches for a minimum number of
   times in order to be considered as highly variable.
+
+- HVF:
+
+  Optional RNA feature names. ATAC features are selected independently.
 
 - do_scaling:
 
@@ -105,17 +123,32 @@ WNN_integrate(
   Scale within each batch. Only used by `"Uncorrected"`, `"Seurat"`,
   `"MNN"`, `"Harmony"`, `"BBKNN"`, `"CSS"`, `"ComBat"`.
 
-- linear_reduction, linear_reduction_dims, linear_reduction_dims_use,
-  linear_reduction_params, force_linear_reduction:
+- linear_reduction:
 
-  Linear reduction (`"pca"`, `"svd"`, `"ica"`, `"nmf"`, `"mds"`,
-  `"glmpca"`). `linear_reduction_dims_use = NULL` uses estimated
-  dimensions, else the first 50.
+  RNA reduction, which must be `"pca"`. ATAC uses SVD.
+
+- linear_reduction_dims:
+
+  Number of components to compute for each modality.
+
+- linear_reduction_dims_use:
+
+  Explicit component indices, or NULL for modality-specific selection.
+  Inspect `WNN_dims_list` for the selected indices.
+
+- linear_reduction_params:
+
+  Named arguments for the linear reduction backend.
+
+- force_linear_reduction:
+
+  Whether to recompute existing linear reductions.
 
 - nonlinear_reduction:
 
-  Nonlinear reduction (`"umap"`, `"umap-naive"`, `"tsne"`, `"dm"`,
-  `"phate"`, `"pacmap"`, `"trimap"`, `"largevis"`, `"fr"`).
+  One or more of `"umap"`, `"umap-naive"` and `"fr"`, or
+  [`character()`](https://rdrr.io/r/base/character.html) for graphs and
+  clusters without an embedding.
 
 - nonlinear_reduction_dims:
 
@@ -148,66 +181,56 @@ WNN_integrate(
 
   Random seed.
 
+## Value
+
+A Seurat object with RNA PCA and ATAC LSI reductions, `WNN` neighbors,
+`WNNKNN` and `WNNSNN` graphs, `WNNclusters` metadata and requested WNN
+embeddings. `Misc(object, "WNN_reduction_list")` names the retained
+source reductions; `WNN_dims_list` records their selected dimensions.
+Both return modes retain complete processed modality assays (including
+scaled RNA), ATAC reductions, metadata and representation receipts, with
+the processed RNA assay (SCT when selected) active. The caller's
+random-number state is restored.
+
+## Details
+
+Cells must represent paired measurements. RNA and ATAC preprocessing is
+followed by native multimodal neighbor construction. This function does
+not use batch labels to correct either modality. Specify assays
+explicitly after adding derived assays, for example
+`assay = c("RNA", "peaks")`. Both assays must contain the same cells as
+the object. Subset to verified paired cells explicitly before running
+WNN. Nonlinear reductions supported here are `"umap"`, `"umap-naive"`
+and `"fr"`; use [`character()`](https://rdrr.io/r/base/character.html)
+to retain graphs and clusters without computing an embedding. RNA uses
+the requested normalization and PCA. ATAC always uses TF-IDF and SVD,
+including when RNA uses SCT. `HVF` supplies RNA features; ATAC features
+are selected independently from accessibility counts.
+
+## See also
+
+[`ReadMultiomeData()`](https://mengxu98.github.io/scop/reference/ReadMultiomeData.md),
+[`RunStandardWorkflow()`](https://mengxu98.github.io/scop/reference/RunStandardWorkflow.md),
+[`RunLinkPeaks()`](https://mengxu98.github.io/scop/reference/RunLinkPeaks.md)
+
 ## Examples
 
 ``` r
+# Small paired subset; no external fragments or reference downloads.
 data("pbmcmultiome_sub", package = "scop")
-pbmcmultiome_sub$batch <- rep(c("batch1", "batch2"), length.out = ncol(pbmcmultiome_sub))
-pbmcmultiome_sub <- WNN_integrate(
-  srt_merge = pbmcmultiome_sub,
-  batch = "batch",
-  linear_reduction_dims = 20,
-  linear_reduction_dims_use = 1:10
+paired <- subset(pbmcmultiome_sub, cells = colnames(pbmcmultiome_sub)[1:80])
+paired <- WNN_integrate(
+  srt_merge = paired, assay = c("RNA", "peaks"),
+  linear_reduction_dims = 10, linear_reduction_dims_use = 2:8,
+  nHVF = 100, neighbor_k = 10, nonlinear_reduction_dims = 2,
+  verbose = FALSE
 )
-#> ℹ [2026-11-01 23:48:03] Start standard processing workflow...
-#> ℹ [2026-11-01 23:48:03] Auto preprocess assays: "RNA" and "peaks"
-#> ℹ [2026-11-01 23:48:03] Start standard processing workflow...
-#> ℹ [2026-11-01 23:48:03] Checking a list of <Seurat>...
-#> ! [2026-11-01 23:48:03] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-11-01 23:48:03] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-11-01 23:48:03] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-01 23:48:03] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-01 23:48:03] Number of available HVF: 2000
-#> ℹ [2026-11-01 23:48:03] Finished check
-#> ℹ [2026-11-01 23:48:03] Perform `ScaleData()`
-#> ℹ [2026-11-01 23:48:03] Perform pca linear dimension reduction
-#> ℹ [2026-11-01 23:48:03] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-01 23:48:03] Reorder clusters...
-#> ℹ [2026-11-01 23:48:03] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-01 23:48:04] Perform umap nonlinear dimension reduction
-#> ℹ [2026-11-01 23:48:13] Perform umap nonlinear dimension reduction using RNApca (1:10)
-#> ✔ [2026-11-01 23:48:21] Standard processing workflow completed
-#> ℹ [2026-11-01 23:48:21] Start standard processing workflow...
-#> ℹ [2026-11-01 23:48:21] Checking a list of <Seurat>...
-#> ! [2026-11-01 23:48:21] Data 1/1 of the `srt_list` is "raw_counts"
-#> ℹ [2026-11-01 23:48:21] Perform `RunTFIDF()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-01 23:48:21] Perform `FindTopFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-01 23:48:21] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-01 23:48:21] Number of available HVF: 11413
-#> ℹ [2026-11-01 23:48:21] Finished check
-#> ℹ [2026-11-01 23:48:21] `normalization_method` is TFIDF. Use lsi workflow
-#> ℹ [2026-11-01 23:48:21] Perform svd linear dimension reduction
-#> Running SVD
-#> Scaling cell embeddings
-#> ℹ [2026-11-01 23:48:22] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-01 23:48:22] Reorder clusters...
-#> ℹ [2026-11-01 23:48:22] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-01 23:48:22] Perform umap nonlinear dimension reduction
-#> ℹ [2026-11-01 23:48:32] Perform umap nonlinear dimension reduction using ATACsvd (1:10)
-#> ✔ [2026-11-01 23:48:39] Standard processing workflow completed
-#> ℹ [2026-11-01 23:48:39] Adjust neighbor k from 20 to 20 for small-sample WNN graph construction
-#> ℹ [2026-11-01 23:48:39] Adjust WNN knn.range to 80 for small-sample graph construction
-#> ℹ [2026-11-01 23:48:39] Perform WNN integration using RNApca and ATAClsi
-#> Calculating cell-specific modality weights
-#> Finding 20 nearest neighbors for each modality.
-#> Calculating kernel bandwidths
-#> Finding multimodal neighbors
-#> Constructing multimodal KNN graph
-#> Constructing multimodal SNN graph
-#> ℹ [2026-11-01 23:48:40] Adjust neighbor k from 20 to 20 for small-sample clustering
-#> ℹ [2026-11-01 23:48:40] Perform `Seurat::FindClusters()` with "louvain"
-#> ℹ [2026-11-01 23:48:40] Reorder clusters...
-#> ℹ [2026-11-01 23:48:40] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-01 23:48:40] Perform umap nonlinear dimension reduction using WNN
-#> ℹ [2026-11-01 23:48:47] Perform umap nonlinear dimension reduction using WNN
+#> ℹ [2026-11-02 15:33:33] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-02 15:33:41] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-02 15:33:49] Reorder clusters...
+#> ℹ [2026-11-02 15:33:49] Skip `log1p()` because `layer = data` is not "counts"
+SeuratObject::Reductions(paired)
+#> [1] "RNApca"        "RNApcaUMAP2D"  "RNAUMAP2D"     "ATACsvd"      
+#> [5] "ATACsvdUMAP2D" "ATACUMAP2D"    "ATAClsi"       "WNNUMAP2D"    
+stopifnot(all(paired@misc$WNN_reduction_list %in% SeuratObject::Reductions(paired)))
 ```

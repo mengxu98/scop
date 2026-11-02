@@ -37,6 +37,12 @@
     <li><a class="dropdown-item" href="../articles/spatial-platform-workflows.html">Spatial imports and standard workflow methods</a></li>
     <li><a class="dropdown-item" href="../articles/spatial-framework-bridges.html">Spatial framework bridges</a></li>
     <li><a class="dropdown-item" href="../articles/spatial-benchmark-workflow.html">Spatial domain benchmark workflow</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>ATAC and Multiome</h6></li>
+    <li><a class="dropdown-item" href="../articles/atac-matrix-workflow.html">ATAC from a common peak matrix</a></li>
+    <li><a class="dropdown-item" href="../articles/atac-fragments-workflow.html">ATAC fragments, peak calling and recount</a></li>
+    <li><a class="dropdown-item" href="../articles/atac-paired-dar-workflow.html">ATAC DAR with paired biological samples</a></li>
+    <li><a class="dropdown-item" href="../articles/atac-paired-wnn-workflow.html">Paired RNA and ATAC with WNN</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -173,7 +179,8 @@ Possible values are <code>"global"</code> and <code>"separate"</code>.</p></dd>
 
 <dt id="arg-linear-reduction-linear-reduction-dims-linear-reduction-dims-use-linear-reduction-params-force-linear-reduction">linear_reduction, linear_reduction_dims, linear_reduction_dims_use, linear_reduction_params, force_linear_reduction<a class="anchor" aria-label="anchor" href="#arg-linear-reduction-linear-reduction-dims-linear-reduction-dims-use-linear-reduction-params-force-linear-reduction"></a></dt>
 <dd><p>Linear reduction (<code>"pca"</code>, <code>"svd"</code>, <code>"ica"</code>, <code>"nmf"</code>, <code>"mds"</code>, <code>"glmpca"</code>).
-<code>linear_reduction_dims_use = NULL</code> uses estimated dimensions, else the first 50.</p></dd>
+<code>linear_reduction_dims_use = NULL</code> uses estimated dimensions unless the method
+specifies a different default; explicit values select computed components.</p></dd>
 
 
 <dt id="arg-harmony-dims-use">harmony_dims_use<a class="anchor" aria-label="anchor" href="#arg-harmony-dims-use"></a></dt>

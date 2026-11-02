@@ -148,12 +148,12 @@ query <- RunSingleR(
   srt_query = query, srt_ref = reference,
   ref_group = "celltype", genes = "de", cores = 1, verbose = FALSE
 )
-#> ℹ [2026-11-01 23:39:44] Data type is log-normalized
-#> ℹ [2026-11-01 23:39:44] Detected `srt_query` data type: "log_normalized_counts"
-#> ℹ [2026-11-01 23:39:44] Data type is log-normalized
-#> ℹ [2026-11-01 23:39:44] Detected `srt_ref` data type: "log_normalized_counts"
+#> ℹ [2026-11-02 15:25:31] Data type is log-normalized
+#> ℹ [2026-11-02 15:25:31] Detected `srt_query` data type: "log_normalized_counts"
+#> ℹ [2026-11-02 15:25:31] Data type is log-normalized
+#> ℹ [2026-11-02 15:25:31] Detected `srt_ref` data type: "log_normalized_counts"
 query <- RunStandardWorkflow(query, verbose = FALSE, linear_reduction_dims = 10)
-#> ℹ [2026-11-01 23:39:45] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-02 15:25:32] Skip `log1p()` because `layer = data` is not "counts"
 CellDimPlot(
   query,
   group.by = "singler_annotation",

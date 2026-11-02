@@ -37,6 +37,12 @@
     <li><a class="dropdown-item" href="../articles/spatial-platform-workflows.html">Spatial imports and standard workflow methods</a></li>
     <li><a class="dropdown-item" href="../articles/spatial-framework-bridges.html">Spatial framework bridges</a></li>
     <li><a class="dropdown-item" href="../articles/spatial-benchmark-workflow.html">Spatial domain benchmark workflow</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>ATAC and Multiome</h6></li>
+    <li><a class="dropdown-item" href="../articles/atac-matrix-workflow.html">ATAC from a common peak matrix</a></li>
+    <li><a class="dropdown-item" href="../articles/atac-fragments-workflow.html">ATAC fragments, peak calling and recount</a></li>
+    <li><a class="dropdown-item" href="../articles/atac-paired-dar-workflow.html">ATAC DAR with paired biological samples</a></li>
+    <li><a class="dropdown-item" href="../articles/atac-paired-wnn-workflow.html">Paired RNA and ATAC with WNN</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -319,14 +325,14 @@ Enrichment result is a list with the following component:</p><ul><li><p><code>en
 <span class="r-in"><span>  nPermSimple <span class="op">=</span> <span class="fl">10000</span>,</span></span>
 <span class="r-in"><span>  eps <span class="op">=</span> <span class="fl">0</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-01 23:13:33] Start <span style="color: #0000BB;">GSEA</span> analysis</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-11-01 23:13:33] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-01 23:13:33] Preparing custom GSEA database from `TERM2GENE`/`TERM2NAME` ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-01 23:13:33] Prepared <span style="color: #0000BB;">15</span> ranked gene rows after ID mapping.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-01 23:13:33] Running GSEA for <span style="color: #0000BB;">1</span> group/database combination(s) ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-01 23:13:33] Running GSEA: group <span style="color: #0000BB;">"Cluster1"</span>, database <span style="color: #0000BB;">"custom"</span>, genes <span style="color: #0000BB;">15</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-01 23:13:33] Finished GSEA: group <span style="color: #0000BB;">"Cluster1"</span>, database <span style="color: #0000BB;">"custom"</span>.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-11-01 23:13:33] <span style="color: #0000BB;">GSEA</span> analysis done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-02 15:01:06] Start <span style="color: #0000BB;">GSEA</span> analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-11-02 15:01:06] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-02 15:01:06] Preparing custom GSEA database from `TERM2GENE`/`TERM2NAME` ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-02 15:01:06] Prepared <span style="color: #0000BB;">15</span> ranked gene rows after ID mapping.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-02 15:01:06] Running GSEA for <span style="color: #0000BB;">1</span> group/database combination(s) ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-02 15:01:06] Running GSEA: group <span style="color: #0000BB;">"Cluster1"</span>, database <span style="color: #0000BB;">"custom"</span>, genes <span style="color: #0000BB;">15</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-02 15:01:07] Finished GSEA: group <span style="color: #0000BB;">"Cluster1"</span>, database <span style="color: #0000BB;">"custom"</span>.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-11-02 15:01:07] <span style="color: #0000BB;">GSEA</span> analysis done</span>
 <span class="r-in"><span><span class="fu"><a href="GSEAPlot.html">GSEAPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  res <span class="op">=</span> <span class="va">gsea_out</span>,</span></span>
 <span class="r-in"><span>  db <span class="op">=</span> <span class="st">"custom"</span>,</span></span>

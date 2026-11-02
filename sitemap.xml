@@ -1,6 +1,10 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://mengxu98.github.io/scop/404.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/LICENSE.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/articles/atac-fragments-workflow.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/articles/atac-matrix-workflow.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/articles/atac-paired-dar-workflow.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/articles/atac-paired-wnn-workflow.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/articles/cell-annotation-workflow.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/articles/cellrank-palantir-fate-workflow.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/articles/differential-enrichment-workflow.html</loc></url>
@@ -17,6 +21,8 @@
 <url><loc>https://mengxu98.github.io/scop/authors.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/index.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/news/index.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/ATACFragmentPlot.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/ATACMotifPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/AddATACMotifs.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/AddFeaturesData.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/AddModuleScore.html</loc></url>
@@ -33,6 +39,7 @@
 <url><loc>https://mengxu98.github.io/scop/reference/CNVPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/COMMOTPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/CSS_integrate.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/CallATACPeaks.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/Cell2locationPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/CellCorHeatmap.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/CellCycleScoring.html</loc></url>

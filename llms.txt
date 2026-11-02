@@ -1761,11 +1761,15 @@ etc.
 
 - [`RunATACQC()`](https://mengxu98.github.io/scop/reference/RunATACQC.md)
   : Run scATAC quality control metrics
+- [`ATACFragmentPlot()`](https://mengxu98.github.io/scop/reference/ATACFragmentPlot.md)
+  : Plot ATAC fragment lengths
 - [`CoverageTrackPlot()`](https://mengxu98.github.io/scop/reference/CoverageTrackPlot.md)
   : Coverage track plot for ATAC data
 
 ### Peak Definition and Annotation
 
+- [`CallATACPeaks()`](https://mengxu98.github.io/scop/reference/CallATACPeaks.md)
+  : Call MACS2 peaks for explicitly selected capture groups
 - [`CombineATACPeaks()`](https://mengxu98.github.io/scop/reference/CombineATACPeaks.md)
   : Combine explicit peak sets into one common interval universe
 - [`RecountATAC()`](https://mengxu98.github.io/scop/reference/RecountATAC.md)
@@ -1777,6 +1781,8 @@ etc.
 
 ### Motifs and Accessibility Deviations
 
+- [`ATACMotifPlot()`](https://mengxu98.github.io/scop/reference/ATACMotifPlot.md)
+  : Plot motif sequence logos
 - [`AddATACMotifs()`](https://mengxu98.github.io/scop/reference/AddATACMotifs.md)
   : Add native motif matches and sequence statistics
 - [`RunMotifEnrichment()`](https://mengxu98.github.io/scop/reference/RunMotifEnrichment.md)
@@ -2213,3 +2219,14 @@ etc.
   bridges](https://mengxu98.github.io/scop/articles/spatial-framework-bridges.md):
 - [Spatial domain benchmark
   workflow](https://mengxu98.github.io/scop/articles/spatial-benchmark-workflow.md):
+
+### ATAC and paired multiome workflows
+
+- [ATAC from a common peak
+  matrix](https://mengxu98.github.io/scop/articles/atac-matrix-workflow.md):
+- [ATAC fragments, peak calling and
+  recount](https://mengxu98.github.io/scop/articles/atac-fragments-workflow.md):
+- [ATAC DAR with paired biological
+  samples](https://mengxu98.github.io/scop/articles/atac-paired-dar-workflow.md):
+- [Paired RNA and ATAC with
+  WNN](https://mengxu98.github.io/scop/articles/atac-paired-wnn-workflow.md):

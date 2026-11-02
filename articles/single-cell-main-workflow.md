@@ -438,9 +438,9 @@ build_receipt <- data.frame(
 )
 build_receipt
 #>                     article               built_utc  scop     R
-#> 1 single-cell-main-workflow 2026-11-01 23:57:36 UTC 0.9.2 4.6.2
+#> 1 single-cell-main-workflow 2026-11-02 15:43:14 UTC 0.9.2 4.6.2
 #>                            source_revision source_has_local_changes
-#> 1 2f44f8c52c247c5a5b42a8a2cb3a7c9800ae24cb                    FALSE
+#> 1 2e6e188056b8e79bee9eea1a8cd5e24ef9cbffb7                    FALSE
 #>                        article_md5 R_seed cells_retained genes_in_active_assay
 #> 1 2c5a3d3c700eb7db8ec2b44b16fcceda     11           1000                 15998
 utils::write.csv(build_receipt, file.path(output_dir, "build-receipt.csv"),

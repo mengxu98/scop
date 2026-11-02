@@ -1,5 +1,5 @@
 {
-  "source": "2f44f8c52c247c5a5b42a8a2cb3a7c9800ae24cb",
+  "source": "2e6e188056b8e79bee9eea1a8cd5e24ef9cbffb7",
   "R": "4.6.2",
   "packages": {
     "abind": "1.4-8:1.4-8",
@@ -262,6 +262,7 @@
     "irlba": "2.4.1:2.4.1",
     "isoband": "0.3.0:0.3.0",
     "iterators": "1.0.14:1.0.14",
+    "JASPAR2020": "0.99.10:0.99.10",
     "jomo": "2.7-6:2.7-6",
     "jpeg": "0.1-11:0.1-11",
     "jquerylib": "0.1.4:0.1.4",
@@ -529,7 +530,7 @@
     "SparseM": "1.84-2:1.84-2",
     "sparseMatrixStats": "1.24.0:1.24.0",
     "sparsesvd": "0.2-3:0.2-3",
-    "sparsevctrs": "0.3.6:0.3.6",
+    "sparsevctrs": "0.4.0:0.4.0",
     "SpatialCellChat": "0.1.0:0706564b8afe8653c666f636fa24481fb6605b96",
     "SpatialExperiment": "1.22.0:1.22.0",
     "spatstat.data": "3.1-9:3.1-9",

@@ -153,7 +153,8 @@ RunStandardWorkflow(
 
   Linear reduction (`"pca"`, `"svd"`, `"ica"`, `"nmf"`, `"mds"`,
   `"glmpca"`). `linear_reduction_dims_use = NULL` uses estimated
-  dimensions, else the first 50.
+  dimensions unless the method specifies a different default; explicit
+  values select computed components.
 
 - nonlinear_reduction, nonlinear_reduction_dims,
   nonlinear_reduction_params, force_nonlinear_reduction:
@@ -228,27 +229,37 @@ including the effective `set_variable_features` value, `result_stored`,
 and `result_location`. A failed stage signals an error with the same
 table in attribute `standard_spatial_stages`.
 
+## Details
+
+ATAC defaults select the available dimensions from 2:30. Explicit ATAC
+dimensions must exist in the computed reduction. ATAC workflows record
+selected dimensions, cells, features and Pearson correlations with raw
+library depth in `Misc(reduction, "scop_atac_representation")`.
+Undefined correlations remain NA. A requested ATAC graph, clustering or
+nonlinear-reduction failure stops the workflow; a partially processed
+object is not returned as successful.
+
 ## Examples
 
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-11-01 23:40:47] Start standard processing workflow...
-#> ℹ [2026-11-01 23:40:47] Checking a list of <Seurat>...
-#> ! [2026-11-01 23:40:47] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-11-01 23:40:47] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-11-01 23:40:47] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-01 23:40:47] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-01 23:40:48] Number of available HVF: 2000
-#> ℹ [2026-11-01 23:40:48] Finished check
-#> ℹ [2026-11-01 23:40:48] Perform `ScaleData()`
-#> ℹ [2026-11-01 23:40:48] Perform pca linear dimension reduction
-#> ℹ [2026-11-01 23:40:48] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-11-01 23:40:48] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-01 23:40:49] Reorder clusters...
-#> ℹ [2026-11-01 23:40:49] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-01 23:40:49] Perform umap nonlinear dimension reduction
-#> ✔ [2026-11-01 23:40:59] Standard processing workflow completed
+#> ℹ [2026-11-02 15:26:32] Start standard processing workflow...
+#> ℹ [2026-11-02 15:26:33] Checking a list of <Seurat>...
+#> ! [2026-11-02 15:26:33] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-02 15:26:33] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-02 15:26:33] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-02 15:26:33] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-02 15:26:33] Number of available HVF: 2000
+#> ℹ [2026-11-02 15:26:33] Finished check
+#> ℹ [2026-11-02 15:26:33] Perform `ScaleData()`
+#> ℹ [2026-11-02 15:26:33] Perform pca linear dimension reduction
+#> ℹ [2026-11-02 15:26:33] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-11-02 15:26:34] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-02 15:26:34] Reorder clusters...
+#> ℹ [2026-11-02 15:26:34] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-02 15:26:34] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-02 15:26:43] Standard processing workflow completed
 CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType"
@@ -265,22 +276,22 @@ pancreas_sub <- RunStandardWorkflow(
   linear_reduction = linear_reductions,
   nonlinear_reduction = "umap"
 )
-#> ℹ [2026-11-01 23:40:59] Start standard processing workflow...
-#> ℹ [2026-11-01 23:40:59] Checking a list of <Seurat>...
-#> ℹ [2026-11-01 23:41:00] Data 1/1 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-01 23:41:00] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-01 23:41:00] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-01 23:41:00] Number of available HVF: 2000
-#> ℹ [2026-11-01 23:41:00] Finished check
-#> ℹ [2026-11-01 23:41:00] Perform `ScaleData()`
-#> ℹ [2026-11-01 23:41:00] Perform pca linear dimension reduction
-#> ℹ [2026-11-01 23:41:00] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-11-01 23:41:01] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-01 23:41:01] Reorder clusters...
-#> ℹ [2026-11-01 23:41:01] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-01 23:41:01] Perform umap nonlinear dimension reduction
-#> ℹ [2026-11-01 23:41:11] Perform nmf linear dimension reduction
-#> ℹ [2026-11-01 23:41:11] Running NMF...
+#> ℹ [2026-11-02 15:26:43] Start standard processing workflow...
+#> ℹ [2026-11-02 15:26:43] Checking a list of <Seurat>...
+#> ℹ [2026-11-02 15:26:43] Data 1/1 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-02 15:26:43] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-02 15:26:44] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-02 15:26:44] Number of available HVF: 2000
+#> ℹ [2026-11-02 15:26:44] Finished check
+#> ℹ [2026-11-02 15:26:44] Perform `ScaleData()`
+#> ℹ [2026-11-02 15:26:44] Perform pca linear dimension reduction
+#> ℹ [2026-11-02 15:26:44] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-11-02 15:26:45] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-02 15:26:45] Reorder clusters...
+#> ℹ [2026-11-02 15:26:45] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-02 15:26:45] Perform umap nonlinear dimension reduction
+#> ℹ [2026-11-02 15:26:54] Perform nmf linear dimension reduction
+#> ℹ [2026-11-02 15:26:54] Running NMF...
 #> ℹ StandardBE_ 1 
 #> ℹ Positive:  Ccnd1, Spp1, Mdk, Rps2, Ldha, Pebp1, Cd24a, Dlk1, Krt8, Mgst1 
 #> ℹ      Clu, Gapdh, Eno1, Prdx1, Cldn10, Mif, Cldn7, Npm1, Dbi, Vim 
@@ -316,19 +327,19 @@ pancreas_sub <- RunStandardWorkflow(
 #> ℹ Negative:  1110002L01Rik, Aacs, Wipi1, B830012L14Rik, Tmcc3, Trib1, Fgf12, Plekho1, Ppp2r2b, Lama1 
 #> ℹ      Tenm4, Trf, Gm5420, Man1c1, Jam3, Mgst2, Kcnip3, Tnr, Gm15915, Cbfa2t2 
 #> ℹ      Sh2d4a, Bbc3, Fkbp9, Ano6, Prkcb, Megf6, Fam46d, Slc52a3, Ankrd2, Tox2 
-#> ✔ [2026-11-01 23:41:21] NMF compute completed
-#> ℹ [2026-11-01 23:41:21] Use stored estimated dimensions 1:50 for Standardnmf
-#> ℹ [2026-11-01 23:41:21] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-01 23:41:21] Reorder clusters...
-#> ℹ [2026-11-01 23:41:21] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-01 23:41:21] Perform umap nonlinear dimension reduction
-#> ℹ [2026-11-01 23:41:31] Perform mds linear dimension reduction
-#> ℹ [2026-11-01 23:41:32] Use stored estimated dimensions 1:13 for Standardmds
-#> ℹ [2026-11-01 23:41:32] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-01 23:41:33] Reorder clusters...
-#> ℹ [2026-11-01 23:41:33] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-01 23:41:33] Perform umap nonlinear dimension reduction
-#> ✔ [2026-11-01 23:41:43] Standard processing workflow completed
+#> ✔ [2026-11-02 15:27:04] NMF compute completed
+#> ℹ [2026-11-02 15:27:04] Use stored estimated dimensions 1:50 for Standardnmf
+#> ℹ [2026-11-02 15:27:04] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-02 15:27:04] Reorder clusters...
+#> ℹ [2026-11-02 15:27:04] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-02 15:27:04] Perform umap nonlinear dimension reduction
+#> ℹ [2026-11-02 15:27:13] Perform mds linear dimension reduction
+#> ℹ [2026-11-02 15:27:14] Use stored estimated dimensions 1:13 for Standardmds
+#> ℹ [2026-11-02 15:27:14] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-02 15:27:14] Reorder clusters...
+#> ℹ [2026-11-02 15:27:14] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-02 15:27:14] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-02 15:27:23] Standard processing workflow completed
 plist1 <- lapply(
   linear_reductions, function(lr) {
     CellDimPlot(
@@ -355,25 +366,25 @@ pancreas_sub <- RunStandardWorkflow(
   linear_reduction = "pca",
   nonlinear_reduction = nonlinear_reductions
 )
-#> ℹ [2026-11-01 23:41:43] Start standard processing workflow...
-#> ℹ [2026-11-01 23:41:43] Checking a list of <Seurat>...
-#> ℹ [2026-11-01 23:41:43] Data 1/1 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-01 23:41:43] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-01 23:41:44] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-01 23:41:44] Number of available HVF: 2000
-#> ℹ [2026-11-01 23:41:44] Finished check
-#> ℹ [2026-11-01 23:41:44] Perform `ScaleData()`
-#> ℹ [2026-11-01 23:41:44] Perform pca linear dimension reduction
-#> ℹ [2026-11-01 23:41:44] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-11-01 23:41:45] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-01 23:41:45] Reorder clusters...
-#> ℹ [2026-11-01 23:41:45] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-01 23:41:45] Perform umap nonlinear dimension reduction
-#> ℹ [2026-11-01 23:41:55] Perform tsne nonlinear dimension reduction
-#> ℹ [2026-11-01 23:41:55] Perform tsne nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-11-01 23:41:57] Perform fr nonlinear dimension reduction
-#> ℹ [2026-11-01 23:41:57] Perform fr nonlinear dimension reduction using Standardpca_SNN
-#> ✔ [2026-11-01 23:41:59] Standard processing workflow completed
+#> ℹ [2026-11-02 15:27:23] Start standard processing workflow...
+#> ℹ [2026-11-02 15:27:23] Checking a list of <Seurat>...
+#> ℹ [2026-11-02 15:27:24] Data 1/1 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-02 15:27:24] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-02 15:27:24] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-02 15:27:24] Number of available HVF: 2000
+#> ℹ [2026-11-02 15:27:24] Finished check
+#> ℹ [2026-11-02 15:27:24] Perform `ScaleData()`
+#> ℹ [2026-11-02 15:27:24] Perform pca linear dimension reduction
+#> ℹ [2026-11-02 15:27:25] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-11-02 15:27:25] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-02 15:27:25] Reorder clusters...
+#> ℹ [2026-11-02 15:27:25] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-02 15:27:25] Perform umap nonlinear dimension reduction
+#> ℹ [2026-11-02 15:27:34] Perform tsne nonlinear dimension reduction
+#> ℹ [2026-11-02 15:27:34] Perform tsne nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-11-02 15:27:36] Perform fr nonlinear dimension reduction
+#> ℹ [2026-11-02 15:27:36] Perform fr nonlinear dimension reduction using Standardpca_SNN
+#> ✔ [2026-11-02 15:27:38] Standard processing workflow completed
 plist2 <- lapply(
   nonlinear_reductions, function(nr) {
     CellDimPlot(
@@ -406,33 +417,33 @@ spatial <- RunStandardWorkflow(
   nonlinear_reduction_dims = 2,
   spatial_variable_features_params = list(nfeatures = 50)
 )
-#> ℹ [2026-11-01 23:41:59] Start standard spot-level spatial workflow...
-#> ◌ [2026-11-01 23:41:59] Running spot-level quality control
-#> ✔ [2026-11-01 23:41:59] Spot QC completed: 1986 evaluated, 1907 Pass, 79 Fail
+#> ℹ [2026-11-02 15:27:38] Start standard spot-level spatial workflow...
+#> ◌ [2026-11-02 15:27:38] Running spot-level quality control
+#> ✔ [2026-11-02 15:27:39] Spot QC completed: 1986 evaluated, 1907 Pass, 79 Fail
 #> ℹ   Scope assay "Spatial", layer "counts"
 #> ℹ   Saved metadata column `SpotQC`
 #> ℹ   Plot returned object `SpatialSpotPlot(<returned_object>, group.by = "SpotQC")`
-#> ℹ [2026-11-01 23:41:59] Start standard processing workflow...
-#> ℹ [2026-11-01 23:41:59] Checking a list of <Seurat>...
-#> ! [2026-11-01 23:41:59] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-11-01 23:41:59] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-11-01 23:42:00] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-01 23:42:00] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-01 23:42:00] Number of available HVF: 2000
-#> ℹ [2026-11-01 23:42:00] Finished check
-#> ℹ [2026-11-01 23:42:00] Perform `ScaleData()`
-#> ℹ [2026-11-01 23:42:00] Perform pca linear dimension reduction
-#> ℹ [2026-11-01 23:42:01] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-01 23:42:01] Reorder clusters...
-#> ℹ [2026-11-01 23:42:01] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-01 23:42:01] Perform umap nonlinear dimension reduction
-#> ✔ [2026-11-01 23:42:13] Standard processing workflow completed
-#> ◌ [2026-11-01 23:42:13] Running spatial variable feature detection
-#> ✔ [2026-11-01 23:42:13] Spatial variable features completed: 2000 tested, 50 ranked in the top set
+#> ℹ [2026-11-02 15:27:39] Start standard processing workflow...
+#> ℹ [2026-11-02 15:27:39] Checking a list of <Seurat>...
+#> ! [2026-11-02 15:27:39] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-02 15:27:39] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-02 15:27:39] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-02 15:27:39] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-02 15:27:39] Number of available HVF: 2000
+#> ℹ [2026-11-02 15:27:39] Finished check
+#> ℹ [2026-11-02 15:27:39] Perform `ScaleData()`
+#> ℹ [2026-11-02 15:27:39] Perform pca linear dimension reduction
+#> ℹ [2026-11-02 15:27:40] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-02 15:27:40] Reorder clusters...
+#> ℹ [2026-11-02 15:27:40] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-02 15:27:40] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-02 15:27:51] Standard processing workflow completed
+#> ◌ [2026-11-02 15:27:51] Running spatial variable feature detection
+#> ✔ [2026-11-02 15:27:51] Spatial variable features completed: 2000 tested, 50 ranked in the top set
 #> ℹ   Scope method "moran" ("cpp" backend); assay "Spatial", layer "data"; 1986 spots; coordinates "raw"
 #> ℹ   Saved full result in returned object tool bundle `SpatialVariableFeatures`
 #> ℹ   Plot returned object `SpatialVariableFeaturePlot(<returned_object>, plot_type = "combined", assay = "Spatial", image = "slice1", coord.cols = c("x", "y"))`
-#> ✔ [2026-11-01 23:42:13] Standard spot-level spatial workflow completed
+#> ✔ [2026-11-02 15:27:51] Standard spot-level spatial workflow completed
 SpatialSpotPlot(spatial, group.by = "SpotQC")
 
 SpatialSpotPlot(
@@ -462,42 +473,42 @@ spatial_bayes <- RunStandardWorkflow(
     )
   )
 )
-#> ℹ [2026-11-01 23:42:14] Start standard spot-level spatial workflow...
-#> ◌ [2026-11-01 23:42:14] Running spot-level quality control
-#> ✔ [2026-11-01 23:42:14] Spot QC completed: 1986 evaluated, 1907 Pass, 79 Fail
+#> ℹ [2026-11-02 15:27:52] Start standard spot-level spatial workflow...
+#> ◌ [2026-11-02 15:27:52] Running spot-level quality control
+#> ✔ [2026-11-02 15:27:52] Spot QC completed: 1986 evaluated, 1907 Pass, 79 Fail
 #> ℹ   Scope assay "Spatial", layer "counts"
 #> ℹ   Saved metadata column `SpotQC`
 #> ℹ   Plot returned object `SpatialSpotPlot(<returned_object>, group.by = "SpotQC")`
-#> ℹ [2026-11-01 23:42:14] Start standard processing workflow...
-#> ℹ [2026-11-01 23:42:14] Checking a list of <Seurat>...
-#> ! [2026-11-01 23:42:14] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-11-01 23:42:14] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-11-01 23:42:14] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-01 23:42:14] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-01 23:42:14] Number of available HVF: 2000
-#> ℹ [2026-11-01 23:42:14] Finished check
-#> ℹ [2026-11-01 23:42:14] Perform `ScaleData()`
-#> ℹ [2026-11-01 23:42:15] Perform pca linear dimension reduction
-#> ℹ [2026-11-01 23:42:15] Use stored estimated dimensions 1:30 for Standardpca
-#> ℹ [2026-11-01 23:42:16] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-01 23:42:16] Reorder clusters...
-#> ℹ [2026-11-01 23:42:16] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-01 23:42:16] Perform umap nonlinear dimension reduction
-#> ✔ [2026-11-01 23:42:28] Standard processing workflow completed
-#> ◌ [2026-11-01 23:42:28] Running spatial variable feature detection
-#> ✔ [2026-11-01 23:42:28] Spatial variable features completed: 2000 tested, 2000 ranked in the top set
+#> ℹ [2026-11-02 15:27:52] Start standard processing workflow...
+#> ℹ [2026-11-02 15:27:52] Checking a list of <Seurat>...
+#> ! [2026-11-02 15:27:52] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-02 15:27:52] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-02 15:27:52] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-02 15:27:52] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-02 15:27:52] Number of available HVF: 2000
+#> ℹ [2026-11-02 15:27:52] Finished check
+#> ℹ [2026-11-02 15:27:52] Perform `ScaleData()`
+#> ℹ [2026-11-02 15:27:52] Perform pca linear dimension reduction
+#> ℹ [2026-11-02 15:27:53] Use stored estimated dimensions 1:30 for Standardpca
+#> ℹ [2026-11-02 15:27:54] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-02 15:27:54] Reorder clusters...
+#> ℹ [2026-11-02 15:27:54] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-02 15:27:54] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-02 15:28:04] Standard processing workflow completed
+#> ◌ [2026-11-02 15:28:04] Running spatial variable feature detection
+#> ✔ [2026-11-02 15:28:04] Spatial variable features completed: 2000 tested, 2000 ranked in the top set
 #> ℹ   Scope method "moran" ("cpp" backend); assay "Spatial", layer "data"; 1986 spots; coordinates "raw"
 #> ℹ   Saved full result in returned object tool bundle `SpatialVariableFeatures`
 #> ℹ   Plot returned object `SpatialVariableFeaturePlot(<returned_object>, plot_type = "combined", assay = "Spatial", image = "slice1", coord.cols = c("x", "y"))`
-#> ℹ [2026-11-01 23:42:28] Convert <Seurat> to <SingleCellExperiment> for BayesSpace
-#> ℹ [2026-11-01 23:42:29] Run BayesSpace spatial clustering with `q = 3`
+#> ℹ [2026-11-02 15:28:05] Convert <Seurat> to <SingleCellExperiment> for BayesSpace
+#> ℹ [2026-11-02 15:28:05] Run BayesSpace spatial clustering with `q = 3`
 #> Neighbors were identified for 1974 out of 1986 spots.
 #> Fitting model...
 #> Calculating labels using iterations 51 through 200.
-#> ✔ [2026-11-01 23:42:34] BayesSpace completed: 1986 spots, 3 domains, domain size 131-1308
+#> ✔ [2026-11-02 15:28:10] BayesSpace completed: 1986 spots, 3 domains, domain size 131-1308
 #> ℹ   Scope assay "Spatial", image "slice1", raw coordinates
 #> ℹ   Saved metadata column `BayesSpace_cluster` and returned object tool bundle `BayesSpace`
 #> ℹ   Plot returned object `SpatialSpotPlot(<returned_object>, group.by = "BayesSpace_cluster", image = "slice1")`
-#> ✔ [2026-11-01 23:42:35] Standard spot-level spatial workflow completed
+#> ✔ [2026-11-02 15:28:10] Standard spot-level spatial workflow completed
 SpatialSpotPlot(spatial_bayes, group.by = "BayesSpace_cluster")
 ```

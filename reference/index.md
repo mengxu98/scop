@@ -591,11 +591,15 @@
 
 - [`RunATACQC()`](https://mengxu98.github.io/scop/reference/RunATACQC.md)
   : Run scATAC quality control metrics
+- [`ATACFragmentPlot()`](https://mengxu98.github.io/scop/reference/ATACFragmentPlot.md)
+  : Plot ATAC fragment lengths
 - [`CoverageTrackPlot()`](https://mengxu98.github.io/scop/reference/CoverageTrackPlot.md)
   : Coverage track plot for ATAC data
 
 ### Peak Definition and Annotation
 
+- [`CallATACPeaks()`](https://mengxu98.github.io/scop/reference/CallATACPeaks.md)
+  : Call MACS2 peaks for explicitly selected capture groups
 - [`CombineATACPeaks()`](https://mengxu98.github.io/scop/reference/CombineATACPeaks.md)
   : Combine explicit peak sets into one common interval universe
 - [`RecountATAC()`](https://mengxu98.github.io/scop/reference/RecountATAC.md)
@@ -607,6 +611,8 @@
 
 ### Motifs and Accessibility Deviations
 
+- [`ATACMotifPlot()`](https://mengxu98.github.io/scop/reference/ATACMotifPlot.md)
+  : Plot motif sequence logos
 - [`AddATACMotifs()`](https://mengxu98.github.io/scop/reference/AddATACMotifs.md)
   : Add native motif matches and sequence statistics
 - [`RunMotifEnrichment()`](https://mengxu98.github.io/scop/reference/RunMotifEnrichment.md)

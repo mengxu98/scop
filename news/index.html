@@ -37,6 +37,12 @@
     <li><a class="dropdown-item" href="../articles/spatial-platform-workflows.html">Spatial imports and standard workflow methods</a></li>
     <li><a class="dropdown-item" href="../articles/spatial-framework-bridges.html">Spatial framework bridges</a></li>
     <li><a class="dropdown-item" href="../articles/spatial-benchmark-workflow.html">Spatial domain benchmark workflow</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>ATAC and Multiome</h6></li>
+    <li><a class="dropdown-item" href="../articles/atac-matrix-workflow.html">ATAC from a common peak matrix</a></li>
+    <li><a class="dropdown-item" href="../articles/atac-fragments-workflow.html">ATAC fragments, peak calling and recount</a></li>
+    <li><a class="dropdown-item" href="../articles/atac-paired-dar-workflow.html">ATAC DAR with paired biological samples</a></li>
+    <li><a class="dropdown-item" href="../articles/atac-paired-wnn-workflow.html">Paired RNA and ATAC with WNN</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="active nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -64,7 +70,8 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="scop-development-version">scop (development version)<a class="anchor" aria-label="anchor" href="#scop-development-version"></a></h2>
-<ul><li><p>Add <code><a href="../reference/RunCellOracle.html">RunCellOracle()</a></code> and <code><a href="../reference/CellOraclePlot.html">CellOraclePlot()</a></code> for the official CellOracle 0.20.0 workflow, saved-model reuse, original displacement/randomized controls and a standalone Linux/macOS Python environment profile.</p></li>
+<ul><li><p>Add <code><a href="../reference/ATACFragmentPlot.html">ATACFragmentPlot()</a></code> for regional fragment-length diagnostics with explicit barcode mappings.</p></li>
+<li><p>Add <code><a href="../reference/RunCellOracle.html">RunCellOracle()</a></code> and <code><a href="../reference/CellOraclePlot.html">CellOraclePlot()</a></code> for the official CellOracle 0.20.0 workflow, saved-model reuse, original displacement/randomized controls and a standalone Linux/macOS Python environment profile.</p></li>
 <li><p><code>EnrichmentPlot(plot_type = "rank")</code> plots stored ORA terms by enrichment magnitude, with group colors, solid-point sizes, bold halo labels, <code>grid_major</code> reference grids, and zero-void panel bounds.</p></li>
 <li><p><strong>feat</strong>: <code><a href="../reference/GroupHeatmap.html">GroupHeatmap()</a></code> accepts <code>legend_params</code> to customize expression and percent legends independently, including horizontal color bars and single-row dot legends.</p></li>
 <li>
@@ -76,9 +83,10 @@
 </ul></li>
 <li>
 <p><strong>feat</strong>:</p>
-<ul><li>Extend <code><a href="../reference/FeatureDimPlot.html">FeatureDimPlot()</a></code> density, palette and title controls. Embedding plots default to <code>label_insitu = TRUE</code>; <code>FALSE</code> uses numbered labels. DE, volcano, Manhattan and ring plots accept standalone tables. Honor CNV palettes, SCENIC reductions and thisplot Pastel1 volcano overlays.</li>
-<li>Add ATAC/multiome reading, QC, annotation, shared peaks, native Signac recounting, raw-range motifs, ChromVAR, gene activity, peak linking and complete exports. Preserve capture/cell/region alignment, doublet aggregation, native ties, fragment FRiP, eligible backgrounds, bias correction and measured pairing. Sample-level edgeR validates replicates, pairs and covariates.</li>
-<li>Add experimental IREA analysis, plots and checksum-checked resources with contrast provenance; official-portal equivalence remains unestablished.</li>
+<ul><li><p>Make ATAC workflows fail on requested graph, clustering or embedding errors, retain dimension/depth records, and fit default LSI dimensions to small inputs. WNN preserves complete modality assays and validates paired cells, normalizes SCT RNA separately from ATAC, and supports graph-only analysis. Peak calling resolves MACS2 from PATH and retains capture/group records after failure. Add an executable ATAC matrix quick start and complete the DAR motif recipe.</p></li>
+<li><p>Extend <code><a href="../reference/FeatureDimPlot.html">FeatureDimPlot()</a></code> density, palette and title controls. Embedding plots default to <code>label_insitu = TRUE</code>; <code>FALSE</code> uses numbered labels. DE, volcano, Manhattan and ring plots accept standalone tables. Honor CNV palettes, SCENIC reductions and thisplot Pastel1 volcano overlays.</p></li>
+<li><p>Add ATAC/multiome reading, QC, annotation, shared peaks, native Signac recounting, raw-range motifs, ChromVAR, gene activity, peak linking and complete exports. Preserve capture/cell/region alignment, doublet aggregation, native ties, fragment FRiP, eligible backgrounds, bias correction and measured pairing. Sample-level edgeR validates replicates, pairs and covariates.</p></li>
+<li><p>Add experimental IREA analysis, plots and checksum-checked resources with contrast provenance; official-portal equivalence remains unestablished.</p></li>
 </ul></li>
 <li>
 <p><strong>change</strong>:</p>

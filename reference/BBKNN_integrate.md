@@ -110,7 +110,8 @@ BBKNN_integrate(
 
   Linear reduction (`"pca"`, `"svd"`, `"ica"`, `"nmf"`, `"mds"`,
   `"glmpca"`). `linear_reduction_dims_use = NULL` uses estimated
-  dimensions, else the first 50.
+  dimensions unless the method specifies a different default; explicit
+  values select computed components.
 
 - nonlinear_reduction:
 
