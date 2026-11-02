@@ -1,0 +1,223 @@
+---
+title: "ATAC DAR with paired biological samples"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(eval = FALSE, error = FALSE, collapse = TRUE, comment = "#>")
+```
+
+## Biological design and provenance
+
+Use [GSE178428](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE178428):
+Control and LPS at 6 h, Donor1--4, hg19. The experimental units are the four
+donors measured under both conditions. Cells and technical libraries are not
+additional independent biological replicates.
+
+Prepare the series peak file and GEO cell metadata, plus these eight sample
+fragment files: GSM5390937--GSM5390940 (Control) and
+GSM5390957--GSM5390960 (LPS). GEO cell metadata contains capture and donor fields
+but no cell-type labels. The authors' [archived Shiny data](https://doi.org/10.5281/zenodo.6820097)
+provides `prep/stim_ATAC_paired_cellMeta.rds`, including `pairedLabel`.
+All 62,219 author-labelled barcodes occur in the 67,581-row GEO table; shared
+condition, stimulus, experiment and donor fields must agree before joining.
+The other 5,362 GEO cells are outside that author-labelled population.
+
+These labels come from the study's computational RNA/ATAC pairing. They do not
+turn this dataset into experimentally paired multiome measurements for LinkPeaks.
+
+```{r select-cells}
+data_dir <- "atac_dar_data"
+dir.create(data_dir)
+series <- "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE178nnn/GSE178428/suppl/"
+for (file in c("GSE178428_PBMCs_stim_peaks.bed.gz", "GSE178428_PBMCs_stim_scATACseq_cellMeta.txt.gz")) {
+  utils::download.file(paste0(series, file), file.path(data_dir, file), mode = "wb")
+}
+archive <- file.path(data_dir, "stimFigRShiny.zip")
+utils::download.file("https://zenodo.org/api/records/6820097/files/stimFigRShiny.zip/content",
+  archive, mode = "wb")
+annotation_file <- "stimFigRShiny/prep/stim_ATAC_paired_cellMeta.rds"
+utils::unzip(archive, files = annotation_file, exdir = data_dir)
+author <- readRDS(file.path(data_dir, annotation_file))
+geo <- utils::read.delim(gzfile(file.path(data_dir,
+  "GSE178428_PBMCs_stim_scATACseq_cellMeta.txt.gz")), row.names = 1)
+stopifnot(all(rownames(author) %in% rownames(geo)))
+for (field in c("Condition", "StimType", "Experiment", "Donor")) {
+  stopifnot(identical(as.character(author[[field]]),
+    as.character(geo[rownames(author), field])))
+}
+metadata <- author[author$Condition %in% c("Control_6h", "LPS_6h") &
+  author$pairedLabel == "CD14_Mono", , drop = FALSE]
+metadata$sample <- metadata$Experiment
+metadata$condition <- factor(metadata$StimType, levels = c("Control", "LPS"))
+metadata$donor <- factor(metadata$Donor)
+metadata$celltype <- metadata$pairedLabel
+table(metadata$donor, metadata$condition)
+```
+
+This selects 1,151 CD14 monocytes. Control has 160/181/229/302 cells across
+Donor1--4; LPS has 57/21/68/133. All eight samples exceed the example's
+10-cell minimum. Retain every donor rather than manufacturing replication by
+splitting cells.
+
+## Explicit interval and barcode contracts
+
+GEO labels `GSE178428_PBMCs_stim_peaks.bed.gz` as BED. Standard BED interpretation
+uses 0-based half-open intervals. There is a source discrepancy: every supplied
+`end - start` is 300, whereas the methods describe 301-bp windows. Declare the
+chosen interpretation and retain this limitation; do not silently shift starts
+or claim an exact reconstruction of the authors' original peak ranges.
+
+```{r peak-universe}
+bed <- utils::read.delim(gzfile(file.path(data_dir,
+  "GSE178428_PBMCs_stim_peaks.bed.gz")), header = FALSE)
+bed <- bed[bed[[1]] == "chr1", 1:3]
+names(bed) <- c("seqnames", "start", "end")
+peaks <- GenomicRanges::makeGRangesFromDataFrame(bed, starts.in.df.are.0based = TRUE)
+GenomeInfoDb::genome(peaks) <- "hg19"
+```
+
+The worked computation uses the common 20,950 chr1 intervals, not a separate
+feature universe for each sample. Its statistical family is therefore
+chromosome-scoped. Never substitute the hg38 resources from the PBMC example.
+
+Original fragment files have four columns and no read-support field. For Signac
+input, retain each genuine selected record and append a fifth value of one;
+this encodes record multiplicity and does not reconstruct read support. Bgzip
+and index the prepared files without changing interval endpoints. Preserve the
+original files and record the transformation.
+
+Cell metadata uses `6h` in cell IDs while most fragment barcodes use `6hr`.
+Use the supplied `Experiment` field plus the verified barcode suffix, not a
+generic suffix-stripping rule. LPS Donor2 has `6h` inside its fragment barcodes
+despite `6hr` in the filename. Verify actual barcode membership for all cells.
+
+```{r explicit-mapping}
+suffix <- sub("^.*(_BC[0-9]+_N[0-9]+)$", "\\1", rownames(metadata))
+stopifnot(all(paste0(sub("_6hr_", "_6h_", metadata$Experiment, fixed = TRUE), suffix) == rownames(metadata)))
+metadata$fragment_barcode <- paste0(metadata$Experiment, suffix)
+sample_ids <- c(paste0("Control_6hr_Donor", 1:4, "_S1"),
+  "LPS_6hr_Donor1_S1", "LPS_6h_Donor2_S1", "LPS_6hr_Donor3_S1", "LPS_6hr_Donor4_S1")
+gsm <- c(5390937:5390940, 5390957:5390960)
+file_ids <- sample_ids
+file_ids[[6]] <- "LPS_6hr_Donor2_S1" # Verified filename; barcode prefix remains 6h.
+fragment_files <- stats::setNames(file.path(data_dir, paste0("dar-", sample_ids, "-chr1.tsv.gz")), sample_ids)
+maps <- lapply(names(fragment_files), function(sample) {
+  cells <- metadata[metadata$Experiment == sample, , drop = FALSE]
+  stats::setNames(cells$fragment_barcode, rownames(cells))
+})
+prepare_bap <- function(source, target, barcodes) {
+  stopifnot(!file.exists(target))
+  input <- gzfile(source, "rt")
+  output <- file(target, "wt")
+  on.exit({ close(input); close(output) })
+  repeat {
+    lines <- readLines(input, n = 100000, warn = FALSE)
+    if (!length(lines)) break
+    fields <- strsplit(lines, "\t", fixed = TRUE)
+    stopifnot(all(lengths(fields) == 4L))
+    keep <- vapply(fields, function(x) x[[1]] == "chr1" && x[[4]] %in% barcodes, logical(1))
+    if (any(keep)) writeLines(paste0(lines[keep], "\t1"), output)
+  }
+}
+for (i in seq_along(sample_ids)) {
+  file <- paste0("GSM", gsm[i], "_", file_ids[i], ".fragments.tsv.gz")
+  source <- file.path(data_dir, file)
+  url <- paste0("https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5390nnn/GSM", gsm[i], "/suppl/", file)
+  utils::download.file(url, source, mode = "wb")
+  plain <- sub("[.]gz$", "", fragment_files[i])
+  prepare_bap(source, plain, unname(maps[[i]]))
+  Rsamtools::bgzip(plain, dest = fragment_files[i])
+  Rsamtools::indexTabix(fragment_files[i], format = "bed")
+}
+fragments <- Map(function(file, cells) Signac::CreateFragmentObject(file, cells = cells),
+  fragment_files, maps)
+matrices <- Map(function(fragment, mapping) {
+  Signac::FeatureMatrix(fragment, features = peaks, cells = names(mapping))
+}, fragments, maps)
+counts <- do.call(cbind, unname(matrices))
+atac <- scop::ReadATACData(counts, ranges = peaks, genome = "hg19",
+  metadata = metadata[colnames(counts), , drop = FALSE],
+  fragments = unname(fragment_files), fragment.cells = maps)
+```
+
+## Paired edgeR QL model
+
+Within this cell type, aggregate raw peak counts by the eight sample IDs.
+`~ donor + condition` accounts for donor-specific baselines. A complete named
+contrast makes positive log-fold-change mean LPS relative to Control.
+
+```{r paired-dar}
+samples <- metadata[!duplicated(metadata$sample), , drop = FALSE]
+design_matrix <- stats::model.matrix(~ donor + condition, samples)
+contrast <- stats::setNames(rep(0, ncol(design_matrix)), colnames(design_matrix))
+contrast["conditionLPS"] <- 1
+atac <- scop::RunDEtest(atac,
+  test.use = "edgeR", assay = "peaks", layer = "counts", feature_type = "peak",
+  group.by = "celltype", sample_col = "sample", condition_col = "condition",
+  group1 = "Control", group2 = "LPS", min.cells.sample = 10,
+  design = ~ donor + condition, contrast = contrast,
+  only.pos = FALSE, fc.threshold = 1, p.adjust.method = "BH")
+model <- atac@tools$DEtest_celltype$edgeR_models$CD14_Mono
+model$sample_inventory
+model$design
+model$contrast
+complete_results <- model$full_results
+```
+
+SCOP passes the counts and design to native edgeR filtering, TMM normalization,
+dispersion estimation and robust QL fitting/testing. The receipt retains raw
+pseudobulk counts, true cell membership, design/contrast, normalization, tested
+and filtered features, full results and backend versions. Missing combinations
+are not invented as zero-count samples. This model has eight samples, five
+design columns and three residual degrees of freedom.
+
+BH correction uses the full filterByExpr-tested family before display filtering.
+The compatibility column `p_val_adj` uses the requested adjustment; the explicit
+`p_val_BH` remains available. Nonsignificance and a fully filtered empty result
+are valid outcomes, not reasons to switch statistical engines.
+
+## Connect DAR to motifs and export
+
+Prepare a matching hg19 reference and the desired PWM collection explicitly:
+
+```{r prepare-motif-reference}
+fasta_gz <- file.path(data_dir, "hg19-chr1.fa.gz")
+utils::download.file(
+  "https://hgdownload.soe.ucsc.edu/goldenPath/hg19/chromosomes/chr1.fa.gz",
+  fasta_gz, mode = "wb")
+fasta <- file.path(data_dir, "hg19-chr1.fa")
+Biostrings::writeXStringSet(Biostrings::readDNAStringSet(fasta_gz), fasta)
+Rsamtools::indexFa(fasta)
+hg19_reference <- Rsamtools::FaFile(fasta)
+pfm <- TFBSTools::getMatrixSet(JASPAR2020::JASPAR2020, opts = list(
+  ID = c("MA0139.1", "MA0080.5", "MA0105.4", "MA0107.1", "MA0039.4", "MA0466.2", "MA0098.3")))
+```
+
+Keep
+upregulated and downregulated foregrounds separate and use the full tested
+universe, not only significant peaks, as the eligible population.
+
+```{r motif-connection}
+foreground <- rownames(complete_results)[complete_results$p_val_BH < 0.05 &
+  complete_results$avg_log2FC > 0]
+tables <- list(DAR = complete_results, samples = model$sample_inventory)
+if (length(foreground)) {
+  atac <- scop::AddATACMotifs(atac, hg19_reference, pfm, genome.id = "hg19")
+  enriched <- scop::RunMotifEnrichment(atac, features = foreground,
+    universe = model$tested_features, n.background = 1000, seed = 19)
+  enriched$receipt
+  tables$motifs <- enriched$results
+} else {
+  message("No positive BH-significant peaks; save the complete DAR results without a motif test.")
+}
+scop::ExportATACResults(atac, outdir = "paired_DAR_export", assay = "peaks",
+  tables = tables)
+# In a fresh session:
+restored <- readRDS("paired_DAR_export/object.rds")
+stopifnot(scop::CheckATACData(restored)$valid)
+```
+
+Inspect the foreground first; an empty foreground is not evidence of absent TF
+regulation. Motif P-values are one-sided sequence over-enrichment tests. A fold
+enrichment below one does not constitute a separate under-enrichment test, and
+enrichment does not demonstrate binding or causality.
