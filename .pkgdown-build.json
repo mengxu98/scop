@@ -1,5 +1,5 @@
 {
-  "source": "81f648c8eee1676b7a13805590bf3c63cba05fd7",
+  "source": "265891f3a98320aa08a80df40d1e750a7416eb5c",
   "R": "4.6.2",
   "packages": {
     "abind": "1.4-8:1.4-8",
@@ -20,6 +20,7 @@
     "AUCell": "1.34.0:1.34.0",
     "Augur": "1.0.3:b252b84e4af687d9817813b1db409267eb44ec3f",
     "backports": "1.5.1:1.5.1",
+    "Banksy": "1.8.1:1.8.1",
     "base64enc": "0.1-6:0.1-6",
     "batchelor": "1.28.0:1.28.0",
     "BayesSpace": "1.22.0:1.22.0",
@@ -426,6 +427,7 @@
     "RcppDist": "0.1.1.1:0.1.1.1",
     "RcppEigen": "0.3.4.0.2:0.3.4.0.2",
     "RcppHNSW": "0.7.0:0.7.0",
+    "RcppHungarian": "0.3:0.3",
     "RcppML": "0.3.7.1:0.3.7.1",
     "RcppParallel": "6.2.1:6.2.1",
     "RcppPlanc": "2.0.16:2.0.16",

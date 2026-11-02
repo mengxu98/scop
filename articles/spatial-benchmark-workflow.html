@@ -176,17 +176,13 @@ tissue.</p>
 <span></span>
 <span><span class="va">bench</span><span class="op">$</span><span class="va">summary</span></span>
 <span><span class="co">#&gt;        method      workflow ARI NMI purity runtime_s baseline_memory_mb</span></span>
-<span><span class="co">#&gt; 1  BayesSpace SpatialDomain   1   1      1    14.577           291.3906</span></span>
-<span><span class="co">#&gt; 2      BANKSY SpatialDomain  NA  NA     NA        NA                 NA</span></span>
-<span><span class="co">#&gt; 3 SmoothClust SpatialDomain   1   1      1     6.495           291.2812</span></span>
-<span><span class="co">#&gt;   peak_memory_mb memory_delta_mb n_evaluated n_clusters      status</span></span>
-<span><span class="co">#&gt; 1      1069.9609        778.5703          36          3     success</span></span>
-<span><span class="co">#&gt; 2             NA              NA           0         NA unavailable</span></span>
-<span><span class="co">#&gt; 3       980.7812        689.5000          36          3     success</span></span>
-<span><span class="co">#&gt;            error</span></span>
-<span><span class="co">#&gt; 1               </span></span>
-<span><span class="co">#&gt; 2 Banksy=missing</span></span>
-<span><span class="co">#&gt; 3</span></span></code></pre></div>
+<span><span class="co">#&gt; 1  BayesSpace SpatialDomain   1   1      1    15.268           289.4531</span></span>
+<span><span class="co">#&gt; 2      BANKSY SpatialDomain   1   1      1     7.369           289.4219</span></span>
+<span><span class="co">#&gt; 3 SmoothClust SpatialDomain   1   1      1     6.730           289.4805</span></span>
+<span><span class="co">#&gt;   peak_memory_mb memory_delta_mb n_evaluated n_clusters  status error</span></span>
+<span><span class="co">#&gt; 1      1068.9961        779.5430          36          3 success      </span></span>
+<span><span class="co">#&gt; 2       974.4453        685.0234          36          3 success      </span></span>
+<span><span class="co">#&gt; 3       978.8672        689.3867          36          3 success</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="inspect-the-result-object">Inspect the result object<a class="anchor" aria-label="anchor" href="#inspect-the-result-object"></a>
@@ -206,17 +202,17 @@ tissue.</p>
 <span><span class="co">#&gt; 'data.frame':    3 obs. of  13 variables:</span></span>
 <span><span class="co">#&gt;  $ method            : chr  "BayesSpace" "BANKSY" "SmoothClust"</span></span>
 <span><span class="co">#&gt;  $ workflow          : chr  "SpatialDomain" "SpatialDomain" "SpatialDomain"</span></span>
-<span><span class="co">#&gt;  $ ARI               : num  1 NA 1</span></span>
-<span><span class="co">#&gt;  $ NMI               : num  1 NA 1</span></span>
-<span><span class="co">#&gt;  $ purity            : num  1 NA 1</span></span>
-<span><span class="co">#&gt;  $ runtime_s         : num  14.6 NA 6.5</span></span>
-<span><span class="co">#&gt;  $ baseline_memory_mb: num  291 NA 291</span></span>
-<span><span class="co">#&gt;  $ peak_memory_mb    : num  1070 NA 981</span></span>
-<span><span class="co">#&gt;  $ memory_delta_mb   : num  779 NA 690</span></span>
-<span><span class="co">#&gt;  $ n_evaluated       : int  36 0 36</span></span>
-<span><span class="co">#&gt;  $ n_clusters        : int  3 NA 3</span></span>
-<span><span class="co">#&gt;  $ status            : chr  "success" "unavailable" "success"</span></span>
-<span><span class="co">#&gt;  $ error             : chr  "" "Banksy=missing" ""</span></span>
+<span><span class="co">#&gt;  $ ARI               : num  1 1 1</span></span>
+<span><span class="co">#&gt;  $ NMI               : num  1 1 1</span></span>
+<span><span class="co">#&gt;  $ purity            : num  1 1 1</span></span>
+<span><span class="co">#&gt;  $ runtime_s         : num  15.27 7.37 6.73</span></span>
+<span><span class="co">#&gt;  $ baseline_memory_mb: num  289 289 289</span></span>
+<span><span class="co">#&gt;  $ peak_memory_mb    : num  1069 974 979</span></span>
+<span><span class="co">#&gt;  $ memory_delta_mb   : num  780 685 689</span></span>
+<span><span class="co">#&gt;  $ n_evaluated       : int  36 36 36</span></span>
+<span><span class="co">#&gt;  $ n_clusters        : int  3 3 3</span></span>
+<span><span class="co">#&gt;  $ status            : chr  "success" "success" "success"</span></span>
+<span><span class="co">#&gt;  $ error             : chr  "" "" ""</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">bench</span><span class="op">$</span><span class="va">predictions</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   spot_id gold_standard     method prediction</span></span>
 <span><span class="co">#&gt; 1   spot1          left BayesSpace          1</span></span>

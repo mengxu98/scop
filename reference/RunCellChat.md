@@ -108,37 +108,37 @@ A `Seurat` object with `CellChat` results stored in
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-11-02 16:30:20] Start standard processing workflow...
-#> ℹ [2026-11-02 16:30:20] Checking a list of <Seurat>...
-#> ! [2026-11-02 16:30:20] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-11-02 16:30:20] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-11-02 16:30:20] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-02 16:30:20] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-02 16:30:20] Number of available HVF: 2000
-#> ℹ [2026-11-02 16:30:20] Finished check
-#> ℹ [2026-11-02 16:30:20] Perform `ScaleData()`
-#> ℹ [2026-11-02 16:30:20] Perform pca linear dimension reduction
-#> ℹ [2026-11-02 16:30:21] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-11-02 16:30:21] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-02 16:30:21] Reorder clusters...
-#> ℹ [2026-11-02 16:30:21] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-02 16:30:21] Perform umap nonlinear dimension reduction
-#> ✔ [2026-11-02 16:30:29] Standard processing workflow completed
+#> ℹ [2026-11-02 18:07:02] Start standard processing workflow...
+#> ℹ [2026-11-02 18:07:02] Checking a list of <Seurat>...
+#> ! [2026-11-02 18:07:02] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-02 18:07:02] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-02 18:07:02] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-02 18:07:02] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-02 18:07:02] Number of available HVF: 2000
+#> ℹ [2026-11-02 18:07:02] Finished check
+#> ℹ [2026-11-02 18:07:02] Perform `ScaleData()`
+#> ℹ [2026-11-02 18:07:02] Perform pca linear dimension reduction
+#> ℹ [2026-11-02 18:07:03] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-11-02 18:07:03] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-02 18:07:03] Reorder clusters...
+#> ℹ [2026-11-02 18:07:03] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-02 18:07:03] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-02 18:07:12] Standard processing workflow completed
 pancreas_sub <- RunCellChat(
   pancreas_sub,
   group.by = "CellType",
   species = "Mus_musculus"
 )
-#> ℹ [2026-11-02 16:30:29] Start CellChat analysis
+#> ℹ [2026-11-02 18:07:12] Start CellChat analysis
 #> [1] "Create a CellChat object from a data matrix"
 #> Set cell identities for the new CellChat object 
 #> The cell groups used for CellChat analysis are  Ductal, Endocrine, Ngn3-high-EP, Ngn3-low-EP, Pre-endocrine 
-#> ! [2026-11-02 16:30:29] Function "CellChatDB.mouse" not found in CellChat namespace
+#> ! [2026-11-02 18:07:12] Function "CellChatDB.mouse" not found in CellChat namespace
 #> The number of highly variable ligand-receptor pairs used for signaling inference is 841 
 #> triMean is used for calculating the average gene expression per cell group. 
-#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-11-02 16:30:32.313934]"
-#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-11-02 16:30:43.915233]"
-#> ✔ [2026-11-02 16:30:44] CellChat analysis completed
+#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-11-02 18:07:14.540041]"
+#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-11-02 18:07:26.292364]"
+#> ✔ [2026-11-02 18:07:26] CellChat analysis completed
 
 CCCNetworkPlot(
   pancreas_sub,

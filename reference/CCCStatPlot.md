@@ -318,23 +318,23 @@ A ggplot or recorded base plot object.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-11-02 16:04:37] Start standard processing workflow...
-#> ℹ [2026-11-02 16:04:38] Checking a list of <Seurat>...
-#> ! [2026-11-02 16:04:38] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-02 17:42:36] Start standard processing workflow...
+#> ℹ [2026-11-02 17:42:36] Checking a list of <Seurat>...
+#> ! [2026-11-02 17:42:36] Data 1/1 of the `srt_list` is "unknown"
 #> Warning: Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-11-02 16:04:38] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-11-02 16:04:38] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-02 16:04:38] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-02 16:04:38] Number of available HVF: 2000
-#> ℹ [2026-11-02 16:04:38] Finished check
-#> ℹ [2026-11-02 16:04:38] Perform `ScaleData()`
-#> ℹ [2026-11-02 16:04:38] Perform pca linear dimension reduction
-#> ℹ [2026-11-02 16:04:40] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-11-02 16:04:40] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-02 16:04:40] Reorder clusters...
-#> ℹ [2026-11-02 16:04:40] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-02 16:04:40] Perform umap nonlinear dimension reduction
-#> ✔ [2026-11-02 16:04:45] Standard processing workflow completed
+#> ℹ [2026-11-02 17:42:36] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-02 17:42:36] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-02 17:42:36] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-02 17:42:36] Number of available HVF: 2000
+#> ℹ [2026-11-02 17:42:36] Finished check
+#> ℹ [2026-11-02 17:42:36] Perform `ScaleData()`
+#> ℹ [2026-11-02 17:42:36] Perform pca linear dimension reduction
+#> ℹ [2026-11-02 17:42:38] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-11-02 17:42:38] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-02 17:42:38] Reorder clusters...
+#> ℹ [2026-11-02 17:42:38] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-02 17:42:38] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-02 17:42:44] Standard processing workflow completed
 
 pc1 <- Seurat::Embeddings(pancreas_sub, "Standardpca")[, 1]
 ct <- as.character(pancreas_sub$CellType)
@@ -352,30 +352,30 @@ pancreas_sub <- RunCellChat(
   group_cmp = list(c("ConditionA", "ConditionB")),
   species = "Mus_musculus"
 )
-#> ℹ [2026-11-02 16:04:45] Start CellChat analysis
-#> ℹ [2026-11-02 16:04:45] Processing condition: "ConditionB"
+#> ℹ [2026-11-02 17:42:44] Start CellChat analysis
+#> ℹ [2026-11-02 17:42:44] Processing condition: "ConditionB"
 #> [1] "Create a CellChat object from a data matrix"
 #> Set cell identities for the new CellChat object 
 #> The cell groups used for CellChat analysis are  Ductal, Endocrine, Ngn3-high-EP, Ngn3-low-EP, Pre-endocrine 
-#> ! [2026-11-02 16:04:46] Function "CellChatDB.mouse" not found in CellChat namespace
+#> ! [2026-11-02 17:42:44] Function "CellChatDB.mouse" not found in CellChat namespace
 #> Warning: Function "CellChatDB.mouse" not found in CellChat namespace
 #> The number of highly variable ligand-receptor pairs used for signaling inference is 554 
 #> triMean is used for calculating the average gene expression per cell group. 
-#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-11-02 16:04:47.523948]"
-#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-11-02 16:04:56.669692]"
-#> ℹ [2026-11-02 16:04:56] Processing condition: "ConditionA"
+#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-11-02 17:42:46.149768]"
+#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-11-02 17:42:55.370144]"
+#> ℹ [2026-11-02 17:42:55] Processing condition: "ConditionA"
 #> [1] "Create a CellChat object from a data matrix"
 #> Set cell identities for the new CellChat object 
 #> The cell groups used for CellChat analysis are  Ductal, Endocrine, Ngn3-high-EP, Ngn3-low-EP, Pre-endocrine 
-#> ! [2026-11-02 16:04:57] Function "CellChatDB.mouse" not found in CellChat namespace
+#> ! [2026-11-02 17:42:55] Function "CellChatDB.mouse" not found in CellChat namespace
 #> Warning: Function "CellChatDB.mouse" not found in CellChat namespace
 #> The number of highly variable ligand-receptor pairs used for signaling inference is 598 
 #> triMean is used for calculating the average gene expression per cell group. 
-#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-11-02 16:04:58.576563]"
-#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-11-02 16:05:09.253336]"
-#> ℹ [2026-11-02 16:05:09] Merging CellChat objects for comparison "ConditionA_vs_ConditionB"
+#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-11-02 17:42:57.278375]"
+#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-11-02 17:43:08.020327]"
+#> ℹ [2026-11-02 17:43:08] Merging CellChat objects for comparison "ConditionA_vs_ConditionB"
 #> Merge the following slots: 'data.signaling','images','net', 'netP','meta', 'idents', 'var.features' , 'DB', and 'LR'.
-#> ✔ [2026-11-02 16:05:09] CellChat analysis completed
+#> ✔ [2026-11-02 17:43:08] CellChat analysis completed
 
 CCCStatPlot(
   pancreas_sub,
@@ -385,7 +385,7 @@ CCCStatPlot(
   display_by = "aggregation",
   top_n = 20
 )
-#> ! [2026-11-02 16:05:10] `thisplot::StatPlot()` sankey is count-based. For `CCCStatPlot()` with `plot_type = 'sankey'`, `edge_value` is used to rank/filter pairs, but flow width is shown by interaction count.
+#> ! [2026-11-02 17:43:08] `thisplot::StatPlot()` sankey is count-based. For `CCCStatPlot()` with `plot_type = 'sankey'`, `edge_value` is used to rank/filter pairs, but flow width is shown by interaction count.
 #> Warning: `thisplot::StatPlot()` sankey is count-based. For `CCCStatPlot()` with `plot_type = 'sankey'`, `edge_value` is used to rank/filter pairs, but flow width is shown by interaction count.
 
 
@@ -453,7 +453,7 @@ CCCStatPlot(
   plot_type = "gene",
   signaling = "MK"
 )
-#> ℹ [2026-11-02 16:05:16] Setting `group.by` to "Features" as `plot.by` is set to "feature"
+#> ℹ [2026-11-02 17:43:15] Setting `group.by` to "Features" as `plot.by` is set to "feature"
 
 
 CCCStatPlot(

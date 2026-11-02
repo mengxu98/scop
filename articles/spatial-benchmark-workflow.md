@@ -80,17 +80,13 @@ bench <- RunSpatialBenchmark(
 
 bench$summary
 #>        method      workflow ARI NMI purity runtime_s baseline_memory_mb
-#> 1  BayesSpace SpatialDomain   1   1      1    14.577           291.3906
-#> 2      BANKSY SpatialDomain  NA  NA     NA        NA                 NA
-#> 3 SmoothClust SpatialDomain   1   1      1     6.495           291.2812
-#>   peak_memory_mb memory_delta_mb n_evaluated n_clusters      status
-#> 1      1069.9609        778.5703          36          3     success
-#> 2             NA              NA           0         NA unavailable
-#> 3       980.7812        689.5000          36          3     success
-#>            error
-#> 1               
-#> 2 Banksy=missing
-#> 3
+#> 1  BayesSpace SpatialDomain   1   1      1    15.268           289.4531
+#> 2      BANKSY SpatialDomain   1   1      1     7.369           289.4219
+#> 3 SmoothClust SpatialDomain   1   1      1     6.730           289.4805
+#>   peak_memory_mb memory_delta_mb n_evaluated n_clusters  status error
+#> 1      1068.9961        779.5430          36          3 success      
+#> 2       974.4453        685.0234          36          3 success      
+#> 3       978.8672        689.3867          36          3 success
 ```
 
 ## Inspect the result object
@@ -108,17 +104,17 @@ str(bench$summary, max.level = 1)
 #> 'data.frame':    3 obs. of  13 variables:
 #>  $ method            : chr  "BayesSpace" "BANKSY" "SmoothClust"
 #>  $ workflow          : chr  "SpatialDomain" "SpatialDomain" "SpatialDomain"
-#>  $ ARI               : num  1 NA 1
-#>  $ NMI               : num  1 NA 1
-#>  $ purity            : num  1 NA 1
-#>  $ runtime_s         : num  14.6 NA 6.5
-#>  $ baseline_memory_mb: num  291 NA 291
-#>  $ peak_memory_mb    : num  1070 NA 981
-#>  $ memory_delta_mb   : num  779 NA 690
-#>  $ n_evaluated       : int  36 0 36
-#>  $ n_clusters        : int  3 NA 3
-#>  $ status            : chr  "success" "unavailable" "success"
-#>  $ error             : chr  "" "Banksy=missing" ""
+#>  $ ARI               : num  1 1 1
+#>  $ NMI               : num  1 1 1
+#>  $ purity            : num  1 1 1
+#>  $ runtime_s         : num  15.27 7.37 6.73
+#>  $ baseline_memory_mb: num  289 289 289
+#>  $ peak_memory_mb    : num  1069 974 979
+#>  $ memory_delta_mb   : num  780 685 689
+#>  $ n_evaluated       : int  36 36 36
+#>  $ n_clusters        : int  3 3 3
+#>  $ status            : chr  "success" "success" "success"
+#>  $ error             : chr  "" "" ""
 head(bench$predictions)
 #>   spot_id gold_standard     method prediction
 #> 1   spot1          left BayesSpace          1

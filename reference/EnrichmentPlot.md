@@ -378,30 +378,30 @@ EnrichmentPlot(res = rank_result, db = "custom", plot_type = "rank",
 
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-11-02 16:15:43] Start standard processing workflow...
-#> ℹ [2026-11-02 16:15:43] Checking a list of <Seurat>...
-#> ! [2026-11-02 16:15:43] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-11-02 16:15:43] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-11-02 16:15:43] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-02 16:15:43] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-02 16:15:43] Number of available HVF: 2000
-#> ℹ [2026-11-02 16:15:43] Finished check
-#> ℹ [2026-11-02 16:15:43] Perform `ScaleData()`
-#> ℹ [2026-11-02 16:15:43] Perform pca linear dimension reduction
-#> ℹ [2026-11-02 16:15:44] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-11-02 16:15:44] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-02 16:15:44] Reorder clusters...
-#> ℹ [2026-11-02 16:15:44] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-02 16:15:44] Perform umap nonlinear dimension reduction
-#> ✔ [2026-11-02 16:15:51] Standard processing workflow completed
+#> ℹ [2026-11-02 17:53:38] Start standard processing workflow...
+#> ℹ [2026-11-02 17:53:38] Checking a list of <Seurat>...
+#> ! [2026-11-02 17:53:38] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-02 17:53:38] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-02 17:53:38] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-02 17:53:38] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-02 17:53:38] Number of available HVF: 2000
+#> ℹ [2026-11-02 17:53:38] Finished check
+#> ℹ [2026-11-02 17:53:38] Perform `ScaleData()`
+#> ℹ [2026-11-02 17:53:38] Perform pca linear dimension reduction
+#> ℹ [2026-11-02 17:53:39] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-11-02 17:53:39] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-02 17:53:39] Reorder clusters...
+#> ℹ [2026-11-02 17:53:39] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-02 17:53:39] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-02 17:53:46] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"
 )
-#> ℹ [2026-11-02 16:15:51] Data type is log-normalized
-#> ℹ [2026-11-02 16:15:51] Start differential expression test
-#> ℹ [2026-11-02 16:15:52] Find all markers(wilcox) among [1] 5 groups...
-#> ✔ [2026-11-02 16:15:52] Differential expression test completed
+#> ℹ [2026-11-02 17:53:46] Data type is log-normalized
+#> ℹ [2026-11-02 17:53:46] Start differential expression test
+#> ℹ [2026-11-02 17:53:46] Find all markers(wilcox) among [1] 5 groups...
+#> ✔ [2026-11-02 17:53:47] Differential expression test completed
 
 pancreas_sub <- RunEnrichment(
   pancreas_sub,
@@ -409,17 +409,17 @@ pancreas_sub <- RunEnrichment(
   group.by = "CellType",
   species = "Mus_musculus"
 )
-#> ℹ [2026-11-02 16:15:52] Start Enrichment analysis
-#> ℹ [2026-11-02 16:15:52] Species: "Mus_musculus"
-#> ℹ [2026-11-02 16:15:52] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-11-02 16:11:36
-#> ℹ [2026-11-02 16:16:24] Preparing database: GO_BP
-#> ℹ [2026-11-02 16:16:36] Preparing database: GO_CC
-#> ℹ [2026-11-02 16:16:41] Convert ID types for the GO_BP database
-#> ℹ [2026-11-02 16:16:41] Converted ID types using local annotation package org.Mm.eg.db
-#> ℹ [2026-11-02 16:16:42] Convert ID types for the GO_CC database
-#> ℹ [2026-11-02 16:16:43] Converted ID types using local annotation package org.Mm.eg.db
-#> ℹ [2026-11-02 16:16:43] Permform enrichment...
-#> ✔ [2026-11-02 16:16:44] Enrichment analysis done
+#> ℹ [2026-11-02 17:53:47] Start Enrichment analysis
+#> ℹ [2026-11-02 17:53:47] Species: "Mus_musculus"
+#> ℹ [2026-11-02 17:53:47] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-11-02 17:49:23
+#> ℹ [2026-11-02 17:54:20] Preparing database: GO_BP
+#> ℹ [2026-11-02 17:54:32] Preparing database: GO_CC
+#> ℹ [2026-11-02 17:54:37] Convert ID types for the GO_BP database
+#> ℹ [2026-11-02 17:54:37] Converted ID types using local annotation package org.Mm.eg.db
+#> ℹ [2026-11-02 17:54:38] Convert ID types for the GO_CC database
+#> ℹ [2026-11-02 17:54:39] Converted ID types using local annotation package org.Mm.eg.db
+#> ℹ [2026-11-02 17:54:39] Permform enrichment...
+#> ✔ [2026-11-02 17:54:40] Enrichment analysis done
 
 EnrichmentPlot(
   pancreas_sub,
@@ -586,7 +586,7 @@ EnrichmentPlot(
 #> Also defined by ‘BiocGenerics’
 #> Found more than one class "dist" in cache; using the first, from namespace 'spam'
 #> Also defined by ‘BiocGenerics’
-#> ✔ [2026-11-02 16:16:57] shadowtext installed successfully
+#> ✔ [2026-11-02 17:54:54] shadowtext installed successfully
 
 
 EnrichmentPlot(
@@ -602,7 +602,7 @@ EnrichmentPlot(
     "GO:0030073"
   )
 )
-#> ✔ [2026-11-02 16:16:58] shadowtext installed successfully
+#> ✔ [2026-11-02 17:54:55] shadowtext installed successfully
 
 
 EnrichmentPlot(
@@ -613,7 +613,7 @@ EnrichmentPlot(
   plot_type = "network",
   network_layoutadjust = FALSE
 )
-#> ✔ [2026-11-02 16:16:59] shadowtext installed successfully
+#> ✔ [2026-11-02 17:54:56] shadowtext installed successfully
 
 
 EnrichmentPlot(
@@ -627,7 +627,7 @@ EnrichmentPlot(
   theme_use = "theme_blank",
   theme_args = list(add_coord = FALSE)
 ) |> thisplot::panel_fix(height = 5)
-#> ✔ [2026-11-02 16:17:00] shadowtext installed successfully
+#> ✔ [2026-11-02 17:54:57] shadowtext installed successfully
 
 
 EnrichmentPlot(
@@ -683,13 +683,13 @@ pancreas_sub <- RunEnrichment(
   convert_species = TRUE,
   species = "Mus_musculus"
 )
-#> ℹ [2026-11-02 16:17:04] Start Enrichment analysis
-#> ℹ [2026-11-02 16:17:04] Species: "Mus_musculus"
-#> ℹ [2026-11-02 16:17:04] Preparing MP database
-#> ℹ [2026-11-02 16:17:16] Species: "Mus_musculus"
-#> ℹ [2026-11-02 16:17:16] Preparing DO database
-#> ℹ [2026-11-02 16:17:20] Permform enrichment...
-#> ✔ [2026-11-02 16:17:20] Enrichment analysis done
+#> ℹ [2026-11-02 17:55:02] Start Enrichment analysis
+#> ℹ [2026-11-02 17:55:02] Species: "Mus_musculus"
+#> ℹ [2026-11-02 17:55:02] Preparing MP database
+#> ℹ [2026-11-02 17:55:07] Species: "Mus_musculus"
+#> ℹ [2026-11-02 17:55:07] Preparing DO database
+#> ℹ [2026-11-02 17:55:11] Permform enrichment...
+#> ✔ [2026-11-02 17:55:11] Enrichment analysis done
 
 EnrichmentPlot(
   pancreas_sub,

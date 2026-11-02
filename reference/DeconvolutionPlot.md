@@ -145,7 +145,7 @@ islet_bulk <- RunDeconvolution(
   backend = "cpp",
   perm = 0
 )
-#> ℹ [2026-11-02 16:12:15] Use 400 shared genes for CIBERSORT
+#> ℹ [2026-11-02 17:50:03] Use 400 shared genes for CIBERSORT
 DeconvolutionPlot(islet_bulk, plot_type = "bar")
 
 

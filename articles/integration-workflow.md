@@ -269,7 +269,7 @@ data.frame(
   bytes = file.info(list.files(output_dir, full.names = TRUE))$size
 )
 #>                file    bytes
-#> 1      analysis.rds 48007419
+#> 1      analysis.rds 48007420
 #> 2 cell-metadata.csv   186170
 ```
 
@@ -327,9 +327,9 @@ build_receipt <- data.frame(
 )
 build_receipt
 #>                article               built_utc  scop     R
-#> 1 integration-workflow 2026-11-02 17:20:03 UTC 0.9.2 4.6.2
+#> 1 integration-workflow 2026-11-02 18:58:09 UTC 0.9.2 4.6.2
 #>                            source_revision source_has_local_changes
-#> 1 81f648c8eee1676b7a13805590bf3c63cba05fd7                    FALSE
+#> 1 265891f3a98320aa08a80df40d1e750a7416eb5c                    FALSE
 #>                        article_md5 R_seed cells_retained genes_in_active_assay
 #> 1 258fa719de827f5739c0606e0dfd1e7c     11           1600                 12932
 utils::write.csv(build_receipt, file.path(output_dir, "build-receipt.csv"),
