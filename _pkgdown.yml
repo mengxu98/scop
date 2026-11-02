@@ -448,6 +448,7 @@ reference:
 
 - subtitle: "Motifs and Accessibility Deviations"
   contents:
+  - ATACMotifPlot
   - AddATACMotifs
   - RunMotifEnrichment
   - RunChromVAR
