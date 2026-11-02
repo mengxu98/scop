@@ -380,7 +380,7 @@ data.frame(
   bytes = file.info(list.files(output_dir, full.names = TRUE))$size
 )
 #>                file    bytes
-#> 1      analysis.rds 34270940
+#> 1      analysis.rds 34270938
 #> 2 cell-metadata.csv   236267
 ```
 
@@ -438,7 +438,7 @@ build_receipt <- data.frame(
 )
 build_receipt
 #>                     article               built_utc  scop     R
-#> 1 single-cell-main-workflow 2026-10-31 18:59:27 UTC 0.9.2 4.6.2
+#> 1 single-cell-main-workflow 2026-11-01 23:57:36 UTC 0.9.2 4.6.2
 #>                            source_revision source_has_local_changes
 #> 1 2f44f8c52c247c5a5b42a8a2cb3a7c9800ae24cb                    FALSE
 #>                        article_md5 R_seed cells_retained genes_in_active_assay
@@ -483,7 +483,7 @@ sessionInfo()
 #>   [7] rmarkdown_2.32         GlobalOptions_0.1.4    fs_2.1.0              
 #>  [10] ragg_1.5.2             vctrs_0.7.3            ROCR_1.0-12           
 #>  [13] spatstat.explore_3.8-3 htmltools_0.5.9        sass_0.4.10           
-#>  [16] thisutils_0.5.3        sctransform_0.4.3      parallelly_1.48.0     
+#>  [16] thisutils_0.5.3        sctransform_0.4.3      parallelly_1.50.0     
 #>  [19] KernSmooth_2.23-27     bslib_0.12.0           htmlwidgets_1.6.4     
 #>  [22] desc_1.4.3             ica_1.0-3              plyr_1.8.9            
 #>  [25] plotly_4.12.1          zoo_1.9-1              cachem_1.1.0          

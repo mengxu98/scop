@@ -652,7 +652,7 @@ build_receipt <- data.frame(
 )
 build_receipt
 #>                            article               built_utc  scop     R
-#> 1 differential-enrichment-workflow 2026-10-31 18:55:54 UTC 0.9.2 4.6.2
+#> 1 differential-enrichment-workflow 2026-11-01 23:54:03 UTC 0.9.2 4.6.2
 #>                            source_revision source_has_local_changes
 #> 1 2f44f8c52c247c5a5b42a8a2cb3a7c9800ae24cb                    FALSE
 #>                        article_md5 R_seed cells_retained genes_in_active_assay
@@ -704,7 +704,7 @@ sessionInfo()
 #>  [28] S7_0.2.2                spatstat.data_3.1-9     ggridges_0.5.7         
 #>  [31] pbapply_1.7-5           pkgdown_2.2.1           systemfonts_1.3.2      
 #>  [34] yulab.utils_0.2.5       gson_0.2.2              DOSE_4.6.0             
-#>  [37] dichromat_2.0-1         parallelly_1.48.0       RSQLite_3.53.3         
+#>  [37] dichromat_2.0-1         parallelly_1.50.0       RSQLite_3.53.3         
 #>  [40] generics_0.1.4          gridGraphics_0.5-1      shape_1.4.6.1          
 #>  [43] ica_1.0-3               spatstat.random_3.5-2   dplyr_1.2.1            
 #>  [46] GO.db_3.23.1            Matrix_1.7-6            S4Vectors_0.50.3       

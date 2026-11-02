@@ -159,55 +159,55 @@ pbmcmultiome_sub <- WNN_integrate(
   linear_reduction_dims = 20,
   linear_reduction_dims_use = 1:10
 )
-#> ℹ [2026-10-31 18:50:02] Start standard processing workflow...
-#> ℹ [2026-10-31 18:50:02] Auto preprocess assays: "RNA" and "peaks"
-#> ℹ [2026-10-31 18:50:02] Start standard processing workflow...
-#> ℹ [2026-10-31 18:50:02] Checking a list of <Seurat>...
-#> ! [2026-10-31 18:50:02] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-10-31 18:50:02] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-10-31 18:50:02] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-10-31 18:50:03] Use the separate HVF from `srt_list`
-#> ℹ [2026-10-31 18:50:03] Number of available HVF: 2000
-#> ℹ [2026-10-31 18:50:03] Finished check
-#> ℹ [2026-10-31 18:50:03] Perform `ScaleData()`
-#> ℹ [2026-10-31 18:50:03] Perform pca linear dimension reduction
-#> ℹ [2026-10-31 18:50:03] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-10-31 18:50:03] Reorder clusters...
-#> ℹ [2026-10-31 18:50:03] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-10-31 18:50:03] Perform umap nonlinear dimension reduction
-#> ℹ [2026-10-31 18:50:11] Perform umap nonlinear dimension reduction using RNApca (1:10)
-#> ✔ [2026-10-31 18:50:17] Standard processing workflow completed
-#> ℹ [2026-10-31 18:50:17] Start standard processing workflow...
-#> ℹ [2026-10-31 18:50:17] Checking a list of <Seurat>...
-#> ! [2026-10-31 18:50:18] Data 1/1 of the `srt_list` is "raw_counts"
-#> ℹ [2026-10-31 18:50:18] Perform `RunTFIDF()` on 1/1 of `srt_list`...
-#> ℹ [2026-10-31 18:50:18] Perform `FindTopFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-10-31 18:50:18] Use the separate HVF from `srt_list`
-#> ℹ [2026-10-31 18:50:18] Number of available HVF: 11413
-#> ℹ [2026-10-31 18:50:18] Finished check
-#> ℹ [2026-10-31 18:50:18] `normalization_method` is TFIDF. Use lsi workflow
-#> ℹ [2026-10-31 18:50:18] Perform svd linear dimension reduction
+#> ℹ [2026-11-01 23:48:03] Start standard processing workflow...
+#> ℹ [2026-11-01 23:48:03] Auto preprocess assays: "RNA" and "peaks"
+#> ℹ [2026-11-01 23:48:03] Start standard processing workflow...
+#> ℹ [2026-11-01 23:48:03] Checking a list of <Seurat>...
+#> ! [2026-11-01 23:48:03] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-01 23:48:03] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-01 23:48:03] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-01 23:48:03] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-01 23:48:03] Number of available HVF: 2000
+#> ℹ [2026-11-01 23:48:03] Finished check
+#> ℹ [2026-11-01 23:48:03] Perform `ScaleData()`
+#> ℹ [2026-11-01 23:48:03] Perform pca linear dimension reduction
+#> ℹ [2026-11-01 23:48:03] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-01 23:48:03] Reorder clusters...
+#> ℹ [2026-11-01 23:48:03] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-01 23:48:04] Perform umap nonlinear dimension reduction
+#> ℹ [2026-11-01 23:48:13] Perform umap nonlinear dimension reduction using RNApca (1:10)
+#> ✔ [2026-11-01 23:48:21] Standard processing workflow completed
+#> ℹ [2026-11-01 23:48:21] Start standard processing workflow...
+#> ℹ [2026-11-01 23:48:21] Checking a list of <Seurat>...
+#> ! [2026-11-01 23:48:21] Data 1/1 of the `srt_list` is "raw_counts"
+#> ℹ [2026-11-01 23:48:21] Perform `RunTFIDF()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-01 23:48:21] Perform `FindTopFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-01 23:48:21] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-01 23:48:21] Number of available HVF: 11413
+#> ℹ [2026-11-01 23:48:21] Finished check
+#> ℹ [2026-11-01 23:48:21] `normalization_method` is TFIDF. Use lsi workflow
+#> ℹ [2026-11-01 23:48:21] Perform svd linear dimension reduction
 #> Running SVD
 #> Scaling cell embeddings
-#> ℹ [2026-10-31 18:50:19] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-10-31 18:50:19] Reorder clusters...
-#> ℹ [2026-10-31 18:50:19] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-10-31 18:50:19] Perform umap nonlinear dimension reduction
-#> ℹ [2026-10-31 18:50:27] Perform umap nonlinear dimension reduction using ATACsvd (1:10)
-#> ✔ [2026-10-31 18:50:33] Standard processing workflow completed
-#> ℹ [2026-10-31 18:50:33] Adjust neighbor k from 20 to 20 for small-sample WNN graph construction
-#> ℹ [2026-10-31 18:50:33] Adjust WNN knn.range to 80 for small-sample graph construction
-#> ℹ [2026-10-31 18:50:33] Perform WNN integration using RNApca and ATAClsi
+#> ℹ [2026-11-01 23:48:22] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-01 23:48:22] Reorder clusters...
+#> ℹ [2026-11-01 23:48:22] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-01 23:48:22] Perform umap nonlinear dimension reduction
+#> ℹ [2026-11-01 23:48:32] Perform umap nonlinear dimension reduction using ATACsvd (1:10)
+#> ✔ [2026-11-01 23:48:39] Standard processing workflow completed
+#> ℹ [2026-11-01 23:48:39] Adjust neighbor k from 20 to 20 for small-sample WNN graph construction
+#> ℹ [2026-11-01 23:48:39] Adjust WNN knn.range to 80 for small-sample graph construction
+#> ℹ [2026-11-01 23:48:39] Perform WNN integration using RNApca and ATAClsi
 #> Calculating cell-specific modality weights
 #> Finding 20 nearest neighbors for each modality.
 #> Calculating kernel bandwidths
 #> Finding multimodal neighbors
 #> Constructing multimodal KNN graph
 #> Constructing multimodal SNN graph
-#> ℹ [2026-10-31 18:50:34] Adjust neighbor k from 20 to 20 for small-sample clustering
-#> ℹ [2026-10-31 18:50:34] Perform `Seurat::FindClusters()` with "louvain"
-#> ℹ [2026-10-31 18:50:34] Reorder clusters...
-#> ℹ [2026-10-31 18:50:34] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-10-31 18:50:34] Perform umap nonlinear dimension reduction using WNN
-#> ℹ [2026-10-31 18:50:40] Perform umap nonlinear dimension reduction using WNN
+#> ℹ [2026-11-01 23:48:40] Adjust neighbor k from 20 to 20 for small-sample clustering
+#> ℹ [2026-11-01 23:48:40] Perform `Seurat::FindClusters()` with "louvain"
+#> ℹ [2026-11-01 23:48:40] Reorder clusters...
+#> ℹ [2026-11-01 23:48:40] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-01 23:48:40] Perform umap nonlinear dimension reduction using WNN
+#> ℹ [2026-11-01 23:48:47] Perform umap nonlinear dimension reduction using WNN
 ```

@@ -96,22 +96,22 @@ A patchwork object or a named list of `ggplot` objects.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-10-31 18:00:10] Start standard processing workflow...
-#> ℹ [2026-10-31 18:00:10] Checking a list of <Seurat>...
-#> ! [2026-10-31 18:00:10] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-10-31 18:00:10] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-10-31 18:00:10] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-10-31 18:00:11] Use the separate HVF from `srt_list`
-#> ℹ [2026-10-31 18:00:11] Number of available HVF: 2000
-#> ℹ [2026-10-31 18:00:11] Finished check
-#> ℹ [2026-10-31 18:00:11] Perform `ScaleData()`
-#> ℹ [2026-10-31 18:00:11] Perform pca linear dimension reduction
-#> ℹ [2026-10-31 18:00:11] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-10-31 18:00:12] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-10-31 18:00:12] Reorder clusters...
-#> ℹ [2026-10-31 18:00:12] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-10-31 18:00:12] Perform umap nonlinear dimension reduction
-#> ✔ [2026-10-31 18:00:19] Standard processing workflow completed
+#> ℹ [2026-11-01 22:56:55] Start standard processing workflow...
+#> ℹ [2026-11-01 22:56:55] Checking a list of <Seurat>...
+#> ! [2026-11-01 22:56:55] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-01 22:56:55] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-01 22:56:56] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-01 22:56:56] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-01 22:56:56] Number of available HVF: 2000
+#> ℹ [2026-11-01 22:56:56] Finished check
+#> ℹ [2026-11-01 22:56:56] Perform `ScaleData()`
+#> ℹ [2026-11-01 22:56:56] Perform pca linear dimension reduction
+#> ℹ [2026-11-01 22:56:56] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-11-01 22:56:57] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-01 22:56:57] Reorder clusters...
+#> ℹ [2026-11-01 22:56:57] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-01 22:56:57] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-01 22:57:05] Standard processing workflow completed
 pancreas_sub <- RunFitDevo(pancreas_sub, verbose = FALSE)
 FitDevoPlot(pancreas_sub)
 ```

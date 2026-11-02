@@ -214,7 +214,7 @@ query <- RunKNNPredict(
   ref_collapsing = FALSE, k = 10, verbose = FALSE
 )
 query <- RunStandardWorkflow(query, verbose = FALSE, linear_reduction_dims = 10)
-#> ℹ [2026-10-31 18:34:32] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-01 23:32:07] Skip `log1p()` because `layer = data` is not "counts"
 CellDimPlot(
   query,
   group.by = "KNNPredict_classification",
