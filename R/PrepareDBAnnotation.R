@@ -204,13 +204,22 @@ PrepareMP <- function(
         gene_id <- utils::read.table(
           temp,
           header = FALSE,
+          skip = 1L,
           row.names = NULL,
+          check.names = FALSE,
+          comment.char = "",
           sep = "\t",
           fill = TRUE,
           quote = ""
         )
-        gene_id <- gene_id[, 1:15]
-        colnames(gene_id) <- gene_id[1, ]
+        required_columns <- c("1. MGI accession id", "2. marker type", "3. marker symbol")
+        report_columns <- strsplit(readLines(temp, n = 1L, warn = FALSE), "\t", fixed = TRUE)[[1L]]
+        column_index <- match(required_columns, report_columns)
+        if (anyNA(column_index) || any(column_index > ncol(gene_id))) {
+          log_message("MGI gene report is missing required accession, marker type or symbol columns; check the downloaded report.", message_type = "error")
+        }
+        gene_id <- gene_id[, column_index, drop = FALSE]
+        colnames(gene_id) <- required_columns
         gene_id <- gene_id[
           gene_id[, 2] %in% c("Gene", "Pseudogene"), ,
           drop = FALSE
