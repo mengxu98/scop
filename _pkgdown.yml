@@ -451,6 +451,8 @@ reference:
 
 - subtitle: "Motifs and Accessibility Deviations"
   contents:
+  - RunATACFootprint
+  - ATACFootprintPlot
   - ATACMotifPlot
   - AddATACMotifs
   - RunMotifEnrichment
