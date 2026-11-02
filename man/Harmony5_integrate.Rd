@@ -71,7 +71,8 @@ Possible values are \code{"global"} and \code{"separate"}.}
 \item{regression_model}{\code{"linear"}, \code{"poisson"}, or \code{"negativebinomial"}.}
 
 \item{linear_reduction, linear_reduction_dims, linear_reduction_dims_use, linear_reduction_params, force_linear_reduction}{Linear reduction (\code{"pca"}, \code{"svd"}, \code{"ica"}, \code{"nmf"}, \code{"mds"}, \code{"glmpca"}).
-\code{linear_reduction_dims_use = NULL} uses estimated dimensions, else the first 50.}
+\code{linear_reduction_dims_use = NULL} uses estimated dimensions unless the method
+specifies a different default; explicit values select computed components.}
 
 \item{harmony_dims_use}{Integrated dimensions used for downstream clustering and nonlinear reduction.}
 

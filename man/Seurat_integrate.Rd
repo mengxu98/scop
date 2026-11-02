@@ -76,7 +76,8 @@ Possible values are \code{"global"} and \code{"separate"}.}
 \code{"Uncorrected"}, \code{"Seurat"}, \code{"MNN"}, \code{"Harmony"}, \code{"BBKNN"}, \code{"CSS"}, \code{"ComBat"}.}
 
 \item{linear_reduction, linear_reduction_dims, linear_reduction_dims_use, linear_reduction_params, force_linear_reduction}{Linear reduction (\code{"pca"}, \code{"svd"}, \code{"ica"}, \code{"nmf"}, \code{"mds"}, \code{"glmpca"}).
-\code{linear_reduction_dims_use = NULL} uses estimated dimensions, else the first 50.}
+\code{linear_reduction_dims_use = NULL} uses estimated dimensions unless the method
+specifies a different default; explicit values select computed components.}
 
 \item{nonlinear_reduction}{Nonlinear reduction (\code{"umap"}, \code{"umap-naive"}, \code{"tsne"}, \code{"dm"}, \code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"largevis"}, \code{"fr"}).}
 
