@@ -188,7 +188,8 @@ find_neighbors_and_clusters <- function(
   cluster_algorithm_index,
   cluster_resolution,
   run_find_neighbors = TRUE,
-  verbose
+  verbose,
+  stop_on_error = FALSE
 ) {
   neighbor_k_use <- min(as.integer(neighbor_k), max(1L, ncol(srt) - 1L))
   if (!identical(neighbor_k_use, as.integer(neighbor_k))) {
@@ -215,14 +216,18 @@ find_neighbors_and_clusters <- function(
         "Perform {.fn Seurat::FindClusters} with {.val {cluster_algorithm}}",
         verbose = verbose
       )
-      srt <- FindClusters(
+      cluster_args <- list(
         object = srt,
         resolution = cluster_resolution,
         algorithm = cluster_algorithm_index,
-        leiden_method = "igraph",
         graph.name = graph_snn,
         verbose = FALSE
       )
+      if (identical(tolower(cluster_algorithm), "leiden") &&
+        "leiden_method" %in% names(formals(utils::getS3method("FindClusters", "Seurat", envir = asNamespace("Seurat"))))) {
+        cluster_args$leiden_method <- "igraph"
+      }
+      srt <- do.call(FindClusters, cluster_args)
       log_message("Reorder clusters...")
       srt <- srt_reorder(
         srt,
@@ -235,6 +240,7 @@ find_neighbors_and_clusters <- function(
       srt
     },
     error = function(error) {
+      if (isTRUE(stop_on_error)) stop(error)
       err_msg <- conditionMessage(error)
       err_msg <- gsub("{", "{{", err_msg, fixed = TRUE)
       err_msg <- gsub("}", "}}", err_msg, fixed = TRUE)
