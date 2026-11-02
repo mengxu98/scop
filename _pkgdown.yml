@@ -436,6 +436,7 @@ reference:
 - subtitle: "Accessibility Quality and Coverage"
   contents:
   - RunATACQC
+  - ATACFragmentPlot
   - CoverageTrackPlot
 
 - subtitle: "Peak Definition and Annotation"
