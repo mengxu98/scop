@@ -436,8 +436,13 @@ reference:
 - subtitle: "Accessibility Quality and Coverage"
   contents:
   - RunATACQC
+  - ATACDepthCorPlot
+  - ATACTSSPlot
   - ATACFragmentPlot
   - CoverageTrackPlot
+  - RunATACRegionMatrix
+  - ATACRegionHeatmap
+  - ATACRegionPlot
 
 - subtitle: "Peak Definition and Annotation"
   contents:
@@ -450,6 +455,8 @@ reference:
 
 - subtitle: "Motifs and Accessibility Deviations"
   contents:
+  - RunATACFootprint
+  - ATACFootprintPlot
   - ATACMotifPlot
   - AddATACMotifs
   - RunMotifEnrichment
