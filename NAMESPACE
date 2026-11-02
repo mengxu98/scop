@@ -87,6 +87,8 @@ S3method(print,scop_logo)
 export("%>%")
 export("%||%")
 export(ATACFragmentPlot)
+export(ATACMotifPlot)
+export(ATACTSSPlot)
 export(AddATACMotifs)
 export(AddFeaturesData)
 export(AddModuleScore)
@@ -579,5 +581,3 @@ importFrom(utils,
   read.csv
 )
 useDynLib(scop, .registration = TRUE)
-
-export(ATACMotifPlot)
