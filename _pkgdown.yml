@@ -58,6 +58,14 @@ articles:
   - spatial-framework-bridges
   - spatial-benchmark-workflow
 
+- title: ATAC and paired multiome workflows
+  navbar: ATAC and Multiome
+  contents:
+  - atac-matrix-workflow
+  - atac-fragments-workflow
+  - atac-paired-dar-workflow
+  - atac-paired-wnn-workflow
+
 reference:
 - title: "Overview and Workflows"
 
@@ -429,10 +437,12 @@ reference:
   contents:
   - RunATACQC
   - ATACTSSPlot
+  - ATACFragmentPlot
   - CoverageTrackPlot
 
 - subtitle: "Peak Definition and Annotation"
   contents:
+  - CallATACPeaks
   - CombineATACPeaks
   - RecountATAC
   - FilterATACPeaks
@@ -440,6 +450,7 @@ reference:
 
 - subtitle: "Motifs and Accessibility Deviations"
   contents:
+  - ATACMotifPlot
   - AddATACMotifs
   - RunMotifEnrichment
   - RunChromVAR
