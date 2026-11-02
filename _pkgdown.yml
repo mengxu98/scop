@@ -449,6 +449,7 @@ reference:
   - CallATACPeaks
   - CombineATACPeaks
   - RecountATAC
+  - RunGenomeTiles
   - FilterATACPeaks
   - AnnotateATACPeaks
 
