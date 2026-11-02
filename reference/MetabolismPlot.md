@@ -59,22 +59,22 @@ MetabolismPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-11-02 14:47:24] Start standard processing workflow...
-#> ℹ [2026-11-02 14:47:24] Checking a list of <Seurat>...
-#> ! [2026-11-02 14:47:24] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-11-02 14:47:24] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-11-02 14:47:24] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-02 14:47:25] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-02 14:47:25] Number of available HVF: 2000
-#> ℹ [2026-11-02 14:47:25] Finished check
-#> ℹ [2026-11-02 14:47:25] Perform `ScaleData()`
-#> ℹ [2026-11-02 14:47:25] Perform pca linear dimension reduction
-#> ℹ [2026-11-02 14:47:25] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-11-02 14:47:26] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-02 14:47:26] Reorder clusters...
-#> ℹ [2026-11-02 14:47:26] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-02 14:47:26] Perform umap nonlinear dimension reduction
-#> ✔ [2026-11-02 14:47:33] Standard processing workflow completed
+#> ℹ [2026-11-02 16:24:44] Start standard processing workflow...
+#> ℹ [2026-11-02 16:24:44] Checking a list of <Seurat>...
+#> ! [2026-11-02 16:24:44] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-02 16:24:44] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-02 16:24:44] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-02 16:24:44] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-02 16:24:44] Number of available HVF: 2000
+#> ℹ [2026-11-02 16:24:44] Finished check
+#> ℹ [2026-11-02 16:24:44] Perform `ScaleData()`
+#> ℹ [2026-11-02 16:24:44] Perform pca linear dimension reduction
+#> ℹ [2026-11-02 16:24:45] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-11-02 16:24:45] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-02 16:24:45] Reorder clusters...
+#> ℹ [2026-11-02 16:24:45] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-02 16:24:45] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-02 16:24:53] Standard processing workflow completed
 pancreas_sub <- RunMetabolism(
   pancreas_sub,
   db = c("KEGG", "REACTOME"),
@@ -84,28 +84,349 @@ pancreas_sub <- RunMetabolism(
   method = "AUCell",
   use_preparedb = FALSE
 )
-#> ℹ [2026-11-02 14:47:33] Start metabolism pathway scoring
-#> ℹ [2026-11-02 14:47:34] Data type is raw counts
-#> ℹ [2026-11-02 14:47:34] Averaging expression by "CellType" ...
-#> ℹ [2026-11-02 14:47:34] Aggregated expression: 15998 genes x 5 groups
-#> ℹ [2026-11-02 14:47:34] Using raw scMetabolism gene sets with species conversion to "Mus_musculus"
-#> ℹ [2026-11-02 14:47:34] Converting 3297 human gene symbols to "Mus_musculus" via biomaRt ...
-#> ℹ [2026-11-02 14:47:34] Connect to the Ensembl archives...
-#> ℹ [2026-11-02 14:47:34] Using the 115 version of ensembl database...
-#> ℹ [2026-11-02 14:47:34] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
-#> ℹ [2026-11-02 14:47:34] Searching the dataset hsapiens ...
-#> ℹ [2026-11-02 14:47:35] Connecting to the dataset hsapiens_gene_ensembl ...
-#> ℹ [2026-11-02 14:47:36] Converting the geneIDs...
-#> ℹ [2026-11-02 14:47:39] 3256 genes mapped with "ensembl_symbol"
-#> ℹ [2026-11-02 14:47:40] 13 genes mapped with "entrez_symbol"
-#> ℹ [2026-11-02 14:47:41] 6 genes mapped with "uniprot_symbol"
-#> ℹ [2026-11-02 14:47:42] ==============================
-#> ℹ                       3275 genes mapped
-#> ℹ                       22 genes unmapped
-#> ℹ                       ==============================
-#> ✔ [2026-11-02 14:47:43] Species conversion added 207 gene matches across pathways
-#> ℹ [2026-11-02 14:47:43] Total metabolism gene sets to score: 127
-#> ✔ [2026-11-02 14:47:43] Metabolism scores stored in tools slot "Metabolism_CellType_AUCell"
+#> ℹ [2026-11-02 16:24:53] Start metabolism pathway scoring
+#> ℹ [2026-11-02 16:24:53] Data type is raw counts
+#> ℹ [2026-11-02 16:24:53] Averaging expression by "CellType" ...
+#> ℹ [2026-11-02 16:24:53] Aggregated expression: 15998 genes x 5 groups
+#> ℹ [2026-11-02 16:24:53] Using raw scMetabolism gene sets with species conversion to "Mus_musculus"
+#> ℹ [2026-11-02 16:24:53] Converting 3297 human gene symbols to "Mus_musculus" via biomaRt ...
+#> ℹ [2026-11-02 16:24:53] Connect to the Ensembl archives...
+#> ℹ [2026-11-02 16:24:54] Using the 115 version of ensembl database...
+#> ℹ [2026-11-02 16:24:54] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
+#> ℹ [2026-11-02 16:24:54] Searching the dataset hsapiens ...
+#> ℹ [2026-11-02 16:25:09] Connecting to the dataset hsapiens_gene_ensembl ...
+#> ! [2026-11-02 16:25:37] <error/httr2_http_504>
+#> !                       Error in `req_perform()`:
+#> !                       ! HTTP 504 Gateway Timeout.
+#> !                       ---
+#> !                       Backtrace:
+#> !                            ▆
+#> !                         1. ├─global record(if (plan$full) "full-site" else "incremental-site", build())
+#> !                         2. │ └─base::force(expression)
+#> !                         3. └─global build()
+#> !                         4.   └─pkgdown::build_site(...)
+#> !                         5.     └─pkgdown:::build_site_local(...)
+#> !                         6.       └─pkgdown::build_reference(...)
+#> !                         7.         ├─pkgdown:::unwrap_purrr_error(...)
+#> !                         8.         │ └─base::withCallingHandlers(...)
+#> !                         9.         └─purrr::map(...)
+#> !                        10.           └─purrr:::map_("list", .x, .f, ..., .progress = .progress)
+#> !                        11.             ├─purrr:::with_indexed_errors(...)
+#> !                        12.             │ └─base::withCallingHandlers(...)
+#> !                        13.             ├─purrr:::call_with_cleanup(...)
+#> !                        14.             └─pkgdown (local) .f(.x[[i]], ...)
+#> !                        15.               ├─base::withCallingHandlers(...)
+#> !                        16.               └─pkgdown:::data_reference_topic(...)
+#> !                        17.                 └─pkgdown:::run_examples(...)
+#> !                        18.                   └─pkgdown:::highlight_examples(code, topic, env = env)
+#> !                        19.                     └─downlit::evaluate_and_highlight(...)
+#> !                        20.                       └─evaluate::evaluate(code, child_env(env), new_device = TRUE, output_handler = output_handler)
+#> !                        21.                         ├─base::withRestarts(...)
+#> !                        22.                         │ └─base (local) withRestartList(expr, restarts)
+#> !                        23.                         │   ├─base (local) withOneRestart(withRestartList(expr, restarts[-nr]), restarts[[nr]])
+#> !                        24.                         │   │ └─base (local) doWithOneRestart(return(expr), restart)
+#> !                        25.                         │   └─base (local) withRestartList(expr, restarts[-nr])
+#> !                        26.                         │     └─base (local) withOneRestart(expr, restarts[[1L]])
+#> !                        27.                         │       └─base (local) doWithOneRestart(return(expr), restart)
+#> !                        28.                         ├─evaluate:::with_handlers(...)
+#> !                        29.                         │ ├─base::eval(call)
+#> !                        30.                         │ │ └─base::eval(call)
+#> !                        31.                         │ └─base::withCallingHandlers(...)
+#> !                        32.                         ├─base::withVisible(eval(expr, envir))
+#> !                        33.                         └─base::eval(expr, envir)
+#> !                        34.                           └─base::eval(expr, envir)
+#> !                        35.                             └─scop::RunMetabolism(...)
+#> !                        36.                               ├─base::tryCatch(...)
+#> !                        37.                               │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+#> !                        38.                               │   └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+#> !                        39.                               │     └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+#> !                        40.                               └─scop::GeneConvert(...)
+#> !                        41.                                 ├─thisutils::try_get(...)
+#> !                        42.                                 │ ├─base::tryCatch(...)
+#> !                        43.                                 │ │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+#> !                        44.                                 │ │   └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+#> !                        45.                                 │ │     └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+#> !                        46.                                 │ └─base::eval.parent(substitute(expr))
+#> !                        47.                                 │   └─base::eval(expr, p)
+#> !                        48.                                 │     └─base::eval(expr, p)
+#> !                        49.                                 └─scop:::connect_biomart_dataset(...)
+#> !                        50.                                   ├─base::tryCatch(...)
+#> !                        51.                                   │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+#> !                        52.                                   │   └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+#> !                        53.                                   │     └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+#> !                        54.                                   └─biomaRt::useDataset(dataset = dataset, mart = mart)
+#> !                        55.                                     └─biomaRt:::.getAttributes(mart, verbose = verbose)
+#> !                        56.                                       └─biomaRt:::.getAttrFilt(mart = mart, verbose = verbose, type = "attributes")
+#> !                        57.                                         └─biomaRt:::bmRequest(...)
+#> !                        58.                                           └─httr2::req_perform(request)
+#> ! [2026-11-02 16:25:37] Get errors when connecting with Dataset (hsapiens_gene_ensembl)
+#> ! [2026-11-02 16:25:38] Retrying...
+#> ! [2026-11-02 16:25:48] <error/httr2_http_504>
+#> !                       Error in `req_perform()`:
+#> !                       ! HTTP 504 Gateway Timeout.
+#> !                       ---
+#> !                       Backtrace:
+#> !                            ▆
+#> !                         1. ├─global record(if (plan$full) "full-site" else "incremental-site", build())
+#> !                         2. │ └─base::force(expression)
+#> !                         3. └─global build()
+#> !                         4.   └─pkgdown::build_site(...)
+#> !                         5.     └─pkgdown:::build_site_local(...)
+#> !                         6.       └─pkgdown::build_reference(...)
+#> !                         7.         ├─pkgdown:::unwrap_purrr_error(...)
+#> !                         8.         │ └─base::withCallingHandlers(...)
+#> !                         9.         └─purrr::map(...)
+#> !                        10.           └─purrr:::map_("list", .x, .f, ..., .progress = .progress)
+#> !                        11.             ├─purrr:::with_indexed_errors(...)
+#> !                        12.             │ └─base::withCallingHandlers(...)
+#> !                        13.             ├─purrr:::call_with_cleanup(...)
+#> !                        14.             └─pkgdown (local) .f(.x[[i]], ...)
+#> !                        15.               ├─base::withCallingHandlers(...)
+#> !                        16.               └─pkgdown:::data_reference_topic(...)
+#> !                        17.                 └─pkgdown:::run_examples(...)
+#> !                        18.                   └─pkgdown:::highlight_examples(code, topic, env = env)
+#> !                        19.                     └─downlit::evaluate_and_highlight(...)
+#> !                        20.                       └─evaluate::evaluate(code, child_env(env), new_device = TRUE, output_handler = output_handler)
+#> !                        21.                         ├─base::withRestarts(...)
+#> !                        22.                         │ └─base (local) withRestartList(expr, restarts)
+#> !                        23.                         │   ├─base (local) withOneRestart(withRestartList(expr, restarts[-nr]), restarts[[nr]])
+#> !                        24.                         │   │ └─base (local) doWithOneRestart(return(expr), restart)
+#> !                        25.                         │   └─base (local) withRestartList(expr, restarts[-nr])
+#> !                        26.                         │     └─base (local) withOneRestart(expr, restarts[[1L]])
+#> !                        27.                         │       └─base (local) doWithOneRestart(return(expr), restart)
+#> !                        28.                         ├─evaluate:::with_handlers(...)
+#> !                        29.                         │ ├─base::eval(call)
+#> !                        30.                         │ │ └─base::eval(call)
+#> !                        31.                         │ └─base::withCallingHandlers(...)
+#> !                        32.                         ├─base::withVisible(eval(expr, envir))
+#> !                        33.                         └─base::eval(expr, envir)
+#> !                        34.                           └─base::eval(expr, envir)
+#> !                        35.                             └─scop::RunMetabolism(...)
+#> !                        36.                               ├─base::tryCatch(...)
+#> !                        37.                               │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+#> !                        38.                               │   └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+#> !                        39.                               │     └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+#> !                        40.                               └─scop::GeneConvert(...)
+#> !                        41.                                 ├─thisutils::try_get(...)
+#> !                        42.                                 │ ├─base::tryCatch(...)
+#> !                        43.                                 │ │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+#> !                        44.                                 │ │   └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+#> !                        45.                                 │ │     └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+#> !                        46.                                 │ └─base::eval.parent(substitute(expr))
+#> !                        47.                                 │   └─base::eval(expr, p)
+#> !                        48.                                 │     └─base::eval(expr, p)
+#> !                        49.                                 └─scop:::connect_biomart_dataset(...)
+#> !                        50.                                   ├─base::tryCatch(...)
+#> !                        51.                                   │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+#> !                        52.                                   │   └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+#> !                        53.                                   │     └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+#> !                        54.                                   └─biomaRt::useDataset(dataset = dataset, mart = mart)
+#> !                        55.                                     └─biomaRt:::checkDataset(dataset = dataset, mart = mart)
+#> !                        56.                                       └─biomaRt:::.listDatasets(mart, sort = FALSE)
+#> !                        57.                                         └─biomaRt:::bmRequest(...)
+#> !                        58.                                           └─httr2::req_perform(request)
+#> ! [2026-11-02 16:25:49] Get errors when connecting with Dataset (hsapiens_gene_ensembl)
+#> ! [2026-11-02 16:25:50] Retrying...
+#> ! [2026-11-02 16:26:00] <error/httr2_http_504>
+#> !                       Error in `req_perform()`:
+#> !                       ! HTTP 504 Gateway Timeout.
+#> !                       ---
+#> !                       Backtrace:
+#> !                            ▆
+#> !                         1. ├─global record(if (plan$full) "full-site" else "incremental-site", build())
+#> !                         2. │ └─base::force(expression)
+#> !                         3. └─global build()
+#> !                         4.   └─pkgdown::build_site(...)
+#> !                         5.     └─pkgdown:::build_site_local(...)
+#> !                         6.       └─pkgdown::build_reference(...)
+#> !                         7.         ├─pkgdown:::unwrap_purrr_error(...)
+#> !                         8.         │ └─base::withCallingHandlers(...)
+#> !                         9.         └─purrr::map(...)
+#> !                        10.           └─purrr:::map_("list", .x, .f, ..., .progress = .progress)
+#> !                        11.             ├─purrr:::with_indexed_errors(...)
+#> !                        12.             │ └─base::withCallingHandlers(...)
+#> !                        13.             ├─purrr:::call_with_cleanup(...)
+#> !                        14.             └─pkgdown (local) .f(.x[[i]], ...)
+#> !                        15.               ├─base::withCallingHandlers(...)
+#> !                        16.               └─pkgdown:::data_reference_topic(...)
+#> !                        17.                 └─pkgdown:::run_examples(...)
+#> !                        18.                   └─pkgdown:::highlight_examples(code, topic, env = env)
+#> !                        19.                     └─downlit::evaluate_and_highlight(...)
+#> !                        20.                       └─evaluate::evaluate(code, child_env(env), new_device = TRUE, output_handler = output_handler)
+#> !                        21.                         ├─base::withRestarts(...)
+#> !                        22.                         │ └─base (local) withRestartList(expr, restarts)
+#> !                        23.                         │   ├─base (local) withOneRestart(withRestartList(expr, restarts[-nr]), restarts[[nr]])
+#> !                        24.                         │   │ └─base (local) doWithOneRestart(return(expr), restart)
+#> !                        25.                         │   └─base (local) withRestartList(expr, restarts[-nr])
+#> !                        26.                         │     └─base (local) withOneRestart(expr, restarts[[1L]])
+#> !                        27.                         │       └─base (local) doWithOneRestart(return(expr), restart)
+#> !                        28.                         ├─evaluate:::with_handlers(...)
+#> !                        29.                         │ ├─base::eval(call)
+#> !                        30.                         │ │ └─base::eval(call)
+#> !                        31.                         │ └─base::withCallingHandlers(...)
+#> !                        32.                         ├─base::withVisible(eval(expr, envir))
+#> !                        33.                         └─base::eval(expr, envir)
+#> !                        34.                           └─base::eval(expr, envir)
+#> !                        35.                             └─scop::RunMetabolism(...)
+#> !                        36.                               ├─base::tryCatch(...)
+#> !                        37.                               │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+#> !                        38.                               │   └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+#> !                        39.                               │     └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+#> !                        40.                               └─scop::GeneConvert(...)
+#> !                        41.                                 ├─thisutils::try_get(...)
+#> !                        42.                                 │ ├─base::tryCatch(...)
+#> !                        43.                                 │ │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+#> !                        44.                                 │ │   └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+#> !                        45.                                 │ │     └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+#> !                        46.                                 │ └─base::eval.parent(substitute(expr))
+#> !                        47.                                 │   └─base::eval(expr, p)
+#> !                        48.                                 │     └─base::eval(expr, p)
+#> !                        49.                                 └─scop:::connect_biomart_dataset(...)
+#> !                        50.                                   ├─base::tryCatch(...)
+#> !                        51.                                   │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+#> !                        52.                                   │   └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+#> !                        53.                                   │     └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+#> !                        54.                                   └─biomaRt::useDataset(dataset = dataset, mart = mart)
+#> !                        55.                                     └─biomaRt:::checkDataset(dataset = dataset, mart = mart)
+#> !                        56.                                       └─biomaRt:::.listDatasets(mart, sort = FALSE)
+#> !                        57.                                         └─biomaRt:::bmRequest(...)
+#> !                        58.                                           └─httr2::req_perform(request)
+#> ! [2026-11-02 16:26:00] Get errors when connecting with Dataset (hsapiens_gene_ensembl)
+#> ! [2026-11-02 16:26:01] Retrying...
+#> ! [2026-11-02 16:26:15] <error/httr2_http_502>
+#> !                       Error in `req_perform()`:
+#> !                       ! HTTP 502 Bad Gateway.
+#> !                       ---
+#> !                       Backtrace:
+#> !                            ▆
+#> !                         1. ├─global record(if (plan$full) "full-site" else "incremental-site", build())
+#> !                         2. │ └─base::force(expression)
+#> !                         3. └─global build()
+#> !                         4.   └─pkgdown::build_site(...)
+#> !                         5.     └─pkgdown:::build_site_local(...)
+#> !                         6.       └─pkgdown::build_reference(...)
+#> !                         7.         ├─pkgdown:::unwrap_purrr_error(...)
+#> !                         8.         │ └─base::withCallingHandlers(...)
+#> !                         9.         └─purrr::map(...)
+#> !                        10.           └─purrr:::map_("list", .x, .f, ..., .progress = .progress)
+#> !                        11.             ├─purrr:::with_indexed_errors(...)
+#> !                        12.             │ └─base::withCallingHandlers(...)
+#> !                        13.             ├─purrr:::call_with_cleanup(...)
+#> !                        14.             └─pkgdown (local) .f(.x[[i]], ...)
+#> !                        15.               ├─base::withCallingHandlers(...)
+#> !                        16.               └─pkgdown:::data_reference_topic(...)
+#> !                        17.                 └─pkgdown:::run_examples(...)
+#> !                        18.                   └─pkgdown:::highlight_examples(code, topic, env = env)
+#> !                        19.                     └─downlit::evaluate_and_highlight(...)
+#> !                        20.                       └─evaluate::evaluate(code, child_env(env), new_device = TRUE, output_handler = output_handler)
+#> !                        21.                         ├─base::withRestarts(...)
+#> !                        22.                         │ └─base (local) withRestartList(expr, restarts)
+#> !                        23.                         │   ├─base (local) withOneRestart(withRestartList(expr, restarts[-nr]), restarts[[nr]])
+#> !                        24.                         │   │ └─base (local) doWithOneRestart(return(expr), restart)
+#> !                        25.                         │   └─base (local) withRestartList(expr, restarts[-nr])
+#> !                        26.                         │     └─base (local) withOneRestart(expr, restarts[[1L]])
+#> !                        27.                         │       └─base (local) doWithOneRestart(return(expr), restart)
+#> !                        28.                         ├─evaluate:::with_handlers(...)
+#> !                        29.                         │ ├─base::eval(call)
+#> !                        30.                         │ │ └─base::eval(call)
+#> !                        31.                         │ └─base::withCallingHandlers(...)
+#> !                        32.                         ├─base::withVisible(eval(expr, envir))
+#> !                        33.                         └─base::eval(expr, envir)
+#> !                        34.                           └─base::eval(expr, envir)
+#> !                        35.                             └─scop::RunMetabolism(...)
+#> !                        36.                               ├─base::tryCatch(...)
+#> !                        37.                               │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+#> !                        38.                               │   └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+#> !                        39.                               │     └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+#> !                        40.                               └─scop::GeneConvert(...)
+#> !                        41.                                 ├─thisutils::try_get(...)
+#> !                        42.                                 │ ├─base::tryCatch(...)
+#> !                        43.                                 │ │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+#> !                        44.                                 │ │   └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+#> !                        45.                                 │ │     └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+#> !                        46.                                 │ └─base::eval.parent(substitute(expr))
+#> !                        47.                                 │   └─base::eval(expr, p)
+#> !                        48.                                 │     └─base::eval(expr, p)
+#> !                        49.                                 └─scop:::connect_biomart_dataset(...)
+#> !                        50.                                   ├─base::tryCatch(...)
+#> !                        51.                                   │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+#> !                        52.                                   │   └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+#> !                        53.                                   │     └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+#> !                        54.                                   └─biomaRt::useDataset(dataset = dataset, mart = mart)
+#> !                        55.                                     └─biomaRt:::.getAttributes(mart, verbose = verbose)
+#> !                        56.                                       └─biomaRt:::.getAttrFilt(mart = mart, verbose = verbose, type = "attributes")
+#> !                        57.                                         └─biomaRt:::bmRequest(...)
+#> !                        58.                                           └─httr2::req_perform(request)
+#> ! [2026-11-02 16:26:15] Get errors when connecting with Dataset (hsapiens_gene_ensembl)
+#> ! [2026-11-02 16:26:16] Retrying...
+#> ! [2026-11-02 16:26:16] <error/httr2_http_502>
+#> !                       Error in `req_perform()`:
+#> !                       ! HTTP 502 Bad Gateway.
+#> !                       ---
+#> !                       Backtrace:
+#> !                            ▆
+#> !                         1. ├─global record(if (plan$full) "full-site" else "incremental-site", build())
+#> !                         2. │ └─base::force(expression)
+#> !                         3. └─global build()
+#> !                         4.   └─pkgdown::build_site(...)
+#> !                         5.     └─pkgdown:::build_site_local(...)
+#> !                         6.       └─pkgdown::build_reference(...)
+#> !                         7.         ├─pkgdown:::unwrap_purrr_error(...)
+#> !                         8.         │ └─base::withCallingHandlers(...)
+#> !                         9.         └─purrr::map(...)
+#> !                        10.           └─purrr:::map_("list", .x, .f, ..., .progress = .progress)
+#> !                        11.             ├─purrr:::with_indexed_errors(...)
+#> !                        12.             │ └─base::withCallingHandlers(...)
+#> !                        13.             ├─purrr:::call_with_cleanup(...)
+#> !                        14.             └─pkgdown (local) .f(.x[[i]], ...)
+#> !                        15.               ├─base::withCallingHandlers(...)
+#> !                        16.               └─pkgdown:::data_reference_topic(...)
+#> !                        17.                 └─pkgdown:::run_examples(...)
+#> !                        18.                   └─pkgdown:::highlight_examples(code, topic, env = env)
+#> !                        19.                     └─downlit::evaluate_and_highlight(...)
+#> !                        20.                       └─evaluate::evaluate(code, child_env(env), new_device = TRUE, output_handler = output_handler)
+#> !                        21.                         ├─base::withRestarts(...)
+#> !                        22.                         │ └─base (local) withRestartList(expr, restarts)
+#> !                        23.                         │   ├─base (local) withOneRestart(withRestartList(expr, restarts[-nr]), restarts[[nr]])
+#> !                        24.                         │   │ └─base (local) doWithOneRestart(return(expr), restart)
+#> !                        25.                         │   └─base (local) withRestartList(expr, restarts[-nr])
+#> !                        26.                         │     └─base (local) withOneRestart(expr, restarts[[1L]])
+#> !                        27.                         │       └─base (local) doWithOneRestart(return(expr), restart)
+#> !                        28.                         ├─evaluate:::with_handlers(...)
+#> !                        29.                         │ ├─base::eval(call)
+#> !                        30.                         │ │ └─base::eval(call)
+#> !                        31.                         │ └─base::withCallingHandlers(...)
+#> !                        32.                         ├─base::withVisible(eval(expr, envir))
+#> !                        33.                         └─base::eval(expr, envir)
+#> !                        34.                           └─base::eval(expr, envir)
+#> !                        35.                             └─scop::RunMetabolism(...)
+#> !                        36.                               ├─base::tryCatch(...)
+#> !                        37.                               │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+#> !                        38.                               │   └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+#> !                        39.                               │     └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+#> !                        40.                               └─scop::GeneConvert(...)
+#> !                        41.                                 ├─thisutils::try_get(...)
+#> !                        42.                                 │ ├─base::tryCatch(...)
+#> !                        43.                                 │ │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+#> !                        44.                                 │ │   └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+#> !                        45.                                 │ │     └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+#> !                        46.                                 │ └─base::eval.parent(substitute(expr))
+#> !                        47.                                 │   └─base::eval(expr, p)
+#> !                        48.                                 │     └─base::eval(expr, p)
+#> !                        49.                                 └─scop:::connect_biomart_dataset(...)
+#> !                        50.                                   ├─base::tryCatch(...)
+#> !                        51.                                   │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+#> !                        52.                                   │   └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+#> !                        53.                                   │     └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+#> !                        54.                                   └─biomaRt::useDataset(dataset = dataset, mart = mart)
+#> !                        55.                                     └─biomaRt:::checkDataset(dataset = dataset, mart = mart)
+#> !                        56.                                       └─biomaRt:::.listDatasets(mart, sort = FALSE)
+#> !                        57.                                         └─biomaRt:::bmRequest(...)
+#> !                        58.                                           └─httr2::req_perform(request)
+#> ! [2026-11-02 16:26:16] Get errors when connecting with Dataset (hsapiens_gene_ensembl)
+#> ! [2026-11-02 16:26:17] `GeneConvert()` failed: "\033[1m\033[22m\033[1m\033[34m<error/httr2_http_502>\033[39m\033[22m \033[1m\033[33mError\033[39m in \033[94m`req_perform()`\033[39m:\033[22m \033[33m!\033[39m HTTP 502 Bad Gateway. --- \033[1mBacktrace:\033[22m \033[90m \033[39m▆ \033[90m 1. \033[39m├─\033[1mglobal\033[22m record(if (plan$full) \"full-site\" else \"incremental-site\", build()) \033[90m 2. \033[39m│ \033[38;5;246m└─\033[1mbase\033[22m::force(expression)\033[39m \033[90m 3. \033[39m└─\033[1mglobal\033[22m build() \033[90m4. \033[39m └─\033[1mpkgdown\033[22m::build_site(...) \033[90m 5. \033[39m └─pkgdown:::build_site_local(...) \033[90m 6.\033[39m └─pkgdown::build_reference(...) \033[90m 7. \033[39m ├\033[38;5;246m─pkgdown:::unwrap_purrr_error(...)\033[39m \033[90m 8. \033[39m │ \033[38;5;246m└─\033[1mbase\033[22m::withCallingHandlers(...)\033[39m \033[90m 9. \033[39m └─\033[1mpurrr\033[22m::map(...) \033[90m 10.\033[39m └─purrr:::map_(\"list\", .x, .f, ..., .progress = .progress) \033[90m 11.\033[39m ├\033[38;5;246m─purrr:::with_indexed_errors(...)\033[39m \033[90m 12. \033[39m │ \033[38;5;246m└─\033[1mbase\033[22m::withCallingHandlers(...)\033[39m \033[90m13. \033[39m ├\033[38;5;246m─\033[1mpurrr\033[22m:::call_with_cleanup(...)\033[39m \033[90m 14. \033[39m └─\033[1mpkgdown\033[22m (local) .f(.x[[i]], ...) \033[90m15. \033[39m ├\033[38;5;246m─\033[1mbase\033[22m::withCallingHandlers(...)\033[39m \033[90m 16.\033[39m └─\033[1mpkgdown\033[22m:::data_reference_topic(...) \033[90m 17. \033[39m └─pkgdown:::run_examples(...) \033[90m 18.\033[39m └─pkgdown:::highlight_examples(code, topic, env = env) \033[90m 19.\033[39m └─\033[1mdownlit\033[22m::evaluate_and_highlight(...) \033[90m 20. \033[39m └─\033[1mevaluate\033[22m::evaluate(code, child_env(env), new_device = TRUE, output_handler = output_handler) \033[90m 21.\033[39m ├\033[38;5;246m─\033[1mbase\033[22m::withRestarts(...)\033[39m \033[90m 22. \033[39m │ \033[38;5;246m└─base (local) withRestartList(expr,\033[39m \033[38;5;246mrestarts)\033[39m \033[90m 23. \033[39m │ \033[38;5;246m├─base (local) withOneRestart(withRestartList(expr,\033[39m \033[38;5;246mrestarts[-nr]), restarts[[nr]])\033[39m \033[90m 24. \033[39m │ \033[38;5;246m│ └─base (local)\033[39m \033[38;5;246mdoWithOneRestart(return(expr), restart)\033[39m \033[90m 25. \033[39m │ \033[38;5;246m└─base (local)\033[39m \033[38;5;246mwithRestartList(expr, restarts[-nr])\033[39m \033[90m 26. \033[39m │ \033[38;5;246m└─base (local) withOneRestart(expr,\033[39m \033[38;5;246mrestarts[[1L]])\033[39m \033[90m 27. \033[39m │ \033[38;5;246m└─base (local) doWithOneRestart(return(expr), restart)\033[39m \033[90m28. \033[39m ├\033[38;5;246m─\033[1mevaluate\033[22m:::with_handlers(...)\033[39m \033[90m 29. \033[39m │ \033[38;5;246m├─\033[1mbase\033[22m::eval(call)\033[39m \033[90m 30. \033[39m │ \033[38;5;246m│\033[39m \033[38;5;246m└─base::eval(call)\033[39m \033[90m 31. \033[39m │ \033[38;5;246m└─base::withCallingHandlers(...)\033[39m \033[90m 32.\033[39m ├\033[38;5;246m─base::withVisible(eval(expr, envir))\033[39m \033[90m 33. \033[39m └─base::eval(expr, envir) \033[90m 34.\033[39m └─base::eval(expr, envir) \033[90m 35. \033[39m └─\033[1mscop\033[22m::RunMetabolism(...) \033[90m 36.\033[39m ├\033[38;5;246m─\033[1mbase\033[22m::tryCatch(...)\033[39m \033[90m 37. \033[39m │ \033[38;5;246m└─base (local) tryCatchList(expr, classes,\033[39m \033[38;5;246mparentenv, handlers)\033[39m \033[90m 38. \033[39m │ \033[38;5;246m└─base (local) tryCatchOne(expr, names, parentenv,\033[39m \033[38;5;246mhandlers[[1L]])\033[39m \033[90m 39. \033[39m │ \033[38;5;246m└─base (local) doTryCatch(return(expr), name, parentenv,\033[39m \033[38;5;246mhandler)\033[39m \033[90m 40. \033[39m └─\033[1mscop\033[22m::GeneConvert(...) \033[90m 41. \033[39m ├\033[38;5;246m─\033[1mthisutils\033[22m::try_get(...)\033[39m \033[90m 42. \033[39m │ \033[38;5;246m├─\033[1mbase\033[22m::tryCatch(...)\033[39m \033[90m 43. \033[39m │ \033[38;5;246m│ └─base (local) tryCatchList(expr, classes,\033[39m \033[38;5;246mparentenv, handlers)\033[39m \033[90m 44. \033[39m │ \033[38;5;246m│ └─base (local) tryCatchOne(expr, names,\033[39m \033[38;5;246mparentenv, handlers[[1L]])\033[39m \033[90m 45. \033[39m │ \033[38;5;246m│ └─base (local) doTryCatch(return(expr),\033[39m \033[38;5;246mname, parentenv, handler)\033[39m \033[90m 46. \033[39m │ \033[38;5;246m└─base::eval.parent(substitute(expr))\033[39m \033[90m 47. \033[39m │ \033[38;5;246m└─base::eval(expr, p)\033[39m \033[90m 48. \033[39m │ \033[38;5;246m└─base::eval(expr, p)\033[39m \033[90m 49.\033[39m └─\033[1mscop\033[22m:::connect_biomart_dataset(...) \033[90m 50. \033[39m ├\033[38;5;246m─\033[1mbase\033[22m::tryCatch(...)\033[39m \033[90m 51. \033[39m │ \033[38;5;246m└─base (local) tryCatchList(expr, classes, parentenv, handlers)\033[39m \033[90m 52. \033[39m │ \033[38;5;246m└─base\033[39m \033[38;5;246m(local) tryCatchOne(expr, names, parentenv, handlers[[1L]])\033[39m \033[90m 53. \033[39m │ \033[38;5;246m└─base\033[39m \033[38;5;246m(local) doTryCatch(return(expr), name, parentenv, handler)\033[39m \033[90m 54.\033[39m └─\033[1mbiomaRt\033[22m::useDataset(dataset = dataset, mart = mart) \033[90m 55.\033[39m └─biomaRt:::checkDataset(dataset = dataset, mart = mart) \033[90m 56.\033[39m └─biomaRt:::.listDatasets(mart, sort = FALSE) \033[90m 57. \033[39m └─biomaRt:::bmRequest(...) \033[90m58. \033[39m └─\033[1m\033[94mhttr2::req_perform(\033[39m\033[22mrequest\033[1m\033[94m)\033[39m\033[22m". Falling back to direct symbol matching.
+#> ℹ [2026-11-02 16:26:18] Total metabolism gene sets to score: 127
+#> ✔ [2026-11-02 16:26:18] Metabolism scores stored in tools slot "Metabolism_CellType_AUCell"
 
 ht1 <- MetabolismPlot(
   pancreas_sub,
@@ -159,7 +480,7 @@ MetabolismPlot(
   plot_type = "network",
   topTerm = 3
 )
-#> ✔ [2026-11-02 14:47:47] shadowtext installed successfully
+#> ✔ [2026-11-02 16:26:21] shadowtext installed successfully
 
 
 MetabolismPlot(
@@ -188,27 +509,27 @@ pancreas_sub <- RunMetabolism(
   Ensembl_version = 115,
   use_preparedb = FALSE
 )
-#> ℹ [2026-11-02 14:47:52] Start metabolism pathway scoring
-#> ℹ [2026-11-02 14:47:52] Data type is raw counts
-#> ℹ [2026-11-02 14:47:52] Using raw scMetabolism gene sets with species conversion to "Mus_musculus"
-#> ℹ [2026-11-02 14:47:52] Converting 3297 human gene symbols to "Mus_musculus" via biomaRt ...
-#> ℹ [2026-11-02 14:47:52] Connect to the Ensembl archives...
-#> ℹ [2026-11-02 14:47:53] Using the 115 version of ensembl database...
-#> ℹ [2026-11-02 14:47:53] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
-#> ℹ [2026-11-02 14:47:53] Searching the dataset hsapiens ...
-#> ℹ [2026-11-02 14:47:53] Connecting to the dataset hsapiens_gene_ensembl ...
-#> ℹ [2026-11-02 14:47:53] Converting the geneIDs...
-#> ℹ [2026-11-02 14:47:54] 3256 genes mapped with "ensembl_symbol"
-#> ℹ [2026-11-02 14:47:54] 13 genes mapped with "entrez_symbol"
-#> ℹ [2026-11-02 14:47:55] 6 genes mapped with "uniprot_symbol"
-#> ℹ [2026-11-02 14:47:55] ==============================
+#> ℹ [2026-11-02 16:26:26] Start metabolism pathway scoring
+#> ℹ [2026-11-02 16:26:26] Data type is raw counts
+#> ℹ [2026-11-02 16:26:26] Using raw scMetabolism gene sets with species conversion to "Mus_musculus"
+#> ℹ [2026-11-02 16:26:26] Converting 3297 human gene symbols to "Mus_musculus" via biomaRt ...
+#> ℹ [2026-11-02 16:26:26] Connect to the Ensembl archives...
+#> ℹ [2026-11-02 16:26:27] Using the 115 version of ensembl database...
+#> ℹ [2026-11-02 16:26:27] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
+#> ℹ [2026-11-02 16:26:27] Searching the dataset hsapiens ...
+#> ℹ [2026-11-02 16:26:29] Connecting to the dataset hsapiens_gene_ensembl ...
+#> ℹ [2026-11-02 16:26:32] Converting the geneIDs...
+#> ℹ [2026-11-02 16:26:39] 3256 genes mapped with "ensembl_symbol"
+#> ℹ [2026-11-02 16:26:42] 13 genes mapped with "entrez_symbol"
+#> ℹ [2026-11-02 16:26:44] 6 genes mapped with "uniprot_symbol"
+#> ℹ [2026-11-02 16:26:45] ==============================
 #> ℹ                       3275 genes mapped
 #> ℹ                       22 genes unmapped
 #> ℹ                       ==============================
-#> ✔ [2026-11-02 14:47:57] Species conversion added 207 gene matches across pathways
-#> ℹ [2026-11-02 14:47:57] Total metabolism gene sets to score: 127
-#> ✔ [2026-11-02 14:47:57] Metabolism scores stored in tools slot "Metabolism_AUCell"
-#> ℹ [2026-11-02 14:47:57] Metabolism scores also stored in assay "METABOLISM"
+#> ✔ [2026-11-02 16:26:46] Species conversion added 207 gene matches across pathways
+#> ℹ [2026-11-02 16:26:46] Total metabolism gene sets to score: 127
+#> ✔ [2026-11-02 16:26:46] Metabolism scores stored in tools slot "Metabolism_AUCell"
+#> ℹ [2026-11-02 16:26:46] Metabolism scores also stored in assay "METABOLISM"
 
 FeatureDimPlot(
   pancreas_sub,
@@ -235,5 +556,5 @@ ht <- GroupHeatmap(
   width = 1,
   height = 2
 )
-#> ! [2026-11-02 14:47:58] The values in the "counts" layer are non-integer. Set the library size to "1"
+#> ! [2026-11-02 16:26:48] The values in the "counts" layer are non-integer. Set the library size to "1"
 ```

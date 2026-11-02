@@ -21,8 +21,12 @@
 <url><loc>https://mengxu98.github.io/scop/authors.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/index.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/news/index.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/ATACDepthCorPlot.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/ATACFootprintPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/ATACFragmentPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/ATACMotifPlot.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/ATACRegionHeatmap.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/ATACTSSPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/AddATACMotifs.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/AddFeaturesData.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/AddModuleScore.html</loc></url>
@@ -175,7 +179,9 @@
 <url><loc>https://mengxu98.github.io/scop/reference/RemoveEnv.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RenameClusters.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RenameFeatures.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunATACFootprint.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunATACQC.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunATACRegionMatrix.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunAugur.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunBANKSY.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunBayesSpace.html</loc></url>
@@ -228,6 +234,7 @@
 <url><loc>https://mengxu98.github.io/scop/reference/RunGSEA.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunGSVA.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunGeneActivity.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunGenomeTiles.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunHarmony2.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunIREA.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunIntegration.html</loc></url>

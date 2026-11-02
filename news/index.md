@@ -2,6 +2,22 @@
 
 ## scop (development version)
 
+- Add fixed-width genome tile counting through the validated sparse ATAC
+  recount workflow, with reference checks and tile provenance.
+
+- Add grouped ATAC region endpoint matrices, heatmaps and aggregate
+  profiles with explicit strand, coordinate and normalization semantics.
+
+- Add
+  [`ATACDepthCorPlot()`](https://mengxu98.github.io/scop/reference/ATACDepthCorPlot.md)
+  for depth/component correlations using fresh count-layer totals by
+  default.
+
+- Add
+  [`ATACTSSPlot()`](https://mengxu98.github.io/scop/reference/ATACTSSPlot.md)
+  for precomputed positional TSS enrichment profiles with assay-cell
+  alignment.
+
 - Add
   [`ATACFragmentPlot()`](https://mengxu98.github.io/scop/reference/ATACFragmentPlot.md)
   for regional fragment-length diagnostics with explicit barcode

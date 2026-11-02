@@ -591,10 +591,19 @@
 
 - [`RunATACQC()`](https://mengxu98.github.io/scop/reference/RunATACQC.md)
   : Run scATAC quality control metrics
+- [`ATACDepthCorPlot()`](https://mengxu98.github.io/scop/reference/ATACDepthCorPlot.md)
+  : Plot ATAC reduction-depth correlations
+- [`ATACTSSPlot()`](https://mengxu98.github.io/scop/reference/ATACTSSPlot.md)
+  : Plot ATAC TSS enrichment profiles
 - [`ATACFragmentPlot()`](https://mengxu98.github.io/scop/reference/ATACFragmentPlot.md)
   : Plot ATAC fragment lengths
 - [`CoverageTrackPlot()`](https://mengxu98.github.io/scop/reference/CoverageTrackPlot.md)
   : Coverage track plot for ATAC data
+- [`RunATACRegionMatrix()`](https://mengxu98.github.io/scop/reference/RunATACRegionMatrix.md)
+  : Count strand-oriented insertion endpoints around ATAC regions
+- [`ATACRegionHeatmap()`](https://mengxu98.github.io/scop/reference/ATACRegionHeatmap.md)
+  [`ATACRegionPlot()`](https://mengxu98.github.io/scop/reference/ATACRegionHeatmap.md)
+  : Plot positional ATAC region signal
 
 ### Peak Definition and Annotation
 
@@ -604,6 +613,8 @@
   : Combine explicit peak sets into one common interval universe
 - [`RecountATAC()`](https://mengxu98.github.io/scop/reference/RecountATAC.md)
   : Recount fragments over an explicit common ATAC peak universe
+- [`RunGenomeTiles()`](https://mengxu98.github.io/scop/reference/RunGenomeTiles.md)
+  : Count fragments in fixed-width genome tiles
 - [`FilterATACPeaks()`](https://mengxu98.github.io/scop/reference/FilterATACPeaks.md)
   : Filter an ATAC peak universe with explicit criteria
 - [`AnnotateATACPeaks()`](https://mengxu98.github.io/scop/reference/AnnotateATACPeaks.md)
@@ -611,6 +622,10 @@
 
 ### Motifs and Accessibility Deviations
 
+- [`RunATACFootprint()`](https://mengxu98.github.io/scop/reference/RunATACFootprint.md)
+  : Bias-corrected ATAC footprinting
+- [`ATACFootprintPlot()`](https://mengxu98.github.io/scop/reference/ATACFootprintPlot.md)
+  : Plot bias-corrected footprints
 - [`ATACMotifPlot()`](https://mengxu98.github.io/scop/reference/ATACMotifPlot.md)
   : Plot motif sequence logos
 - [`AddATACMotifs()`](https://mengxu98.github.io/scop/reference/AddATACMotifs.md)

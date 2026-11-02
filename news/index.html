@@ -70,7 +70,11 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="scop-development-version">scop (development version)<a class="anchor" aria-label="anchor" href="#scop-development-version"></a></h2>
-<ul><li><p>Add <code><a href="../reference/ATACFragmentPlot.html">ATACFragmentPlot()</a></code> for regional fragment-length diagnostics with explicit barcode mappings.</p></li>
+<ul><li><p>Add fixed-width genome tile counting through the validated sparse ATAC recount workflow, with reference checks and tile provenance.</p></li>
+<li><p>Add grouped ATAC region endpoint matrices, heatmaps and aggregate profiles with explicit strand, coordinate and normalization semantics.</p></li>
+<li><p>Add <code><a href="../reference/ATACDepthCorPlot.html">ATACDepthCorPlot()</a></code> for depth/component correlations using fresh count-layer totals by default.</p></li>
+<li><p>Add <code><a href="../reference/ATACTSSPlot.html">ATACTSSPlot()</a></code> for precomputed positional TSS enrichment profiles with assay-cell alignment.</p></li>
+<li><p>Add <code><a href="../reference/ATACFragmentPlot.html">ATACFragmentPlot()</a></code> for regional fragment-length diagnostics with explicit barcode mappings.</p></li>
 <li><p>Add <code><a href="../reference/RunCellOracle.html">RunCellOracle()</a></code> and <code><a href="../reference/CellOraclePlot.html">CellOraclePlot()</a></code> for the official CellOracle 0.20.0 workflow, saved-model reuse, original displacement/randomized controls and a standalone Linux/macOS Python environment profile.</p></li>
 <li><p><code>EnrichmentPlot(plot_type = "rank")</code> plots stored ORA terms by enrichment magnitude, with group colors, solid-point sizes, bold halo labels, <code>grid_major</code> reference grids, and zero-void panel bounds.</p></li>
 <li><p><strong>feat</strong>: <code><a href="../reference/GroupHeatmap.html">GroupHeatmap()</a></code> accepts <code>legend_params</code> to customize expression and percent legends independently, including horizontal color bars and single-row dot legends.</p></li>

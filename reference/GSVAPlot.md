@@ -451,14 +451,14 @@ pancreas_sub <- RunGSVA(
   minGSSize = 2,
   min.sz = 2
 )
-#> ℹ [2026-11-02 14:45:08] Start GSVA analysis
-#> ℹ [2026-11-02 14:45:08] Single-cell GSVA mode: using expression matrix directly ...
-#> ℹ [2026-11-02 14:45:08] Expression matrix: 12238 genes x 80 cells
-#> ℹ [2026-11-02 14:45:08] Processing database: "custom" ...
-#> ℹ [2026-11-02 14:45:08] Initial overlap: 6 genes out of 12238 expression genes and 10 genes in gene sets
-#> ℹ [2026-11-02 14:45:08] Running GSVA for 2 gene sets ...
-#> ℹ [2026-11-02 14:45:08] GSVA results stored in assay "GSVA", meta.data, and tools slot "GSVA_cell_zscore"
-#> ✔ [2026-11-02 14:45:08] GSVA analysis done
+#> ℹ [2026-11-02 16:22:17] Start GSVA analysis
+#> ℹ [2026-11-02 16:22:17] Single-cell GSVA mode: using expression matrix directly ...
+#> ℹ [2026-11-02 16:22:17] Expression matrix: 12238 genes x 80 cells
+#> ℹ [2026-11-02 16:22:17] Processing database: "custom" ...
+#> ℹ [2026-11-02 16:22:17] Initial overlap: 6 genes out of 12238 expression genes and 10 genes in gene sets
+#> ℹ [2026-11-02 16:22:17] Running GSVA for 2 gene sets ...
+#> ℹ [2026-11-02 16:22:17] GSVA results stored in assay "GSVA", meta.data, and tools slot "GSVA_cell_zscore"
+#> ✔ [2026-11-02 16:22:17] GSVA analysis done
 
 ht <- GSVAPlot(
   pancreas_sub,
