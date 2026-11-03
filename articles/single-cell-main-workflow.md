@@ -380,7 +380,7 @@ data.frame(
   bytes = file.info(list.files(output_dir, full.names = TRUE))$size
 )
 #>                file    bytes
-#> 1      analysis.rds 34270937
+#> 1      analysis.rds 34270938
 #> 2 cell-metadata.csv   236267
 ```
 
@@ -438,9 +438,9 @@ build_receipt <- data.frame(
 )
 build_receipt
 #>                     article               built_utc  scop     R
-#> 1 single-cell-main-workflow 2026-11-02 19:00:10 UTC 0.9.2 4.6.2
+#> 1 single-cell-main-workflow 2026-11-03 06:59:14 UTC 0.9.2 4.6.2
 #>                            source_revision source_has_local_changes
-#> 1 265891f3a98320aa08a80df40d1e750a7416eb5c                    FALSE
+#> 1 b733e3ff393213290d6d898f7faeb488b537b396                    FALSE
 #>                        article_md5 R_seed cells_retained genes_in_active_assay
 #> 1 2c5a3d3c700eb7db8ec2b44b16fcceda     11           1000                 15998
 utils::write.csv(build_receipt, file.path(output_dir, "build-receipt.csv"),
@@ -490,7 +490,7 @@ sessionInfo()
 #>  [28] igraph_2.3.4           mime_0.13              lifecycle_1.0.5       
 #>  [31] iterators_1.0.14       pkgconfig_2.0.3        Matrix_1.7-6          
 #>  [34] R6_2.6.1               fastmap_1.2.0          clue_0.3-68           
-#>  [37] fitdistrplus_1.2-6     future_1.80.0          shiny_1.14.0          
+#>  [37] fitdistrplus_1.2-6     future_1.82.0          shiny_1.14.0          
 #>  [40] digest_0.6.39          thisplot_0.4.6         colorspace_2.1-4      
 #>  [43] ggnewscale_0.5.2       S4Vectors_0.50.3       patchwork_1.3.2       
 #>  [46] Seurat_5.6.0           tensor_1.5.1           RSpectra_0.16-2       

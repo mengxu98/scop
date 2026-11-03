@@ -638,6 +638,8 @@
 
 ### Gene Activity and Peak-Gene Associations
 
+- [`RunATACCoaccessibility()`](https://mengxu98.github.io/scop/reference/RunATACCoaccessibility.md)
+  : Infer coaccessibility using native Cicero
 - [`RunGeneActivity()`](https://mengxu98.github.io/scop/reference/RunGeneActivity.md)
   : Quantify gene activity from indexed ATAC fragments
 - [`RunLinkPeaks()`](https://mengxu98.github.io/scop/reference/RunLinkPeaks.md)

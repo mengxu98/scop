@@ -350,23 +350,23 @@ A `ggplot`, `patchwork`, or list of `ggplot` objects.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-11-02 17:44:35] Start standard processing workflow...
-#> ℹ [2026-11-02 17:44:35] Checking a list of <Seurat>...
-#> ! [2026-11-02 17:44:35] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-03 05:41:06] Start standard processing workflow...
+#> ℹ [2026-11-03 05:41:06] Checking a list of <Seurat>...
+#> ! [2026-11-03 05:41:06] Data 1/1 of the `srt_list` is "unknown"
 #> Warning: Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-11-02 17:44:35] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-11-02 17:44:35] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-02 17:44:36] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-02 17:44:36] Number of available HVF: 2000
-#> ℹ [2026-11-02 17:44:36] Finished check
-#> ℹ [2026-11-02 17:44:36] Perform `ScaleData()`
-#> ℹ [2026-11-02 17:44:36] Perform pca linear dimension reduction
-#> ℹ [2026-11-02 17:44:36] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-11-02 17:44:37] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-02 17:44:37] Reorder clusters...
-#> ℹ [2026-11-02 17:44:37] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-02 17:44:37] Perform umap nonlinear dimension reduction
-#> ✔ [2026-11-02 17:44:42] Standard processing workflow completed
+#> ℹ [2026-11-03 05:41:06] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-03 05:41:06] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-03 05:41:07] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-03 05:41:07] Number of available HVF: 2000
+#> ℹ [2026-11-03 05:41:07] Finished check
+#> ℹ [2026-11-03 05:41:07] Perform `ScaleData()`
+#> ℹ [2026-11-03 05:41:07] Perform pca linear dimension reduction
+#> ℹ [2026-11-03 05:41:07] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-11-03 05:41:08] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-03 05:41:08] Reorder clusters...
+#> ℹ [2026-11-03 05:41:08] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-03 05:41:08] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-03 05:41:14] Standard processing workflow completed
 p1 <- CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType",
@@ -737,8 +737,8 @@ pancreas_sub <- RunPAGA(
   backend = "cpp",
   return_seurat = TRUE
 )
-#> ℹ [2026-11-02 17:45:00] Running PAGA with BiocNeighbors using 29 neighbors
-#> ✔ [2026-11-02 17:45:00] PAGA cpp backend completed
+#> ℹ [2026-11-03 05:41:32] Running PAGA with BiocNeighbors using 29 neighbors
+#> ✔ [2026-11-03 05:41:32] PAGA cpp backend completed
 
 CellDimPlot(
   pancreas_sub,
@@ -786,10 +786,10 @@ pancreas_sub <- RunSCVELO(
   show_plot = FALSE,
   return_seurat = TRUE
 )
-#> ℹ [2026-11-02 17:45:02] Running scanpy-compatible preprocessing (15998 features -> filter + normalize)...
-#> ℹ [2026-11-02 17:45:05] Running scVelo "stochastic" mode with `backend = 'cpp'` (9699 features)
-#> ✔ [2026-11-02 17:45:08] scVelo "stochastic" mode completed
-#> ✔ [2026-11-02 17:45:08] scVelo cpp backend completed
+#> ℹ [2026-11-03 05:41:34] Running scanpy-compatible preprocessing (15998 features -> filter + normalize)...
+#> ℹ [2026-11-03 05:41:38] Running scVelo "stochastic" mode with `backend = 'cpp'` (9699 features)
+#> ✔ [2026-11-03 05:41:41] scVelo "stochastic" mode completed
+#> ✔ [2026-11-03 05:41:41] scVelo cpp backend completed
 
 CellDimPlot(
   pancreas_sub,

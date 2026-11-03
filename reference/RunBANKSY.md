@@ -92,8 +92,7 @@ RunBANKSY(
 
 - algo:
 
-  Clustering algorithm passed to
-  [`Banksy::clusterBanksy()`](https://rdrr.io/pkg/Banksy/man/clusterBanksy.html).
+  Clustering algorithm passed to `Banksy::clusterBanksy()`.
 
 - k_neighbors:
 
@@ -114,25 +113,20 @@ RunBANKSY(
 
 - compute_banksy_params:
 
-  Additional parameters passed to
-  [`Banksy::computeBanksy()`](https://rdrr.io/pkg/Banksy/man/computeBanksy.html).
+  Additional parameters passed to `Banksy::computeBanksy()`.
 
 - run_pca_params:
 
-  Additional parameters passed to
-  [`Banksy::runBanksyPCA()`](https://rdrr.io/pkg/Banksy/man/runBanksyPCA.html).
+  Additional parameters passed to `Banksy::runBanksyPCA()`.
 
 - cluster_banksy_params:
 
-  Additional parameters passed to
-  [`Banksy::clusterBanksy()`](https://rdrr.io/pkg/Banksy/man/clusterBanksy.html).
+  Additional parameters passed to `Banksy::clusterBanksy()`.
 
 - cluster_source:
 
   Optional BANKSY `colData` column to copy. If `NULL`, the first cluster
-  name reported by
-  [`Banksy::clusterNames()`](https://rdrr.io/pkg/Banksy/man/clusterNames.html)
-  is used when available.
+  name reported by `Banksy::clusterNames()` is used when available.
 
 - cluster_colname:
 

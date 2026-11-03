@@ -86,27 +86,27 @@ gene weight. Briefings in Bioinformatics, 2022. doi:10.1093/bib/bbac293.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-11-02 18:15:54] Start standard processing workflow...
-#> ℹ [2026-11-02 18:15:54] Checking a list of <Seurat>...
-#> ! [2026-11-02 18:15:54] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-11-02 18:15:54] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-11-02 18:15:54] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-02 18:15:54] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-02 18:15:54] Number of available HVF: 2000
-#> ℹ [2026-11-02 18:15:55] Finished check
-#> ℹ [2026-11-02 18:15:55] Perform `ScaleData()`
-#> ℹ [2026-11-02 18:15:55] Perform pca linear dimension reduction
-#> ℹ [2026-11-02 18:15:55] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-11-02 18:15:55] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-02 18:15:55] Reorder clusters...
-#> ℹ [2026-11-02 18:15:55] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-02 18:15:56] Perform umap nonlinear dimension reduction
-#> ✔ [2026-11-02 18:16:04] Standard processing workflow completed
+#> ℹ [2026-11-03 06:13:20] Start standard processing workflow...
+#> ℹ [2026-11-03 06:13:20] Checking a list of <Seurat>...
+#> ! [2026-11-03 06:13:20] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-03 06:13:20] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-03 06:13:21] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-03 06:13:21] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-03 06:13:21] Number of available HVF: 2000
+#> ℹ [2026-11-03 06:13:21] Finished check
+#> ℹ [2026-11-03 06:13:21] Perform `ScaleData()`
+#> ℹ [2026-11-03 06:13:21] Perform pca linear dimension reduction
+#> ℹ [2026-11-03 06:13:21] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-11-03 06:13:22] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-03 06:13:22] Reorder clusters...
+#> ℹ [2026-11-03 06:13:22] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-03 06:13:22] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-03 06:13:31] Standard processing workflow completed
 pancreas_sub <- RunFitDevo(
   pancreas_sub,
   nfeatures = 300
 )
-#> ℹ [2026-11-02 18:16:04] Run FitDevo scoring with 300 features and 1000 cells
+#> ℹ [2026-11-03 06:13:31] Run FitDevo scoring with 300 features and 1000 cells
 FeatureDimPlot(pancreas_sub, features = "FitDevo_Score")
 
 FitDevoPlot(

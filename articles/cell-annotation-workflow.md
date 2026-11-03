@@ -387,9 +387,9 @@ build_receipt <- data.frame(
 )
 build_receipt
 #>                    article               built_utc  scop     R
-#> 1 cell-annotation-workflow 2026-11-02 18:52:26 UTC 0.9.2 4.6.2
+#> 1 cell-annotation-workflow 2026-11-03 06:51:23 UTC 0.9.2 4.6.2
 #>                            source_revision source_has_local_changes
-#> 1 265891f3a98320aa08a80df40d1e750a7416eb5c                    FALSE
+#> 1 b733e3ff393213290d6d898f7faeb488b537b396                    FALSE
 #>                        article_md5 R_seed cells_retained genes_in_active_assay
 #> 1 fb85a2913df817dbe406011c397667b4     11            200                 12932
 utils::write.csv(build_receipt, file.path(output_dir, "build-receipt.csv"),
@@ -439,7 +439,7 @@ sessionInfo()
 #>  [28] igraph_2.3.4           iterators_1.0.14       mime_0.13             
 #>  [31] lifecycle_1.0.5        pkgconfig_2.0.3        Matrix_1.7-6          
 #>  [34] R6_2.6.1               fastmap_1.2.0          clue_0.3-68           
-#>  [37] fitdistrplus_1.2-6     future_1.80.0          shiny_1.14.0          
+#>  [37] fitdistrplus_1.2-6     future_1.82.0          shiny_1.14.0          
 #>  [40] digest_0.6.39          thisplot_0.4.6         colorspace_2.1-4      
 #>  [43] ggnewscale_0.5.2       S4Vectors_0.50.3       patchwork_1.3.2       
 #>  [46] Seurat_5.6.0           tensor_1.5.1           RSpectra_0.16-2       
