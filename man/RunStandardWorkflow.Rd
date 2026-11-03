@@ -102,7 +102,8 @@ scaled data (\code{NULL}). One of \code{"LogNormalize"}, \code{"SCT"}, \code{"TF
 \item{regression_model}{\code{"linear"}, \code{"poisson"}, or \code{"negativebinomial"}.}
 
 \item{linear_reduction, linear_reduction_dims, linear_reduction_dims_use, linear_reduction_params, force_linear_reduction}{Linear reduction (\code{"pca"}, \code{"svd"}, \code{"ica"}, \code{"nmf"}, \code{"mds"}, \code{"glmpca"}).
-\code{linear_reduction_dims_use = NULL} uses estimated dimensions, else the first 50.}
+\code{linear_reduction_dims_use = NULL} uses estimated dimensions unless the method
+specifies a different default; explicit values select computed components.}
 
 \item{nonlinear_reduction, nonlinear_reduction_dims, nonlinear_reduction_params, force_nonlinear_reduction}{Nonlinear reduction (\code{"umap"}, \code{"umap-naive"}, \code{"tsne"}, \code{"dm"}, \code{"phate"},
 \code{"pacmap"}, \code{"trimap"}, \code{"largevis"}, \code{"fr"}).}
@@ -156,6 +157,15 @@ not a multi-slice integration orchestrator.
 
 Objects that also contain a \code{ChromatinAssay} are preprocessed sequentially
 (default assay, then chromatin).
+}
+\details{
+ATAC defaults select the available dimensions from 2:30. Explicit ATAC
+dimensions must exist in the computed reduction.
+ATAC workflows record selected dimensions, cells, features and Pearson
+correlations with raw library depth in
+\code{Misc(reduction, "scop_atac_representation")}. Undefined correlations remain
+NA. A requested ATAC graph, clustering or nonlinear-reduction failure stops
+the workflow; a partially processed object is not returned as successful.
 }
 \examples{
 data(pancreas_sub)

@@ -42,6 +42,8 @@ Imports:
     utils,
     uwot
 Suggests:
+    cicero,
+    ggseqlogo,
     IRanges,
     Biostrings,
     BSgenome,
