@@ -2,7 +2,7 @@
 enrichment_rank_plot <- function(
   res, db, group_use, score_col, topTerm, label_n, label_terms,
   palcolor, palette, point_size, point_alpha, label_size, label_width,
-  shared_y, theme_use, theme_args, combine, nrow, ncol, byrow, seed,
+  shared_y, grid_major = TRUE, theme_use, theme_args, combine, nrow, ncol, byrow, seed,
   legend.position, legend.direction
 ) {
   d <- res$enrichment
@@ -28,8 +28,9 @@ enrichment_rank_plot <- function(
   if (length(point_alpha) != 1L || !is.finite(point_alpha) || point_alpha < 0 || point_alpha > 1 ||
     length(label_size) != 1L || !is.finite(label_size) || label_size <= 0 ||
     length(label_width) != 1L || !is.finite(label_width) || label_width < 1 ||
-    length(shared_y) != 1L || is.na(shared_y) || !is.logical(shared_y)) {
-    log_message("Invalid rank opacity, label size, character width, or shared-y setting", message_type = "error")
+    length(shared_y) != 1L || is.na(shared_y) || !is.logical(shared_y) ||
+    length(grid_major) != 1L || is.na(grid_major) || !is.logical(grid_major)) {
+    log_message("Invalid rank opacity, label size, character width, shared-y, or grid_major setting", message_type = "error")
   }
   if (is.null(group_use)) group_use <- unique(as.character(d$Groups))
   group_use <- unique(as.character(group_use))
@@ -56,7 +57,7 @@ enrichment_rank_plot <- function(
   title <- "Enrichment rank"
   label.fg <- "black"
   label.bg <- "white"
-  label.bg.r <- 0.1
+  label.bg.r <- 0.12
   parts <- lapply(group_use, function(g) {
     z <- d[d$Groups == g, , drop = FALSE]
     z <- z[order(-z$.score, z$p.adjust, z$ID), , drop = FALSE]
@@ -69,7 +70,7 @@ enrichment_rank_plot <- function(
     } else {
       z$ID %in% terms | z$Description %in% terms
     }
-    z$.label <- vapply(as.character(z$Description), function(s) {
+    z$.label <- vapply(thisutils::capitalize(as.character(z$Description)), function(s) {
       paste(strwrap(s, width = label_width), collapse = "\n")
     }, character(1))
     z
@@ -78,7 +79,7 @@ enrichment_rank_plot <- function(
   ylim <- range(plotted$.score)
   span <- diff(ylim)
   if (span == 0) span <- max(abs(ylim), 1) * 0.1
-  ylim <- ylim + c(-0.06, 0.65) * span
+  ylim <- ylim + c(-0.04, 0.20) * span
   size_limits <- range(plotted$.significance)
   if (diff(size_limits) == 0) size_limits <- size_limits + c(-0.01, 0.01)
   panels <- lapply(seq_along(group_use), function(i) {
@@ -100,52 +101,26 @@ enrichment_rank_plot <- function(
     if (!shared_y) {
       yr <- range(z$.score)
       ys <- max(diff(yr), max(abs(yr), 1) * 0.1)
-      panel_ylim <- yr + c(-0.06, 0.65) * ys
+      panel_ylim <- yr + c(-0.04, 0.20) * ys
     }
     xmax <- max(z$.rank)
     # Ordered callouts, inspired by heatmap anno_mark. Lines anchor to the
     # original point coordinates; labels never change rank or enrichment.
     if (nrow(hi)) {
       line_count <- lengths(strsplit(hi$.label, "\n", fixed = TRUE))
-      weights <- line_count + 1.2
+      weights <- line_count + 1.0
       centers <- cumsum(weights) - weights / 2
       hi$.label_y <- panel_ylim[2] - diff(panel_ylim) *
-        (0.06 + 0.66 * centers / sum(weights))
-      hi$.label_x <- max(xmax * 0.48, max(hi$.rank) + xmax * 0.12)
+        (0.04 + 0.72 * centers / sum(weights))
+      hi$.label_x <- max(xmax * 0.35, max(hi$.rank) + xmax * 0.06)
     }
+    rgb_vals <- grDevices::col2rgb(color) / 255
+    luminance <- 0.299 * rgb_vals[1] + 0.587 * rgb_vals[2] + 0.114 * rgb_vals[3]
+    strip_text_color <- if (luminance < 0.65) "white" else "#0F172A"
+
     p <- ggplot2::ggplot(z, ggplot2::aes(.data[[".rank"]], .data[[".score"]])) +
       ggplot2::geom_point(ggplot2::aes(size = .data[[".significance"]]),
         shape = 16, colour = color, alpha = point_alpha
-      ) +
-      ggplot2::geom_point(
-        data = hi, ggplot2::aes(size = .data[[".significance"]]),
-        shape = 16, colour = color
-      ) +
-      ggplot2::facet_wrap(~.panel) +
-      ggplot2::scale_size_continuous(
-        name = expression(-log[10](adjusted ~ P)),
-        range = point_size, limits = size_limits
-      ) +
-      ggplot2::guides(size = ggplot2::guide_legend(
-        override.aes = list(colour = "grey45", alpha = 1, shape = 16)
-      )) +
-      ggplot2::scale_x_continuous(breaks = unique(round(seq(1, xmax, length.out = 4)))) +
-      ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0.08, 0.35))) +
-      ggplot2::labs(x = "Pathway rank", y = if (score_col == "FoldEnrichment") {
-        "Fold enrichment"
-      } else {
-        score_col
-      }) +
-      apply_plot_theme(theme_use, theme_args) +
-      ggplot2::theme(
-        panel.border = ggplot2::element_rect(fill = NA, colour = "#30343B", linewidth = 0.45),
-        panel.grid = ggplot2::element_blank(),
-        axis.text = ggplot2::element_text(colour = "#4F5661", size = 9),
-        axis.title = ggplot2::element_text(colour = "#202328", size = 11),
-        axis.ticks = ggplot2::element_line(colour = "#30343B", linewidth = 0.4),
-        strip.background = ggplot2::element_rect(fill = color, colour = "#30343B", linewidth = 0.45),
-        strip.text = ggplot2::element_text(size = 12, face = "bold"),
-        plot.margin = ggplot2::margin(8, 12, 8, 8)
       )
     if (nrow(hi)) {
       p <- p +
@@ -153,20 +128,60 @@ enrichment_rank_plot <- function(
           data = hi,
           ggplot2::aes(x = .data[[".rank"]], y = .data[[".score"]], label = .data[[".label"]]),
           inherit.aes = FALSE, hjust = 0, size = label_size,
-          lineheight = 1.05, colour = label.fg,
+          lineheight = 0.85, colour = label.fg,
           bg.color = label.bg, bg.r = label.bg.r,
-          family = "sans", fontface = "plain",
+          family = "sans", fontface = "bold",
           nudge_x = hi$.label_x - hi$.rank,
           nudge_y = hi$.label_y - hi$.score,
-          direction = "y", force = 1, force_pull = 0,
-          box.padding = 0.3, point.padding = 0.15,
-          min.segment.length = 0, segment.size = 0.25,
-          max.overlaps = Inf, seed = seed, segment.colour = "grey40"
+          direction = "y", force = 0.8, force_pull = 0,
+          box.padding = 0.25, point.padding = 0.05,
+          min.segment.length = 0, segment.size = 0.68,
+          segment.curvature = -0.10, segment.ncp = 3, segment.angle = 20,
+          max.overlaps = Inf, seed = seed, segment.colour = "#0F172A"
+        ) +
+        ggplot2::geom_point(
+          data = hi, ggplot2::aes(size = .data[[".significance"]]),
+          shape = 21, fill = color, colour = "#0F172A", stroke = 0.75
         )
     }
-    xright <- if (nrow(hi)) max(xmax * 1.42, hi$.label_x[1] + xmax * 0.94) else xmax * 1.1
+    p <- p +
+      ggplot2::facet_wrap(~.panel) +
+      ggplot2::scale_size_continuous(
+        name = expression(-log[10](adjusted ~ P)),
+        range = point_size, limits = size_limits
+      ) +
+      ggplot2::guides(size = ggplot2::guide_legend(
+        override.aes = list(fill = "grey45", colour = "#0F172A", alpha = 1, shape = 21, stroke = 0.75)
+      )) +
+      ggplot2::scale_x_continuous(breaks = unique(round(seq(1, xmax, length.out = 4)))) +
+      ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0.04, 0.06))) +
+      ggplot2::labs(x = "Pathway rank", y = if (score_col == "FoldEnrichment") {
+        "Fold enrichment"
+      } else {
+        score_col
+      }) +
+      apply_plot_theme(theme_use, theme_args) +
+      ggplot2::theme(
+        panel.border = ggplot2::element_rect(fill = NA, colour = "#475569", linewidth = 0.45),
+        axis.text = ggplot2::element_text(colour = "black", size = 8.5),
+        axis.title = ggplot2::element_text(colour = "black", size = 9.5, face = "bold"),
+        axis.ticks = ggplot2::element_line(colour = "#475569", linewidth = 0.4),
+        strip.background = ggplot2::element_rect(fill = color, colour = "#475569", linewidth = 0.45),
+        strip.text = ggplot2::element_text(size = 11, face = "bold", colour = strip_text_color),
+        plot.margin = ggplot2::margin(4, 6, 4, 4)
+      )
+
+    if (isTRUE(grid_major)) {
+      p <- p + ggplot2::theme(
+        panel.grid.major = ggplot2::element_line(colour = "grey85", linetype = 2, linewidth = 0.35),
+        panel.grid.minor = ggplot2::element_blank()
+      )
+    } else {
+      p <- p + ggplot2::theme(panel.grid = ggplot2::element_blank())
+    }
+
     p <- p + ggplot2::coord_cartesian(
-      xlim = c(1 - xmax * 0.045, xright), ylim = panel_ylim, expand = FALSE
+      xlim = c(0.5, xmax + 0.6), ylim = panel_ylim, expand = FALSE
     )
     p
   })
@@ -175,8 +190,18 @@ enrichment_rank_plot <- function(
     return(panels)
   }
   p <- patchwork::wrap_plots(panels, nrow = nrow, ncol = ncol, byrow = byrow, guides = "collect") +
-    patchwork::plot_annotation(title = paste0(title, " | ", db))
-  p <- p & ggplot2::theme(legend.position = legend.position, legend.direction = legend.direction)
+    patchwork::plot_annotation(
+      title = paste0(title, " | ", db),
+      theme = ggplot2::theme(
+        plot.title = ggplot2::element_text(size = 13, face = "bold", colour = "black", margin = ggplot2::margin(b = 6))
+      )
+    )
+  p <- p & ggplot2::theme(
+    legend.position = legend.position,
+    legend.direction = legend.direction,
+    legend.title = ggplot2::element_text(size = 9, face = "bold"),
+    legend.text = ggplot2::element_text(size = 8.5)
+  )
   attr(p, "enrichment_data") <- plotted
   p
 }

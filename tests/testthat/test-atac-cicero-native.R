@@ -1,0 +1,37 @@
+# Optional synthetic integration acceptance; no mocked estimation backends.
+# Run with SCOP_RUN_NATIVE_CICERO=true and official monocle3-compatible Cicero.
+# This verifies native parity, not biological validity or real-data performance.
+test_that("coaccessibility agrees exactly with native Cicero on synthetic data", {
+  skip_if(Sys.getenv("SCOP_RUN_NATIVE_CICERO") != "true", "opt-in native Cicero integration test")
+  for (pkg in c("Signac", "monocle3", "cicero", "withr")) skip_if_not_installed(pkg)
+  dependencies <- paste(utils::packageDescription("cicero")[c("Imports", "Depends")], collapse = " ")
+  skip_if(!grepl("monocle3", dependencies, fixed = TRUE), "requires official monocle3-compatible Cicero")
+  withr::local_preserve_seed()
+  set.seed(712)
+  n <- 96L; p <- 240L
+  ranges <- GenomicRanges::GRanges('chr1', IRanges::IRanges(seq(10001L, 2390001L, length.out=p),width=200L))
+  GenomeInfoDb::genome(ranges) <- 'synthetic'; GenomeInfoDb::seqlengths(ranges) <- c(chr1=2500000L)
+  counts <- Matrix::Matrix(matrix(rbinom(n*p, 2L, .25),p,n,dimnames=list(paste0('peak',seq_len(p)),paste0('cell',seq_len(n)))),sparse=TRUE)
+  assay <- Signac::CreateChromatinAssay(counts=counts,ranges=ranges,genome=GenomeInfoDb::seqinfo(ranges))
+  x <- SeuratObject::CreateSeuratObject(assay,assay='peaks')
+  coords <- matrix(rnorm(n*2L),n,2L,dimnames=list(colnames(x),c('LSI_1','LSI_2')))
+  x[['lsi']] <- SeuratObject::CreateDimReducObject(coords,key='LSI_',assay='peaks')
+  original <- serialize(x,NULL)
+  set.seed(12); rng <- .Random.seed
+  out <- RunATACCoaccessibility(x,c(chr1=2500000L),'synthetic',dims=1:2,k=8L,sample.num=4L,seed=42L,verbose=FALSE)
+  expect_identical(rng, .Random.seed)
+  expect_identical(original, serialize(x, NULL))
+  receipt <- SeuratObject::Misc(out[['peaks']],'scop_coaccessibility')
+  binary <- Matrix::drop0(SeuratObject::GetAssayData(x[['peaks']],layer='counts')); binary@x[] <- 1
+  metadata <- data.frame(gene_short_name=rownames(binary),chr='chr1',bp1=GenomicRanges::start(ranges),bp2=GenomicRanges::end(ranges),row.names=rownames(binary))
+  set.seed(42L)
+  cds <- monocle3::new_cell_data_set(binary,cell_metadata=data.frame(row.names=colnames(binary)),gene_metadata=metadata)
+  agg <- cicero::make_cicero_cds(cds,reduced_coordinates=coords,k=8L,size_factor_normalize=TRUE,silent=TRUE,return_agg_info=TRUE)
+  direct <- cicero::run_cicero(agg[[1L]],genomic_coords=data.frame(chromosome='chr1',length=2500000),window=500000L,sample_num=4L,silent=TRUE)
+  expect_identical(receipt$connections, direct)
+  expect_identical(receipt$aggregation, agg[[2L]])
+  expect_gt(nrow(direct), 0L)
+  expect_true(any(is.finite(direct$coaccess)))
+  expect_true(all(receipt$connections$Peak1 %in% rownames(binary)))
+  expect_true(all(receipt$connections$Peak2 %in% rownames(binary)))
+})

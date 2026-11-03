@@ -1,0 +1,69 @@
+make_atac_coaccessibility_fixture <- function() {
+  skip_if_not_installed("Signac")
+  counts <- Matrix::Matrix(matrix(c(1, 2, 3, 4, 2, 3, 4, 5, 3, 2, 5, 4), 3, 4,
+    dimnames = list(paste0("p", 1:3), paste0("c", 1:4))), sparse = TRUE)
+  ranges <- GenomicRanges::GRanges("chr1", IRanges::IRanges(c(1000, 2000, 3000), width = 100))
+  x <- ReadATACData(counts, ranges = ranges, genome = "toy", verbose = FALSE)
+  coords <- matrix(c(1, 2, 3, 4, 2, 5, 3, 6), 4, 2,
+    dimnames = list(colnames(x), c("LSI_1", "LSI_2")))
+  x[["lsi"]] <- SeuratObject::CreateDimReducObject(coords, key = "LSI_", assay = "peaks")
+  x
+}
+
+
+test_that("coaccessibility validates reference, embedding and result ownership before fitting", {
+  x <- make_atac_coaccessibility_fixture()
+  expect_error(RunATACCoaccessibility(x, c(chr2 = 1000000), "toy", dims = 1:2, k = 2), "cover source peaks")
+  expect_error(RunATACCoaccessibility(x, c(chr1 = 1000000), "wrong", dims = 1:2, k = 2), "genome|reference")
+  expect_error(RunATACCoaccessibility(x, c(chr1 = 1000000), "toy", dims = 3, k = 2), "dims")
+  expect_error(RunATACCoaccessibility(x, c(chr1 = 1000000), "toy", dims = 1:2, k = 4), "k < cell")
+  expect_error(RunATACCoaccessibility(x, c(chr1 = 1000000), "toy", dims = 1:2, k = 2, window = 100000), "window >")
+  expect_error(RunATACCoaccessibility(x, c(chr1 = 1000000, `1` = 1000000), "toy", dims = 1:2, k = 2), "collide")
+  SeuratObject::Misc(x[["peaks"]], "scop_coaccessibility") <- list(existing = TRUE)
+  expect_error(RunATACCoaccessibility(x, c(chr1 = 1000000), "toy", dims = 1:2, k = 2), "unused")
+})
+
+test_that("coaccessibility dispatch preserves sparse binary data, order and native NA scores", {
+  x <- make_atac_coaccessibility_fixture()
+  original <- serialize(x, NULL)
+  calls <- new.env()
+  fake_new <- function(expression_data, cell_metadata, gene_metadata) {
+    calls$counts <- expression_data
+    calls$genes <- gene_metadata
+    expression_data
+  }
+  fake_aggregate <- function(cds, reduced_coordinates, k, size_factor_normalize, silent, return_agg_info) {
+    calls$coords <- reduced_coordinates
+    expect_true(return_agg_info)
+    list(cds[, 1:2, drop = FALSE], data.frame(cell = colnames(cds), bin = c(1, 1, 2, 2)))
+  }
+  fake_run <- function(cds, genomic_coords, window, sample_num, silent) {
+    data.frame(Peak1 = rownames(cds)[1], Peak2 = rownames(cds)[2], coaccess = NA_real_)
+  }
+  old <- atac_backend_fun
+  local_mocked_bindings(atac_backend_fun = function(package, fun) {
+    if (package == "monocle3") return(fake_new)
+    if (package == "cicero" && fun == "make_cicero_cds") return(fake_aggregate)
+    if (package == "cicero" && fun == "run_cicero") return(fake_run)
+    old(package, fun)
+  })
+  original_description <- utils::packageDescription
+  original_version <- utils::packageVersion
+  local_mocked_bindings(
+    packageDescription = function(pkg, ...) if (pkg == "cicero") list(Imports = "monocle3") else original_description(pkg, ...),
+    packageVersion = function(pkg, ...) if (pkg %in% c("cicero", "monocle3")) numeric_version("1.0.0") else original_version(pkg, ...),
+    .package = "utils")
+  set.seed(123)
+  rng <- .Random.seed
+  out <- RunATACCoaccessibility(x, c(chr1 = 1000000), "toy", dims = 1:2, k = 2)
+  expect_identical(.Random.seed, rng)
+  expect_identical(serialize(x, NULL), original)
+  expect_true(inherits(calls$counts, "sparseMatrix"))
+  expect_true(all(calls$counts@x == 1))
+  expect_identical(rownames(calls$coords), colnames(x))
+  expect_identical(calls$genes$bp1, c(1000L, 2000L, 3000L))
+  receipt <- SeuratObject::Misc(out[["peaks"]], "scop_coaccessibility")
+  expect_true(is.na(receipt$connections$coaccess))
+  expect_identical(SeuratObject::DefaultAssay(out), SeuratObject::DefaultAssay(x))
+  expect_identical(Signac::Links(out[["peaks"]]), Signac::Links(x[["peaks"]]))
+})
