@@ -2358,6 +2358,11 @@ group_heatmap_aggregate_matrix <- function(mat, groups, aggregate_fun = base::me
       function(group) rowMeans(mat[, groups == group, drop = FALSE]),
       numeric(nrow(mat))
     )
+    # vapply simplifies a single feature to a vector; retain the feature axis.
+    out <- matrix(
+      out, nrow = nrow(mat),
+      dimnames = list(rownames(mat), group_levels)
+    )
     return(group_heatmap_legacy_aggregate_layout(
       out = out,
       group_levels = group_levels,
@@ -2396,6 +2401,10 @@ group_heatmap_expression_fraction <- function(mat, groups, exp_cutoff = 0) {
     group_levels,
     function(group) rowMeans(mat[, groups == group, drop = FALSE] > exp_cutoff),
     numeric(nrow(mat))
+  )
+  out <- matrix(
+    out, nrow = nrow(mat),
+    dimnames = list(rownames(mat), group_levels)
   )
   group_heatmap_legacy_aggregate_layout(
     out = out,

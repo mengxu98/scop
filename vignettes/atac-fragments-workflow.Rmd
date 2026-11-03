@@ -1,0 +1,183 @@
+---
+title: "ATAC fragments, peak calling and recount"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(eval = FALSE, error = FALSE, collapse = TRUE, comment = "#>")
+```
+
+## Inputs and interpretation
+
+This external-data recipe extends the [common-matrix workflow](atac-matrix-workflow.html).
+Use the same hg38 PBMC cells, explicitly prepared fragments/index and Ensembl
+98 transcript annotation. The acceptance run restricts both reference and
+fragments to chr1. Therefore its FRiP, TSS summaries, peaks and coverage describe
+that retained region, not genome-wide QC. Full-genome use requires corresponding
+full-genome resources and a suitable effective genome size.
+
+Prepare the [10x fragments and index](https://stuartlab.org/signac/articles/pbmc_vignette.html)
+and [Ensembl 98 GTF](https://ftp.ensembl.org/pub/release-98/gtf/homo_sapiens/Homo_sapiens.GRCh38.98.gtf.gz)
+explicitly. Preserve original files and checksums. Restrict fragments by chromosome
+and the exact selected barcodes; preserve records and their existing fifth column.
+Do not strip barcode suffixes. The GTF uses chromosome `1`; explicitly rename
+that selected sequence to `chr1` for this known reference before attaching it.
+SCOP itself does not guess chromosome styles or reference assemblies.
+
+```{r prepare-fragments}
+data_dir <- "atac_data"
+atac <- readRDS(file.path(data_dir, "atac_counts.rds"))
+prefix <- "10k_pbmc_ATACv2_nextgem_Chromium_Controller_"
+base <- paste0("https://cf.10xgenomics.com/samples/cell-atac/2.1.0/",
+  "10k_pbmc_ATACv2_nextgem_Chromium_Controller/")
+source_fragments <- file.path(data_dir, paste0(prefix, "fragments.tsv.gz"))
+utils::download.file(paste0(base, basename(source_fragments)), source_fragments, mode = "wb")
+select_fragments <- function(source, target, cells) {
+  stopifnot(!file.exists(target))
+  input <- gzfile(source, "rt")
+  output <- file(target, "wt")
+  on.exit({ close(input); close(output) })
+  repeat {
+    lines <- readLines(input, n = 100000, warn = FALSE)
+    if (!length(lines)) break
+    lines <- lines[!startsWith(lines, "#")]
+    fields <- strsplit(lines, "\t", fixed = TRUE)
+    keep <- vapply(fields, function(x) x[[1]] == "chr1" && x[[4]] %in% cells, logical(1))
+    writeLines(lines[keep], output)
+  }
+}
+select_fragments(source_fragments, file.path(data_dir, "pbmc-chr1-selected.tsv"), colnames(atac))
+gtf <- file.path(data_dir, "Homo_sapiens.GRCh38.98.gtf.gz")
+utils::download.file(
+  "https://ftp.ensembl.org/pub/release-98/gtf/homo_sapiens/Homo_sapiens.GRCh38.98.gtf.gz",
+  gtf, mode = "wb")
+annotation <- rtracklayer::import(gtf)
+annotation <- GenomeInfoDb::keepSeqlevels(annotation, "1", pruning.mode = "coarse")
+GenomeInfoDb::seqlevels(annotation) <- "chr1"
+annotation <- annotation[annotation$type %in% c("transcript", "exon")]
+annotation$tx_id <- annotation$transcript_id
+GenomeInfoDb::genome(annotation) <- "hg38"
+```
+
+```{r attach-resources}
+atac <- readRDS(file.path(data_dir, "atac_counts.rds"))
+# This prepared file contains genuine chr1 records for the selected cells.
+plain <- file.path(data_dir, "pbmc-chr1-selected.tsv")
+fragment_file <- Rsamtools::bgzip(plain, dest = paste0(plain, ".gz"))
+Rsamtools::indexTabix(fragment_file, format = "bed")
+fragment <- Signac::CreateFragmentObject(fragment_file,
+  cells = stats::setNames(colnames(atac), colnames(atac)))
+Signac::Fragments(atac[["peaks"]]) <- fragment
+Signac::Annotation(atac[["peaks"]]) <- annotation
+stopifnot(scop::CheckATACData(atac)$fragments_ready)
+```
+
+## QC and capture-specific doublets
+
+```{r qc}
+atac <- scop::RunATACQC(atac, assay = "peaks", frip = TRUE)
+summary(atac$frip)
+atac <- scop::RunDoubletCalling(atac, assay = "peaks", sample.by = "capture",
+  db_rate = 0.08, seed = 17)
+table(atac$db.scDblFinder_class)
+saveRDS(atac, "pbmc_before_doublet_filter.rds")
+selected <- colnames(atac)[atac$db.scDblFinder_class == "singlet"]
+atac <- subset(atac, cells = selected)
+```
+
+Direct FRiP counts fragment records once over the peak union, even when a record
+overlaps multiple peaks. It does not sum the fifth-column read support. Recount
+may count one record in several overlapping features, so its column sum is not a
+general FRiP numerator. Requested filters fail if their metrics are unavailable.
+
+For ATAC, scDblFinder uses feature aggregation and `normFeatures`, independently
+within declared captures. The default ATAC expected rate is the backend's
+per-capture rate; this example explicitly supplies 0.08. Choose this value from
+capture chemistry and loading, not the desired number of removed cells. Existing
+upstream doublet calls can instead be used directly. The worked run predicted
+109 doublets and retained 891 cells; these predictions are not verified labels.
+
+## MACS2, consensus and sequence scanning before recount
+
+Prepare MACS2 2.2.9.1 separately. The accepted run used a Linux Docker image built
+from official MACS2 source, Python 3.10, NumPy 1.26.4 and Cython 0.29.37. Signac
+1.16.0 performs splitting in the R host. An explicitly configured executable
+launcher may invoke the pinned container with known mounted paths; SCOP does
+not install containers, translate paths or choose an alternative caller.
+
+```{r call-peaks}
+macs2_path <- "macs2" # A command on PATH, executable path, or configured container launcher.
+reference <- Rsamtools::FaFile(file.path(data_dir, "hg38-chr1.fa"))
+pfm <- TFBSTools::getMatrixSet(JASPAR2020::JASPAR2020, opts = list(
+  ID = c("MA0139.1", "MA0080.5", "MA0105.4", "MA0107.1", "MA0039.4", "MA0466.2", "MA0098.3")))
+effective_size <- sum(Biostrings::letterFrequency(
+  Biostrings::readDNAStringSet(file.path(data_dir, "hg38-chr1.fa")),
+  c("A", "C", "G", "T")))
+called <- scop::CallATACPeaks(atac, sample.by = "capture",
+  macs2.path = macs2_path, outdir = "pbmc_peak_calls",
+  effective.genome.size = effective_size)
+called$groups
+lengths(called$peaks)
+common <- scop::CombineATACPeaks(called$peaks, genome = "hg38")
+scanned <- scop::AddATACMotifs(common$ranges, reference, pfm, genome.id = "hg38")
+```
+
+For the chromosome-scoped example, the effective size is the number of A/C/G/T
+bases in the retained reference. This is an explicit reference-length choice,
+not a genome-wide mappability estimate. Peak significance is not a condition
+comparison with biological replication. In the acceptance run MACS2 retained
+8,108 peaks. Each call keeps split BEDs, exact arguments, stdout/stderr, exit
+status and native outputs. A failed process cannot become a successful empty
+result. A successful empty narrowPeak file remains an empty set.
+
+If a call fails, inspect its `.log` and `commands.rds` in the output directory.
+`receipt.rds` and `groups.rds` retain the selected cells, capture/group mapping
+and source fragments even after an error. Correct the cause and use a new
+output directory for the next call; an existing result is never overwritten.
+
+With multiple captures, calls remain separate. An optional `group.by` subdivides
+captures. `CombineATACPeaks(groups = ..., min.support = ...)` applies support
+within declared groups before taking their union. Its support counts input
+sets contributing to connected intervals, not support at every base. Sequence
+scanning above uses ranges, DNA and PWMs without placeholder counts.
+
+## Recount and final representation
+
+```{r recount}
+final <- scop::RecountATAC(atac, common$ranges, new.assay = "ATACFinal")
+stopifnot(identical(rownames(final[["ATACFinal"]]), scanned$receipt$peaks))
+Signac::Motifs(final[["ATACFinal"]]) <- scanned$motifs
+final[["ATACFinal"]] <- SeuratObject::AddMetaData(final[["ATACFinal"]], scanned$statistics)
+Signac::Annotation(final[["ATACFinal"]]) <- annotation
+final <- scop::RunStandardWorkflow(final, assay = "ATACFinal", prefix = "ATACFinal",
+  nHVF = 5000, linear_reduction_dims = 25, linear_reduction_dims_use = 2:20,
+  cores = 1)
+```
+
+Native Signac FeatureMatrix computes the new counts. Recount creates a new assay
+and does not copy old normalized data, reductions, motifs or links into it. Here
+the sequence annotation is explicitly attached only after verifying the same
+peak order. Inspect final depth correlations again; initial dimensions are not
+automatically appropriate after changing the feature universe.
+
+## Gene activity, chromVAR, coverage and reload
+
+```{r downstream}
+final <- scop::RunGeneActivity(final, assay = "ATACFinal",
+  features = c("C1QA", "C1QB", "C1QC", "FCGR1A", "IL6R", "CD247",
+    "RGS1", "SELL", "JUN", "CTSS", "CD53"))
+final <- scop::RunChromVAR(final, reference, genome.id = "hg38", assay = "ATACFinal",
+  new.assay = "chromvarFinal", niterations = 25, seed = 19)
+scop::CoverageTrackPlot(final, region = "chr1-22650000-22700000",
+  assay = "ATACFinal", group.by = "ATACFinallsiclusters")
+scop::ExportATACResults(final, outdir = "pbmc_fragments_export", assay = "ATACFinal", counts = TRUE)
+# In a fresh R session:
+restored <- readRDS("pbmc_fragments_export/object.rds")
+scop::CheckATACData(restored, assay = "ATACFinal")
+```
+
+Gene activity is fragment accessibility over annotated gene bodies/promoters,
+not measured RNA. Coverage is a descriptive locus view. Saved objects retain
+external file references; missing fragments block fragment-dependent steps but
+do not invalidate matrix-only analyses. Relocate files explicitly with Signac's
+verified path-update API. For condition inference, use biological replicates as
+in the [paired DAR workflow](atac-paired-dar-workflow.html).

@@ -2,7 +2,19 @@
 
 - Add `RunATACCoaccessibility()` with explicit assay/reference contracts and focused native/backend tests.
 
+# Development: ATAC footprint
+
+- Add `RunATACFootprint()`, `ATACFootprintPlot()` with explicit assay/reference contracts and focused native/backend tests.
+# Development: ATAC motif
+- Add `ATACMotifPlot()` with explicit assay/reference contracts and focused native/backend tests.
+
 # scop (development version)
+
+* Add fixed-width genome tile counting through the validated sparse ATAC recount workflow, with reference checks and tile provenance.
+* Add grouped ATAC region endpoint matrices, heatmaps and aggregate profiles with explicit strand, coordinate and normalization semantics.
+* Add `ATACDepthCorPlot()` for depth/component correlations using fresh count-layer totals by default.
+* Add `ATACTSSPlot()` for precomputed positional TSS enrichment profiles with assay-cell alignment.
+* Add `ATACFragmentPlot()` for regional fragment-length diagnostics with explicit barcode mappings.
 
 * Add `RunCellOracle()` and `CellOraclePlot()` for the official CellOracle 0.20.0
   workflow, saved-model reuse, original displacement/randomized controls and
@@ -27,6 +39,13 @@
     and `n_cores`, including `...` aliases in `RunCIBERSORT()` and AUCell scoring.
 
 * **feat**:
+
+  * Make ATAC workflows fail on requested graph, clustering or embedding errors,
+    retain dimension/depth records, and fit default LSI dimensions to small inputs.
+    WNN preserves complete modality assays and validates paired cells, normalizes
+    SCT RNA separately from ATAC, and supports graph-only analysis. Peak calling
+    resolves MACS2 from PATH and retains capture/group records after failure.
+    Add an executable ATAC matrix quick start and complete the DAR motif recipe.
 
   * Extend `FeatureDimPlot()` density, palette and title controls. Embedding plots
     default to `label_insitu = TRUE`; `FALSE` uses numbered labels. DE, volcano,
