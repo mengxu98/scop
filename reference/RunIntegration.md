@@ -246,41 +246,41 @@ panc8_sub <- RunIntegration(
   lisi_label_colnames = "tech",
   lisi_perplexity = 10
 )
-#> ◌ [2026-11-03 07:52:16] Run integration workflow...
-#> ℹ [2026-11-03 07:52:17] Split `srt_merge` into `srt_list` by "tech"
-#> ℹ [2026-11-03 07:52:17] Checking a list of <Seurat>...
-#> ! [2026-11-03 07:52:17] Data 1/5 of the `srt_list` is "unknown"
-#> ℹ [2026-11-03 07:52:17] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/5 of `srt_list`...
-#> ℹ [2026-11-03 07:52:17] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
-#> ! [2026-11-03 07:52:17] Data 2/5 of the `srt_list` is "unknown"
-#> ℹ [2026-11-03 07:52:17] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 2/5 of `srt_list`...
-#> ℹ [2026-11-03 07:52:17] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
-#> ! [2026-11-03 07:52:17] Data 3/5 of the `srt_list` is "unknown"
-#> ℹ [2026-11-03 07:52:17] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 3/5 of `srt_list`...
-#> ℹ [2026-11-03 07:52:17] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
-#> ! [2026-11-03 07:52:18] Data 4/5 of the `srt_list` is "unknown"
-#> ℹ [2026-11-03 07:52:18] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 4/5 of `srt_list`...
-#> ℹ [2026-11-03 07:52:18] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
-#> ! [2026-11-03 07:52:18] Data 5/5 of the `srt_list` is "unknown"
-#> ℹ [2026-11-03 07:52:18] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 5/5 of `srt_list`...
-#> ℹ [2026-11-03 07:52:18] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
-#> ℹ [2026-11-03 07:52:18] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-03 07:52:18] Number of available HVF: 500
-#> ℹ [2026-11-03 07:52:18] Finished check
-#> ℹ [2026-11-03 07:52:20] Perform `Seurat::ScaleData()`
-#> ℹ [2026-11-03 07:52:20] Perform linear dimension reduction("pca")
-#> ℹ [2026-11-03 07:52:20] Perform Harmony integration
-#> ℹ [2026-11-03 07:52:20] Using "Harmonypca" (1:10) as input
-#> ℹ [2026-11-03 07:52:20] Adjust neighbor k from 20 to 20 for small-sample clustering
-#> ℹ [2026-11-03 07:52:21] Perform `Seurat::FindClusters()` with "louvain"
-#> ℹ [2026-11-03 07:52:21] Reorder clusters...
-#> ℹ [2026-11-03 07:52:21] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-03 07:52:21] Perform umap nonlinear dimension reduction using Harmony (1:10)
-#> ℹ [2026-11-03 07:52:28] Perform umap nonlinear dimension reduction using Harmonypca (1:10)
-#> ℹ [2026-11-03 07:52:35] Compute LISI scores from reduction "HarmonypcaUMAP2D"
-#> ℹ [2026-11-03 07:52:35] Compute LISI scores from reduction "HarmonyUMAP2D"
-#> ✔ [2026-11-03 07:52:35] Stored LISI scores in metadata: "HarmonypcaUMAP2D_tech_LISI" and "HarmonyUMAP2D_tech_LISI"
-#> ✔ [2026-11-03 07:52:36] Harmony integration completed
+#> ◌ [2026-11-03 09:25:03] Run integration workflow...
+#> ℹ [2026-11-03 09:25:03] Split `srt_merge` into `srt_list` by "tech"
+#> ℹ [2026-11-03 09:25:04] Checking a list of <Seurat>...
+#> ! [2026-11-03 09:25:04] Data 1/5 of the `srt_list` is "unknown"
+#> ℹ [2026-11-03 09:25:04] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/5 of `srt_list`...
+#> ℹ [2026-11-03 09:25:04] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
+#> ! [2026-11-03 09:25:04] Data 2/5 of the `srt_list` is "unknown"
+#> ℹ [2026-11-03 09:25:04] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 2/5 of `srt_list`...
+#> ℹ [2026-11-03 09:25:04] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
+#> ! [2026-11-03 09:25:04] Data 3/5 of the `srt_list` is "unknown"
+#> ℹ [2026-11-03 09:25:04] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 3/5 of `srt_list`...
+#> ℹ [2026-11-03 09:25:04] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
+#> ! [2026-11-03 09:25:04] Data 4/5 of the `srt_list` is "unknown"
+#> ℹ [2026-11-03 09:25:04] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 4/5 of `srt_list`...
+#> ℹ [2026-11-03 09:25:04] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
+#> ! [2026-11-03 09:25:04] Data 5/5 of the `srt_list` is "unknown"
+#> ℹ [2026-11-03 09:25:04] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 5/5 of `srt_list`...
+#> ℹ [2026-11-03 09:25:05] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
+#> ℹ [2026-11-03 09:25:05] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-03 09:25:05] Number of available HVF: 500
+#> ℹ [2026-11-03 09:25:05] Finished check
+#> ℹ [2026-11-03 09:25:07] Perform `Seurat::ScaleData()`
+#> ℹ [2026-11-03 09:25:08] Perform linear dimension reduction("pca")
+#> ℹ [2026-11-03 09:25:08] Perform Harmony integration
+#> ℹ [2026-11-03 09:25:08] Using "Harmonypca" (1:10) as input
+#> ℹ [2026-11-03 09:25:08] Adjust neighbor k from 20 to 20 for small-sample clustering
+#> ℹ [2026-11-03 09:25:08] Perform `Seurat::FindClusters()` with "louvain"
+#> ℹ [2026-11-03 09:25:08] Reorder clusters...
+#> ℹ [2026-11-03 09:25:08] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-03 09:25:08] Perform umap nonlinear dimension reduction using Harmony (1:10)
+#> ℹ [2026-11-03 09:25:15] Perform umap nonlinear dimension reduction using Harmonypca (1:10)
+#> ℹ [2026-11-03 09:25:21] Compute LISI scores from reduction "HarmonypcaUMAP2D"
+#> ℹ [2026-11-03 09:25:22] Compute LISI scores from reduction "HarmonyUMAP2D"
+#> ✔ [2026-11-03 09:25:22] Stored LISI scores in metadata: "HarmonypcaUMAP2D_tech_LISI" and "HarmonyUMAP2D_tech_LISI"
+#> ✔ [2026-11-03 09:25:22] Harmony integration completed
 CellDimPlot(
   panc8_sub,
   group.by = c("tech", "celltype"),
@@ -296,32 +296,32 @@ panc8_sub <- RunIntegration(
   batch = "tech",
   integration_methods = "LIGER"
 )
-#> ◌ [2026-11-03 07:52:36] Run integration workflow...
-#> ℹ [2026-11-03 07:52:37] Split `srt_merge` into `srt_list` by "tech"
-#> ℹ [2026-11-03 07:52:37] Checking a list of <Seurat>...
-#> ℹ [2026-11-03 07:52:37] Data 1/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 07:52:38] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
-#> ℹ [2026-11-03 07:52:38] Data 2/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 07:52:38] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
-#> ℹ [2026-11-03 07:52:38] Data 3/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 07:52:38] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
-#> ℹ [2026-11-03 07:52:38] Data 4/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 07:52:38] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
-#> ℹ [2026-11-03 07:52:38] Data 5/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 07:52:38] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
-#> ℹ [2026-11-03 07:52:38] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-03 07:52:38] Number of available HVF: 2000
-#> ℹ [2026-11-03 07:52:38] Finished check
-#> ℹ [2026-11-03 07:52:39] Prepare rliger layer "ligerScaleData" ...
-#> ℹ [2026-11-03 07:52:39] Perform LIGER integration
-#> ℹ [2026-11-03 07:52:43] Adjust neighbor k from 20 to 20 for small-sample clustering
-#> ℹ [2026-11-03 07:52:44] Perform `Seurat::FindClusters()` with "louvain"
-#> ℹ [2026-11-03 07:52:44] Reorder clusters...
-#> ℹ [2026-11-03 07:52:44] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-03 07:52:44] Perform umap nonlinear dimension reduction using LIGER (1:20)
-#> ℹ [2026-11-03 07:52:51] Perform umap nonlinear dimension reduction using LIGER (1:20)
-#> ℹ [2026-11-03 07:52:58] Perform umap nonlinear dimension reduction using LIGER (1:20)
-#> ✔ [2026-11-03 07:53:06] LIGER integration completed
+#> ◌ [2026-11-03 09:25:23] Run integration workflow...
+#> ℹ [2026-11-03 09:25:23] Split `srt_merge` into `srt_list` by "tech"
+#> ℹ [2026-11-03 09:25:24] Checking a list of <Seurat>...
+#> ℹ [2026-11-03 09:25:24] Data 1/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:25:24] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
+#> ℹ [2026-11-03 09:25:25] Data 2/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:25:25] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
+#> ℹ [2026-11-03 09:25:25] Data 3/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:25:25] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
+#> ℹ [2026-11-03 09:25:25] Data 4/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:25:25] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
+#> ℹ [2026-11-03 09:25:25] Data 5/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:25:25] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
+#> ℹ [2026-11-03 09:25:25] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-03 09:25:25] Number of available HVF: 2000
+#> ℹ [2026-11-03 09:25:25] Finished check
+#> ℹ [2026-11-03 09:25:26] Prepare rliger layer "ligerScaleData" ...
+#> ℹ [2026-11-03 09:25:26] Perform LIGER integration
+#> ℹ [2026-11-03 09:25:31] Adjust neighbor k from 20 to 20 for small-sample clustering
+#> ℹ [2026-11-03 09:25:31] Perform `Seurat::FindClusters()` with "louvain"
+#> ℹ [2026-11-03 09:25:31] Reorder clusters...
+#> ℹ [2026-11-03 09:25:31] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-03 09:25:31] Perform umap nonlinear dimension reduction using LIGER (1:20)
+#> ℹ [2026-11-03 09:25:38] Perform umap nonlinear dimension reduction using LIGER (1:20)
+#> ℹ [2026-11-03 09:25:45] Perform umap nonlinear dimension reduction using LIGER (1:20)
+#> ✔ [2026-11-03 09:25:52] LIGER integration completed
 panc8_sub <- RunIntegration(
   panc8_sub,
   batch = "tech",
@@ -329,37 +329,37 @@ panc8_sub <- RunIntegration(
   compute_lisi = TRUE,
   lisi_label_colnames = "tech"
 )
-#> ◌ [2026-11-03 07:53:06] Run integration workflow...
-#> ℹ [2026-11-03 07:53:06] Split `srt_merge` into `srt_list` by "tech"
-#> ℹ [2026-11-03 07:53:07] Checking a list of <Seurat>...
-#> ℹ [2026-11-03 07:53:07] Data 1/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 07:53:07] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
-#> ℹ [2026-11-03 07:53:07] Data 2/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 07:53:07] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
-#> ℹ [2026-11-03 07:53:08] Data 3/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 07:53:08] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
-#> ℹ [2026-11-03 07:53:08] Data 4/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 07:53:08] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
-#> ℹ [2026-11-03 07:53:08] Data 5/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 07:53:08] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
-#> ℹ [2026-11-03 07:53:08] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-03 07:53:08] Number of available HVF: 2000
-#> ℹ [2026-11-03 07:53:08] Finished check
-#> ℹ [2026-11-03 07:53:08] Perform `Seurat::ScaleData()`
-#> ℹ [2026-11-03 07:53:08] Perform linear dimension reduction("pca")
-#> ℹ [2026-11-03 07:53:09] Perform Harmony integration
-#> ℹ [2026-11-03 07:53:09] Using "Harmonypca" (1:20) as input
-#> ℹ [2026-11-03 07:53:09] Adjust neighbor k from 20 to 20 for small-sample clustering
-#> ℹ [2026-11-03 07:53:10] Perform `Seurat::FindClusters()` with "louvain"
-#> ℹ [2026-11-03 07:53:10] Reorder clusters...
-#> ℹ [2026-11-03 07:53:10] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-03 07:53:10] Perform umap nonlinear dimension reduction using Harmony (1:20)
-#> ℹ [2026-11-03 07:53:17] Perform umap nonlinear dimension reduction using Harmony (1:20)
-#> ℹ [2026-11-03 07:53:24] Perform umap nonlinear dimension reduction using Harmonypca (1:20)
-#> ℹ [2026-11-03 07:53:31] Compute LISI scores from reduction "HarmonypcaUMAP2D"
-#> ℹ [2026-11-03 07:53:31] Compute LISI scores from reduction "HarmonyUMAP2D"
-#> ✔ [2026-11-03 07:53:31] Stored LISI scores in metadata: "HarmonypcaUMAP2D_tech_LISI" and "HarmonyUMAP2D_tech_LISI"
-#> ✔ [2026-11-03 07:53:31] Harmony integration completed
+#> ◌ [2026-11-03 09:25:52] Run integration workflow...
+#> ℹ [2026-11-03 09:25:52] Split `srt_merge` into `srt_list` by "tech"
+#> ℹ [2026-11-03 09:25:53] Checking a list of <Seurat>...
+#> ℹ [2026-11-03 09:25:54] Data 1/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:25:54] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
+#> ℹ [2026-11-03 09:25:54] Data 2/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:25:54] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
+#> ℹ [2026-11-03 09:25:54] Data 3/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:25:54] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
+#> ℹ [2026-11-03 09:25:54] Data 4/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:25:54] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
+#> ℹ [2026-11-03 09:25:54] Data 5/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:25:54] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
+#> ℹ [2026-11-03 09:25:55] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-03 09:25:55] Number of available HVF: 2000
+#> ℹ [2026-11-03 09:25:55] Finished check
+#> ℹ [2026-11-03 09:25:55] Perform `Seurat::ScaleData()`
+#> ℹ [2026-11-03 09:25:55] Perform linear dimension reduction("pca")
+#> ℹ [2026-11-03 09:25:56] Perform Harmony integration
+#> ℹ [2026-11-03 09:25:56] Using "Harmonypca" (1:20) as input
+#> ℹ [2026-11-03 09:25:56] Adjust neighbor k from 20 to 20 for small-sample clustering
+#> ℹ [2026-11-03 09:25:56] Perform `Seurat::FindClusters()` with "louvain"
+#> ℹ [2026-11-03 09:25:56] Reorder clusters...
+#> ℹ [2026-11-03 09:25:57] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-03 09:25:57] Perform umap nonlinear dimension reduction using Harmony (1:20)
+#> ℹ [2026-11-03 09:26:03] Perform umap nonlinear dimension reduction using Harmony (1:20)
+#> ℹ [2026-11-03 09:26:10] Perform umap nonlinear dimension reduction using Harmonypca (1:20)
+#> ℹ [2026-11-03 09:26:16] Compute LISI scores from reduction "HarmonypcaUMAP2D"
+#> ℹ [2026-11-03 09:26:16] Compute LISI scores from reduction "HarmonyUMAP2D"
+#> ✔ [2026-11-03 09:26:16] Stored LISI scores in metadata: "HarmonypcaUMAP2D_tech_LISI" and "HarmonyUMAP2D_tech_LISI"
+#> ✔ [2026-11-03 09:26:17] Harmony integration completed
 IntegrationBenchmarkPlot(panc8_sub, plot_type = "box")
 
 
@@ -372,31 +372,31 @@ pbmcmultiome_sub <- RunIntegration(
   integration_methods = "Harmony5",
   normalization_method = "TFIDF"
 )
-#> ◌ [2026-11-03 07:53:31] Run integration workflow...
-#> ! [2026-11-03 07:53:31] `integration_method = 'Harmony5'` is not compatible with <ChromatinAssay> in current Seurat v5 workflow. Automatically switch to "Harmony"
-#> ℹ [2026-11-03 07:53:31] Split `srt_merge` into `srt_list` by "batch"
-#> ℹ [2026-11-03 07:53:31] Checking a list of <Seurat>...
-#> ! [2026-11-03 07:53:32] Data 1/2 of the `srt_list` is "raw_counts"
-#> ℹ [2026-11-03 07:53:32] Perform `RunTFIDF()` on 1/2 of `srt_list`...
-#> ℹ [2026-11-03 07:53:32] Perform `FindTopFeatures()` on 1/2 of `srt_list`...
-#> ! [2026-11-03 07:53:32] Data 2/2 of the `srt_list` is "raw_counts"
-#> ℹ [2026-11-03 07:53:32] Perform `RunTFIDF()` on 2/2 of `srt_list`...
-#> ℹ [2026-11-03 07:53:32] Perform `FindTopFeatures()` on 2/2 of `srt_list`...
-#> ℹ [2026-11-03 07:53:32] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-03 07:53:32] Number of available HVF: 2000
-#> ℹ [2026-11-03 07:53:32] Finished check
-#> ℹ [2026-11-03 07:53:32] `normalization_method` is "TFIDF". Use lsi workflow...
-#> ℹ [2026-11-03 07:53:32] Perform linear dimension reduction("svd")
+#> ◌ [2026-11-03 09:26:17] Run integration workflow...
+#> ! [2026-11-03 09:26:17] `integration_method = 'Harmony5'` is not compatible with <ChromatinAssay> in current Seurat v5 workflow. Automatically switch to "Harmony"
+#> ℹ [2026-11-03 09:26:17] Split `srt_merge` into `srt_list` by "batch"
+#> ℹ [2026-11-03 09:26:17] Checking a list of <Seurat>...
+#> ! [2026-11-03 09:26:17] Data 1/2 of the `srt_list` is "raw_counts"
+#> ℹ [2026-11-03 09:26:17] Perform `RunTFIDF()` on 1/2 of `srt_list`...
+#> ℹ [2026-11-03 09:26:17] Perform `FindTopFeatures()` on 1/2 of `srt_list`...
+#> ! [2026-11-03 09:26:18] Data 2/2 of the `srt_list` is "raw_counts"
+#> ℹ [2026-11-03 09:26:18] Perform `RunTFIDF()` on 2/2 of `srt_list`...
+#> ℹ [2026-11-03 09:26:18] Perform `FindTopFeatures()` on 2/2 of `srt_list`...
+#> ℹ [2026-11-03 09:26:18] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-03 09:26:18] Number of available HVF: 2000
+#> ℹ [2026-11-03 09:26:18] Finished check
+#> ℹ [2026-11-03 09:26:18] `normalization_method` is "TFIDF". Use lsi workflow...
+#> ℹ [2026-11-03 09:26:18] Perform linear dimension reduction("svd")
 #> Running SVD
 #> Scaling cell embeddings
-#> ℹ [2026-11-03 07:53:33] Perform Harmony integration
-#> ℹ [2026-11-03 07:53:33] Using "Harmonysvd" (2:5) as input
-#> ℹ [2026-11-03 07:53:33] Perform `Seurat::FindClusters()` with "louvain"
-#> ℹ [2026-11-03 07:53:33] Reorder clusters...
-#> ℹ [2026-11-03 07:53:33] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-03 07:53:33] Perform umap nonlinear dimension reduction using Harmony (1:4)
-#> ℹ [2026-11-03 07:53:39] Perform umap nonlinear dimension reduction using Harmony (1:4)
-#> ✔ [2026-11-03 07:53:45] Harmony integration completed
+#> ℹ [2026-11-03 09:26:18] Perform Harmony integration
+#> ℹ [2026-11-03 09:26:18] Using "Harmonysvd" (2:5) as input
+#> ℹ [2026-11-03 09:26:19] Perform `Seurat::FindClusters()` with "louvain"
+#> ℹ [2026-11-03 09:26:19] Reorder clusters...
+#> ℹ [2026-11-03 09:26:19] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-03 09:26:19] Perform umap nonlinear dimension reduction using Harmony (1:4)
+#> ℹ [2026-11-03 09:26:24] Perform umap nonlinear dimension reduction using Harmony (1:4)
+#> ✔ [2026-11-03 09:26:30] Harmony integration completed
 
 integration_methods <- c(
   "Uncorrected", "Seurat", "CCA", "RPCA",
@@ -423,203 +423,203 @@ for (method in integration_methods) {
     theme_use = "theme_blank"
   )
 }
-#> ◌ [2026-11-03 07:53:45] Run integration workflow...
-#> ℹ [2026-11-03 07:53:46] Split `srt_merge` into `srt_list` by "tech"
-#> ℹ [2026-11-03 07:53:47] Checking a list of <Seurat>...
-#> ℹ [2026-11-03 07:53:47] Data 1/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 07:53:47] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
-#> ℹ [2026-11-03 07:53:47] Data 2/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 07:53:47] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
-#> ℹ [2026-11-03 07:53:47] Data 3/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 07:53:47] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
-#> ℹ [2026-11-03 07:53:47] Data 4/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 07:53:47] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
-#> ℹ [2026-11-03 07:53:48] Data 5/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 07:53:48] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
-#> ℹ [2026-11-03 07:53:48] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-03 07:53:48] Number of available HVF: 2000
-#> ℹ [2026-11-03 07:53:48] Finished check
-#> ℹ [2026-11-03 07:53:48] Perform Uncorrected integration
-#> ℹ [2026-11-03 07:53:48] Perform `Seurat::ScaleData()`
-#> ℹ [2026-11-03 07:53:48] Perform "pca" linear dimension reduction
-#> ℹ [2026-11-03 07:53:49] Adjust neighbor k from 20 to 20 for small-sample clustering
-#> ℹ [2026-11-03 07:53:49] Perform `Seurat::FindClusters()` with "louvain"
-#> ℹ [2026-11-03 07:53:49] Reorder clusters...
-#> ℹ [2026-11-03 07:53:49] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-03 07:53:49] Perform umap nonlinear dimension reduction using Uncorrectedpca (1:50)
-#> ℹ [2026-11-03 07:53:56] Perform umap nonlinear dimension reduction using Uncorrectedpca (1:50)
-#> ℹ [2026-11-03 07:54:03] Perform umap nonlinear dimension reduction using Uncorrectedpca (1:50)
-#> ✔ [2026-11-03 07:54:10] Uncorrected integration completed
-#> ◌ [2026-11-03 07:54:10] Run integration workflow...
-#> ℹ [2026-11-03 07:54:11] Split `srt_merge` into `srt_list` by "tech"
-#> ℹ [2026-11-03 07:54:12] Checking a list of <Seurat>...
-#> ℹ [2026-11-03 07:54:12] Data 1/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 07:54:12] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
-#> ℹ [2026-11-03 07:54:12] Data 2/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 07:54:12] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
-#> ℹ [2026-11-03 07:54:12] Data 3/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 07:54:12] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
-#> ℹ [2026-11-03 07:54:12] Data 4/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 07:54:12] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
-#> ℹ [2026-11-03 07:54:12] Data 5/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 07:54:12] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
-#> ℹ [2026-11-03 07:54:13] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-03 07:54:13] Number of available HVF: 2000
-#> ℹ [2026-11-03 07:54:13] Finished check
-#> ℹ [2026-11-03 07:54:13] Perform FindIntegrationAnchors
-#> ℹ [2026-11-03 07:54:30] Perform Seurat integration
-#> ℹ [2026-11-03 07:54:43] Perform ScaleData on `srt_integrated`
-#> ℹ [2026-11-03 07:54:43] Perform "pca" linear dimension reduction
-#> ℹ [2026-11-03 07:54:44] Perform `Seurat::FindClusters()` with "louvain"
-#> ℹ [2026-11-03 07:54:44] Reorder clusters...
-#> ℹ [2026-11-03 07:54:44] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-03 07:54:44] Perform umap nonlinear dimension reduction using Seuratpca (1:50)
-#> ℹ [2026-11-03 07:54:51] Perform umap nonlinear dimension reduction using Seuratpca (1:50)
-#> ℹ [2026-11-03 07:54:58] Perform umap nonlinear dimension reduction using Seuratpca (1:50)
-#> ✔ [2026-11-03 07:55:07] Seurat integration completed
-#> ◌ [2026-11-03 07:55:08] Run integration workflow...
+#> ◌ [2026-11-03 09:26:30] Run integration workflow...
+#> ℹ [2026-11-03 09:26:31] Split `srt_merge` into `srt_list` by "tech"
+#> ℹ [2026-11-03 09:26:32] Checking a list of <Seurat>...
+#> ℹ [2026-11-03 09:26:32] Data 1/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:26:32] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
+#> ℹ [2026-11-03 09:26:32] Data 2/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:26:32] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
+#> ℹ [2026-11-03 09:26:32] Data 3/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:26:32] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
+#> ℹ [2026-11-03 09:26:32] Data 4/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:26:32] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
+#> ℹ [2026-11-03 09:26:33] Data 5/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:26:33] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
+#> ℹ [2026-11-03 09:26:33] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-03 09:26:33] Number of available HVF: 2000
+#> ℹ [2026-11-03 09:26:33] Finished check
+#> ℹ [2026-11-03 09:26:33] Perform Uncorrected integration
+#> ℹ [2026-11-03 09:26:33] Perform `Seurat::ScaleData()`
+#> ℹ [2026-11-03 09:26:33] Perform "pca" linear dimension reduction
+#> ℹ [2026-11-03 09:26:34] Adjust neighbor k from 20 to 20 for small-sample clustering
+#> ℹ [2026-11-03 09:26:34] Perform `Seurat::FindClusters()` with "louvain"
+#> ℹ [2026-11-03 09:26:34] Reorder clusters...
+#> ℹ [2026-11-03 09:26:34] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-03 09:26:34] Perform umap nonlinear dimension reduction using Uncorrectedpca (1:50)
+#> ℹ [2026-11-03 09:26:41] Perform umap nonlinear dimension reduction using Uncorrectedpca (1:50)
+#> ℹ [2026-11-03 09:26:47] Perform umap nonlinear dimension reduction using Uncorrectedpca (1:50)
+#> ✔ [2026-11-03 09:26:54] Uncorrected integration completed
+#> ◌ [2026-11-03 09:26:54] Run integration workflow...
+#> ℹ [2026-11-03 09:26:55] Split `srt_merge` into `srt_list` by "tech"
+#> ℹ [2026-11-03 09:26:56] Checking a list of <Seurat>...
+#> ℹ [2026-11-03 09:26:56] Data 1/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:26:56] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
+#> ℹ [2026-11-03 09:26:56] Data 2/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:26:56] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
+#> ℹ [2026-11-03 09:26:56] Data 3/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:26:56] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
+#> ℹ [2026-11-03 09:26:56] Data 4/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:26:56] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
+#> ℹ [2026-11-03 09:26:57] Data 5/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:26:57] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
+#> ℹ [2026-11-03 09:26:57] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-03 09:26:57] Number of available HVF: 2000
+#> ℹ [2026-11-03 09:26:57] Finished check
+#> ℹ [2026-11-03 09:26:57] Perform FindIntegrationAnchors
+#> ℹ [2026-11-03 09:27:20] Perform Seurat integration
+#> ℹ [2026-11-03 09:27:37] Perform ScaleData on `srt_integrated`
+#> ℹ [2026-11-03 09:27:37] Perform "pca" linear dimension reduction
+#> ℹ [2026-11-03 09:27:38] Perform `Seurat::FindClusters()` with "louvain"
+#> ℹ [2026-11-03 09:27:38] Reorder clusters...
+#> ℹ [2026-11-03 09:27:38] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-03 09:27:38] Perform umap nonlinear dimension reduction using Seuratpca (1:50)
+#> ℹ [2026-11-03 09:27:45] Perform umap nonlinear dimension reduction using Seuratpca (1:50)
+#> ℹ [2026-11-03 09:27:51] Perform umap nonlinear dimension reduction using Seuratpca (1:50)
+#> ✔ [2026-11-03 09:28:00] Seurat integration completed
+#> ◌ [2026-11-03 09:28:00] Run integration workflow...
 #> Splitting ‘counts’, ‘data’ layers. Not splitting . If you would like to split other layers, set in `layers` argument.
-#> ℹ [2026-11-03 07:55:08] Data appears already log-normalized. Skipping `Seurat::NormalizeData()`
-#> ℹ [2026-11-03 07:55:08] Perform `Seurat::FindVariableFeatures()` per batch (`HVF_source = 'separate'`)
-#> ℹ [2026-11-03 07:55:09] Number of available HVF: 2000
-#> ℹ [2026-11-03 07:55:10] Perform `Seurat::ScaleData()` on split layers for Seurat v5 integration
-#> ℹ [2026-11-03 07:55:10] Perform PCA on split layers before `Seurat::IntegrateLayers()`
-#> ℹ [2026-11-03 07:55:10] Perform Seurat v5 integration with `CCAIntegration()`
-#> ℹ [2026-11-03 07:55:15] Adjust neighbor k from 20 to 20 for small-sample clustering
-#> ℹ [2026-11-03 07:55:16] Perform `Seurat::FindClusters()` with "louvain"
-#> ℹ [2026-11-03 07:55:16] Reorder clusters...
-#> ℹ [2026-11-03 07:55:16] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-03 07:55:16] Perform umap nonlinear dimension reduction using CCA (1:50)
-#> ℹ [2026-11-03 07:55:23] Perform umap nonlinear dimension reduction using CCA (1:50)
-#> ℹ [2026-11-03 07:55:30] Perform umap nonlinear dimension reduction using pca (1:50)
-#> ✔ [2026-11-03 07:55:38] CCA integration completed
-#> ◌ [2026-11-03 07:55:38] Run integration workflow...
+#> ℹ [2026-11-03 09:28:01] Data appears already log-normalized. Skipping `Seurat::NormalizeData()`
+#> ℹ [2026-11-03 09:28:01] Perform `Seurat::FindVariableFeatures()` per batch (`HVF_source = 'separate'`)
+#> ℹ [2026-11-03 09:28:02] Number of available HVF: 2000
+#> ℹ [2026-11-03 09:28:03] Perform `Seurat::ScaleData()` on split layers for Seurat v5 integration
+#> ℹ [2026-11-03 09:28:03] Perform PCA on split layers before `Seurat::IntegrateLayers()`
+#> ℹ [2026-11-03 09:28:04] Perform Seurat v5 integration with `CCAIntegration()`
+#> ℹ [2026-11-03 09:28:10] Adjust neighbor k from 20 to 20 for small-sample clustering
+#> ℹ [2026-11-03 09:28:10] Perform `Seurat::FindClusters()` with "louvain"
+#> ℹ [2026-11-03 09:28:11] Reorder clusters...
+#> ℹ [2026-11-03 09:28:11] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-03 09:28:11] Perform umap nonlinear dimension reduction using CCA (1:50)
+#> ℹ [2026-11-03 09:28:17] Perform umap nonlinear dimension reduction using CCA (1:50)
+#> ℹ [2026-11-03 09:28:24] Perform umap nonlinear dimension reduction using pca (1:50)
+#> ✔ [2026-11-03 09:28:31] CCA integration completed
+#> ◌ [2026-11-03 09:28:31] Run integration workflow...
 #> Splitting ‘counts’, ‘data’ layers. Not splitting . If you would like to split other layers, set in `layers` argument.
-#> ℹ [2026-11-03 07:55:39] Data appears already log-normalized. Skipping `Seurat::NormalizeData()`
-#> ℹ [2026-11-03 07:55:39] Perform `Seurat::FindVariableFeatures()` per batch (`HVF_source = 'separate'`)
-#> ℹ [2026-11-03 07:55:39] Number of available HVF: 2000
-#> ℹ [2026-11-03 07:55:40] Perform `Seurat::ScaleData()` on split layers for Seurat v5 integration
-#> ℹ [2026-11-03 07:55:42] Perform PCA on split layers before `Seurat::IntegrateLayers()`
-#> ℹ [2026-11-03 07:55:43] Perform Seurat v5 integration with `RPCAIntegration()`
-#> ℹ [2026-11-03 07:55:51] Adjust neighbor k from 20 to 20 for small-sample clustering
-#> ℹ [2026-11-03 07:55:52] Perform `Seurat::FindClusters()` with "louvain"
-#> ℹ [2026-11-03 07:55:52] Reorder clusters...
-#> ℹ [2026-11-03 07:55:52] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-03 07:55:52] Perform umap nonlinear dimension reduction using RPCA (1:50)
-#> ℹ [2026-11-03 07:55:59] Perform umap nonlinear dimension reduction using RPCA (1:50)
-#> ℹ [2026-11-03 07:56:05] Perform umap nonlinear dimension reduction using pca (1:50)
-#> ✔ [2026-11-03 07:56:13] RPCA integration completed
-#> ◌ [2026-11-03 07:56:14] Run integration workflow...
-#> ℹ [2026-11-03 07:56:15] Checking a list of <Seurat>...
-#> ℹ [2026-11-03 07:56:15] Data 1/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 07:56:15] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
-#> ℹ [2026-11-03 07:56:15] Data 2/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 07:56:15] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
-#> ℹ [2026-11-03 07:56:15] Data 3/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 07:56:15] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
-#> ℹ [2026-11-03 07:56:15] Data 4/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 07:56:15] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
-#> ℹ [2026-11-03 07:56:16] Data 5/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 07:56:16] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
-#> ℹ [2026-11-03 07:56:16] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-03 07:56:16] Number of available HVF: 2000
-#> ℹ [2026-11-03 07:56:16] Finished check
-#> ℹ [2026-11-03 07:56:16] Perform MNN integration
-#> ℹ [2026-11-03 07:56:54] Perform ScaleData
-#> ℹ [2026-11-03 07:56:54] Perform "pca" linear dimension reduction
-#> ℹ [2026-11-03 07:56:55] Perform `Seurat::FindClusters()` with "louvain"
-#> ℹ [2026-11-03 07:56:55] Reorder clusters...
-#> ℹ [2026-11-03 07:56:55] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-03 07:56:55] Perform umap nonlinear dimension reduction using MNNpca (1:50)
-#> ℹ [2026-11-03 07:57:02] Perform umap nonlinear dimension reduction using MNNpca (1:50)
-#> ℹ [2026-11-03 07:57:09] Perform umap nonlinear dimension reduction using MNNpca (1:50)
-#> ✔ [2026-11-03 07:57:18] MNN integration completed
-#> ◌ [2026-11-03 07:57:18] Run integration workflow...
-#> ℹ [2026-11-03 07:57:19] Checking a list of <Seurat>...
-#> ℹ [2026-11-03 07:57:20] Data 1/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 07:57:20] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
-#> ℹ [2026-11-03 07:57:20] Data 2/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 07:57:20] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
-#> ℹ [2026-11-03 07:57:20] Data 3/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 07:57:20] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
-#> ℹ [2026-11-03 07:57:20] Data 4/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 07:57:20] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
-#> ℹ [2026-11-03 07:57:20] Data 5/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 07:57:20] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
-#> ℹ [2026-11-03 07:57:20] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-03 07:57:20] Number of available HVF: 2000
-#> ℹ [2026-11-03 07:57:21] Finished check
-#> ℹ [2026-11-03 07:57:21] Perform fastMNN integration
-#> ℹ [2026-11-03 07:57:24] Perform `Seurat::FindClusters()` with "louvain"
-#> ℹ [2026-11-03 07:57:24] Reorder clusters...
-#> ℹ [2026-11-03 07:57:24] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-03 07:57:24] Perform umap nonlinear dimension reduction using fastMNN (1:50)
-#> ℹ [2026-11-03 07:57:31] Perform umap nonlinear dimension reduction using fastMNN (1:50)
-#> ℹ [2026-11-03 07:57:38] Perform umap nonlinear dimension reduction using fastMNN (1:50)
-#> ✔ [2026-11-03 07:57:46] fastMNN integration completed
-#> ◌ [2026-11-03 07:57:46] Run integration workflow...
-#> ℹ [2026-11-03 07:57:48] Split `srt_merge` into `srt_list` by "tech"
-#> ℹ [2026-11-03 07:57:49] Checking a list of <Seurat>...
-#> ℹ [2026-11-03 07:57:49] Data 1/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 07:57:49] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
-#> ℹ [2026-11-03 07:57:49] Data 2/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 07:57:49] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
-#> ℹ [2026-11-03 07:57:49] Data 3/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 07:57:49] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
-#> ℹ [2026-11-03 07:57:49] Data 4/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 07:57:49] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
-#> ℹ [2026-11-03 07:57:50] Data 5/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 07:57:50] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
-#> ℹ [2026-11-03 07:57:50] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-03 07:57:50] Number of available HVF: 2000
-#> ℹ [2026-11-03 07:57:50] Finished check
-#> ℹ [2026-11-03 07:57:50] Perform `Seurat::ScaleData()`
-#> ℹ [2026-11-03 07:57:50] Perform linear dimension reduction("pca")
-#> ℹ [2026-11-03 07:57:51] Perform Harmony integration
-#> ℹ [2026-11-03 07:57:51] Using "Harmonypca" (1:50) as input
-#> ℹ [2026-11-03 07:57:51] Adjust neighbor k from 20 to 20 for small-sample clustering
-#> ℹ [2026-11-03 07:57:51] Perform `Seurat::FindClusters()` with "louvain"
-#> ℹ [2026-11-03 07:57:51] Reorder clusters...
-#> ℹ [2026-11-03 07:57:51] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-03 07:57:51] Perform umap nonlinear dimension reduction using Harmony (1:50)
-#> ℹ [2026-11-03 07:57:58] Perform umap nonlinear dimension reduction using Harmony (1:50)
-#> ℹ [2026-11-03 07:58:05] Perform umap nonlinear dimension reduction using Harmonypca (1:50)
-#> ✔ [2026-11-03 07:58:14] Harmony integration completed
-#> ◌ [2026-11-03 07:58:14] Run integration workflow...
+#> ℹ [2026-11-03 09:28:33] Data appears already log-normalized. Skipping `Seurat::NormalizeData()`
+#> ℹ [2026-11-03 09:28:33] Perform `Seurat::FindVariableFeatures()` per batch (`HVF_source = 'separate'`)
+#> ℹ [2026-11-03 09:28:33] Number of available HVF: 2000
+#> ℹ [2026-11-03 09:28:34] Perform `Seurat::ScaleData()` on split layers for Seurat v5 integration
+#> ℹ [2026-11-03 09:28:34] Perform PCA on split layers before `Seurat::IntegrateLayers()`
+#> ℹ [2026-11-03 09:28:35] Perform Seurat v5 integration with `RPCAIntegration()`
+#> ℹ [2026-11-03 09:28:46] Adjust neighbor k from 20 to 20 for small-sample clustering
+#> ℹ [2026-11-03 09:28:46] Perform `Seurat::FindClusters()` with "louvain"
+#> ℹ [2026-11-03 09:28:46] Reorder clusters...
+#> ℹ [2026-11-03 09:28:46] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-03 09:28:46] Perform umap nonlinear dimension reduction using RPCA (1:50)
+#> ℹ [2026-11-03 09:28:53] Perform umap nonlinear dimension reduction using RPCA (1:50)
+#> ℹ [2026-11-03 09:28:59] Perform umap nonlinear dimension reduction using pca (1:50)
+#> ✔ [2026-11-03 09:29:07] RPCA integration completed
+#> ◌ [2026-11-03 09:29:07] Run integration workflow...
+#> ℹ [2026-11-03 09:29:09] Checking a list of <Seurat>...
+#> ℹ [2026-11-03 09:29:09] Data 1/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:29:09] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
+#> ℹ [2026-11-03 09:29:09] Data 2/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:29:09] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
+#> ℹ [2026-11-03 09:29:09] Data 3/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:29:09] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
+#> ℹ [2026-11-03 09:29:10] Data 4/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:29:10] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
+#> ℹ [2026-11-03 09:29:10] Data 5/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:29:10] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
+#> ℹ [2026-11-03 09:29:10] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-03 09:29:10] Number of available HVF: 2000
+#> ℹ [2026-11-03 09:29:10] Finished check
+#> ℹ [2026-11-03 09:29:10] Perform MNN integration
+#> ℹ [2026-11-03 09:29:52] Perform ScaleData
+#> ℹ [2026-11-03 09:29:52] Perform "pca" linear dimension reduction
+#> ℹ [2026-11-03 09:29:53] Perform `Seurat::FindClusters()` with "louvain"
+#> ℹ [2026-11-03 09:29:53] Reorder clusters...
+#> ℹ [2026-11-03 09:29:53] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-03 09:29:53] Perform umap nonlinear dimension reduction using MNNpca (1:50)
+#> ℹ [2026-11-03 09:30:00] Perform umap nonlinear dimension reduction using MNNpca (1:50)
+#> ℹ [2026-11-03 09:30:07] Perform umap nonlinear dimension reduction using MNNpca (1:50)
+#> ✔ [2026-11-03 09:30:15] MNN integration completed
+#> ◌ [2026-11-03 09:30:15] Run integration workflow...
+#> ℹ [2026-11-03 09:30:17] Checking a list of <Seurat>...
+#> ℹ [2026-11-03 09:30:17] Data 1/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:30:17] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
+#> ℹ [2026-11-03 09:30:17] Data 2/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:30:17] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
+#> ℹ [2026-11-03 09:30:18] Data 3/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:30:18] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
+#> ℹ [2026-11-03 09:30:18] Data 4/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:30:18] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
+#> ℹ [2026-11-03 09:30:18] Data 5/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:30:18] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
+#> ℹ [2026-11-03 09:30:18] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-03 09:30:18] Number of available HVF: 2000
+#> ℹ [2026-11-03 09:30:18] Finished check
+#> ℹ [2026-11-03 09:30:19] Perform fastMNN integration
+#> ℹ [2026-11-03 09:30:22] Perform `Seurat::FindClusters()` with "louvain"
+#> ℹ [2026-11-03 09:30:23] Reorder clusters...
+#> ℹ [2026-11-03 09:30:23] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-03 09:30:23] Perform umap nonlinear dimension reduction using fastMNN (1:50)
+#> ℹ [2026-11-03 09:30:29] Perform umap nonlinear dimension reduction using fastMNN (1:50)
+#> ℹ [2026-11-03 09:30:36] Perform umap nonlinear dimension reduction using fastMNN (1:50)
+#> ✔ [2026-11-03 09:30:44] fastMNN integration completed
+#> ◌ [2026-11-03 09:30:44] Run integration workflow...
+#> ℹ [2026-11-03 09:30:46] Split `srt_merge` into `srt_list` by "tech"
+#> ℹ [2026-11-03 09:30:47] Checking a list of <Seurat>...
+#> ℹ [2026-11-03 09:30:47] Data 1/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:30:47] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
+#> ℹ [2026-11-03 09:30:47] Data 2/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:30:47] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
+#> ℹ [2026-11-03 09:30:47] Data 3/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:30:47] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
+#> ℹ [2026-11-03 09:30:47] Data 4/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:30:47] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
+#> ℹ [2026-11-03 09:30:48] Data 5/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:30:48] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
+#> ℹ [2026-11-03 09:30:48] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-03 09:30:48] Number of available HVF: 2000
+#> ℹ [2026-11-03 09:30:48] Finished check
+#> ℹ [2026-11-03 09:30:48] Perform `Seurat::ScaleData()`
+#> ℹ [2026-11-03 09:30:48] Perform linear dimension reduction("pca")
+#> ℹ [2026-11-03 09:30:49] Perform Harmony integration
+#> ℹ [2026-11-03 09:30:49] Using "Harmonypca" (1:50) as input
+#> ℹ [2026-11-03 09:30:49] Adjust neighbor k from 20 to 20 for small-sample clustering
+#> ℹ [2026-11-03 09:30:50] Perform `Seurat::FindClusters()` with "louvain"
+#> ℹ [2026-11-03 09:30:50] Reorder clusters...
+#> ℹ [2026-11-03 09:30:50] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-03 09:30:50] Perform umap nonlinear dimension reduction using Harmony (1:50)
+#> ℹ [2026-11-03 09:30:56] Perform umap nonlinear dimension reduction using Harmony (1:50)
+#> ℹ [2026-11-03 09:31:03] Perform umap nonlinear dimension reduction using Harmonypca (1:50)
+#> ✔ [2026-11-03 09:31:11] Harmony integration completed
+#> ◌ [2026-11-03 09:31:11] Run integration workflow...
 #> Splitting ‘counts’, ‘data’ layers. Not splitting . If you would like to split other layers, set in `layers` argument.
-#> ℹ [2026-11-03 07:58:15] Data appears already log-normalized. Skipping `Seurat::NormalizeData()`
-#> ℹ [2026-11-03 07:58:15] Perform `Seurat::FindVariableFeatures()` per batch (`HVF_source = 'separate'`)
-#> ℹ [2026-11-03 07:58:16] Number of available HVF: 2000
-#> ℹ [2026-11-03 07:58:17] Perform `Seurat::ScaleData()` on split layers for Seurat v5 integration
-#> ℹ [2026-11-03 07:58:17] Perform PCA on split layers before `Seurat::IntegrateLayers()`
-#> ℹ [2026-11-03 07:58:17] Perform Seurat v5 integration with `HarmonyIntegration()`
+#> ℹ [2026-11-03 09:31:12] Data appears already log-normalized. Skipping `Seurat::NormalizeData()`
+#> ℹ [2026-11-03 09:31:12] Perform `Seurat::FindVariableFeatures()` per batch (`HVF_source = 'separate'`)
+#> ℹ [2026-11-03 09:31:13] Number of available HVF: 2000
+#> ℹ [2026-11-03 09:31:14] Perform `Seurat::ScaleData()` on split layers for Seurat v5 integration
+#> ℹ [2026-11-03 09:31:14] Perform PCA on split layers before `Seurat::IntegrateLayers()`
+#> ℹ [2026-11-03 09:31:15] Perform Seurat v5 integration with `HarmonyIntegration()`
 #> The `features` argument is ignored by `HarmonyIntegration`.
 #> This message is displayed once per session.
-#> ℹ [2026-11-03 07:58:18] Adjust neighbor k from 20 to 20 for small-sample clustering
-#> ℹ [2026-11-03 07:58:19] Perform `Seurat::FindClusters()` with "louvain"
-#> ℹ [2026-11-03 07:58:19] Reorder clusters...
-#> ℹ [2026-11-03 07:58:19] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-03 07:58:19] Perform umap nonlinear dimension reduction using Harmony5 (1:50)
-#> ℹ [2026-11-03 07:58:26] Perform umap nonlinear dimension reduction using Harmony5 (1:50)
-#> ℹ [2026-11-03 07:58:33] Perform umap nonlinear dimension reduction using pca (1:50)
-#> ✔ [2026-11-03 07:58:41] Harmony5 integration completed
-#> ◌ [2026-11-03 07:58:41] Run integration workflow...
-#> ℹ [2026-11-03 07:58:43] Split `srt_merge` into `srt_list` by "tech"
-#> ℹ [2026-11-03 07:58:44] Checking a list of <Seurat>...
-#> ℹ [2026-11-03 07:58:44] Data 1/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 07:58:44] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
-#> ℹ [2026-11-03 07:58:44] Data 2/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 07:58:44] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
-#> ℹ [2026-11-03 07:58:44] Data 3/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 07:58:44] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
-#> ℹ [2026-11-03 07:58:44] Data 4/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 07:58:44] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
-#> ℹ [2026-11-03 07:58:45] Data 5/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 07:58:45] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
-#> ℹ [2026-11-03 07:58:45] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-03 07:58:45] Number of available HVF: 2000
-#> ℹ [2026-11-03 07:58:45] Finished check
-#> ℹ [2026-11-03 07:58:45] Perform Coralysis integration
+#> ℹ [2026-11-03 09:31:16] Adjust neighbor k from 20 to 20 for small-sample clustering
+#> ℹ [2026-11-03 09:31:16] Perform `Seurat::FindClusters()` with "louvain"
+#> ℹ [2026-11-03 09:31:16] Reorder clusters...
+#> ℹ [2026-11-03 09:31:16] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-03 09:31:16] Perform umap nonlinear dimension reduction using Harmony5 (1:50)
+#> ℹ [2026-11-03 09:31:23] Perform umap nonlinear dimension reduction using Harmony5 (1:50)
+#> ℹ [2026-11-03 09:31:29] Perform umap nonlinear dimension reduction using pca (1:50)
+#> ✔ [2026-11-03 09:31:38] Harmony5 integration completed
+#> ◌ [2026-11-03 09:31:38] Run integration workflow...
+#> ℹ [2026-11-03 09:31:39] Split `srt_merge` into `srt_list` by "tech"
+#> ℹ [2026-11-03 09:31:40] Checking a list of <Seurat>...
+#> ℹ [2026-11-03 09:31:40] Data 1/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:31:40] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
+#> ℹ [2026-11-03 09:31:41] Data 2/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:31:41] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
+#> ℹ [2026-11-03 09:31:41] Data 3/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:31:41] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
+#> ℹ [2026-11-03 09:31:41] Data 4/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:31:41] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
+#> ℹ [2026-11-03 09:31:41] Data 5/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:31:41] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
+#> ℹ [2026-11-03 09:31:42] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-03 09:31:42] Number of available HVF: 2000
+#> ℹ [2026-11-03 09:31:42] Finished check
+#> ℹ [2026-11-03 09:31:42] Perform Coralysis integration
 #> Data in `logcounts` slot already of `dgCMatrix` class...
 #> 2000/2000 features remain after filtering features with only zero values.
 #> 
@@ -651,103 +651,103 @@ for (method in integration_methods) {
 #> 
 #> Multi-level integration completed successfully.
 #> Divisive ICP: selecting ICP tables multiple of 4
-#> ℹ [2026-11-03 08:00:01] Adjust neighbor k from 20 to 20 for small-sample clustering
-#> ℹ [2026-11-03 08:00:01] Perform `Seurat::FindClusters()` with "louvain"
-#> ℹ [2026-11-03 08:00:01] Reorder clusters...
-#> ℹ [2026-11-03 08:00:01] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-03 08:00:01] Perform umap nonlinear dimension reduction using Coralysis (1:50)
-#> ℹ [2026-11-03 08:00:08] Perform umap nonlinear dimension reduction using Coralysis (1:50)
-#> ℹ [2026-11-03 08:00:15] Perform umap nonlinear dimension reduction using Coralysis (1:50)
-#> ✔ [2026-11-03 08:00:24] Coralysis integration completed
-#> ◌ [2026-11-03 08:00:24] Run integration workflow...
-#> ℹ [2026-11-03 08:00:26] Split `srt_merge` into `srt_list` by "tech"
-#> ℹ [2026-11-03 08:00:27] Checking a list of <Seurat>...
-#> ℹ [2026-11-03 08:00:27] Data 1/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 08:00:27] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
-#> ℹ [2026-11-03 08:00:27] Data 2/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 08:00:27] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
-#> ℹ [2026-11-03 08:00:27] Data 3/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 08:00:27] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
-#> ℹ [2026-11-03 08:00:27] Data 4/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 08:00:27] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
-#> ℹ [2026-11-03 08:00:28] Data 5/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 08:00:28] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
-#> ℹ [2026-11-03 08:00:28] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-03 08:00:28] Number of available HVF: 2000
-#> ℹ [2026-11-03 08:00:28] Finished check
-#> ℹ [2026-11-03 08:00:28] Prepare rliger layer "ligerScaleData" ...
-#> ℹ [2026-11-03 08:00:28] Perform LIGER integration
-#> ℹ [2026-11-03 08:00:33] Adjust neighbor k from 20 to 20 for small-sample clustering
-#> ℹ [2026-11-03 08:00:33] Perform `Seurat::FindClusters()` with "louvain"
-#> ℹ [2026-11-03 08:00:33] Reorder clusters...
-#> ℹ [2026-11-03 08:00:33] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-03 08:00:33] Perform umap nonlinear dimension reduction using LIGER (1:20)
-#> ℹ [2026-11-03 08:00:41] Perform umap nonlinear dimension reduction using LIGER (1:20)
-#> ℹ [2026-11-03 08:00:48] Perform umap nonlinear dimension reduction using LIGER (1:50)
-#> ✔ [2026-11-03 08:00:57] LIGER integration completed
-#> ◌ [2026-11-03 08:00:57] Run integration workflow...
-#> ℹ [2026-11-03 08:00:59] Split `srt_merge` into `srt_list` by "tech"
-#> ℹ [2026-11-03 08:01:00] Checking a list of <Seurat>...
-#> ℹ [2026-11-03 08:01:00] Data 1/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 08:01:00] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
-#> ℹ [2026-11-03 08:01:00] Data 2/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 08:01:00] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
-#> ℹ [2026-11-03 08:01:00] Data 3/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 08:01:00] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
-#> ℹ [2026-11-03 08:01:01] Data 4/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 08:01:01] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
-#> ℹ [2026-11-03 08:01:01] Data 5/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 08:01:01] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
-#> ℹ [2026-11-03 08:01:01] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-03 08:01:01] Number of available HVF: 2000
-#> ℹ [2026-11-03 08:01:01] Finished check
-#> ℹ [2026-11-03 08:01:01] Perform ScaleData on the data 1 ...
-#> ℹ [2026-11-03 08:01:01] Perform "pca" linear dimension reduction
-#> ℹ [2026-11-03 08:01:01] Perform ScaleData on the data 2 ...
-#> ℹ [2026-11-03 08:01:01] Perform "pca" linear dimension reduction
-#> ℹ [2026-11-03 08:01:02] Perform ScaleData on the data 3 ...
-#> ℹ [2026-11-03 08:01:02] Perform "pca" linear dimension reduction
-#> ℹ [2026-11-03 08:01:02] Perform ScaleData on the data 4 ...
-#> ℹ [2026-11-03 08:01:02] Perform "pca" linear dimension reduction
-#> ℹ [2026-11-03 08:01:02] Perform ScaleData on the data 5 ...
-#> ℹ [2026-11-03 08:01:02] Perform "pca" linear dimension reduction
-#> ℹ [2026-11-03 08:01:03]  Perform Conos integration
-#> ℹ [2026-11-03 08:01:03] Conos integration using pca (1:50) as input
-#> ℹ [2026-11-03 08:01:06] Adjust neighbor k from 20 to 20 for small-sample clustering
-#> ℹ [2026-11-03 08:01:06] Perform `Seurat::FindClusters()` with "louvain"
-#> ℹ [2026-11-03 08:01:06] Reorder clusters...
-#> ℹ [2026-11-03 08:01:06] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-03 08:01:06] Perform umap nonlinear dimension reduction using Conos
-#> ℹ [2026-11-03 08:01:14] Perform umap nonlinear dimension reduction using Conos
-#> ℹ [2026-11-03 08:01:21] Perform umap nonlinear dimension reduction using ConosUMAP2D (1:50)
-#> ✔ [2026-11-03 08:01:30] Conos integration completed
-#> ◌ [2026-11-03 08:01:30] Run integration workflow...
-#> ℹ [2026-11-03 08:01:32] Split `srt_merge` into `srt_list` by "tech"
-#> ℹ [2026-11-03 08:01:33] Checking a list of <Seurat>...
-#> ℹ [2026-11-03 08:01:33] Data 1/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 08:01:33] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
-#> ℹ [2026-11-03 08:01:33] Data 2/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 08:01:33] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
-#> ℹ [2026-11-03 08:01:33] Data 3/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 08:01:33] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
-#> ℹ [2026-11-03 08:01:33] Data 4/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 08:01:33] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
-#> ℹ [2026-11-03 08:01:34] Data 5/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 08:01:34] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
-#> ℹ [2026-11-03 08:01:34] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-03 08:01:34] Number of available HVF: 2000
-#> ℹ [2026-11-03 08:01:34] Finished check
-#> ℹ [2026-11-03 08:01:34] Perform ComBat integration
-#> Found 137 genes with uniform expression within a single batch (all zeros); these will not be adjusted for batch.
-#> ℹ [2026-11-03 08:01:35] Perform `Seurat::ScaleData()`
-#> ℹ [2026-11-03 08:01:35] Perform linear dimension reduction ("pca")
-#> ℹ [2026-11-03 08:01:36] Perform `Seurat::FindClusters()` with "louvain"
-#> ℹ [2026-11-03 08:01:36] Reorder clusters...
-#> ℹ [2026-11-03 08:01:36] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-03 08:01:36] Perform umap nonlinear dimension reduction using ComBatpca (1:50)
-#> ℹ [2026-11-03 08:01:43] Perform umap nonlinear dimension reduction using ComBatpca (1:50)
-#> ℹ [2026-11-03 08:01:51] Perform umap nonlinear dimension reduction using ComBatpca (1:50)
-#> ✔ [2026-11-03 08:02:00] ComBat integration completed
+#> ℹ [2026-11-03 09:33:07] Adjust neighbor k from 20 to 20 for small-sample clustering
+#> ℹ [2026-11-03 09:33:08] Perform `Seurat::FindClusters()` with "louvain"
+#> ℹ [2026-11-03 09:33:08] Reorder clusters...
+#> ℹ [2026-11-03 09:33:08] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-03 09:33:08] Perform umap nonlinear dimension reduction using Coralysis (1:50)
+#> ℹ [2026-11-03 09:33:15] Perform umap nonlinear dimension reduction using Coralysis (1:50)
+#> ℹ [2026-11-03 09:33:21] Perform umap nonlinear dimension reduction using Coralysis (1:50)
+#> ✔ [2026-11-03 09:33:29] Coralysis integration completed
+#> ◌ [2026-11-03 09:33:29] Run integration workflow...
+#> ℹ [2026-11-03 09:33:31] Split `srt_merge` into `srt_list` by "tech"
+#> ℹ [2026-11-03 09:33:32] Checking a list of <Seurat>...
+#> ℹ [2026-11-03 09:33:32] Data 1/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:33:32] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
+#> ℹ [2026-11-03 09:33:33] Data 2/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:33:33] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
+#> ℹ [2026-11-03 09:33:33] Data 3/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:33:33] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
+#> ℹ [2026-11-03 09:33:33] Data 4/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:33:33] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
+#> ℹ [2026-11-03 09:33:33] Data 5/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:33:33] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
+#> ℹ [2026-11-03 09:33:33] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-03 09:33:33] Number of available HVF: 2000
+#> ℹ [2026-11-03 09:33:34] Finished check
+#> ℹ [2026-11-03 09:33:34] Prepare rliger layer "ligerScaleData" ...
+#> ℹ [2026-11-03 09:33:34] Perform LIGER integration
+#> ℹ [2026-11-03 09:33:39] Adjust neighbor k from 20 to 20 for small-sample clustering
+#> ℹ [2026-11-03 09:33:39] Perform `Seurat::FindClusters()` with "louvain"
+#> ℹ [2026-11-03 09:33:40] Reorder clusters...
+#> ℹ [2026-11-03 09:33:40] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-03 09:33:40] Perform umap nonlinear dimension reduction using LIGER (1:20)
+#> ℹ [2026-11-03 09:33:46] Perform umap nonlinear dimension reduction using LIGER (1:20)
+#> ℹ [2026-11-03 09:33:53] Perform umap nonlinear dimension reduction using LIGER (1:50)
+#> ✔ [2026-11-03 09:34:02] LIGER integration completed
+#> ◌ [2026-11-03 09:34:02] Run integration workflow...
+#> ℹ [2026-11-03 09:34:04] Split `srt_merge` into `srt_list` by "tech"
+#> ℹ [2026-11-03 09:34:05] Checking a list of <Seurat>...
+#> ℹ [2026-11-03 09:34:05] Data 1/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:34:05] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
+#> ℹ [2026-11-03 09:34:05] Data 2/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:34:05] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
+#> ℹ [2026-11-03 09:34:05] Data 3/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:34:05] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
+#> ℹ [2026-11-03 09:34:06] Data 4/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:34:06] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
+#> ℹ [2026-11-03 09:34:06] Data 5/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:34:06] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
+#> ℹ [2026-11-03 09:34:06] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-03 09:34:06] Number of available HVF: 2000
+#> ℹ [2026-11-03 09:34:06] Finished check
+#> ℹ [2026-11-03 09:34:06] Perform ScaleData on the data 1 ...
+#> ℹ [2026-11-03 09:34:06] Perform "pca" linear dimension reduction
+#> ℹ [2026-11-03 09:34:06] Perform ScaleData on the data 2 ...
+#> ℹ [2026-11-03 09:34:06] Perform "pca" linear dimension reduction
+#> ℹ [2026-11-03 09:34:07] Perform ScaleData on the data 3 ...
+#> ℹ [2026-11-03 09:34:07] Perform "pca" linear dimension reduction
+#> ℹ [2026-11-03 09:34:07] Perform ScaleData on the data 4 ...
+#> ℹ [2026-11-03 09:34:07] Perform "pca" linear dimension reduction
+#> ℹ [2026-11-03 09:34:07] Perform ScaleData on the data 5 ...
+#> ℹ [2026-11-03 09:34:07] Perform "pca" linear dimension reduction
+#> ℹ [2026-11-03 09:34:08]  Perform Conos integration
+#> ℹ [2026-11-03 09:34:08] Conos integration using pca (1:50) as input
+#> ℹ [2026-11-03 09:34:12] Adjust neighbor k from 20 to 20 for small-sample clustering
+#> ℹ [2026-11-03 09:34:12] Perform `Seurat::FindClusters()` with "louvain"
+#> ℹ [2026-11-03 09:34:12] Reorder clusters...
+#> ℹ [2026-11-03 09:34:12] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-03 09:34:12] Perform umap nonlinear dimension reduction using Conos
+#> ℹ [2026-11-03 09:34:19] Perform umap nonlinear dimension reduction using Conos
+#> ℹ [2026-11-03 09:34:26] Perform umap nonlinear dimension reduction using ConosUMAP2D (1:50)
+#> ✔ [2026-11-03 09:34:34] Conos integration completed
+#> ◌ [2026-11-03 09:34:34] Run integration workflow...
+#> ℹ [2026-11-03 09:34:37] Split `srt_merge` into `srt_list` by "tech"
+#> ℹ [2026-11-03 09:34:38] Checking a list of <Seurat>...
+#> ℹ [2026-11-03 09:34:38] Data 1/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:34:38] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
+#> ℹ [2026-11-03 09:34:38] Data 2/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:34:38] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
+#> ℹ [2026-11-03 09:34:38] Data 3/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:34:38] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
+#> ℹ [2026-11-03 09:34:39] Data 4/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:34:39] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
+#> ℹ [2026-11-03 09:34:39] Data 5/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:34:39] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
+#> ℹ [2026-11-03 09:34:39] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-03 09:34:39] Number of available HVF: 2000
+#> ℹ [2026-11-03 09:34:39] Finished check
+#> ℹ [2026-11-03 09:34:39] Perform ComBat integration
+#> Found 138 genes with uniform expression within a single batch (all zeros); these will not be adjusted for batch.
+#> ℹ [2026-11-03 09:34:40] Perform `Seurat::ScaleData()`
+#> ℹ [2026-11-03 09:34:40] Perform linear dimension reduction ("pca")
+#> ℹ [2026-11-03 09:34:41] Perform `Seurat::FindClusters()` with "louvain"
+#> ℹ [2026-11-03 09:34:41] Reorder clusters...
+#> ℹ [2026-11-03 09:34:41] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-03 09:34:41] Perform umap nonlinear dimension reduction using ComBatpca (1:50)
+#> ℹ [2026-11-03 09:34:48] Perform umap nonlinear dimension reduction using ComBatpca (1:50)
+#> ℹ [2026-11-03 09:34:55] Perform umap nonlinear dimension reduction using ComBatpca (1:50)
+#> ✔ [2026-11-03 09:35:03] ComBat integration completed
 
 # Python-backed methods prepare a scVI/scvi-tools environment and run model
 # training, so keep them separate from ordinary example checks.
@@ -780,55 +780,55 @@ panc8_sub <- RunIntegration(
   nonlinear_reduction = nonlinear_reductions,
   nonlinear_reduction_params = list(largevis = list(n_epochs = 1000L))
 )
-#> ◌ [2026-11-03 08:02:00] Run integration workflow...
-#> ℹ [2026-11-03 08:02:02] Split `srt_merge` into `srt_list` by "tech"
-#> ℹ [2026-11-03 08:02:03] Checking a list of <Seurat>...
-#> ℹ [2026-11-03 08:02:03] Data 1/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 08:02:03] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
-#> ℹ [2026-11-03 08:02:03] Data 2/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 08:02:03] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
-#> ℹ [2026-11-03 08:02:03] Data 3/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 08:02:03] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
-#> ℹ [2026-11-03 08:02:03] Data 4/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 08:02:03] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
-#> ℹ [2026-11-03 08:02:04] Data 5/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-03 08:02:04] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
-#> ℹ [2026-11-03 08:02:04] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-03 08:02:04] Number of available HVF: 2000
-#> ℹ [2026-11-03 08:02:04] Finished check
-#> ℹ [2026-11-03 08:02:04] Perform FindIntegrationAnchors
-#> ℹ [2026-11-03 08:02:31] Perform Seurat integration
-#> ℹ [2026-11-03 08:03:13] Perform ScaleData on `srt_integrated`
-#> ℹ [2026-11-03 08:03:13] Perform "pca" linear dimension reduction
-#> ℹ [2026-11-03 08:03:14] Perform `Seurat::FindClusters()` with "louvain"
-#> ℹ [2026-11-03 08:03:14] Reorder clusters...
-#> ℹ [2026-11-03 08:03:14] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-03 08:03:14] Perform umap nonlinear dimension reduction using Seuratpca (1:50)
-#> ℹ [2026-11-03 08:03:22] Perform umap nonlinear dimension reduction using Seuratpca (1:50)
-#> ℹ [2026-11-03 08:03:30] Perform tsne nonlinear dimension reduction using Seuratpca (1:50)
-#> ℹ [2026-11-03 08:03:32] Perform tsne nonlinear dimension reduction using Seuratpca (1:50)
-#> ℹ [2026-11-03 08:03:36] Perform dm nonlinear dimension reduction using Seuratpca (1:50)
-#> ℹ [2026-11-03 08:04:51] Perform dm nonlinear dimension reduction using Seuratpca (1:50)
-#> ℹ [2026-11-03 08:04:52] Perform phate nonlinear dimension reduction using Seuratpca (1:50)
-#> ◌ [2026-11-03 08:04:55] Preparing python environment...
-#> ℹ [2026-11-03 08:04:55] Environment name: 'scprep_env' and python version: 3.10-1
-#> ℹ [2026-11-03 08:04:55] Auto-detecting conda-compatible environment manager...
-#> ℹ [2026-11-03 08:04:55] Using micromamba executable: '/home/runner/.cache/R/scop/micromamba/linux-64/bin/micromamba'
-#> ℹ [2026-11-03 08:04:55] Creating Python environment with python "3.10-1" using micromamba...
-#> ℹ [2026-11-03 08:04:55] Skipping conda Terms of Service acceptance for micromamba.
+#> ◌ [2026-11-03 09:35:03] Run integration workflow...
+#> ℹ [2026-11-03 09:35:06] Split `srt_merge` into `srt_list` by "tech"
+#> ℹ [2026-11-03 09:35:07] Checking a list of <Seurat>...
+#> ℹ [2026-11-03 09:35:07] Data 1/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:35:07] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
+#> ℹ [2026-11-03 09:35:07] Data 2/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:35:07] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
+#> ℹ [2026-11-03 09:35:07] Data 3/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:35:07] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
+#> ℹ [2026-11-03 09:35:08] Data 4/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:35:08] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
+#> ℹ [2026-11-03 09:35:08] Data 5/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-03 09:35:08] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
+#> ℹ [2026-11-03 09:35:08] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-03 09:35:08] Number of available HVF: 2000
+#> ℹ [2026-11-03 09:35:08] Finished check
+#> ℹ [2026-11-03 09:35:08] Perform FindIntegrationAnchors
+#> ℹ [2026-11-03 09:35:43] Perform Seurat integration
+#> ℹ [2026-11-03 09:36:35] Perform ScaleData on `srt_integrated`
+#> ℹ [2026-11-03 09:36:35] Perform "pca" linear dimension reduction
+#> ℹ [2026-11-03 09:36:36] Perform `Seurat::FindClusters()` with "louvain"
+#> ℹ [2026-11-03 09:36:36] Reorder clusters...
+#> ℹ [2026-11-03 09:36:36] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-03 09:36:36] Perform umap nonlinear dimension reduction using Seuratpca (1:50)
+#> ℹ [2026-11-03 09:36:43] Perform umap nonlinear dimension reduction using Seuratpca (1:50)
+#> ℹ [2026-11-03 09:36:50] Perform tsne nonlinear dimension reduction using Seuratpca (1:50)
+#> ℹ [2026-11-03 09:36:53] Perform tsne nonlinear dimension reduction using Seuratpca (1:50)
+#> ℹ [2026-11-03 09:36:58] Perform dm nonlinear dimension reduction using Seuratpca (1:50)
+#> ℹ [2026-11-03 09:38:28] Perform dm nonlinear dimension reduction using Seuratpca (1:50)
+#> ℹ [2026-11-03 09:38:30] Perform phate nonlinear dimension reduction using Seuratpca (1:50)
+#> ◌ [2026-11-03 09:38:33] Preparing python environment...
+#> ℹ [2026-11-03 09:38:33] Environment name: 'scprep_env' and python version: 3.10-1
+#> ℹ [2026-11-03 09:38:33] Auto-detecting conda-compatible environment manager...
+#> ℹ [2026-11-03 09:38:33] Using micromamba executable: '/home/runner/.cache/R/scop/micromamba/linux-64/bin/micromamba'
+#> ℹ [2026-11-03 09:38:33] Creating Python environment with python "3.10-1" using micromamba...
+#> ℹ [2026-11-03 09:38:33] Skipping conda Terms of Service acceptance for micromamba.
 #> + /home/runner/.cache/R/scop/micromamba/linux-64/bin/micromamba 'create' '--yes' '--name' 'scprep_env' 'python=3.10-1' 'pip' 'setuptools<81' 'wheel' '--quiet' '-c' 'conda-forge'
-#> ✔ [2026-11-03 08:04:57] Environment created successfully: '/home/runner/work/_temp/pkgdown-python/envs/scprep_env'
-#> ℹ [2026-11-03 08:04:57] 14 requirements to check, 3 conda requirements and 11 pip requirements
-#> ℹ [2026-11-03 08:04:57] Checking 3 conda requirements
-#> ℹ [2026-11-03 08:04:57] Installing 3 packages into environment: 'scprep_env' using micromamba
-#> ℹ [2026-11-03 08:04:57] Installing packages via micromamba...
-#> ℹ [2026-11-03 08:04:57] Using channel: "conda-forge"
-#> ℹ [2026-11-03 08:04:57] Installing 3 packages...
+#> ✔ [2026-11-03 09:38:36] Environment created successfully: '/home/runner/work/_temp/pkgdown-python/envs/scprep_env'
+#> ℹ [2026-11-03 09:38:36] 14 requirements to check, 3 conda requirements and 11 pip requirements
+#> ℹ [2026-11-03 09:38:36] Checking 3 conda requirements
+#> ℹ [2026-11-03 09:38:36] Installing 3 packages into environment: 'scprep_env' using micromamba
+#> ℹ [2026-11-03 09:38:36] Installing packages via micromamba...
+#> ℹ [2026-11-03 09:38:36] Using channel: "conda-forge"
+#> ℹ [2026-11-03 09:38:36] Installing 3 packages...
 #> + /home/runner/.cache/R/scop/micromamba/linux-64/bin/micromamba 'install' '--yes' '--name' 'scprep_env' '-c' 'conda-forge' 'leidenalg=0.10.2' 'tbb=2022.2.0' 'python-igraph=0.11.9'
 #> Using Cached Shard Index for conda-forge/linux-64                                                   ✔ Done
 #> Using Cached Shard Index for conda-forge/noarch                                                     ✔ Done
 #> Fetching and Parsing Packages' Shards                                                           ⧖ Starting
-#> Fetching and Parsing Packages' Shards                                                     ✔ Done (0.1 sec)
+#> Fetching and Parsing Packages' Shards                                                     ✔ Done (0.2 sec)
 #> 
 #> Pinned packages:
 #> 
@@ -913,20 +913,20 @@ panc8_sub <- RunIntegration(
 #> 
 #> Transaction finished
 #> 
-#> ✔ [2026-11-03 08:04:58] micromamba installation completed successfully
-#> ℹ [2026-11-03 08:04:59] Checking 12 requirements using uv
-#> ℹ [2026-11-03 08:04:59] Installing 12 packages into environment: 'scprep_env' using micromamba
-#> ℹ [2026-11-03 08:04:59] Installing packages via uv...
+#> ✔ [2026-11-03 09:38:37] micromamba installation completed successfully
+#> ℹ [2026-11-03 09:38:38] Checking 12 requirements using uv
+#> ℹ [2026-11-03 09:38:38] Installing 12 packages into environment: 'scprep_env' using micromamba
+#> ℹ [2026-11-03 09:38:38] Installing packages via uv...
 #> + /home/runner/work/_temp/pkgdown-python/envs/scop_env/bin/uv 'pip' 'install' '--python' '/home/runner/work/_temp/pkgdown-python/envs/scprep_env/bin/python3.10' '--force-reinstall' 'setuptools<81' 'matplotlib==3.10.8' 'numba==0.66.0' 'llvmlite==0.48.0' 'numpy==1.26.4' 'packaging>=24.0' 'pandas==2.0.3' 'scikit-learn==1.7.0' 'scipy==1.15.3' 'phate==1.0.11' 'leidenalg==0.10.2' 'igraph==0.11.9'
 #> Using Python 3.10.1 environment at: /home/runner/work/_temp/pkgdown-python/envs/scprep_env
-#> Resolved 35 packages in 320ms
+#> Resolved 35 packages in 196ms
 #> Downloading pygsp (1.8MiB)
 #> Downloading pandas (11.7MiB)
 #>  Downloaded pygsp
 #>  Downloaded pandas
-#> Prepared 35 packages in 172ms
-#> Uninstalled 5 packages in 13ms
-#> Installed 35 packages in 47ms
+#> Prepared 35 packages in 195ms
+#> Uninstalled 5 packages in 16ms
+#> Installed 35 packages in 61ms
 #>  + cloudpickle==3.1.2
 #>  + contourpy==1.3.2
 #>  + cycler==0.12.1
@@ -966,10 +966,10 @@ panc8_sub <- RunIntegration(
 #>  + threadpoolctl==3.7.0
 #>  + tzdata==2026.6
 #>  + wrapt==2.5.2
-#> ✔ [2026-11-03 08:05:00] uv installation completed
+#> ✔ [2026-11-03 09:38:39] uv installation completed
 #> + /home/runner/work/_temp/pkgdown-python/envs/scprep_env/bin/python3.10 -m pip check
 #> No broken requirements found.
-#> ✔ [2026-11-03 08:05:02] Python environment ready
+#> ✔ [2026-11-03 09:38:41] Python environment ready
 #> ✔                       Until next loading, the environment will be cached
 #> Environment manager config:
 #>  Manager:       micromamba
@@ -979,18 +979,18 @@ panc8_sub <- RunIntegration(
 #>  python:        /home/runner/work/_temp/pkgdown-python/envs/scprep_env/bin/python3.10
 #>  version:       Python 3.10.1
 #> 
-#> ℹ [2026-11-03 08:05:13] Perform phate nonlinear dimension reduction using Seuratpca (1:50)
-#> ◌ [2026-11-03 08:05:16] Preparing python environment...
-#> ℹ [2026-11-03 08:05:16] Environment name: 'scprep_env' and python version: 3.10-1
-#> ℹ [2026-11-03 08:05:16] Auto-detecting conda-compatible environment manager...
-#> ℹ [2026-11-03 08:05:16] Using micromamba executable: '/home/runner/.cache/R/scop/micromamba/linux-64/bin/micromamba'
-#> ℹ [2026-11-03 08:05:16] Using existing environment: '/home/runner/work/_temp/pkgdown-python/envs/scprep_env'
-#> ℹ [2026-11-03 08:05:16] 14 requirements to check, 3 conda requirements and 11 pip requirements
-#> ℹ [2026-11-03 08:05:16] Checking 3 conda requirements
-#> ℹ [2026-11-03 08:05:17] Checking 12 requirements using uv
+#> ℹ [2026-11-03 09:38:53] Perform phate nonlinear dimension reduction using Seuratpca (1:50)
+#> ◌ [2026-11-03 09:38:56] Preparing python environment...
+#> ℹ [2026-11-03 09:38:56] Environment name: 'scprep_env' and python version: 3.10-1
+#> ℹ [2026-11-03 09:38:56] Auto-detecting conda-compatible environment manager...
+#> ℹ [2026-11-03 09:38:56] Using micromamba executable: '/home/runner/.cache/R/scop/micromamba/linux-64/bin/micromamba'
+#> ℹ [2026-11-03 09:38:56] Using existing environment: '/home/runner/work/_temp/pkgdown-python/envs/scprep_env'
+#> ℹ [2026-11-03 09:38:56] 14 requirements to check, 3 conda requirements and 11 pip requirements
+#> ℹ [2026-11-03 09:38:56] Checking 3 conda requirements
+#> ℹ [2026-11-03 09:38:57] Checking 12 requirements using uv
 #> + /home/runner/work/_temp/pkgdown-python/envs/scprep_env/bin/python3.10 -m pip check
 #> No broken requirements found.
-#> ✔ [2026-11-03 08:05:18] Python environment ready
+#> ✔ [2026-11-03 09:38:59] Python environment ready
 #> ✔                       Until next loading, the environment will be cached
 #> Environment manager config:
 #>  Manager:       micromamba
@@ -1000,16 +1000,16 @@ panc8_sub <- RunIntegration(
 #>  python:        /home/runner/work/_temp/pkgdown-python/envs/scprep_env/bin/python3.10
 #>  version:       Python 3.10.1
 #> 
-#> ℹ [2026-11-03 08:05:27] Perform pacmap nonlinear dimension reduction using Seuratpca (1:50)
-#> ℹ [2026-11-03 08:05:28] Perform pacmap nonlinear dimension reduction using Seuratpca (1:50)
-#> ℹ [2026-11-03 08:05:28] Perform trimap nonlinear dimension reduction using Seuratpca (1:50)
-#> ℹ [2026-11-03 08:05:28] Perform trimap nonlinear dimension reduction using Seuratpca (1:50)
-#> ℹ [2026-11-03 08:05:29] Perform largevis nonlinear dimension reduction using Seuratpca (1:50)
-#> ℹ [2026-11-03 08:05:39] Perform largevis nonlinear dimension reduction using Seuratpca (1:50)
-#> ℹ [2026-11-03 08:05:49] Perform fr nonlinear dimension reduction using Seurat_SNN
-#> ℹ [2026-11-03 08:05:49] Perform fr nonlinear dimension reduction using Seurat_SNN
-#> ℹ [2026-11-03 08:05:52] Perform umap nonlinear dimension reduction using Seuratpca (1:50)
-#> ✔ [2026-11-03 08:06:10] Seurat integration completed
+#> ℹ [2026-11-03 09:39:11] Perform pacmap nonlinear dimension reduction using Seuratpca (1:50)
+#> ℹ [2026-11-03 09:39:12] Perform pacmap nonlinear dimension reduction using Seuratpca (1:50)
+#> ℹ [2026-11-03 09:39:12] Perform trimap nonlinear dimension reduction using Seuratpca (1:50)
+#> ℹ [2026-11-03 09:39:13] Perform trimap nonlinear dimension reduction using Seuratpca (1:50)
+#> ℹ [2026-11-03 09:39:13] Perform largevis nonlinear dimension reduction using Seuratpca (1:50)
+#> ℹ [2026-11-03 09:39:22] Perform largevis nonlinear dimension reduction using Seuratpca (1:50)
+#> ℹ [2026-11-03 09:39:31] Perform fr nonlinear dimension reduction using Seurat_SNN
+#> ℹ [2026-11-03 09:39:31] Perform fr nonlinear dimension reduction using Seurat_SNN
+#> ℹ [2026-11-03 09:39:35] Perform umap nonlinear dimension reduction using Seuratpca (1:50)
+#> ✔ [2026-11-03 09:39:53] Seurat integration completed
 for (nr in nonlinear_reductions) {
   print(
     CellDimPlot(

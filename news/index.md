@@ -31,6 +31,18 @@
   original displacement/randomized controls and a standalone Linux/macOS
   Python environment profile.
 
+- Enrichment rank plots add a soft group-colored decorative contour
+  around point clouds and use lighter outlines for highlighted terms.
+  The contour does not represent uncertainty or change the displayed
+  enrichment scores. Separated point clouds are smoothed independently;
+  gaps and sparse segments are left unfilled.
+
+- [`EnrichmentMirrorPlot()`](https://mengxu98.github.io/scop/reference/EnrichmentMirrorPlot.md)
+  compares two saved group-wise enrichment rankings with mirrored bars,
+  full pathway labels, matching gene colors, adaptive axis extents,
+  rounded database bands and configurable group colors, text and
+  spacing.
+
 - `EnrichmentPlot(plot_type = "rank")` plots stored ORA terms by
   enrichment magnitude, with group colors, solid-point sizes, bold halo
   labels, `grid_major` reference grids, and zero-void panel bounds.

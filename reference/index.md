@@ -323,6 +323,8 @@
   : Perform the enrichment analysis (over-representation) on the genes
 - [`EnrichmentPlot()`](https://mengxu98.github.io/scop/reference/EnrichmentPlot.md)
   : Enrichment Plot
+- [`EnrichmentMirrorPlot()`](https://mengxu98.github.io/scop/reference/EnrichmentMirrorPlot.md)
+  : Mirror stored enrichment results for two groups
 - [`FerrisWheelPlot()`](https://mengxu98.github.io/scop/reference/FerrisWheelPlot.md)
   : Ferris Wheel Plot
 - [`RunGSEA()`](https://mengxu98.github.io/scop/reference/RunGSEA.md) :
