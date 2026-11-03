@@ -47,6 +47,9 @@
     resolves MACS2 from PATH and retains capture/group records after failure.
     Add an executable ATAC matrix quick start and complete the DAR motif recipe.
 
+  * Add annotated enrichment bars with rounded database bands, in-bar term labels,
+    matching hit-gene colors and significance opacity, Count dots and compact spacing.
+
   * Extend `FeatureDimPlot()` density, palette and title controls. Embedding plots
     default to `label_insitu = TRUE`; `FALSE` uses numbered labels. DE, volcano,
     Manhattan and ring plots accept standalone tables. Honor CNV palettes, SCENIC
