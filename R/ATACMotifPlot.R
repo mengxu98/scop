@@ -5,6 +5,7 @@
 #' @param use.names Use native motif names in plot labels.
 #' @param ... Arguments passed to Signac::MotifPlot and ggseqlogo.
 #' @return Native motif-logo plot. Motif similarity is not TF binding evidence.
+#' @details Requires the optional ggseqlogo package.
 #' @export
 ATACMotifPlot <- function(object, motifs, assay = NULL, use.names = TRUE, ...) {
   report <- CheckATACData(object, assay = assay)

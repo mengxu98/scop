@@ -4,23 +4,43 @@
 \alias{ATACTSSPlot}
 \title{Plot ATAC TSS enrichment profiles}
 \usage{
-ATACTSSPlot(object, assay = NULL, group.by = NULL, idents = NULL,
-  cells = NULL)
+ATACTSSPlot(object, assay = NULL, group.by = NULL, idents = NULL, cells = NULL)
 }
 \arguments{
 \item{object}{A Seurat object containing a ChromatinAssay.}
+
 \item{assay}{Name of the ChromatinAssay; defaults to the active assay.}
-\item{group.by}{One metadata grouping column, or NULL for identities.}
+
+\item{group.by}{One metadata column used for grouping, or NULL for identities.}
+
 \item{idents}{Group labels to retain, or NULL for all groups.}
+
 \item{cells}{Cell names in the selected assay; NULL uses all assay cells.}
 }
-\value{A ggplot object. The input object is not modified.}
-\description{Plot previously computed per-position TSS enrichment with Signac::TSSPlot. A scalar TSS enrichment score alone is insufficient.}
-\details{First calculate positional enrichment with \code{Signac::TSSEnrichment(..., fast = FALSE)} or \code{RunATACQC(..., tss.positions = tss, fast = FALSE)}. Explicit TSS positions force recalculation by RunATACQC even when imported scores exist. This function never silently recomputes enrichment or invents a curve from scalar scores. Only selected-assay cells are included. Signac 1.17 marks TSSPlot deprecated; the upstream lifecycle warning is retained.}
-\seealso{\code{\link{RunATACQC}}}
+\value{
+A ggplot object. The input object is not modified.
+}
+\description{
+Plot previously computed per-position TSS enrichment with
+\code{Signac::TSSPlot()}. A scalar TSS enrichment score alone is insufficient.
+}
+\details{
+First calculate positional enrichment with
+\code{Signac::TSSEnrichment(..., fast = FALSE)} or
+\code{RunATACQC(..., tss.positions = tss, fast = FALSE)}. Supplying explicit TSS
+positions to RunATACQC forces recalculation even if imported scores exist.
+Use TSS coordinates from the matching reference and recompute positional
+enrichment after changing reference coordinates or preprocessing.
+This function never silently recomputes enrichment or invents a curve from
+scalar scores. Only cells in the selected assay are included. Signac 1.17
+marks TSSPlot deprecated; any upstream lifecycle warning is retained.
+}
 \examples{
 \dontrun{
 object <- RunATACQC(object, tss.positions = tss, fast = FALSE)
 ATACTSSPlot(object, assay = "peaks", group.by = "celltype")
 }
+}
+\seealso{
+\code{\link[=RunATACQC]{RunATACQC()}}
 }

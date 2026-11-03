@@ -12,6 +12,8 @@
 #'   `Signac::TSSEnrichment(..., fast = FALSE)` or
 #'   `RunATACQC(..., tss.positions = tss, fast = FALSE)`. Supplying explicit TSS
 #'   positions to RunATACQC forces recalculation even if imported scores exist.
+#'   Use TSS coordinates from the matching reference and recompute positional
+#'   enrichment after changing reference coordinates or preprocessing.
 #'   This function never silently recomputes enrichment or invents a curve from
 #'   scalar scores. Only cells in the selected assay are included. Signac 1.17
 #'   marks TSSPlot deprecated; any upstream lifecycle warning is retained.

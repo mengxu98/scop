@@ -19,7 +19,8 @@
 #'   written into the object and no component is automatically excluded.
 #' @details All selected assay cells must occur in the reduction and have finite
 #'   depth and embedding values; missing cells are not silently dropped. Depth
-#'   must vary. Component numbers are signed correlations; SVD signs are arbitrary.
+#'   must vary across at least three cells. Component numbers are signed
+#'   correlations; SVD signs are arbitrary.
 #'   This diagnostic supports, but does not by itself determine, LSI selection.
 #' @seealso [RunATACQC()]
 #' @export

@@ -4,24 +4,53 @@
 \alias{ATACFragmentPlot}
 \title{Plot ATAC fragment lengths}
 \usage{
-ATACFragmentPlot(object, region, assay = NULL, group.by = NULL,
-  cells = NULL, log.scale = FALSE, ...)
+ATACFragmentPlot(
+  object,
+  region,
+  assay = NULL,
+  group.by = NULL,
+  cells = NULL,
+  log.scale = FALSE,
+  ...
+)
 }
 \arguments{
 \item{object}{A Seurat object containing a ChromatinAssay.}
-\item{region}{Genomic regions, as a GRanges or strings accepted by Signac. Required explicitly.}
+
+\item{region}{Genomic region(s), as a GRanges or strings accepted by Signac.
+Required explicitly to avoid silently assuming chromosome naming or genome.}
+
 \item{assay}{Name of the ChromatinAssay; defaults to the active assay.}
-\item{group.by}{One metadata grouping column, or NULL for identities.}
+
+\item{group.by}{One metadata column used for grouping, or NULL for identities.}
+
 \item{cells}{Cell names in the selected assay; NULL uses all assay cells.}
+
 \item{log.scale}{Whether to use a logarithmic count axis.}
-\item{...}{Additional arguments to Signac::FragmentHistogram.}
+
+\item{...}{Additional arguments to \code{Signac::FragmentHistogram()}.}
 }
-\value{A ggplot object. The input object is not modified.}
-\description{Plot fragment lengths in an explicitly selected genomic region using Signac::FragmentHistogram. This is a regional diagnostic, not a whole-library fragment-length estimate.}
-\details{Requires accessible indexed fragment files and explicit cell/barcode mappings. The native histogram counts fragment records, not column-five read multiplicities, and displays lengths between 0 and 800 bp by default. As in Signac, a fragment returned for several query intervals can contribute more than once; use a single region for an unambiguous regional histogram.}
-\seealso{\code{\link{RunATACQC}}}
+\value{
+A ggplot object. The input object is not modified.
+}
+\description{
+Plot fragment lengths in an explicitly selected genomic region
+using \code{Signac::FragmentHistogram()}. This is a regional diagnostic, not a
+whole-library fragment-length estimate.
+}
+\details{
+Requires local bgzip fragment files with a \code{.tbi} or \code{.csi} index
+and explicit cell/barcode mappings. The native histogram counts fragment
+records, not column-five read multiplicities, and displays lengths between
+0 and 800 bp by default.
+As in Signac, a fragment returned for several query intervals can contribute
+more than once; use a single region for an unambiguous regional histogram.
+}
 \examples{
 \dontrun{
 ATACFragmentPlot(object, region = "chr1-1-2000000", assay = "peaks")
 }
+}
+\seealso{
+\code{\link[=RunATACQC]{RunATACQC()}}
 }

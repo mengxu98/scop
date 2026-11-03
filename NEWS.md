@@ -10,6 +10,8 @@
 
 # scop (development version)
 
+* Removed the unused static `inst/guides/` ATAC notes; their content now lives in the function documentation.
+
 * Add fixed-width genome tile counting through the validated sparse ATAC recount workflow, with reference checks and tile provenance.
 * Add grouped ATAC region endpoint matrices, heatmaps and aggregate profiles with explicit strand, coordinate and normalization semantics.
 * Add `ATACDepthCorPlot()` for depth/component correlations using fresh count-layer totals by default.
