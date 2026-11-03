@@ -117,8 +117,46 @@ enrichment_rank_plot <- function(
     rgb_vals <- grDevices::col2rgb(color) / 255
     luminance <- 0.299 * rgb_vals[1] + 0.587 * rgb_vals[2] + 0.114 * rgb_vals[3]
     strip_text_color <- if (luminance < 0.65) "white" else "#0F172A"
+    outline_color <- grDevices::rgb(
+      0.55 * rgb_vals[1] + 0.45,
+      0.55 * rgb_vals[2] + 0.45,
+      0.55 * rgb_vals[3] + 0.45
+    )
 
-    p <- ggplot2::ggplot(z, ggplot2::aes(.data[[".rank"]], .data[[".score"]])) +
+    p <- ggplot2::ggplot(z, ggplot2::aes(.data[[".rank"]], .data[[".score"]]))
+    if (nrow(z) >= 4L) {
+      # Decorative envelope of the point cloud, not a fitted enrichment score
+      # or uncertainty interval. Original point coordinates remain unchanged.
+      sizes <- point_size[1] + diff(point_size) * sqrt(
+        (z$.significance - size_limits[1]) / diff(size_limits)
+      )
+      radius <- sizes * diff(panel_ylim) / 260
+      # Compare distances in normalized panel coordinates. Split before fitting
+      # so a spline cannot bridge a visibly empty interval between point clouds.
+      distance <- sqrt((diff(z$.rank) / (xmax + 0.1))^2 +
+        (diff(z$.score) / diff(panel_ylim))^2)
+      reach <- pmax(0.04, 1.5 * (head(sizes, -1) + tail(sizes, -1)) / 260)
+      segments <- split(seq_len(nrow(z)), cumsum(c(TRUE, distance > reach)))
+      for (idx in segments) {
+        if (length(idx) < 4L) next
+        xx <- seq(min(z$.rank[idx]), max(z$.rank[idx]), length.out = 400L)
+        upper <- stats::predict(stats::smooth.spline(z$.rank[idx], z$.score[idx] + radius[idx], spar = 0.35), xx)$y
+        lower <- stats::predict(stats::smooth.spline(z$.rank[idx], z$.score[idx] - radius[idx], spar = 0.35), xx)$y
+        mid <- (upper + lower) / 2
+        half <- pmax((upper - lower) / 2, min(radius[idx]))
+        # Nested translucent silhouettes soften the outer edge.
+        for (band in c(1.6, 1.3, 1)) {
+          contour <- data.frame(.x = xx, .lower = mid - half * band, .upper = mid + half * band)
+          p <- p + ggplot2::geom_ribbon(
+            data = contour,
+            ggplot2::aes(x = .data[[".x"]], ymin = .data[[".lower"]], ymax = .data[[".upper"]]),
+            inherit.aes = FALSE, fill = color, colour = NA,
+            alpha = point_alpha / 3, show.legend = FALSE
+          )
+        }
+      }
+    }
+    p <- p +
       ggplot2::geom_point(ggplot2::aes(size = .data[[".significance"]]),
         shape = 16, colour = color, alpha = point_alpha
       )
@@ -141,7 +179,7 @@ enrichment_rank_plot <- function(
         ) +
         ggplot2::geom_point(
           data = hi, ggplot2::aes(size = .data[[".significance"]]),
-          shape = 21, fill = color, colour = "#0F172A", stroke = 0.75
+          shape = 21, fill = color, colour = outline_color, stroke = 0.45
         )
     }
     p <- p +
@@ -151,7 +189,7 @@ enrichment_rank_plot <- function(
         range = point_size, limits = size_limits
       ) +
       ggplot2::guides(size = ggplot2::guide_legend(
-        override.aes = list(fill = "grey45", colour = "#0F172A", alpha = 1, shape = 21, stroke = 0.75)
+        override.aes = list(fill = "grey45", colour = "grey70", alpha = 1, shape = 21, stroke = 0.45)
       )) +
       ggplot2::scale_x_continuous(breaks = unique(round(seq(1, xmax, length.out = 4)))) +
       ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0.04, 0.06))) +

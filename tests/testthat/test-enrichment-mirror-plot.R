@@ -57,3 +57,25 @@ test_that("mirror reads the saved object key and permits custom result lists", {
   expect_equal(nrow(p$data), 12)
   expect_error(EnrichmentMirrorPlot(object, group.by = "wrong", group_use = c("A", "B")), "Missing saved")
 })
+
+
+test_that("mirror plots use finite display labels for missing descriptions", {
+  res <- mirror_fixture()
+  res$enrichment$Description[1:2] <- c(NA_character_, "  ")
+  original <- res
+  p <- EnrichmentMirrorPlot(res = res, group_use = c("A", "B"), db = "GO_BP")
+  expect_identical(res, original)
+  missing <- is.na(p$data$Description) | !nzchar(trimws(p$data$Description))
+  expect_equal(p$data$.term[missing], p$data$ID[missing])
+  expect_true(all(is.finite(p$scales$get_scales("x")$limits)))
+  expect_no_warning(ggplot2::ggplotGrob(p))
+})
+
+test_that("mirror default titles do not mislabel non-GO enrichment", {
+  res <- mirror_fixture()
+  res$enrichment$Database <- "custom"
+  p <- EnrichmentMirrorPlot(res = res, group_use = c("A", "B"), db = "custom")
+  expect_equal(p$labels$title, "A vs B | enrichment")
+  p <- EnrichmentMirrorPlot(res = res, group_use = c("A", "B"), db = "custom", title = "My comparison")
+  expect_equal(p$labels$title, "My comparison")
+})

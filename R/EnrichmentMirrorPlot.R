@@ -33,6 +33,8 @@
 #' Opposite rows need not represent the same pathway. Asymmetric axis extents
 #' include a character-count estimate of label width; large fonts or narrow exports
 #' may need additional space. No automatic font-size fitting is performed.
+#' Missing or blank descriptions use the term ID; if that is also missing or
+#' blank, the display label is `(unnamed term)`. Original rows are preserved.
 #' @seealso [RunEnrichment()], [EnrichmentPlot()]
 #' @export
 #' @examples
@@ -132,13 +134,17 @@ EnrichmentMirrorPlot <- function(
   xmax <- max(1, d$.score)
   d$.text_x <- d$.side * 0.018 * xmax
   d$.hjust <- ifelse(d$.side == -1, 1, 0)
-  left_span <- max(d$.score[d$.side == -1], 0.12 * max(nchar(d$Description[d$.side == -1])))
-  right_span <- max(d$.score[d$.side == 1], 0.12 * max(nchar(d$Description[d$.side == 1])))
+  # Resolve display-only labels before estimating their widths.
+  d$.term <- gsub("[\r\n]+", " ", as.character(d$Description))
+  missing_term <- is.na(d$.term) | !nzchar(trimws(d$.term))
+  d$.term[missing_term] <- as.character(d$ID[missing_term])
+  d$.term[is.na(d$.term) | !nzchar(trimws(d$.term))] <- "(unnamed term)"
+  left_span <- max(d$.score[d$.side == -1], 0.12 * max(nchar(d$.term[d$.side == -1])))
+  right_span <- max(d$.score[d$.side == 1], 0.12 * max(nchar(d$.term[d$.side == 1])))
   if (symmetric_axis) left_span <- right_span <- max(left_span, right_span)
   band_right <- -left_span - band_gap
   band_left <- band_right - 0.045 * xmax
   # Pathway names remain complete and black, even when longer than their bars.
-  d$.term <- gsub("[\r\n]+", " ", as.character(d$Description))
   d$.genes <- gsub("/", ", ", as.character(d$geneID), fixed = TRUE)
   d$.genes[is.na(d$.genes)] <- ""
   if (is.finite(gene_width)) {
@@ -158,7 +164,7 @@ EnrichmentMirrorPlot <- function(
           gp = grid::gpar(fill = "#EEF1F5", col = NA))
       }))
     })
-  if (is.null(title)) title <- paste(paste(group_use, collapse = " vs "), "| GO enrichment")
+  if (is.null(title)) title <- paste(paste(group_use, collapse = " vs "), "| enrichment")
   p <- ggplot2::ggplot(d) +
     ggplot2::layer(data = bands, mapping = ggplot2::aes(ymin = ymin, ymax = ymax),
       geom = RoundBand, stat = "identity", position = "identity", inherit.aes = FALSE,

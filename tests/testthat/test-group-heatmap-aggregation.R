@@ -38,3 +38,41 @@ test_that("GroupHeatmap custom aggregation retains the aggregate fallback", {
     group_heatmap_legacy_aggregate(mat, groups, stats::median)
   )
 })
+
+test_that("GroupHeatmap single-feature aggregation retains values and gene names", {
+  mat <- matrix(
+    c(1, 0, 4, 2),
+    nrow = 1,
+    dimnames = list("Rpsa", paste0("Cell", 1:4))
+  )
+  groups <- factor(c("B", "A", "B", "A"), levels = c("A", "B", "unused"))
+  names(groups) <- colnames(mat)
+
+  expect_identical(
+    group_heatmap_aggregate_matrix(mat, groups),
+    matrix(c(1, 2.5), nrow = 1, dimnames = list("Rpsa", c("A", "B")))
+  )
+  expect_identical(
+    group_heatmap_expression_fraction(mat, groups, exp_cutoff = 2),
+    matrix(c(0, 0.5), nrow = 1, dimnames = list("Rpsa", c("A", "B")))
+  )
+})
+
+test_that("GroupHeatmap single-feature aggregation supports one observed group", {
+  mat <- matrix(
+    c(1, 0, 4, 2),
+    nrow = 1,
+    dimnames = list("Rpsa", paste0("Cell", 1:4))
+  )
+  groups <- factor(rep("A", 4), levels = c("A", "unused"))
+  names(groups) <- colnames(mat)
+
+  expect_identical(
+    group_heatmap_aggregate_matrix(mat, groups),
+    matrix(1.75, nrow = 1, dimnames = list("Rpsa", "A"))
+  )
+  expect_identical(
+    group_heatmap_expression_fraction(mat, groups, exp_cutoff = 2),
+    matrix(0.25, nrow = 1, dimnames = list("Rpsa", "A"))
+  )
+})

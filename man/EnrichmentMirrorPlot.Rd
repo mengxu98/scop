@@ -88,6 +88,8 @@ Negative x positions denote the left group, not negative enrichment.
 Opposite rows need not represent the same pathway. Asymmetric axis extents
 include a character-count estimate of label width; large fonts or narrow exports
 may need additional space. No automatic font-size fitting is performed.
+Missing or blank descriptions use the term ID; if that is also missing or
+blank, the display label is \code{(unnamed term)}. Original rows are preserved.
 }
 \examples{
 tab <- data.frame(ID = c("a", "b"), Description = c("Process A", "Process B"),
