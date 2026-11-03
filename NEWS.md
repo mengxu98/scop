@@ -1,3 +1,7 @@
+# Development: ATAC coaccessibility
+
+- Add `RunATACCoaccessibility()` with explicit assay/reference contracts and focused native/backend tests.
+
 # Development: ATAC footprint
 
 - Add `RunATACFootprint()`, `ATACFootprintPlot()` with explicit assay/reference contracts and focused native/backend tests.
