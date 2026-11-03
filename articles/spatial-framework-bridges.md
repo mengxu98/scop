@@ -452,9 +452,9 @@ build_receipt <- data.frame(
 )
 build_receipt
 #>                     article               built_utc
-#> 1 spatial-framework-bridges 2026-11-03 07:00:18 UTC
+#> 1 spatial-framework-bridges 2026-11-03 08:31:09 UTC
 #>                            source_revision source_has_local_changes
-#> 1 b733e3ff393213290d6d898f7faeb488b537b396                    FALSE
+#> 1 5d38090bc0aa1779dfeaf13865dc307e2885a62c                    FALSE
 #>                        article_md5     R  scop retained_observations genes
 #> 1 f32a1d03fe7aebfd50780d0c15703cba 4.6.2 0.9.2                  1986  5000
 utils::write.csv(build_receipt, file.path(output_dir, "build-receipt.csv"), row.names = FALSE)

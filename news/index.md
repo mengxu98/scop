@@ -79,6 +79,10 @@
     executable ATAC matrix quick start and complete the DAR motif
     recipe.
 
+  - Add annotated enrichment bars with rounded database bands, in-bar
+    term labels, matching hit-gene colors and significance opacity,
+    Count dots and compact spacing.
+
   - Extend
     [`FeatureDimPlot()`](https://mengxu98.github.io/scop/reference/FeatureDimPlot.md)
     density, palette and title controls. Embedding plots default to

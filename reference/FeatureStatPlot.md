@@ -320,22 +320,22 @@ FeatureStatPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-11-03 05:55:18] Start standard processing workflow...
-#> ℹ [2026-11-03 05:55:18] Checking a list of <Seurat>...
-#> ! [2026-11-03 05:55:19] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-11-03 05:55:19] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-11-03 05:55:19] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-03 05:55:19] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-03 05:55:19] Number of available HVF: 2000
-#> ℹ [2026-11-03 05:55:19] Finished check
-#> ℹ [2026-11-03 05:55:19] Perform `ScaleData()`
-#> ℹ [2026-11-03 05:55:19] Perform pca linear dimension reduction
-#> ℹ [2026-11-03 05:55:19] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-11-03 05:55:20] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-03 05:55:20] Reorder clusters...
-#> ℹ [2026-11-03 05:55:20] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-03 05:55:20] Perform umap nonlinear dimension reduction
-#> ✔ [2026-11-03 05:55:28] Standard processing workflow completed
+#> ℹ [2026-11-03 07:35:19] Start standard processing workflow...
+#> ℹ [2026-11-03 07:35:19] Checking a list of <Seurat>...
+#> ! [2026-11-03 07:35:19] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-03 07:35:19] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-03 07:35:19] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-03 07:35:19] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-03 07:35:19] Number of available HVF: 2000
+#> ℹ [2026-11-03 07:35:19] Finished check
+#> ℹ [2026-11-03 07:35:19] Perform `ScaleData()`
+#> ℹ [2026-11-03 07:35:19] Perform pca linear dimension reduction
+#> ℹ [2026-11-03 07:35:19] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-11-03 07:35:20] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-03 07:35:20] Reorder clusters...
+#> ℹ [2026-11-03 07:35:20] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-03 07:35:20] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-03 07:35:27] Standard processing workflow completed
 FeatureStatPlot(
   pancreas_sub,
   stat.by = c("G2M_score", "Fev"),
@@ -427,8 +427,8 @@ FeatureStatPlot(
   group.by = "SubCellType",
   split.by = "Phase"
 )
-#> ! [2026-11-03 05:55:38] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
-#> ! [2026-11-03 05:55:38] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
+#> ! [2026-11-03 07:35:34] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
+#> ! [2026-11-03 07:35:34] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
 
 
 FeatureStatPlot(
@@ -439,8 +439,8 @@ FeatureStatPlot(
   add_box = TRUE,
   add_trend = TRUE
 )
-#> ! [2026-11-03 05:55:39] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
-#> ! [2026-11-03 05:55:39] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
+#> ! [2026-11-03 07:35:35] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
+#> ! [2026-11-03 07:35:35] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
 
 
 FeatureStatPlot(
@@ -450,10 +450,10 @@ FeatureStatPlot(
   split.by = "Phase",
   comparisons = TRUE
 )
-#> ! [2026-11-03 05:55:41] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
-#> ℹ [2026-11-03 05:55:41] Detected more than 2 groups. Use "kruskal.test" for comparison
-#> ! [2026-11-03 05:55:42] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
-#> ℹ [2026-11-03 05:55:42] Detected more than 2 groups. Use "kruskal.test" for comparison
+#> ! [2026-11-03 07:35:36] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
+#> ℹ [2026-11-03 07:35:36] Detected more than 2 groups. Use "kruskal.test" for comparison
+#> ! [2026-11-03 07:35:37] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
+#> ℹ [2026-11-03 07:35:37] Detected more than 2 groups. Use "kruskal.test" for comparison
 
 
 FeatureStatPlot(
@@ -517,10 +517,10 @@ FeatureStatPlot(
   comparisons = TRUE,
   y.max = 5
 )
-#> ! [2026-11-03 05:55:50] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
-#> ℹ [2026-11-03 05:55:50] Detected more than 2 groups. Use "kruskal.test" for comparison
-#> ! [2026-11-03 05:55:50] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
-#> ℹ [2026-11-03 05:55:50] Detected more than 2 groups. Use "kruskal.test" for comparison
+#> ! [2026-11-03 07:35:43] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
+#> ℹ [2026-11-03 07:35:43] Detected more than 2 groups. Use "kruskal.test" for comparison
+#> ! [2026-11-03 07:35:43] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
+#> ℹ [2026-11-03 07:35:43] Detected more than 2 groups. Use "kruskal.test" for comparison
 
 
 FeatureStatPlot(
@@ -591,7 +591,7 @@ FeatureStatPlot(
   group.by = "CellType",
   plot.by = "feature"
 )
-#> ℹ [2026-11-03 05:56:04] Setting `group.by` to "Features" as `plot.by` is set to "feature"
+#> ℹ [2026-11-03 07:35:52] Setting `group.by` to "Features" as `plot.by` is set to "feature"
 
 
 FeatureStatPlot(
@@ -603,7 +603,7 @@ FeatureStatPlot(
   sig_label = "p.format",
   sig_labelsize = 4
 )
-#> ℹ [2026-11-03 05:56:05] Setting `group.by` to "Features" as `plot.by` is set to "feature"
+#> ℹ [2026-11-03 07:35:53] Setting `group.by` to "Features" as `plot.by` is set to "feature"
 
 
 FeatureStatPlot(
@@ -617,7 +617,7 @@ FeatureStatPlot(
   ),
   stack = TRUE
 )
-#> ℹ [2026-11-03 05:56:09] Setting `group.by` to "Features" as `plot.by` is set to "feature"
+#> ℹ [2026-11-03 07:35:55] Setting `group.by` to "Features" as `plot.by` is set to "feature"
 
 
 FeatureStatPlot(pancreas_sub,
@@ -637,7 +637,7 @@ FeatureStatPlot(pancreas_sub,
   plot.by = "feature",
   stack = TRUE
 )
-#> ℹ [2026-11-03 05:56:12] Setting `group.by` to "Features" as `plot.by` is set to "feature"
+#> ℹ [2026-11-03 07:35:58] Setting `group.by` to "Features" as `plot.by` is set to "feature"
 
 
 data <- GetAssayData5(
