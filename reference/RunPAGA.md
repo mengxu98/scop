@@ -239,22 +239,22 @@ RunPAGA(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-11-03 09:43:04] Start standard processing workflow...
-#> ℹ [2026-11-03 09:43:04] Checking a list of <Seurat>...
-#> ! [2026-11-03 09:43:04] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-11-03 09:43:04] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-11-03 09:43:04] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-03 09:43:04] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-03 09:43:04] Number of available HVF: 2000
-#> ℹ [2026-11-03 09:43:04] Finished check
-#> ℹ [2026-11-03 09:43:04] Perform `ScaleData()`
-#> ℹ [2026-11-03 09:43:04] Perform pca linear dimension reduction
-#> ℹ [2026-11-03 09:43:05] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-11-03 09:43:05] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-03 09:43:05] Reorder clusters...
-#> ℹ [2026-11-03 09:43:05] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-03 09:43:05] Perform umap nonlinear dimension reduction
-#> ✔ [2026-11-03 09:43:14] Standard processing workflow completed
+#> ℹ [2026-11-04 14:08:14] Start standard processing workflow...
+#> ℹ [2026-11-04 14:08:14] Checking a list of <Seurat>...
+#> ! [2026-11-04 14:08:14] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-04 14:08:14] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-04 14:08:14] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-04 14:08:14] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-04 14:08:14] Number of available HVF: 2000
+#> ℹ [2026-11-04 14:08:14] Finished check
+#> ℹ [2026-11-04 14:08:14] Perform `ScaleData()`
+#> ℹ [2026-11-04 14:08:14] Perform pca linear dimension reduction
+#> ℹ [2026-11-04 14:08:15] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-11-04 14:08:15] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-04 14:08:15] Reorder clusters...
+#> ℹ [2026-11-04 14:08:15] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-04 14:08:15] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-04 14:08:24] Standard processing workflow completed
 pancreas_sub <- RunPAGA(
   pancreas_sub,
   assay_x = "RNA",
@@ -263,8 +263,8 @@ pancreas_sub <- RunPAGA(
   nonlinear_reduction = "UMAP",
   backend = "cpp"
 )
-#> ℹ [2026-11-03 09:43:14] Running PAGA with BiocNeighbors using 29 neighbors
-#> ✔ [2026-11-03 09:43:14] PAGA cpp backend completed
+#> ℹ [2026-11-04 14:08:24] Running PAGA with BiocNeighbors using 29 neighbors
+#> ✔ [2026-11-04 14:08:24] PAGA cpp backend completed
 PAGAPlot(pancreas_sub, reduction = "UMAP")
 
 

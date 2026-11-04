@@ -511,36 +511,36 @@ A list with the following elements:
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-11-03 08:51:25] Start standard processing workflow...
-#> ℹ [2026-11-03 08:51:25] Checking a list of <Seurat>...
-#> ! [2026-11-03 08:51:25] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-04 13:16:25] Start standard processing workflow...
+#> ℹ [2026-11-04 13:16:25] Checking a list of <Seurat>...
+#> ! [2026-11-04 13:16:25] Data 1/1 of the `srt_list` is "unknown"
 #> Warning: Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-11-03 08:51:25] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-11-03 08:51:25] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-03 08:51:25] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-03 08:51:25] Number of available HVF: 2000
-#> ℹ [2026-11-03 08:51:25] Finished check
-#> ℹ [2026-11-03 08:51:25] Perform `ScaleData()`
-#> ℹ [2026-11-03 08:51:25] Perform pca linear dimension reduction
-#> ℹ [2026-11-03 08:51:26] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-11-03 08:51:26] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-03 08:51:26] Reorder clusters...
-#> ℹ [2026-11-03 08:51:26] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-03 08:51:26] Perform umap nonlinear dimension reduction
-#> ✔ [2026-11-03 08:51:31] Standard processing workflow completed
+#> ℹ [2026-11-04 13:16:25] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-04 13:16:25] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-04 13:16:25] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-04 13:16:25] Number of available HVF: 2000
+#> ℹ [2026-11-04 13:16:25] Finished check
+#> ℹ [2026-11-04 13:16:25] Perform `ScaleData()`
+#> ℹ [2026-11-04 13:16:25] Perform pca linear dimension reduction
+#> ℹ [2026-11-04 13:16:26] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-11-04 13:16:26] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-04 13:16:26] Reorder clusters...
+#> ℹ [2026-11-04 13:16:26] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-04 13:16:26] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-04 13:16:32] Standard processing workflow completed
 ht1 <- CellCorHeatmap(
   srt_query = pancreas_sub,
   query_group = "SubCellType"
 )
-#> ℹ [2026-11-03 08:51:31] Use the HVF to calculate distance metric
-#> ℹ [2026-11-03 08:51:31] Use [1] 2000 features to calculate distance.
+#> ℹ [2026-11-04 13:16:32] Use the HVF to calculate distance metric
+#> ℹ [2026-11-04 13:16:32] Use [1] 2000 features to calculate distance.
 #> As of Seurat v5, we recommend using AggregateExpression to perform pseudo-bulk analysis.
 #> This message is displayed once per session.
-#> ℹ [2026-11-03 08:51:32] Detected query data type: "log_normalized_counts"
-#> ℹ [2026-11-03 08:51:32] Detected reference data type: "log_normalized_counts"
-#> ℹ [2026-11-03 08:51:32] Calculate similarity...
-#> ℹ [2026-11-03 08:51:32] Use raw method to find neighbors
-#> ℹ [2026-11-03 08:51:32] Predict cell type...
+#> ℹ [2026-11-04 13:16:32] Detected query data type: "log_normalized_counts"
+#> ℹ [2026-11-04 13:16:32] Detected reference data type: "log_normalized_counts"
+#> ℹ [2026-11-04 13:16:32] Calculate similarity...
+#> ℹ [2026-11-04 13:16:32] Use raw method to find neighbors
+#> ℹ [2026-11-04 13:16:32] Predict cell type...
 ht1$plot
 
 
@@ -557,25 +557,25 @@ panc8_sub <- RenameFeatures(
   panc8_sub,
   newnames = genenames
 )
-#> ℹ [2026-11-03 08:51:32] Rename features for the assay: RNA
+#> ℹ [2026-11-04 13:16:33] Rename features for the assay: RNA
 panc8_sub <- RunStandardWorkflow(panc8_sub)
-#> ℹ [2026-11-03 08:51:32] Start standard processing workflow...
-#> ℹ [2026-11-03 08:51:32] Checking a list of <Seurat>...
-#> ! [2026-11-03 08:51:33] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-04 13:16:33] Start standard processing workflow...
+#> ℹ [2026-11-04 13:16:33] Checking a list of <Seurat>...
+#> ! [2026-11-04 13:16:33] Data 1/1 of the `srt_list` is "unknown"
 #> Warning: Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-11-03 08:51:33] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-11-03 08:51:33] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-03 08:51:33] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-03 08:51:33] Number of available HVF: 2000
-#> ℹ [2026-11-03 08:51:33] Finished check
-#> ℹ [2026-11-03 08:51:33] Perform `ScaleData()`
-#> ℹ [2026-11-03 08:51:33] Perform pca linear dimension reduction
-#> ℹ [2026-11-03 08:51:34] Use stored estimated dimensions 1:26 for Standardpca
-#> ℹ [2026-11-03 08:51:34] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-03 08:51:35] Reorder clusters...
-#> ℹ [2026-11-03 08:51:35] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-03 08:51:35] Perform umap nonlinear dimension reduction
-#> ✔ [2026-11-03 08:51:41] Standard processing workflow completed
+#> ℹ [2026-11-04 13:16:33] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-04 13:16:33] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-04 13:16:33] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-04 13:16:33] Number of available HVF: 2000
+#> ℹ [2026-11-04 13:16:34] Finished check
+#> ℹ [2026-11-04 13:16:34] Perform `ScaleData()`
+#> ℹ [2026-11-04 13:16:34] Perform pca linear dimension reduction
+#> ℹ [2026-11-04 13:16:34] Use stored estimated dimensions 1:26 for Standardpca
+#> ℹ [2026-11-04 13:16:35] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-04 13:16:35] Reorder clusters...
+#> ℹ [2026-11-04 13:16:35] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-04 13:16:35] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-04 13:16:41] Standard processing workflow completed
 
 ht2 <- CellCorHeatmap(
   srt_query = pancreas_sub,
@@ -589,13 +589,13 @@ ht2 <- CellCorHeatmap(
   ref_annotation = "tech",
   ref_annotation_palette = "Set3"
 )
-#> ℹ [2026-11-03 08:51:41] Use the HVF to calculate distance metric
-#> ℹ [2026-11-03 08:51:41] Use [1] 374 features to calculate distance.
-#> ℹ [2026-11-03 08:51:42] Detected query data type: "log_normalized_counts"
-#> ℹ [2026-11-03 08:51:42] Detected reference data type: "log_normalized_counts"
-#> ℹ [2026-11-03 08:51:42] Calculate similarity...
-#> ℹ [2026-11-03 08:51:42] Use raw method to find neighbors
-#> ℹ [2026-11-03 08:51:42] Predict cell type...
+#> ℹ [2026-11-04 13:16:41] Use the HVF to calculate distance metric
+#> ℹ [2026-11-04 13:16:41] Use [1] 374 features to calculate distance.
+#> ℹ [2026-11-04 13:16:41] Detected query data type: "log_normalized_counts"
+#> ℹ [2026-11-04 13:16:41] Detected reference data type: "log_normalized_counts"
+#> ℹ [2026-11-04 13:16:41] Calculate similarity...
+#> ℹ [2026-11-04 13:16:41] Use raw method to find neighbors
+#> ℹ [2026-11-04 13:16:41] Predict cell type...
 ht2$plot
 
 
@@ -609,13 +609,13 @@ ht3 <- CellCorHeatmap(
   ref_collapsing = FALSE,
   cluster_columns = TRUE
 )
-#> ℹ [2026-11-03 08:51:46] Use the HVF to calculate distance metric
-#> ℹ [2026-11-03 08:51:46] Use [1] 374 features to calculate distance.
-#> ℹ [2026-11-03 08:51:46] Detected query data type: "log_normalized_counts"
-#> ℹ [2026-11-03 08:51:46] Detected reference data type: "log_normalized_counts"
-#> ℹ [2026-11-03 08:51:46] Calculate similarity...
-#> ℹ [2026-11-03 08:51:46] Use raw method to find neighbors
-#> ℹ [2026-11-03 08:51:46] Predict cell type...
+#> ℹ [2026-11-04 13:16:46] Use the HVF to calculate distance metric
+#> ℹ [2026-11-04 13:16:46] Use [1] 374 features to calculate distance.
+#> ℹ [2026-11-04 13:16:46] Detected query data type: "log_normalized_counts"
+#> ℹ [2026-11-04 13:16:46] Detected reference data type: "log_normalized_counts"
+#> ℹ [2026-11-04 13:16:46] Calculate similarity...
+#> ℹ [2026-11-04 13:16:46] Use raw method to find neighbors
+#> ℹ [2026-11-04 13:16:46] Predict cell type...
 ht3$plot
 
 
@@ -633,22 +633,22 @@ ht4 <- CellCorHeatmap(
     "Sox9", "Rbp4", "Gcg", "Nap1l2", "Xist"
   )
 )
-#> ℹ [2026-11-03 08:51:57] Use the HVF to calculate distance metric
-#> ℹ [2026-11-03 08:51:58] Use [1] 374 features to calculate distance.
-#> ℹ [2026-11-03 08:51:58] Detected query data type: "log_normalized_counts"
-#> ℹ [2026-11-03 08:51:58] Detected reference data type: "log_normalized_counts"
-#> ℹ [2026-11-03 08:51:58] Calculate similarity...
-#> ℹ [2026-11-03 08:51:58] Use raw method to find neighbors
-#> ℹ [2026-11-03 08:51:58] Predict cell type...
-#> ! [2026-11-03 08:52:01] Removed 1 group with < 2 observations for violin plot: "sp--gp-schwann"
+#> ℹ [2026-11-04 13:16:58] Use the HVF to calculate distance metric
+#> ℹ [2026-11-04 13:16:58] Use [1] 374 features to calculate distance.
+#> ℹ [2026-11-04 13:16:58] Detected query data type: "log_normalized_counts"
+#> ℹ [2026-11-04 13:16:58] Detected reference data type: "log_normalized_counts"
+#> ℹ [2026-11-04 13:16:58] Calculate similarity...
+#> ℹ [2026-11-04 13:16:58] Use raw method to find neighbors
+#> ℹ [2026-11-04 13:16:59] Predict cell type...
+#> ! [2026-11-04 13:17:01] Removed 1 group with < 2 observations for violin plot: "sp--gp-schwann"
 #> Warning: Removed 1 group with < 2 observations for violin plot: "sp--gp-schwann"
-#> ! [2026-11-03 08:52:01] Removed 1 group with < 2 observations for violin plot: "sp--gp-schwann"
+#> ! [2026-11-04 13:17:02] Removed 1 group with < 2 observations for violin plot: "sp--gp-schwann"
 #> Warning: Removed 1 group with < 2 observations for violin plot: "sp--gp-schwann"
-#> ! [2026-11-03 08:52:02] Removed 1 group with < 2 observations for violin plot: "sp--gp-schwann"
+#> ! [2026-11-04 13:17:03] Removed 1 group with < 2 observations for violin plot: "sp--gp-schwann"
 #> Warning: Removed 1 group with < 2 observations for violin plot: "sp--gp-schwann"
-#> ! [2026-11-03 08:52:03] Removed 1 group with < 2 observations for violin plot: "sp--gp-schwann"
+#> ! [2026-11-04 13:17:03] Removed 1 group with < 2 observations for violin plot: "sp--gp-schwann"
 #> Warning: Removed 1 group with < 2 observations for violin plot: "sp--gp-schwann"
-#> ! [2026-11-03 08:52:04] Removed 1 group with < 2 observations for violin plot: "sp--gp-schwann"
+#> ! [2026-11-04 13:17:04] Removed 1 group with < 2 observations for violin plot: "sp--gp-schwann"
 #> Warning: Removed 1 group with < 2 observations for violin plot: "sp--gp-schwann"
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's colour values.

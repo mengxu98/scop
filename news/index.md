@@ -2,6 +2,11 @@
 
 ## scop (development version)
 
+- **fix**:
+  [`RunMonocle2()`](https://mengxu98.github.io/scop/reference/RunMonocle2.md)
+  forwards `verbose` to Monocle dimensionality reduction so DDRTree
+  progress follows the requested verbosity.
+
 - Add fixed-width genome tile counting through the validated sparse ATAC
   recount workflow, with reference checks and tile provenance.
 

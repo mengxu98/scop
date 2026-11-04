@@ -70,7 +70,8 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="scop-development-version">scop (development version)<a class="anchor" aria-label="anchor" href="#scop-development-version"></a></h2>
-<ul><li><p>Add fixed-width genome tile counting through the validated sparse ATAC recount workflow, with reference checks and tile provenance.</p></li>
+<ul><li><p><strong>fix</strong>: <code><a href="../reference/RunMonocle2.html">RunMonocle2()</a></code> forwards <code>verbose</code> to Monocle dimensionality reduction so DDRTree progress follows the requested verbosity.</p></li>
+<li><p>Add fixed-width genome tile counting through the validated sparse ATAC recount workflow, with reference checks and tile provenance.</p></li>
 <li><p>Add grouped ATAC region endpoint matrices, heatmaps and aggregate profiles with explicit strand, coordinate and normalization semantics.</p></li>
 <li><p>Add <code><a href="../reference/ATACDepthCorPlot.html">ATACDepthCorPlot()</a></code> for depth/component correlations using fresh count-layer totals by default.</p></li>
 <li><p>Add <code><a href="../reference/ATACTSSPlot.html">ATACTSSPlot()</a></code> for precomputed positional TSS enrichment profiles with assay-cell alignment.</p></li>
