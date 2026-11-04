@@ -189,6 +189,14 @@ List gniplr_cpp(
   std::vector<int> targets;
   std::vector<double> pvalues;
   std::vector<double> importance;
+  const std::size_t reserve_edges = std::min(
+    static_cast<std::size_t>(gene_num) * static_cast<std::size_t>(gene_num),
+    static_cast<std::size_t>(gene_num) * 64U
+  );
+  regulators.reserve(reserve_edges);
+  targets.reserve(reserve_edges);
+  pvalues.reserve(reserve_edges);
+  importance.reserve(reserve_edges);
   for (int i = 0; i < gene_num; ++i) {
     double mpmax = 0.0;
     for (int j = 0; j < gene_num; ++j) {

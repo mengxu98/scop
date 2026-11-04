@@ -136,11 +136,7 @@ RunGNIPLR.default <- function(
       check.names = FALSE
     ))
   }
-  expr <- if (inherits(object, "Matrix")) {
-    as.matrix(object)
-  } else {
-    as.matrix(object)
-  }
+  expr <- if (is.matrix(object)) object else as.matrix(object)
   if (identical(genes_in, "columns")) {
     expr <- t(expr)
   }

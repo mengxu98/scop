@@ -1402,15 +1402,20 @@ preparedb_irea_reference <- function(directory, db, species, update, verbose = T
   old_timeout <- getOption("timeout")
   options(timeout = max(600, old_timeout))
   on.exit(options(timeout = old_timeout), add = TRUE)
-  for (path in paths) {
+  new_rows <- vector("list", length(paths))
+  touched <- character(length(paths))
+  for (i in seq_along(paths)) {
+    path <- paths[[i]]
     filenames <- c(path, gsub("/", "_", path, fixed = TRUE))
     candidates <- c(file.path(directory, db, filenames), file.path(directory, filenames))
     existing <- candidates[file.exists(candidates)]
     target <- if (length(existing)) existing[[1]] else candidates[[4]]
     relative <- substring(target, nchar(directory) + 2L)
+    touched[[i]] <- relative
     prior <- manifest[manifest$file == relative, , drop = FALSE]
+    target_md5 <- if (file.exists(target)) unname(tools::md5sum(target)) else NA_character_
     if (!update && file.exists(target) && nrow(prior) &&
-      !identical(unname(tools::md5sum(target)), prior$checksum_md5)) {
+      !identical(target_md5, prior$checksum_md5)) {
       log_message("IREA cache checksum mismatch: ", relative, "; use db_update = TRUE to refresh.", message_type = "error")
     }
     url <- paste0("https://www.immune-dictionary.org/static/", path)
@@ -1423,14 +1428,16 @@ preparedb_irea_reference <- function(directory, db, species, update, verbose = T
         log_message("Failed to cache IREA reference: ", path, message_type = "error")
       }
       unlink(temporary)
+      target_md5 <- unname(tools::md5sum(target))
     }
-    manifest <- manifest[manifest$file != relative, , drop = FALSE]
-    manifest <- rbind(manifest, data.frame(
+    new_rows[[i]] <- data.frame(
       source_url = url, file = relative,
-      bytes = unname(file.info(target)$size), checksum_md5 = unname(tools::md5sum(target)),
+      bytes = unname(file.info(target)$size), checksum_md5 = target_md5,
       checked_at = as.character(Sys.time())
-    ))
+    )
   }
+  manifest <- manifest[!(manifest$file %in% touched), , drop = FALSE]
+  manifest <- rbind(manifest, do.call(rbind, new_rows))
   reference <- preparedb_read_irea(directory, db, species)
   utils::write.csv(manifest, manifest_path, row.names = FALSE)
   reference

@@ -764,7 +764,16 @@ benchmark_child_entry <- function(
   }
   srt <- readRDS(input_path)
   file.create(ready_path)
-  while (!file.exists(go_path)) Sys.sleep(0.01)
+  go_deadline <- proc.time()[["elapsed"]] + getOption("scop_benchmark_go_timeout", 600)
+  while (!file.exists(go_path)) {
+    if (proc.time()[["elapsed"]] > go_deadline) {
+      thisutils::log_message(
+        "Timed out waiting for the benchmark start signal",
+        message_type = "error"
+      )
+    }
+    Sys.sleep(0.05)
+  }
   set.seed(seed)
   start <- proc.time()[["elapsed"]]
   param_string <- get(

@@ -132,18 +132,23 @@ def RunGNIPLR(
         pvals = [p for p in pvals if np.isfinite(p)]
         return min(pvals) if pvals else 1.0
 
+    target_mask = np.fromiter(
+        (gene in target_set for gene in genes), dtype=bool, count=gene_num
+    )
+    all_genes = np.arange(gene_num)
     for i in range(gene_num):
-        row = pear[i].copy()
-        row = np.delete(row, i)
-        mpmax = np.max(np.abs(row)) if row.size else 0.0
+        abs_row = np.abs(pear[i])
+        mpmax = max(
+            float(abs_row[:i].max()) if i else 0.0,
+            float(abs_row[i + 1:].max()) if i + 1 < gene_num else 0.0,
+        )
         if mpmax <= 0:
             continue
-        for j in range(gene_num):
-            if i == j or genes[j] not in target_set:
-                continue
-            corr = pear[i, j]
-            if abs(corr) < mpmax * float(correlation_threshold):
-                continue
+        cutoff = mpmax * float(correlation_threshold)
+        candidates = np.flatnonzero(
+            (np.abs(pear[i]) >= cutoff) & target_mask & (all_genes != i)
+        )
+        for j in candidates:
             gene1, gene2 = lasso_regress(aa[i, :], aa[j, :])
             if np.array_equal(gene1, gene2):
                 continue
