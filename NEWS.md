@@ -10,6 +10,8 @@
 
 # scop (development version)
 
+* **fix**: `RunMonocle2()` forwards `verbose` to Monocle dimensionality reduction so DDRTree progress follows the requested verbosity.
+
 * Add fixed-width genome tile counting through the validated sparse ATAC recount workflow, with reference checks and tile provenance.
 * Add grouped ATAC region endpoint matrices, heatmaps and aggregate profiles with explicit strand, coordinate and normalization semantics.
 * Add `ATACDepthCorPlot()` for depth/component correlations using fresh count-layer totals by default.
