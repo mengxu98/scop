@@ -18,7 +18,8 @@
 #' `scop_footprints` receipt in assay Misc. Input counts, cells and default assay
 #' are preserved. At least two assay cells are required. A receipt is a snapshot; recalculate after changing cells,
 #' peaks, fragments or reference.
-#' @details Bias is recalculated using the explicit region, never silently
+#' @details Requires indexed local fragment files with complete cell/barcode
+#' mappings. Bias is recalculated using the explicit region, never silently
 #' reused from another reference. Native estimation errors are preserved.
 #' Footprints summarize Tn5 insertion patterns, not proven TF binding or
 #' causality. Factors sharing a motif cannot be distinguished by this analysis.
