@@ -27,8 +27,9 @@
 #' errors. A successful zero-byte narrowPeak file is a valid empty peak set;
 #' this is distinct from a failed call. No matrix or existing result is changed.
 #' `receipt.rds` and `groups.rds` are written before splitting/calling, and
-#' `commands.rds` is updated after each process exits. These retain selected
-#' cells, capture/group membership and resources for diagnosing failed calls.
+#' `commands.rds` plus the final `receipt.rds` are persisted once when the
+#' function exits (including on error). These retain selected cells,
+#' capture/group membership and resources for diagnosing failed calls.
 #' Combine the returned sets with [CombineATACPeaks()] and recount the resulting
 #' ranges with [RecountATAC()] before comparing previously different universes.
 #' Signac's splitting API is reused. The process is invoked directly so its
@@ -134,6 +135,12 @@ CallATACPeaks <- function(object, sample.by, group.by = NULL, cells = NULL,
     outdir = splitdir, append = TRUE, verbose = verbose
   )
   peaks <- commands <- stats::setNames(vector("list", length(ids)), ids)
+  on.exit({
+    saveRDS(commands, file.path(outdir, "commands.rds"))
+    state <- receipt
+    state$commands <- commands
+    saveRDS(state, file.path(outdir, "receipt.rds"))
+  }, add = TRUE)
   for (id in ids) {
     bed <- file.path(splitdir, paste0(id, ".bed"))
     if (!file.exists(bed) || file.info(bed)$size == 0) {
@@ -151,12 +158,10 @@ CallATACPeaks <- function(object, sample.by, group.by = NULL, cells = NULL,
       executable = macs2.path, arguments = args,
       status = status, log = log, output = output
     )
-    saveRDS(commands, file.path(outdir, "commands.rds"))
-    receipt$commands <- commands
-    saveRDS(receipt, file.path(outdir, "receipt.rds"))
     if (status != 0L) log_message("{paste0('MACS2 failed for ', id, ' (exit ', status, '). See ', log)}", message_type = "error")
     peaks[[id]] <- atac_read_narrowpeaks(output, report$genome)
   }
+  receipt$commands <- commands
   result <- list(peaks = peaks, groups = groups, receipt = receipt)
   saveRDS(result, file.path(outdir, "peak_calls.rds"))
   result

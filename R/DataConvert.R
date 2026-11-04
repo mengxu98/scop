@@ -1457,11 +1457,12 @@ loom_read_matrix_sparse <- function(
     )
   }
 
-  triplet_i <- integer(0)
-  triplet_j <- integer(0)
-  triplet_x <- numeric(0)
   feature_starts <- seq.int(1L, n_features, by = chunk_rows)
-  for (start in feature_starts) {
+  triplet_i <- vector("list", length(feature_starts))
+  triplet_j <- vector("list", length(feature_starts))
+  triplet_x <- vector("list", length(feature_starts))
+  for (chunk in seq_along(feature_starts)) {
+    start <- feature_starts[[chunk]]
     end <- min(start + chunk_rows - 1L, n_features)
     if (identical(orientation, "features_by_cells")) {
       block <- rhdf5::h5read(
@@ -1494,10 +1495,14 @@ loom_read_matrix_sparse <- function(
       next
     }
     summary_block <- Matrix::summary(sparse_block)
-    triplet_i <- c(triplet_i, as.integer(summary_block[["i"]]) + start - 1L)
-    triplet_j <- c(triplet_j, as.integer(summary_block[["j"]]))
-    triplet_x <- c(triplet_x, as.numeric(summary_block[["x"]]))
+    triplet_i[[chunk]] <- as.integer(summary_block[["i"]]) + start - 1L
+    triplet_j[[chunk]] <- as.integer(summary_block[["j"]])
+    triplet_x[[chunk]] <- as.numeric(summary_block[["x"]])
   }
+
+  triplet_i <- as.integer(unlist(triplet_i, use.names = FALSE))
+  triplet_j <- as.integer(unlist(triplet_j, use.names = FALSE))
+  triplet_x <- as.numeric(unlist(triplet_x, use.names = FALSE))
 
   mat <- Matrix::sparseMatrix(
     i = triplet_i,

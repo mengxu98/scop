@@ -76,7 +76,6 @@ PrepareCCCDB <- function(
               verbose = verbose
             )
             db_loaded <- R.cache::loadCache(pathname = pathname)
-            Sys.sleep(0.5)
             db_list[[sps]][[term]] <- db_loaded
           }
         }

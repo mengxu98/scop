@@ -81,6 +81,10 @@ def _custom_lr(adata: anndata.AnnData, path: Path, min_cell: int) -> None:
     if not required.issubset(table.columns) or table.empty:
         raise ValueError("custom LR table requires ligand, receptor and annotation columns")
     genes = set(adata.var_names.astype(str))
+    detected_by_gene = pd.Series(
+        np.asarray((adata.X > 0).sum(axis=0)).ravel(),
+        index=adata.var_names.astype(str),
+    ).groupby(level=0).sum().to_dict()
 
     def components(value: str) -> list[str]:
         return [item.strip() for item in str(value).replace(",", ";").split(";") if item.strip()]
@@ -93,7 +97,7 @@ def _custom_lr(adata: anndata.AnnData, path: Path, min_cell: int) -> None:
         receptor = [gene for gene in components(row["receptor"]) if gene in genes]
         if not ligand or not receptor:
             continue
-        if any(np.asarray((adata[:, gene].X > 0).sum()).item() < min_cell for gene in ligand + receptor):
+        if any(detected_by_gene.get(gene, 0) < min_cell for gene in ligand + receptor):
             continue
         interaction = str(row.get("interaction", "")) or "_".join(ligand + receptor)
         rows.append({

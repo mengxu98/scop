@@ -558,7 +558,11 @@ phate_native_affinity <- function(data, k, decay, metric) {
     log_message("Unsupported native PHATE distance {.val {metric}}", message_type = "error")
   }
   diag(distance) <- Inf
-  idx <- t(apply(distance, 1L, order))[, seq_len(k), drop = FALSE]
+  idx <- t(vapply(
+    seq_len(nrow(distance)),
+    function(i) as.integer(order(distance[i, ])[seq_len(k)]),
+    integer(k)
+  ))
   d <- matrix(distance[cbind(rep(seq_len(nrow(data)), each = k), as.vector(t(idx)))],
     nrow = nrow(data), byrow = TRUE
   )
