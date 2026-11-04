@@ -1142,8 +1142,14 @@ run_cellrank_cpp <- function(
     T_mat <- combined$transition
     if (isTRUE(combined$combined)) kernel_used <- "pseudotime_connectivity_combined"
   } else if (kernel_type == "cytotrace") {
-    cytotrace_expr <- as.matrix(GetAssayData5(srt, assay = assay_y[[1L]], layer = layer_y))
-    gene_counts <- colSums(cytotrace_expr > 0)
+    # Only per-cell detected-gene counts are needed. as.matrix() materialised a
+    # dense genes x cells matrix plus a second dense logical matrix for `> 0`;
+    # colSums() on a sparse Matrix keeps both representations sparse.
+    cytotrace_expr <- GetAssayData5(srt, assay = assay_y[[1L]], layer = layer_y)
+    if (!inherits(cytotrace_expr, c("Matrix", "matrix"))) {
+      cytotrace_expr <- as.matrix(cytotrace_expr)
+    }
+    gene_counts <- Matrix::colSums(cytotrace_expr > 0)
     main_transition <- cellrank_cytotrace_kernel_cpp(
       gene_counts = as.numeric(gene_counts),
       knn_idx = knn[["idx"]],
@@ -1261,11 +1267,12 @@ run_cellrank_cpp <- function(
       srt[[paste0("cellrank_fate_", lineage)]] <- as.numeric(ap[, lineage])
     }
     if (isTRUE(compute_lineage_drivers)) {
-      expression <- as.matrix(GetAssayData5(
+      expression <- GetAssayData5(
         srt,
         assay = assay_y[[1L]],
         layer = layer_y
-      ))[, cells, drop = FALSE]
+      )[, cells, drop = FALSE]
+      expression <- as.matrix(expression)
       lineage_idx <- if (is.null(driver_lineages)) {
         integer()
       } else {

@@ -68,8 +68,9 @@ Missing input, nonzero caller exit, missing output and malformed output are
 errors. A successful zero-byte narrowPeak file is a valid empty peak set;
 this is distinct from a failed call. No matrix or existing result is changed.
 \code{receipt.rds} and \code{groups.rds} are written before splitting/calling, and
-\code{commands.rds} is updated after each process exits. These retain selected
-cells, capture/group membership and resources for diagnosing failed calls.
+\code{commands.rds} plus the final \code{receipt.rds} are persisted once when the
+function exits (including on error). These retain selected cells,
+capture/group membership and resources for diagnosing failed calls.
 Combine the returned sets with \code{\link[=CombineATACPeaks]{CombineATACPeaks()}} and recount the resulting
 ranges with \code{\link[=RecountATAC]{RecountATAC()}} before comparing previously different universes.
 Signac's splitting API is reused. The process is invoked directly so its

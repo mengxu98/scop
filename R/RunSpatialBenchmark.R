@@ -764,7 +764,20 @@ benchmark_child_entry <- function(
   }
   srt <- readRDS(input_path)
   file.create(ready_path)
-  while (!file.exists(go_path)) Sys.sleep(0.01)
+  # Poll at 20 Hz instead of 100 Hz, and guard against an orphaned child if
+  # the parent is gone before it sends the start signal. The parent normally
+  # kills the process tree on timeout; this is the child-side backstop.
+  go_timeout <- getOption("scop_benchmark_go_timeout", default = 600)
+  go_deadline <- proc.time()[["elapsed"]] + go_timeout
+  while (!file.exists(go_path)) {
+    if (proc.time()[["elapsed"]] > go_deadline) {
+      thisutils::log_message(
+        "Timed out waiting for the benchmark start signal",
+        message_type = "error"
+      )
+    }
+    Sys.sleep(0.05)
+  }
   set.seed(seed)
   start <- proc.time()[["elapsed"]]
   param_string <- get(

@@ -428,11 +428,26 @@ graph_conn_edges_r <- function(embeddings, k) {
       remove_self = FALSE
     ))
   }
-  d <- as.matrix(stats::dist(embeddings))
-  diag(d) <- Inf
-  index <- t(apply(d, 1L, function(row) {
-    as.integer(order(row)[seq_len(k)])
-  }))
+  # Fallback without BiocNeighbors: read stats::dist()'s packed lower-triangle
+  # vector directly, one row at a time. Distances stay bit-identical to
+  # as.matrix(dist(...)) while avoiding the dense n x n distance matrix, the
+  # n x n order matrix and its transpose.
+  n <- nrow(embeddings)
+  dist_values <- as.vector(stats::dist(embeddings))
+  index <- matrix(NA_integer_, nrow = n, ncol = k)
+  for (i in seq_len(n)) {
+    row_dist <- numeric(n)
+    if (i > 1L) {
+      j <- seq_len(i - 1L)
+      row_dist[j] <- dist_values[n * (j - 1L) - j * (j - 1L) / 2L + (i - j)]
+    }
+    if (i < n) {
+      j <- seq.int(i + 1L, n)
+      row_dist[j] <- dist_values[n * (i - 1L) - i * (i - 1L) / 2L + (j - i)]
+    }
+    row_dist[i] <- Inf
+    index[i, ] <- as.integer(order(row_dist)[seq_len(k)])
+  }
   graph_conn_edges_from_index(
     index = index,
     k = k,

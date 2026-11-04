@@ -220,6 +220,13 @@ Rcpp::NumericMatrix pacmap_optimize_cpp(
   std::vector<Pair> near_pairs;
   std::vector<Pair> mid_pairs;
   std::vector<Pair> far_pairs;
+  // Each row contributes at most knn_index.ncol() / n_mid / n_far pairs, so
+  // the capacities are known up front. Reserve once instead of repeatedly
+  // reallocating and copying while walking all rows.
+  const std::size_t row_count = static_cast<std::size_t>(rows);
+  near_pairs.reserve(row_count * static_cast<std::size_t>(knn_index.ncol()));
+  mid_pairs.reserve(row_count * static_cast<std::size_t>(std::max(0, n_mid)));
+  far_pairs.reserve(row_count * static_cast<std::size_t>(std::max(0, n_far)));
   std::vector<std::unordered_set<int> > neighbor_sets(rows);
 
   for (int row = 0; row < rows; ++row) {

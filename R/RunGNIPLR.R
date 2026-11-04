@@ -136,10 +136,12 @@ RunGNIPLR.default <- function(
       check.names = FALSE
     ))
   }
-  expr <- if (inherits(object, "Matrix")) {
-    as.matrix(object)
-  } else {
-    as.matrix(object)
+  # gniplr_cpp consumes a dense numeric matrix, so sparse Matrix inputs have
+  # to be expanded here. Already-dense inputs are used directly; other
+  # matrix-like inputs still go through as.matrix().
+  expr <- if (inherits(object, "Matrix")) as.matrix(object) else object
+  if (!is.matrix(expr)) {
+    expr <- as.matrix(expr)
   }
   if (identical(genes_in, "columns")) {
     expr <- t(expr)

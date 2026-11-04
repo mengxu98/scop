@@ -75,8 +75,9 @@ PrepareCCCDB <- function(
               "Loading cached: {.pkg {term}} version: {.pkg {cached_version}} created: {.pkg {timestamp}}",
               verbose = verbose
             )
+            # loadCache() is synchronous; the fixed 0.5s delay added no safety
+            # and accumulated linearly across every cached species/database.
             db_loaded <- R.cache::loadCache(pathname = pathname)
-            Sys.sleep(0.5)
             db_list[[sps]][[term]] <- db_loaded
           }
         }

@@ -189,6 +189,18 @@ List gniplr_cpp(
   std::vector<int> targets;
   std::vector<double> pvalues;
   std::vector<double> importance;
+  // gene_num^2 is the exact worst-case edge count, but reserving it for these
+  // four vectors would commit ~24 * gene_num^2 bytes on large inputs. Cap the
+  // initial capacity at 64 * gene_num to remove the early reallocations
+  // without over-committing; the vectors still grow if more edges pass.
+  const std::size_t reserve_edges = std::min(
+    static_cast<std::size_t>(gene_num) * static_cast<std::size_t>(gene_num),
+    static_cast<std::size_t>(gene_num) * 64U
+  );
+  regulators.reserve(reserve_edges);
+  targets.reserve(reserve_edges);
+  pvalues.reserve(reserve_edges);
+  importance.reserve(reserve_edges);
   for (int i = 0; i < gene_num; ++i) {
     double mpmax = 0.0;
     for (int j = 0; j < gene_num; ++j) {

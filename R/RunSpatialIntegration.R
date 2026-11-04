@@ -832,8 +832,9 @@ spatial_integration_extract_precast <- function(raw_result, input) {
   if (!is.list(clusters) || length(clusters) != length(input$samples)) {
     return(list(raw_result = raw_result))
   }
-  domains <- character()
-  embedding <- NULL
+  n_samples <- length(input$samples)
+  domains_by_sample <- vector("list", n_samples)
+  embedding_by_sample <- vector("list", n_samples)
   for (i in seq_along(input$samples)) {
     sample <- input$samples[[i]]
     cells <- colnames(raw_result@seulist[[i]])
@@ -852,7 +853,7 @@ spatial_integration_extract_precast <- function(raw_result, input) {
     }
     cluster <- as.character(cluster)
     names(cluster) <- cells
-    domains <- c(domains, cluster)
+    domains_by_sample[[i]] <- cluster
     if (is.list(embeddings) && length(embeddings) == length(input$samples)) {
       sample_embedding <- as.matrix(embeddings[[i]])
       if (nrow(sample_embedding) != length(cells)) {
@@ -862,9 +863,13 @@ spatial_integration_extract_precast <- function(raw_result, input) {
         )
       }
       rownames(sample_embedding) <- cells
-      embedding <- rbind(embedding, sample_embedding)
+      embedding_by_sample[[i]] <- sample_embedding
     }
   }
+  # Single concatenation instead of copying everything on every iteration.
+  # do.call(c, ...) preserves the per-cell names; rbind() preserves rownames.
+  domains <- if (n_samples) do.call(c, domains_by_sample) else character()
+  embedding <- do.call(rbind, embedding_by_sample)
   list(
     embedding = embedding,
     domains = domains,
