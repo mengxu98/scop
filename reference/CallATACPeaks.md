@@ -95,9 +95,10 @@ Missing input, nonzero caller exit, missing output and malformed output
 are errors. A successful zero-byte narrowPeak file is a valid empty peak
 set; this is distinct from a failed call. No matrix or existing result
 is changed. `receipt.rds` and `groups.rds` are written before
-splitting/calling, and `commands.rds` is updated after each process
-exits. These retain selected cells, capture/group membership and
-resources for diagnosing failed calls. Combine the returned sets with
+splitting/calling, and `commands.rds` plus the final `receipt.rds` are
+persisted once when the function exits (including on error). These
+retain selected cells, capture/group membership and resources for
+diagnosing failed calls. Combine the returned sets with
 [`CombineATACPeaks()`](https://mengxu98.github.io/scop/reference/CombineATACPeaks.md)
 and recount the resulting ranges with
 [`RecountATAC()`](https://mengxu98.github.io/scop/reference/RecountATAC.md)

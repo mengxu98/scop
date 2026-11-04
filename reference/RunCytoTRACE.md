@@ -174,38 +174,38 @@ Model data: <https://github.com/mengxu98/datasets/tree/main/CytoTRACE2>
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-11-04 18:35:56] Start standard processing workflow...
-#> ℹ [2026-11-04 18:35:56] Checking a list of <Seurat>...
-#> ! [2026-11-04 18:35:56] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-11-04 18:35:56] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-11-04 18:35:56] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-04 18:35:56] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-04 18:35:56] Number of available HVF: 2000
-#> ℹ [2026-11-04 18:35:56] Finished check
-#> ℹ [2026-11-04 18:35:56] Perform `ScaleData()`
-#> ℹ [2026-11-04 18:35:56] Perform pca linear dimension reduction
-#> ℹ [2026-11-04 18:35:57] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-11-04 18:35:57] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-04 18:35:57] Reorder clusters...
-#> ℹ [2026-11-04 18:35:57] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-04 18:35:57] Perform umap nonlinear dimension reduction
-#> ✔ [2026-11-04 18:36:06] Standard processing workflow completed
+#> ℹ [2026-11-04 20:11:32] Start standard processing workflow...
+#> ℹ [2026-11-04 20:11:32] Checking a list of <Seurat>...
+#> ! [2026-11-04 20:11:32] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-04 20:11:32] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-04 20:11:32] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-04 20:11:33] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-04 20:11:33] Number of available HVF: 2000
+#> ℹ [2026-11-04 20:11:33] Finished check
+#> ℹ [2026-11-04 20:11:33] Perform `ScaleData()`
+#> ℹ [2026-11-04 20:11:33] Perform pca linear dimension reduction
+#> ℹ [2026-11-04 20:11:33] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-11-04 20:11:34] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-04 20:11:34] Reorder clusters...
+#> ℹ [2026-11-04 20:11:34] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-04 20:11:34] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-04 20:11:43] Standard processing workflow completed
 pancreas_sub <- RunCytoTRACE(
   pancreas_sub,
   species = "Mus_musculus",
   backend = "cpp"
 )
-#> ◌ [2026-11-04 18:36:06] Running CytoTRACE2
-#> ℹ [2026-11-04 18:36:06] Extracting expression matrix from `assay = RNA, layer = counts`
-#> ◌ [2026-11-04 18:36:06] Running CytoTRACE2 with `backend = cpp`
-#> ℹ [2026-11-04 18:36:06] Loading cached: CytoTRACE2 version: 1.1.0
-#> ℹ [2026-11-04 18:36:06] Loading model from /home/runner/.local/share/R/scop/CytoTRACE2
-#> ℹ [2026-11-04 18:36:08] Dataset contains 15998 genes and 1000 cells.
-#> ℹ [2026-11-04 18:36:08] Running on 1 subsample
-#> ℹ [2026-11-04 18:36:08] Using 1 core
-#> ℹ [2026-11-04 18:36:08] 12486 input genes mapped to model genes.
-#> ℹ [2026-11-04 18:36:08] Building results
-#> ✔ [2026-11-04 18:36:18] CytoTRACE2 computed successfully
+#> ◌ [2026-11-04 20:11:43] Running CytoTRACE2
+#> ℹ [2026-11-04 20:11:43] Extracting expression matrix from `assay = RNA, layer = counts`
+#> ◌ [2026-11-04 20:11:43] Running CytoTRACE2 with `backend = cpp`
+#> ℹ [2026-11-04 20:11:43] Loading cached: CytoTRACE2 version: 1.1.0
+#> ℹ [2026-11-04 20:11:43] Loading model from /home/runner/.local/share/R/scop/CytoTRACE2
+#> ℹ [2026-11-04 20:11:46] Dataset contains 15998 genes and 1000 cells.
+#> ℹ [2026-11-04 20:11:46] Running on 1 subsample
+#> ℹ [2026-11-04 20:11:46] Using 1 core
+#> ℹ [2026-11-04 20:11:46] 12486 input genes mapped to model genes.
+#> ℹ [2026-11-04 20:11:46] Building results
+#> ✔ [2026-11-04 20:11:57] CytoTRACE2 computed successfully
 
 CytoTRACEPlot(
   pancreas_sub,

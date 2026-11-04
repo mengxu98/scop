@@ -168,8 +168,9 @@ is a caller result, not a biological-replicate condition comparison.</p>
 errors. A successful zero-byte narrowPeak file is a valid empty peak set;
 this is distinct from a failed call. No matrix or existing result is changed.
 <code>receipt.rds</code> and <code>groups.rds</code> are written before splitting/calling, and
-<code>commands.rds</code> is updated after each process exits. These retain selected
-cells, capture/group membership and resources for diagnosing failed calls.
+<code>commands.rds</code> plus the final <code>receipt.rds</code> are persisted once when the
+function exits (including on error). These retain selected cells,
+capture/group membership and resources for diagnosing failed calls.
 Combine the returned sets with <code><a href="CombineATACPeaks.html">CombineATACPeaks()</a></code> and recount the resulting
 ranges with <code><a href="RecountATAC.html">RecountATAC()</a></code> before comparing previously different universes.
 Signac's splitting API is reused. The process is invoked directly so its

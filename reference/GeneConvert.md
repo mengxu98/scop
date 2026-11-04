@@ -107,87 +107,16 @@ res <- GeneConvert(
   species_to = "Mus_musculus",
   Ensembl_version = 115
 )
-#> ℹ [2026-11-04 18:19:30] Connect to the Ensembl archives...
-#> ! [2026-11-04 18:19:59] <curl_error_operation_timedout in curl::curl_fetch_memory(url, handle = handle): Timeout was reached [sep2025.archive.ensembl.org]:
-#> !                       Operation timed out after 20002 milliseconds with 0 bytes received>
-#> ! [2026-11-04 18:19:59] Get errors when connecting with EnsemblArchives...
-#> ! [2026-11-04 18:20:00] Retrying...
-#> ! [2026-11-04 18:20:26] <curl_error_operation_timedout in curl::curl_fetch_memory(url, handle = handle): Timeout was reached [sep2025.archive.ensembl.org]:
-#> !                       Operation timed out after 20002 milliseconds with 0 bytes received>
-#> ! [2026-11-04 18:20:26] Get errors when connecting with EnsemblArchives...
-#> ! [2026-11-04 18:20:28] Retrying...
-#> ! [2026-11-04 18:20:54] <curl_error_operation_timedout in curl::curl_fetch_memory(url, handle = handle): Timeout was reached [sep2025.archive.ensembl.org]:
-#> !                       Operation timed out after 20002 milliseconds with 0 bytes received>
-#> ! [2026-11-04 18:20:54] Get errors when connecting with EnsemblArchives...
-#> ! [2026-11-04 18:20:55] Retrying...
-#> ! [2026-11-04 18:21:24] <curl_error_operation_timedout in curl::curl_fetch_memory(url, handle = handle): Timeout was reached [sep2025.archive.ensembl.org]:
-#> !                       Operation timed out after 20002 milliseconds with 0 bytes received>
-#> ! [2026-11-04 18:21:24] Get errors when connecting with EnsemblArchives...
-#> ! [2026-11-04 18:21:25] Retrying...
-#> ℹ [2026-11-04 18:21:45] Using the 115 version of ensembl database...
-#> ℹ [2026-11-04 18:21:45] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
-#> ℹ [2026-11-04 18:21:45] Searching the dataset hsapiens ...
-#> ℹ [2026-11-04 18:21:58] Connecting to the dataset hsapiens_gene_ensembl ...
-#> ℹ [2026-11-04 18:22:18] Searching the dataset mmusculus ...
-#> ! [2026-11-04 18:22:18] <error/httr2_http_502>
-#> !                       Error in `req_perform()`:
-#> !                       ! HTTP 502 Bad Gateway.
-#> !                       ---
-#> !                       Backtrace:
-#> !                            ▆
-#> !                         1. ├─global record(if (plan$full) "full-site" else "incremental-site", build())
-#> !                         2. │ └─base::force(expression)
-#> !                         3. └─global build()
-#> !                         4.   └─pkgdown::build_site(...)
-#> !                         5.     └─pkgdown:::build_site_local(...)
-#> !                         6.       └─pkgdown::build_reference(...)
-#> !                         7.         ├─pkgdown:::unwrap_purrr_error(...)
-#> !                         8.         │ └─base::withCallingHandlers(...)
-#> !                         9.         └─purrr::map(...)
-#> !                        10.           └─purrr:::map_("list", .x, .f, ..., .progress = .progress)
-#> !                        11.             ├─purrr:::with_indexed_errors(...)
-#> !                        12.             │ └─base::withCallingHandlers(...)
-#> !                        13.             ├─purrr:::call_with_cleanup(...)
-#> !                        14.             └─pkgdown (local) .f(.x[[i]], ...)
-#> !                        15.               ├─base::withCallingHandlers(...)
-#> !                        16.               └─pkgdown:::data_reference_topic(...)
-#> !                        17.                 └─pkgdown:::run_examples(...)
-#> !                        18.                   └─pkgdown:::highlight_examples(code, topic, env = env)
-#> !                        19.                     └─downlit::evaluate_and_highlight(...)
-#> !                        20.                       └─evaluate::evaluate(code, child_env(env), new_device = TRUE, output_handler = output_handler)
-#> !                        21.                         ├─base::withRestarts(...)
-#> !                        22.                         │ └─base (local) withRestartList(expr, restarts)
-#> !                        23.                         │   ├─base (local) withOneRestart(withRestartList(expr, restarts[-nr]), restarts[[nr]])
-#> !                        24.                         │   │ └─base (local) doWithOneRestart(return(expr), restart)
-#> !                        25.                         │   └─base (local) withRestartList(expr, restarts[-nr])
-#> !                        26.                         │     └─base (local) withOneRestart(expr, restarts[[1L]])
-#> !                        27.                         │       └─base (local) doWithOneRestart(return(expr), restart)
-#> !                        28.                         ├─evaluate:::with_handlers(...)
-#> !                        29.                         │ ├─base::eval(call)
-#> !                        30.                         │ │ └─base::eval(call)
-#> !                        31.                         │ └─base::withCallingHandlers(...)
-#> !                        32.                         ├─base::withVisible(eval(expr, envir))
-#> !                        33.                         └─base::eval(expr, envir)
-#> !                        34.                           └─base::eval(expr, envir)
-#> !                        35.                             └─scop::GeneConvert(...)
-#> !                        36.                               ├─thisutils::try_get(...)
-#> !                        37.                               │ ├─base::tryCatch(...)
-#> !                        38.                               │ │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
-#> !                        39.                               │ │   └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
-#> !                        40.                               │ │     └─base (local) doTryCatch(return(expr), name, parentenv, handler)
-#> !                        41.                               │ └─base::eval.parent(substitute(expr))
-#> !                        42.                               │   └─base::eval(expr, p)
-#> !                        43.                               │     └─base::eval(expr, p)
-#> !                        44.                               └─biomaRt::listDatasets(mart_to)
-#> !                        45.                                 └─biomaRt:::.listDatasets(mart = mart, verbose = verbose, sort = TRUE)
-#> !                        46.                                   └─biomaRt:::bmRequest(...)
-#> !                        47.                                     └─httr2::req_perform(request)
-#> ! [2026-11-04 18:22:19] Get errors when connecting with ensembl database (ENSEMBL_MART_ENSEMBL)
-#> ! [2026-11-04 18:22:20] Retrying...
-#> ℹ [2026-11-04 18:22:21] Connecting to the dataset mmusculus_gene_ensembl ...
-#> ℹ [2026-11-04 18:22:45] Converting the geneIDs...
-#> ℹ [2026-11-04 18:24:15] 5 genes mapped with "ensembl_symbol"
-#> ℹ [2026-11-04 18:24:15] ==============================
+#> ℹ [2026-11-04 20:03:12] Connect to the Ensembl archives...
+#> ℹ [2026-11-04 20:03:20] Using the 115 version of ensembl database...
+#> ℹ [2026-11-04 20:03:20] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
+#> ℹ [2026-11-04 20:03:20] Searching the dataset hsapiens ...
+#> ℹ [2026-11-04 20:03:21] Connecting to the dataset hsapiens_gene_ensembl ...
+#> ℹ [2026-11-04 20:03:22] Searching the dataset mmusculus ...
+#> ℹ [2026-11-04 20:03:22] Connecting to the dataset mmusculus_gene_ensembl ...
+#> ℹ [2026-11-04 20:03:26] Converting the geneIDs...
+#> ℹ [2026-11-04 20:03:28] 5 genes mapped with "ensembl_symbol"
+#> ℹ [2026-11-04 20:03:28] ==============================
 #> ℹ                       5 genes mapped
 #> ℹ                       0 genes unmapped
 #> ℹ                       ==============================
