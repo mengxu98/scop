@@ -1,24 +1,35 @@
 # Bias-corrected ATAC footprinting
 
-Bias-corrected ATAC footprinting.
+Compute native Signac insertion bias and footprints with an explicit
+sequence reference. No reference is downloaded. Existing cached
+footprints are never overwritten.
 
 ## Usage
 
 ``` r
-RunATACFootprint(object, genome, genome.id, bias.region, motifs,
-  assay = NULL, upstream = 250L, downstream = 250L,
-  in.peaks = FALSE, verbose = TRUE)
+RunATACFootprint(
+  object,
+  genome,
+  genome.id,
+  bias.region,
+  motifs,
+  assay = NULL,
+  upstream = 250L,
+  downstream = 250L,
+  in.peaks = FALSE,
+  verbose = TRUE
+)
 ```
 
 ## Arguments
 
 - object:
 
-  Seurat object with a ChromatinAssay.
+  A Seurat object containing a ChromatinAssay.
 
 - genome:
 
-  Loaded BSgenome or indexed FaFile; no reference is downloaded.
+  A loaded BSgenome or indexed Rsamtools FaFile.
 
 - genome.id:
 
@@ -26,24 +37,26 @@ RunATACFootprint(object, genome, genome.id, bias.region, motifs,
 
 - bias.region:
 
-  Explicit chromosome-start-end interval with three-base boundary
-  margins.
+  One explicit chromosome interval string, for example
+  \`chr1-4-1000000\`. It must fit the reference. Native bias estimation
+  requires adequate coverage of all hexamers and can fail on small
+  datasets.
 
 - motifs:
 
-  Unique motif IDs with stored positions.
+  Unique motif IDs present in the selected assay's positions.
 
 - assay:
 
-  Chromatin assay.
+  Source assay; defaults to the active assay.
 
 - upstream, downstream:
 
-  Integer flanking widths, at least 50 bases.
+  Nonnegative flanking widths (at least 50 each).
 
 - in.peaks:
 
-  Restrict motif positions to peaks.
+  Restrict motif instances to peaks.
 
 - verbose:
 
@@ -51,13 +64,21 @@ RunATACFootprint(object, genome, genome.id, bias.region, motifs,
 
 ## Value
 
-Seurat object with native bias and footprints, plus assay Misc
-scop_footprints receipts.
+A Seurat object with native positionEnrichment and a \`scop_footprints\`
+receipt in assay Misc. Input counts, cells and default assay are
+preserved. At least two assay cells are required. A receipt is a
+snapshot; recalculate after changing cells, peaks, fragments or
+reference.
 
 ## Details
 
-Native Signac bias is recalculated on an explicit region. Existing
-footprint keys are not overwritten. Adequate hexamer coverage is
-required; native failures are preserved. Footprints are insertion
-patterns, not proof of TF binding. Recompute after changing reference,
-cells, peaks or fragments.
+Requires indexed local fragment files with complete cell/barcode
+mappings. Bias is recalculated using the explicit region, never silently
+reused from another reference. Native estimation errors are preserved.
+Footprints summarize Tn5 insertion patterns, not proven TF binding or
+causality. Factors sharing a motif cannot be distinguished by this
+analysis.
+
+## See also
+
+\[ATACFootprintPlot()\]

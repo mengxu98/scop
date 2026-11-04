@@ -1,6 +1,6 @@
-# Plot motif sequence logos
+# Plot motif sequence logos from a selected ATAC assay
 
-Plot motif sequence logos.
+Plot motif sequence logos from a selected ATAC assay
 
 ## Usage
 
@@ -12,11 +12,11 @@ ATACMotifPlot(object, motifs, assay = NULL, use.names = TRUE, ...)
 
 - object:
 
-  Seurat object with motifs.
+  A Seurat object with native motifs.
 
 - motifs:
 
-  Unique motif IDs in the selected assay PWM list.
+  Unique motif IDs (not ambiguous common names).
 
 - assay:
 
@@ -24,7 +24,7 @@ ATACMotifPlot(object, motifs, assay = NULL, use.names = TRUE, ...)
 
 - use.names:
 
-  Use native motif display names.
+  Use native motif names in plot labels.
 
 - ...:
 
@@ -32,9 +32,8 @@ ATACMotifPlot(object, motifs, assay = NULL, use.names = TRUE, ...)
 
 ## Value
 
-Native motif sequence logo plot.
+Native motif-logo plot. Motif similarity is not TF binding evidence.
 
 ## Details
 
-Uses exact assay-specific IDs rather than ambiguous common names.
-Requires ggseqlogo.
+Requires the optional ggseqlogo package.

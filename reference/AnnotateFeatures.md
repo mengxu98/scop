@@ -125,8 +125,8 @@ pancreas_sub <- AnnotateFeatures(
   species = "Mus_musculus",
   db = "TF"
 )
-#> ℹ [2026-11-04 13:14:11] Species: "Mus_musculus"
-#> ℹ [2026-11-04 13:14:11] Preparing database: TF
+#> ℹ [2026-11-04 14:48:56] Species: "Mus_musculus"
+#> ℹ [2026-11-04 14:48:56] Preparing database: TF
 head(
   GetFeaturesData(
     pancreas_sub

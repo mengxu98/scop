@@ -1,14 +1,22 @@
 # Plot ATAC fragment lengths
 
 Plot fragment lengths in an explicitly selected genomic region using
-Signac::FragmentHistogram. This is a regional diagnostic, not a
-whole-library fragment-length estimate.
+[`Signac::FragmentHistogram()`](https://stuartlab.org/signac/reference/FragmentHistogram.html).
+This is a regional diagnostic, not a whole-library fragment-length
+estimate.
 
 ## Usage
 
 ``` r
-ATACFragmentPlot(object, region, assay = NULL, group.by = NULL,
-  cells = NULL, log.scale = FALSE, ...)
+ATACFragmentPlot(
+  object,
+  region,
+  assay = NULL,
+  group.by = NULL,
+  cells = NULL,
+  log.scale = FALSE,
+  ...
+)
 ```
 
 ## Arguments
@@ -19,8 +27,9 @@ ATACFragmentPlot(object, region, assay = NULL, group.by = NULL,
 
 - region:
 
-  Genomic regions, as a GRanges or strings accepted by Signac. Required
-  explicitly.
+  Genomic region(s), as a GRanges or strings accepted by Signac.
+  Required explicitly to avoid silently assuming chromosome naming or
+  genome.
 
 - assay:
 
@@ -28,7 +37,7 @@ ATACFragmentPlot(object, region, assay = NULL, group.by = NULL,
 
 - group.by:
 
-  One metadata grouping column, or NULL for identities.
+  One metadata column used for grouping, or NULL for identities.
 
 - cells:
 
@@ -40,7 +49,8 @@ ATACFragmentPlot(object, region, assay = NULL, group.by = NULL,
 
 - ...:
 
-  Additional arguments to Signac::FragmentHistogram.
+  Additional arguments to
+  [`Signac::FragmentHistogram()`](https://stuartlab.org/signac/reference/FragmentHistogram.html).
 
 ## Value
 
@@ -48,16 +58,16 @@ A ggplot object. The input object is not modified.
 
 ## Details
 
-Requires accessible indexed fragment files and explicit cell/barcode
-mappings. The native histogram counts fragment records, not column-five
-read multiplicities, and displays lengths between 0 and 800 bp by
-default. As in Signac, a fragment returned for several query intervals
-can contribute more than once; use a single region for an unambiguous
-regional histogram.
+Requires local bgzip fragment files with a `.tbi` or `.csi` index and
+explicit cell/barcode mappings. The native histogram counts fragment
+records, not column-five read multiplicities, and displays lengths
+between 0 and 800 bp by default. As in Signac, a fragment returned for
+several query intervals can contribute more than once; use a single
+region for an unambiguous regional histogram.
 
 ## See also
 
-[`RunATACQC`](https://mengxu98.github.io/scop/reference/RunATACQC.md)
+[`RunATACQC()`](https://mengxu98.github.io/scop/reference/RunATACQC.md)
 
 ## Examples
 

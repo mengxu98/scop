@@ -1,13 +1,13 @@
 # Plot ATAC TSS enrichment profiles
 
 Plot previously computed per-position TSS enrichment with
-Signac::TSSPlot. A scalar TSS enrichment score alone is insufficient.
+[`Signac::TSSPlot()`](https://stuartlab.org/signac/reference/TSSPlot.html).
+A scalar TSS enrichment score alone is insufficient.
 
 ## Usage
 
 ``` r
-ATACTSSPlot(object, assay = NULL, group.by = NULL, idents = NULL,
-  cells = NULL)
+ATACTSSPlot(object, assay = NULL, group.by = NULL, idents = NULL, cells = NULL)
 ```
 
 ## Arguments
@@ -22,7 +22,7 @@ ATACTSSPlot(object, assay = NULL, group.by = NULL, idents = NULL,
 
 - group.by:
 
-  One metadata grouping column, or NULL for identities.
+  One metadata column used for grouping, or NULL for identities.
 
 - idents:
 
@@ -40,16 +40,18 @@ A ggplot object. The input object is not modified.
 
 First calculate positional enrichment with
 `Signac::TSSEnrichment(..., fast = FALSE)` or
-`RunATACQC(..., tss.positions = tss, fast = FALSE)`. Explicit TSS
-positions force recalculation by RunATACQC even when imported scores
-exist. This function never silently recomputes enrichment or invents a
-curve from scalar scores. Only selected-assay cells are included. Signac
-1.17 marks TSSPlot deprecated; the upstream lifecycle warning is
-retained.
+`RunATACQC(..., tss.positions = tss, fast = FALSE)`. Supplying explicit
+TSS positions to RunATACQC forces recalculation even if imported scores
+exist. Use TSS coordinates from the matching reference and recompute
+positional enrichment after changing reference coordinates or
+preprocessing. This function never silently recomputes enrichment or
+invents a curve from scalar scores. Only cells in the selected assay are
+included. Signac 1.17 marks TSSPlot deprecated; any upstream lifecycle
+warning is retained.
 
 ## See also
 
-[`RunATACQC`](https://mengxu98.github.io/scop/reference/RunATACQC.md)
+[`RunATACQC()`](https://mengxu98.github.io/scop/reference/RunATACQC.md)
 
 ## Examples
 

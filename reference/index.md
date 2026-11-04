@@ -629,7 +629,7 @@
 - [`ATACFootprintPlot()`](https://mengxu98.github.io/scop/reference/ATACFootprintPlot.md)
   : Plot bias-corrected footprints
 - [`ATACMotifPlot()`](https://mengxu98.github.io/scop/reference/ATACMotifPlot.md)
-  : Plot motif sequence logos
+  : Plot motif sequence logos from a selected ATAC assay
 - [`AddATACMotifs()`](https://mengxu98.github.io/scop/reference/AddATACMotifs.md)
   : Add native motif matches and sequence statistics
 - [`RunMotifEnrichment()`](https://mengxu98.github.io/scop/reference/RunMotifEnrichment.md)

@@ -7,6 +7,9 @@
   forwards `verbose` to Monocle dimensionality reduction so DDRTree
   progress follows the requested verbosity.
 
+- Removed the unused static `inst/guides/` ATAC notes; their content now
+  lives in the function documentation.
+
 - Add fixed-width genome tile counting through the validated sparse ATAC
   recount workflow, with reference checks and tile provenance.
 
