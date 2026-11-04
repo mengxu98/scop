@@ -36,10 +36,10 @@ paired <- scop::WNN_integrate(
   nHVF = 100, neighbor_k = 10, nonlinear_reduction_dims = 2,
   verbose = FALSE
 )
-#> ℹ [2026-11-04 15:48:49] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-04 15:48:52] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-04 15:48:55] Reorder clusters...
-#> ℹ [2026-11-04 15:48:55] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-04 19:16:48] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-04 19:16:51] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-04 19:16:54] Reorder clusters...
+#> ℹ [2026-11-04 19:16:54] Skip `log1p()` because `layer = data` is not "counts"
 #> Warning: Key 'RNApcaUMAP2D_' taken, using 'rnaumap2d_' instead
 #> Warning: Key 'ATACsvdUMAP2D_' taken, using 'atacumap2d_' instead
 SeuratObject::Reductions(paired)

@@ -151,7 +151,7 @@ spatial <- RunStandardWorkflow(
   do_deconvolution = FALSE,
   verbose = FALSE
 )
-#> ℹ [2026-11-04 15:56:10] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-04 19:25:05] Skip `log1p()` because `layer = data` is not "counts"
 ```
 
 ## Inspect stored results before plotting

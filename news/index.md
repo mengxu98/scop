@@ -3,6 +3,16 @@
 ## scop (development version)
 
 - **fix**:
+  [`PrepareEnv()`](https://mengxu98.github.io/scop/reference/PrepareEnv.md)
+  no longer passes two conflicting pandas pins to pip during a default
+  installation ([\#561](https://github.com/mengxu98/scop/issues/561)).
+  Environment requirements emit one pin per package, isolated profiles
+  such as `scprep_env` no longer redefine shared package versions, and
+  `include_optional` no longer pulls in `magic` (isolated `scprep_env`)
+  or `moscot` (own JAX profile), so the `optional` shortcut stays
+  usable.
+
+- **fix**:
   [`RunMonocle2()`](https://mengxu98.github.io/scop/reference/RunMonocle2.md)
   forwards `verbose` to Monocle dimensionality reduction so DDRTree
   progress follows the requested verbosity.

@@ -159,10 +159,6 @@ env_requirements("3.10-1")
 #>                                     "SEACells" 
 #>                                         joblib 
 #>                                       "joblib" 
-#>                                         pandas 
-#>                                       "pandas" 
-#>                                   scikit-learn 
-#>                                 "scikit-learn" 
 #>                             charset-normalizer 
 #>                      "charset-normalizer>=3.4" 
 #> 
@@ -187,10 +183,8 @@ env_requirements("3.10-1")
 #>              "pip"              "pip"              "pip"              "pip" 
 #>                wot             pacmap             trimap           multimap 
 #>              "pip"              "pip"              "pip"              "pip" 
-#>           SEACells             joblib             pandas       scikit-learn 
-#>              "pip"              "pip"              "pip"              "pip" 
-#> charset-normalizer 
-#>              "pip" 
+#>           SEACells             joblib charset-normalizer 
+#>              "pip"              "pip"              "pip" 
 #> 
 #> $package_aliases
 #> $package_aliases$`python-igraph`
