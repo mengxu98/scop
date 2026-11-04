@@ -10,6 +10,7 @@
 
 # scop (development version)
 
+* **fix**: `RunMonocle2()` forwards `verbose` to Monocle dimensionality reduction so DDRTree progress follows the requested verbosity.
 * Removed the unused static `inst/guides/` ATAC notes; their content now lives in the function documentation.
 
 * Add fixed-width genome tile counting through the validated sparse ATAC recount workflow, with reference checks and tile provenance.
@@ -21,6 +22,14 @@
 * Add `RunCellOracle()` and `CellOraclePlot()` for the official CellOracle 0.20.0
   workflow, saved-model reuse, original displacement/randomized controls and
   a standalone Linux/macOS Python environment profile.
+* Enrichment rank plots add a soft group-colored decorative contour around
+  point clouds and use lighter outlines for highlighted terms. The contour
+  does not represent uncertainty or change the displayed enrichment scores.
+  Separated point clouds are smoothed independently; gaps and sparse segments
+  are left unfilled.
+* `EnrichmentMirrorPlot()` compares two saved group-wise enrichment rankings with
+  mirrored bars, full pathway labels, matching gene colors, adaptive axis extents,
+  rounded database bands and configurable group colors, text and spacing.
 
 * `EnrichmentPlot(plot_type = "rank")` plots stored ORA terms by enrichment magnitude,
   with group colors, solid-point sizes, bold halo labels, `grid_major` reference grids,
@@ -48,6 +57,9 @@
     SCT RNA separately from ATAC, and supports graph-only analysis. Peak calling
     resolves MACS2 from PATH and retains capture/group records after failure.
     Add an executable ATAC matrix quick start and complete the DAR motif recipe.
+
+  * Add annotated enrichment bars with rounded database bands, in-bar term labels,
+    matching hit-gene colors and significance opacity, Count dots and compact spacing.
 
   * Extend `FeatureDimPlot()` density, palette and title controls. Embedding plots
     default to `label_insitu = TRUE`; `FALSE` uses numbered labels. DE, volcano,

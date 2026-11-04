@@ -52,6 +52,30 @@ test_that("RunMonocle2 stores Monocle2-compatible results", {
   expect_true(all(is.finite(out$Monocle2_Pseudotime)))
 })
 
+test_that("RunMonocle2 verbosity controls DDRTree progress without changing results", {
+  skip_if_not_installed("Seurat")
+  skip_if_not_installed("monocle")
+  skip_if_not_installed("DDRTree")
+
+  srt <- make_monocle2_branching_srt(n_per_branch = 30L)
+  args <- list(
+    object = srt,
+    features = rownames(srt)[1:70],
+    expressionFamily = "uninormal",
+    norm_method = "none",
+    ddrtree_maxIter = 5
+  )
+  default_output <- capture.output(out_default <- do.call(RunMonocle2, args))
+  quiet_output <- capture.output(
+    out_quiet <- do.call(RunMonocle2, c(args, list(verbose = FALSE)))
+  )
+  expect_gt(length(default_output), 0L)
+  expect_length(quiet_output, 0L)
+  expect_equal(out_default@reductions$DDRTree, out_quiet@reductions$DDRTree)
+  expect_equal(out_default$Monocle2_Pseudotime, out_quiet$Monocle2_Pseudotime)
+  expect_equal(out_default$Monocle2_State, out_quiet$Monocle2_State)
+})
+
 test_that("RunMonocle2 supports Disp feature selection", {
   skip_if_not_installed("Seurat")
   skip_if_not_installed("monocle")

@@ -25,10 +25,38 @@ test_that("rank plots filter before ranking and preserve group/size contracts", 
   expect_equal(p$A$data$p.adjust[2], 0)
   expect_identical(res, original)
   built <- ggplot2::ggplot_build(p$A)
-  expect_true(all(built$data[[1]]$size >= 3 & built$data[[1]]$size <= 6))
-  expect_true(all(built$data[[1]]$shape == 16))
+  point_layer <- which(vapply(p$A$layers, function(layer) inherits(layer$geom, "GeomPoint"), logical(1)))[1]
+  expect_true(all(built$data[[point_layer]]$size >= 3 & built$data[[point_layer]]$size <= 6))
+  expect_true(all(built$data[[point_layer]]$shape == 16))
   expect_s3_class(p$C, "ggplot")
   expect_silent(ggplot2::ggplotGrob(p$A))
+})
+
+test_that("soft rank contours preserve point scores and stay ordered", {
+  res <- rank_fixture()
+  res$enrichment <- res$enrichment[rep(4, 80), ]
+  res$enrichment$ID <- paste0("t", 1:80)
+  res$enrichment$FoldEnrichment <- c(seq(12, 11.5, length.out = 40), seq(5, 4.5, length.out = 40))
+  p <- EnrichmentPlot(
+    res = res, db = "custom", plot_type = "rank", combine = FALSE
+  )
+  built <- ggplot2::ggplot_build(p$B)
+  expect_s3_class(p$B$layers[[1]]$geom, "GeomRibbon")
+  expect_true(all(built$data[[1]]$ymax > built$data[[1]]$ymin))
+  expect_true(all(is.finite(built$data[[1]]$ymax)))
+  expect_equal(p$B$data$.score, res$enrichment$FoldEnrichment)
+  ribbons <- Filter(function(layer) inherits(layer$geom, "GeomRibbon"), p$B$layers)
+  expect_length(ribbons, 6)
+  expect_true(all(vapply(ribbons, function(layer) {
+    max(layer$data$.x) <= 40 || min(layer$data$.x) >= 41
+  }, logical(1))))
+  res <- rank_fixture()
+  res$enrichment <- res$enrichment[1, ]
+  singleton <- EnrichmentPlot(res = res, db = "custom", plot_type = "rank", combine = FALSE)
+  expect_false(any(vapply(
+    singleton[[1]]$layers,
+    function(layer) inherits(layer$geom, "GeomRibbon"), logical(1)
+  )))
 })
 
 test_that("rank labels select displayed terms without filtering background", {

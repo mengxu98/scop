@@ -239,7 +239,8 @@ RunMonocle2 <- function(
     pseudo_expr = pseudo_expr,
     ddrtree_maxIter = ddrtree_maxIter,
     ddrtree_ncenter = ddrtree_ncenter,
-    ddrtree_tol = ddrtree_tol
+    ddrtree_tol = ddrtree_tol,
+    verbose = verbose
   )
   cds <- do.call(get_namespace_fun("monocle", "reduceDimension"), reduce_args)
   cds <- get_namespace_fun("monocle", "orderCells")(cds)
@@ -336,7 +337,8 @@ monocle2_reduce_dimension_args <- function(
   pseudo_expr = 1,
   ddrtree_maxIter = NULL,
   ddrtree_ncenter = NULL,
-  ddrtree_tol = NULL
+  ddrtree_tol = NULL,
+  verbose = TRUE
 ) {
   args <- list(
     cds = cds,
@@ -344,7 +346,8 @@ monocle2_reduce_dimension_args <- function(
     reduction_method = reduction_method,
     norm_method = norm_method,
     residualModelFormulaStr = residualModelFormulaStr,
-    pseudo_expr = pseudo_expr
+    pseudo_expr = pseudo_expr,
+    verbose = verbose
   )
   if (identical(reduction_method, "DDRTree")) {
     if (!is.null(ddrtree_maxIter)) {
