@@ -10,6 +10,8 @@
 
 # scop (development version)
 
+* **fix**: `PrepareEnv()` no longer passes two conflicting pandas pins to pip during a default installation (#561). Environment requirements emit one pin per package, isolated profiles such as `scprep_env` no longer redefine shared package versions, and `include_optional` no longer pulls in `magic` (isolated `scprep_env`) or `moscot` (own JAX profile), so the `optional` shortcut stays usable.
+
 * **fix**: `RunMonocle2()` forwards `verbose` to Monocle dimensionality reduction so DDRTree progress follows the requested verbosity.
 * Removed the unused static `inst/guides/` ATAC notes; their content now lives in the function documentation.
 

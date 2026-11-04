@@ -429,3 +429,96 @@ test_that("installed metadata follows transitive dependencies, markers and cycle
     c("closure-root", "closure-middle", "closure-leaf")
   )
 })
+
+test_that("environment requirements emit one pin per package", {
+  for (modules in list(NULL, "magic", c("scvelo", "magic"), "scenicplus_io", "celloracle")) {
+    req <- env_requirements(modules = modules, verbose = FALSE)
+    expect_identical(anyDuplicated(names(req$packages)), 0L)
+    expect_identical(names(req$packages), names(req$install_methods))
+    expect_false(anyNA(req$install_methods))
+  }
+  default <- env_requirements(verbose = FALSE)$packages
+  expect_identical(unname(default[["pandas"]]), "pandas==2.2.0")
+  expect_identical(sum(grepl("^pandas", default)), 1L)
+  expect_identical(
+    unname(env_requirements(modules = c("scvelo", "magic"), verbose = FALSE)$packages[["pandas"]]),
+    "pandas==2.0.3"
+  )
+})
+
+test_that("optional modules stay in the shared environment", {
+  optional <- normalize_env_modules("optional")
+  expect_false("magic" %in% optional)
+  expect_false("moscot" %in% optional)
+  req <- env_requirements(include_optional = TRUE, verbose = FALSE)$packages
+  expect_false("magic-impute" %in% names(req))
+  expect_false("moscot" %in% names(req))
+  expect_identical(unname(req[["pandas"]]), "pandas==2.2.0")
+  if ("jax" %in% names(req)) {
+    expect_identical(unname(req[["jax"]]), "jax[cpu]==0.4.38")
+  }
+})
+
+test_that("PrepareEnv accepts the optional module shortcut", {
+  testthat::local_mocked_bindings(
+    is_windows = function() FALSE,
+    resolve_conda = identity,
+    ensure_conda = function(conda) TRUE,
+    env_exist = function(conda, envname) TRUE,
+    conda_python = function(envname, conda) "python",
+    python_minor_version = function(python_path) "3.11",
+    installed_python_pkgs = function(...) {
+      data.frame(package = "cellrank", version = "2.0.7")
+    },
+    build_env_cache_spec = function(...) stop("optional profile accepted"),
+    log_message = function(...) NULL,
+    .package = "scop"
+  )
+  expect_error(
+    PrepareEnv(
+      envname = "test-env", conda = "conda",
+      version = "3.11-1", modules = "optional"
+    ),
+    "optional profile accepted"
+  )
+})
+
+test_that("default installation sends a single pandas pin to pip", {
+  installed <- NULL
+  checks <- 0L
+  testthat::local_mocked_bindings(
+    resolve_conda = function(conda) NULL,
+    conda_python = function(...) NULL,
+    python_minor_version = function(...) "3.10",
+    env_exist = function(...) TRUE,
+    log_message = function(...) NULL,
+    exist_python_pkgs = function(packages, ...) {
+      checks <<- checks + 1L
+      stats::setNames(rep(checks > 1L, length(packages)), packages)
+    },
+    conda_install = function(packages, ...) installed <<- packages,
+    .package = "scop"
+  )
+  expect_true(check_python(
+    env_requirements(verbose = FALSE)$packages,
+    envname = "scop_env", conda = "auto", verbose = FALSE
+  ))
+  expect_identical(grep("^pandas", installed, value = TRUE), "pandas==2.2.0")
+  expect_true("SEACells" %in% installed)
+  expect_true("joblib" %in% installed)
+})
+
+test_that("isolated profiles keep exclusive pins without redefining shared ones", {
+  testthat::local_mocked_bindings(
+    resolve_conda = function(conda) NULL,
+    conda_python = function(...) NULL,
+    python_minor_version = function(...) "3.10",
+    .package = "scop"
+  )
+  resolve <- function(pkg) {
+    unname(resolve_requested_python_packages(pkg, envname = "scop_env", conda = "auto"))
+  }
+  expect_identical(resolve("pandas"), "pandas==2.2.0")
+  expect_identical(resolve("magic-impute"), "magic-impute==3.0.0")
+  expect_identical(resolve("phate"), "phate==1.0.11")
+})

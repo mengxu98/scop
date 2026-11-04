@@ -271,7 +271,40 @@ unique_python_requirements <- function(
     envname = envname,
     conda = conda
   )
-  packages[!duplicated(unname(packages))]
+  if (length(packages) < 2L) {
+    return(packages)
+  }
+
+  values <- unname(packages)
+  parsed <- lapply(values, parse_python_requirement)
+  distributions <- vapply(
+    parsed,
+    function(req) canonical_python_distribution_name(req$name),
+    character(1)
+  )
+  pinned <- vapply(parsed, function(req) !is.na(req$operator), logical(1))
+
+  groups <- split(seq_along(packages), distributions)
+  keep <- unlist(lapply(groups, function(idx) {
+    if (length(idx) == 1L) {
+      return(idx)
+    }
+    explicit <- idx[pinned[idx]]
+    chosen <- if (length(explicit)) explicit[[1L]] else idx[[1L]]
+    distinct <- unique(values[idx])
+    if (length(distinct) > 1L) {
+      warning(
+        "Conflicting Python requirements for '", distributions[[idx[[1L]]]],
+        "': ", paste(distinct, collapse = ", "),
+        ". Keeping '", values[[chosen]], "'. Prepare modules that require ",
+        "different versions in separate environments.",
+        call. = FALSE
+      )
+    }
+    chosen
+  }), use.names = FALSE)
+
+  packages[sort(keep)]
 }
 
 resolve_requested_python_packages <- function(
@@ -292,13 +325,26 @@ resolve_requested_python_packages <- function(
     if (is_windows()) "3.11-1" else "3.10-1"
   }
   requested <- vapply(packages, function(pkg) parse_python_requirement(pkg)$name, "")
+  isolated_specs <- Filter(
+    function(spec) !is.null(spec$environment),
+    env_module_requirements()
+  )
   modules <- if ("moscot" %in% requested) {
     "moscot"
   } else {
-    setdiff(normalize_env_modules(include_optional = TRUE), "moscot")
+    setdiff(
+      normalize_env_modules(include_optional = TRUE),
+      c("moscot", names(isolated_specs))
+    )
   }
   requirements <- env_requirements(version = version, modules = modules)
   package_versions <- requirements$packages
+  if (!"moscot" %in% requested) {
+    for (spec in isolated_specs) {
+      extra <- spec$packages[!names(spec$packages) %in% names(package_versions)]
+      package_versions <- c(package_versions, extra)
+    }
+  }
 
   resolved <- vapply(
     packages,

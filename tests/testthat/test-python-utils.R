@@ -220,3 +220,31 @@ test_that("Python requirement checks retain repeated constraints", {
   actual <- exist_python_pkgs(c("backend==2.0", "backend==2.0", "backend<2.0"), conda = "test")
   expect_identical(unname(actual), c(TRUE, TRUE, FALSE))
 })
+
+test_that("Python requirements deduplicate by distribution name", {
+  testthat::local_mocked_bindings(
+    resolve_conda = function(conda) NULL,
+    conda_python = function(...) NULL,
+    python_minor_version = function(...) "3.10",
+    .package = "scop"
+  )
+  unique_requirements <- getFromNamespace("unique_python_requirements", "scop")
+  resolved <- unique_requirements(c(a = "pandas", b = "pandas==2.2.0", c = "scanpy"))
+  expect_identical(grep("^pandas", unname(resolved), value = TRUE), "pandas==2.2.0")
+  expect_true("scanpy==1.11.3" %in% unname(resolved))
+})
+
+test_that("conflicting pins warn and keep one requirement", {
+  testthat::local_mocked_bindings(
+    resolve_conda = function(conda) NULL,
+    conda_python = function(...) NULL,
+    python_minor_version = function(...) "3.10",
+    .package = "scop"
+  )
+  unique_requirements <- getFromNamespace("unique_python_requirements", "scop")
+  expect_warning(
+    result <- unique_requirements(c(a = "pandas==2.0.3", b = "pandas==2.2.0")),
+    "Conflicting Python requirements for 'pandas'"
+  )
+  expect_length(result, 1L)
+})

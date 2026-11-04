@@ -669,17 +669,6 @@ default_env_modules <- function() {
   setdiff(supported_env_modules(), c(excluded, isolated))
 }
 
-optional_env_modules <- function() {
-  c(
-    "celltypist",
-    "cellphonedb",
-    "magic",
-    "scrublet",
-    "doubletdetection",
-    "moscot"
-  )
-}
-
 env_module_dependencies <- function() {
   list(
     celltypist = "scanpy",
@@ -931,12 +920,14 @@ normalize_env_modules <- function(modules = NULL, include_optional = FALSE) {
     modules <- default_env_modules()
   }
 
-  if (isTRUE(include_optional)) {
-    modules <- c(modules, optional_env_modules())
-  }
-
-  if ("optional" %in% modules) {
-    modules <- c(setdiff(modules, "optional"), optional_env_modules())
+  if (isTRUE(include_optional) || "optional" %in% modules) {
+    modules <- c(
+      setdiff(modules, "optional"),
+      "celltypist",
+      "cellphonedb",
+      "scrublet",
+      "doubletdetection"
+    )
   }
 
   if ("doublet" %in% modules) {
@@ -2075,6 +2066,10 @@ env_requirements <- function(
   if ("scenic" %in% modules && "numpy" %in% names(package_versions)) {
     package_versions[["numpy"]] <- "numpy==1.23.5"
   }
+
+  package_versions <- package_versions[!duplicated(names(package_versions))]
+  package_install_methods <- package_install_methods[names(package_versions)]
+  package_install_methods[is.na(package_install_methods)] <- "pip"
 
   requirements <- list(
     python = if ("scenicplus" %in% modules) "3.11.8" else version,
