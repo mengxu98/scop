@@ -55,6 +55,25 @@ jobs:
           needs: check
           dependencies: '"hard"'
 
+      - uses: actions/setup-python@v5
+        if: runner.os == 'Linux'
+        with:
+          python-version: '3.10'
+
+      - name: Check real PAGA neighbor compatibility
+        if: runner.os == 'Linux'
+        shell: bash
+        env:
+          NUMBA_NUM_THREADS: '2'
+          OPENBLAS_NUM_THREADS: '1'
+          OMP_NUM_THREADS: '1'
+          MPLBACKEND: Agg
+        run: |
+          python -m venv "$RUNNER_TEMP/paga-python"
+          "$RUNNER_TEMP/paga-python/bin/python" -m pip install 'scanpy==1.11.3' 'scipy==1.15.3' 'pynndescent==0.6.0' 'igraph==0.11.9' 'numpy==1.26.4' 'pandas==2.2.0' 'anndata==0.11.4' 'zarr<3' 'numba==0.66.0' 'llvmlite==0.48.0' 'scikit-learn==1.7.0' 'matplotlib==3.10.8'
+          "$RUNNER_TEMP/paga-python/bin/python" -m pip check
+          "$RUNNER_TEMP/paga-python/bin/python" -m unittest discover -s tests/python -v
+
       - uses: r-lib/actions/check-r-package@v2
         with:
           args: ${{ matrix.config.check-args }}
