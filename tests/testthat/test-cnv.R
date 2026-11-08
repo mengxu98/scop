@@ -274,7 +274,7 @@ test_that("CNV standardization derives fallback predictions for every backend", 
   }
 })
 
-test_that("fastCNV extraction reads Seurat assays and derives cell predictions", {
+test_that("fastCNV extracts genomic scores even with DecontX UMAP present", {
   srt <- make_cnv_seurat()
   mat <- matrix(
     c(-0.2, 0.1, 0.3, 0.5, -0.4, 0.2),
@@ -285,6 +285,11 @@ test_that("fastCNV extraction reads Seurat assays and derives cell predictions",
   suppressWarnings({
     fast_obj[["genomicScores"]] <- SeuratObject::CreateAssayObject(data = mat)
   })
+  fast_obj@tools$decontX <- list(umap = matrix(
+    c(8, 2, 3, 1, 4, 6),
+    ncol = 2,
+    dimnames = list(colnames(srt), c("DecontX_UMAP_1", "DecontX_UMAP_2"))
+  ))
   fast_obj$CNV_fastCNV_score <- c(0.2, 0.1, 0.6)
   fast_obj$CNV_fastCNV_prediction <- NA_character_
   fast_obj$cnv_clusters <- c("A", "A", "B")
@@ -296,10 +301,17 @@ test_that("fastCNV extraction reads Seurat assays and derives cell predictions",
     reference = "Normal"
   )
 
-  expect_equal(dim(extracted$cnv_matrix), c(2, 3))
+  expect_equal(as.matrix(extracted$cnv_matrix), mat)
   expect_equal(extracted$cell_info$score, c(0.2, 0.1, 0.6))
   expect_equal(extracted$cell_info$prediction, c("aneuploid", "diploid", "aneuploid"))
   expect_equal(extracted$cell_info$cluster, c("A", "A", "B"))
+})
+
+test_that("fastCNV reports a missing genomicScores assay instead of using a tool matrix", {
+  srt <- make_cnv_seurat()
+  srt@tools$decontX <- list(umap = SeuratObject::Embeddings(srt[["umap"]]))
+
+  expect_error(cnv_extract_fastcnv(srt, cells = colnames(srt)), "genomicScores")
 })
 
 test_that("fastCNV runner skips expensive upstream preparation by default", {
@@ -354,6 +366,46 @@ test_that("fastCNV runner skips expensive upstream preparation by default", {
   )
 
   expect_equal(extracted$cell_info$prediction, c("aneuploid", "diploid", "aneuploid"))
+})
+
+test_that("RunCNV saves infercnv coordinates in matrix row order", {
+  srt <- make_cnv_seurat()
+  gene_order <- data.frame(
+    gene = c("Gene4", "Gene2", "Gene3", "Gene1"),
+    chr = c("chr2", "chr1", "chr2", "chr1"),
+    start = c(400, 200, 300, 100),
+    end = c(499, 299, 399, 199)
+  )
+  mat <- matrix(
+    c(0.99, 1.2, 0.81, 0.96, 1.1, 0.85, 1.01, 1.3, 0.86),
+    nrow = 3,
+    dimnames = list(c("Gene3", "Gene1", "unmatched"), colnames(srt))
+  )
+  testthat::local_mocked_bindings(
+    check_r = function(...) TRUE,
+    get_namespace_fun = function(package, name) {
+      if (identical(name, "CreateInfercnvObject")) {
+        return(function(...) list())
+      }
+      function(...) mat
+    }
+  )
+
+  out <- RunCNV(
+    srt,
+    method = "infercnv",
+    reference.by = "celltype",
+    reference = "Normal",
+    gene_order = gene_order,
+    verbose = FALSE
+  )
+  bundle <- out@tools$CNV$methods$infercnv
+
+  expect_identical(bundle$cnv_matrix, mat)
+  expect_identical(bundle$bin_info$gene, rownames(mat))
+  expect_identical(bundle$bin_info$chr, c("chr2", "chr1", NA_character_))
+  expect_identical(bundle$bin_info$start, c(300, 100, NA_real_))
+  expect_identical(bundle$bin_info$end, c(399, 199, NA_real_))
 })
 
 test_that("infercnv runner avoids subclusters by default and filters passthrough arguments", {

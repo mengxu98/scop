@@ -542,7 +542,11 @@ cnv_run_infercnv <- function(
     list(...)
   )
   result <- cnv_call_backend_fun(run_fun, args)
-  cnv_extract_generic_result(result, method = "infercnv", cells = colnames(counts))
+  extracted <- cnv_extract_generic_result(result, method = "infercnv", cells = colnames(counts))
+  gene_index <- match(rownames(extracted$cnv_matrix), gene_order$gene)
+  coord_cols <- c("chr", "start", "end")
+  extracted$bin_info[coord_cols] <- gene_order[gene_index, coord_cols, drop = FALSE]
+  extracted
 }
 
 cnv_run_numbat <- function(
@@ -823,9 +827,19 @@ cnv_extract_from_seurat_result <- function(
     cell_info$cluster <- as.character(meta[[cluster_col]])
   }
   rownames(cell_info) <- cell_info$cell
-  candidates <- cnv_find_matrix_candidates(result@tools, cells = cells)
-  if (is.null(candidates$matrix)) {
-    candidates <- cnv_find_seurat_assay_matrix(result, cells = cells)
+  if (identical(method, "fastCNV")) {
+    candidates <- cnv_find_seurat_assay_matrix(result, cells = cells, assay_names = "genomicScores")
+    if (is.null(candidates$matrix)) {
+      log_message(
+        "{.pkg fastCNV} did not return a detectable CNV matrix in the {.val genomicScores} assay",
+        message_type = "error"
+      )
+    }
+  } else {
+    candidates <- cnv_find_matrix_candidates(result@tools, cells = cells)
+    if (is.null(candidates$matrix)) {
+      candidates <- cnv_find_seurat_assay_matrix(result, cells = cells)
+    }
   }
   list(
     cnv_matrix = candidates$matrix,
@@ -1658,12 +1672,12 @@ cnv_call_backend_fun <- function(fun, args) {
   do.call(fun, args[names(args) %in% allowed])
 }
 
-cnv_find_seurat_assay_matrix <- function(result, cells) {
-  assay_names <- intersect(
-    c("genomicScores", "rawGenomicScores", "CNV", "CNA", "cnv", "cna"),
-    names(result@assays)
-  )
-  for (assay in assay_names) {
+cnv_find_seurat_assay_matrix <- function(
+  result,
+  cells,
+  assay_names = c("genomicScores", "rawGenomicScores", "CNV", "CNA", "cnv", "cna")
+) {
+  for (assay in intersect(assay_names, names(result@assays))) {
     for (layer in c("data", "counts", "scale.data")) {
       mat <- tryCatch(
         GetAssayData5(result, assay = assay, layer = layer),
