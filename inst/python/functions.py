@@ -3435,6 +3435,24 @@ def CellRank(
     return adata, estimator, final_kernel, payload
 
 
+def _check_paga_pynndescent_runtime():
+    """Do not continue with a dependency replaced underneath an active R session."""
+    import sys
+    from importlib.metadata import version
+
+    loaded = sys.modules.get("pynndescent")
+    if loaded is None:
+        return
+    loaded_version = getattr(loaded, "__version__", None)
+    installed_version = version("pynndescent")
+    if loaded_version is not None and loaded_version != installed_version:
+        raise RuntimeError(
+            f"PyNNDescent {loaded_version} is still loaded, but "
+            f"{installed_version} is installed. Restart R (or the Python process) "
+            "after PrepareEnv() updates dependencies, then rerun RunPAGA()."
+        )
+
+
 def PAGA(
     adata=None,
     h5ad=None,
@@ -3493,6 +3511,8 @@ def PAGA(
             numba_runtime_optional=True,
             verbose=verbose,
         )
+
+    _check_paga_pynndescent_runtime()
 
     try:
         import matplotlib

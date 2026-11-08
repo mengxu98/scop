@@ -522,3 +522,14 @@ test_that("isolated profiles keep exclusive pins without redefining shared ones"
   expect_identical(resolve("magic-impute"), "magic-impute==3.0.0")
   expect_identical(resolve("phate"), "phate==1.0.11")
 })
+
+
+test_that("Scanpy profiles pin a matrix-returning PyNNDescent", {
+  for (version in c("3.10-1", "3.11-1", "3.12-1")) {
+    for (module in c("scanpy", "scvelo", "cellrank")) {
+      req <- env_requirements(version = version, modules = module)
+      expect_identical(req$packages[["pynndescent"]], "pynndescent==0.6.0")
+      expect_identical(req$install_methods[["pynndescent"]], "pip")
+    }
+  }
+})

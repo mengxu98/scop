@@ -10,6 +10,8 @@
 
 # scop (development version)
 
+* **fix**: Pin PyNNDescent 0.6.0 in Scanpy environments to prevent sparse-array `getnnz` failures in large-data `RunPAGA()` neighbor searches. If an R session still holds a replaced PyNNDescent version, report that R must be restarted before analysis.
+
 * **fix**: `PrepareEnv()` no longer passes two conflicting pandas pins to pip during a default installation (#561). Environment requirements emit one pin per package, isolated profiles such as `scprep_env` no longer redefine shared package versions, and `include_optional` no longer pulls in `magic` (isolated `scprep_env`) or `moscot` (own JAX profile), so the `optional` shortcut stays usable.
 
 * **fix**: `RunMonocle2()` forwards `verbose` to Monocle dimensionality reduction so DDRTree progress follows the requested verbosity.
