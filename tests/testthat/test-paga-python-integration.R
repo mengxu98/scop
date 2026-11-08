@@ -1,17 +1,22 @@
-# Run in a fresh R process with RETICULATE_PYTHON pointing to a prepared
-# SCOP Scanpy environment. The test never provisions or upgrades Python packages.
+# The integration test runs in a child R process using an explicitly selected,
+# pre-provisioned Python interpreter. It never installs or updates dependencies.
 test_that("real large-data RunPAGA roundtrips Seurat through AnnData", {
-  skip_if_not(nzchar(Sys.getenv("RETICULATE_PYTHON")))
+  python <- Sys.getenv("RETICULATE_PYTHON")
+  skip_if_not(nzchar(python))
+  skip_if_not(file.exists(python))
   skip_if_not_installed("callr")
 
-  skip_if_not(reticulate::py_module_available("scanpy"))
-  skip_if_not(reticulate::py_module_available("pynndescent"))
-  expect_identical(
-    reticulate::py_eval(
-      "import importlib.metadata; importlib.metadata.version('pynndescent')"
-    ),
-    "0.6.0"
-  )
+  python_check <- suppressWarnings(system2(
+    python,
+    c("-c", shQuote(
+      "import scanpy, pynndescent; print(pynndescent.__version__)"
+    )),
+    stdout = TRUE,
+    stderr = TRUE
+  ))
+  python_status <- attr(python_check, "status")
+  skip_if(!is.null(python_status) && python_status != 0L)
+  expect_identical(tail(python_check, 1L), "0.6.0")
 
   package_path <- getNamespaceInfo(asNamespace("scop"), "path")
   output <- callr::r(function(package_path, libpath) {
