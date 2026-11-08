@@ -4,9 +4,8 @@ The default Euclidean neighbor search switches to PyNNDescent at 8192 cells.
 `test_paga_neighbors.py` uses 8200 synthetic cells so it exercises this path,
 then checks PAGA connectivity, layout, and graph embedding. It does not replace
 Scanpy, PyNNDescent, or numerical results; only the R-specific logger is stubbed.
-The existing Ubuntu job in `.github/workflows/R-CMD-check.yaml` runs this
-regression in an isolated Python 3.10 environment. No separate workflow or job
-is required. To run locally, install the same dependencies and execute:
+Run this regression locally in an isolated Python 3.10 environment. Install
+the dependencies and execute:
 
 ```sh
 python -m pip install 'scanpy==1.11.3' 'scipy==1.15.3' 'pynndescent==0.6.0' 'igraph==0.11.9' 'numpy==1.26.4' 'pandas==2.2.0' 'anndata==0.11.4' 'zarr<3' 'numba==0.66.0' 'llvmlite==0.48.0' 'scikit-learn==1.7.0' 'matplotlib==3.10.8'
