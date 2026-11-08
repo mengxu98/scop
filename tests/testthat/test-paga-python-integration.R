@@ -1,10 +1,10 @@
-# The integration test runs in a child R process using an explicitly selected,
-# pre-provisioned Python interpreter. It never installs or updates dependencies.
+# Discover an existing interpreter without provisioning a Python environment.
+# Run in a child R process so other tests cannot select a different interpreter.
 test_that("real large-data RunPAGA roundtrips Seurat through AnnData", {
-  python <- Sys.getenv("RETICULATE_PYTHON")
-  skip_if_not(nzchar(python))
-  skip_if_not(file.exists(python))
   skip_if_not_installed("callr")
+  config <- reticulate::py_discover_config()
+  skip_if(is.null(config), "No existing Python interpreter available")
+  python <- config$python
 
   python_check <- suppressWarnings(system2(
     python,
@@ -19,12 +19,14 @@ test_that("real large-data RunPAGA roundtrips Seurat through AnnData", {
   expect_identical(tail(python_check, 1L), "0.6.0")
 
   package_path <- getNamespaceInfo(asNamespace("scop"), "path")
-  output <- callr::r(function(package_path, libpath) {
+  output <- callr::r(function(package_path, libpath, python) {
     .libPaths(libpath)
+    reticulate::use_python(python, required = TRUE)
+    reticulate::py_config()
     if (file.exists(file.path(package_path, ".Rbuildignore"))) {
-      pkgload::load_all(package_path, quiet = TRUE)
+      pkgload::load_all(package_path, quiet = TRUE, compile = FALSE)
     } else {
-      library(scop)
+      loadNamespace("scop")
     }
 
     # The Python environment is prepared before this test. Mock only package
@@ -33,6 +35,28 @@ test_that("real large-data RunPAGA roundtrips Seurat through AnnData", {
       PrepareEnv = function(...) invisible(NULL),
       .package = "scop"
     )
+
+    getFromNamespace("scop_python_import", "scop")("functions", convert = FALSE)
+    reticulate::py_run_string(paste(
+      "import sys, types",
+      "from unittest.mock import patch",
+      "from functions import _check_paga_pynndescent_runtime",
+      "with patch.dict(sys.modules, {'pynndescent': None}):",
+      "    _check_paga_pynndescent_runtime()",
+      "with patch('importlib.metadata.version', return_value='0.6.0'):",
+      "    with patch.dict(sys.modules, {'pynndescent': types.SimpleNamespace(__version__='0.6.0')}):",
+      "        _check_paga_pynndescent_runtime()",
+      "    with patch.dict(sys.modules, {'pynndescent': types.SimpleNamespace(__version__='0.7.0')}):",
+      "        try:",
+      "            _check_paga_pynndescent_runtime()",
+      "        except RuntimeError as error:",
+      "            assert 'Restart R' in str(error)",
+      "            assert '0.7.0 is still loaded' in str(error)",
+      "            assert '0.6.0 is installed' in str(error)",
+      "        else:",
+      "            raise AssertionError('Stale PyNNDescent was accepted')",
+      sep = "\n"
+    ))
 
     set.seed(42)
     counts <- Matrix::Matrix(
@@ -77,7 +101,7 @@ test_that("real large-data RunPAGA roundtrips Seurat through AnnData", {
       dirpath = withr::local_tempdir(),
       verbose = FALSE
     )
-  }, args = list(package_path, .libPaths()), user_profile = FALSE, show = TRUE)
+  }, args = list(package_path, .libPaths(), python), user_profile = FALSE, show = TRUE)
 
   expect_s4_class(output, "Seurat")
   expect_identical(colnames(output), paste0("cell", seq_len(8200)))
