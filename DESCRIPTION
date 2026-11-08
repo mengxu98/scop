@@ -20,6 +20,7 @@ Depends:
 Imports:
     cli,
     graphics,
+    grid,
     dplyr,
     ggnewscale (>= 0.5.2),
     ggrepel,
@@ -92,7 +93,6 @@ Suggests:
     GOSemSim,
     GSVA,
     grDevices,
-    grid,
     harmony,
     HDF5Array,
     htmlwidgets,
@@ -146,6 +146,7 @@ Suggests:
     scmap,
     SeuratData,
     stringr,
+    systemfonts,
     sva,
     SingleR,
     SingleCellExperiment,
