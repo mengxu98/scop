@@ -135,3 +135,123 @@ test_that("ambiguous annotation and duplicate enrichment fail clearly", {
     cellstate_fixture_plot(f)
   })
 })
+
+test_that("annotation maps take precedence over unused metadata columns", {
+  f <- cellstate_fixture()
+  map <- c(A = "One", B = "Two", C = "Three")
+  p <- cellstate_fixture_plot(
+    f, class.by = "old_class", subclass.by = "old_subclass",
+    class.map = map, subclass.map = map
+  )
+  expect_equal(p$data$clusters$class, unname(map[p$data$clusters$cluster]))
+  expect_equal(p$data$clusters$subclass, unname(map[p$data$clusters$cluster]))
+  expect_error(cellstate_fixture_plot(f, class.by = "old_class"), "Missing metadata")
+  expect_error(cellstate_fixture_plot(f, class.map = map[-1]), "cover every cluster")
+})
+
+test_that("default PDF export needs no font registration", {
+  p <- cellstate_fixture_plot(cellstate_fixture())
+  file <- withr::local_tempfile(fileext = ".pdf")
+  expect_no_condition(ggplot2::ggsave(
+    file, p$plot, width = p$width_mm, height = p$height_mm, units = "mm"
+  ))
+  expect_gt(file.info(file)$size, 1000)
+})
+
+test_that("marker size legends describe the displayed high fractions", {
+  f <- cellstate_fixture()
+  counts <- rbind(
+    M1 = c(rep(1, 18), 0, 0, rep(1, 19), 0, rep(1, 20)),
+    M2 = rep(1, 60)
+  )
+  colnames(counts) <- paste0("cell", seq_len(ncol(counts)))
+  object <- SeuratObject::CreateSeuratObject(Matrix::Matrix(counts, sparse = TRUE))
+  object <- SeuratObject::SetAssayData(
+    object, layer = "data", new.data = Matrix::Matrix(counts, sparse = TRUE)
+  )
+  object$cluster <- rep(c("A", "B", "C"), each = 20)
+  object$donor <- rep(c("d1", "d2"), 30)
+  tree <- stats::hclust(stats::dist(diag(3)))
+  tree$labels <- c("A", "B", "C")
+  p <- CellStatePlot(
+    object, "cluster", "donor", "M1", program.by = "donor",
+    gsea = f$gsea, tree = tree, return_data = TRUE
+  )
+  file <- withr::local_tempfile(fileext = ".pdf")
+  grDevices::pdf(file, family = "sans")
+  on.exit(grDevices::dev.off(), add = TRUE)
+  p$plot$layout$family <- "sans"
+  children <- as.list(grid::grid.force(p$plot)$children[[1]]$children)
+  legend <- Filter(function(g) {
+    inherits(g, "circle") && identical(unname(g$gp$fill), rep("#D3D3D3", 3))
+  }, children)
+  labels <- unlist(lapply(Filter(function(g) inherits(g, "text"), children), `[[`, "label"))
+  expect_equal(p$data$markers$proportion, c(.9, .95, 1))
+  expect_length(legend, 1)
+  expect_true(all(diff(as.numeric(legend[[1]]$r)) > 0))
+  expect_equal(as.numeric(legend[[1]]$r), p$data$markers$radius)
+  expect_true(any(grepl("0\\.9", labels)))
+})
+
+test_that("single-row panels reserve space for their vertical titles", {
+  f <- cellstate_fixture()
+  p <- CellStatePlot(
+    f$object, "cluster", "donor", "M1", program.by = "donor",
+    gsea = f$gsea, pathways = "H_ONE", family = "sans", return_data = TRUE
+  )
+  file <- withr::local_tempfile(fileext = ".pdf")
+  grDevices::pdf(file, width = p$width_mm / 25.4, height = p$height_mm / 25.4)
+  on.exit(grDevices::dev.off(), add = TRUE)
+  g <- grid::grid.force(p$plot)
+  vp <- g$children[[1]]$vp
+  grid::pushViewport(vp)
+  on.exit(grid::popViewport(), add = TRUE, after = FALSE)
+  titles <- Filter(function(g) {
+    inherits(g, "text") && all(g$label %in% c("Marker gene", "expression", "Pathway", "enrichment"))
+  }, as.list(g$children[[1]]$children))
+  expect_length(titles, 2)
+  bounds <- lapply(titles, function(title) {
+    vapply(seq_along(title$label), function(i) {
+      t <- grid::textGrob(
+        title$label[i], x = title$x[i], y = title$y[i],
+        just = c("left", "bottom"), rot = 90, gp = title$gp
+      )
+      c(
+        north = grid::convertY(grid::grobY(t, "north"), "bigpts", valueOnly = TRUE),
+        south = grid::convertY(grid::grobY(t, "south"), "bigpts", valueOnly = TRUE)
+      )
+    }, numeric(2))
+  })
+  expect_gt(min(bounds[[1]]["south", ]), max(bounds[[2]]["north", ]))
+})
+
+test_that("AnnData objects work with either reticulate conversion mode", {
+  skip_if_not_installed("reticulate")
+  if (!reticulate::py_available(initialize = FALSE)) {
+    skip("Requires an existing initialized Python environment")
+  }
+  if (!reticulate::py_module_available("anndata") ||
+      !reticulate::py_module_available("scipy.sparse")) {
+    skip("Existing Python environment needs anndata and scipy")
+  }
+  f <- cellstate_fixture()
+  expected <- cellstate_fixture_plot(f)
+  scipy <- reticulate::import("scipy.sparse", convert = FALSE)
+  for (convert in c(TRUE, FALSE)) {
+    ad <- reticulate::import("anndata", convert = convert)
+    for (sparse in c(FALSE, TRUE)) {
+      x <- t(f$counts)
+      if (sparse) x <- scipy$csr_matrix(x)
+      object <- ad$AnnData(
+        X = x, obs = f$object[[]], var = data.frame(row.names = rownames(f$counts))
+      )
+      p <- CellStatePlot(
+        object, "cluster", "donor", c("M1", "M2", "M4"),
+        program.scores = c(High = "score1", Low = "score2"),
+        gsea = f$gsea, return_data = TRUE
+      )
+      expect_equal(p$data, expected$data)
+      expect_equal(p$tree, expected$tree)
+    }
+  }
+})
