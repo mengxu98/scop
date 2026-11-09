@@ -144,13 +144,17 @@ test_that("constant dot domains and zero-height trees draw without side effects"
 test_that("ambiguous annotation and duplicate enrichment fail clearly", {
   f <- cellstate_fixture()
   f$object$annotation <- c("One", "Two", "One", "One", "One", "One")
-  expect_snapshot(error = TRUE, {
-    cellstate_fixture_plot(f, class.by = "annotation")
-  })
+  expect_error(
+    cellstate_fixture_plot(f, class.by = "annotation"),
+    "Mixed annotations in cluster A; supply an explicit map.",
+    fixed = TRUE
+  )
   f$gsea <- rbind(f$gsea, f$gsea[1, ])
-  expect_snapshot(error = TRUE, {
-    cellstate_fixture_plot(f)
-  })
+  expect_error(
+    cellstate_fixture_plot(f),
+    "Duplicate GSEA cluster/pathway rows; select one result per combination.",
+    fixed = TRUE
+  )
 })
 
 test_that("annotation maps take precedence over unused metadata columns", {
