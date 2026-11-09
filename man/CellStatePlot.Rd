@@ -35,7 +35,7 @@ CellStatePlot(
   enrichment_palette = "RdBu",
   palcolor = NULL,
   family = "sans",
-  title = "Cell states",
+  title = NULL,
   panel_label = NULL,
   return_data = FALSE
 )
@@ -120,7 +120,7 @@ program and sample, or color ramps for expression and enrichment.}
 \item{family}{Font family. Systemfonts, when available, supplies accurate
 text measurements; otherwise approximate character widths are used.}
 
-\item{title, panel_label}{Optional title and panel letter.}
+\item{title, panel_label}{Optional title and panel letter. Both default to NULL.}
 
 \item{return_data}{Return the plot, numerical summaries, tree, provenance
 and native dimensions instead of only the plot.}

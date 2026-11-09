@@ -401,3 +401,25 @@ test_that("large sample legends wrap instead of widening the canvas", {
   }
   expect_lte(widths[2], widths[1] * 1.2)
 })
+
+test_that("plots omit repeated class headings and keep titles optional", {
+  f <- cellstate_fixture()
+  map <- c(A = "Progenitor", B = "Progenitor", C = "Differentiated")
+  p <- cellstate_fixture_plot(f, class.map = map)
+  file <- withr::local_tempfile(fileext = ".pdf")
+  grDevices::pdf(file, width = p$width_mm / 25.4, height = p$height_mm / 25.4)
+  on.exit(grDevices::dev.off(), add = TRUE)
+  labels <- function(plot) {
+    children <- as.list(grid::grid.force(plot)$children[[1]]$children)
+    unlist(lapply(Filter(function(g) inherits(g, "text"), children), `[[`, "label"))
+  }
+  text <- labels(p$plot)
+  expect_null(formals(CellStatePlot)$title)
+  expect_false(any(c("Cell states", unname(map)) %in% text))
+  expect_true(all(c("A", "B", "C") %in% text))
+  expect_equal(p$data$clusters$class, unname(map[p$data$clusters$cluster]))
+  q <- cellstate_fixture_plot(f, class.map = map, title = "Custom title\nSecond line")
+  expect_true(all(c("Custom title", "Second line") %in% labels(q$plot)))
+  expect_identical(p$data, q$data)
+  expect_gt(q$height_mm, p$height_mm)
+})

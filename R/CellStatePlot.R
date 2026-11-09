@@ -61,7 +61,7 @@
 #'   program and sample, or color ramps for expression and enrichment.
 #' @param family Font family. Systemfonts, when available, supplies accurate
 #'   text measurements; otherwise approximate character widths are used.
-#' @param title,panel_label Optional title and panel letter.
+#' @param title,panel_label Optional title and panel letter. Both default to NULL.
 #' @param return_data Return the plot, numerical summaries, tree, provenance
 #'   and native dimensions instead of only the plot.
 #'
@@ -140,7 +140,7 @@ CellStatePlot <- function(
   enrichment_palette = "RdBu",
   palcolor = NULL,
   family = "sans",
-  title = "Cell states",
+  title = NULL,
   panel_label = NULL,
   return_data = FALSE
 ) {

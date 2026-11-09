@@ -151,27 +151,6 @@ cellstate_grob <- function(data, tree, features, feature.labels, pathways,
   ends <- cumsum(runs$lengths)
   starts <- c(1L, head(ends, -1L) + 1L)
   edges <- c(left, (xs[head(ends, -1L)] + xs[starts[-1L]]) / 2 - .35, right)
-  headers <- mapply(wrap, gsub("_", " ", runs$values), diff(edges) - 2, USE.NAMES = FALSE)
-  rows <- lengths(strsplit(headers, "\n", fixed = TRUE))
-  header.starts <- integer(length(headers))
-  occupied <- numeric()
-  for (i in seq_along(headers)) {
-    width <- max(measure(strsplit(headers[i], "\n", fixed = TRUE)[[1]]))
-    center <- mean(edges[i + 0:1])
-    row <- 0L
-    repeat {
-      use <- row + seq_len(rows[i])
-      free <- vapply(use, function(j) {
-        j > length(occupied) || occupied[j] + 2 <= center - width / 2
-      }, logical(1))
-      if (all(free)) break
-      row <- row + 1L
-    }
-    header.starts[i] <- row
-    length(occupied) <- max(length(occupied), max(use))
-    occupied[is.na(occupied)] <- -Inf
-    occupied[use] <- center + width / 2
-  }
   title.lines <- if (is.null(title) || !nzchar(title)) {
     character()
   } else {
@@ -180,8 +159,7 @@ cellstate_grob <- function(data, tree, features, feature.labels, pathways,
   display <- function(s) sub("^t cell$", "T cell", gsub("_", " ", s, fixed = TRUE))
   cluster.labels <- display(data$clusters$cluster)
   title.y <- 8
-  header.y <- title.y + max(1L, length(title.lines)) * 7 + 3
-  tree.top <- header.y + max(1L, length(occupied)) * 7 + 3
+  tree.top <- if (length(title.lines)) title.y + (length(title.lines) - 1L) * 7 + 4 else 4
   tree.height <- 24
   tree.bottom <- tree.top + tree.height
   sub.top <- tree.bottom + 3
@@ -267,9 +245,8 @@ cellstate_grob <- function(data, tree, features, feature.labels, pathways,
   )
   layout <- list(
     W = W, H = H, xs = xs, left = left, right = right, label.x = label.x,
-    runs = runs, edges = edges, headers = headers, header.starts = header.starts,
-    occupied = occupied, cluster.labels = cluster.labels,
-    title.lines = title.lines, title.y = title.y, header.y = header.y,
+    runs = runs, edges = edges, cluster.labels = cluster.labels,
+    title.lines = title.lines, title.y = title.y,
     panel_label = panel_label, family = family,
     tree.top = tree.top, tree.bottom = tree.bottom, tree.height = tree.height,
     sub.top = sub.top, sub.height = sub.height,
@@ -380,9 +357,6 @@ makeContent.scop_cell_state_plot <- function(x) {
       a$bottom - a$tree.bottom - 1, palette$body[class]
     )
     rect(a$edges[i], a$tree.top - 1, diff(a$edges)[i], a$tree.height + 2, palette$header[class])
-    words <- strsplit(a$headers[i], "\n", fixed = TRUE)[[1]]
-    yy <- a$header.y + (a$header.starts[i] + seq_along(words) - 1L) * 7
-    text(words, mean(a$edges[i + 0:1]), yy, just = "centre", col = "black")
   }
   text(a$panel_label, 1.7457, a$title.y, 8, "bold")
   text(a$title.lines, mean(c(a$left, a$right)), a$title.y +
