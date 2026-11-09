@@ -9,23 +9,31 @@
 #' @md
 #' @param object An analysed Seurat or Python AnnData object. Read saved objects
 #'   first with `readRDS()` or `h5ad_to_srt()`. AnnData uses the existing Python
-#'   environment; this function installs nothing.
+#'   environment and reads only the selected expression layer into R memory.
 #' @param group.by,sample.by Metadata columns identifying clusters and biological
-#'   samples or donors. Both must be complete.
-#' @param features Marker genes in display order. Unmatched genes remain missing.
+#'   samples or donors. Both must be complete. Sample bars show descriptive
+#'   within-cluster cell fractions.
+#' @param features Marker genes in display order. Colors show cluster-mean
+#'   z scores using population SD, clipped to 0--2; constant genes have z = 0.
+#'   Dot area increases with expressing fraction over the displayed range.
+#'   Unmatched genes remain missing.
 #' @param program.by A metadata column containing per-cell program assignments.
+#'   Program bars show descriptive within-cluster cell fractions.
 #' @param program.scores Numeric metadata columns containing program scores.
 #'   Names, if supplied, are used as program labels. The highest score wins;
 #'   ties are Ambiguous and cells with no finite scores are Unassigned.
 #' @param programs Alternatively, a uniquely named list of gene sets. Each gene
 #'   is standardized across cells using the population SD, then averaged within
 #'   each set. The largest mean determines the relative assignment. At least
-#'   two sets must have min.program.genes matched, variable genes.
+#'   two sets must have min.program.genes matched, variable genes. These relative
+#'   scores describe assignments rather than inferred biological states.
 #'   Supply exactly one of program.by, program.scores and programs.
-#' @param gsea A precomputed RunGSEA result or enrichment table. Native columns
-#'   are Groups, Database, ID, Description, NES, pvalue and p.adjust.
+#' @param gsea A precomputed RunGSEA result or enrichment table. RunGSEA columns
+#'   include Groups, Database, ID, Description, NES, pvalue and p.adjust.
 #'   Tidy columns cluster, feature, nes, p_value and optional padj, status
-#'   are also accepted. NOT_EVALUABLE records remain missing.
+#'   are also accepted. NOT_EVALUABLE records remain missing. Colors encode NES
+#'   clipped to -2.5--2.5; dot area is proportional to -ln(raw P). P = 1 has zero
+#'   area; P = 0 uses 1e-10 for drawing only. Raw values are preserved.
 #'   If NULL, use the Seurat object's stored RunGSEA result for group.by and
 #'   test.use. This plot does not run differential expression or enrichment.
 #' @param pathways Pathway IDs or unambiguous descriptions in display order.
@@ -63,51 +71,62 @@
 #'   text measurements; otherwise approximate character widths are used.
 #' @param title,panel_label Optional title and panel letter. Both default to NULL.
 #' @param return_data Return the plot, numerical summaries, tree, provenance
-#'   and native dimensions instead of only the plot.
+#'   and unscaled dimensions instead of only the plot.
+#' @param flip Logical. Rotate the entire plot clockwise by 90 degrees.
+#'   Default FALSE preserves the vertical layout; TRUE swaps width and height.
 #'
 #' @return A printable grid grob accepted by ggplot2::ggsave(). Attributes
-#'   width_mm and height_mm give its native dimensions. With return_data = TRUE,
+#'   width_mm and height_mm give its unscaled dimensions. With return_data = TRUE,
 #'   a list with plot, data, tree, provenance, width_mm and height_mm.
-#'
-#' @details
-#' Marker colors encode per-gene z scores of cluster means, using population SD;
-#' zero-variance genes have z = 0. Colors clip to 0--2. Marker area increases
-#' with expressing fraction over the displayed range. GSEA colors encode NES
-#' clipped to -2.5--2.5; area is proportional to -ln(raw P). P = 1 has zero
-#' area. P = 0 uses 1e-10 for drawing only. Raw values are retained.
-#' Missing expression or enrichment combinations use gray crosses.
-#'
-#' Sample and program bars are fractions of cells within a cluster; they are
-#' descriptive compositions, not sample-level statistical tests. Gene-set
-#' program assignments are relative scores, not inferred biological states.
-#' Only the selected expression layer is read from AnnData, into R memory.
-#' The input object is not modified and constructing a plot writes no files.
+#'   Missing expression or enrichment combinations use gray crosses.
+#'   The input object is not modified and constructing a plot writes no files.
 #'
 #' @seealso [adata_to_srt()], [h5ad_to_srt()], [RunGSEA()]
 #' @export
 #'
 #' @examples
-#' counts <- rbind(
-#'   M1 = c(2, 0, 0, 0, 4, 0),
-#'   M2 = c(0, 0, 2, 2, 0, 0),
-#'   M3 = c(0, 1, 0, 2, 1, 3),
-#'   M4 = rep(1, 6)
+#' data(pancreas_sub)
+#' counts <- GetAssayData5(pancreas_sub, assay = "RNA", layer = "counts")
+#' normalized <- counts %*% Matrix::Diagonal(x = 1e4 / Matrix::colSums(counts))
+#' dimnames(normalized) <- dimnames(counts)
+#' groups <- sort(unique(as.character(pancreas_sub$SubCellType)))
+#' scores <- vapply(groups, function(group) {
+#'   cells <- colnames(counts)[pancreas_sub$SubCellType == group]
+#'   FoldChange(
+#'     normalized,
+#'     cells.1 = cells, cells.2 = setdiff(colnames(counts), cells),
+#'     mean.fxn = function(x) log2(Matrix::rowMeans(x) + 1), fc.name = "log2FC"
+#'   )$log2FC
+#' }, numeric(nrow(counts)))
+#' pathways <- c(
+#'   "GO:0031016", "GO:0031017", "GO:0031018", "GO:0030073",
+#'   "GO:0008286", "GO:0007049", "GO:0006260", "GO:0006614"
 #' )
-#' colnames(counts) <- paste0("cell", seq_len(ncol(counts)))
-#' object <- SeuratObject::CreateSeuratObject(Matrix::Matrix(counts, sparse = TRUE))
-#' object$cluster <- rep(c("A", "B", "C"), each = 2)
-#' object$donor <- c("d1", "d2", "d1", "d2", "d1", "d1")
-#' object$program <- c("P1", "P1", "P2", "P2", "P1", "P2")
-#' enrichment <- expand.grid(
-#'   Groups = c("A", "B", "C"), ID = c("Pathway1", "Pathway2", "Pathway3")
+#' database <- PrepareDB(
+#'   species = "Mus_musculus", db = "GO_BP", db_IDtypes = "symbol",
+#'   convert_species = FALSE, verbose = FALSE
+#' )[["Mus_musculus"]][["GO_BP"]]
+#' term2gene <- unique(database$TERM2GENE[
+#'   database$TERM2GENE$Term %in% pathways, c("Term", "symbol")
+#' ])
+#' term2name <- database$TERM2NAME[
+#'   database$TERM2NAME$Term %in% pathways, c("Term", "Name")
+#' ]
+#' set.seed(20261109)
+#' gsea <- RunGSEA(
+#'   geneID = rep(rownames(counts), length(groups)), geneScore = as.numeric(scores),
+#'   geneID_groups = rep(groups, each = nrow(counts)),
+#'   species = "Mus_musculus", IDtype = "symbol", result_IDtype = "symbol",
+#'   TERM2GENE = term2gene, TERM2NAME = term2name,
+#'   minGSSize = 10, maxGSSize = 5000, nPermSimple = 10000, eps = 0,
+#'   convert_species = FALSE, verbose = FALSE
 #' )
-#' enrichment$NES <- c(1.5, -1.2, 0.5, 1, 0.7, -1.8, -0.6, 1.4, 2)
-#' enrichment$pvalue <- c(0.05, 0.01, 0.2, 0.02, 0.3, 0.01, 0.1, 0.05, NA)
 #' CellStatePlot(
-#'   object,
-#'   group.by = "cluster", sample.by = "donor",
-#'   features = rownames(counts), program.by = "program",
-#'   gsea = enrichment, layer = "counts", input.scale = "counts"
+#'   pancreas_sub,
+#'   group.by = "SubCellType", sample.by = "orig.ident",
+#'   features = c("Ins1", "Ins2", "Gcg", "Sst", "Ghrl", "Neurog3", "Fev", "Sox9", "Krt19", "Mki67"),
+#'   program.by = "Phase", class.by = "CellType", gsea = gsea, pathways = pathways,
+#'   layer = "counts", input.scale = "counts", flip = TRUE
 #' )
 CellStatePlot <- function(
   object,
@@ -142,9 +161,13 @@ CellStatePlot <- function(
   family = "sans",
   title = NULL,
   panel_label = NULL,
-  return_data = FALSE
+  return_data = FALSE,
+  flip = FALSE
 ) {
   input.scale <- match.arg(input.scale)
+  if (!is.logical(flip) || length(flip) != 1L || is.na(flip)) {
+    stop("flip must be TRUE or FALSE.")
+  }
   for (nm in c("group.by", "sample.by")) {
     value <- get(nm)
     if (!is.character(value) || length(value) != 1L || is.na(value) ||
@@ -248,7 +271,10 @@ CellStatePlot <- function(
   if (!length(matched)) stop("No marker genes matched the expression gene IDs.")
   absent <- setdiff(features, matched)
   if (length(absent)) {
-    warning("Unmatched markers retained as missing: ", paste(absent, collapse = ", "))
+    thisutils::log_message(
+      "Unmatched markers retained as missing: {paste(absent, collapse = ', ')}",
+      message_type = "warning", verbose = TRUE
+    )
   }
   gm <- means[matched, , drop = FALSE]
   centered <- gm - rowMeans(gm)
@@ -369,7 +395,7 @@ CellStatePlot <- function(
   plot <- cellstate_grob(
     data, tree, features, marker.labels, enrichment$ids, pathway.labels,
     encoded, palette, expression_palette, enrichment_palette,
-    palcolor, family, title, panel_label
+    palcolor, family, title, panel_label, flip
   )
   provenance <- list(
     input = input$source, input.scale = input.scale, assay = input$assay,
@@ -418,28 +444,31 @@ cellstate_input <- function(object, assay, layer, reduction) {
   }
   if (!is.null(assay)) stop("assay applies to Seurat; use layer for AnnData.")
   mat <- if (is.null(layer) || identical(layer, "X")) {
-    object$X
+    reticulate::py_get_attr(object, "X")
   } else {
-    if (!layer %in% get_adata_keys(object$layers)) stop("Unknown AnnData layer: ", layer)
-    get_adata_element(object$layers, layer)
+    layers <- reticulate::py_get_attr(object, "layers")
+    if (!layer %in% get_adata_keys(layers)) stop("Unknown AnnData layer: ", layer)
+    get_adata_element(layers, layer)
   }
   if (inherits(mat, "python.builtin.object") &&
     reticulate::py_has_attr(mat, "to_memory")) {
-    mat <- mat$to_memory()
+    mat <- reticulate::py_get_attr(mat, "to_memory")()
   }
   if (inherits(mat, "h5py._hl.dataset.Dataset")) {
-    mat <- reticulate::import("numpy", convert = FALSE)$asarray(mat)
+    numpy <- reticulate::import("numpy", convert = FALSE)
+    mat <- reticulate::py_get_attr(numpy, "asarray")(mat)
   }
   x <- Matrix::t(adata_matrix_to_r(mat))
   dimnames(x) <- list(
     as.character(get_adata_names(object, "var")),
     as.character(get_adata_names(object, "obs"))
   )
-  meta <- as.data.frame(py_to_r2(object$obs), check.names = FALSE)
+  meta <- as.data.frame(py_to_r2(reticulate::py_get_attr(object, "obs")), check.names = FALSE)
   embedding <- NULL
   if (!is.null(reduction)) {
-    if (!reduction %in% get_adata_keys(object$obsm)) stop("Unknown AnnData obsm key: ", reduction)
-    embedding <- as.matrix(py_to_r2(get_adata_element(object$obsm, reduction)))
+    obsm <- reticulate::py_get_attr(object, "obsm")
+    if (!reduction %in% get_adata_keys(obsm)) stop("Unknown AnnData obsm key: ", reduction)
+    embedding <- as.matrix(py_to_r2(get_adata_element(obsm, reduction)))
     rownames(embedding) <- colnames(x)
   }
   list(
@@ -562,12 +591,10 @@ cellstate_gsea <- function(gsea, groups, pathways, db) {
   if (!length(ids)) stop("Select at least one pathway.")
   labels <- gsub("_", " ", sub("^HALLMARK_", "", descriptions))
   labels <- vapply(labels, \(s) paste(strwrap(s, width = 22L), collapse = "\n"), character(1))
-  result <- expand.grid(cluster = groups, feature = ids, stringsAsFactors = FALSE)
-  index <- match(
-    paste(result$cluster, result$feature, sep = "\r"),
-    paste(gsea$cluster, gsea$feature, sep = "\r")
+  result <- expand.grid(
+    cluster = groups, feature = ids, stringsAsFactors = FALSE, KEEP.OUT.ATTRS = FALSE
   )
-  result <- cbind(result, gsea[index, setdiff(names(gsea), c("cluster", "feature")), drop = FALSE])
+  result <- dplyr::left_join(result, gsea, by = c("cluster", "feature"))
   rownames(result) <- NULL
   if (!"status" %in% names(result)) result$status <- NA_character_
   result$status <- as.character(result$status)
@@ -600,17 +627,24 @@ cellstate_encode <- function(data, min.pct) {
     3.259 * sqrt(pmax(0, pmin(1, p / upper)))
   }
   marker.ticks <- seq(domain[1], domain[2], length.out = 3L)
-  for (digits in 2:17) {
-    marker.labels <- format(marker.ticks, trim = TRUE, digits = digits)
-    if (!anyDuplicated(marker.labels)) break
+  format_ticks <- function(ticks) {
+    for (digits in 2:17) {
+      labels <- format(ticks, trim = TRUE, digits = digits)
+      if (!anyDuplicated(labels)) break
+    }
+    labels
   }
+  marker.labels <- format_ticks(marker.ticks)
+  size.ticks <- c(.2, .6, 1) * upper
+  size.labels <- format(round(size.ticks, 1), trim = TRUE)
+  if (anyDuplicated(size.labels)) size.labels <- format_ticks(size.ticks)
   markers$radius <- marker.radius(markers$proportion)
   pathways$radius <- pathway.radius(pathways$neg_log_p)
   list(
     markers = markers, pathways = pathways, marker.valid = valid,
     marker.radius = marker.radius, pathway.radius = pathway.radius,
     marker.ticks = marker.ticks, marker.labels = marker.labels,
-    size.ticks = c(.2, .6, 1) * upper
+    size.ticks = size.ticks, size.labels = size.labels
   )
 }
 
@@ -680,7 +714,7 @@ cellstate_palettes <- function(data, palette, expression_palette, enrichment_pal
 cellstate_grob <- function(data, tree, features, feature.labels, pathways,
                            pathway.labels, encoded, palette, expression_palette,
                            enrichment_palette, palcolor, family, title,
-                           panel_label) {
+                           panel_label, flip) {
   if (length(family) != 1L || is.na(family)) stop("family must be one font family.")
   if (length(title) > 1L || length(panel_label) > 1L ||
     anyNA(title) || anyNA(panel_label)) {
@@ -798,11 +832,10 @@ cellstate_grob <- function(data, tree, features, feature.labels, pathways,
   key.width <- function(label, values) {
     measure(label) + 6 + max(key.offsets(values) + 4 + measure(values))
   }
-  size.labels <- format(round(encoded$size.ticks, 1), trim = TRUE)
   key.widths <- c(
     key.width("Expression proportion", encoded$marker.labels),
     key.width("z-normalized expression", c("0", "1", "2")),
-    key.width("-ln(P)", size.labels),
+    key.width("-ln(P)", encoded$size.labels),
     key.width("GSEA NES", c("-2.5", "0", "2.5"))
   )
   W <- max(
@@ -847,11 +880,11 @@ cellstate_grob <- function(data, tree, features, feature.labels, pathways,
   plot <- grid::gTree(
     data = data, tree = tree, features = features, feature.labels = feature.labels,
     pathways = pathways, pathway.labels = pathway.labels, encoded = encoded,
-    palette = palette, colors = colors, layout = layout,
+    palette = palette, colors = colors, layout = layout, flip = flip,
     name = "cell-state-plot", cl = "scop_cell_state_plot"
   )
-  attr(plot, "width_mm") <- W / 72 * 25.4
-  attr(plot, "height_mm") <- H / 72 * 25.4
+  attr(plot, "width_mm") <- (if (flip) H else W) / 72 * 25.4
+  attr(plot, "height_mm") <- (if (flip) W else H) / 72 * 25.4
   plot
 }
 
@@ -869,9 +902,11 @@ makeContent.scop_cell_state_plot <- function(x) {
   a <- x$layout
   data <- x$data
   palette <- x$palette
+  output.width <- if (x$flip) a$H else a$W
+  output.height <- if (x$flip) a$W else a$H
   scale <- min(
-    grid::convertWidth(grid::unit(1, "npc"), "inches", valueOnly = TRUE) * 72 / a$W,
-    grid::convertHeight(grid::unit(1, "npc"), "inches", valueOnly = TRUE) * 72 / a$H
+    grid::convertWidth(grid::unit(1, "npc"), "inches", valueOnly = TRUE) * 72 / output.width,
+    grid::convertHeight(grid::unit(1, "npc"), "inches", valueOnly = TRUE) * 72 / output.height
   )
   children <- list()
   add <- function(grob) children[[length(children) + 1L]] <<- grob
@@ -1057,7 +1092,7 @@ makeContent.scop_cell_state_plot <- function(x) {
     continuous(c(0, 1, 2), "expression"), a$key.x[2], a$key.y[2]
   )
   dot.key(
-    "-ln(P)", format(round(x$encoded$size.ticks, 1), trim = TRUE),
+    "-ln(P)", x$encoded$size.labels,
     x$encoded$pathway.radius(x$encoded$size.ticks), "#333333",
     a$key.x[3], a$key.y[3]
   )
@@ -1068,7 +1103,8 @@ makeContent.scop_cell_state_plot <- function(x) {
   )
   viewport <- grid::viewport(
     width = grid::unit(a$W * scale, "bigpts"), height = grid::unit(a$H * scale, "bigpts"),
-    xscale = c(0, a$W), yscale = c(a$H, 0)
+    xscale = c(0, a$W), yscale = c(a$H, 0),
+    angle = if (x$flip) -90 else 0
   )
   child <- grid::gTree(children = do.call(grid::gList, children), vp = viewport)
   grid::setChildren(x, grid::gList(child))

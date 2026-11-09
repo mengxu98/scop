@@ -120,8 +120,7 @@ test_that("constant dot domains and zero-height trees draw without side effects"
   tree <- stats::hclust(stats::dist(diag(3)))
   tree$labels <- c("A", "B", "C")
   tree$height[] <- 0
-  directory <- tempfile("cell-state-construction-")
-  dir.create(directory)
+  directory <- withr::local_tempdir(pattern = "cell-state-construction-")
   withr::local_dir(directory)
   devices <- grDevices::dev.list()
   p <- CellStatePlot(
@@ -133,7 +132,7 @@ test_that("constant dot domains and zero-height trees draw without side effects"
   expect_length(list.files(directory, all.files = TRUE, no.. = TRUE), 0)
   expect_gt(diff(p$plot$encoded$marker.radius(c(.4, .8))), 0)
   grDevices::cairo_pdf(
-    tempfile(fileext = ".pdf"),
+    withr::local_tempfile(fileext = ".pdf"),
     width = p$width_mm / 25.4, height = p$height_mm / 25.4
   )
   on.exit(grDevices::dev.off(), add = TRUE)
@@ -426,4 +425,102 @@ test_that("plots omit repeated class headings and keep titles optional", {
   expect_true(all(c("Custom title", "Second line") %in% labels(q$plot)))
   expect_identical(p$data, q$data)
   expect_gt(q$height_mm, p$height_mm)
+})
+
+test_that("GSEA rows are matched by both cluster and pathway IDs", {
+  f <- cellstate_fixture()
+  groups <- c("A\rB", "A", "C")
+  f$object$cluster <- rep(groups, each = 2)
+  f$gsea <- data.frame(
+    cluster = c("A\rB", "A", "C", "A\rB"),
+    feature = c("C", "B\rC", "C", "B\rC"),
+    nes = c(1, -2, 3, 4), p_value = c(.1, .2, NA, .4),
+    status = c("EVALUABLE", "EVALUABLE", "NOT_EVALUABLE", "NOT_EVALUABLE")
+  )
+  original <- f$gsea
+  p <- cellstate_fixture_plot(f)
+  g <- p$data$pathways
+  expect_identical(f$gsea, original)
+  expect_equal(g[c("cluster", "feature")], expand.grid(
+    cluster = sort(groups), feature = c("C", "B\rC"),
+    stringsAsFactors = FALSE, KEEP.OUT.ATTRS = FALSE
+  ))
+  first <- g$cluster == "A\rB" & g$feature == "C"
+  second <- g$cluster == "A" & g$feature == "B\rC"
+  missing <- g$cluster == "A" & g$feature == "C"
+  excluded <- g$cluster == "A\rB" & g$feature == "B\rC"
+  expect_equal(g$nes[first], 1)
+  expect_equal(g$nes[second], -2)
+  expect_equal(g$p_value[first], .1)
+  expect_equal(g$p_value[second], .2)
+  expect_true(is.na(g$nes[missing]))
+  expect_equal(g$status[missing], "NOT_EVALUABLE")
+  expect_equal(g$p_value[excluded], .4)
+  expect_true(is.na(g$neg_log_p[excluded]))
+})
+
+test_that("small enrichment values have distinct measured and drawn size labels", {
+  f <- cellstate_fixture()
+  f$gsea$pvalue[] <- .99
+  p <- cellstate_fixture_plot(f)
+  encoded <- p$plot$encoded
+  expect_length(unique(encoded$size.labels), 3)
+  expect_equal(as.numeric(encoded$size.labels), encoded$size.ticks, tolerance = .01)
+  file <- withr::local_tempfile(fileext = ".pdf")
+  grDevices::pdf(file, width = p$width_mm / 25.4, height = p$height_mm / 25.4)
+  on.exit(grDevices::dev.off(), add = TRUE)
+  children <- as.list(grid::grid.force(p$plot)$children[[1]]$children)
+  labels <- Filter(function(g) {
+    inherits(g, "text") && identical(g$label, encoded$size.labels)
+  }, children)
+  expect_length(labels, 1)
+  a <- p$plot$layout
+  expected.x <- a$key.x[3] + a$measure("-ln(P)") + 6 +
+    a$key.offsets(encoded$size.labels) + 4
+  expect_equal(as.numeric(labels[[1]]$x), expected.x)
+  expect_lte(max(expected.x + a$measure(encoded$size.labels)), a$W - 4)
+})
+
+test_that("flip rotates the whole plot and preserves numerical results", {
+  f <- cellstate_fixture()
+  p <- cellstate_fixture_plot(f)
+  q <- cellstate_fixture_plot(f, flip = TRUE)
+  expect_false(formals(CellStatePlot)$flip)
+  expect_identical(p$data, q$data)
+  expect_identical(p$tree, q$tree)
+  expect_identical(p$provenance, q$provenance)
+  expect_identical(p$plot$palette, q$plot$palette)
+  expect_identical(p$plot$colors, q$plot$colors)
+  geometry <- names(p$plot$layout)[!vapply(p$plot$layout, is.function, logical(1))]
+  expect_identical(p$plot$layout[geometry], q$plot$layout[geometry])
+  expect_identical(p$width_mm, q$height_mm)
+  expect_identical(p$height_mm, q$width_mm)
+  for (result in list(p, q)) {
+    file <- withr::local_tempfile(fileext = ".pdf")
+    local({
+      withr::local_pdf(file, width = result$width_mm / 25.4, height = result$height_mm / 25.4)
+      expect_no_condition(grid::grid.draw(result$plot))
+      drawn <- grid::grid.force(result$plot)
+      vp <- drawn$children[[1]]$vp
+      expect_equal(vp$angle, if (result$plot$flip) -90 else 0)
+      expect_equal(grid::convertWidth(vp$width, "mm", valueOnly = TRUE), p$width_mm)
+      expect_equal(grid::convertHeight(vp$height, "mm", valueOnly = TRUE), p$height_mm)
+    })
+    expect_gt(file.info(file)$size, 1000)
+  }
+})
+
+test_that("flip requires a single nonmissing logical value", {
+  f <- cellstate_fixture()
+  for (value in list(NULL, NA, c(TRUE, FALSE), 1, "TRUE")) {
+    expect_error(cellstate_fixture_plot(f, flip = value), "flip must be TRUE or FALSE.", fixed = TRUE)
+  }
+})
+
+test_that("unmatched marker warnings retain the gene IDs", {
+  f <- cellstate_fixture()
+  expect_warning(CellStatePlot(
+    f$object, "cluster", "donor", c("M1", "absent{marker}"),
+    program.by = "donor", gsea = f$gsea
+  ), "Unmatched markers retained as missing: absent{marker}", fixed = TRUE)
 })

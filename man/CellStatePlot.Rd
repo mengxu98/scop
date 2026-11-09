@@ -37,20 +37,26 @@ CellStatePlot(
   family = "sans",
   title = NULL,
   panel_label = NULL,
-  return_data = FALSE
+  return_data = FALSE,
+  flip = FALSE
 )
 }
 \arguments{
 \item{object}{An analysed Seurat or Python AnnData object. Read saved objects
 first with \code{readRDS()} or \code{h5ad_to_srt()}. AnnData uses the existing Python
-environment; this function installs nothing.}
+environment and reads only the selected expression layer into R memory.}
 
 \item{group.by, sample.by}{Metadata columns identifying clusters and biological
-samples or donors. Both must be complete.}
+samples or donors. Both must be complete. Sample bars show descriptive
+within-cluster cell fractions.}
 
-\item{features}{Marker genes in display order. Unmatched genes remain missing.}
+\item{features}{Marker genes in display order. Colors show cluster-mean
+z scores using population SD, clipped to 0--2; constant genes have z = 0.
+Dot area increases with expressing fraction over the displayed range.
+Unmatched genes remain missing.}
 
-\item{program.by}{A metadata column containing per-cell program assignments.}
+\item{program.by}{A metadata column containing per-cell program assignments.
+Program bars show descriptive within-cluster cell fractions.}
 
 \item{program.scores}{Numeric metadata columns containing program scores.
 Names, if supplied, are used as program labels. The highest score wins;
@@ -59,13 +65,16 @@ ties are Ambiguous and cells with no finite scores are Unassigned.}
 \item{programs}{Alternatively, a uniquely named list of gene sets. Each gene
 is standardized across cells using the population SD, then averaged within
 each set. The largest mean determines the relative assignment. At least
-two sets must have min.program.genes matched, variable genes.
+two sets must have min.program.genes matched, variable genes. These relative
+scores describe assignments rather than inferred biological states.
 Supply exactly one of program.by, program.scores and programs.}
 
-\item{gsea}{A precomputed RunGSEA result or enrichment table. Native columns
-are Groups, Database, ID, Description, NES, pvalue and p.adjust.
+\item{gsea}{A precomputed RunGSEA result or enrichment table. RunGSEA columns
+include Groups, Database, ID, Description, NES, pvalue and p.adjust.
 Tidy columns cluster, feature, nes, p_value and optional padj, status
-are also accepted. NOT_EVALUABLE records remain missing.
+are also accepted. NOT_EVALUABLE records remain missing. Colors encode NES
+clipped to -2.5--2.5; dot area is proportional to -ln(raw P). P = 1 has zero
+area; P = 0 uses 1e-10 for drawing only. Raw values are preserved.
 If NULL, use the Seurat object's stored RunGSEA result for group.by and
 test.use. This plot does not run differential expression or enrichment.}
 
@@ -123,12 +132,17 @@ text measurements; otherwise approximate character widths are used.}
 \item{title, panel_label}{Optional title and panel letter. Both default to NULL.}
 
 \item{return_data}{Return the plot, numerical summaries, tree, provenance
-and native dimensions instead of only the plot.}
+and unscaled dimensions instead of only the plot.}
+
+\item{flip}{Logical. Rotate the entire plot clockwise by 90 degrees.
+Default FALSE preserves the vertical layout; TRUE swaps width and height.}
 }
 \value{
 A printable grid grob accepted by ggplot2::ggsave(). Attributes
-width_mm and height_mm give its native dimensions. With return_data = TRUE,
+width_mm and height_mm give its unscaled dimensions. With return_data = TRUE,
 a list with plot, data, tree, provenance, width_mm and height_mm.
+Missing expression or enrichment combinations use gray crosses.
+The input object is not modified and constructing a plot writes no files.
 }
 \description{
 Combine a cluster similarity tree, class and subclass annotations, program
@@ -136,42 +150,49 @@ assignment, sample contributions, marker expression and precomputed GSEA.
 Columns represent clusters throughout the panel. The layout uses compact
 physical spacing and preserves its aspect ratio when resized.
 }
-\details{
-Marker colors encode per-gene z scores of cluster means, using population SD;
-zero-variance genes have z = 0. Colors clip to 0--2. Marker area increases
-with expressing fraction over the displayed range. GSEA colors encode NES
-clipped to -2.5--2.5; area is proportional to -ln(raw P). P = 1 has zero
-area. P = 0 uses 1e-10 for drawing only. Raw values are retained.
-Missing expression or enrichment combinations use gray crosses.
-
-Sample and program bars are fractions of cells within a cluster; they are
-descriptive compositions, not sample-level statistical tests. Gene-set
-program assignments are relative scores, not inferred biological states.
-Only the selected expression layer is read from AnnData, into R memory.
-The input object is not modified and constructing a plot writes no files.
-}
 \examples{
-counts <- rbind(
-  M1 = c(2, 0, 0, 0, 4, 0),
-  M2 = c(0, 0, 2, 2, 0, 0),
-  M3 = c(0, 1, 0, 2, 1, 3),
-  M4 = rep(1, 6)
+data(pancreas_sub)
+counts <- GetAssayData5(pancreas_sub, assay = "RNA", layer = "counts")
+normalized <- counts \%*\% Matrix::Diagonal(x = 1e4 / Matrix::colSums(counts))
+dimnames(normalized) <- dimnames(counts)
+groups <- sort(unique(as.character(pancreas_sub$SubCellType)))
+scores <- vapply(groups, function(group) {
+  cells <- colnames(counts)[pancreas_sub$SubCellType == group]
+  FoldChange(
+    normalized,
+    cells.1 = cells, cells.2 = setdiff(colnames(counts), cells),
+    mean.fxn = function(x) log2(Matrix::rowMeans(x) + 1), fc.name = "log2FC"
+  )$log2FC
+}, numeric(nrow(counts)))
+pathways <- c(
+  "GO:0031016", "GO:0031017", "GO:0031018", "GO:0030073",
+  "GO:0008286", "GO:0007049", "GO:0006260", "GO:0006614"
 )
-colnames(counts) <- paste0("cell", seq_len(ncol(counts)))
-object <- SeuratObject::CreateSeuratObject(Matrix::Matrix(counts, sparse = TRUE))
-object$cluster <- rep(c("A", "B", "C"), each = 2)
-object$donor <- c("d1", "d2", "d1", "d2", "d1", "d1")
-object$program <- c("P1", "P1", "P2", "P2", "P1", "P2")
-enrichment <- expand.grid(
-  Groups = c("A", "B", "C"), ID = c("Pathway1", "Pathway2", "Pathway3")
+database <- PrepareDB(
+  species = "Mus_musculus", db = "GO_BP", db_IDtypes = "symbol",
+  convert_species = FALSE, verbose = FALSE
+)[["Mus_musculus"]][["GO_BP"]]
+term2gene <- unique(database$TERM2GENE[
+  database$TERM2GENE$Term \%in\% pathways, c("Term", "symbol")
+])
+term2name <- database$TERM2NAME[
+  database$TERM2NAME$Term \%in\% pathways, c("Term", "Name")
+]
+set.seed(20261109)
+gsea <- RunGSEA(
+  geneID = rep(rownames(counts), length(groups)), geneScore = as.numeric(scores),
+  geneID_groups = rep(groups, each = nrow(counts)),
+  species = "Mus_musculus", IDtype = "symbol", result_IDtype = "symbol",
+  TERM2GENE = term2gene, TERM2NAME = term2name,
+  minGSSize = 10, maxGSSize = 5000, nPermSimple = 10000, eps = 0,
+  convert_species = FALSE, verbose = FALSE
 )
-enrichment$NES <- c(1.5, -1.2, 0.5, 1, 0.7, -1.8, -0.6, 1.4, 2)
-enrichment$pvalue <- c(0.05, 0.01, 0.2, 0.02, 0.3, 0.01, 0.1, 0.05, NA)
 CellStatePlot(
-  object,
-  group.by = "cluster", sample.by = "donor",
-  features = rownames(counts), program.by = "program",
-  gsea = enrichment, layer = "counts", input.scale = "counts"
+  pancreas_sub,
+  group.by = "SubCellType", sample.by = "orig.ident",
+  features = c("Ins1", "Ins2", "Gcg", "Sst", "Ghrl", "Neurog3", "Fev", "Sox9", "Krt19", "Mki67"),
+  program.by = "Phase", class.by = "CellType", gsea = gsea, pathways = pathways,
+  layer = "counts", input.scale = "counts", flip = TRUE
 )
 }
 \seealso{
