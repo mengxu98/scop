@@ -2,16 +2,19 @@ local_edition(3)
 
 cellstate_fixture <- function() {
   counts <- matrix(
-    c(2, 0, 0, 0, 4, 0,
+    c(
+      2, 0, 0, 0, 4, 0,
       0, 0, 2, 2, 0, 0,
       0, 1, 0, 2, 1, 3,
-      1, 1, 1, 1, 1, 1),
+      1, 1, 1, 1, 1, 1
+    ),
     nrow = 4, byrow = TRUE,
     dimnames = list(paste0("M", 1:4), paste0("c", 1:6))
   )
   object <- SeuratObject::CreateSeuratObject(Matrix::Matrix(counts, sparse = TRUE))
   object <- SeuratObject::SetAssayData(
-    object, layer = "data", new.data = Matrix::Matrix(counts, sparse = TRUE)
+    object,
+    layer = "data", new.data = Matrix::Matrix(counts, sparse = TRUE)
   )
   object$cluster <- rep(c("A", "B", "C"), each = 2)
   object$donor <- c("d1", "d2", "d1", "d2", "d1", "d1")
@@ -27,7 +30,8 @@ cellstate_fixture <- function() {
 
 cellstate_fixture_plot <- function(fixture, ...) {
   CellStatePlot(
-    fixture$object, group.by = "cluster", sample.by = "donor",
+    fixture$object,
+    group.by = "cluster", sample.by = "donor",
     features = c("M1", "M2", "M4"),
     program.scores = c(High = "score1", Low = "score2"),
     gsea = fixture$gsea, return_data = TRUE, ...
@@ -43,12 +47,18 @@ test_that("CellStatePlot summaries agree with independent expectations", {
   expect_equal(m$mean_z[m$feature == "M1"], c(0, -1, 1) / sqrt(2 / 3))
   expect_equal(m$proportion[m$feature == "M1"], c(.5, 0, .5))
   expect_equal(m$mean_z[m$feature == "M4"], rep(0, 3))
-  expect_equal(unname(p$data$program.assignment),
-               c("High", "Ambiguous", "Unassigned", "Low", "High", "Unassigned"))
-  expect_equal(as.numeric(tapply(p$data$programs$fraction, p$data$programs$cluster, sum)),
-               rep(1, 3))
-  expect_equal(as.numeric(tapply(p$data$samples$fraction, p$data$samples$cluster, sum)),
-               rep(1, 3))
+  expect_equal(
+    unname(p$data$program.assignment),
+    c("High", "Ambiguous", "Unassigned", "Low", "High", "Unassigned")
+  )
+  expect_equal(
+    as.numeric(tapply(p$data$programs$fraction, p$data$programs$cluster, sum)),
+    rep(1, 3)
+  )
+  expect_equal(
+    as.numeric(tapply(p$data$samples$fraction, p$data$samples$cluster, sum)),
+    rep(1, 3)
+  )
   c.samples <- subset(p$data$samples, cluster == "C")
   expect_equal(c.samples$fraction[as.character(c.samples$category) == "d1"], 1)
   expect_identical(f$object, original)
@@ -80,10 +90,13 @@ test_that("cell-ID alignment and counts normalization are preserved", {
   expect_equal(a$data$markers, b$data$markers)
   expect_equal(a$data$samples, b$data$samples)
   expect_equal(a$data$programs, b$data$programs)
-  expect_equal(a$data$program.assignment[sort(names(a$data$program.assignment))],
-               b$data$program.assignment[sort(names(b$data$program.assignment))])
+  expect_equal(
+    a$data$program.assignment[sort(names(a$data$program.assignment))],
+    b$data$program.assignment[sort(names(b$data$program.assignment))]
+  )
   p <- CellStatePlot(
-    f$object, "cluster", "donor", "M1", layer = "counts", input.scale = "counts",
+    f$object, "cluster", "donor", "M1",
+    layer = "counts", input.scale = "counts",
     programs = list(One = "M1", Two = "M2"), min.program.genes = 1,
     gsea = f$gsea, tree = a$tree, return_data = TRUE
   )
@@ -96,8 +109,10 @@ test_that("cell-ID alignment and counts normalization are preserved", {
     rowMeans(normalized[c("M1", "M2"), ])
   standardized <- standardized / sqrt(rowMeans(standardized^2))
   expected.assignment <- ifelse(standardized[1, ] > standardized[2, ], "One", "Two")
-  expect_equal(unname(p$data$program.assignment[colnames(f$counts)]),
-               unname(expected.assignment))
+  expect_equal(
+    unname(p$data$program.assignment[colnames(f$counts)]),
+    unname(expected.assignment)
+  )
 })
 
 test_that("constant dot domains and zero-height trees draw without side effects", {
@@ -110,14 +125,16 @@ test_that("constant dot domains and zero-height trees draw without side effects"
   withr::local_dir(directory)
   devices <- grDevices::dev.list()
   p <- CellStatePlot(
-    f$object, "cluster", "donor", "M4", program.by = "donor",
-    gsea = f$gsea, tree = tree, return_data = TRUE
+    f$object, "cluster", "donor", "M4",
+    program.by = "donor",
+    gsea = f$gsea, tree = tree, family = "sans", return_data = TRUE
   )
   expect_identical(grDevices::dev.list(), devices)
   expect_length(list.files(directory, all.files = TRUE, no.. = TRUE), 0)
   expect_gt(diff(p$plot$encoded$marker.radius(c(.4, .8))), 0)
   grDevices::cairo_pdf(
-    tempfile(fileext = ".pdf"), width = p$width_mm / 25.4, height = p$height_mm / 25.4
+    tempfile(fileext = ".pdf"),
+    width = p$width_mm / 25.4, height = p$height_mm / 25.4
   )
   on.exit(grDevices::dev.off(), add = TRUE)
   expect_no_condition(grid::grid.draw(p$plot))
@@ -140,7 +157,8 @@ test_that("annotation maps take precedence over unused metadata columns", {
   f <- cellstate_fixture()
   map <- c(A = "One", B = "Two", C = "Three")
   p <- cellstate_fixture_plot(
-    f, class.by = "old_class", subclass.by = "old_subclass",
+    f,
+    class.by = "old_class", subclass.by = "old_subclass",
     class.map = map, subclass.map = map
   )
   expect_equal(p$data$clusters$class, unname(map[p$data$clusters$cluster]))
@@ -153,7 +171,8 @@ test_that("default PDF export needs no font registration", {
   p <- cellstate_fixture_plot(cellstate_fixture())
   file <- withr::local_tempfile(fileext = ".pdf")
   expect_no_condition(ggplot2::ggsave(
-    file, p$plot, width = p$width_mm, height = p$height_mm, units = "mm"
+    file, p$plot,
+    width = p$width_mm, height = p$height_mm, units = "mm"
   ))
   expect_gt(file.info(file)$size, 1000)
 })
@@ -167,20 +186,21 @@ test_that("marker size legends describe the displayed high fractions", {
   colnames(counts) <- paste0("cell", seq_len(ncol(counts)))
   object <- SeuratObject::CreateSeuratObject(Matrix::Matrix(counts, sparse = TRUE))
   object <- SeuratObject::SetAssayData(
-    object, layer = "data", new.data = Matrix::Matrix(counts, sparse = TRUE)
+    object,
+    layer = "data", new.data = Matrix::Matrix(counts, sparse = TRUE)
   )
   object$cluster <- rep(c("A", "B", "C"), each = 20)
   object$donor <- rep(c("d1", "d2"), 30)
   tree <- stats::hclust(stats::dist(diag(3)))
   tree$labels <- c("A", "B", "C")
   p <- CellStatePlot(
-    object, "cluster", "donor", "M1", program.by = "donor",
+    object, "cluster", "donor", "M1",
+    program.by = "donor",
     gsea = f$gsea, tree = tree, return_data = TRUE
   )
   file <- withr::local_tempfile(fileext = ".pdf")
   grDevices::pdf(file, family = "sans")
   on.exit(grDevices::dev.off(), add = TRUE)
-  p$plot$layout$family <- "sans"
   children <- as.list(grid::grid.force(p$plot)$children[[1]]$children)
   legend <- Filter(function(g) {
     inherits(g, "circle") && identical(unname(g$gp$fill), rep("#D3D3D3", 3))
@@ -196,7 +216,8 @@ test_that("marker size legends describe the displayed high fractions", {
 test_that("single-row panels reserve space for their vertical titles", {
   f <- cellstate_fixture()
   p <- CellStatePlot(
-    f$object, "cluster", "donor", "M1", program.by = "donor",
+    f$object, "cluster", "donor", "M1",
+    program.by = "donor",
     gsea = f$gsea, pathways = "H_ONE", family = "sans", return_data = TRUE
   )
   file <- withr::local_tempfile(fileext = ".pdf")
@@ -213,7 +234,8 @@ test_that("single-row panels reserve space for their vertical titles", {
   bounds <- lapply(titles, function(title) {
     vapply(seq_along(title$label), function(i) {
       t <- grid::textGrob(
-        title$label[i], x = title$x[i], y = title$y[i],
+        title$label[i],
+        x = title$x[i], y = title$y[i],
         just = c("left", "bottom"), rot = 90, gp = title$gp
       )
       c(
@@ -231,7 +253,7 @@ test_that("AnnData objects work with either reticulate conversion mode", {
     skip("Requires an existing initialized Python environment")
   }
   if (!reticulate::py_module_available("anndata") ||
-      !reticulate::py_module_available("scipy.sparse")) {
+    !reticulate::py_module_available("scipy.sparse")) {
     skip("Existing Python environment needs anndata and scipy")
   }
   f <- cellstate_fixture()
@@ -254,4 +276,42 @@ test_that("AnnData objects work with either reticulate conversion mode", {
       expect_equal(p$tree, expected$tree)
     }
   }
+})
+
+test_that("palette changes preserve summaries and respect named overrides", {
+  f <- cellstate_fixture()
+  p <- cellstate_fixture_plot(f)
+  q <- cellstate_fixture_plot(
+    f,
+    palette = "Set2", expression_palette = "Blues", enrichment_palette = "Spectral",
+    palcolor = list(program = c(High = "black"), expression = c("white", "blue"))
+  )
+  expect_identical(p$data, q$data)
+  expect_identical(p$tree, q$tree)
+  expected <- thisplot::palette_colors(
+    unique(as.character(p$data$programs$category)),
+    palette = "Chinese", type = "discrete"
+  )
+  expect_identical(p$plot$palette$program, expected)
+  expect_identical(unname(q$plot$palette$program["High"]), "black")
+  expect_false(identical(p$plot$palette$expression, q$plot$palette$expression))
+  expect_false(identical(p$plot$palette$enrichment, q$plot$palette$enrichment))
+  expect_error(cellstate_fixture_plot(f, palcolor = list(c("red", "blue"))), "named list")
+  expect_error(cellstate_fixture_plot(f, palcolor = list(program = c(High = NA))), "color")
+})
+
+test_that("file loading stays outside plotting and leaves the session untouched", {
+  f <- cellstate_fixture()
+  file <- withr::local_tempfile(fileext = ".rds")
+  saveRDS(f$object, file)
+  before <- Sys.getenv("RETICULATE_USE_MANAGED_VENV", unset = NA_character_)
+  expect_error(CellStatePlot(file, "cluster", "donor", "M1", program.by = "donor"), "readRDS")
+  expect_error(CellStatePlot("object.h5ad", "cluster", "donor", "M1", program.by = "donor"), "h5ad_to_srt")
+  loaded <- CellStatePlot(
+    readRDS(file), "cluster", "donor", c("M1", "M2", "M4"),
+    program.scores = c(High = "score1", Low = "score2"),
+    gsea = f$gsea, return_data = TRUE
+  )
+  expect_equal(loaded$data, cellstate_fixture_plot(f)$data)
+  expect_identical(Sys.getenv("RETICULATE_USE_MANAGED_VENV", unset = NA_character_), before)
 })

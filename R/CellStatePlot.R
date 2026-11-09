@@ -1,13 +1,15 @@
-#' Composite cell-state plot
+#' @title Composite cell-state plot
 #'
+#' @description
 #' Combine a cluster similarity tree, class and subclass annotations, program
 #' assignment, sample contributions, marker expression and precomputed GSEA.
 #' Columns represent clusters throughout the panel. The layout uses compact
 #' physical spacing and preserves its aspect ratio when resized.
 #'
-#' @param object An analysed Seurat object, a path to its RDS file, a Python
-#'   AnnData object, or an h5ad path. AnnData requires an existing Python
-#'   environment with anndata and scipy; this function installs nothing.
+#' @md
+#' @param object An analysed Seurat or Python AnnData object. Read saved objects
+#'   first with `readRDS()` or `h5ad_to_srt()`. AnnData uses the existing Python
+#'   environment; this function installs nothing.
 #' @param group.by,sample.by Metadata columns identifying clusters and biological
 #'   samples or donors. Both must be complete.
 #' @param features Marker genes in display order. Unmatched genes remain missing.
@@ -51,13 +53,21 @@
 #' @param min.program.genes Minimum matched variable genes per program.
 #' @param feature.labels,pathway.labels Optional named vectors mapping feature
 #'   or pathway IDs to display labels. Newlines are supported for pathways.
+#' @param palette Categorical palette name passed to `thisplot::palette_colors()`.
+#' @param expression_palette,enrichment_palette Continuous palette names for
+#'   expression and NES. The default RdBu shows negative NES in blue and
+#'   positive NES in red.
 #' @param palcolor Optional list of named color vectors for class, subclass,
-#'   program and sample. Unspecified colors use the built-in palette.
+#'   program and sample, or color ramps for expression and enrichment.
 #' @param family Font family. Systemfonts, when available, supplies accurate
 #'   text measurements; otherwise approximate character widths are used.
 #' @param title,panel_label Optional title and panel letter.
 #' @param return_data Return the plot, numerical summaries, tree, provenance
 #'   and native dimensions instead of only the plot.
+#'
+#' @return A printable grid grob accepted by ggplot2::ggsave(). Attributes
+#'   width_mm and height_mm give its native dimensions. With return_data = TRUE,
+#'   a list with plot, data, tree, provenance, width_mm and height_mm.
 #'
 #' @details
 #' Marker colors encode per-gene z scores of cluster means, using population SD;
@@ -73,33 +83,32 @@
 #' Only the selected expression layer is read from AnnData, into R memory.
 #' The input object is not modified and constructing a plot writes no files.
 #'
-#' @return A printable grid grob accepted by ggplot2::ggsave(). Attributes
-#'   width_mm and height_mm give its native dimensions. With return_data = TRUE,
-#'   a list with plot, data, tree, provenance, width_mm and height_mm.
+#' @seealso [adata_to_srt()], [h5ad_to_srt()], [RunGSEA()]
 #' @export
 #'
 #' @examples
-#' # Once clustering, annotation and enrichment are complete:
-#' \dontrun{
-#' p <- CellStatePlot(
-#'   object, group.by = "seurat_clusters", sample.by = "donor",
-#'   features = c("SOX2", "GFAP", "OLIG2"),
-#'   program.by = "program_assignment",
-#'   gsea = enrichment_table,
-#'   class.by = "cell_class", subclass.by = "cell_subclass"
+#' counts <- rbind(
+#'   M1 = c(2, 0, 0, 0, 4, 0),
+#'   M2 = c(0, 0, 2, 2, 0, 0),
+#'   M3 = c(0, 1, 0, 2, 1, 3),
+#'   M4 = rep(1, 6)
 #' )
-#' p
-#' ggplot2::ggsave(
-#'   "cell-states.pdf", p, width = attr(p, "width_mm"),
-#'   height = attr(p, "height_mm"), units = "mm", device = grDevices::cairo_pdf
+#' colnames(counts) <- paste0("cell", seq_len(ncol(counts)))
+#' object <- SeuratObject::CreateSeuratObject(Matrix::Matrix(counts, sparse = TRUE))
+#' object$cluster <- rep(c("A", "B", "C"), each = 2)
+#' object$donor <- c("d1", "d2", "d1", "d2", "d1", "d1")
+#' object$program <- c("P1", "P1", "P2", "P2", "P1", "P2")
+#' enrichment <- expand.grid(
+#'   Groups = c("A", "B", "C"), ID = c("Pathway1", "Pathway2", "Pathway3")
 #' )
-#' # The same interface accepts an h5ad file:
-#' p <- CellStatePlot(
-#'   "analysed.h5ad", group.by = "leiden", sample.by = "donor",
-#'   features = markers, program.by = "program_assignment",
-#'   gsea = enrichment_table
+#' enrichment$NES <- c(1.5, -1.2, 0.5, 1, 0.7, -1.8, -0.6, 1.4, 2)
+#' enrichment$pvalue <- c(0.05, 0.01, 0.2, 0.02, 0.3, 0.01, 0.1, 0.05, NA)
+#' CellStatePlot(
+#'   object,
+#'   group.by = "cluster", sample.by = "donor",
+#'   features = rownames(counts), program.by = "program",
+#'   gsea = enrichment, layer = "counts", input.scale = "counts"
 #' )
-#' }
 CellStatePlot <- function(
   object,
   group.by,
@@ -126,8 +135,11 @@ CellStatePlot <- function(
   min.program.genes = 3,
   feature.labels = NULL,
   pathway.labels = NULL,
+  palette = "Chinese",
+  expression_palette = "Reds",
+  enrichment_palette = "RdBu",
   palcolor = NULL,
-  family = "Arial",
+  family = "sans",
   title = "Cell states",
   panel_label = NULL,
   return_data = FALSE
@@ -136,16 +148,20 @@ CellStatePlot <- function(
   for (nm in c("group.by", "sample.by")) {
     value <- get(nm)
     if (!is.character(value) || length(value) != 1L || is.na(value) ||
-        !nzchar(value)) stop(nm, " must name one metadata column.")
+      !nzchar(value)) {
+      stop(nm, " must name one metadata column.")
+    }
   }
   if (!is.numeric(min.pct) || length(min.pct) != 1L ||
-      !is.finite(min.pct) || min.pct < 0 || min.pct > 1) {
+    !is.finite(min.pct) || min.pct < 0 || min.pct > 1) {
     stop("min.pct must be between 0 and 1.")
   }
   if (length(expression.cutoff) != 1L || !is.finite(expression.cutoff) ||
-      expression.cutoff < 0) stop("expression.cutoff must be nonnegative.")
+    expression.cutoff < 0) {
+    stop("expression.cutoff must be nonnegative.")
+  }
   if (length(min.program.genes) != 1L || !is.finite(min.program.genes) ||
-      min.program.genes < 1 || min.program.genes %% 1 != 0) {
+    min.program.genes < 1 || min.program.genes %% 1 != 0) {
     stop("min.program.genes must be a positive integer.")
   }
   choices <- list(program.by, program.scores, programs)
@@ -165,9 +181,9 @@ CellStatePlot <- function(
   }
   x <- input$x
   if (is.null(rownames(x)) || is.null(colnames(x)) ||
-      anyNA(rownames(x)) || anyNA(colnames(x)) ||
-      any(!nzchar(rownames(x))) || any(!nzchar(colnames(x))) ||
-      anyDuplicated(rownames(x)) || anyDuplicated(colnames(x))) {
+    anyNA(rownames(x)) || anyNA(colnames(x)) ||
+    any(!nzchar(rownames(x))) || any(!nzchar(colnames(x))) ||
+    anyDuplicated(rownames(x)) || anyDuplicated(colnames(x))) {
     stop("Expression needs unique, nonempty gene and cell IDs.")
   }
   meta <- input$meta
@@ -175,7 +191,12 @@ CellStatePlot <- function(
     stop("Expression and metadata cell IDs do not match.")
   }
   meta <- meta[colnames(x), , drop = FALSE]
-  required <- c(group.by, sample.by, class.by, subclass.by, program.by, program.scores)
+  required <- c(
+    group.by, sample.by,
+    if (is.null(class.map)) class.by,
+    if (is.null(subclass.map)) subclass.by,
+    program.by, program.scores
+  )
   if (!all(required %in% names(meta))) {
     stop("Missing metadata columns: ", paste(setdiff(required, names(meta)), collapse = ", "))
   }
@@ -184,7 +205,10 @@ CellStatePlot <- function(
       stop(nm, " contains missing or empty values.")
     }
   }
-  x <- methods::as(Matrix::Matrix(x, sparse = TRUE), "dgCMatrix")
+  x <- methods::as(methods::as(
+    Matrix::Matrix(x, sparse = TRUE),
+    "generalMatrix"
+  ), "CsparseMatrix")
   if (any(!is.finite(x@x)) || any(x@x < 0)) {
     stop("Expression must be finite and nonnegative; do not use scaled residuals.")
   }
@@ -245,7 +269,7 @@ CellStatePlot <- function(
     assignment <- as.character(meta[[program.by]])
   } else if (!is.null(program.scores)) {
     if (!length(program.scores) ||
-        !all(vapply(meta[program.scores], is.numeric, logical(1)))) {
+      !all(vapply(meta[program.scores], is.numeric, logical(1)))) {
       stop("program.scores must name numeric metadata columns.")
     }
     labels <- names(program.scores)
@@ -256,8 +280,8 @@ CellStatePlot <- function(
     assignment <- cellstate_winners(as.matrix(meta[program.scores]), labels)
   } else {
     if (!is.list(programs) || is.null(names(programs)) ||
-        anyNA(names(programs)) || any(!nzchar(names(programs))) ||
-        anyDuplicated(names(programs))) {
+      anyNA(names(programs)) || any(!nzchar(names(programs))) ||
+      anyDuplicated(names(programs))) {
       stop("programs must be a uniquely named list of gene sets.")
     }
     union <- intersect(unique(as.character(unlist(programs))), rownames(x))
@@ -293,7 +317,7 @@ CellStatePlot <- function(
     if (!is.null(input$embedding)) {
       emb <- input$embedding
       if (is.null(rownames(emb)) || anyDuplicated(rownames(emb)) ||
-          !setequal(rownames(emb), colnames(x))) {
+        !setequal(rownames(emb), colnames(x))) {
         stop("Reduction and expression cell IDs do not match.")
       }
       profiles <- as.matrix(Matrix::crossprod(
@@ -320,8 +344,8 @@ CellStatePlot <- function(
     tree.source <- "Caller-supplied hclust"
   }
   if (!inherits(tree, "hclust") || anyDuplicated(tree$labels) ||
-      !setequal(tree$labels, groups) || nrow(tree$merge) != length(groups) - 1L ||
-      any(!is.finite(tree$height)) || any(tree$height < 0)) {
+    !setequal(tree$labels, groups) || nrow(tree$merge) != length(groups) - 1L ||
+    any(!is.finite(tree$height)) || any(tree$height < 0)) {
     stop("tree must be an hclust with unique labels matching all cluster IDs.")
   }
   order <- tree$labels[tree$order]
@@ -344,7 +368,8 @@ CellStatePlot <- function(
   data$pathways <- encoded$pathways
   plot <- cellstate_grob(
     data, tree, features, marker.labels, enrichment$ids, pathway.labels,
-    encoded, palcolor, family, title, panel_label
+    encoded, palette, expression_palette, enrichment_palette,
+    palcolor, family, title, panel_label
   )
   provenance <- list(
     input = input$source, input.scale = input.scale, assay = input$assay,
@@ -363,21 +388,7 @@ CellStatePlot <- function(
 cellstate_input <- function(object, assay, layer, reduction) {
   source <- class(object)[1]
   if (is.character(object) && length(object) == 1L) {
-    if (!file.exists(object)) stop("Input file does not exist: ", object)
-    source <- normalizePath(object)
-    if (grepl("\\.rds$", object, ignore.case = TRUE)) {
-      object <- readRDS(object)
-    } else if (grepl("\\.h5ad$", object, ignore.case = TRUE)) {
-      old <- Sys.getenv("RETICULATE_USE_MANAGED_VENV", unset = NA_character_)
-      on.exit(if (is.na(old)) Sys.unsetenv("RETICULATE_USE_MANAGED_VENV") else
-        Sys.setenv(RETICULATE_USE_MANAGED_VENV = old), add = TRUE)
-      Sys.setenv(RETICULATE_USE_MANAGED_VENV = "no")
-      ad <- reticulate::import("anndata", convert = FALSE)
-      object <- ad$read_h5ad(object, backed = "r")
-      on.exit(object$file$close(), add = TRUE)
-    } else {
-      stop("Input path must be an RDS or h5ad file.")
-    }
+    stop("Load the object with readRDS() or h5ad_to_srt() before calling CellStatePlot().")
   }
   if (inherits(object, "Seurat")) {
     if (is.null(assay)) assay <- SeuratObject::DefaultAssay(object)
@@ -386,7 +397,9 @@ cellstate_input <- function(object, assay, layer, reduction) {
     if (!layer %in% SeuratObject::Layers(object[[assay]], search = NA)) {
       stop("Select one existing joined layer; join split layers before plotting: ", layer)
     }
-    embedding <- if (is.null(reduction)) NULL else {
+    embedding <- if (is.null(reduction)) {
+      NULL
+    } else {
       if (!reduction %in% SeuratObject::Reductions(object)) {
         stop("Unknown reduction: ", reduction)
       }
@@ -399,22 +412,29 @@ cellstate_input <- function(object, assay, layer, reduction) {
     ))
   }
   if (!inherits(object, "python.builtin.object") ||
-      !reticulate::py_has_attr(object, "obs_names") ||
-      !reticulate::py_has_attr(object, "var_names")) {
-    stop("object must be Seurat, AnnData, an RDS path or an h5ad path.")
+    !reticulate::py_has_attr(object, "obs_names") ||
+    !reticulate::py_has_attr(object, "var_names")) {
+    stop("object must be a Seurat or Python AnnData object.")
   }
   if (!is.null(assay)) stop("assay applies to Seurat; use layer for AnnData.")
-  mat <- if (is.null(layer) || identical(layer, "X")) object$X else {
+  mat <- if (is.null(layer) || identical(layer, "X")) {
+    object$X
+  } else {
     if (!layer %in% get_adata_keys(object$layers)) stop("Unknown AnnData layer: ", layer)
     get_adata_element(object$layers, layer)
   }
-  if (reticulate::py_has_attr(mat, "to_memory")) mat <- mat$to_memory()
+  if (inherits(mat, "python.builtin.object") &&
+    reticulate::py_has_attr(mat, "to_memory")) {
+    mat <- mat$to_memory()
+  }
   if (inherits(mat, "h5py._hl.dataset.Dataset")) {
     mat <- reticulate::import("numpy", convert = FALSE)$asarray(mat)
   }
   x <- Matrix::t(adata_matrix_to_r(mat))
-  dimnames(x) <- list(as.character(get_adata_names(object, "var")),
-                     as.character(get_adata_names(object, "obs")))
+  dimnames(x) <- list(
+    as.character(get_adata_names(object, "var")),
+    as.character(get_adata_names(object, "obs"))
+  )
   meta <- as.data.frame(py_to_r2(object$obs), check.names = FALSE)
   embedding <- NULL
   if (!is.null(reduction)) {
@@ -422,8 +442,10 @@ cellstate_input <- function(object, assay, layer, reduction) {
     embedding <- as.matrix(py_to_r2(get_adata_element(object$obsm, reduction)))
     rownames(embedding) <- colnames(x)
   }
-  list(x = x, meta = meta, embedding = embedding, gsea.object = NULL,
-       assay = NULL, layer = if (is.null(layer)) "X" else layer, source = source)
+  list(
+    x = x, meta = meta, embedding = embedding, gsea.object = NULL,
+    assay = NULL, layer = if (is.null(layer)) "X" else layer, source = source
+  )
 }
 
 cellstate_annotation <- function(meta, group.by, groups, column, map, default) {
@@ -463,9 +485,13 @@ cellstate_composition <- function(group, category) {
 }
 
 cellstate_labels <- function(ids, labels, default) {
-  if (is.null(labels)) return(unname(default))
+  if (is.null(labels)) {
+    return(unname(default))
+  }
   if (is.null(names(labels)) || anyDuplicated(names(labels)) ||
-      anyNA(labels[ids])) stop("Label maps must name all displayed IDs uniquely.")
+    anyNA(labels[ids])) {
+    stop("Label maps must name all displayed IDs uniquely.")
+  }
   unname(as.character(labels[ids]))
 }
 
@@ -497,7 +523,7 @@ cellstate_gsea <- function(gsea, groups, pathways, db) {
   gsea$cluster <- as.character(gsea$cluster)
   gsea$feature <- as.character(gsea$feature)
   if (anyNA(gsea[c("cluster", "feature")]) ||
-      any(!nzchar(gsea$cluster)) || any(!nzchar(gsea$feature))) {
+    any(!nzchar(gsea$cluster)) || any(!nzchar(gsea$feature))) {
     stop("GSEA cluster and pathway IDs must be nonempty.")
   }
   gsea <- gsea[gsea$cluster %in% groups, , drop = FALSE]
@@ -506,9 +532,9 @@ cellstate_gsea <- function(gsea, groups, pathways, db) {
     stop("Duplicate GSEA cluster/pathway rows; select one result per combination.")
   }
   if (!is.numeric(gsea$nes) || !is.numeric(gsea$p_value) ||
-      any(!is.finite(gsea$nes) & !is.na(gsea$nes)) ||
-      any(!is.na(gsea$p_value) & (!is.finite(gsea$p_value) |
-        gsea$p_value < 0 | gsea$p_value > 1))) {
+    any(!is.finite(gsea$nes) & !is.na(gsea$nes)) ||
+    any(!is.na(gsea$p_value) & (!is.finite(gsea$p_value) |
+      gsea$p_value < 0 | gsea$p_value > 1))) {
     stop("GSEA needs numeric NES and P values between 0 and 1 (or NA).")
   }
   ids <- unique(gsea$feature)
@@ -523,7 +549,9 @@ cellstate_gsea <- function(gsea, groups, pathways, db) {
   }
   if (!is.null(pathways)) {
     selected <- vapply(pathways, function(p) {
-      if (p %in% ids) return(p)
+      if (p %in% ids) {
+        return(p)
+      }
       hit <- ids[descriptions == p]
       if (length(hit) != 1L) stop("Unknown or ambiguous pathway: ", p)
       hit
@@ -549,6 +577,7 @@ cellstate_gsea <- function(gsea, groups, pathways, db) {
   result$status[valid & is.na(result$status)] <- "EVALUABLE"
   result$neg_log_p <- NA_real_
   result$neg_log_p[valid] <- -log(ifelse(result$p_value[valid] == 0, 1e-10,
-                                      result$p_value[valid]))
+    result$p_value[valid]
+  ))
   list(data = result, ids = ids, labels = labels)
 }

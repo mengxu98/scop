@@ -30,17 +30,20 @@ CellStatePlot(
   min.program.genes = 3,
   feature.labels = NULL,
   pathway.labels = NULL,
+  palette = "Chinese",
+  expression_palette = "Reds",
+  enrichment_palette = "RdBu",
   palcolor = NULL,
-  family = "Arial",
+  family = "sans",
   title = "Cell states",
   panel_label = NULL,
   return_data = FALSE
 )
 }
 \arguments{
-\item{object}{An analysed Seurat object, a path to its RDS file, a Python
-AnnData object, or an h5ad path. AnnData requires an existing Python
-environment with anndata and scipy; this function installs nothing.}
+\item{object}{An analysed Seurat or Python AnnData object. Read saved objects
+first with \code{readRDS()} or \code{h5ad_to_srt()}. AnnData uses the existing Python
+environment; this function installs nothing.}
 
 \item{group.by, sample.by}{Metadata columns identifying clusters and biological
 samples or donors. Both must be complete.}
@@ -105,8 +108,14 @@ expressed, after any counts normalization.}
 \item{feature.labels, pathway.labels}{Optional named vectors mapping feature
 or pathway IDs to display labels. Newlines are supported for pathways.}
 
+\item{palette}{Categorical palette name passed to \code{thisplot::palette_colors()}.}
+
+\item{expression_palette, enrichment_palette}{Continuous palette names for
+expression and NES. The default RdBu shows negative NES in blue and
+positive NES in red.}
+
 \item{palcolor}{Optional list of named color vectors for class, subclass,
-program and sample. Unspecified colors use the built-in palette.}
+program and sample, or color ramps for expression and enrichment.}
 
 \item{family}{Font family. Systemfonts, when available, supplies accurate
 text measurements; otherwise approximate character widths are used.}
@@ -118,8 +127,8 @@ and native dimensions instead of only the plot.}
 }
 \value{
 A printable grid grob accepted by ggplot2::ggsave(). Attributes
-  width_mm and height_mm give its native dimensions. With return_data = TRUE,
-  a list with plot, data, tree, provenance, width_mm and height_mm.
+width_mm and height_mm give its native dimensions. With return_data = TRUE,
+a list with plot, data, tree, provenance, width_mm and height_mm.
 }
 \description{
 Combine a cluster similarity tree, class and subclass annotations, program
@@ -142,25 +151,29 @@ Only the selected expression layer is read from AnnData, into R memory.
 The input object is not modified and constructing a plot writes no files.
 }
 \examples{
-# Once clustering, annotation and enrichment are complete:
-\dontrun{
-p <- CellStatePlot(
-  object, group.by = "seurat_clusters", sample.by = "donor",
-  features = c("SOX2", "GFAP", "OLIG2"),
-  program.by = "program_assignment",
-  gsea = enrichment_table,
-  class.by = "cell_class", subclass.by = "cell_subclass"
+counts <- rbind(
+  M1 = c(2, 0, 0, 0, 4, 0),
+  M2 = c(0, 0, 2, 2, 0, 0),
+  M3 = c(0, 1, 0, 2, 1, 3),
+  M4 = rep(1, 6)
 )
-p
-ggplot2::ggsave(
-  "cell-states.pdf", p, width = attr(p, "width_mm"),
-  height = attr(p, "height_mm"), units = "mm", device = grDevices::cairo_pdf
+colnames(counts) <- paste0("cell", seq_len(ncol(counts)))
+object <- SeuratObject::CreateSeuratObject(Matrix::Matrix(counts, sparse = TRUE))
+object$cluster <- rep(c("A", "B", "C"), each = 2)
+object$donor <- c("d1", "d2", "d1", "d2", "d1", "d1")
+object$program <- c("P1", "P1", "P2", "P2", "P1", "P2")
+enrichment <- expand.grid(
+  Groups = c("A", "B", "C"), ID = c("Pathway1", "Pathway2", "Pathway3")
 )
-# The same interface accepts an h5ad file:
-p <- CellStatePlot(
-  "analysed.h5ad", group.by = "leiden", sample.by = "donor",
-  features = markers, program.by = "program_assignment",
-  gsea = enrichment_table
+enrichment$NES <- c(1.5, -1.2, 0.5, 1, 0.7, -1.8, -0.6, 1.4, 2)
+enrichment$pvalue <- c(0.05, 0.01, 0.2, 0.02, 0.3, 0.01, 0.1, 0.05, NA)
+CellStatePlot(
+  object,
+  group.by = "cluster", sample.by = "donor",
+  features = rownames(counts), program.by = "program",
+  gsea = enrichment, layer = "counts", input.scale = "counts"
 )
 }
+\seealso{
+\code{\link[=adata_to_srt]{adata_to_srt()}}, \code{\link[=h5ad_to_srt]{h5ad_to_srt()}}, \code{\link[=RunGSEA]{RunGSEA()}}
 }
