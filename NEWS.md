@@ -10,7 +10,7 @@
 
 # scop (development version)
 
-* `CellStatePlot()` combines a cluster similarity tree, annotations, program and sample composition, marker expression and precomputed GSEA in a compact grid plot. It accepts Seurat and AnnData objects, supports categorical and continuous palettes, and can return the underlying summaries.
+* `CellStatePlot()` combines a cluster similarity tree, annotations, program and sample composition, marker expression and precomputed GSEA in a compact grid plot with measured label spacing, short composition tracks and wrapping legends. It accepts Seurat and AnnData objects, supports categorical and continuous palettes, and can return the underlying summaries.
 
 * **fix**: `PrepareEnv()` no longer passes two conflicting pandas pins to pip during a default installation (#561). Environment requirements emit one pin per package, isolated profiles such as `scprep_env` no longer redefine shared package versions, and `include_optional` no longer pulls in `magic` (isolated `scprep_env`) or `moscot` (own JAX profile), so the `optional` shortcut stays usable.
 

@@ -315,3 +315,89 @@ test_that("file loading stays outside plotting and leaves the session untouched"
   expect_equal(loaded$data, cellstate_fixture_plot(f)$data)
   expect_identical(Sys.getenv("RETICULATE_USE_MANAGED_VENV", unset = NA_character_), before)
 })
+
+test_that("short cluster labels keep the composition and dot tracks together", {
+  p <- cellstate_fixture_plot(cellstate_fixture())
+  a <- p$plot$layout
+  expect_lte(a$program.y - a$cluster.bottom, 9)
+  expect_gte(a$bar.height, 14)
+  expect_lte(a$bar.height, 18)
+  expect_lte(a$sample.y - a$program.y - a$bar.height, 5)
+  expect_lte(a$gene.top - a$sample.y - a$bar.height, 13)
+  expect_lt(a$W, 244)
+  expect_gt(a$H, a$bottom)
+})
+
+test_that("long labels and many categories draw without text collisions", {
+  f <- cellstate_fixture()
+  clusters <- c("Alpha progenitor cluster", "Beta differentiated cluster", "Gamma precursor cluster")
+  f$object$cluster <- rep(clusters, each = 2)
+  f$gsea$Groups <- clusters[match(f$gsea$Groups, c("A", "B", "C"))]
+  categories <- paste("Biological sample", seq_len(ncol(f$object)), "extended label")
+  f$object$donor <- categories
+  p <- CellStatePlot(
+    f$object, "cluster", "donor", c("M1", "M2", "M4"),
+    program.by = "donor", gsea = f$gsea,
+    subclass.map = stats::setNames(paste("Subclass", seq_along(clusters), "annotation"), clusters),
+    class.map = stats::setNames(rep("Broad class", length(clusters)), clusters),
+    feature.labels = c(M1 = "Long marker gene label", M2 = "Second marker", M4 = "Third marker"),
+    pathway.labels = c(H_ONE = "First pathway\nwith multiple lines", H_TWO = "Second pathway label"),
+    return_data = TRUE
+  )
+  file <- withr::local_tempfile(fileext = ".pdf")
+  grDevices::pdf(file, width = p$width_mm / 25.4, height = p$height_mm / 25.4)
+  on.exit(grDevices::dev.off(), add = TRUE)
+  g <- grid::grid.force(p$plot)
+  grid::pushViewport(g$children[[1]]$vp)
+  on.exit(grid::popViewport(), add = TRUE, after = FALSE)
+  labels <- Filter(function(g) {
+    inherits(g, "text") && length(g$label) == 1L &&
+      g$label %in% c(categories, "Program assignment", "Donors / samples", "Not evaluable")
+  }, as.list(g$children[[1]]$children))
+  expect_equal(sum(vapply(labels, function(g) g$label %in% categories, logical(1))), 2L * length(categories))
+  boxes <- vapply(labels, function(g) {
+    c(
+      left = grid::convertX(grid::grobX(g, "west"), "bigpts", valueOnly = TRUE),
+      right = grid::convertX(grid::grobX(g, "east"), "bigpts", valueOnly = TRUE),
+      bottom = grid::convertY(grid::grobY(g, "south"), "bigpts", valueOnly = TRUE),
+      top = grid::convertY(grid::grobY(g, "north"), "bigpts", valueOnly = TRUE)
+    )
+  }, numeric(4))
+  pairs <- utils::combn(ncol(boxes), 2)
+  overlaps <- apply(pairs, 2, function(pair) {
+    a <- boxes[, pair[1]]
+    b <- boxes[, pair[2]]
+    min(a["right"], b["right"]) > max(a["left"], b["left"]) &&
+      min(a["top"], b["top"]) > max(a["bottom"], b["bottom"])
+  })
+  expect_false(any(overlaps))
+  expect_gt(min(boxes["left", ]), 0)
+  expect_lt(max(boxes["right", ]), p$plot$layout$W)
+})
+
+test_that("large sample legends wrap instead of widening the canvas", {
+  f <- cellstate_fixture()
+  counts <- f$counts[, rep(seq_len(ncol(f$counts)), 20)]
+  colnames(counts) <- paste0("cell", seq_len(ncol(counts)))
+  object <- SeuratObject::CreateSeuratObject(Matrix::Matrix(counts, sparse = TRUE))
+  object <- SeuratObject::SetAssayData(object, layer = "data", new.data = Matrix::Matrix(counts, sparse = TRUE))
+  object$cluster <- rep(c("A", "B", "C"), each = 40)
+  widths <- numeric()
+  for (n in c(20L, 50L)) {
+    object$donor <- paste("Biological sample", rep(seq_len(n), length.out = ncol(object)), "extended label")
+    p <- CellStatePlot(
+      object, "cluster", "donor", c("M1", "M2", "M4"),
+      program.by = "donor", gsea = f$gsea, return_data = TRUE
+    )
+    expect_setequal(names(p$plot$palette$sample), unique(object$donor))
+    expect_equal(nrow(p$data$samples), 3L * n)
+    expect_lt(p$plot$layout$W, 500)
+    file <- withr::local_tempfile(fileext = ".pdf")
+    expect_no_condition(ggplot2::ggsave(
+      file, p$plot,
+      width = p$width_mm, height = p$height_mm, units = "mm"
+    ))
+    widths <- c(widths, p$plot$layout$W)
+  }
+  expect_lte(widths[2], widths[1] * 1.2)
+})

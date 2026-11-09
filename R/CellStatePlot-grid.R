@@ -142,7 +142,8 @@ cellstate_grob <- function(data, tree, features, feature.labels, pathways,
   }
   palette <- cellstate_palettes(data, palette, expression_palette, enrichment_palette, palcolor)
   n <- nrow(data$clusters)
-  xs <- 28.2732 + (seq_len(n) - 1) * 7.07006
+  xs <- max(28.2732, max(measure(c("Subclasses", "Clusters"))) + 10) +
+    (seq_len(n) - 1) * 7.07006
   left <- xs[1] - 5.7712
   right <- tail(xs, 1) + 6.3442
   label.x <- right + 6.0072
@@ -176,81 +177,84 @@ cellstate_grob <- function(data, tree, features, feature.labels, pathways,
   } else {
     strsplit(wrap(title, max(110, right - left)), "\n", fixed = TRUE)[[1]]
   }
-  extra <- max(0, length(occupied) - 2L) * 7.002 +
-    max(0, length(title.lines) - 1L) * 7.002
   display <- function(s) sub("^t cell$", "T cell", gsub("_", " ", s, fixed = TRUE))
   cluster.labels <- display(data$clusters$cluster)
-  program.y <- 119.13574 + extra + max(0, max(measure(cluster.labels, 5)) - 42.6)
-  sub.top <- 53.3329 + extra
-  capacity <- max(1L, floor((program.y - 14 - sub.top) / 6.474) + 1L)
-  sub.rows <- min(length(palette$subclass), capacity)
-  sub.columns <- ceiling(length(palette$subclass) / sub.rows)
-  sub.widths <- vapply(seq_len(sub.columns), function(j) {
-    ids <- which((seq_along(palette$subclass) - 1L) %/% sub.rows == j - 1L)
-    max(measure(display(names(palette$subclass)[ids]))) + 11.1
-  }, numeric(1))
-  sub.offsets <- c(0, head(cumsum(sub.widths + 5), -1L))
-  program.y <- max(program.y, sub.top + (sub.rows - 1L) * 6.474 + 14)
-  program.key.y <- program.y + 3.686
-  sample.y <- max(
-    program.y + 36.109,
-    program.key.y + (ceiling(length(palette$program) / 2) - 1L) * 6.4082 + 14
+  title.y <- 8
+  header.y <- title.y + max(1L, length(title.lines)) * 7 + 3
+  tree.top <- header.y + max(1L, length(occupied)) * 7 + 3
+  tree.height <- 24
+  tree.bottom <- tree.top + tree.height
+  sub.top <- tree.bottom + 3
+  sub.height <- 5
+  cluster.top <- sub.top + sub.height + 3
+  cluster.bottom <- cluster.top + max(measure(cluster.labels, 5))
+  annotation.bottom <- max(cluster.bottom, cluster.top + 5)
+  category.layout <- function(colors, top, height, labels = names(colors)) {
+    capacity <- max(1L, floor((height - 5) / 6.5) + 1L)
+    columns <- min(2L, ceiling(length(colors) / capacity))
+    nr <- ceiling(length(colors) / columns)
+    column <- (seq_along(colors) - 1L) %/% nr + 1L
+    widths <- vapply(seq_len(max(column)), function(j) {
+      max(measure(labels[column == j])) + 11.1
+    }, numeric(1))
+    offsets <- c(0, head(cumsum(widths + 5), -1L))
+    list(
+      x = label.x + offsets[column],
+      y = top + 5 + ((seq_along(colors) - 1L) %% nr) * 6.5,
+      right = label.x + sum(widths) + 5 * (length(widths) - 1L),
+      bottom = top + 5 + (nr - 1L) * 6.5
+    )
+  }
+  annotation.y <- tree.top + c(4, 11)
+  subclass.key <- category.layout(
+    palette$subclass, tree.top + 15, annotation.bottom - tree.top - 20,
+    display(names(palette$subclass))
   )
-  sample.key.y <- sample.y - .8684
-  sample.end <- sample.key.y + (ceiling(length(palette$sample) / 2) - 1L) * 6.58332
+  annotation.bottom <- max(annotation.bottom, subclass.key$bottom + 6)
+  bar.height <- 16
+  program.y <- annotation.bottom + 4
+  program.key <- category.layout(palette$program, program.y, bar.height)
+  sample.y <- max(program.y + bar.height + 4, program.key$bottom + 9)
+  sample.key <- category.layout(palette$sample, sample.y, bar.height)
+  sample.end <- max(sample.y + bar.height, sample.key$bottom + 2)
   missing <- any(!encoded$marker.valid) || any(!is.finite(data$pathways$neg_log_p))
-  gene.start <- max(sample.y + 40.69437, sample.end + if (missing) 15.2 else 8)
+  gene.top <- sample.end + if (missing) 13 else 4
   gene.span <- (length(features) - 1L) * 5.418856
   gene.height <- max(gene.span + 11.381, max(measure(c("Marker gene", "expression"))) + 4)
-  gene.top <- gene.start - 5.6911
   gene.y <- gene.top + (gene.height - gene.span) / 2 +
     (seq_along(features) - 1L) * 5.418856
   gene.bottom <- gene.top + gene.height
   path.lines <- lengths(strsplit(pathway.labels, "\n", fixed = TRUE))
-  path.step <- max(9.483429, (max(path.lines) - 1L) * 5.25 + 4)
-  path.span <- (length(pathways) - 1L) * path.step
-  path.margin <- max(5.244, max(path.lines) * 2.625)
-  path.top <- gene.bottom + .2214
-  path.height <- max(
-    path.span + 4.76234 + path.margin,
-    max(measure(c("Pathway", "enrichment"))) + 4
-  )
-  path.y <- path.top + 4.76234 +
-    (path.height - path.span - 4.76234 - path.margin) / 2 +
-    (seq_along(pathways) - 1L) * path.step
+  path.half <- pmax(3.259, path.lines * 2.625)
+  path.offsets <- c(0, cumsum(head(path.half, -1L) + tail(path.half, -1L) + 2.5))
+  path.content <- tail(path.offsets, 1) + path.half[1] + tail(path.half, 1)
+  path.top <- gene.bottom + 3
+  path.height <- max(path.content + 4, max(measure(c("Pathway", "enrichment"))) + 4)
+  path.y <- path.top + (path.height - path.content) / 2 + path.half[1] + path.offsets
   bottom <- path.top + path.height
-  legend.y <- bottom + 6.8023
-  category.gap <- function(colors, minimum) {
-    max(minimum, max(measure(head(names(colors), ceiling(length(colors) / 2)))) + 15)
-  }
-  program.gap <- category.gap(palette$program, 32.25)
-  sample.gap <- category.gap(palette$sample, 25.885)
-  category.width <- function(colors, gap) {
-    nr <- ceiling(length(colors) / 2)
-    max(measure(names(colors)) + 11.1 + ((seq_along(colors) - 1L) %/% nr) * gap)
-  }
-  key.offsets <- function(labels) c(0, cumsum(pmax(22, head(measure(labels), -1L) + 8)))
-  key.end <- function(label, values, x) {
-    x + measure(label) + 6 + max(key.offsets(values) + 4 + measure(values))
+  key.offsets <- function(labels) c(0, cumsum(pmax(15, head(measure(labels), -1L) + 8)))
+  key.width <- function(label, values) {
+    measure(label) + 6 + max(key.offsets(values) + 4 + measure(values))
   }
   size.labels <- format(round(encoded$size.ticks, 1), trim = TRUE)
-  key.left.end <- max(
-    key.end("Expression proportion", encoded$marker.labels, 6.8),
-    key.end("z-normalized expression", c("0", "1", "2"), 1)
+  key.widths <- c(
+    key.width("Expression proportion", encoded$marker.labels),
+    key.width("z-normalized expression", c("0", "1", "2")),
+    key.width("-ln(P)", size.labels),
+    key.width("GSEA NES", c("-2.5", "0", "2.5"))
   )
-  key.right.x <- max(146.85, key.left.end + 8)
   W <- max(
-    244, label.x + 5 +
-      max(
-        76.484, max(measure(unlist(strsplit(c(feature.labels, pathway.labels), "\n", fixed = TRUE)), 5)) + 3,
-        tail(sub.offsets + sub.widths, 1),
-        category.width(palette$program, program.gap),
-        category.width(palette$sample, sample.gap)
-      ),
-    key.end("-ln(P)", size.labels, key.right.x) + 4,
-    key.end("GSEA NES", c("-2.5", "0", "2.5"), key.right.x) + 4
+    label.x + 5 + max(measure(unlist(strsplit(c(feature.labels, pathway.labels), "\n", fixed = TRUE)), 5)),
+    subclass.key$right + 4, program.key$right + 4, sample.key$right + 4,
+    label.x + measure("Cell population") + 4,
+    label.x + measure("Program assignment") + 4,
+    max(key.widths) + 8
   )
-  H <- legend.y + 10.9507 + 5.177
+  legend.y <- bottom + 8
+  key.columns <- max(key.widths[1:2]) + max(key.widths[3:4]) + 16 <= W
+  key.x <- if (key.columns) c(4, 4, 12 + max(key.widths[1:2]), 12 + max(key.widths[1:2])) else rep(4, 4)
+  key.y <- legend.y + if (key.columns) c(0, 11, 0, 11) else c(0, 11, 22, 33)
+  H <- max(key.y) + 7
   colors <- rbind(
     data.frame(
       scale = "expression", value = seq(0, 2, length.out = 257L),
@@ -264,15 +268,19 @@ cellstate_grob <- function(data, tree, features, feature.labels, pathways,
   layout <- list(
     W = W, H = H, xs = xs, left = left, right = right, label.x = label.x,
     runs = runs, edges = edges, headers = headers, header.starts = header.starts,
-    occupied = occupied, extra = extra, cluster.labels = cluster.labels,
-    title.lines = title.lines, panel_label = panel_label, family = family,
-    program.y = program.y, program.key.y = program.key.y,
-    sample.y = sample.y, sample.key.y = sample.key.y, sample.end = sample.end,
-    sub.top = sub.top, sub.rows = sub.rows, sub.offsets = sub.offsets,
-    program.gap = program.gap, sample.gap = sample.gap, missing = missing,
+    occupied = occupied, cluster.labels = cluster.labels,
+    title.lines = title.lines, title.y = title.y, header.y = header.y,
+    panel_label = panel_label, family = family,
+    tree.top = tree.top, tree.bottom = tree.bottom, tree.height = tree.height,
+    sub.top = sub.top, sub.height = sub.height,
+    cluster.top = cluster.top, cluster.bottom = cluster.bottom,
+    annotation.bottom = annotation.bottom, annotation.y = annotation.y,
+    bar.height = bar.height, program.y = program.y, sample.y = sample.y,
+    sample.end = sample.end, missing = missing,
+    subclass.key = subclass.key, program.key = program.key, sample.key = sample.key,
     gene.y = gene.y, gene.top = gene.top, gene.bottom = gene.bottom,
     path.y = path.y, path.top = path.top, bottom = bottom, legend.y = legend.y,
-    key.right.x = key.right.x, key.offsets = key.offsets,
+    key.x = key.x, key.y = key.y, key.offsets = key.offsets,
     measure = measure, display = display
   )
   plot <- grid::gTree(
@@ -368,35 +376,30 @@ makeContent.scop_cell_state_plot <- function(x) {
   for (i in seq_along(a$runs$values)) {
     class <- a$runs$values[i]
     rect(
-      a$edges[i], 64.229 + a$extra, diff(a$edges)[i],
-      a$bottom - 64.229 - a$extra, palette$body[class]
+      a$edges[i], a$tree.bottom + 1, diff(a$edges)[i],
+      a$bottom - a$tree.bottom - 1, palette$body[class]
     )
-    rect(a$edges[i], 27.918 + a$extra, diff(a$edges)[i], 35.872, palette$header[class])
+    rect(a$edges[i], a$tree.top - 1, diff(a$edges)[i], a$tree.height + 2, palette$header[class])
     words <- strsplit(a$headers[i], "\n", fixed = TRUE)[[1]]
-    title.extra <- max(0, length(a$title.lines) - 1L) * 7.002
-    yy <- if (length(a$occupied) == 1L) {
-      21.4217 + title.extra
-    } else {
-      17.9207 + title.extra + (a$header.starts[i] + seq_along(words) - 1L) * 7.002
-    }
+    yy <- a$header.y + (a$header.starts[i] + seq_along(words) - 1L) * 7
     text(words, mean(a$edges[i + 0:1]), yy, just = "centre", col = "black")
   }
-  text(a$panel_label, 1.7457, 8.1712, 8, "bold")
-  text(a$title.lines, mean(c(a$left, a$right)), 8.1668 +
-    (seq_along(a$title.lines) - 1L) * 7.002, just = "centre")
+  text(a$panel_label, 1.7457, a$title.y, 8, "bold")
+  text(a$title.lines, mean(c(a$left, a$right)), a$title.y +
+    (seq_along(a$title.lines) - 1L) * 7, just = "centre")
   leaf.x <- stats::setNames(a$xs, ids)
   tree.x <- tree.y <- numeric(n - 1L)
   height <- max(x$tree$height)
   for (i in seq_len(n - 1L)) {
     xy <- lapply(x$tree$merge[i, ], function(k) {
       if (k < 0) {
-        c(leaf.x[x$tree$labels[-k]], 62.271545 + a$extra)
+        c(leaf.x[x$tree$labels[-k]], a$tree.bottom)
       } else {
         c(tree.x[k], tree.y[k])
       }
     })
-    yy <- 62.271545 + a$extra -
-      if (height > 0) 32.612 * x$tree$height[i] / height else 0
+    yy <- a$tree.bottom -
+      if (height > 0) a$tree.height * x$tree$height[i] / height else 0
     line(
       c(xy[[1]][1], xy[[1]][1], xy[[2]][1], xy[[2]][1]),
       c(xy[[1]][2], yy, yy, xy[[2]][2]), "#555555", 1.242
@@ -406,23 +409,22 @@ makeContent.scop_cell_state_plot <- function(x) {
   }
   for (j in seq_len(n)) {
     rect(
-      a$xs[j] - 2.2436, 65.7556 + a$extra, 3.536, 6.4534,
+      a$xs[j] - 2.2436, a$sub.top, 3.536, a$sub.height,
       palette$subclass[data$clusters$subclass[j]]
     )
-    text(a$cluster.labels[j], a$xs[j] + 1.063, 74.7436 + a$extra +
+    text(a$cluster.labels[j], a$xs[j] + 1.063, a$cluster.top +
       a$measure(a$cluster.labels[j], 5), 5, rot = 90, col = "#58595B")
   }
-  text("Classes", 16.7994, 56.4034 + a$extra, rot = 90)
-  text("Subclasses", 6.7194, 84.5314 + a$extra, rot = 90)
-  text("Clusters", 16.7994, 103.3474 + a$extra, rot = 90)
-  line(c(12.55, 20.55), rep(69.1 + a$extra, 2), "#231F20", .5)
+  text("Classes", 16.7994, mean(c(a$tree.top, a$tree.bottom)) + a$measure("Classes") / 2, rot = 90)
+  text("Subclasses", a$left - 3, a$sub.top + a$sub.height, just = "right")
+  text("Clusters", a$left - 3, a$annotation.bottom, just = "right")
   stack <- function(table, colors, y) {
     for (j in seq_len(n)) {
-      cursor <- y + 32.23
+      cursor <- y + a$bar.height
       for (category in names(colors)) {
         value <- table$fraction[table$cluster == ids[j] & table$category == category]
         if (!length(value) || value == 0) next
-        h <- 32.23 * value
+        h <- a$bar.height * value
         cursor <- cursor - h
         rect(a$xs[j] - 1.8405, cursor, 3.532, h, colors[category], "black")
       }
@@ -464,26 +466,20 @@ makeContent.scop_cell_state_plot <- function(x) {
       a$measure(c("Pathway", "enrichment")) / 2,
     rot = 90
   )
-  text(c("Cell population", "annotations"), a$label.x, 38.0432 + a$extra + c(0, 7.002))
-  for (i in seq_along(palette$subclass)) {
-    xx <- a$label.x + a$sub.offsets[(i - 1L) %/% a$sub.rows + 1L]
-    yy <- a$sub.top + ((i - 1L) %% a$sub.rows) * 6.474
-    rect(xx, yy - 3.3619, 8.651, 3.028, palette$subclass[i])
-    text(a$display(names(palette$subclass)[i]), xx + 11.0013, yy)
-  }
-  category.key <- function(colors, y, gap) {
-    nr <- ceiling(length(colors) / 2)
+  text(c("Cell population", "annotations"), a$label.x, a$annotation.y)
+  category.key <- function(colors, positions, labels = names(colors)) {
     for (i in seq_along(colors)) {
-      xx <- a$label.x + ((i - 1L) %/% nr) * gap
-      yy <- y + ((i - 1L) %% nr) * 6.5
+      xx <- positions$x[i]
+      yy <- positions$y[i]
       rect(xx, yy - 3.3437, 8.65, 3.03, colors[i])
-      text(names(colors)[i], xx + 11.1, yy)
+      text(labels[i], xx + 11.1, yy)
     }
   }
-  text("Program assignment", a$label.x, a$program.y - 4.2046)
-  category.key(palette$program, a$program.key.y, a$program.gap)
-  text("Donors / samples", a$label.x, a$sample.y - 8.8364)
-  category.key(palette$sample, a$sample.key.y, a$sample.gap)
+  category.key(palette$subclass, a$subclass.key, a$display(names(palette$subclass)))
+  text("Program assignment", a$label.x, a$program.y - 2)
+  category.key(palette$program, a$program.key)
+  text("Donors / samples", a$label.x, a$sample.y - 2)
+  category.key(palette$sample, a$sample.key)
   if (a$missing) {
     cross(a$label.x + 1, a$sample.end + 5.6)
     text("Not evaluable", a$label.x + 4, a$sample.end + 7.2, 5, col = "#666666")
@@ -496,21 +492,21 @@ makeContent.scop_cell_state_plot <- function(x) {
   }
   dot.key(
     "Expression proportion", x$encoded$marker.labels,
-    x$encoded$marker.radius(x$encoded$marker.ticks), "#D3D3D3", 6.8, a$legend.y
+    x$encoded$marker.radius(x$encoded$marker.ticks), "#D3D3D3", a$key.x[1], a$key.y[1]
   )
   dot.key(
     "z-normalized expression", c("0", "1", "2"), rep(1.505, 3),
-    continuous(c(0, 1, 2), "expression"), 1, a$legend.y + 10.9507
+    continuous(c(0, 1, 2), "expression"), a$key.x[2], a$key.y[2]
   )
   dot.key(
     "-ln(P)", format(round(x$encoded$size.ticks, 1), trim = TRUE),
     x$encoded$pathway.radius(x$encoded$size.ticks), "#333333",
-    a$key.right.x, a$legend.y
+    a$key.x[3], a$key.y[3]
   )
   dot.key(
     "GSEA NES", c("-2.5", "0", "2.5"), rep(1.129, 3),
     continuous(c(-2.5, 0, 2.5), "enrichment"),
-    a$key.right.x, a$legend.y + 10.9507
+    a$key.x[4], a$key.y[4]
   )
   viewport <- grid::viewport(
     width = grid::unit(a$W * scale, "bigpts"), height = grid::unit(a$H * scale, "bigpts"),
