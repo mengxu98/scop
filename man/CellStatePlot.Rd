@@ -42,113 +42,91 @@ CellStatePlot(
 )
 }
 \arguments{
-\item{object}{An analysed Seurat or Python AnnData object. Read saved objects
-first with \code{readRDS()} or \code{h5ad_to_srt()}. AnnData uses the existing Python
-environment and reads only the selected expression layer into R memory.}
+\item{object}{A Seurat or Python AnnData object.}
 
-\item{group.by, sample.by}{Metadata columns identifying clusters and biological
-samples or donors. Both must be complete. Sample bars show descriptive
-within-cluster cell fractions.}
+\item{group.by, sample.by}{Metadata columns identifying clusters and samples.
+Both must be complete. Bars show within-cluster cell fractions.}
 
-\item{features}{Marker genes in display order. Colors show cluster-mean
-z scores using population SD, clipped to 0--2; constant genes have z = 0.
-Dot area increases with expressing fraction over the displayed range.
-Unmatched genes remain missing.}
+\item{features}{Marker genes in display order. Color shows population-SD
+z scores of cluster means, clipped to 0--2; size shows expressing fraction.
+Constant genes have z = 0; unmatched genes remain missing.}
 
-\item{program.by}{A metadata column containing per-cell program assignments.
-Program bars show descriptive within-cluster cell fractions.}
+\item{program.by}{Metadata column containing per-cell program assignments.}
 
 \item{program.scores}{Numeric metadata columns containing program scores.
-Names, if supplied, are used as program labels. The highest score wins;
-ties are Ambiguous and cells with no finite scores are Unassigned.}
+Optional names label programs. The highest score wins; ties are Ambiguous
+and cells without finite scores are Unassigned.}
 
-\item{programs}{Alternatively, a uniquely named list of gene sets. Each gene
-is standardized across cells using the population SD, then averaged within
-each set. The largest mean determines the relative assignment. At least
-two sets must have min.program.genes matched, variable genes. These relative
-scores describe assignments rather than inferred biological states.
+\item{programs}{Named gene sets. Each gene is standardized across cells using
+population SD; the highest set mean determines assignment. At least two
+sets must meet min.program.genes.
 Supply exactly one of program.by, program.scores and programs.}
 
-\item{gsea}{A precomputed RunGSEA result or enrichment table. RunGSEA columns
-include Groups, Database, ID, Description, NES, pvalue and p.adjust.
-Tidy columns cluster, feature, nes, p_value and optional padj, status
-are also accepted. NOT_EVALUABLE records remain missing. Colors encode NES
-clipped to -2.5--2.5; dot area is proportional to -ln(raw P). P = 1 has zero
-area; P = 0 uses 1e-10 for drawing only. Raw values are preserved.
-If NULL, use the Seurat object's stored RunGSEA result for group.by and
-test.use. This plot does not run differential expression or enrichment.}
+\item{gsea}{A RunGSEA result or table with Groups, ID, NES and pvalue columns.
+Tidy names cluster, feature, nes and p_value are also accepted. NULL uses
+stored results for group.by and test.use. Color shows NES clipped to
+-2.5--2.5; dot area shows -ln(raw P). Missing or NOT_EVALUABLE entries
+use gray crosses.}
 
 \item{pathways}{Pathway IDs or unambiguous descriptions in display order.
-NULL displays all supplied pathways, without a significance filter.}
+NULL shows all supplied pathways without significance filtering.}
 
-\item{db}{Database to select when the GSEA table contains several databases.}
+\item{db}{Value to select from the GSEA table's Database column.}
 
 \item{test.use}{Test used to locate stored RunGSEA results.}
 
-\item{class.by, subclass.by}{Optional metadata columns giving a single
-annotation per cluster. Mixed annotations require an explicit map.}
+\item{class.by, subclass.by}{Metadata columns with one annotation per cluster.
+Mixed annotations require an explicit map.}
 
-\item{class.map, subclass.map}{Optional named character vectors mapping
-cluster IDs to annotations. These take precedence over metadata columns.}
+\item{class.map, subclass.map}{Named cluster-to-annotation vectors, overriding
+the corresponding metadata columns.}
 
 \item{assay}{Seurat assay. NULL uses DefaultAssay(object).}
 
-\item{layer}{Seurat expression layer (default data), or AnnData layer
-(default X). Select a single joined layer explicitly.}
+\item{layer}{Expression layer, defaulting to data for Seurat or X for AnnData.
+Select one joined Seurat layer.}
 
-\item{input.scale}{Either log1p normalized, nonnegative expression, or counts.
-Counts are normalized to 10,000 per cell and transformed with log1p.
-Scaled expression, residuals and integrated values are inappropriate.}
+\item{input.scale}{Nonnegative log1p expression or counts. Counts are normalized
+to 10,000 per cell and transformed with log1p.}
 
-\item{reduction}{Existing Seurat reduction or AnnData obsm key for the tree.
+\item{reduction}{Seurat reduction or AnnData obsm key used for the tree.
 NULL uses up to 500 variable cluster-average gene profiles.}
 
-\item{tree}{Optional hclust with unique cluster-ID labels. Otherwise use
-Pearson distance and complete linkage on cluster-average profiles.
-This is a similarity tree, not evidence of time or lineage.}
+\item{tree}{Optional hclust with cluster-ID labels. Otherwise use Pearson
+distance and complete linkage on cluster-average profiles.}
 
-\item{min.pct}{Minimum expressing fraction for a marker dot.}
+\item{min.pct}{Minimum expressing fraction (0--1) for displaying marker dots.}
 
-\item{expression.cutoff}{Expression strictly above this value counts as
-expressed, after any counts normalization.}
+\item{expression.cutoff}{Nonnegative expression threshold used to count
+expressing cells, after any counts normalization.}
 
 \item{min.program.genes}{Minimum matched variable genes per program.}
 
-\item{feature.labels, pathway.labels}{Optional named vectors mapping feature
-or pathway IDs to display labels. Newlines are supported for pathways.}
+\item{feature.labels, pathway.labels}{Named ID-to-label vectors.
+Pathway labels support newlines.}
 
-\item{palette}{Categorical palette name passed to \code{thisplot::palette_colors()}.}
+\item{palette}{Categorical palette passed to thisplot::palette_colors().}
 
-\item{expression_palette, enrichment_palette}{Continuous palette names for
-expression and NES. The default RdBu shows negative NES in blue and
-positive NES in red.}
+\item{expression_palette, enrichment_palette}{Continuous palettes for expression
+and NES. RdBu maps negative NES to blue and positive NES to red.}
 
-\item{palcolor}{Optional list of named color vectors for class, subclass,
-program and sample, or color ramps for expression and enrichment.}
+\item{palcolor}{List of named class, subclass, program and sample colors,
+or expression and enrichment color ramps.}
 
-\item{family}{Font family. Systemfonts, when available, supplies accurate
-text measurements; otherwise approximate character widths are used.}
+\item{family}{Font family.}
 
-\item{title, panel_label}{Optional title and panel letter. Both default to NULL.}
+\item{title, panel_label}{Optional title and panel letter.}
 
-\item{return_data}{Return the plot, numerical summaries, tree, provenance
-and unscaled dimensions instead of only the plot.}
+\item{return_data}{Include numerical summaries and metadata with the plot.}
 
-\item{flip}{Logical. Arrange clusters in rows with the tree on the left.
-Default FALSE preserves the vertical layout. Legends remain upright.}
+\item{flip}{Arrange clusters in rows with the tree on the left and upright legends.}
 }
 \value{
-A printable grid grob accepted by ggplot2::ggsave(). Attributes
-width_mm and height_mm give its unscaled dimensions. With return_data = TRUE,
-a list with plot, data, tree, provenance, width_mm and height_mm.
-Missing expression or enrichment combinations use gray crosses.
-The input object is not modified and constructing a plot writes no files.
+A grid grob, or a list with the plot and data if return_data = TRUE.
 }
 \description{
-Combine a cluster similarity tree, class and subclass annotations, program
-assignment, sample contributions, marker expression and precomputed GSEA.
-Clusters occupy columns by default, or rows with flip = TRUE. The layout
-uses compact physical spacing and preserves its aspect ratio when resized.
+Combine a cluster similarity tree, annotations, cell compositions, marker
+expression and precomputed GSEA in one aligned plot.
 }
 \examples{
 data(pancreas_sub)
