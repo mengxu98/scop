@@ -401,6 +401,20 @@ test_that("large sample legends wrap instead of widening the canvas", {
       width = p$width_mm, height = p$height_mm, units = "mm"
     ))
     widths <- c(widths, p$plot$layout$W)
+    q <- CellStatePlot(
+      object, "cluster", "donor", c("M1", "M2", "M4"),
+      program.by = "donor", gsea = f$gsea, return_data = TRUE, flip = TRUE
+    )
+    expect_identical(p$data, q$data)
+    expect_identical(p$plot$palette, q$plot$palette)
+    a <- q$plot$layout
+    expect_gt(length(unique(a$sample.key$y)), 1)
+    expect_lte(max(a$sample.key$x + 11.1 + a$measure(names(q$plot$palette$sample))), a$output.width - 4)
+    expect_gt(min(a$sample.key$y), max(a$program.key$y) + 6)
+    expect_no_condition(ggplot2::ggsave(
+      file, q$plot,
+      width = q$width_mm, height = q$height_mm, units = "mm"
+    ))
   }
   expect_lte(widths[2], widths[1] * 1.2)
 })
@@ -481,7 +495,7 @@ test_that("small enrichment values have distinct measured and drawn size labels"
   expect_lte(max(expected.x + a$measure(encoded$size.labels)), a$W - 4)
 })
 
-test_that("flip rotates the whole plot and preserves numerical results", {
+test_that("flip puts cluster information on the left and keeps legends upright", {
   f <- cellstate_fixture()
   p <- cellstate_fixture_plot(f)
   q <- cellstate_fixture_plot(f, flip = TRUE)
@@ -491,23 +505,117 @@ test_that("flip rotates the whole plot and preserves numerical results", {
   expect_identical(p$provenance, q$provenance)
   expect_identical(p$plot$palette, q$plot$palette)
   expect_identical(p$plot$colors, q$plot$colors)
-  geometry <- names(p$plot$layout)[!vapply(p$plot$layout, is.function, logical(1))]
-  expect_identical(p$plot$layout[geometry], q$plot$layout[geometry])
-  expect_identical(p$width_mm, q$height_mm)
-  expect_identical(p$height_mm, q$width_mm)
-  for (result in list(p, q)) {
-    file <- withr::local_tempfile(fileext = ".pdf")
-    local({
-      withr::local_pdf(file, width = result$width_mm / 25.4, height = result$height_mm / 25.4)
-      expect_no_condition(grid::grid.draw(result$plot))
-      drawn <- grid::grid.force(result$plot)
-      vp <- drawn$children[[1]]$vp
-      expect_equal(vp$angle, if (result$plot$flip) -90 else 0)
-      expect_equal(grid::convertWidth(vp$width, "mm", valueOnly = TRUE), p$width_mm)
-      expect_equal(grid::convertHeight(vp$height, "mm", valueOnly = TRUE), p$height_mm)
-    })
-    expect_gt(file.info(file)$size, 1000)
+  file <- withr::local_tempfile(fileext = ".pdf")
+  withr::local_pdf(file, width = q$width_mm / 25.4, height = q$height_mm / 25.4)
+  expect_no_condition(grid::grid.draw(q$plot))
+  drawn <- grid::grid.force(q$plot)$children[[1]]
+  expect_equal(drawn$vp$angle, 0)
+  children <- as.list(drawn$children)
+  cluster.labels <- Filter(function(g) {
+    inherits(g, "text") && identical(g$gp$col, "#58595B") &&
+      length(g$label) == 1L && g$label %in% q$data$clusters$cluster
+  }, children)
+  trees <- Filter(function(g) inherits(g, "lines") && identical(g$gp$col, "#555555"), children)
+  markers <- Filter(function(g) inherits(g, "circle"), children)[[1]]
+  expect_lt(max(unlist(lapply(trees, function(g) as.numeric(g$x)))), min(as.numeric(markers$x)))
+  expect_true(all(vapply(cluster.labels, function(g) g$rot == 0, logical(1))))
+  expect_lt(max(unlist(lapply(cluster.labels, function(g) as.numeric(g$x)))), min(as.numeric(markers$x)))
+  expect_identical(unname(vapply(cluster.labels, `[[`, character(1), "label")), q$data$clusters$cluster)
+  cluster.y <- unname(vapply(cluster.labels, function(g) as.numeric(g$y), numeric(1)))
+  expect_identical(order(cluster.y), seq_along(cluster.y))
+  legend.labels <- c(
+    "Cell population", "annotations", "Program assignment", "Donors / samples",
+    names(q$plot$palette$subclass), names(q$plot$palette$program), names(q$plot$palette$sample),
+    "Expression proportion", "z-normalized expression", "-ln(P)", "GSEA NES", "Not evaluable",
+    q$plot$encoded$marker.labels, q$plot$encoded$size.labels, "0", "1", "2", "-2.5", "2.5"
+  )
+  legends <- Filter(function(g) inherits(g, "text") && any(g$label %in% legend.labels), children)
+  expect_true(all(vapply(legends, function(g) g$rot == 0, logical(1))))
+  for (values in list(q$plot$encoded$marker.labels, c("0", "1", "2"), q$plot$encoded$size.labels, c("-2.5", "0", "2.5"))) {
+    labels <- Filter(function(g) inherits(g, "text") && identical(g$label, values), children)
+    expect_length(labels, 1)
+    expect_true(all(diff(as.numeric(labels[[1]]$x)) > 0))
+    expect_length(unique(as.numeric(labels[[1]]$y)), 1)
   }
+  grid::pushViewport(drawn$vp)
+  boxes <- vapply(legends, function(g) {
+    c(
+      left = grid::convertX(grid::grobX(g, "west"), "bigpts", valueOnly = TRUE),
+      right = grid::convertX(grid::grobX(g, "east"), "bigpts", valueOnly = TRUE),
+      bottom = grid::convertY(grid::grobY(g, "south"), "bigpts", valueOnly = TRUE),
+      top = grid::convertY(grid::grobY(g, "north"), "bigpts", valueOnly = TRUE)
+    )
+  }, numeric(4))
+  grid::popViewport()
+  expect_gte(min(boxes[c("left", "bottom"), ]), 0)
+  expect_lte(max(boxes["right", ]), q$width_mm / 25.4 * 72)
+  expect_lte(max(boxes["top", ]), q$height_mm / 25.4 * 72)
+})
+
+test_that("flipped titles fit the canvas with many clusters", {
+  f <- cellstate_fixture()
+  counts <- f$counts[, rep(seq_len(ncol(f$counts)), length.out = 160)]
+  colnames(counts) <- paste0("cell", seq_len(ncol(counts)))
+  object <- SeuratObject::CreateSeuratObject(Matrix::Matrix(counts, sparse = TRUE))
+  object <- SeuratObject::SetAssayData(object, layer = "data", new.data = Matrix::Matrix(counts, sparse = TRUE))
+  groups <- sprintf("K%02d", seq_len(80))
+  object$cluster <- rep(groups, each = 2)
+  object$donor <- "S"
+  object$program <- "P"
+  gsea <- expand.grid(Groups = groups, ID = "H_ONE")
+  gsea$NES <- 1
+  gsea$pvalue <- .05
+  tree <- stats::hclust(stats::dist(seq_len(80)))
+  tree$labels <- groups
+  p <- CellStatePlot(
+    object, "cluster", "donor", "M1",
+    program.by = "program", gsea = gsea, tree = tree, flip = TRUE,
+    title = paste(
+      "A landscape cell state figure with many clusters and a sufficiently",
+      "descriptive biological title that should fit within the rendered canvas"
+    ), return_data = TRUE
+  )
+  withr::local_pdf(
+    withr::local_tempfile(fileext = ".pdf"),
+    width = p$width_mm / 25.4, height = p$height_mm / 25.4
+  )
+  drawn <- grid::grid.force(p$plot)$children[[1]]
+  titles <- Filter(function(g) {
+    inherits(g, "text") && identical(g$label, p$plot$layout$title.lines)
+  }, as.list(drawn$children))
+  expect_length(titles, 1)
+  grid::pushViewport(drawn$vp)
+  left <- grid::convertX(grid::grobX(titles[[1]], "west"), "bigpts", valueOnly = TRUE)
+  right <- grid::convertX(grid::grobX(titles[[1]], "east"), "bigpts", valueOnly = TRUE)
+  grid::popViewport()
+  expect_gte(left, 0)
+  expect_lte(right, p$width_mm / 25.4 * 72)
+})
+
+test_that("short categories leave room for flipped legend headings", {
+  f <- cellstate_fixture()
+  f$object$program <- "P"
+  f$object$donor <- "S"
+  p <- CellStatePlot(
+    f$object, "cluster", "donor", "M1",
+    program.by = "program", gsea = f$gsea, flip = TRUE, return_data = TRUE
+  )
+  withr::local_pdf(
+    withr::local_tempfile(fileext = ".pdf"),
+    width = p$width_mm / 25.4, height = p$height_mm / 25.4
+  )
+  drawn <- grid::grid.force(p$plot)$children[[1]]
+  headings <- lapply(c("Program assignment", "Donors / samples"), function(label) {
+    Filter(function(g) inherits(g, "text") && identical(g$label, label), as.list(drawn$children))[[1]]
+  })
+  expect_identical(as.numeric(headings[[1]]$y), as.numeric(headings[[2]]$y))
+  grid::pushViewport(drawn$vp)
+  program.right <- grid::convertX(grid::grobX(headings[[1]], "east"), "bigpts", valueOnly = TRUE)
+  sample.left <- grid::convertX(grid::grobX(headings[[2]], "west"), "bigpts", valueOnly = TRUE)
+  sample.right <- grid::convertX(grid::grobX(headings[[2]], "east"), "bigpts", valueOnly = TRUE)
+  grid::popViewport()
+  expect_lt(program.right, sample.left)
+  expect_lte(sample.right, p$width_mm / 25.4 * 72)
 })
 
 test_that("flip requires a single nonmissing logical value", {
