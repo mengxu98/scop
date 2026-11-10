@@ -134,8 +134,8 @@ text measurements; otherwise approximate character widths are used.}
 \item{return_data}{Return the plot, numerical summaries, tree, provenance
 and unscaled dimensions instead of only the plot.}
 
-\item{flip}{Logical. Rotate the entire plot clockwise by 90 degrees.
-Default FALSE preserves the vertical layout; TRUE swaps width and height.}
+\item{flip}{Logical. Arrange clusters in rows with the tree on the left.
+Default FALSE preserves the vertical layout. Legends remain upright.}
 }
 \value{
 A printable grid grob accepted by ggplot2::ggsave(). Attributes
@@ -147,8 +147,8 @@ The input object is not modified and constructing a plot writes no files.
 \description{
 Combine a cluster similarity tree, class and subclass annotations, program
 assignment, sample contributions, marker expression and precomputed GSEA.
-Columns represent clusters throughout the panel. The layout uses compact
-physical spacing and preserves its aspect ratio when resized.
+Clusters occupy columns by default, or rows with flip = TRUE. The layout
+uses compact physical spacing and preserves its aspect ratio when resized.
 }
 \examples{
 data(pancreas_sub)

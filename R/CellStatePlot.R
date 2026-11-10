@@ -3,8 +3,8 @@
 #' @description
 #' Combine a cluster similarity tree, class and subclass annotations, program
 #' assignment, sample contributions, marker expression and precomputed GSEA.
-#' Columns represent clusters throughout the panel. The layout uses compact
-#' physical spacing and preserves its aspect ratio when resized.
+#' Clusters occupy columns by default, or rows with flip = TRUE. The layout
+#' uses compact physical spacing and preserves its aspect ratio when resized.
 #'
 #' @md
 #' @param object An analysed Seurat or Python AnnData object. Read saved objects
@@ -72,8 +72,8 @@
 #' @param title,panel_label Optional title and panel letter. Both default to NULL.
 #' @param return_data Return the plot, numerical summaries, tree, provenance
 #'   and unscaled dimensions instead of only the plot.
-#' @param flip Logical. Rotate the entire plot clockwise by 90 degrees.
-#'   Default FALSE preserves the vertical layout; TRUE swaps width and height.
+#' @param flip Logical. Arrange clusters in rows with the tree on the left.
+#'   Default FALSE preserves the vertical layout. Legends remain upright.
 #'
 #' @return A printable grid grob accepted by ggplot2::ggsave(). Attributes
 #'   width_mm and height_mm give its unscaled dimensions. With return_data = TRUE,
@@ -807,12 +807,13 @@ cellstate_grob <- function(data, tree, features, feature.labels, pathways,
     display(names(palette$subclass))
   )
   annotation.bottom <- max(annotation.bottom, subclass.key$bottom + 6)
+  if (flip) annotation.bottom <- max(cluster.bottom, cluster.top + 5)
   bar.height <- 16
   program.y <- annotation.bottom + 4
   program.key <- category.layout(palette$program, program.y, bar.height)
-  sample.y <- max(program.y + bar.height + 4, program.key$bottom + 9)
+  sample.y <- if (flip) program.y + bar.height + 4 else max(program.y + bar.height + 4, program.key$bottom + 9)
   sample.key <- category.layout(palette$sample, sample.y, bar.height)
-  sample.end <- max(sample.y + bar.height, sample.key$bottom + 2)
+  sample.end <- if (flip) sample.y + bar.height else max(sample.y + bar.height, sample.key$bottom + 2)
   missing <- any(!encoded$marker.valid) || any(!is.finite(data$pathways$neg_log_p))
   gene.top <- sample.end + if (missing) 13 else 4
   gene.span <- (length(features) - 1L) * 5.418856
@@ -850,6 +851,65 @@ cellstate_grob <- function(data, tree, features, feature.labels, pathways,
   key.x <- if (key.columns) c(4, 4, 12 + max(key.widths[1:2]), 12 + max(key.widths[1:2])) else rep(4, 4)
   key.y <- legend.y + if (key.columns) c(0, 11, 0, 11) else c(0, 11, 22, 33)
   H <- max(key.y) + 7
+  output.width <- W
+  output.height <- H
+  panel.offset <- 0
+  if (flip) {
+    output.width <- max(
+      bottom + 4, max(key.widths) + 8,
+      max(measure(c(display(names(palette$subclass)), names(palette$program), names(palette$sample)))) + 24.1
+    )
+    if (length(title.lines)) {
+      title.lines <- strsplit(wrap(title, output.width - 8), "\n", fixed = TRUE)[[1]]
+    }
+    panel.offset <- if (length(title.lines) || !is.null(panel_label)) {
+      max(10, length(title.lines) * 7 + 4)
+    } else {
+      0
+    }
+    landscape.category <- function(colors, top, labels = names(colors),
+                                   left = 4, right = output.width - 4) {
+      widths <- measure(labels) + 16.1
+      xx <- yy <- numeric(length(colors))
+      cursor <- left
+      row <- top + 9
+      for (i in seq_along(colors)) {
+        if (cursor > left && cursor + widths[i] > right) {
+          cursor <- left
+          row <- row + 7
+        }
+        xx[i] <- cursor
+        yy[i] <- row
+        cursor <- cursor + widths[i]
+      }
+      list(x = xx, y = yy, right = max(xx + widths), bottom = max(yy))
+    }
+    label.height <- max(measure(c(feature.labels, unlist(strsplit(pathway.labels, "\n", fixed = TRUE))), 5))
+    legend.y <- label.x + label.height + panel.offset + 10
+    annotation.y <- legend.y + c(0, 7)
+    subclass.key <- landscape.category(palette$subclass, legend.y + 7, display(names(palette$subclass)))
+    program.heading <- subclass.key$bottom + 10
+    program.width <- max(sum(measure(names(palette$program)) + 16.1), measure("Program assignment"))
+    sample.width <- max(sum(measure(names(palette$sample)) + 16.1), measure("Donors / samples"))
+    sample.heading.x <- 4
+    if (program.width + sample.width + 12 <= output.width - 8) {
+      program.key <- landscape.category(palette$program, program.heading, right = 4 + program.width)
+      sample.heading <- program.heading
+      sample.heading.x <- 4 + program.width + 12
+      sample.key <- landscape.category(palette$sample, sample.heading, left = sample.heading.x)
+    } else {
+      program.key <- landscape.category(palette$program, program.heading)
+      sample.heading <- program.key$bottom + 10
+      sample.key <- landscape.category(palette$sample, sample.heading)
+    }
+    category.bottom <- max(program.key$bottom, sample.key$bottom)
+    missing.y <- category.bottom + 10
+    key.top <- category.bottom + if (missing) 21 else 12
+    key.columns <- max(key.widths[1:2]) + max(key.widths[3:4]) + 16 <= output.width
+    key.x <- if (key.columns) c(4, 4, 12 + max(key.widths[1:2]), 12 + max(key.widths[1:2])) else rep(4, 4)
+    key.y <- key.top + if (key.columns) c(0, 11, 0, 11) else c(0, 11, 22, 33)
+    output.height <- max(key.y) + 7
+  }
   colors <- rbind(
     data.frame(
       scale = "expression", value = seq(0, 2, length.out = 257L),
@@ -861,7 +921,8 @@ cellstate_grob <- function(data, tree, features, feature.labels, pathways,
     )
   )
   layout <- list(
-    W = W, H = H, xs = xs, left = left, right = right, label.x = label.x,
+    W = W, H = H, output.width = output.width, output.height = output.height,
+    panel.offset = panel.offset, xs = xs, left = left, right = right, label.x = label.x,
     runs = runs, edges = edges, cluster.labels = cluster.labels,
     title.lines = title.lines, title.y = title.y,
     panel_label = panel_label, family = family,
@@ -877,14 +938,20 @@ cellstate_grob <- function(data, tree, features, feature.labels, pathways,
     key.x = key.x, key.y = key.y, key.offsets = key.offsets,
     measure = measure, display = display
   )
+  if (flip) {
+    layout$program.heading <- program.heading
+    layout$sample.heading <- sample.heading
+    layout$sample.heading.x <- sample.heading.x
+    layout$missing.y <- missing.y
+  }
   plot <- grid::gTree(
     data = data, tree = tree, features = features, feature.labels = feature.labels,
     pathways = pathways, pathway.labels = pathway.labels, encoded = encoded,
     palette = palette, colors = colors, layout = layout, flip = flip,
     name = "cell-state-plot", cl = "scop_cell_state_plot"
   )
-  attr(plot, "width_mm") <- (if (flip) H else W) / 72 * 25.4
-  attr(plot, "height_mm") <- (if (flip) W else H) / 72 * 25.4
+  attr(plot, "width_mm") <- output.width / 72 * 25.4
+  attr(plot, "height_mm") <- output.height / 72 * 25.4
   plot
 }
 
@@ -902,8 +969,8 @@ makeContent.scop_cell_state_plot <- function(x) {
   a <- x$layout
   data <- x$data
   palette <- x$palette
-  output.width <- if (x$flip) a$H else a$W
-  output.height <- if (x$flip) a$W else a$H
+  output.width <- a$output.width
+  output.height <- a$output.height
   scale <- min(
     grid::convertWidth(grid::unit(1, "npc"), "inches", valueOnly = TRUE) * 72 / output.width,
     grid::convertHeight(grid::unit(1, "npc"), "inches", valueOnly = TRUE) * 72 / output.height
@@ -911,37 +978,72 @@ makeContent.scop_cell_state_plot <- function(x) {
   children <- list()
   add <- function(grob) children[[length(children) + 1L]] <<- grob
   native <- function(value) grid::unit(value, "native")
-  rect <- function(xx, yy, w, h, fill, col = NA, lw = .25) {
+  rect <- function(xx, yy, w, h, fill, col = NA, lw = .25, panel = TRUE) {
+    if (x$flip && panel) {
+      original.x <- xx
+      xx <- yy
+      yy <- original.x + a$panel.offset
+      original.w <- w
+      w <- h
+      h <- original.w
+    }
     add(grid::rectGrob(native(xx), native(yy),
-      grid::unit(w / a$W, "npc"), grid::unit(h / a$H, "npc"),
+      grid::unit(w / output.width, "npc"), grid::unit(h / output.height, "npc"),
       just = c("left", "top"),
       gp = grid::gpar(fill = fill, col = col, lwd = lw * scale / .75)
     ))
   }
-  line <- function(xx, yy, col = "#D3D3D3", lw = .259) {
+  line <- function(xx, yy, col = "#D3D3D3", lw = .259, panel = TRUE) {
+    if (x$flip && panel) {
+      original.x <- xx
+      xx <- yy
+      yy <- original.x + a$panel.offset
+    }
     add(grid::linesGrob(native(xx), native(yy),
       gp = grid::gpar(col = col, lwd = lw * scale / .75, lineend = "square")
     ))
   }
   text <- function(s, xx, yy, size = 6, face = "plain", just = "left",
-                   rot = 0, col = "#231F20") {
+                   rot = 0, col = "#231F20", panel = TRUE) {
     if (!length(s)) {
       return(invisible(NULL))
     }
+    vertical.just <- "bottom"
+    if (x$flip && panel) {
+      original.x <- xx
+      xx <- yy
+      yy <- original.x + a$panel.offset
+      if (rot == 90) {
+        rot <- 0
+        just <- switch(just,
+          left = "right",
+          right = "left",
+          just
+        )
+      } else {
+        rot <- -90
+        vertical.just <- "top"
+      }
+    }
     add(grid::textGrob(s, native(xx), native(yy),
-      just = c(just, "bottom"), rot = rot,
+      just = c(just, vertical.just), rot = rot,
       gp = grid::gpar(
         fontfamily = a$family, fontsize = size * scale,
         fontface = face, col = col
       )
     ))
   }
-  dots <- function(xx, yy, radius, fill, lw = .25) {
+  dots <- function(xx, yy, radius, fill, lw = .25, panel = TRUE) {
     if (!length(xx)) {
       return(invisible(NULL))
     }
     yy <- rep(yy, length.out = length(xx))
     fill <- rep(fill, length.out = length(xx))
+    if (x$flip && panel) {
+      original.x <- xx
+      xx <- yy
+      yy <- original.x + a$panel.offset
+    }
     keep <- is.finite(radius) & radius > 0
     if (!any(keep)) {
       return(invisible(NULL))
@@ -950,10 +1052,10 @@ makeContent.scop_cell_state_plot <- function(x) {
       gp = grid::gpar(fill = fill[keep], col = "black", lwd = lw * scale / .75)
     ))
   }
-  cross <- function(xx, yy) {
+  cross <- function(xx, yy, panel = TRUE) {
     for (i in seq_along(xx)) {
-      line(xx[i] + c(-.7, .7), yy[i] + c(-.7, .7), "#777777", .35)
-      line(xx[i] + c(-.7, .7), yy[i] + c(.7, -.7), "#777777", .35)
+      line(xx[i] + c(-.7, .7), yy[i] + c(-.7, .7), "#777777", .35, panel = panel)
+      line(xx[i] + c(-.7, .7), yy[i] + c(.7, -.7), "#777777", .35, panel = panel)
     }
   }
   continuous <- function(values, kind) {
@@ -977,9 +1079,9 @@ makeContent.scop_cell_state_plot <- function(x) {
     )
     rect(a$edges[i], a$tree.top - 1, diff(a$edges)[i], a$tree.height + 2, palette$header[class])
   }
-  text(a$panel_label, 1.7457, a$title.y, 8, "bold")
-  text(a$title.lines, mean(c(a$left, a$right)), a$title.y +
-    (seq_along(a$title.lines) - 1L) * 7, just = "centre")
+  text(a$panel_label, 1.7457, a$title.y, 8, "bold", panel = FALSE)
+  text(a$title.lines, if (x$flip) output.width / 2 else mean(c(a$left, a$right)), a$title.y +
+    (seq_along(a$title.lines) - 1L) * 7, just = "centre", panel = FALSE)
   leaf.x <- stats::setNames(a$xs, ids)
   tree.x <- tree.y <- numeric(n - 1L)
   height <- max(x$tree$height)
@@ -1059,29 +1161,41 @@ makeContent.scop_cell_state_plot <- function(x) {
       a$measure(c("Pathway", "enrichment")) / 2,
     rot = 90
   )
-  text(c("Cell population", "annotations"), a$label.x, a$annotation.y)
+  text(c("Cell population", "annotations"), if (x$flip) 4 else a$label.x, a$annotation.y, panel = FALSE)
   category.key <- function(colors, positions, labels = names(colors)) {
     for (i in seq_along(colors)) {
       xx <- positions$x[i]
       yy <- positions$y[i]
-      rect(xx, yy - 3.3437, 8.65, 3.03, colors[i])
-      text(labels[i], xx + 11.1, yy)
+      rect(xx, yy - 3.3437, 8.65, 3.03, colors[i], panel = FALSE)
+      text(labels[i], xx + 11.1, yy, panel = FALSE)
     }
   }
   category.key(palette$subclass, a$subclass.key, a$display(names(palette$subclass)))
-  text("Program assignment", a$label.x, a$program.y - 2)
+  text("Program assignment", if (x$flip) 4 else a$label.x,
+    if (x$flip) a$program.heading else a$program.y - 2,
+    panel = FALSE
+  )
   category.key(palette$program, a$program.key)
-  text("Donors / samples", a$label.x, a$sample.y - 2)
+  text("Donors / samples", if (x$flip) a$sample.heading.x else a$label.x,
+    if (x$flip) a$sample.heading else a$sample.y - 2,
+    panel = FALSE
+  )
   category.key(palette$sample, a$sample.key)
   if (a$missing) {
-    cross(a$label.x + 1, a$sample.end + 5.6)
-    text("Not evaluable", a$label.x + 4, a$sample.end + 7.2, 5, col = "#666666")
+    cross(if (x$flip) 5 else a$label.x + 1,
+      if (x$flip) a$missing.y - 1.6 else a$sample.end + 5.6,
+      panel = FALSE
+    )
+    text("Not evaluable", if (x$flip) 8 else a$label.x + 4,
+      if (x$flip) a$missing.y else a$sample.end + 7.2, 5,
+      col = "#666666", panel = FALSE
+    )
   }
   dot.key <- function(label, labels, radii, fill, xx, yy) {
-    text(label, xx, yy + 1.84, col = "black")
+    text(label, xx, yy + 1.84, col = "black", panel = FALSE)
     dx <- xx + a$measure(label) + 6 + a$key.offsets(labels)
-    dots(dx, rep(yy, 3), radii, fill)
-    text(labels, dx + 4, yy + 1.84, col = "black")
+    dots(dx, rep(yy, 3), radii, fill, panel = FALSE)
+    text(labels, dx + 4, yy + 1.84, col = "black", panel = FALSE)
   }
   dot.key(
     "Expression proportion", x$encoded$marker.labels,
@@ -1102,9 +1216,8 @@ makeContent.scop_cell_state_plot <- function(x) {
     a$key.x[4], a$key.y[4]
   )
   viewport <- grid::viewport(
-    width = grid::unit(a$W * scale, "bigpts"), height = grid::unit(a$H * scale, "bigpts"),
-    xscale = c(0, a$W), yscale = c(a$H, 0),
-    angle = if (x$flip) -90 else 0
+    width = grid::unit(output.width * scale, "bigpts"), height = grid::unit(output.height * scale, "bigpts"),
+    xscale = c(0, output.width), yscale = c(output.height, 0)
   )
   child <- grid::gTree(children = do.call(grid::gList, children), vp = viewport)
   grid::setChildren(x, grid::gList(child))
