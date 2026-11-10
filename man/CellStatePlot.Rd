@@ -122,7 +122,7 @@ or expression and enrichment color ramps.}
 \item{flip}{Arrange clusters in rows with the tree on the left and upright legends.}
 }
 \value{
-A grid grob, or a list with the plot and data if return_data = TRUE.
+A patchwork plot, or a list with the plot and data if return_data = TRUE.
 }
 \description{
 Combine a cluster similarity tree, annotations, cell compositions, marker

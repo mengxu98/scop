@@ -57,7 +57,7 @@
 #' @param return_data Include numerical summaries and metadata with the plot.
 #' @param flip Arrange clusters in rows with the tree on the left and upright legends.
 #'
-#' @return A grid grob, or a list with the plot and data if return_data = TRUE.
+#' @return A patchwork plot, or a list with the plot and data if return_data = TRUE.
 #'
 #' @seealso [adata_to_srt()], [h5ad_to_srt()], [RunGSEA()]
 #' @export
@@ -370,7 +370,7 @@ CellStatePlot <- function(
   encoded <- cellstate_encode(data, min.pct)
   data$markers <- encoded$markers
   data$pathways <- encoded$pathways
-  plot <- cellstate_grob(
+  plot <- cellstate_plot(
     data, tree, features, marker.labels, enrichment$ids, pathway.labels,
     encoded, palette, expression_palette, enrichment_palette,
     palcolor, family, title, panel_label, flip
@@ -689,7 +689,7 @@ cellstate_palettes <- function(data, palette, expression_palette, enrichment_pal
   )
 }
 
-cellstate_grob <- function(data, tree, features, feature.labels, pathways,
+cellstate_plot <- function(data, tree, features, feature.labels, pathways,
                            pathway.labels, encoded, palette, expression_palette,
                            enrichment_palette, palcolor, family, title,
                            panel_label, flip) {
@@ -922,28 +922,27 @@ cellstate_grob <- function(data, tree, features, feature.labels, pathways,
     layout$sample.heading.x <- sample.heading.x
     layout$missing.y <- missing.y
   }
-  plot <- grid::gTree(
+  state <- list(
     data = data, tree = tree, features = features, feature.labels = feature.labels,
     pathways = pathways, pathway.labels = pathway.labels, encoded = encoded,
-    palette = palette, colors = colors, layout = layout, flip = flip,
-    name = "cell-state-plot", cl = "scop_cell_state_plot"
+    palette = palette, colors = colors, layout = layout, flip = flip
   )
+  recorded <- grid::recordGrob(
+    grid::grid.draw(render(state)),
+    list(state = state, render = cellstate_render),
+    name = "cell-state-plot"
+  )
+  check_r("patchwork", verbose = FALSE)
+  plot.theme <- ggplot2::theme(plot.margin = ggplot2::margin(0, 0, 0, 0))
+  plot <- patchwork::wrap_elements(full = recorded, clip = FALSE) +
+    plot.theme
+  plot <- patchwork::wrap_plots(plot) + patchwork::plot_annotation(theme = plot.theme)
   attr(plot, "width_mm") <- output.width / 72 * 25.4
   attr(plot, "height_mm") <- output.height / 72 * 25.4
   plot
 }
 
-#' @export
-print.scop_cell_state_plot <- function(x, ...) {
-  grid::grid.newpage()
-  grid::grid.draw(x)
-  invisible(x)
-}
-
-#' @export
-#' @method makeContent scop_cell_state_plot
-#' @importFrom grid makeContent
-makeContent.scop_cell_state_plot <- function(x) {
+cellstate_render <- function(x) {
   a <- x$layout
   data <- x$data
   palette <- x$palette
@@ -1198,5 +1197,5 @@ makeContent.scop_cell_state_plot <- function(x) {
     xscale = c(0, output.width), yscale = c(output.height, 0)
   )
   child <- grid::gTree(children = do.call(grid::gList, children), vp = viewport)
-  grid::setChildren(x, grid::gList(child))
+  child
 }

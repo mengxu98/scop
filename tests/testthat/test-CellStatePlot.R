@@ -1,4 +1,7 @@
 local_edition(3)
+skip_if_not_installed("patchwork")
+
+cellstate_test_state <- function(plot) attr(plot, "grobs")$full$list$state
 
 cellstate_fixture <- function() {
   counts <- matrix(
@@ -62,7 +65,7 @@ test_that("CellStatePlot summaries agree with independent expectations", {
   c.samples <- subset(p$data$samples, cluster == "C")
   expect_equal(c.samples$fraction[as.character(c.samples$category) == "d1"], 1)
   expect_identical(f$object, original)
-  expect_s3_class(p$plot, "grob")
+  expect_s3_class(p$plot, "ggplot")
   expect_gt(p$width_mm, 0)
   expect_gt(p$height_mm, 0)
 })
@@ -123,14 +126,17 @@ test_that("constant dot domains and zero-height trees draw without side effects"
   directory <- withr::local_tempdir(pattern = "cell-state-construction-")
   withr::local_dir(directory)
   devices <- grDevices::dev.list()
+  withr::local_seed(1)
+  seed <- .Random.seed
   p <- CellStatePlot(
     f$object, "cluster", "donor", "M4",
     program.by = "donor",
     gsea = f$gsea, tree = tree, family = "sans", return_data = TRUE
   )
   expect_identical(grDevices::dev.list(), devices)
+  expect_identical(.Random.seed, seed)
   expect_length(list.files(directory, all.files = TRUE, no.. = TRUE), 0)
-  expect_gt(diff(p$plot$encoded$marker.radius(c(.4, .8))), 0)
+  expect_gt(diff(cellstate_test_state(p$plot)$encoded$marker.radius(c(.4, .8))), 0)
   grDevices::cairo_pdf(
     withr::local_tempfile(fileext = ".pdf"),
     width = p$width_mm / 25.4, height = p$height_mm / 25.4
@@ -180,6 +186,56 @@ test_that("default PDF export needs no font registration", {
   expect_gt(file.info(file)$size, 1000)
 })
 
+test_that("standard plots display, compose and draw through public interfaces", {
+  f <- cellstate_fixture()
+  p <- CellStatePlot(
+    f$object, "cluster", "donor", "M1",
+    program.by = "donor", gsea = f$gsea
+  )
+  q <- cellstate_fixture_plot(f, flip = TRUE)
+  expect_s3_class(p, "ggplot")
+  expect_s3_class(p, "patchwork")
+  expect_gt(attr(p, "width_mm"), 0)
+  expect_equal(attr(q$plot, "height_mm"), q$height_mm)
+  withr::local_pdf(withr::local_tempfile(fileext = ".pdf"))
+  expect_no_condition(base::withAutoprint(p, echo = FALSE))
+  grid::grid.force()
+  expect_true(any(grepl("cell-state-plot", grid::grid.ls(print = FALSE)$name)))
+  grid::grid.newpage()
+  expect_no_condition(grid::grid.draw(thisplot::as_grob(p)))
+  grid::grid.force()
+  expect_true(any(grepl("cell-state-plot", grid::grid.ls(print = FALSE)$name)))
+  expect_no_condition(grid::grid.draw(q$plot))
+  combined <- p + q$plot
+  expect_s3_class(combined, "patchwork")
+  file <- withr::local_tempfile(fileext = ".pdf")
+  expect_no_condition(ggplot2::ggsave(file, combined, width = 10, height = 4))
+  expect_gt(file.info(file)$size, 1000)
+})
+
+test_that("the same plot rescales vector text on fresh devices", {
+  f <- cellstate_fixture()
+  for (flip in c(FALSE, TRUE)) {
+    p <- cellstate_fixture_plot(f, flip = flip)
+    a <- cellstate_test_state(p$plot)$layout
+    sizes <- numeric()
+    for (dimensions in list(c(7, 2), c(4, 7))) {
+      file <- withr::local_tempfile(fileext = ".pdf")
+      grDevices::pdf(file, width = dimensions[1], height = dimensions[2], compress = FALSE)
+      tryCatch(expect_no_condition(print(p$plot)), finally = grDevices::dev.off())
+      content <- readLines(file, warn = FALSE)
+      marker <- grep("\\(M1\\) Tj$", content, value = TRUE, useBytes = TRUE)
+      expect_length(marker, 1)
+      transform <- as.numeric(strsplit(marker, " ", fixed = TRUE)[[1]][4:7])
+      size <- max(abs(transform))
+      scale <- min(dimensions * 72 / c(a$output.width, a$output.height))
+      expect_equal(size, round(5 * scale))
+      sizes <- c(sizes, size)
+    }
+    expect_false(isTRUE(all.equal(sizes[1], sizes[2])))
+  }
+})
+
 test_that("marker size legends describe the displayed high fractions", {
   f <- cellstate_fixture()
   counts <- rbind(
@@ -204,7 +260,7 @@ test_that("marker size legends describe the displayed high fractions", {
   file <- withr::local_tempfile(fileext = ".pdf")
   grDevices::pdf(file, family = "sans")
   on.exit(grDevices::dev.off(), add = TRUE)
-  children <- as.list(grid::grid.force(p$plot)$children[[1]]$children)
+  children <- as.list(cellstate_render(cellstate_test_state(p$plot))$children)
   legend <- Filter(function(g) {
     inherits(g, "circle") && identical(unname(g$gp$fill), rep("#D3D3D3", 3))
   }, children)
@@ -226,13 +282,13 @@ test_that("single-row panels reserve space for their vertical titles", {
   file <- withr::local_tempfile(fileext = ".pdf")
   grDevices::pdf(file, width = p$width_mm / 25.4, height = p$height_mm / 25.4)
   on.exit(grDevices::dev.off(), add = TRUE)
-  g <- grid::grid.force(p$plot)
-  vp <- g$children[[1]]$vp
+  g <- cellstate_render(cellstate_test_state(p$plot))
+  vp <- g$vp
   grid::pushViewport(vp)
   on.exit(grid::popViewport(), add = TRUE, after = FALSE)
   titles <- Filter(function(g) {
     inherits(g, "text") && all(g$label %in% c("Marker gene", "expression", "Pathway", "enrichment"))
-  }, as.list(g$children[[1]]$children))
+  }, as.list(g$children))
   expect_length(titles, 2)
   bounds <- lapply(titles, function(title) {
     vapply(seq_along(title$label), function(i) {
@@ -295,10 +351,10 @@ test_that("palette changes preserve summaries and respect named overrides", {
     unique(as.character(p$data$programs$category)),
     palette = "Chinese", type = "discrete"
   )
-  expect_identical(p$plot$palette$program, expected)
-  expect_identical(unname(q$plot$palette$program["High"]), "black")
-  expect_false(identical(p$plot$palette$expression, q$plot$palette$expression))
-  expect_false(identical(p$plot$palette$enrichment, q$plot$palette$enrichment))
+  expect_identical(cellstate_test_state(p$plot)$palette$program, expected)
+  expect_identical(unname(cellstate_test_state(q$plot)$palette$program["High"]), "black")
+  expect_false(identical(cellstate_test_state(p$plot)$palette$expression, cellstate_test_state(q$plot)$palette$expression))
+  expect_false(identical(cellstate_test_state(p$plot)$palette$enrichment, cellstate_test_state(q$plot)$palette$enrichment))
   expect_error(cellstate_fixture_plot(f, palcolor = list(c("red", "blue"))), "named list")
   expect_error(cellstate_fixture_plot(f, palcolor = list(program = c(High = NA))), "color")
 })
@@ -321,7 +377,7 @@ test_that("file loading stays outside plotting and leaves the session untouched"
 
 test_that("short cluster labels keep the composition and dot tracks together", {
   p <- cellstate_fixture_plot(cellstate_fixture())
-  a <- p$plot$layout
+  a <- cellstate_test_state(p$plot)$layout
   expect_lte(a$program.y - a$cluster.bottom, 9)
   expect_gte(a$bar.height, 14)
   expect_lte(a$bar.height, 18)
@@ -350,13 +406,13 @@ test_that("long labels and many categories draw without text collisions", {
   file <- withr::local_tempfile(fileext = ".pdf")
   grDevices::pdf(file, width = p$width_mm / 25.4, height = p$height_mm / 25.4)
   on.exit(grDevices::dev.off(), add = TRUE)
-  g <- grid::grid.force(p$plot)
-  grid::pushViewport(g$children[[1]]$vp)
+  g <- cellstate_render(cellstate_test_state(p$plot))
+  grid::pushViewport(g$vp)
   on.exit(grid::popViewport(), add = TRUE, after = FALSE)
   labels <- Filter(function(g) {
     inherits(g, "text") && length(g$label) == 1L &&
       g$label %in% c(categories, "Program assignment", "Donors / samples", "Not evaluable")
-  }, as.list(g$children[[1]]$children))
+  }, as.list(g$children))
   expect_equal(sum(vapply(labels, function(g) g$label %in% categories, logical(1))), 2L * length(categories))
   boxes <- vapply(labels, function(g) {
     c(
@@ -375,7 +431,7 @@ test_that("long labels and many categories draw without text collisions", {
   })
   expect_false(any(overlaps))
   expect_gt(min(boxes["left", ]), 0)
-  expect_lt(max(boxes["right", ]), p$plot$layout$W)
+  expect_lt(max(boxes["right", ]), cellstate_test_state(p$plot)$layout$W)
 })
 
 test_that("large sample legends wrap instead of widening the canvas", {
@@ -392,24 +448,24 @@ test_that("large sample legends wrap instead of widening the canvas", {
       object, "cluster", "donor", c("M1", "M2", "M4"),
       program.by = "donor", gsea = f$gsea, return_data = TRUE
     )
-    expect_setequal(names(p$plot$palette$sample), unique(object$donor))
+    expect_setequal(names(cellstate_test_state(p$plot)$palette$sample), unique(object$donor))
     expect_equal(nrow(p$data$samples), 3L * n)
-    expect_lt(p$plot$layout$W, 500)
+    expect_lt(cellstate_test_state(p$plot)$layout$W, 500)
     file <- withr::local_tempfile(fileext = ".pdf")
     expect_no_condition(ggplot2::ggsave(
       file, p$plot,
       width = p$width_mm, height = p$height_mm, units = "mm"
     ))
-    widths <- c(widths, p$plot$layout$W)
+    widths <- c(widths, cellstate_test_state(p$plot)$layout$W)
     q <- CellStatePlot(
       object, "cluster", "donor", c("M1", "M2", "M4"),
       program.by = "donor", gsea = f$gsea, return_data = TRUE, flip = TRUE
     )
     expect_identical(p$data, q$data)
-    expect_identical(p$plot$palette, q$plot$palette)
-    a <- q$plot$layout
+    expect_identical(cellstate_test_state(p$plot)$palette, cellstate_test_state(q$plot)$palette)
+    a <- cellstate_test_state(q$plot)$layout
     expect_gt(length(unique(a$sample.key$y)), 1)
-    expect_lte(max(a$sample.key$x + 11.1 + a$measure(names(q$plot$palette$sample))), a$output.width - 4)
+    expect_lte(max(a$sample.key$x + 11.1 + a$measure(names(cellstate_test_state(q$plot)$palette$sample))), a$output.width - 4)
     expect_gt(min(a$sample.key$y), max(a$program.key$y) + 6)
     expect_no_condition(ggplot2::ggsave(
       file, q$plot,
@@ -427,7 +483,7 @@ test_that("plots omit repeated class headings and keep titles optional", {
   grDevices::pdf(file, width = p$width_mm / 25.4, height = p$height_mm / 25.4)
   on.exit(grDevices::dev.off(), add = TRUE)
   labels <- function(plot) {
-    children <- as.list(grid::grid.force(plot)$children[[1]]$children)
+    children <- as.list(cellstate_render(cellstate_test_state(plot))$children)
     unlist(lapply(Filter(function(g) inherits(g, "text"), children), `[[`, "label"))
   }
   text <- labels(p$plot)
@@ -477,18 +533,18 @@ test_that("small enrichment values have distinct measured and drawn size labels"
   f <- cellstate_fixture()
   f$gsea$pvalue[] <- .99
   p <- cellstate_fixture_plot(f)
-  encoded <- p$plot$encoded
+  encoded <- cellstate_test_state(p$plot)$encoded
   expect_length(unique(encoded$size.labels), 3)
   expect_equal(as.numeric(encoded$size.labels), encoded$size.ticks, tolerance = .01)
   file <- withr::local_tempfile(fileext = ".pdf")
   grDevices::pdf(file, width = p$width_mm / 25.4, height = p$height_mm / 25.4)
   on.exit(grDevices::dev.off(), add = TRUE)
-  children <- as.list(grid::grid.force(p$plot)$children[[1]]$children)
+  children <- as.list(cellstate_render(cellstate_test_state(p$plot))$children)
   labels <- Filter(function(g) {
     inherits(g, "text") && identical(g$label, encoded$size.labels)
   }, children)
   expect_length(labels, 1)
-  a <- p$plot$layout
+  a <- cellstate_test_state(p$plot)$layout
   expected.x <- a$key.x[3] + a$measure("-ln(P)") + 6 +
     a$key.offsets(encoded$size.labels) + 4
   expect_equal(as.numeric(labels[[1]]$x), expected.x)
@@ -503,12 +559,12 @@ test_that("flip puts cluster information on the left and keeps legends upright",
   expect_identical(p$data, q$data)
   expect_identical(p$tree, q$tree)
   expect_identical(p$provenance, q$provenance)
-  expect_identical(p$plot$palette, q$plot$palette)
-  expect_identical(p$plot$colors, q$plot$colors)
+  expect_identical(cellstate_test_state(p$plot)$palette, cellstate_test_state(q$plot)$palette)
+  expect_identical(cellstate_test_state(p$plot)$colors, cellstate_test_state(q$plot)$colors)
   file <- withr::local_tempfile(fileext = ".pdf")
   withr::local_pdf(file, width = q$width_mm / 25.4, height = q$height_mm / 25.4)
   expect_no_condition(grid::grid.draw(q$plot))
-  drawn <- grid::grid.force(q$plot)$children[[1]]
+  drawn <- cellstate_render(cellstate_test_state(q$plot))
   expect_equal(drawn$vp$angle, 0)
   children <- as.list(drawn$children)
   cluster.labels <- Filter(function(g) {
@@ -525,13 +581,13 @@ test_that("flip puts cluster information on the left and keeps legends upright",
   expect_identical(order(cluster.y), seq_along(cluster.y))
   legend.labels <- c(
     "Cell population", "annotations", "Program assignment", "Donors / samples",
-    names(q$plot$palette$subclass), names(q$plot$palette$program), names(q$plot$palette$sample),
+    names(cellstate_test_state(q$plot)$palette$subclass), names(cellstate_test_state(q$plot)$palette$program), names(cellstate_test_state(q$plot)$palette$sample),
     "Expression proportion", "z-normalized expression", "-ln(P)", "GSEA NES", "Not evaluable",
-    q$plot$encoded$marker.labels, q$plot$encoded$size.labels, "0", "1", "2", "-2.5", "2.5"
+    cellstate_test_state(q$plot)$encoded$marker.labels, cellstate_test_state(q$plot)$encoded$size.labels, "0", "1", "2", "-2.5", "2.5"
   )
   legends <- Filter(function(g) inherits(g, "text") && any(g$label %in% legend.labels), children)
   expect_true(all(vapply(legends, function(g) g$rot == 0, logical(1))))
-  for (values in list(q$plot$encoded$marker.labels, c("0", "1", "2"), q$plot$encoded$size.labels, c("-2.5", "0", "2.5"))) {
+  for (values in list(cellstate_test_state(q$plot)$encoded$marker.labels, c("0", "1", "2"), cellstate_test_state(q$plot)$encoded$size.labels, c("-2.5", "0", "2.5"))) {
     labels <- Filter(function(g) inherits(g, "text") && identical(g$label, values), children)
     expect_length(labels, 1)
     expect_true(all(diff(as.numeric(labels[[1]]$x)) > 0))
@@ -579,9 +635,9 @@ test_that("flipped titles fit the canvas with many clusters", {
     withr::local_tempfile(fileext = ".pdf"),
     width = p$width_mm / 25.4, height = p$height_mm / 25.4
   )
-  drawn <- grid::grid.force(p$plot)$children[[1]]
+  drawn <- cellstate_render(cellstate_test_state(p$plot))
   titles <- Filter(function(g) {
-    inherits(g, "text") && identical(g$label, p$plot$layout$title.lines)
+    inherits(g, "text") && identical(g$label, cellstate_test_state(p$plot)$layout$title.lines)
   }, as.list(drawn$children))
   expect_length(titles, 1)
   grid::pushViewport(drawn$vp)
@@ -604,7 +660,7 @@ test_that("short categories leave room for flipped legend headings", {
     withr::local_tempfile(fileext = ".pdf"),
     width = p$width_mm / 25.4, height = p$height_mm / 25.4
   )
-  drawn <- grid::grid.force(p$plot)$children[[1]]
+  drawn <- cellstate_render(cellstate_test_state(p$plot))
   headings <- lapply(c("Program assignment", "Donors / samples"), function(label) {
     Filter(function(g) inherits(g, "text") && identical(g$label, label), as.list(drawn$children))[[1]]
   })
