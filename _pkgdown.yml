@@ -130,6 +130,7 @@ reference:
   - FindNeighbors
   - FindClusters
   - ClusterTreePlot
+  - CellStatePlot
   - RunCHOIR
   - RunRareQ
 
