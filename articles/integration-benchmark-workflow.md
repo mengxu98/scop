@@ -133,8 +133,8 @@ batch scores; the metrics view lists every metric per method.
 bench <- panc8_sub@tools$IntegrationBenchmark
 bench$runs
 #>        method  status error runtime_s         latent              umap
-#> 1 Uncorrected success          15.596 Uncorrectedpca UncorrectedUMAP2D
-#> 2     Harmony success          10.639        Harmony     HarmonyUMAP2D
+#> 1 Uncorrected success          13.373 Uncorrectedpca UncorrectedUMAP2D
+#> 2     Harmony success           9.456        Harmony     HarmonyUMAP2D
 stopifnot(all(bench$runs$status == "success"))
 
 thisplot::print_colored_table(
@@ -143,8 +143,8 @@ thisplot::print_colored_table(
   palette = "Chinese"
 )
 #> method       status   overall    bio        batch      iLISI       cLISI      celltype_ASW  batch_ASW_mixing  celltype_graph_connectivity  celltype_ARI  celltype_NMI  runtime_s  latent          umap             
-#> Uncorrected  success  0.6710946  0.7850261  0.5001973  0.05972029  0.9906632  0.6055287     0.9406743         0.9464146                    0.4704063     0.7371439     15.596     Uncorrectedpca  UncorrectedUMAP2D
-#> Harmony      success  0.7796145  0.8679485  0.6471136  0.37231389  0.9939489  0.6688806     0.9219133         0.9457216                    0.7640205     0.8676191     10.639     Harmony         HarmonyUMAP2D    
+#> Uncorrected  success  0.6710946  0.7850261  0.5001973  0.05972029  0.9906632  0.6055287     0.9406743         0.9464146                    0.4704063     0.7371439     13.373     Uncorrectedpca  UncorrectedUMAP2D
+#> Harmony      success  0.7796145  0.8679485  0.6471136  0.37231389  0.9939489  0.6688806     0.9219133         0.9457216                    0.7640205     0.8676191     9.456      Harmony         HarmonyUMAP2D    
 
 metrics <- bench$metrics
 metrics <- metrics[
@@ -275,10 +275,10 @@ data.frame(
   bytes = file.info(list.files(output_dir, full.names = TRUE))$size
 )
 #>                    file    bytes
-#> 1          analysis.rds 47324996
+#> 1          analysis.rds 47325167
 #> 2 benchmark-metrics.csv     1600
-#> 3    benchmark-runs.csv      181
-#> 4 benchmark-summary.csv      659
+#> 3    benchmark-runs.csv      180
+#> 4 benchmark-summary.csv      658
 #> 5     cell-metadata.csv   274871
 ```
 
@@ -336,9 +336,9 @@ build_receipt <- data.frame(
 )
 build_receipt
 #>                          article               built_utc  scop     R
-#> 1 integration-benchmark-workflow 2026-11-04 21:02:28 UTC 0.9.2 4.6.2
+#> 1 integration-benchmark-workflow 2026-11-10 10:57:22 UTC 0.9.2 4.6.2
 #>                            source_revision source_has_local_changes
-#> 1 6f8a9791297dbcc54d60f6c67cd54df1a2dbb496                    FALSE
+#> 1 1ae6058d875064a3d9b1ef3b3ceca07f248c4796                    FALSE
 #>                        article_md5 R_seed cells_retained genes_in_active_assay
 #> 1 8fe304a2e6bb06793cb671d232710b92     11           1600                 12932
 utils::write.csv(build_receipt, file.path(output_dir, "build-receipt.csv"),
@@ -376,49 +376,39 @@ sessionInfo()
 #> [1] scop_0.9.2
 #> 
 #> loaded via a namespace (and not attached):
-#>   [1] deldir_2.0-4           pbapply_1.7-5          gridExtra_2.3.1       
-#>   [4] rlang_1.3.0            magrittr_2.0.5         RcppAnnoy_0.0.23      
-#>   [7] otel_0.2.0             spatstat.geom_3.8-3    matrixStats_1.5.0     
-#>  [10] ggridges_0.5.7         compiler_4.6.2         png_0.1-9             
-#>  [13] systemfonts_1.3.2      vctrs_0.7.3            reshape2_1.4.5        
-#>  [16] stringr_1.6.0          pkgconfig_2.0.3        fastmap_1.2.0         
-#>  [19] labeling_0.4.3         promises_1.5.0         rmarkdown_2.32        
-#>  [22] ragg_1.5.2             purrr_1.2.2            xfun_0.62             
-#>  [25] cachem_1.1.0           jsonlite_2.0.0         goftest_1.2-3         
-#>  [28] later_1.4.8            spatstat.utils_3.2-5   irlba_2.4.1           
-#>  [31] parallel_4.6.2         cluster_2.1.8.3        R6_2.6.1              
-#>  [34] ica_1.0-3              spatstat.data_3.1-9    bslib_0.12.0          
-#>  [37] stringi_1.8.9          RColorBrewer_1.1-3     reticulate_1.47.0     
-#>  [40] spatstat.univar_3.2-0  parallelly_1.50.0      lmtest_0.9-40         
-#>  [43] jquerylib_0.1.4        scattermore_1.2        Rcpp_1.1.2            
-#>  [46] knitr_1.52             tensor_1.5.1           future.apply_1.21.0   
-#>  [49] zoo_1.9-1              sctransform_0.4.3      httpuv_1.6.17         
-#>  [52] Matrix_1.7-6           splines_4.6.2          igraph_2.3.4          
-#>  [55] tidyselect_1.2.1       abind_1.4-8            thisplot_0.4.6        
-#>  [58] dichromat_2.0-1        yaml_2.3.12            spatstat.random_3.5-2 
-#>  [61] spatstat.explore_3.8-3 codetools_0.2-20       miniUI_0.1.2          
-#>  [64] listenv_1.1.0          plyr_1.8.9             lattice_0.23-1        
-#>  [67] tibble_3.3.1           withr_3.0.3            shiny_1.14.0          
-#>  [70] S7_0.2.2               ROCR_1.0-12            evaluate_1.0.5        
-#>  [73] Rtsne_0.17             future_1.82.0          fastDummies_1.7.6     
-#>  [76] desc_1.4.3             survival_3.8-12        polyclip_1.10-7       
-#>  [79] fitdistrplus_1.2-6     pillar_1.11.1          Seurat_5.6.0          
-#>  [82] KernSmooth_2.23-27     plotly_4.12.1          generics_0.1.4        
-#>  [85] thisutils_0.5.3        RcppHNSW_0.7.0         sp_2.2-4              
-#>  [88] ggplot2_4.0.3          scales_1.4.0           globals_0.20.0        
-#>  [91] xtable_1.8-8           RhpcBLASctl_0.23-42    glue_1.8.1            
-#>  [94] proxyC_0.6.0           tools_4.6.2            BiocNeighbors_2.6.0   
-#>  [97] data.table_1.18.6.1    RSpectra_0.16-2        RANN_2.6.3            
-#> [100] fs_2.1.0               dotCall64_1.2          cowplot_1.2.0         
-#> [103] grid_4.6.2             tidyr_1.3.2            nlme_3.1-171          
-#> [106] patchwork_1.3.2        cli_3.6.6              spatstat.sparse_3.2-0 
-#> [109] textshaping_1.0.5      spam_2.11-4            viridisLite_0.4.3     
-#> [112] dplyr_1.2.1            uwot_0.2.5             gtable_0.3.6          
-#> [115] sass_0.4.10            digest_0.6.39          progressr_1.1.0       
-#> [118] ggrepel_0.9.8          htmlwidgets_1.6.4      SeuratObject_5.4.0    
-#> [121] farver_2.1.2           htmltools_0.5.9        pkgdown_2.2.1         
-#> [124] lifecycle_1.0.5        httr_1.4.9             mime_0.13             
-#> [127] harmony_2.1.0          MASS_7.3-66
+#>  [1] tidyselect_1.2.1    dplyr_1.2.1         farver_2.1.2       
+#>  [4] S7_0.2.2            fastmap_1.2.0       RANN_2.6.3         
+#>  [7] digest_0.6.39       dotCall64_1.2       lifecycle_1.0.5    
+#> [10] cluster_2.1.8.3     SeuratObject_5.4.0  magrittr_2.0.5     
+#> [13] compiler_4.6.2      rlang_1.3.0         sass_0.4.10        
+#> [16] tools_4.6.2         igraph_2.3.4        yaml_2.3.12        
+#> [19] knitr_1.52          labeling_0.4.3      htmlwidgets_1.6.4  
+#> [22] sp_2.2-4            plyr_1.8.9          RColorBrewer_1.1-3 
+#> [25] KernSmooth_2.23-27  Rtsne_0.17          withr_3.0.3        
+#> [28] desc_1.4.3          grid_4.6.2          RcppHNSW_0.7.0     
+#> [31] fastDummies_1.7.6   future_1.82.0       progressr_1.1.0    
+#> [34] ggplot2_4.0.3       globals_0.20.0      scales_1.4.0       
+#> [37] MASS_7.3-66         ggridges_0.5.7      dichromat_2.0-1    
+#> [40] cli_3.6.6           rmarkdown_2.32      ragg_1.5.2         
+#> [43] thisutils_0.5.3     generics_0.1.4      Seurat_6.0.0       
+#> [46] otel_0.3.0          ica_1.0-3           future.apply_1.21.0
+#> [49] RSpectra_0.16-2     sctransform_0.4.3   httr_1.4.9         
+#> [52] reshape2_1.4.5      pbapply_1.7-5       cachem_1.1.0       
+#> [55] stringr_1.6.0       parallel_4.6.2      proxyC_0.6.0       
+#> [58] matrixStats_1.5.0   vctrs_0.7.3         Matrix_1.7-6       
+#> [61] jsonlite_2.0.0      BiocNeighbors_2.6.0 patchwork_1.3.2    
+#> [64] thisplot_0.4.6      ggrepel_0.9.8       irlba_2.4.1        
+#> [67] scattermore_1.2     listenv_1.1.0       systemfonts_1.3.2  
+#> [70] harmony_2.1.0       jquerylib_0.1.4     pls_2.9-0          
+#> [73] glue_1.8.1          parallelly_1.50.0   spam_2.11-4        
+#> [76] pkgdown_2.2.1       codetools_0.2-20    uwot_0.2.5         
+#> [79] cowplot_1.2.0       stringi_1.8.9       RcppAnnoy_0.0.23   
+#> [82] gtable_0.3.6        tibble_3.3.1        pillar_1.11.1      
+#> [85] htmltools_0.5.9     R6_2.6.1            textshaping_1.0.5  
+#> [88] evaluate_1.0.5      lattice_0.23-1      png_0.1-9          
+#> [91] RhpcBLASctl_0.23-42 bslib_0.12.0        Rcpp_1.1.2         
+#> [94] gridExtra_2.3.1     xfun_0.62           fs_2.1.0           
+#> [97] pkgconfig_2.0.3
 ```
 
 ## What to report

@@ -1268,6 +1268,8 @@ etc.
   : Seurat clustering with transparent backend delegation
 - [`ClusterTreePlot()`](https://mengxu98.github.io/scop/reference/ClusterTreePlot.md)
   : Cluster tree plot
+- [`CellStatePlot()`](https://mengxu98.github.io/scop/reference/CellStatePlot.md)
+  : Composite cell-state plot
 - [`RunCHOIR()`](https://mengxu98.github.io/scop/reference/RunCHOIR.md)
   : Run CHOIR clustering
 - [`RunRareQ()`](https://mengxu98.github.io/scop/reference/RunRareQ.md)

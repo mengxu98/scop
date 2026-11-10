@@ -631,7 +631,7 @@ data.frame(
 )
 #>                   package version
 #> scop                 scop   0.9.2
-#> Seurat             Seurat   5.6.0
+#> Seurat             Seurat   6.0.0
 #> SeuratObject SeuratObject   5.4.0
 #> Matrix             Matrix   1.7.6
 ```
@@ -666,9 +666,9 @@ build_receipt <- data.frame(
 )
 build_receipt
 #>                      article               built_utc
-#> 1 spatial-platform-workflows 2026-11-04 21:06:41 UTC
+#> 1 spatial-platform-workflows 2026-11-10 11:01:13 UTC
 #>                            source_revision source_has_local_changes
-#> 1 6f8a9791297dbcc54d60f6c67cd54df1a2dbb496                    FALSE
+#> 1 1ae6058d875064a3d9b1ef3b3ceca07f248c4796                    FALSE
 #>                        article_md5     R  scop retained_observations genes
 #> 1 eac3a9d4491ccb8b103d855602ed0f7e 4.6.2 0.9.2                  1986  5000
 utils::write.csv(build_receipt, file.path(output_dir, "build-receipt.csv"), row.names = FALSE)

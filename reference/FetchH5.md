@@ -76,27 +76,27 @@ A Seurat object with the fetched data.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-11-04 20:02:24] Start standard processing workflow...
-#> ℹ [2026-11-04 20:02:24] Checking a list of <Seurat>...
-#> ! [2026-11-04 20:02:24] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-11-04 20:02:24] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-11-04 20:02:24] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-04 20:02:24] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-04 20:02:24] Number of available HVF: 2000
-#> ℹ [2026-11-04 20:02:24] Finished check
-#> ℹ [2026-11-04 20:02:24] Perform `ScaleData()`
-#> ℹ [2026-11-04 20:02:24] Perform pca linear dimension reduction
-#> ℹ [2026-11-04 20:02:25] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-11-04 20:02:25] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-04 20:02:25] Reorder clusters...
-#> ℹ [2026-11-04 20:02:25] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-04 20:02:25] Perform umap nonlinear dimension reduction
-#> ✔ [2026-11-04 20:02:33] Standard processing workflow completed
+#> ℹ [2026-11-10 10:04:12] Start standard processing workflow...
+#> ℹ [2026-11-10 10:04:12] Checking a list of <Seurat>...
+#> ! [2026-11-10 10:04:12] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-10 10:04:12] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-10 10:04:12] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-10 10:04:12] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-10 10:04:12] Number of available HVF: 2000
+#> ℹ [2026-11-10 10:04:12] Finished check
+#> ℹ [2026-11-10 10:04:12] Perform `ScaleData()`
+#> ℹ [2026-11-10 10:04:12] Perform pca linear dimension reduction
+#> ℹ [2026-11-10 10:04:12] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-11-10 10:04:13] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-10 10:04:13] Reorder clusters...
+#> ℹ [2026-11-10 10:04:13] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-10 10:04:13] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-10 10:04:21] Standard processing workflow completed
 PrepareSCExplorer(pancreas_sub, base_dir = tempdir())
-#> ℹ [2026-11-04 20:02:33] Set the project name of each <Seurat> to their dataset name
-#> ℹ [2026-11-04 20:02:33] Prepare data for object: "SeuratProject"
-#> ℹ [2026-11-04 20:02:34] Write the expression matrix to: /tmp/RtmplBMXPx/data.hdf5
-#> ℹ [2026-11-04 20:02:36] Write the meta information to: /tmp/RtmplBMXPx/meta.hdf5
+#> ℹ [2026-11-10 10:04:21] Set the project name of each <Seurat> to their dataset name
+#> ℹ [2026-11-10 10:04:21] Prepare data for object: "SeuratProject"
+#> ℹ [2026-11-10 10:04:21] Write the expression matrix to: /tmp/RtmpnregfX/data.hdf5
+#> ℹ [2026-11-10 10:04:23] Write the meta information to: /tmp/RtmpnregfX/meta.hdf5
 srt <- FetchH5(
   data_file = paste0(tempdir(), "/data.hdf5"),
   meta_file = paste0(tempdir(), "/meta.hdf5"),

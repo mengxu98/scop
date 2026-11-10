@@ -2,6 +2,16 @@
 
 ## scop (development version)
 
+- **feat**:
+  [`CellStatePlot()`](https://mengxu98.github.io/scop/reference/CellStatePlot.md)
+  combines a cluster similarity tree, annotations, program and sample
+  composition, marker expression and precomputed GSEA in a standard
+  patchwork object with measured label spacing, short composition tracks
+  and wrapping legends. It accepts Seurat and AnnData objects, supports
+  categorical and continuous palettes, can place clusters in rows with
+  the tree on the left and upright legends using `flip = TRUE`, and can
+  return the underlying summaries.
+
 - **fix**:
   [`PrepareEnv()`](https://mengxu98.github.io/scop/reference/PrepareEnv.md)
   no longer passes two conflicting pandas pins to pip during a default

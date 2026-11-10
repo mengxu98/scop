@@ -191,23 +191,23 @@ CellScoring(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-11-04 19:48:04] Start standard processing workflow...
-#> ℹ [2026-11-04 19:48:04] Checking a list of <Seurat>...
-#> ! [2026-11-04 19:48:04] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-10 09:51:12] Start standard processing workflow...
+#> ℹ [2026-11-10 09:51:12] Checking a list of <Seurat>...
+#> ! [2026-11-10 09:51:12] Data 1/1 of the `srt_list` is "unknown"
 #> Warning: Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-11-04 19:48:04] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-11-04 19:48:04] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-04 19:48:04] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-04 19:48:04] Number of available HVF: 2000
-#> ℹ [2026-11-04 19:48:04] Finished check
-#> ℹ [2026-11-04 19:48:04] Perform `ScaleData()`
-#> ℹ [2026-11-04 19:48:04] Perform pca linear dimension reduction
-#> ℹ [2026-11-04 19:48:05] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-11-04 19:48:05] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-04 19:48:05] Reorder clusters...
-#> ℹ [2026-11-04 19:48:05] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-04 19:48:05] Perform umap nonlinear dimension reduction
-#> ✔ [2026-11-04 19:48:12] Standard processing workflow completed
+#> ℹ [2026-11-10 09:51:12] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-10 09:51:12] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-10 09:51:12] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-10 09:51:12] Number of available HVF: 2000
+#> ℹ [2026-11-10 09:51:12] Finished check
+#> ℹ [2026-11-10 09:51:12] Perform `ScaleData()`
+#> ℹ [2026-11-10 09:51:12] Perform pca linear dimension reduction
+#> ℹ [2026-11-10 09:51:13] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-11-10 09:51:13] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-10 09:51:13] Reorder clusters...
+#> ℹ [2026-11-10 09:51:13] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-10 09:51:13] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-10 09:51:20] Standard processing workflow completed
 features_all <- rownames(pancreas_sub)
 pancreas_sub <- CellScoring(
   pancreas_sub,
@@ -218,10 +218,10 @@ pancreas_sub <- CellScoring(
   method = "AUCell",
   name = "test"
 )
-#> ℹ [2026-11-04 19:48:12] Start cell scoring
-#> ℹ [2026-11-04 19:48:12] Data type is log-normalized
-#> ℹ [2026-11-04 19:48:12] Number of feature lists to be scored: 2
-#> ✔ [2026-11-04 19:48:12] Cell scoring completed
+#> ℹ [2026-11-10 09:51:20] Start cell scoring
+#> ℹ [2026-11-10 09:51:20] Data type is log-normalized
+#> ℹ [2026-11-10 09:51:20] Number of feature lists to be scored: 2
+#> ✔ [2026-11-10 09:51:20] Cell scoring completed
 CellDimPlot(pancreas_sub, "test_classification")
 
 
@@ -236,15 +236,15 @@ pancreas_sub <- CellScoring(
   features = list(A = features_all[1:100]),
   method = c("AUCell", "GSVA")
 )
-#> ℹ [2026-11-04 19:48:12] Start cell scoring
-#> ℹ [2026-11-04 19:48:12] Start cell scoring
-#> ℹ [2026-11-04 19:48:13] Data type is log-normalized
-#> ℹ [2026-11-04 19:48:13] Number of feature lists to be scored: 1
-#> ✔ [2026-11-04 19:48:13] Cell scoring completed
-#> ℹ [2026-11-04 19:48:13] Start cell scoring
-#> ℹ [2026-11-04 19:48:13] Data type is log-normalized
-#> ℹ [2026-11-04 19:48:13] Number of feature lists to be scored: 1
-#> ✔ [2026-11-04 19:48:15] Cell scoring completed
+#> ℹ [2026-11-10 09:51:20] Start cell scoring
+#> ℹ [2026-11-10 09:51:20] Start cell scoring
+#> ℹ [2026-11-10 09:51:20] Data type is log-normalized
+#> ℹ [2026-11-10 09:51:21] Number of feature lists to be scored: 1
+#> ✔ [2026-11-10 09:51:21] Cell scoring completed
+#> ℹ [2026-11-10 09:51:21] Start cell scoring
+#> ℹ [2026-11-10 09:51:21] Data type is log-normalized
+#> ℹ [2026-11-10 09:51:21] Number of feature lists to be scored: 1
+#> ✔ [2026-11-10 09:51:23] Cell scoring completed
 FeatureStatPlot(
   pancreas_sub,
   stat.by = c("AUCell_A", "GSVA_A"),
@@ -253,7 +253,7 @@ FeatureStatPlot(
   plot_type = "violin",
   stack = TRUE
 )
-#> ℹ [2026-11-04 19:48:15] Setting `group.by` to "Features" as `plot.by` is set to "feature"
+#> ℹ [2026-11-10 09:51:23] Setting `group.by` to "Features" as `plot.by` is set to "feature"
 
 
 FeatureDimPlot(
