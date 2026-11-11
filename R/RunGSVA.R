@@ -22,7 +22,7 @@
 #' implementation. `"cpp"` supports `method = "ssgsea"`,
 #' `method = "zscore"`, `method = "plage"`, and `method = "gsva"` with
 #' `kcdf = "Gaussian"`, `kcdf = "Poisson"`, or `kcdf = "none"`. Gaussian
-#' GSVA uses the native C++ KDE/ranking kernel, tracking the sparse scoring
+#' GSVA uses the compiled C++ KDE/ranking kernel, tracking the sparse scoring
 #' walk of the installed GSVA release; other GSVA kernels keep the validated
 #' GSVA implementation. PLAGE scores are oriented to have non-negative
 #' dot product with the gene set mean z-score so SVD signs are deterministic.
@@ -127,8 +127,8 @@ RunGSVA <- function(
   ssgsea.norm = TRUE,
   cores = NULL,
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   species <- normalize_species_name(species)

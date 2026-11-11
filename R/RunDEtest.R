@@ -919,8 +919,7 @@ prepare_de_for_pathway <- function(de_results, require_score = FALSE) {
 #' Calculate expression fold change
 #'
 #' @param object Object containing expression data.
-#' @param ... Passed to methods.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A data frame of fold-change statistics.
 #' @export
 FoldChange <- function(object, ...) {
@@ -1232,10 +1231,7 @@ RunDEtestFindAllMarkers <- function(
     return(NULL)
   }
 
-  presto_ready <- isTRUE(all(unlist(
-    check_r("presto", install = FALSE, verbose = FALSE),
-    use.names = FALSE
-  )))
+  presto_ready <- isTRUE(check_r("presto", install = FALSE, verbose = FALSE)[["presto"]])
   presto_fun <- if (presto_ready) get_namespace_fun("presto", "wilcoxauc")
   if (is.null(presto_fun)) {
     return(NULL)
@@ -1890,9 +1886,9 @@ RunDEtest_pseudobulk <- function(
   assay = NULL,
   verbose = TRUE,
   cores = 1,
-  ...,
   design = NULL,
-  contrast = NULL
+  contrast = NULL,
+  ...
 ) {
   explicit_design <- RunDEtestCheckDesign(design, contrast, test.use)
   if (is.null(assay)) {
@@ -2325,13 +2321,10 @@ RunDEtest_pseudobulk <- function(
 #' `"edgeR"`, `"limma"`, `"DESeq2"`, and `"dream"` run sample-level
 #' pseudobulk differential testing on `Seurat` input and bulk DE on
 #' `SummarizedExperiment` input.
-#' @param ... Additional arguments passed to the marker backend. Arguments not
-#'   supported by scop's sparse Wilcoxon path are delegated to
-#'   [Seurat::FindMarkers].
-#'
+#' @param ... Arguments passed to other functions.
 #' @details
 #' Without `design` and `contrast`, existing defaults and comparison behavior are
-#' unchanged. Explicit edgeR models use native `filterByExpr(design = ...)`, TMM
+#' unchanged. Explicit edgeR models use `filterByExpr(design = ...)`, TMM
 #' normalization, dispersion estimation, `glmQLFit(robust = TRUE)`, and
 #' `glmQLFTest(contrast = ...)`. Both `p_val_adj` (the requested adjustment) and
 #' `p_val_BH` use the full tested feature universe before fold-change display
@@ -2345,7 +2338,7 @@ RunDEtest_pseudobulk <- function(
 #' `full_results`, input/tested/filtered feature IDs, raw pseudobulk counts,
 #' sample metadata and cell membership, cell counts, library sizes, normalization
 #' factors, design matrix, contrast, direction, residual degrees of freedom and
-#' backend versions. Bulk receipts are under
+#' dependency versions. Bulk receipts are under
 #' `S4Vectors::metadata(object)$DEtest$methods$de_edgeR_qlf$details$groups`, in each
 #' comparison's `details$edgeR_model` (without per-cell membership).
 #' Explicit `peak`/`cCRE` models require a `ChromatinAssay` or
@@ -2587,49 +2580,48 @@ RunDEtest_pseudobulk <- function(
 #' )
 #'
 #' # Explicit paired sample-level model (synthetic biological-sample counts).
-#' if (requireNamespace("edgeR", quietly = TRUE) &&
-#'   requireNamespace("statmod", quietly = TRUE)) {
-#'   local({
-#'     withr::local_preserve_seed()
-#'     set.seed(11)
-#'     samples <- data.frame(
-#'       donor = factor(rep(paste0("D", 1:4), each = 2)),
-#'       condition = factor(rep(c("control", "treated"), 4)),
-#'       row.names = paste0("sample", 1:8)
-#'     )
-#'     counts <- matrix(rnbinom(200 * 8, mu = 60, size = 12),
-#'       nrow = 200,
-#'       dimnames = list(paste0("gene", 1:200), rownames(samples))
-#'     )
-#'     bulk <- SummarizedExperiment::SummarizedExperiment(
-#'       assays = list(counts = counts), colData = samples
-#'     )
-#'     columns <- colnames(model.matrix(~ donor + condition, samples))
-#'     contrast <- setNames(rep(0, length(columns)), columns)
-#'     contrast["conditiontreated"] <- 1
-#'     fitted <- RunDEtest(bulk,
-#'       condition_col = "condition",
-#'       group1 = "control", group2 = "treated", test.use = "edgeR",
-#'       design = ~ donor + condition, contrast = contrast,
-#'       only.pos = FALSE, fc.threshold = 1, p.adjust.method = "BH", verbose = FALSE
-#'     )
-#'     results <- S4Vectors::metadata(fitted)$DEtest$results
-#'     stopifnot(all(results$p_val_BH >= 0 & results$p_val_BH <= 1))
-#'   })
-#' }
+#' local({
+#'   withr::local_preserve_seed()
+#'   set.seed(11)
+#'   samples <- data.frame(
+#'     donor = factor(rep(paste0("D", 1:4), each = 2)),
+#'     condition = factor(rep(c("control", "treated"), 4)),
+#'     row.names = paste0("sample", 1:8)
+#'   )
+#'   counts <- matrix(rnbinom(200 * 8, mu = 60, size = 12),
+#'     nrow = 200,
+#'     dimnames = list(paste0("gene", 1:200), rownames(samples))
+#'   )
+#'   bulk <- SummarizedExperiment::SummarizedExperiment(
+#'     assays = list(counts = counts), colData = samples
+#'   )
+#'   columns <- colnames(model.matrix(~ donor + condition, samples))
+#'   contrast <- setNames(rep(0, length(columns)), columns)
+#'   contrast["conditiontreated"] <- 1
+#'   fitted <- RunDEtest(bulk,
+#'     condition_col = "condition",
+#'     group1 = "control", group2 = "treated", test.use = "edgeR",
+#'     design = ~ donor + condition, contrast = contrast,
+#'     only.pos = FALSE, fc.threshold = 1, p.adjust.method = "BH", verbose = FALSE
+#'   )
+#'   results <- S4Vectors::metadata(fitted)$DEtest$results
+#'   stopifnot(all(results$p_val_BH >= 0 & results$p_val_BH <= 1))
+#' })
 #' # End explicit paired sample-level model.
 RunDEtest <- function(
   object = NULL,
-  ...,
-  srt = NULL
+  ...
 ) {
   object_missing <- missing(object)
+  dots <- as.list(match.call(expand.dots = FALSE)[["..."]])
+  srt <- if ("srt" %in% names(dots)) ...elt(match("srt", names(dots))) else NULL
   object <- resolve_deprecated_srt(object, srt, object_missing)
+  dots[["srt"]] <- NULL
   if (methods::is(object, "SummarizedExperiment")) {
-    return(RunDEtest.SummarizedExperiment(object, ...))
+    return(do.call(RunDEtest.SummarizedExperiment, c(list(object = object), dots), envir = parent.frame()))
   }
   if (object_missing && methods::is(object, "Seurat")) {
-    return(RunDEtest.Seurat(object, ...))
+    return(do.call(RunDEtest.Seurat, c(list(object = object), dots), envir = parent.frame()))
   }
   UseMethod(generic = "RunDEtest", object = object)
 }
@@ -2688,12 +2680,13 @@ RunDEtest.Seurat <- function(
   seed = 11,
   verbose = TRUE,
   cores = 1,
-  ...,
   design = NULL,
-  contrast = NULL
+  contrast = NULL,
+  srt = NULL,
+  ...
 ) {
   RunDEtestCheckDesign(design, contrast, test.use)
-  srt <- object
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   set.seed(seed)
   feature_type <- match.arg(feature_type)
   markers_type <- match.arg(markers_type)
@@ -3752,16 +3745,17 @@ RunDEtest.SummarizedExperiment <- function(
   seed = 11,
   verbose = TRUE,
   cores = 1,
-  ...,
   design = NULL,
-  contrast = NULL
+  contrast = NULL,
+  srt = NULL,
+  ...
 ) {
   explicit_design <- RunDEtestCheckDesign(design, contrast, test.use)
   set.seed(seed)
   feature_type <- match.arg(feature_type)
   markers_type <- match.arg(markers_type)
   meta.method <- match.arg(meta.method)
-  bulk_se <- object
+  bulk_se <- resolve_deprecated_srt(object, srt, missing(object))
 
   if (!identical(feature_type, "gene") && !explicit_design) {
     log_message(

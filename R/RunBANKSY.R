@@ -240,7 +240,7 @@ RunBANKSY <- function(
     "Run {.pkg Banksy} with {.val {nrow(expr)}} features and {.val {ncol(expr)}} spatial spots",
     verbose = verbose
   )
-  backend <- banksy_run_backend(
+  backend <- banksy_run_model(
     expr = expr,
     coords = coords,
     coldata = coldata,
@@ -767,7 +767,7 @@ banksy_run_by_sample <- function(
   srt
 }
 
-banksy_run_backend <- function(
+banksy_run_model <- function(
   expr,
   coords,
   coldata,

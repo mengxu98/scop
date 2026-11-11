@@ -213,115 +213,25 @@ test_that("SCENICPlusPlot rss heatmap keeps regulons with underscores", {
   expect_equal(nrow(out$heatmap$matrix_list[[1]]), length(original))
 })
 
-test_that("SCENICPlusPlot activity heatmap keeps regulons with underscores", {
-  dat <- make_scenicplus_plot_mock()
-  original <- c("TF_1(+)", "TF_2(+)", "TF_5(+)")
-  rownames(dat$srt@tools$SCENICPlus$scores) <- original
-  dat$srt$CellType <- rep(c("A", "B"), each = 6)
-
-  out <- SCENICPlusPlot(
-    dat$srt,
-    group.by = "CellType",
-    plot_type = "activity_heatmap",
-    features = original,
-    activity_scale = TRUE,
-    heatmap_show_row_names = TRUE,
-    heatmap_order = "group",
-    return_data = TRUE,
-    verbose = FALSE
-  )
-
-  expect_s3_class(out$plot, "ggplot")
-  expect_setequal(as.character(unique(out$plot_data$regulon)), original)
-})
-
-test_that("SCENICPlot activity heatmap returns drawable plot object", {
+test_that("SCENIC activity assays support common heatmaps and distributions", {
   dat <- make_scenic_plot_mock(seed = 2)
-  out <- SCENICPlot(
-    dat$srt,
-    group.by = "CellType",
-    plot_type = "activity_heatmap",
-    features = rownames(dat$auc)[1:4],
-    verbose = FALSE
+  activity <- SeuratObject::CreateAssayObject(data = dat$auc)
+  activity@misc$calcN <- FALSE
+  dat$srt[["scenic"]] <- activity
+  features <- rownames(dat$srt[["scenic"]])[1:4]
+  heatmap <- GroupHeatmap(
+    dat$srt, features = features, group.by = "CellType",
+    assay = "scenic", layer = "data", exp_method = "raw",
+    lib_normalize = FALSE, verbose = FALSE
   )
-
-  expect_s3_class(out$plot, "ggplot")
-  expect_s3_class(out$plots[[1]], "ggplot")
-  expect_false("matrix_list" %in% names(out$plot))
-  expect_s3_class(out$heatmap$plot, "ggplot")
-  expect_true("matrix_list" %in% names(out$heatmap))
-})
-
-test_that("SCENICPlot activity violin forwards statistical arguments", {
-  skip_if_not_installed("ggpubr")
-  dat <- make_scenic_plot_mock(seed = 2)
-  out <- SCENICPlot(
-    dat$srt,
-    group.by = "CellType",
-    plot_type = "activity_violin",
-    features = rownames(dat$auc)[1],
-    violin_args = list(
-      comparisons = list(c("A", "B")),
-      pairwise_method = "wilcox.test",
-      sig_label = "p.format"
-    ),
-    combine = FALSE,
-    verbose = FALSE
+  expect_s3_class(heatmap$plot, "ggplot")
+  expect_setequal(rownames(heatmap$matrix_list[[1]]), features)
+  violin <- FeatureStatPlot(
+    dat$srt, stat.by = features[[1L]], group.by = "CellType",
+    assay = "scenic", layer = "data", plot_type = "violin",
+    combine = FALSE
   )
-
-  compare_layers <- Filter(
-    function(layer) inherits(layer$stat, "StatSignif"),
-    out$plots[[1]]$layers
-  )
-  expect_length(compare_layers, 1)
-  expect_equal(compare_layers[[1]]$stat_params$comparisons, list(c("A", "B")))
-  expect_no_error(suppressWarnings(ggplot2::ggplot_build(out$plots[[1]])))
-})
-
-test_that("SCENICPlot activity heatmap can order rows by RSS source group", {
-  dat <- make_scenic_plot_mock(seed = 22)
-  dat$auc[, ] <- 0
-  dat$auc["TF1(+)", dat$srt$CellType == "A"] <- 4
-  dat$auc["TF2(+)", dat$srt$CellType == "A"] <- 3
-  dat$auc["TF3(+)", dat$srt$CellType == "B"] <- 4
-  dat$auc["TF4(+)", dat$srt$CellType == "B"] <- 3
-  dat$auc["TF5(+)", dat$srt$CellType == "C"] <- 4
-  dat$auc["TF6(+)", dat$srt$CellType == "C"] <- 3
-  dat$srt@tools$SCENIC <- list(scores_cells_by_regulon = t(dat$auc))
-
-  out <- SCENICPlot(
-    dat$srt,
-    group.by = "CellType",
-    plot_type = "activity_heatmap",
-    heatmap_order = "group",
-    heatmap_cluster_rows = FALSE,
-    top_n = 1,
-    verbose = FALSE
-  )
-
-  regulons <- rev(levels(out$plot_data$regulon))
-  expect_length(regulons, 3)
-  expect_equal(
-    as.character(unique(out$plot_data$rss_group[match(regulons, out$plot_data$regulon)])),
-    c("A", "B", "C")
-  )
-  expect_true(all(c("rss_group", "rss_rank") %in% colnames(out$plot_data)))
-})
-
-test_that("SCENICPlot activity heatmap explicit features are not replaced by top_n", {
-  dat <- make_scenic_plot_mock(seed = 23)
-  out <- SCENICPlot(
-    dat$srt,
-    group.by = "CellType",
-    plot_type = "activity_heatmap",
-    features = rownames(dat$auc)[1:4],
-    heatmap_order = "input",
-    top_n = 1,
-    verbose = FALSE
-  )
-
-  expect_equal(rev(levels(out$plot_data$regulon)), rownames(dat$auc)[1:4])
-  expect_true(all(c("rss_group", "rss_rank") %in% colnames(out$plot_data)))
+  expect_no_warning(ggplot2::ggplotGrob(violin[[1L]]))
 })
 
 test_that("SCENICPlot rss rank keeps requested labels by default", {
@@ -537,14 +447,13 @@ test_that("SCENICPlot heatmap_dotplot colors dots by TF expression", {
   )
 })
 
-test_that("SCENICPlot activity_dim can compare TF expression", {
+test_that("SCENICPlot eregulon_dim compares TF expression and activity", {
   dat <- make_scenic_plot_mock(seed = 8, add_embedding = TRUE)
   out <- SCENICPlot(
     dat$srt,
     group.by = "CellType",
-    plot_type = "activity_dim",
+    plot_type = "eregulon_dim",
     features = c("TF1(+)", "TF2(+)"),
-    compare_expression = TRUE,
     reduction = "umap",
     return_data = TRUE,
     verbose = FALSE
@@ -1126,4 +1035,32 @@ test_that("compact SCENIC+ display keeps downstream genes for selected regions",
   compact <- scenic_network_display_data(edges, c("TF1", "TF2"), target_limit = 1)
   expect_equal(compact$edges, edges[c(1, 3, 4, 6), ])
   expect_setequal(compact$nodes$name, c("TF1", "TF2", "R1", "R3", "Gene1", "Gene3"))
+})
+
+
+test_that("SCENIC target bars preserve panel composition and target limits", {
+  dat <- make_scenic_plot_mock(seed = 13)
+  original <- dat$srt
+  cases <- list(
+    list(features = "TF1(+)", max_targets = 1, rows = 1L),
+    list(features = c("TF1(+)", "TF2(+)"), max_targets = 2, rows = 4L, warns = TRUE),
+    list(features = "TF1(+)", max_targets = 0, rows = 1L)
+  )
+  for (case in cases) {
+    out <- SCENICPlot(dat$srt,
+      group.by = "CellType", plot_type = "target_bar",
+      features = case$features, max_targets = case$max_targets, verbose = FALSE
+    )
+    expect_named(out$plots, case$features)
+    expect_equal(nrow(out$plot_data), case$rows)
+    expect_identical(out$plot$patches$annotation$title, "SCENIC regulon targets")
+    if (isTRUE(case$warns)) {
+      expect_true(anyNA(out$plot_data$importance))
+      expect_warning(grob <- patchwork::patchworkGrob(out$plot), "Removed 1 row")
+    } else {
+      grob <- patchwork::patchworkGrob(out$plot)
+    }
+    expect_s3_class(grob, "gtable")
+  }
+  expect_identical(dat$srt, original)
 })

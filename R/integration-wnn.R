@@ -15,7 +15,7 @@
 #' @param linear_reduction_dims Number of components to compute for each modality.
 #' @param linear_reduction_dims_use Explicit component indices, or NULL for
 #'   modality-specific selection. Inspect `WNN_dims_list` for the selected indices.
-#' @param linear_reduction_params Named arguments for the linear reduction backend.
+#' @param linear_reduction_params Named arguments for linear reduction.
 #' @param force_linear_reduction Whether to recompute existing linear reductions.
 #' @param nonlinear_reduction One or more of `"umap"`, `"umap-naive"` and `"fr"`,
 #'   or `character()` for graphs and clusters without an embedding.
@@ -26,7 +26,7 @@
 #'   and the number of available features.
 #' @details
 #' Cells must represent paired measurements. RNA and ATAC preprocessing is
-#' followed by native multimodal neighbor construction. This function does not
+#' followed by multimodal neighbor construction. This function does not
 #' use batch labels to correct either modality. Specify assays explicitly after
 #' adding derived assays, for example `assay = c("RNA", "peaks")`.
 #' Both assays must contain the same cells as the object. Subset to verified
@@ -102,7 +102,8 @@ WNN_integrate <- function(
     log_message("WNN requires linear_reduction = 'pca' for RNA and computes ATAC LSI separately.", message_type = "error")
   }
 
-  atac_backend_fun("withr", "local_preserve_seed")()
+  check_r("withr", verbose = FALSE)
+  withr::local_preserve_seed()
   set.seed(seed)
   if (!is.null(batch)) {
     # Supported thisutils releases silence warnings when verbose is FALSE.

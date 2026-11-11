@@ -26,7 +26,7 @@ COMMOTPlot(
 \item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.
 Applied to every plot type, including the network view.}
 
-\item{...}{Arguments passed to the SCOP network plot for `"network"`.}
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A `ggplot` or compatible plot object.

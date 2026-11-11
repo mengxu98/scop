@@ -21,7 +21,7 @@ GetCCCObject(
 \item{sample}{Spatial sample for SpatialCellChat results.}
 }
 \value{
-An upstream backend object.
+An upstream CellChat or SpatialCellChat object.
 }
 \description{
 Get an upstream CellChat-family object

@@ -300,7 +300,7 @@ spatalk_pathway_table <- function(object, lr_table) {
 #' @title Run official SpaTalk spatial communication analysis
 #'
 #' @description
-#' Run the official SpaTalk R backend for single-cell spatial data or spot data
+#' Run official SpaTalk for single-cell spatial data or spot data
 #' with a single-cell reference. Results are stored as a compact method bundle
 #' and added to SCOP's unified CCC table.
 #'
@@ -328,8 +328,7 @@ spatalk_pathway_table <- function(object, lr_table) {
 #' @param overwrite Whether to replace an existing named result.
 #' @param backend Backend used only for SCOP CCC result aggregation.
 #' @param verbose Whether to print progress messages.
-#' @param ... Named arguments forwarded to compatible official SpaTalk steps.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return The input `Seurat` object with `srt@tools$SpaTalk` and unified CCC
 #'   results updated.
 #' @references <https://github.com/ZJUFanLab/SpaTalk>
@@ -364,8 +363,8 @@ RunSpaTalk <- function(
   overwrite = FALSE,
   backend = c("cpp", "r"),
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   mode <- match.arg(mode)
@@ -401,10 +400,10 @@ RunSpaTalk <- function(
     dots <- deconvolution_spec$dots
   }
 
-  spatalk_installed <- isTRUE(all(unlist(
+  spatalk_installed <- all(vapply(
     check_r(c("NNLM", "SpaTalk"), install = FALSE, verbose = FALSE),
-    use.names = FALSE
-  )))
+    isTRUE, logical(1)
+  ))
   if (!spatalk_installed) {
     check_r(c("linxihui/NNLM", "ZJUFanLab/SpaTalk"), verbose = FALSE)
   }
@@ -525,7 +524,7 @@ RunSpaTalk <- function(
 #' @title Plot stored SpaTalk results
 #'
 #' @description Plot a stored SpaTalk communication result without rerunning
-#' the optional backend.
+#' the analysis.
 #'
 #' @param object A `Seurat` object with SpaTalk results.
 #' @param result.name Stored SpaTalk result name.
@@ -533,8 +532,7 @@ RunSpaTalk <- function(
 #'   receptor-TF view.
 #' @param theme_use,theme_args Theme name or function, plus extra theme arguments.
 #' Applied to every plot type, including the delegated CCC views.
-#' @param ... Arguments passed to the corresponding SCOP CCC plot.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A `ggplot` or compatible plot object.
 #' @export
 SpaTalkPlot <- function(

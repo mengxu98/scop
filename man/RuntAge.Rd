@@ -52,7 +52,7 @@ object with genes in rows and pseudobulk/bulk samples in columns.}
 (\code{.rds} for \code{backend = "cpp"}, \code{.pkl} for \code{backend = "python"}).
 Names must match one or more of \code{"scaled"}, \code{"scaled_diff"}, \code{"yugene"},
 and \code{"yugene_diff"}. If \code{NULL}, model files are downloaded from
-\code{mengxu98/datasets} for the C++ backend or Zenodo for the Python backend.}
+\code{mengxu98/datasets} for the C++ implementation or Zenodo for Python.}
 
 \item{backend}{Model prediction backend. \code{"cpp"} uses converted Elastic Net
 models and C++ prediction. \code{"python"} uses \code{tAge::predict_tAge()}.}

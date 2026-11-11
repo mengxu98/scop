@@ -14,9 +14,10 @@ STdeconvolvePlot(
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE,
-  ...,
   image.scale = c("lowres", "hires"),
-  srt = NULL
+  srt = NULL,
+  image = NULL,
+  ...
 )
 }
 \arguments{
@@ -41,20 +42,23 @@ plots is returned.}
 \item{nrow, ncol, byrow}{Point-plot layout controls. When both \code{nrow} and
 \code{ncol} are \code{NULL}, a near-square layout with at most three columns is used.}
 
-\item{...}{Additional arguments passed to \code{SpatialSpotPlot()}.}
-
 \item{image.scale}{Image scale factor matching the raster stored in the
 selected image. Use \code{"hires"} for a hires raster; do not modify Seurat
 scale-factor slots.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{image}{Spatial image name. Required when multiple images are present;
+a single image is selected automatically when \code{NULL}.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A \code{ggplot}, \code{patchwork}, or list of \code{ggplot} objects.
 }
 \description{
-Plot stored topic proportions without rerunning the optional backend.
+Plot stored topic proportions without rerunning the deconvolution.
 Multi-topic point maps use one shared proportion scale and reserve title
 space above the automatic layout.
 }

@@ -5,8 +5,7 @@
 #' @md
 #' @inheritParams RunStandardWorkflow
 #' @param object A `Assay`, `Assay5` or `Seurat` object.
-#' @param ... Additional arguments passed to the method.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A data frame containing the features data.
 #' @export
 GetFeaturesData <- function(object, ...) {
@@ -64,8 +63,7 @@ GetFeaturesData.Assay5 <- function(
 #' @md
 #' @inheritParams GetFeaturesData
 #' @param features Features data to add.
-#' @param ... Additional arguments passed to the method.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A `Assay`, `Assay5` or `Seurat` object.
 #' @export
 AddFeaturesData <- function(object, ...) {

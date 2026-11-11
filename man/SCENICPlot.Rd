@@ -11,9 +11,8 @@ SCENICPlot(
   assay = "scenic",
   layer = "data",
   plot_type = c("rss_rank", "rss_heatmap", "rss_dotplot", "heatmap_dotplot",
-    "activity_heatmap", "activity_violin", "activity_dim", "eregulon_dim",
-    "activity_cor_dumbbell", "regulon_size", "network_graph", "network", "egrn",
-    "overlap", "target_bar", "coverage"),
+    "eregulon_dim", "activity_cor_dumbbell", "regulon_size", "network_graph", "network",
+    "egrn", "overlap", "target_bar", "coverage"),
   features = NULL,
   reduction = NULL,
   dims = c(1, 2),
@@ -28,7 +27,6 @@ SCENICPlot(
   top_n = 12,
   regulon_label = c("auto", "regulon", "tf"),
   rss_rank_yscale = c("shared", "free"),
-  activity_scale = FALSE,
   rss_scale = FALSE,
   heatmap_show_row_names = FALSE,
   heatmap_show_column_names = FALSE,
@@ -48,11 +46,9 @@ SCENICPlot(
   heatmap_args = list(),
   palette = "RdYlBu",
   palcolor = NULL,
-  compare_expression = FALSE,
   expression_assay = NULL,
   expression_layer = "data",
   expression_scale = TRUE,
-  violin_args = list(),
   dim_args = list(),
   atac_assay = NULL,
   extend.upstream = 50000,
@@ -82,11 +78,11 @@ SCENICPlot(
   label_size = 3,
   label_max_overlaps = Inf,
   verbose = TRUE,
-  ...,
   srt = NULL,
   theme_use = "theme_scop",
   theme_args = list(),
-  network_display_targets = Inf
+  network_display_targets = Inf,
+  ...
 )
 }
 \arguments{
@@ -101,14 +97,13 @@ SCENICPlot(
 \item{layer}{Assay layer for regulon activity scores (RAS).}
 
 \item{plot_type}{One of \code{"rss_rank"}, \code{"rss_heatmap"}, \code{"rss_dotplot"},
-\code{"heatmap_dotplot"}, \code{"activity_heatmap"}, \code{"activity_violin"},
-\code{"activity_dim"}, \code{"eregulon_dim"}, \code{"activity_cor_dumbbell"},
+\code{"heatmap_dotplot"}, \code{"eregulon_dim"}, \code{"activity_cor_dumbbell"},
 \code{"regulon_size"}, \code{"network"}, \code{"network_graph"}, \code{"egrn"}, \code{"overlap"},
 \code{"target_bar"}, \code{"coverage"}.}
 
 \item{features}{TF or regulon names.}
 
-\item{reduction}{Reduction for \code{"activity_dim"} / \code{"eregulon_dim"}.}
+\item{reduction}{Reduction for \code{"eregulon_dim"}.}
 
 \item{dims}{Two reduction dimensions.}
 
@@ -139,8 +134,6 @@ regulon names; \code{"tf"} always shows TF names.}
 \item{rss_rank_yscale}{Use a \code{"shared"} y-axis across RSS rank panels for
 direct score comparison, or \code{"free"} for the legacy per-panel scale.}
 
-\item{activity_scale}{Z-score regulons in \code{"activity_heatmap"}.}
-
 \item{rss_scale}{Z-score regulons in \code{"rss_heatmap"}.}
 
 \item{heatmap_show_row_names, heatmap_show_column_names}{Heatmap names.}
@@ -159,20 +152,15 @@ direct score comparison, or \code{"free"} for the legacy per-panel scale.}
 
 \item{heatmap_group_palette, heatmap_group_palcolor}{Group annotation palette.}
 
-\item{heatmap_limits}{Color-scale limits for RSS/activity heatmaps.}
+\item{heatmap_limits}{Color-scale limits for RSS heatmaps.}
 
-\item{heatmap_args}{Extra arguments for \code{\link[=GroupHeatmap]{GroupHeatmap()}} / \code{\link[=FeatureHeatmap]{FeatureHeatmap()}}.}
+\item{heatmap_args}{Extra arguments for RSS and overlap heatmaps.}
 
 \item{palette, palcolor}{Palette for RSS, size, target, and network colors.}
-
-\item{compare_expression}{Add TF expression next to \code{"activity_dim"}.}
 
 \item{expression_assay, expression_layer}{Assay and layer for TF expression.}
 
 \item{expression_scale}{Z-score TF expression in \code{"heatmap_dotplot"}.}
-
-\item{violin_args}{Extra arguments for \code{\link[=FeatureStatPlot]{FeatureStatPlot()}} in
-\code{"activity_violin"}.}
 
 \item{dim_args}{Extra arguments for \code{\link[=FeatureDimPlot]{FeatureDimPlot()}}.}
 
@@ -198,7 +186,7 @@ TF color. The default legend includes each TF's top RSS group when available.}
 
 \item{network_label_top_n}{Max automatic or TF labels in \code{"network_graph"}. Highlighted TFs are always included, except with \code{label_nodes = "none"}. TF legends with more than 20 entries are omitted; full annotations are returned in \code{plot_data$annotations}.}
 
-\item{combine}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE} returns a list of ggplots.}
+\item{combine}{Combine plots with \code{\link[patchwork:wrap_plots]{patchwork::wrap_plots()}}. \code{combine = FALSE} returns a list of ggplots.}
 
 \item{ncol}{Number of columns of the combined plot.}
 
@@ -231,8 +219,6 @@ will be removed in scop 1.0.0.}
 
 \item{verbose}{Print messages.}
 
-\item{...}{Extra heatmap arguments such as \code{width} and \code{height}.}
-
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
 
@@ -245,6 +231,8 @@ all shared targets and TF-to-TF links. Selected regions retain their downstream
 genes. \code{plot_data$edges} and
 \code{plot_data$nodes} retain the network selected by \code{max_targets} and \code{max_edges};
 the actual display subset is in \code{plot_data$display_edges} and \code{plot_data$display_nodes}.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 Plot, or a list with \code{rss_matrix}, \code{rank_table}, \code{top_table}, \code{plots}, and \code{plot} when \code{return_data = TRUE}.
@@ -263,6 +251,14 @@ requested with \code{network_display_targets}; returned data disclose that subse
 Without an explicit TF list, sources with at least one quarter of the maximum
 outgoing degree are used to select automatic labels. Widths retain edge weights.
 }
+\details{
+For ordinary activity heatmaps, distributions, and embeddings, use
+\link{GroupHeatmap}, \link{FeatureStatPlot}, and \link{FeatureDimPlot} with the activity
+assay created by the analysis function. Use its stored feature names from
+\code{rownames(object[["scenic"]])} because Seurat may normalize regulon names.
+\code{"eregulon_dim"} retains the paired TF-expression, gene-activity, and
+available region-activity comparison.
+}
 \examples{
 \dontrun{
 data(pancreas_sub)
@@ -275,13 +271,27 @@ pancreas_sub <- RunSCENIC(
 )
 scenic_rss <- SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "rss_rank")
 example_tfs <- unique(scenic_rss$top_table$TF)[1:3]
+regulons <- head(rownames(pancreas_sub[["scenic"]]), 6)
+GroupHeatmap(
+  pancreas_sub, group.by = "CellType", features = regulons,
+  assay = "scenic", layer = "data", exp_method = "raw",
+  lib_normalize = FALSE
+)$plot
+FeatureStatPlot(
+  pancreas_sub, group.by = "CellType", stat.by = regulons,
+  assay = "scenic", layer = "data", plot_type = "violin"
+)
+FeatureDimPlot(
+  pancreas_sub, features = regulons, assay = "scenic",
+  layer = "data", reduction = "UMAP"
+)
+
 SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "heatmap_dotplot")
 SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "network", features = example_tfs)
 SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "network_graph", features = example_tfs)
-SCENICPlusPlot(pancreas_sub, group.by = "CellType", plot_type = "egrn", features = example_tfs)
-SCENICPlusPlot(pancreas_sub, group.by = "CellType", plot_type = "coverage", features = example_tfs)
 }
 }
 \seealso{
-\link{RunSCENIC}, \link{RunSCENICPlus}, \link{SCENICPlusPlot}
+\link{RunSCENIC}, \link{RunSCENICPlus}, \link{SCENICPlusPlot},
+\link{GroupHeatmap}, \link{FeatureStatPlot}, \link{FeatureDimPlot}
 }

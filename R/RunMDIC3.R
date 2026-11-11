@@ -21,12 +21,11 @@
 #' and `"python"`.
 #' @param envname Python environment used when `backend = "python"`.
 #' @param conda Conda-compatible executable used when `backend = "python"`.
-#' @param ... Additional arguments passed to [RunGRNBoost2()] or [RunGNIPLR()]
-#' when those methods are selected through `grn_method`.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A Seurat object with results stored in `object@tools[["MDIC3"]]`, or
 #' a list for matrix input.
 #'
+#' @export
 #' @examples
 #' data(pancreas_sub)
 #' expr <- GetAssayData5(
@@ -50,7 +49,6 @@
 #'   max_edges_per_target = 2
 #' )
 #' mdic3$celltype_communication
-#' @export
 RunMDIC3 <- function(object, ...) {
   UseMethod("RunMDIC3", object)
 }

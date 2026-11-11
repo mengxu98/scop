@@ -678,22 +678,6 @@ clustertree_gradient_colors <- function(values, colors, na_color = "grey85") {
   out
 }
 
-clustertree_contrast_text <- function(fill_colors) {
-  fill_colors[is.na(fill_colors) | !nzchar(fill_colors)] <- "grey85"
-  rgb_values <- t(grDevices::col2rgb(fill_colors)) / 255
-  rgb_linear <- ifelse(
-    rgb_values <= 0.04045,
-    rgb_values / 12.92,
-    ((rgb_values + 0.055) / 1.055)^2.4
-  )
-  luminance <- 0.2126 * rgb_linear[, 1L] +
-    0.7152 * rgb_linear[, 2L] +
-    0.0722 * rgb_linear[, 3L]
-  contrast_black <- (luminance + 0.05) / 0.05
-  contrast_white <- 1.05 / (luminance + 0.05)
-  ifelse(contrast_white >= contrast_black, "white", "black")
-}
-
 clustertree_single_plot <- function(
   tree_data,
   feature_name = NULL,
@@ -908,7 +892,7 @@ clustertree_single_plot <- function(
       )
   }
   nodes$.label_color <- if (identical(label.fg, "auto")) {
-    clustertree_contrast_text(node_fill)
+    thisplot::contrast_text(unname(replace(node_fill, is.na(node_fill) | !nzchar(node_fill), "grey85")), alpha = 1)
   } else {
     rep_len(as.character(label.fg), nrow(nodes))
   }

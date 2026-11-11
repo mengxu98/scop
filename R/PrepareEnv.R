@@ -40,7 +40,7 @@
 #' upstream stacks are more reliable when requested explicitly for
 #' method-specific workflows.
 #' CellOracle uses an explicit standalone `"celloracle_env"` profile with Python
-#' 3.10 and official CellOracle 0.20.0; native Windows is unsupported.
+#' 3.10 and official CellOracle 0.20.0; Windows is unsupported.
 #' @param pip_options Additional command line arguments to be passed to `uv`/`pip` when installing pip packages.
 #' @param components Components to prepare. Supported values are `"python"`,
 #' `"r"`, and `"all"`; `"all"` expands to both Python and R. The default,
@@ -48,12 +48,11 @@
 #' collects packages declared through `check_r()` and checks/installs them,
 #' including optional workflow dependencies not listed in `DESCRIPTION`.
 #' CHOIR is R-only, so `PrepareEnv(modules = "choir")` prepares its
-#' optional R backend without creating a Python environment.
+#' optional R implementation without creating a Python environment.
 #' @param cores Number of workers for R-package installation. Use `NULL` (the
 #' default) to let pak select its worker count automatically.
 #' @param configure_runtime Whether to select the prepared interpreter for embedded Python and configure the R process. Set to `FALSE` for subprocess-only use.
-#' @param ... Additional arguments passed to package installation functions.
-#'
+#' @param ... Arguments passed to other functions.
 #' @export
 PrepareEnv <- function(
   envname = NULL,
@@ -719,7 +718,7 @@ env_module_environment <- function(modules) {
 
 env_module_requirements <- function() {
   scenic_backend <- paste0("py", "scenic")
-  scenic_pkg <- stats::setNames(scenic_backend_requirement(), scenic_backend)
+  scenic_pkg <- stats::setNames(scenic_requirement(), scenic_backend)
   scenic_method <- stats::setNames("pip", scenic_backend)
   scmalignantfinder_packages <- c(
     "scMalignantFinder" = "git+https://github.com/Jonyyqn/scMalignantFinder.git"
@@ -865,12 +864,14 @@ env_module_requirements <- function() {
       )
     ),
     celloracle = env_python_spec(
-      c("celloracle" = "celloracle==0.20.0",
+      c(
+        "celloracle" = "celloracle==0.20.0",
         "cython" = "cython==0.29.37", "wheel" = "wheel",
         "numpy" = "numpy==1.26.4", "pandas" = "pandas==1.5.3",
         "matplotlib" = "matplotlib==3.6.3", "anndata" = "anndata==0.10.8",
         "scanpy" = "scanpy==1.9.8", "scipy" = "scipy==1.11.4",
-        "scikit-learn" = "scikit-learn==1.2.2"),
+        "scikit-learn" = "scikit-learn==1.2.2"
+      ),
       environment = "celloracle_env"
     ),
     regdiffusion = env_python_spec(c("regdiffusion" = "regdiffusion")),
@@ -2162,7 +2163,7 @@ scmalignantfinder_core_python_requirements <- function() {
   )
 }
 
-scenic_backend_requirement <- function(version = "0.12.1") {
+scenic_requirement <- function(version = "0.12.1") {
   paste0("py", "scenic", "==", version)
 }
 

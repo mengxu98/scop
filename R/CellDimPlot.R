@@ -619,6 +619,8 @@ CellDimPlot <- function(
   verbose = TRUE,
   srt = NULL
 ) {
+  check_r("withr", verbose = FALSE)
+  withr::local_preserve_seed()
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   set.seed(seed)
   mark_type <- match.arg(mark_type)
@@ -758,9 +760,6 @@ CellDimPlot <- function(
   raster <- point_config$raster
   raster_pt_size <- point_config$raster_pt_size
   raster.dpi <- point_config$raster.dpi
-  if (isTRUE(raster)) {
-    check_r("scattermore", verbose = FALSE)
-  }
   if (!is.null(stat.by)) {
     srt_stat <- srt
     if (isTRUE(synthetic_split)) {
@@ -1144,24 +1143,26 @@ CellDimPlot <- function(
 
       if (isTRUE(raster)) {
         p <- p +
-          scattermore::geom_scattermore(
+          thisplot::scatter_layers(
             data = dat[is.na(dat[, "group.by"]), , drop = FALSE],
             mapping = aes(x = .data[["x"]], y = .data[["y"]]),
             color = bg_color,
-            pointsize = raster_pt_size,
-            alpha = pt.alpha,
-            pixels = raster.dpi
+            raster.pt.size = raster_pt_size,
+            pt.alpha = pt.alpha,
+            raster.dpi = raster.dpi,
+            raster = TRUE
           ) +
-          scattermore::geom_scattermore(
+          thisplot::scatter_layers(
             data = dat[!is.na(dat[, "group.by"]), , drop = FALSE],
             mapping = aes(
               x = .data[["x"]],
               y = .data[["y"]],
               color = .data[["group.by"]]
             ),
-            pointsize = raster_pt_size,
-            alpha = pt.alpha,
-            pixels = raster.dpi
+            raster.pt.size = raster_pt_size,
+            pt.alpha = pt.alpha,
+            raster.dpi = raster.dpi,
+            raster = TRUE
           )
       } else if (isTRUE(hex)) {
         check_r("hexbin", verbose = FALSE)
@@ -1195,65 +1196,37 @@ CellDimPlot <- function(
         }
       } else {
         p <- p +
-          geom_point(
+          thisplot::scatter_layers(
             mapping = aes(
               x = .data[["x"]],
               y = .data[["y"]],
               color = .data[["group.by"]]
             ),
-            shape = "circle",
-            size = pt.size,
-            stroke = 0,
-            alpha = pt.alpha
+            pt.size = pt.size,
+            pt.alpha = pt.alpha
           )
       }
 
       if (!is.null(cells_highlight_use) && isFALSE(hex)) {
         cell_df <- subset(p$data, rownames(p$data) %in% cells_highlight_use)
         if (nrow(cell_df) > 0) {
-          if (isTRUE(raster)) {
-            p <- p +
-              scattermore::geom_scattermore(
-                data = cell_df,
-                aes(x = .data[["x"]], y = .data[["y"]]),
-                color = cols.highlight,
-                pointsize = floor(sizes.highlight) + stroke.highlight,
-                alpha = alpha.highlight,
-                pixels = raster.dpi
-              ) +
-              scattermore::geom_scattermore(
-                data = cell_df,
-                aes(
-                  x = .data[["x"]],
-                  y = .data[["y"]],
-                  color = .data[["group.by"]]
-                ),
-                pointsize = floor(sizes.highlight),
-                alpha = alpha.highlight,
-                pixels = raster.dpi
-              )
-          } else {
-            p <- p +
-              geom_point(
-                data = cell_df,
-                aes(x = .data[["x"]], y = .data[["y"]]),
-                shape = "circle",
-                color = cols.highlight,
-                size = sizes.highlight + stroke.highlight,
-                alpha = alpha.highlight
-              ) +
-              geom_point(
-                data = cell_df,
-                aes(
-                  x = .data[["x"]],
-                  y = .data[["y"]],
-                  color = .data[["group.by"]]
-                ),
-                shape = "circle",
-                size = sizes.highlight,
-                alpha = alpha.highlight
-              )
-          }
+          p <- p +
+            thisplot::scatter_layers(
+              data = cell_df,
+              mapping = aes(
+                x = .data[["x"]], y = .data[["y"]],
+                color = .data[["group.by"]]
+              ),
+              pt.size = sizes.highlight,
+              pt.alpha = alpha.highlight,
+              raster = isTRUE(raster),
+              raster.pt.size = floor(sizes.highlight),
+              raster.dpi = raster.dpi,
+              stroke = NULL,
+              outline = TRUE,
+              outline.color = cols.highlight,
+              outline.stroke = stroke.highlight
+            )
         }
       }
       legend_title_use <- if (is.null(legend.title)) paste0(g, ":") else legend.title
@@ -1431,6 +1404,7 @@ CellDimPlot <- function(
               size = label_point_size
             ) +
             ggrepel::geom_text_repel(
+              seed = seed,
               data = label_df,
               aes(x = .data[["x"]], y = .data[["y"]], label = .data[["label"]]),
               fontface = "bold",
@@ -1448,6 +1422,7 @@ CellDimPlot <- function(
         } else {
           p <- p +
             ggrepel::geom_text_repel(
+              seed = seed,
               data = label_df,
               aes(
                 x = .data[["x"]],
@@ -2484,18 +2459,10 @@ CellDimPlot3D <- function(
     return(p)
   }
 
-  dat_use[[paste0(reduction_key, dims[1], "All_cells")]] <- dat_use[[paste0(
-    reduction_key,
-    dims[1]
-  )]]
-  dat_use[[paste0(reduction_key, dims[2], "All_cells")]] <- dat_use[[paste0(
-    reduction_key,
-    dims[2]
-  )]]
-  dat_use[[paste0(reduction_key, dims[3], "All_cells")]] <- dat_use[[paste0(
-    reduction_key,
-    dims[3]
-  )]]
+  coordinate_names <- paste0(reduction_key, dims[seq_len(3L)])
+  for (coordinate in coordinate_names) {
+    dat_use[[paste0(coordinate, "All_cells")]] <- dat_use[[coordinate]]
+  }
   cells_highlight_use <- cells.highlight
   if (isTRUE(cells_highlight_use)) {
     cells_highlight_use <- rownames(dat_use)[dat_use[[group.by]] != "NA"]
@@ -2507,55 +2474,42 @@ CellDimPlot3D <- function(
     dat_use_highlight <- dat_use[cells_highlight_use, , drop = FALSE]
   }
 
-  p <- plotly::plot_ly(data = dat_use, width = width, height = height)
-  p <- plotly::add_trace(
-    p = p,
+  p <- thisplot::plot_scatter3d(
     data = dat_use,
-    x = dat_use[[paste0(reduction_key, dims[1], "All_cells")]],
-    y = dat_use[[paste0(reduction_key, dims[2], "All_cells")]],
-    z = dat_use[[paste0(reduction_key, dims[3], "All_cells")]],
+    x = paste0(reduction_key, dims[1], "All_cells"),
+    y = paste0(reduction_key, dims[2], "All_cells"),
+    z = paste0(reduction_key, dims[3], "All_cells"),
     text = paste0(
-      "Cell:",
-      rownames(dat_use),
-      "\ngroup.by:",
-      dat_use[["group.by"]],
-      "\ncolor:",
-      dat_use[["color"]]
+      "Cell:", rownames(dat_use),
+      "\ngroup.by:", dat_use[["group.by"]],
+      "\ncolor:", dat_use[["color"]]
     ),
-    type = "scatter3d",
-    mode = "markers",
     color = dat_use[[group.by]],
     colors = colors,
     marker = list(size = pt.size),
-    showlegend = TRUE,
-    visible = TRUE
+    highlight = if (!is.null(cells_highlight_use)) dat_use_highlight else NULL,
+    highlight_text = if (!is.null(cells_highlight_use)) {
+      paste0(
+        "Cell:", rownames(dat_use_highlight),
+        "\ngroup.by:", dat_use_highlight[["group.by"]],
+        "\ncolor:", dat_use_highlight[["color"]]
+      )
+    } else {
+      NULL
+    },
+    highlight_marker = list(
+      size = sizes.highlight, color = cols.highlight, symbol = shape.highlight
+    ),
+    title = list(
+      text = paste0("Total", " (nCells:", nrow(dat_use), ")"),
+      font = list(size = 16, color = "black"),
+      y = 0.95
+    ),
+    xlab = xlab, ylab = ylab, zlab = zlab,
+    legend = list(itemsizing = "constant", y = 0.5, x = 1, xanchor = "left", alpha = 1),
+    font = list(size = 12, color = "black"),
+    width = width, height = height
   )
-  if (!is.null(cells_highlight_use)) {
-    p <- plotly::add_trace(
-      p = p,
-      x = dat_use_highlight[[paste0(reduction_key, dims[1], "All_cells")]],
-      y = dat_use_highlight[[paste0(reduction_key, dims[2], "All_cells")]],
-      z = dat_use_highlight[[paste0(reduction_key, dims[3], "All_cells")]],
-      text = paste0(
-        "Cell:",
-        rownames(dat_use_highlight),
-        "\ngroup.by:",
-        dat_use_highlight[["group.by"]],
-        "\ncolor:",
-        dat_use_highlight[["color"]]
-      ),
-      type = "scatter3d",
-      mode = "markers",
-      marker = list(
-        size = sizes.highlight,
-        color = cols.highlight,
-        symbol = shape.highlight
-      ),
-      name = "highlight",
-      showlegend = TRUE,
-      visible = TRUE
-    )
-  }
   if (!is.null(lineages)) {
     for (l in lineages) {
       dat_sub <- dat_use[!is.na(dat_use[[l]]), , drop = FALSE]
@@ -2661,48 +2615,6 @@ CellDimPlot3D <- function(
     }
   }
 
-  p <- plotly::layout(
-    p = p,
-    title = list(
-      text = paste0("Total", " (nCells:", nrow(dat_use), ")"),
-      font = list(size = 16, color = "black"),
-      y = 0.95
-    ),
-    font = list(size = 12, color = "black"),
-    showlegend = TRUE,
-    legend = list(
-      itemsizing = "constant",
-      y = 0.5,
-      x = 1,
-      xanchor = "left",
-      alpha = 1
-    ),
-    scene = list(
-      xaxis = list(
-        title = xlab,
-        range = c(
-          min(dat_use[[paste0(reduction_key, dims[1])]], na.rm = TRUE),
-          max(dat_use[[paste0(reduction_key, dims[1])]], na.rm = TRUE)
-        )
-      ),
-      yaxis = list(
-        title = ylab,
-        range = c(
-          min(dat_use[[paste0(reduction_key, dims[2])]], na.rm = TRUE),
-          max(dat_use[[paste0(reduction_key, dims[2])]], na.rm = TRUE)
-        )
-      ),
-      zaxis = list(
-        title = zlab,
-        range = c(
-          min(dat_use[[paste0(reduction_key, dims[3])]], na.rm = TRUE),
-          max(dat_use[[paste0(reduction_key, dims[3])]], na.rm = TRUE)
-        )
-      ),
-      aspectratio = list(x = 1, y = 1, z = 1)
-    ),
-    autosize = FALSE
-  )
 
   if ((!is.null(save) && is.character(save) && nchar(save) > 0)) {
     htmlwidgets::saveWidget(

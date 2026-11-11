@@ -28,7 +28,7 @@ Required explicitly to avoid silently assuming chromosome naming or genome.}
 
 \item{log.scale}{Whether to use a logarithmic count axis.}
 
-\item{...}{Additional arguments to \code{Signac::FragmentHistogram()}.}
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A ggplot object. The input object is not modified.
@@ -40,7 +40,7 @@ whole-library fragment-length estimate.
 }
 \details{
 Requires local bgzip fragment files with a \code{.tbi} or \code{.csi} index
-and explicit cell/barcode mappings. The native histogram counts fragment
+and explicit cell/barcode mappings. The histogram counts fragment
 records, not column-five read multiplicities, and displays lengths between
 0 and 800 bp by default.
 As in Signac, a fragment returned for several query intervals can contribute

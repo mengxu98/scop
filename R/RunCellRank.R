@@ -87,68 +87,12 @@
 #' @param terminal_state_agg Aggregation policy for combined terminal states.
 #' @param driver_lineages Optional lineage names for driver-gene computation.
 #' @param compute_lineage_drivers Whether to compute and store lineage drivers.
-#'
-#' @return
-#' Returns a Seurat object if `return_seurat = TRUE` or an anndata object with CellRank results stored in `obsm`, `obs`, and `varm` slots.
-#' The estimator and kernel objects are stored in `srt@misc$cellrank`.
-#'
-#' @export
-#' @seealso
-#' [RunSCVELO], [RunPAGA], [VelocityPlot], [CellDimPlot], [DynamicPlot],
-#' [RunCellRankTrends], [RunCellRankEnrichment], [CellRankPlot]
-#'
-#' @examples
-#' \dontrun{
-#' data(pancreas_sub)
-#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#' pancreas_sub <- RunCellRank(
-#'   object = pancreas_sub,
-#'   group.by = "SubCellType"
-#' )
-#'
-#' CellDimPlot(
-#'   pancreas_sub,
-#'   group.by = "term_states_fwd",
-#'   reduction = "umap",
-#'   label = TRUE
-#' )
-#'
-#' FeatureDimPlot(
-#'   pancreas_sub,
-#'   features = "latent_time",
-#'   reduction = "umap"
-#' )
-#'
-#' FeatureDimPlot(
-#'   pancreas_sub,
-#'   features = c("stochastic_confidence", "stochastic_length"),
-#'   reduction = "umap"
-#' )
-#'
-#' CellDimPlot(
-#'   pancreas_sub,
-#'   group.by = "SubCellType",
-#'   reduction = "UMAP",
-#'   lineages = "cellrank_pseudotime",
-#'   lineages_span = 0.1,
-#'   lineages_trim = c(0.05, 0.95)
-#' )
-#'
-#' DynamicPlot(
-#'   pancreas_sub,
-#'   lineages = "cellrank_pseudotime",
-#'   features = c("Arxes1", "Ncoa2"),
-#'   group.by = "SubCellType"
-#' )
-#' }
 #' @param backward Whether to compute backward transitions.
 #' @param backend Backend for computation: `"python"` (default) or `"cpp"`.
-#' The C++ path is an explicitly opted-in approximation and does not reproduce
-#' the complete CellRank estimator.
-#' The selected backend is stable: the C++ path never switches to Python
+#' The C++ path is an approximate implementation and issues a warning that results
+#' may not be completely identical to the reference workflow.
+#' The selected computation path is stable: the C++ path never switches to Python
 #' because of an argument value.
-#' @param allow_approximate Whether to allow the approximate C++ path. This must
-#' be `TRUE` when `backend = "cpp"`.
 #' @param max_dense_gib Maximum estimated GiB allowed for the dense
 #' cell-by-cell working matrices used by the C++ path.
 #' @param envname Optional Python environment name. `NULL` uses the current
@@ -157,6 +101,103 @@
 #' @param recompute_neighbors Whether to rebuild Scanpy neighbors before a
 #' pseudotime kernel. If `FALSE`, the existing graph must be complete and
 #' match the current AnnData cell order.
+#'
+#' @return
+#' Returns a Seurat object if `return_seurat = TRUE` or an anndata object with CellRank results stored in `obsm`, `obs`, and `varm` slots.
+#' The estimator and kernel objects are stored in `srt@misc$cellrank`.
+#'
+#' @details
+#' Use [FeatureDimPlot] for stored fate probabilities and [CellDimPlot] for
+#' terminal states. [CellRankPlot] adds circular fate coordinates, projected
+#' transition vectors, random walks, and experimental-time probability flow.
+#' A flow plot requires an experimental-time result from the moscot workflow.
+#'
+#' A stored pseudotime column can also be used with [RunDynamicFeatures],
+#' [DynamicHeatmap], and [DynamicPlot], as for other trajectory methods.
+#' These functions fit expression along pseudotime using the common dynamic
+#' analysis workflow. [RunCellRankTrends] instead fits CellRank's GAM with
+#' lineage-probability weights; its stored curves are a separate analysis.
+#' [RunCellRankEnrichment] tests over-representation in those gene modules,
+#' whereas [RunDynamicEnrichment] fits changing gene-set scores along pseudotime.
+#'
+#' @seealso
+#' [RunSCVELO], [RunPAGA], [VelocityPlot], [CellDimPlot], [DynamicPlot],
+#' [RunDynamicFeatures], [DynamicHeatmap], [RunDynamicEnrichment],
+#' [EnrichmentPlot], [RunCellRankTrends], [RunCellRankEnrichment], [CellRankPlot]
+#'
+#' @export
+#' @examples
+#' data(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
+#' reduction <- DefaultReduction(pancreas_sub, pattern = "UMAP")
+#' pancreas_sub <- RunSCVELO(
+#'   object = pancreas_sub,
+#'   group.by = "SubCellType",
+#'   linear_reduction = "PCA",
+#'   nonlinear_reduction = reduction,
+#'   compute_terminal_states = TRUE,
+#'   compute_pseudotime = TRUE,
+#'   backend = "cpp",
+#'   show_plot = FALSE
+#' )
+#' pancreas_sub <- RunCellRank(
+#'   object = pancreas_sub,
+#'   group.by = "SubCellType",
+#'   linear_reduction = "PCA",
+#'   nonlinear_reduction = reduction,
+#'   kernel_type = "pseudotime",
+#'   time_key = "stochastic_pseudotime",
+#'   backend = "cpp",
+#'   show_plot = FALSE
+#' )
+#'
+#' CellDimPlot(
+#'   pancreas_sub,
+#'   group.by = "cellrank_terminal_states",
+#'   reduction = reduction
+#' )
+#'
+#' FeatureDimPlot(
+#'   pancreas_sub,
+#'   features = "cellrank_fate_Lineage1",
+#'   reduction = reduction
+#' )
+#'
+#' CellRankPlot(
+#'   pancreas_sub,
+#'   plot_type = "circular"
+#' )
+#'
+#' CellRankPlot(
+#'   pancreas_sub,
+#'   plot_type = "projection",
+#'   reduction = reduction,
+#'   group.by = "SubCellType"
+#' )
+#'
+#' pancreas_sub <- RunDynamicFeatures(
+#'   pancreas_sub,
+#'   lineages = "stochastic_pseudotime",
+#'   features = c("Rbp4", "Sst", "Pyy"),
+#'   assay = "RNA"
+#' )
+#'
+#' DynamicHeatmap(
+#'   pancreas_sub,
+#'   lineages = "stochastic_pseudotime",
+#'   features = c("Rbp4", "Sst", "Pyy"),
+#'   use_fitted = TRUE,
+#'   assay = "RNA",
+#'   cell_annotation = "SubCellType"
+#' )
+#'
+#' DynamicPlot(
+#'   pancreas_sub,
+#'   lineages = "stochastic_pseudotime",
+#'   features = c("Rbp4", "Sst", "Pyy"),
+#'   assay = "RNA",
+#'   group.by = "SubCellType"
+#' )
 RunCellRank <- function(
   object = NULL,
   assay_x = "RNA",
@@ -209,7 +250,6 @@ RunCellRank <- function(
   compute_lineage_drivers = TRUE,
   backward = FALSE,
   backend = c("python", "cpp"),
-  allow_approximate = FALSE,
   max_dense_gib = 8,
   show_plot = TRUE,
   save_plot = FALSE,
@@ -290,10 +330,7 @@ RunCellRank <- function(
   }
 
   if (identical(backend, "cpp")) {
-    assert_cpp_approximation_opt_in(
-      allow_approximate,
-      "RunCellRank(backend = \"cpp\")"
-    )
+    warn_cpp_approximation("RunCellRank(backend = \"cpp\")", reference_backend = "python")
     if (!is.null(srt)) {
       assert_cpp_dense_budget(
         n_rows = ncol(srt), n_cols = ncol(srt), copies = 8,
@@ -508,7 +545,6 @@ RunCellRank <- function(
         "plot_prefix",
         "backend",
         "backward",
-        "allow_approximate",
         "max_dense_gib",
         "envname",
         "conda"

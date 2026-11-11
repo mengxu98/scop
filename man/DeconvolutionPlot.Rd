@@ -84,7 +84,7 @@ plots.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{Reserved for future use.}
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A \code{ggplot} object.
@@ -93,7 +93,22 @@ For \code{plot_type = "heatmap"}, returns a \code{ComplexHeatmap::Heatmap} objec
 \description{
 Plot deconvolution results
 }
+\details{
+Bar plots use \link{ImmuneAbundancePlot} with stacked stored proportions.
+Box plots use the shared expression-statistics renderer. Neither view
+estimates cell-type proportions again. The constructed result table below
+demonstrates plotting previously computed proportions.
+}
 \examples{
+proportions <- data.frame(
+  sample = rep(paste0("Sample", 1:4), each = 2),
+  cell_type = rep(c("Alpha", "Beta"), 4),
+  proportion = c(0.7, 0.3, 0.6, 0.4, 0.4, 0.6, 0.3, 0.7),
+  method = "CIBERSORT"
+)
+DeconvolutionPlot(res = proportions, plot_type = "bar")
+DeconvolutionPlot(res = proportions, plot_type = "box")
+
 data(islet_bulk)
 islet_bulk <- RunDeconvolution(
   islet_bulk,
@@ -114,5 +129,5 @@ ht <- DeconvolutionPlot(
 ComplexHeatmap::draw(ht)
 }
 \seealso{
-\link{RunDeconvolution}
+\link{RunDeconvolution}, \link{ImmuneAbundancePlot}, \link{FeatureStatPlot}
 }

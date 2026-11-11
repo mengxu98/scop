@@ -37,7 +37,7 @@ Imports:
     SeuratObject,
     SummarizedExperiment,
     stats,
-    thisplot (>= 0.4.3),
+    thisplot (>= 0.4.7),
     tools,
     thisutils (>= 0.5.3),
     utils,
@@ -131,6 +131,7 @@ Suggests:
     rsample,
     scales,
     scatterpie,
+    shadowtext,
     simplifyEnrichment,
     slingshot,
     scattermore,
@@ -173,7 +174,7 @@ Suggests:
     SpaNorm,
     withr
 Remotes:
-    mengxu98/thisplot,
+    mengxu98/thisplot@4445799988d6094706883e5b0cce99b47c3de272,
     mengxu98/thisutils
 LinkingTo:
     cli,

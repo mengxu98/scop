@@ -19,8 +19,7 @@
 #' @param reduction.key Prefix for the column names of the TriMap embeddings.
 #' @param backend TriMap backend. `"cpp"` uses a compiled triplet sampler
 #' and optimizer; `"python"` retains the official trimap package.
-#' @param ... Passed to the trimap.TRIMAP function.
-#'
+#' @param ... Arguments passed to other functions.
 #' @rdname RunTriMap
 #' @export
 #'
@@ -187,15 +186,15 @@ RunTriMap.default <- function(
         "Additional TriMap arguments are used only by {.arg backend = 'python'}."
       )
     }
-    data <- native_manifold_prepare_data(object, apply_pca = apply_pca)
+    data <- manifold_prepare_data(object, apply_pca = apply_pca)
     n_inliers <- min(as.integer(n_inliers), nrow(data) - 1L)
-    metric_id <- native_manifold_metric_id(distance_method)
+    metric_id <- manifold_metric_id(distance_method)
     knn <- manifold_exact_knn_cpp(
       data,
       k = n_inliers + 1L,
       metric = metric_id
     )
-    initial <- native_manifold_initialization(
+    initial <- manifold_initialization(
       data,
       n_components = as.integer(n_components),
       init = "pca",

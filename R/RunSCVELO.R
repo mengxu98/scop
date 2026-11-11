@@ -12,7 +12,7 @@
 #' @param backend Backend used to compute RNA velocity. `"python"` keeps the
 #' original scVelo workflow. `"cpp"` uses the package C++ implementation for a
 #' stochastic velocity embedding that is compatible with [VelocityPlot].
-#' The C++ backend never switches to Python implicitly.
+#' The C++ implementation never switches to Python implicitly.
 #' @param max_dense_gib Maximum estimated GiB allowed for the dense expression
 #' working matrices used by the C++ path.
 #' @param filter_genes Whether to filter genes based on minimum counts.
@@ -20,7 +20,7 @@
 #' @param min_counts_u Minimum unspliced counts for gene filtering.
 #' @param normalize_per_cell Whether to normalize counts per cell.
 #' @param log_transform Whether to apply log transformation to AnnData `X` in
-#' the Python backend. The C++ velocity calculation uses spliced/unspliced
+#' the Python workflow. The C++ velocity calculation uses spliced/unspliced
 #' layers, matching scVelo, so this does not alter its velocity matrices.
 #' @param use_raw Whether to use raw data for dynamical modeling.
 #' @param diff_kinetics Whether to use differential kinetics.
@@ -33,7 +33,7 @@
 #' The velocity embedding itself is always graph-projected, matching
 #' `scv.tl.velocity_embedding`.
 #' @param compute_terminal_states Whether to compute terminal states (root and end
-#' points). The C++ backend needs the optional `RSpectra` package for this step
+#' points). The C++ path needs the optional `RSpectra` package for this step
 #' and for `compute_pseudotime`.
 #' @param compute_pseudotime Whether to compute velocity pseudotime.
 #' @param compute_paga Whether to compute PAGA (Partition-based graph abstraction).
@@ -854,12 +854,6 @@ run_scanpy_cpp <- function(
 
     if (isTRUE(compute_terminal_states) || isTRUE(compute_pseudotime)) {
       check_r("RSpectra", verbose = FALSE)
-      if (!requireNamespace("RSpectra", quietly = TRUE)) {
-        log_message(
-          "The {.arg backend = 'cpp'} terminal state and pseudotime steps need the optional {.pkg RSpectra} package. Install it with {.code install.packages('RSpectra')}.",
-          message_type = "error"
-        )
-      }
     }
     if (isTRUE(compute_terminal_states)) {
       if (!isTRUE(compute_velocity_graph)) {

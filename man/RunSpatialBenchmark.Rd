@@ -31,7 +31,7 @@ benchmarked producer (\code{BayesSpace}, \code{BANKSY}, and \code{SmoothClust}).
 names may be written with or without the \code{Run} prefix.}
 
 \item{method_params}{Named list of per-method argument lists. Arguments are
-passed to the corresponding SCOP producer, never directly to its backend.}
+passed to the corresponding SCOP producer.}
 
 \item{n_clusters}{Optional common number of domains. When \code{NULL}, methods
 that require a cluster count use the number of non-missing gold-standard
@@ -44,7 +44,7 @@ the result summary.}
 \item{keep_objects}{Whether to keep each successful method's full producer
 result. The default keeps only aligned labels and compact run metadata.}
 
-\item{install_missing}{Whether missing optional backends may enter their
+\item{install_missing}{Whether missing optional packages may enter their
 producer's normal \code{check_r()} installation path. The default records them as
 unavailable without changing the R library.}
 
@@ -73,7 +73,7 @@ aligned labels.
 Run supported spatial domain clustering methods from the same immutable
 input, compare their aligned labels with a gold standard, and record
 classification quality, elapsed time, and sampled peak process-tree memory.
-Each method runs in an isolated R process so one failed backend does not
+Each method runs in an isolated R process so one failed method does not
 corrupt the input or prevent the remaining methods from being assessed.
 }
 \examples{

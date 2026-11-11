@@ -1198,16 +1198,12 @@ spatial_dim_continuous_scale <- function(
     limits <- center + c(-span, span)
     breaks <- center
   }
-  if (identical(aesthetic, "color")) {
-    return(ggplot2::scale_color_gradientn(
-      colors = colors,
-      na.value = "grey80",
-      limits = limits,
-      breaks = breaks,
-      oob = scales::squish
-    ))
+  scale_fun <- if (identical(aesthetic, "color")) {
+    ggplot2::scale_color_gradientn
+  } else {
+    ggplot2::scale_fill_gradientn
   }
-  ggplot2::scale_fill_gradientn(
+  scale_fun(
     colors = colors,
     na.value = "grey80",
     limits = limits,

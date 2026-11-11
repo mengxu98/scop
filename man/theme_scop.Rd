@@ -11,7 +11,7 @@ theme_scop(aspect.ratio = NULL, base_size = 12, ...)
 
 \item{base_size}{Base font size}
 
-\item{...}{Arguments passed to the \link[ggplot2:theme]{ggplot2::theme}.}
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A ggplot2 theme object (class \code{theme}, \code{gg}).

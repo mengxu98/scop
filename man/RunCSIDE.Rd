@@ -22,8 +22,8 @@ RunCSIDE(
   tool_name = "CSIDE",
   store_results = TRUE,
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -34,7 +34,7 @@ RunCSIDE(
 
 \item{explanatory.variable}{Named numeric vector used by
 \code{spacexr::run.CSIDE.single()}. Names must match spatial spot names.
-Spots with missing or non-finite values are excluded before backend dispatch.}
+Spots with missing or non-finite values are excluded before model fitting.}
 
 \item{group.by}{Metadata column used to build C-SIDE regions when
 \code{region_list} is not supplied.}
@@ -62,7 +62,7 @@ spatial spots are used where applicable.}
 \item{celltypes}{Optional cell types passed to C-SIDE as \code{cell_types}.}
 
 \item{features}{Optional features retained in the normalized result table.
-C-SIDE itself still applies its own gene filtering through backend
+C-SIDE itself still applies its own gene filtering through
 parameters such as \code{gene_threshold}.}
 
 \item{prefix}{Prefix for metadata columns.}
@@ -76,14 +76,10 @@ results are retained when \code{FALSE} and do not represent the current run.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{Additional named parameters passed to the selected C-SIDE
-backend, such as \code{cell_type_threshold}, \code{gene_threshold},
-\code{doublet_mode}, \code{cell_type_specific}, or \code{params_to_test}. When using the
-stored result from \code{\link[=RunRCTD]{RunRCTD()}} with \code{rctd_mode = "full"}, \code{doublet_mode}
-defaults to \code{FALSE} unless explicitly supplied.}
-
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A \code{Seurat} object with run-level summaries in metadata. When

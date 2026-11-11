@@ -138,6 +138,8 @@ ProportionTestPlot <- function(
   verbose = TRUE,
   srt = NULL
 ) {
+  check_r("withr", verbose = FALSE)
+  withr::local_preserve_seed()
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   order_by <- match.arg(order_by)
   plot_type <- match.arg(plot_type)

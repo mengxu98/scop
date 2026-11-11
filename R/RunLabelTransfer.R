@@ -8,7 +8,7 @@
 #' @md
 #' @inheritParams RunStandardWorkflow
 #' @param reference RNA reference `Seurat` object used for label transfer.
-#' @param method Label-transfer backend. One of `"Seurat"` or `"scOMM"`.
+#' @param method Label-transfer method. One of `"Seurat"` or `"scOMM"`.
 #' @param prefix Prefix used to resolve ATAC reductions.
 #' @param reference_assay Assay used in the reference object.
 #' @param reference_reduction Reduction used in the reference object.
@@ -48,7 +48,7 @@
 #' backend, the tool result records actual anchor features and current prediction
 #' columns. This is a calculation-time snapshot, not automatically updated by
 #' later subsetting or renaming. Caller RNG state and original cell IDs are
-#' preserved; temporary query IDs isolate native suffix handling. Predictions
+#' preserved; temporary query IDs isolate suffix handling. Predictions
 #' describe similarity to the supplied reference, not independently established
 #' biological accuracy.
 #' @export

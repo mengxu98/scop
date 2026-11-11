@@ -3,7 +3,7 @@
 #' @description
 #' Method-specific implementation used by [RunProportionTest] when
 #' `proportion_method = "propeller"`.
-#' Uses the optional speckle backend: `getTransformedProps()` computes the
+#' Uses speckle: `getTransformedProps()` computes the
 #' transformed proportions and `propeller.ttest()` performs limma empirical
 #' Bayes moderated tests. Each requested comparison is a two-group test;
 #' multiple conditions produce pairwise results, not an omnibus ANOVA.

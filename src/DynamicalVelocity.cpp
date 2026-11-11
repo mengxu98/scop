@@ -208,7 +208,6 @@ static DynamicalPars fit_one_gene_dynamical(
   }
 
   double u_max = *std::max_element(ua.begin(), ua.end());
-  double s_max = *std::max_element(sa.begin(), sa.end());
   double u_min_pos = u_max;
   for (double v : ua) if (v > 0 && v < u_min_pos) u_min_pos = v;
   if (u_min_pos >= u_max) u_min_pos = u_max * 0.1;
@@ -398,7 +397,6 @@ List scanpy_dynamical_velocity_cpp(
 {
   int n_genes = Ms.nrow();
   int n_cells = Ms.ncol();
-  int n_neighbors = knn_idx.ncol();
   int n_dims = embedding.ncol();
 
   if ((int)alpha.size() < n_genes || (int)beta.size() < n_genes ||
@@ -505,15 +503,14 @@ List scanpy_dynamical_em_cpp(
       continue;
     }
 
-    double s_mean = 0, u_mean = 0;
-    double ss_tot = 0, su_tot = 0, uu_tot = 0;
+    double s_mean = 0;
+    double ss_tot = 0, su_tot = 0;
     for (int c = 0; c < n_cells; ++c) {
-      s_mean += s[c]; u_mean += u[c];
+      s_mean += s[c];
       ss_tot += s[c] * s[c];
       su_tot += s[c] * u[c];
-      uu_tot += u[c] * u[c];
     }
-    s_mean /= n_cells; u_mean /= n_cells;
+    s_mean /= n_cells;
 
     double gamma_det = (ss_tot > 1e-12) ? su_tot / ss_tot : 0.5;
     double alpha_init = init_alpha > 0 ? init_alpha : gamma_det * (s_mean > 0.1 ? s_mean : 0.1);
@@ -531,30 +528,15 @@ List scanpy_dynamical_em_cpp(
     for (int em_iter = 0; em_iter < max_iter_em; ++em_iter) {
       double u_steady = a / b;
       double u_switch = u_steady * (1.0 - std::exp(-b * ts));
-      double s_switch = 0.0;
-      {
-        double eu = std::exp(-b * ts), es = std::exp(-gm * ts);
-        s_switch = (a / gm) * (1.0 - es) - (a / gm - u_switch) * (es - eu) * gm / (gm - b > 1e-10 ? (gm - b) : 1e-10);
-        s_switch = (a / gm) * (1.0 - es);
-        if (std::abs(gm - b) > 1e-10) {
-          double c_term = (a - u_switch * b) / (gm - b);
-          s_switch += c_term * (eu - es);
-        }
-        if (!std::isfinite(s_switch)) s_switch = 0.0;
-      }
-
       std::vector<double> tau(n_cells);
-      std::vector<int> regime(n_cells);
       for (int c = 0; c < n_cells; ++c) {
         double uc = u[c];
         if (uc <= u_switch * 1.01 && b > 1e-10) {
-          regime[c] = 0;
           double arg = 1.0 - uc / u_steady;
           if (arg < 1e-12) arg = 1e-12;
           if (arg > 1.0) arg = 1.0;
           tau[c] = -std::log(arg) / b;
         } else if (b > 1e-10) {
-          regime[c] = 1;
           if (u_steady > 1e-10 && uc < u_steady) {
             double arg = uc / u_steady;
             if (arg > 1.0) arg = 1.0;
@@ -563,7 +545,6 @@ List scanpy_dynamical_em_cpp(
             tau[c] = ts * 3.0;
           }
         } else {
-          regime[c] = 0;
           tau[c] = uc / (a > 1e-10 ? a : 1e-10);
         }
         if (!std::isfinite(tau[c]) || tau[c] < 0) tau[c] = 0.0;
@@ -579,43 +560,6 @@ List scanpy_dynamical_em_cpp(
 
         double lr = 0.01;
         for (int gd_iter = 0; gd_iter < 200; ++gd_iter) {
-          double loss = 0.0;
-          double grad_a = 0.0, grad_b = 0.0, grad_g = 0.0;
-          int used = 0;
-
-          for (int c = 0; c < n_cells; ++c) {
-            double ui = u[c], si = s[c], ti = tau[c];
-            double u_pred, s_pred;
-
-            if (ti <= rt || regime[c] == 0) {
-              double eu = std::exp(-rb * ti);
-              u_pred = ra / rb * (1.0 - eu);
-              if (std::abs(rg - rb) > 1e-10) {
-                double es = std::exp(-rg * ti);
-                s_pred = (ra / rg) * (1.0 - es) + (ra / rb * eu - ra / rg) * (es - eu) * rg / (rg - rb);
-              } else {
-                s_pred = ra / rg * (1.0 - std::exp(-rg * ti));
-              }
-            } else {
-              double u_s = ra / rb * (1.0 - std::exp(-rb * rt));
-              double eu_t = std::exp(-rb * (ti - rt));
-              u_pred = u_s * eu_t;
-              double es_t = std::exp(-rg * (ti - rt));
-              double s_at_t = (ra / rg) * (1.0 - std::exp(-rg * rt));
-              s_pred = s_at_t + (u_s * rb / (rg - rb > 1e-10 ? (rg - rb) : 1e-10))
-                        * (es_t - eu_t) + s_at_t * (1.0 - es_t);
-              s_pred = s_at_t * es_t;
-            }
-
-            if (!std::isfinite(u_pred)) u_pred = 0.0;
-            if (!std::isfinite(s_pred)) s_pred = 0.0;
-
-            double err_u = ui - u_pred;
-            double err_s = si - s_pred;
-            loss += err_u * err_u + err_s * err_s;
-            ++used;
-          }
-
           double eps = 1e-5;
           auto compute_loss_at = [&](double pa, double pb, double pg, double pt) -> double {
             double l = 0.0; int n = 0;

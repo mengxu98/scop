@@ -13,8 +13,7 @@
 #' @param rev.mds Whether to perform reverse MDS (i.e., transpose the input matrix) before running the analysis.
 #' @param reduction.name Reduction to be stored in the Seurat object.
 #' @param reduction.key The prefix for the column names of the basis vectors.
-#' @param ... Passed to [stats::cmdscale], [MASS::isoMDS] or [MASS::sammon].
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A `DimReduc` object, or a Seurat object containing the reduction.
 #' For classical MDS, standard deviations are `sqrt(eigenvalue / (n - 1))`
 #' for the retained coordinates, where `n` is the number of embedded points.

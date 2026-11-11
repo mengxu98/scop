@@ -31,8 +31,8 @@ RunDynamicEnrichment(
   cores = 1,
   verbose = TRUE,
   seed = 11,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -99,7 +99,7 @@ The first column should contain the term IDs, and the second column should conta
 
 \item{maxGSSize}{The maximum size of a gene set to be considered in the enrichment analysis.}
 
-\item{backend}{Enrichment backend. \code{"cpp"} is the default and uses a fast native
+\item{backend}{Enrichment backend. \code{"cpp"} is the default and uses a fast
 hypergeometric ORA implementation and returns the enrichment table without
 \code{enrichResult} objects. \code{"r"} uses \code{\link[clusterProfiler:enricher]{clusterProfiler::enricher()}} and returns
 \code{enrichResult} objects in \code{results}. \code{GO_simplify = TRUE} currently uses the R backend.}
@@ -115,10 +115,10 @@ deterministic independent L'Ecuyer-CMRG random-number stream, making results
 reproducible across worker counts and scheduling order. The caller's random
 number state is restored when the call finishes.}
 
-\item{...}{Passed to helper functions.}
-
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \description{
 Calculates gene-set scores from the specified database (\code{db}) for each lineage using the specified scoring method (\code{score_method}).

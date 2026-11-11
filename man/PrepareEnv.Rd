@@ -60,7 +60,7 @@ default also excludes \code{"scvi"}, \code{"glue"}, and \code{"multimap"} becaus
 upstream stacks are more reliable when requested explicitly for
 method-specific workflows.
 CellOracle uses an explicit standalone \code{"celloracle_env"} profile with Python
-3.10 and official CellOracle 0.20.0; native Windows is unsupported.}
+3.10 and official CellOracle 0.20.0; Windows is unsupported.}
 
 \item{pip_options}{Additional command line arguments to be passed to \code{uv}/\code{pip} when installing pip packages.}
 
@@ -70,7 +70,7 @@ CellOracle uses an explicit standalone \code{"celloracle_env"} profile with Pyth
 collects packages declared through \code{check_r()} and checks/installs them,
 including optional workflow dependencies not listed in \code{DESCRIPTION}.
 CHOIR is R-only, so \code{PrepareEnv(modules = "choir")} prepares its
-optional R backend without creating a Python environment.}
+optional R implementation without creating a Python environment.}
 
 \item{cores}{Number of workers for R-package installation. Use \code{NULL} (the
 default) to let pak select its worker count automatically.}
@@ -80,7 +80,7 @@ Default is \code{TRUE}.}
 
 \item{configure_runtime}{Whether to select the prepared interpreter for embedded Python and configure the R process. Set to \code{FALSE} for subprocess-only use.}
 
-\item{...}{Additional arguments passed to package installation functions.}
+\item{...}{Arguments passed to other functions.}
 }
 \description{
 Prepare the python environment by installing the required dependencies and setting up the environment.

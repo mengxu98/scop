@@ -55,6 +55,17 @@ jobs:
           needs: check
           dependencies: '"hard"'
 
+      - name: Check spatial coordinate extraction boundary
+        shell: Rscript {0}
+        run: |
+          files <- list.files("R", pattern = "[.]R$", full.names = TRUE)
+          stopifnot(length(files) > 0L)
+          allowed <- c("SpatialCore.R", "SpatialCellPlot.R", "data.R")
+          bypass <- vapply(files, function(file) {
+            any(grepl("GetTissueCoordinates\\s*\\(", readLines(file, warn = FALSE)))
+          }, logical(1))
+          stopifnot(setequal(basename(files[bypass]), allowed))
+
       - uses: r-lib/actions/check-r-package@v2
         with:
           args: ${{ matrix.config.check-args }}
@@ -114,7 +125,7 @@ jobs:
           }
           pkgload::load_all(".", quiet = TRUE, compile = FALSE)
           for (path in c("tests/testthat/test-banksy.R",
-                         "tests/testthat/test-banksy-multisample-backend.R")) {
+                         "tests/testthat/test-banksy-multisample.R")) {
             results <- testthat::test_file(path, reporter = "summary",
                                           stop_on_failure = TRUE)
             results <- as.data.frame(results)
@@ -162,7 +173,7 @@ jobs:
           presto_fun <- get_namespace_fun("presto", "wilcoxauc")
           stopifnot(is.function(presto_fun))
           testthat::test_file(
-            "tests/testthat/test-presto-backend.R",
+            "tests/testthat/test-presto.R",
             reporter = "summary",
             stop_on_failure = TRUE
           )

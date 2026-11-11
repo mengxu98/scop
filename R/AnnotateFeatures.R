@@ -65,9 +65,9 @@ AnnotateFeatures <- function(
   columns = c("seqname", "feature", "start", "end", "strand", "gene_id", "gene_name", "gene_type"),
   assays = "RNA",
   overwrite = FALSE,
-  ...,
   verbose = TRUE,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   species <- normalize_species_name(species)

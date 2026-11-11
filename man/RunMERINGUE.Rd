@@ -70,7 +70,7 @@ units.}
 default \code{0} skips p-value calculation.}
 
 \item{cores}{Number of cores passed to MERINGUE permutation tests.
-Mapped to \code{ncores} for the R backend and \code{n_threads} for the native backend.
+Mapped to \code{ncores} for the R backend and \code{n_threads} for the C++ backend.
 will be removed in scop 1.0.0.}
 
 \item{pairwise_features}{Features used for spatial cross-correlation. If

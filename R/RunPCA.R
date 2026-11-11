@@ -1,4 +1,4 @@
-pca_native_auto_supported <- function(object, npcs, extra_args) {
+pca_auto_supported <- function(object, npcs, extra_args) {
   is.matrix(object) &&
     is.numeric(object) &&
     length(extra_args) == 0L &&
@@ -9,7 +9,7 @@ pca_native_auto_supported <- function(object, npcs, extra_args) {
     npcs + 1L < min(nrow(object), ncol(object))
 }
 
-pca_native_candidate_acceptable <- function(eigvals, npcs, min_gap = 5e-4) {
+pca_candidate_acceptable <- function(eigvals, npcs, min_gap = 5e-4) {
   length(eigvals) >= npcs + 1L &&
     all(is.finite(eigvals[seq_len(npcs + 1L)])) &&
     eigvals[[npcs]] > 0 &&
@@ -84,7 +84,7 @@ RunPCA.default <- function(
     set.seed(seed = seed.use)
   }
   npcs <- min(npcs, nrow(object) - 1)
-  if (identical(backend, "auto") && !pca_native_auto_supported(object, npcs, dots)) {
+  if (identical(backend, "auto") && !pca_auto_supported(object, npcs, dots)) {
     return(run_seurat())
   }
   nfeatures <- nrow(object)
@@ -100,7 +100,7 @@ RunPCA.default <- function(
   }
   nv <- NULL
   native_auto <- identical(backend, "auto") &&
-    pca_native_auto_supported(obj, npcs, dots)
+    pca_auto_supported(obj, npcs, dots)
   if (identical(backend, "cpp") || native_auto) {
     native_npcs <- if (native_auto) npcs + 1L else npcs
     nv <- tryCatch(
@@ -115,7 +115,7 @@ RunPCA.default <- function(
     if (
       native_auto &&
         !is.null(nv) &&
-        !pca_native_candidate_acceptable(nv$eigvals, npcs)
+        !pca_candidate_acceptable(nv$eigvals, npcs)
     ) {
       nv <- NULL
     }
@@ -297,11 +297,7 @@ RunPCA.Seurat <- function(
 #' Run principal component analysis
 #'
 #' @param object Object containing expression data.
-#' @param ... Passed to methods. The `"cpp"` backend of the `matrix` and assay
-#' methods accepts `cores` to bound its BLAS calls; `NULL` keeps the process
-#' default. The `Seurat` method also accepts `features`, `layer`,
-#' `reduction.name` and the remaining `Seurat::RunPCA()` arguments.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return PCA results or an object containing PCA results.
 #' @export
 RunPCA <- function(object, ...) {

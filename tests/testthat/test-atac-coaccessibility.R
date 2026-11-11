@@ -1,18 +1,5 @@
-make_atac_coaccessibility_fixture <- function() {
-  skip_if_not_installed("Signac")
-  counts <- Matrix::Matrix(matrix(c(1, 2, 3, 4, 2, 3, 4, 5, 3, 2, 5, 4), 3, 4,
-    dimnames = list(paste0("p", 1:3), paste0("c", 1:4))), sparse = TRUE)
-  ranges <- GenomicRanges::GRanges("chr1", IRanges::IRanges(c(1000, 2000, 3000), width = 100))
-  x <- ReadATACData(counts, ranges = ranges, genome = "toy", verbose = FALSE)
-  coords <- matrix(c(1, 2, 3, 4, 2, 5, 3, 6), 4, 2,
-    dimnames = list(colnames(x), c("LSI_1", "LSI_2")))
-  x[["lsi"]] <- SeuratObject::CreateDimReducObject(coords, key = "LSI_", assay = "peaks")
-  x
-}
-
-
 test_that("coaccessibility validates reference, embedding and result ownership before fitting", {
-  x <- make_atac_coaccessibility_fixture()
+  x <- make_atac_test_object()
   expect_error(RunATACCoaccessibility(x, c(chr2 = 1000000), "toy", dims = 1:2, k = 2), "cover source peaks")
   expect_error(RunATACCoaccessibility(x, c(chr1 = 1000000), "wrong", dims = 1:2, k = 2), "genome|reference")
   expect_error(RunATACCoaccessibility(x, c(chr1 = 1000000), "toy", dims = 3, k = 2), "dims")
@@ -24,7 +11,7 @@ test_that("coaccessibility validates reference, embedding and result ownership b
 })
 
 test_that("coaccessibility dispatch preserves sparse binary data, order and native NA scores", {
-  x <- make_atac_coaccessibility_fixture()
+  x <- make_atac_test_object()
   original <- serialize(x, NULL)
   calls <- new.env()
   fake_new <- function(expression_data, cell_metadata, gene_metadata) {
@@ -40,11 +27,17 @@ test_that("coaccessibility dispatch preserves sparse binary data, order and nati
   fake_run <- function(cds, genomic_coords, window, sample_num, silent) {
     data.frame(Peak1 = rownames(cds)[1], Peak2 = rownames(cds)[2], coaccess = NA_real_)
   }
-  old <- atac_backend_fun
-  local_mocked_bindings(atac_backend_fun = function(package, fun) {
-    if (package == "monocle3") return(fake_new)
-    if (package == "cicero" && fun == "make_cicero_cds") return(fake_aggregate)
-    if (package == "cicero" && fun == "run_cicero") return(fake_run)
+  old <- get_namespace_fun
+  local_mocked_bindings(check_r = function(...) invisible(TRUE), get_namespace_fun = function(package, fun) {
+    if (package == "monocle3") {
+      return(fake_new)
+    }
+    if (package == "cicero" && fun == "make_cicero_cds") {
+      return(fake_aggregate)
+    }
+    if (package == "cicero" && fun == "run_cicero") {
+      return(fake_run)
+    }
     old(package, fun)
   })
   original_description <- utils::packageDescription
@@ -52,7 +45,8 @@ test_that("coaccessibility dispatch preserves sparse binary data, order and nati
   local_mocked_bindings(
     packageDescription = function(pkg, ...) if (pkg == "cicero") list(Imports = "monocle3") else original_description(pkg, ...),
     packageVersion = function(pkg, ...) if (pkg %in% c("cicero", "monocle3")) numeric_version("1.0.0") else original_version(pkg, ...),
-    .package = "utils")
+    .package = "utils"
+  )
   set.seed(123)
   rng <- .Random.seed
   out <- RunATACCoaccessibility(x, c(chr1 = 1000000), "toy", dims = 1:2, k = 2)

@@ -309,26 +309,6 @@ static double scenic_tree_feature_value(const ScenicSparseTreeView& view, int ro
   return scenic_tree_feature_value(view.matrix, row, feature);
 }
 
-static double scenic_node_mean(
-    const std::vector<int>& rows,
-    const std::vector<double>& residual) {
-  if (rows.empty()) return 0.0;
-  double sum = 0.0;
-  for (std::size_t i = 0; i < rows.size(); ++i) sum += residual[rows[i]];
-  return sum / static_cast<double>(rows.size());
-}
-
-static double scenic_node_mean(
-    const std::vector<int>& samples,
-    int start,
-    int end,
-    const std::vector<double>& residual) {
-  if (end <= start) return 0.0;
-  double sum = 0.0;
-  for (int i = start; i < end; ++i) sum += residual[samples[i]];
-  return sum / static_cast<double>(end - start);
-}
-
 static double scenic_node_sse(
     const std::vector<int>& samples,
     int start,
@@ -456,26 +436,6 @@ static int scenic_numpy_randint(std::mt19937& rng, int low, int high) {
     value = static_cast<std::uint32_t>(rng()) & mask;
   } while (value > max_value);
   return low + static_cast<int>(value);
-}
-
-static std::vector<unsigned char> scenic_sample_mask(
-    int n_samples,
-    int n_inbag,
-    std::mt19937& rng) {
-  std::vector<unsigned char> mask(n_samples, 0);
-  if (n_inbag >= n_samples) {
-    std::fill(mask.begin(), mask.end(), 1);
-    return mask;
-  }
-  int n_bagged = 0;
-  for (int i = 0; i < n_samples; ++i) {
-    if (scenic_numpy_random_sample(rng) * static_cast<double>(n_samples - i) <
-        static_cast<double>(n_inbag - n_bagged)) {
-      mask[i] = 1;
-      ++n_bagged;
-    }
-  }
-  return mask;
 }
 
 static void scenic_sample_mask_fill(

@@ -71,7 +71,7 @@
 #'
 #' @details
 #' Requires official `celloracle==0.20.0`, either in a Linux/macOS Python
-#' environment or in `docker_container`. Native Windows Python is not supported.
+#' environment or in `docker_container`. Windows Python is not supported.
 #' Prepare the environment or container explicitly before analysis.
 #' The raw import performs CellOracle's own log transformation; no additional
 #' library-size normalization is introduced. PCA, imputation, network inference,
@@ -100,7 +100,8 @@
 #' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' # Supply an official TF-info parquet prepared for the matching species.
 #' pancreas_sub <- RunCellOracle(
-#'   pancreas_sub, perturbation = c(Pdx1 = 0), group.by = "CellType",
+#'   pancreas_sub,
+#'   perturbation = c(Pdx1 = 0), group.by = "CellType",
 #'   base_grn = "mouse_promoter_base_GRN.parquet",
 #'   stage_args = list(
 #'     imputation = list(k = 20L, n_pca_dims = 20L),
@@ -109,6 +110,7 @@
 #'   )
 #' )
 #' CellOraclePlot(pancreas_sub, plot_type = "quiver")
+#' CellOraclePlot(pancreas_sub, plot_type = "effect")
 #' }
 RunCellOracle <- function(
   object, perturbation, group.by, base_grn = NULL,
@@ -122,13 +124,13 @@ RunCellOracle <- function(
     log_message("{.arg object} must be a Seurat object", message_type = "error")
   }
   if (!is.character(tool_name) || length(tool_name) != 1L ||
-      is.na(tool_name) || !nzchar(tool_name) || tool_name %in% names(object@tools)) {
+    is.na(tool_name) || !nzchar(tool_name) || tool_name %in% names(object@tools)) {
     log_message("{.arg tool_name} must be a new, non-empty result name", message_type = "error")
   }
   if (!is.numeric(perturbation) || !length(perturbation) ||
-      any(!is.finite(perturbation)) || any(perturbation < 0) ||
-      is.null(names(perturbation)) || anyNA(names(perturbation)) ||
-      any(!nzchar(names(perturbation))) || anyDuplicated(names(perturbation))) {
+    any(!is.finite(perturbation)) || any(perturbation < 0) ||
+    is.null(names(perturbation)) || anyNA(names(perturbation)) ||
+    any(!nzchar(names(perturbation))) || anyDuplicated(names(perturbation))) {
     log_message("{.arg perturbation} must have unique gene names and finite non-negative values", message_type = "error")
   }
   if (length(group.by) != 1L || is.na(group.by) || !group.by %in% colnames(object[[]])) {
@@ -144,8 +146,8 @@ RunCellOracle <- function(
   counts <- GetAssayData5(object, assay = assay, layer = layer)
   features <- features %||% rownames(counts)
   if (!is.character(features) || length(features) < 2L || anyNA(features) ||
-      anyDuplicated(features) || !all(features %in% rownames(counts)) ||
-      !all(names(perturbation) %in% features)) {
+    anyDuplicated(features) || !all(features %in% rownames(counts)) ||
+    !all(names(perturbation) %in% features)) {
     log_message("{.arg features} must contain unique assay genes including all perturbed genes", message_type = "error")
   }
   if (!identical(colnames(counts), colnames(object))) {
@@ -165,37 +167,47 @@ RunCellOracle <- function(
   }
   embedding <- SeuratObject::Embeddings(object[[reduction]])
   if (ncol(embedding) < 2L || !identical(rownames(embedding), colnames(object)) ||
-      any(!is.finite(embedding[, 1:2, drop = FALSE]))) {
+    any(!is.finite(embedding[, 1:2, drop = FALSE]))) {
     log_message("Reduction must contain finite coordinates for all cells in order", message_type = "error")
   }
-  stages <- c("pca", "imputation", "links", "filter", "fit", "simulation",
-              "transition", "embedding", "grid", "mass_filter")
+  stages <- c(
+    "pca", "imputation", "links", "filter", "fit", "simulation",
+    "transition", "embedding", "grid", "mass_filter"
+  )
   if (!is.list(stage_args) || (length(stage_args) &&
-      (is.null(names(stage_args)) || anyNA(names(stage_args)) ||
-       anyDuplicated(names(stage_args)) || !all(names(stage_args) %in% stages)))) {
+    (is.null(names(stage_args)) || anyNA(names(stage_args)) ||
+      anyDuplicated(names(stage_args)) || !all(names(stage_args) %in% stages)))) {
     log_message("{.arg stage_args} must be named by documented CellOracle stages", message_type = "error")
   }
-  reserved <- c("perturb_condition", "GRN_unit", "use_cluster_specific_TFdict",
-                "calculate_randomized", "random_seed", "threads", "n_jobs",
-                "plot", "cluster_name_for_GRN_unit", "test_mode", "use_randomized_GRN")
+  reserved <- c(
+    "perturb_condition", "GRN_unit", "use_cluster_specific_TFdict",
+    "calculate_randomized", "random_seed", "threads", "n_jobs",
+    "plot", "cluster_name_for_GRN_unit", "test_mode", "use_randomized_GRN"
+  )
   for (stage in names(stage_args)) {
     args <- stage_args[[stage]]
     if (!is.list(args) || (length(args) &&
-        (is.null(names(args)) || anyNA(names(args)) || any(!nzchar(names(args))) ||
-         anyDuplicated(names(args)) || any(names(args) %in% reserved))) ||
-        (stage == "grid" && "smooth" %in% names(args))) {
+      (is.null(names(args)) || anyNA(names(args)) || any(!nzchar(names(args))) ||
+        anyDuplicated(names(args)) || any(names(args) %in% reserved))) ||
+      (stage == "grid" && "smooth" %in% names(args))) {
       log_message("Invalid or SCOP-controlled arguments in {.val {stage}}", message_type = "error")
     }
     integer_args <- switch(stage,
-      pca = "n_components", imputation = c("k", "n_pca_dims", "b_sight", "b_maxl"),
-      links = c("bagging_number", "verbose_level"), filter = "threshold_number",
-      fit = "verbose_level", simulation = "n_propagation",
-      transition = "n_neighbors", grid = c("n_grid", "n_neighbors"), character())
+      pca = "n_components",
+      imputation = c("k", "n_pca_dims", "b_sight", "b_maxl"),
+      links = c("bagging_number", "verbose_level"),
+      filter = "threshold_number",
+      fit = "verbose_level",
+      simulation = "n_propagation",
+      transition = "n_neighbors",
+      grid = c("n_grid", "n_neighbors"),
+      character()
+    )
     for (name in intersect(names(args), integer_args)) {
       value <- args[[name]]
       if (is.null(value)) next
       if (!is.numeric(value) || length(value) != 1L || !is.finite(value) ||
-          value < 0 || value > .Machine$integer.max || value != floor(value)) {
+        value < 0 || value > .Machine$integer.max || value != floor(value)) {
         log_message("{.val {stage}} argument {.val {name}} must be an integer", message_type = "error")
       }
       stage_args[[stage]][[name]] <- as.integer(value)
@@ -203,7 +215,7 @@ RunCellOracle <- function(
   }
   for (value in list(cores = cores, seed = seed)) {
     if (!is.numeric(value) || length(value) != 1L || !is.finite(value) ||
-        value < 0 || value > .Machine$integer.max || value != floor(value)) {
+      value < 0 || value > .Machine$integer.max || value != floor(value)) {
       log_message("{.arg cores} and {.arg seed} must be non-negative integers", message_type = "error")
     }
   }
@@ -226,14 +238,14 @@ RunCellOracle <- function(
     }
   } else {
     if (!is.null(base_grn) || any(names(stage_args) %in% stages[1:5]) ||
-        length(model_dir) != 1L || !dir.exists(model_dir) ||
-        !all(file.exists(file.path(model_dir, c("model.celloracle.oracle", "network.celloracle.links"))))) {
+      length(model_dir) != 1L || !dir.exists(model_dir) ||
+      !all(file.exists(file.path(model_dir, c("model.celloracle.oracle", "network.celloracle.links"))))) {
       log_message("Model reuse requires saved Oracle/Links files, no {.arg base_grn} and no fitting arguments", message_type = "error")
     }
     model_dir <- normalizePath(model_dir, winslash = "/", mustWork = TRUE)
   }
   if (!is.null(output_dir) && (length(output_dir) != 1L || is.na(output_dir) ||
-      !nzchar(output_dir) || file.exists(output_dir))) {
+    !nzchar(output_dir) || file.exists(output_dir))) {
     log_message("{.arg output_dir} must be a new directory", message_type = "error")
   }
   if (!is.null(docker_container)) {
@@ -243,7 +255,8 @@ RunCellOracle <- function(
       perturbation = perturbation, stage_args = stage_args,
       model_dir = model_dir, output_dir = output_dir,
       store_expression = store_expression, cores = cores, seed = seed,
-      container = docker_container, verbose = verbose)
+      container = docker_container, verbose = verbose
+    )
   } else {
     if (is_windows()) {
       log_message("Official CellOracle requires Linux/macOS. Run this analysis in a supported environment; native Windows is unsupported", message_type = "error")
@@ -259,32 +272,42 @@ RunCellOracle <- function(
     }
     PrepareEnv(envname = envname, conda = conda, modules = "celloracle", verbose = verbose)
     check_python("celloracle==0.20.0", envname = envname, conda = conda, verbose = verbose)
-    adata <- srt_to_adata(object, features = features, assay_x = assay,
+    adata <- srt_to_adata(object,
+      features = features, assay_x = assay,
       layer_x = layer, assay_y = character(), reductions = reduction,
-      graphs = character(), neighbors = character(), prepare_env = FALSE, verbose = verbose)
+      graphs = character(), neighbors = character(), prepare_env = FALSE, verbose = verbose
+    )
     # Use a private copy and explicit ordered coordinates, leaving Seurat unchanged.
     pd <- reticulate::import("pandas", convert = FALSE)
-    reticulate::py_set_item(reticulate::py_get_attr(adata, "obs"), group.by,
+    reticulate::py_set_item(
+      reticulate::py_get_attr(adata, "obs"), group.by,
       pd$Categorical(as.character(groups),
         categories = if (is.factor(groups)) levels(droplevels(groups)) else sort(unique(as.character(groups))),
-        ordered = is.ordered(groups)))
-    reticulate::py_set_item(reticulate::py_get_attr(adata, "obsm"), paste0("X_", reduction),
-      reticulate::r_to_py(embedding[, 1:2, drop = FALSE]))
+        ordered = is.ordered(groups)
+      )
+    )
+    reticulate::py_set_item(
+      reticulate::py_get_attr(adata, "obsm"), paste0("X_", reduction),
+      reticulate::r_to_py(embedding[, 1:2, drop = FALSE])
+    )
     runner <- scop_python_import("celloracle_runner", convert = TRUE)
     log_message("Running official CellOracle 0.20.0", verbose = verbose)
     result <- runner$run_celloracle(
       adata = adata, group_by = group.by, embedding_name = paste0("X_", reduction),
       base_grn = base_grn, perturbation = as.list(perturbation),
       stage_args = stage_args, cores = as.integer(cores), seed = as.integer(seed),
-      model_dir = model_dir, output_dir = output_dir, store_expression = store_expression)
+      model_dir = model_dir, output_dir = output_dir, store_expression = store_expression
+    )
   }
   result <- celloracle_validate_result(result, colnames(object), features)
-  result$parameters$input <- list(assay = assay, layer = layer, features = features,
+  result$parameters$input <- list(
+    assay = assay, layer = layer, features = features,
     group.by = group.by, reduction = reduction, perturbation = perturbation,
     docker_container = docker_container,
     stage_args = stage_args,
     base_grn_source = if (!is.null(model_dir)) "saved_model" else if (is.character(base_grn)) base_grn else if (is.data.frame(base_grn)) "TF_info_matrix" else "TFdict",
-    base_grn_md5 = if (is.character(base_grn)) unname(tools::md5sum(base_grn)) else NULL)
+    base_grn_md5 = if (is.character(base_grn)) unname(tools::md5sum(base_grn)) else NULL
+  )
   object@tools[[tool_name]] <- result
   log_message("CellOracle results stored in {.code object@tools[[tool_name]]}", verbose = verbose)
   object
@@ -295,7 +318,7 @@ celloracle_run_docker <- function(
   stage_args, model_dir, output_dir, store_expression, cores, seed, container, verbose
 ) {
   if (!is.character(container) || length(container) != 1L || is.na(container) ||
-      !grepl("^[A-Za-z0-9][A-Za-z0-9_.-]*$", container)) {
+    !grepl("^[A-Za-z0-9][A-Za-z0-9_.-]*$", container)) {
     log_message("{.arg docker_container} must be one container name or ID", message_type = "error")
   }
   docker <- unname(Sys.which("docker"))
@@ -319,8 +342,10 @@ celloracle_run_docker <- function(
   prior_type <- if (is.data.frame(base_grn)) "matrix" else if (is.character(base_grn)) "parquet" else "dict"
   Matrix::writeMM(Matrix::Matrix(counts, sparse = TRUE), file.path(directory, "counts.mtx"))
   utils::write.table(matrix(sprintf("%.17g", embedding), ncol = 2L),
-    file.path(directory, "embedding.csv"), sep = ",", quote = FALSE,
-    row.names = FALSE, col.names = FALSE)
+    file.path(directory, "embedding.csv"),
+    sep = ",", quote = FALSE,
+    row.names = FALSE, col.names = FALSE
+  )
   if (prior_type == "matrix") {
     utils::write.csv(base_grn, file.path(directory, "prior.csv"), row.names = FALSE, fileEncoding = "UTF-8")
   } else if (prior_type == "parquet") {
@@ -348,11 +373,14 @@ celloracle_run_docker <- function(
   file.copy(runner_script_path("celloracle_runner.py", "CellOracle"), directory)
   run(c("exec", container, "mkdir", remote))
   on.exit(system2(docker, shQuote(c("exec", container, "rm", "-rf", "--", remote)),
-    stdout = FALSE, stderr = FALSE), add = TRUE)
+    stdout = FALSE, stderr = FALSE
+  ), add = TRUE)
   run(c("cp", paste0(directory, "/."), paste0(container, ":", remote)))
   log_message("Running official CellOracle in container {.val {container}}", verbose = verbose)
-  run(c("exec", "-e", paste0("PYTHONHASHSEED=", seed), container,
-    "python", paste0(remote, "/celloracle_runner.py"), remote))
+  run(c(
+    "exec", "-e", paste0("PYTHONHASHSEED=", seed), container,
+    "python", paste0(remote, "/celloracle_runner.py"), remote
+  ))
   diagnostics <- readLines(logfile, warn = FALSE)
   if (length(diagnostics)) {
     diagnostic_text <- paste(diagnostics, collapse = "\n")
@@ -365,9 +393,11 @@ celloracle_run_docker <- function(
   result$cells <- unlist(result$cells, use.names = FALSE)
   result$genes <- unlist(result$genes, use.names = FALSE)
   read_table <- function(filename, character_columns = character()) {
-    utils::read.csv(file.path(output, filename), check.names = FALSE, fileEncoding = "UTF-8",
+    utils::read.csv(file.path(output, filename),
+      check.names = FALSE, fileEncoding = "UTF-8",
       stringsAsFactors = FALSE, na.strings = "",
-      colClasses = if (length(character_columns)) stats::setNames(rep("character", length(character_columns)), character_columns) else NA)
+      colClasses = if (length(character_columns)) stats::setNames(rep("character", length(character_columns)), character_columns) else NA
+    )
   }
   result$cell_shift <- read_table("cell_shift.csv", c("cell", "group"))
   result$grid_flow <- read_table("grid_flow.csv")
@@ -395,9 +425,9 @@ celloracle_run_docker <- function(
 
 celloracle_validate_result <- function(result, cells, genes) {
   if (!identical(as.character(result$cells), cells) ||
-      !identical(as.character(result$genes), genes) ||
-      !identical(as.character(result$cell_shift$cell), cells) ||
-      !identical(as.character(result$gene_effect$gene), genes)) {
+    !identical(as.character(result$genes), genes) ||
+    !identical(as.character(result$cell_shift$cell), cells) ||
+    !identical(as.character(result$gene_effect$gene), genes)) {
     log_message("CellOracle returned a different cell or gene order; results were not stored", message_type = "error")
   }
   numeric_columns <- list(
@@ -409,7 +439,7 @@ celloracle_validate_result <- function(result, cells, genes) {
     data <- result[[name]]
     columns <- numeric_columns[[name]]
     if (!is.data.frame(data) || !all(columns %in% names(data)) ||
-        any(!is.finite(as.matrix(data[, columns, drop = FALSE])))) {
+      any(!is.finite(as.matrix(data[, columns, drop = FALSE])))) {
       log_message("CellOracle returned invalid numerical results in {.val {name}}", message_type = "error")
     }
   }

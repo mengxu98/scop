@@ -51,10 +51,12 @@ RunATACRegionMatrix <- function(
   if (length(problems)) stop(paste(problems, collapse = " "), call. = FALSE)
   if (!length(regions)) stop("regions must not be empty.", call. = FALSE)
   atac_qc_ranges(regions, chromatin, "Regions")
-  for (x in list(upstream, downstream)) atac_region_integer(x, "upstream/downstream", 0)
-  atac_region_integer(bin.size, "bin.size", 1)
+  for (x in list(upstream, downstream)) atac_integer(x, "upstream/downstream", 0)
+  atac_integer(bin.size, "bin.size", 1)
   if (!is.numeric(max.entries) || length(max.entries) != 1L ||
-      !is.finite(max.entries) || max.entries < 1) stop("max.entries must be positive.", call. = FALSE)
+    !is.finite(max.entries) || max.entries < 1) {
+    stop("max.entries must be positive.", call. = FALSE)
+  }
   if (as.double(upstream) + downstream + 1 > .Machine$integer.max) stop("Region window is too wide.", call. = FALSE)
   ids <- names(regions)
   if (is.null(ids)) ids <- atac_range_ids(regions)
@@ -67,7 +69,9 @@ RunATACRegionMatrix <- function(
     groups <- as.character(SeuratObject::Idents(object)[cells])
   } else {
     if (!is.character(group.by) || length(group.by) != 1L || is.na(group.by) ||
-        !group.by %in% colnames(object[[]])) stop("group.by must identify one metadata column.", call. = FALSE)
+      !group.by %in% colnames(object[[]])) {
+      stop("group.by must identify one metadata column.", call. = FALSE)
+    }
     groups <- as.character(object[[]][cells, group.by])
   }
   if (anyNA(groups) || any(!nzchar(groups))) stop("Selected cells must have non-missing, non-empty groups.", call. = FALSE)
@@ -86,8 +90,8 @@ RunATACRegionMatrix <- function(
   window.start <- centers - ifelse(minus, downstream, upstream)
   window.end <- centers + ifelse(minus, upstream, downstream)
   chromosomes <- as.character(GenomicRanges::seqnames(regions))
-  source.lengths <- atac_backend_fun("GenomeInfoDb", "seqlengths")(chromatin)
-  supplied.lengths <- atac_backend_fun("GenomeInfoDb", "seqlengths")(regions)
+  source.lengths <- GenomeInfoDb::seqlengths(chromatin)
+  supplied.lengths <- GenomeInfoDb::seqlengths(regions)
   shared <- source.lengths[names(supplied.lengths)]
   if (any(shared != supplied.lengths, na.rm = TRUE)) stop("Region and assay chromosome lengths conflict.", call. = FALSE)
   limits <- source.lengths[chromosomes]
@@ -97,91 +101,68 @@ RunATACRegionMatrix <- function(
     stop("Extended region windows cross chromosome boundaries; reduce the flanks or explicitly select valid regions.", call. = FALSE)
   }
   windows <- GenomicRanges::GRanges(chromosomes, IRanges::IRanges(window.start, window.end))
-  fragments <- atac_region_fragments(chromatin, cells, verbose)
+  fragments <- atac_indexed_fragments(chromatin, cells, verbose)
   known <- union(names(source.lengths), unlist(lapply(fragments, `[[`, "contigs"), use.names = FALSE))
   if (length(setdiff(chromosomes, known))) stop("Regions contain unknown reference contigs.", call. = FALSE)
-  matrices <- lapply(levels, function(x) matrix(0, nrow = length(regions), ncol = nbins,
-    dimnames = list(ids, as.character(positions))))
+  matrices <- lapply(levels, function(x) {
+    matrix(0,
+      nrow = length(regions), ncol = nbins,
+      dimnames = list(ids, as.character(positions))
+    )
+  })
   names(matrices) <- levels
   for (file in fragments) {
     connection <- Rsamtools::TabixFile(file$path, index = file$index)
     open(connection)
     # Each connection is closed even when parsing or counting fails.
-    matrices <- tryCatch({
-      for (i in which(chromosomes %in% file$contigs)) {
-        records <- Rsamtools::scanTabix(connection, param = windows[i])[[1L]]
-        if (!length(records)) next
-        parts <- strsplit(records, "\t", fixed = TRUE)
-        if (any(lengths(parts) < 4L)) stop("Malformed fragment record: at least four fields required.", call. = FALSE)
-        barcodes <- vapply(parts, `[[`, character(1), 4L)
-        selected <- match(barcodes, unname(file$map))
-        keep <- !is.na(selected)
-        if (!any(keep)) next
-        parts <- parts[keep]
-        mapped.groups <- groups[names(file$map)[selected[keep]]]
-        starts <- suppressWarnings(as.numeric(vapply(parts, `[[`, character(1), 2L)))
-        ends <- suppressWarnings(as.numeric(vapply(parts, `[[`, character(1), 3L)))
-        if (any(!is.finite(starts) | !is.finite(ends) | starts < 0 | ends <= starts |
-                starts %% 1 != 0 | ends %% 1 != 0 | ends > .Machine$integer.max)) stop("Invalid BED fragment coordinates.", call. = FALSE)
-        for (group in unique(mapped.groups)) {
-          index <- mapped.groups == group
-          endpoints <- c(starts[index] + 1, ends[index])
-          offsets <- if (minus[i]) centers[i] - endpoints else endpoints - centers[i]
-          offsets <- offsets[offsets >= -upstream & offsets <= downstream]
-          bins <- floor((offsets + upstream) / bin.size) + 1L
-          matrices[[group]][i, ] <- matrices[[group]][i, ] + tabulate(bins, nbins = nbins)
+    matrices <- tryCatch(
+      {
+        for (i in which(chromosomes %in% file$contigs)) {
+          records <- Rsamtools::scanTabix(connection, param = windows[i])[[1L]]
+          if (!length(records)) next
+          parts <- strsplit(records, "\t", fixed = TRUE)
+          if (any(lengths(parts) < 4L)) stop("Malformed fragment record: at least four fields required.", call. = FALSE)
+          barcodes <- vapply(parts, `[[`, character(1), 4L)
+          selected <- match(barcodes, unname(file$map))
+          keep <- !is.na(selected)
+          if (!any(keep)) next
+          parts <- parts[keep]
+          mapped.groups <- groups[names(file$map)[selected[keep]]]
+          starts <- suppressWarnings(as.numeric(vapply(parts, `[[`, character(1), 2L)))
+          ends <- suppressWarnings(as.numeric(vapply(parts, `[[`, character(1), 3L)))
+          if (any(!is.finite(starts) | !is.finite(ends) | starts < 0 | ends <= starts |
+            starts %% 1 != 0 | ends %% 1 != 0 | ends > .Machine$integer.max)) {
+            stop("Invalid BED fragment coordinates.", call. = FALSE)
+          }
+          for (group in unique(mapped.groups)) {
+            index <- mapped.groups == group
+            endpoints <- c(starts[index] + 1, ends[index])
+            offsets <- if (minus[i]) centers[i] - endpoints else endpoints - centers[i]
+            offsets <- offsets[offsets >= -upstream & offsets <= downstream]
+            bins <- floor((offsets + upstream) / bin.size) + 1L
+            matrices[[group]][i, ] <- matrices[[group]][i, ] + tabulate(bins, nbins = nbins)
+          }
         }
-      }
-      matrices
-    }, finally = close(connection))
+        matrices
+      },
+      finally = close(connection)
+    )
   }
   names(regions) <- ids
-  result <- list(matrices = matrices, regions = regions, positions = positions,
+  result <- list(
+    matrices = matrices, regions = regions, positions = positions,
     bin.widths = widths, cells.per.group = table(factor(groups, levels = levels)),
-    receipt = list(source_assay = assay, cells = cells, groups = groups,
+    receipt = list(
+      source_assay = assay, cells = cells, groups = groups,
       upstream = upstream, downstream = downstream, bin.size = bin.size,
       genome = report$genome, coordinate_system = "1-based closed endpoints: BED start+1 and end",
       endpoint_shift = 0L, column5_weighted = FALSE, bias_corrected = FALSE,
       fragments = lapply(fragments, function(x) x[c("path", "index", "hash")]),
-      backend = "SCOP indexed endpoint tabulation", signac_version = as.character(utils::packageVersion("Signac"))))
+      backend = "SCOP indexed endpoint tabulation", signac_version = as.character(utils::packageVersion("Signac"))
+    )
+  )
   class(result) <- c("scop_atac_regions", "list")
   result
-}
-
-atac_region_integer <- function(x, label, minimum = 0) {
-  if (!is.numeric(x) || length(x) != 1L || !is.finite(x) || x < minimum ||
-      x %% 1 != 0 || x > .Machine$integer.max) stop(paste(label, "must be an integer >=", minimum), call. = FALSE)
-  invisible(x)
-}
-
-atac_region_fragments <- function(chromatin, cells, verbose) {
-  atac_backend_fun("Rsamtools", "TabixFile")
-  fragments <- Signac::Fragments(chromatin)
-  maps <- lapply(fragments, Signac::GetFragmentData, slot = "cells")
-  maps <- lapply(maps, function(x) x[names(x) %in% cells])
-  active <- lengths(maps) > 0L
-  maps <- maps[active]
-  fragments <- fragments[active]
-  if (!length(fragments)) stop("Region counting requires attached local indexed fragments.", call. = FALSE)
-  if (!all(vapply(maps, function(x) atac_unique_ids(x) && atac_unique_ids(names(x)), logical(1))) ||
-      anyDuplicated(unlist(lapply(maps, names))) || !setequal(unlist(lapply(maps, names)), cells)) {
-    stop("Fragment maps must cover each selected cell exactly once with unique barcodes.", call. = FALSE)
-  }
-  paths <- vapply(fragments, Signac::GetFragmentData, character(1), slot = "path")
-  if (!all(file.exists(paths))) stop("Fragment files must exist locally.", call. = FALSE)
-  paths <- normalizePath(paths, mustWork = TRUE)
-  if (anyDuplicated(paths)) stop("Fragment paths must be distinct.", call. = FALSE)
-  lapply(seq_along(fragments), function(i) {
-    index <- paste0(paths[i], c(".tbi", ".csi"))
-    index <- index[file.exists(index)][1L]
-    if (is.na(index)) stop("Fragment index is missing.", call. = FALSE)
-    if (!Signac::ValidateHash(fragments[[i]], verbose = verbose)) stop("Fragment hash changed.", call. = FALSE)
-    if (!Signac::ValidateCells(fragments[[i]], cells = unname(maps[[i]]),
-      tolerance = 0, max.lines = NULL, verbose = verbose)) stop("Requested barcodes are absent from fragment file.", call. = FALSE)
-    list(path = paths[i], index = index, map = maps[[i]],
-      contigs = Rsamtools::seqnamesTabix(Rsamtools::TabixFile(paths[i], index = index)),
-      hash = Signac::GetFragmentData(fragments[[i]], slot = "hash"))
-  })
 }
 
 #' Plot positional ATAC region signal
@@ -200,7 +181,8 @@ atac_region_fragments <- function(chromatin, cells, verbose) {
 #'   mean across supplied regions, not a confidence interval or enrichment test.
 #' @seealso [RunATACRegionMatrix()]
 #' @export
-ATACRegionHeatmap <- function(x, normalize = TRUE, per.base = TRUE,
+ATACRegionHeatmap <- function(
+  x, normalize = TRUE, per.base = TRUE,
   groups = NULL, log1p = FALSE, order.rows = FALSE, low = "white", high = "#2166AC"
 ) {
   data <- atac_region_plot_data(x, normalize, per.base, groups)
@@ -214,9 +196,12 @@ ATACRegionHeatmap <- function(x, normalize = TRUE, per.base = TRUE,
   if (log1p) data$value <- base::log1p(data$value)
   ggplot2::ggplot(data, ggplot2::aes(x = .data$position, y = .data$region, fill = .data$value)) +
     ggplot2::geom_tile(ggplot2::aes(width = .data$bin.width), height = 1) +
-    ggplot2::facet_wrap(~group) + ggplot2::scale_fill_gradient(low = low, high = high) +
-    ggplot2::labs(x = "Distance from region center (bp)", y = "Region",
-      fill = paste0(if (log1p) "log1p " else "", atac_region_units(normalize, per.base))) +
+    ggplot2::facet_wrap(~group) +
+    ggplot2::scale_fill_gradient(low = low, high = high) +
+    ggplot2::labs(
+      x = "Distance from region center (bp)", y = "Region",
+      fill = paste0(if (log1p) "log1p " else "", atac_region_units(normalize, per.base))
+    ) +
     ggplot2::theme_classic()
 }
 
@@ -226,8 +211,11 @@ ATACRegionPlot <- function(x, normalize = TRUE, per.base = TRUE, groups = NULL) 
   data <- atac_region_plot_data(x, normalize, per.base, groups)
   data <- stats::aggregate(value ~ position + group, data = data, FUN = mean)
   ggplot2::ggplot(data, ggplot2::aes(x = .data$position, y = .data$value, color = .data$group, group = .data$group)) +
-    ggplot2::geom_line() + ggplot2::labs(x = "Distance from region center (bp)",
-      y = paste("Mean across regions:", atac_region_units(normalize, per.base)), color = "Group") +
+    ggplot2::geom_line() +
+    ggplot2::labs(
+      x = "Distance from region center (bp)",
+      y = paste("Mean across regions:", atac_region_units(normalize, per.base)), color = "Group"
+    ) +
     ggplot2::theme_classic()
 }
 
@@ -239,7 +227,7 @@ atac_region_plot_data <- function(x, normalize, per.base, groups) {
   if (!inherits(x, "scop_atac_regions") || !is.list(x$matrices) || !length(x$matrices)) stop("x must be a RunATACRegionMatrix result.", call. = FALSE)
   for (flag in list(normalize, per.base)) if (!is.logical(flag) || length(flag) != 1L || is.na(flag)) stop("normalize and per.base must be TRUE or FALSE.", call. = FALSE)
   if (!is.numeric(x$positions) || !length(x$positions) || any(!is.finite(x$positions)) ||
-      any(diff(x$positions) <= 0) || !is.numeric(x$bin.widths)) {
+    any(diff(x$positions) <= 0) || !is.numeric(x$bin.widths)) {
     stop("Malformed region positions or bin widths.", call. = FALSE)
   }
   reference.ids <- rownames(x$matrices[[1L]])
@@ -248,18 +236,22 @@ atac_region_plot_data <- function(x, normalize, per.base, groups) {
   result <- lapply(groups, function(group) {
     m <- x$matrices[[group]]
     if (!is.matrix(m) || !is.numeric(m) || any(!is.finite(m)) || any(m < 0) ||
-        ncol(m) != length(x$positions) || ncol(m) != length(x$bin.widths) ||
-        !atac_unique_ids(rownames(m)) || !identical(rownames(m), reference.ids) || any(!is.finite(x$bin.widths) | x$bin.widths <= 0)) stop("Malformed region matrix or bin metadata.", call. = FALSE)
+      ncol(m) != length(x$positions) || ncol(m) != length(x$bin.widths) ||
+      !atac_unique_ids(rownames(m)) || !identical(rownames(m), reference.ids) || any(!is.finite(x$bin.widths) | x$bin.widths <= 0)) {
+      stop("Malformed region matrix or bin metadata.", call. = FALSE)
+    }
     if (normalize) {
       n <- x$cells.per.group[[group]]
       if (length(n) != 1L || !is.finite(n) || n <= 0) stop("Invalid group cell denominator.", call. = FALSE)
       m <- m / n
     }
     if (per.base) m <- sweep(m, 2L, x$bin.widths, "/")
-    data.frame(region = rep(rownames(m), times = ncol(m)),
+    data.frame(
+      region = rep(rownames(m), times = ncol(m)),
       position = rep(x$positions, each = nrow(m)),
       bin.width = rep(x$bin.widths, each = nrow(m)), value = as.vector(m),
-      group = group, stringsAsFactors = FALSE)
+      group = group, stringsAsFactors = FALSE
+    )
   })
   result <- do.call(rbind, result)
   result$group <- factor(result$group, levels = groups)

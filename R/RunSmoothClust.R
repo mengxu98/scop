@@ -25,7 +25,7 @@
 #' @param smooth_method Smoothing method passed to `smoothclust::smoothclust()`.
 #' @param bandwidth,k,truncate Smoothing parameters passed to
 #' `smoothclust::smoothclust()`. `bandwidth` uses the selected coordinate
-#' units; `truncate` is the backend's dimensionless kernel cutoff, and `k` and
+#' units; `truncate` is the method's dimensionless kernel cutoff, and `k` and
 #' are unitless counts.
 #' @param cores Number of workers passed to `smoothclust::smoothclust()`.
 #' @param n_clusters Number of spatial domains for k-means clustering. This
@@ -44,12 +44,11 @@
 #' smoothing and smoothness calculations. The default is raw acquisition
 #' coordinates. Use `"legacy_display"` explicitly to reproduce the
 #' display-scaled behavior used before scop 0.9.0.
-#' @param ... Additional arguments passed to `smoothclust::smoothclust()`.
-#'
+#' @param ... Arguments passed to other functions.
 #' @details
 #' Stored results retain a private per-cell identity metadata column for
 #' [GetSpatialResult()]. Preserve this column when subsetting or renaming cells.
-#' The accessor returns current-cell assignments; stored native results and
+#' The accessor returns current-cell assignments; stored results and
 #' fit parameters remain unchanged.
 #'
 #' @return A `Seurat` object with smoothclust clusters in metadata. When
@@ -108,8 +107,8 @@ RunSmoothClust <- function(
   seed = 11,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   coordinate_space <- match.arg(coordinate_space)
@@ -238,7 +237,7 @@ RunSmoothClust <- function(
     ),
     list(...)
   )
-  smooth_args <- smoothclust_filter_backend_args(
+  smooth_args <- smoothclust_filter_args(
     fun = smooth_fun,
     args = smooth_args
   )
@@ -486,13 +485,13 @@ smoothclust_smoothness_metric <- function(coords, labels, k = 6L) {
         labels = labels,
         k = k
       ),
-      error = function(e) smoothclust_native_smoothness(coords, labels, k)
+      error = function(e) smoothclust_calc_smoothness(coords, labels, k)
     ))
   }
-  smoothclust_native_smoothness(coords, labels, k)
+  smoothclust_calc_smoothness(coords, labels, k)
 }
 
-smoothclust_native_smoothness <- function(coords, labels, k = 6L) {
+smoothclust_calc_smoothness <- function(coords, labels, k = 6L) {
   k <- min(as.integer(k), nrow(coords) - 1L)
   graph <- spatial_graph_compute(
     coords = coords,
@@ -511,7 +510,7 @@ smoothclust_native_smoothness <- function(coords, labels, k = 6L) {
   )
 }
 
-smoothclust_filter_backend_args <- function(fun, args) {
+smoothclust_filter_args <- function(fun, args) {
   formals_use <- tryCatch(names(formals(fun)), error = function(e) NULL)
   if (is.null(formals_use) || "..." %in% formals_use) {
     return(args)

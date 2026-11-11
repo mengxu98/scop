@@ -32,8 +32,8 @@ RunSmoothClust(
   seed = 11,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -63,7 +63,7 @@ for a feature to be used.}
 
 \item{bandwidth, k, truncate}{Smoothing parameters passed to
 \code{smoothclust::smoothclust()}. \code{bandwidth} uses the selected coordinate
-units; \code{truncate} is the backend's dimensionless kernel cutoff, and \code{k} and
+units; \code{truncate} is the method's dimensionless kernel cutoff, and \code{k} and
 are unitless counts.}
 
 \item{cores}{Number of workers passed to \code{smoothclust::smoothclust()}.}
@@ -95,10 +95,10 @@ smoothing and smoothness calculations. The default is raw acquisition
 coordinates. Use \code{"legacy_display"} explicitly to reproduce the
 display-scaled behavior used before scop 0.9.0.}
 
-\item{...}{Additional arguments passed to \code{smoothclust::smoothclust()}.}
-
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A \code{Seurat} object with smoothclust clusters in metadata. When
@@ -113,7 +113,7 @@ domains with PCA and k-means.
 \details{
 Stored results retain a private per-cell identity metadata column for
 \code{\link[=GetSpatialResult]{GetSpatialResult()}}. Preserve this column when subsetting or renaming cells.
-The accessor returns current-cell assignments; stored native results and
+The accessor returns current-cell assignments; stored results and
 fit parameters remain unchanged.
 }
 \examples{

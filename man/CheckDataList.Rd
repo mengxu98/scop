@@ -61,12 +61,12 @@ It also performs data normalization and variable feature finding based on the sp
 Finally, it prepares the data for integration analysis based on the highly variable features.
 }
 \details{
-For chromatin assays with \code{HVF_source = "separate"}, native
+For chromatin assays with \code{HVF_source = "separate"},
 \code{\link[Seurat:SelectIntegrationFeatures]{Seurat::SelectIntegrationFeatures()}} ranks peaks by the number of batches
 selecting them, then by their median variable-feature rank. The \code{nHVF} cap
 is also limited to the smallest per-batch variable-feature count;
 \code{HVF_min_intersection} is applied to the ranked selection. This preserves
-native within-batch peak frequency ranking instead of sorting tied peak IDs.
+within-batch peak frequency ranking instead of sorting tied peak IDs.
 }
 \examples{
 counts <- matrix(rep(6:1, 4),
@@ -87,5 +87,4 @@ checked <- CheckDataList(list(object),
   verbose = FALSE
 )
 checked$HVF
-
 }

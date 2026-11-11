@@ -427,8 +427,10 @@ CellDimPlot(
   pt.alpha = 0,
   density_filled = TRUE,
   density_color = "#355D71",
-  density_filled_palcolor = c("#F2F7F5", "#C5DFD8", "#89BDB5",
-                             "#4A969E", "#286B87", "#253D63"),
+  density_filled_palcolor = c(
+    "#F2F7F5", "#C5DFD8", "#89BDB5",
+    "#4A969E", "#286B87", "#253D63"
+  ),
   theme_use = "theme_blank",
   xlab = "UMAP_1",
   ylab = "UMAP_2",

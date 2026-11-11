@@ -21,9 +21,8 @@
 #' @param flip Whether to flip coordinates so group labels run along the y
 #' axis.
 #' @param title,subtitle,xlab,ylab Plot labels.
-#' @param theme_use Theme function name. Default is `"theme_scop"`, which
-#' maps to `thisplot::theme_this()`, matching the style used by
-#' `thisplot::StatPlot()`.
+#' @param theme_use Theme function name passed to the shared
+#' expression-statistics renderer. Default is `"theme_scop"`.
 #' @param theme_args Additional arguments passed to `theme_use`.
 #' @param legend.position,legend.direction Legend position and direction.
 #' @param grid_major Whether to show major panel grid lines.
@@ -31,14 +30,20 @@
 #' Appearance of major panel grid lines.
 #' @param aspect.ratio Aspect ratio of the plot (`y / x`).
 #' @param seed RNG seed for jitter reproducibility.
-#' @param ... Reserved for future use.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A `ggplot` object.
+#'
+#' @seealso [RuntAge], [FeatureStatPlot]
+#'
 #' @export
 #'
-#' @seealso [RuntAge]
-#'
 #' @examples
+#' predictions <- data.frame(
+#'   group = rep(c("Young", "Aged"), each = 4),
+#'   Mouse_tAge = c(3.1, 4.2, 5.0, 4.6, 18.2, 20.1, 21.3, 19.6)
+#' )
+#' tAgePlot(predictions, group.by = "group")
+#'
 #' \dontrun{
 #' pancreas_sub <- RuntAge(pancreas_sub, group.by = "CellType")
 #' tAgePlot(pancreas_sub, group.by = "CellType")
@@ -114,70 +119,37 @@ tAgePlot <- function(
     )
   }
 
-  group_levels <- unique(as.character(plot_df[[group.by]]))
-  colors <- thisplot::palette_colors(
-    group_levels,
-    palette = palette,
-    palcolor = palcolor,
-    type = "discrete"
-  )
   plot_df[[group.by]] <- factor(
     plot_df[[group.by]],
     levels = names(sort(tapply(plot_df[[score_col]], plot_df[[group.by]], stats::median, na.rm = TRUE)))
   )
-
-  point_alpha <- point_alpha %||% alpha
-  box_alpha <- box_alpha %||% alpha
-
-  plot <- ggplot2::ggplot(
-    plot_df,
-    ggplot2::aes(
-      x = .data[[group.by]],
-      y = .data[[score_col]],
-      color = .data[[group.by]]
-    )
-  ) +
-    ggplot2::geom_boxplot(
-      ggplot2::aes(fill = .data[[group.by]]),
-      outlier.shape = NA,
-      width = 0.55,
-      alpha = box_alpha
-    ) +
-    ggplot2::geom_jitter(
-      ggplot2::position_jitter(width = 0.16, height = 0, seed = seed),
-      size = point_size,
-      alpha = point_alpha
-    ) +
-    ggplot2::scale_color_manual(
-      values = colors,
-      guide = if (identical(legend.position, "none")) "none" else ggplot2::guide_legend()
-    ) +
-    ggplot2::scale_fill_manual(
-      values = colors,
-      guide = if (identical(legend.position, "none")) "none" else ggplot2::guide_legend()
-    ) +
-    ggplot2::labs(
-      title = title,
-      subtitle = subtitle,
-      x = xlab,
-      y = ylab %||% score_col,
-      color = group.by,
-      fill = group.by
-    ) +
-    apply_plot_theme(theme_use, theme_args) +
-    ggplot2::theme(
-      legend.position = legend.position,
-      legend.direction = legend.direction
-    )
-
-  if (isTRUE(flip)) {
-    plot <- plot + ggplot2::coord_flip()
+  plot_df$cells <- rownames(plot_df)
+  rownames(plot_df) <- paste0("tAge_", plot_df$cells)
+  plot <- ExpressionStatPlot(
+    meta.data = plot_df, stat.by = score_col, group.by = group.by,
+    plot_type = "box", palette = palette, palcolor = palcolor,
+    add_point = TRUE, pt.size = point_size,
+    pt.alpha = point_alpha %||% alpha, jitter.width = 0.16, jitter.height = 0,
+    box_width = 0.55, alpha = box_alpha %||% alpha,
+    title = title, subtitle = subtitle, xlab = xlab %||% "",
+    ylab = ylab %||% score_col, legend.title = group.by,
+    theme_use = theme_use, theme_args = theme_args,
+    legend.position = legend.position, legend.direction = legend.direction,
+    grid_major = grid_major, grid_major_colour = grid_major_colour,
+    grid_major_linetype = grid_major_linetype,
+    grid_major_linewidth = grid_major_linewidth,
+    aspect.ratio = aspect.ratio, seed = seed
+  )[[1L]] + ggplot2::facet_null()
+  background_layers <- vapply(plot$layers, function(layer) inherits(layer$geom, "GeomRect"), logical(1))
+  plot$layers <- plot$layers[!background_layers]
+  for (index in seq_along(plot$layers)) {
+    if (inherits(plot$layers[[index]]$geom, "GeomBoxplot")) {
+      plot$layers[[index]]$aes_params$alpha <- box_alpha %||% alpha
+    }
+    if (inherits(plot$layers[[index]]$position, "PositionJitterdodge")) {
+      plot$layers[[index]]$position$seed <- seed
+    }
   }
-
-  if (!is.null(aspect.ratio)) {
-    plot <- plot + ggplot2::theme(aspect.ratio = aspect.ratio)
-  }
-
   if (!is.null(split.by)) {
     if (!split.by %in% colnames(plot_df)) {
       log_message(
@@ -185,16 +157,13 @@ tAgePlot <- function(
         message_type = "error"
       )
     }
-    plot <- plot + ggplot2::facet_wrap(stats::as.formula(paste("~", split.by)))
+    plot$data[[split.by]] <- plot_df[[split.by]][match(plot$data$cells, plot_df$cells)]
+    plot <- plot + ggplot2::facet_wrap(stats::reformulate(split.by))
   }
-
-  major_grid(
-    plot = plot,
-    grid_major = grid_major,
-    grid_major_colour = grid_major_colour,
-    grid_major_linetype = grid_major_linetype,
-    grid_major_linewidth = grid_major_linewidth
-  )
+  if (isTRUE(flip)) {
+    plot <- plot + ggplot2::coord_flip()
+  }
+  plot
 }
 
 tage_plot_data <- function(object, tool_name = "tAge", verbose = TRUE) {

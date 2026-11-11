@@ -18,10 +18,8 @@
 #' @param atac_layer ATAC count layer used for peak-gene correlations.
 #' @param backend Runtime backend. `"python"` reads or extracts official
 #' SCENIC+ result tables and remains the default; it does not run the SCENIC+
-#' pipeline itself. `"cpp"` runs the approximate package workflow and requires
-#' `allow_approximate = TRUE`.
-#' @param allow_approximate Whether to allow the approximate C++ workflow. This
-#' must be `TRUE` when `backend = "cpp"`.
+#' pipeline itself. `"cpp"` runs the approximate package workflow and issues a
+#' warning that results may not be completely identical to the reference workflow.
 #' @param grn_method GRN method used for TF-gene inference. The C++ workflow
 #' can call `RunGRNBoost2()`, `RunGENIE3()`, or `RunGNIPLR()`;
 #' RegDiffusion and GNIPLR are supported through the Python backend.
@@ -38,12 +36,12 @@
 #' @param tf_gene_prior Optional precomputed TF-gene table with columns `TF`,
 #' `target`, and `importance`. When supplied with `backend = "cpp"`, C++
 #' GRN inference is skipped and the table is used as the TF-gene evidence layer.
-#' If a `rho` column is absent, correlations are computed from RNA when native
+#' If a `rho` column is absent, correlations are computed from RNA when
 #' GSEA is requested.
 #' @param region_gene_prior Optional precomputed region-gene table with columns
 #' `region`, `gene`, and `score`. When supplied with `backend = "cpp"`, C++
 #' importance fitting is skipped. If a `rho` column is absent, correlations are
-#' computed from RNA and ATAC when native GSEA is requested.
+#' computed from RNA and ATAC when GSEA is requested.
 #' @param tf_region_prior Optional precomputed TF-region table with columns
 #' `TF`, `region`, and `score`. When supplied with `backend = "cpp"`, existing
 #' motif incidence is not required.
@@ -86,7 +84,7 @@
 #' @param egrn_min_target_genes Minimum leading-edge target genes required for
 #' an eRegulon module. The default follows the official SCENIC+ CLI workflow.
 #' @param egrn_method Local eModule filtering. `"gsea"` computes weighted
-#' permutation GSEA, NES and BH-adjusted p-values in native code. `"leading_edge"`
+#' permutation GSEA, NES and BH-adjusted p-values in compiled code. `"leading_edge"`
 #' retains the older approximation and its unfiltered fallback.
 #' @param egrn_n_perm Number of gene-set permutations per GSEA module.
 #' @param group.by Optional metadata column used to calculate eRegulon
@@ -142,7 +140,7 @@
 #' @param conda Conda-compatible executable used when `backend = "python"`.
 #'
 #' @details
-#' The C++ route runs locally without importing or invoking Python. Native GSEA
+#' The C++ route runs locally without importing or invoking Python. GSEA
 #' filters modules before merging; it does not substitute unfiltered triplets
 #' when no module passes. The tool result includes module `gsea_statistics`,
 #' `region_regulon_list` and `region_auc` alongside gene AUC. Locally computed
@@ -177,12 +175,30 @@
 #'   pancreas_sub,
 #'   group.by = "CellType"
 #' )
-#' example_regulons <- unique(scenicplus_dot$top_table$regulon)[1:2]
+#' example_regulons <- head(rownames(pancreas_sub[["scenicplus"]]), 6)
+#' GroupHeatmap(
+#'   pancreas_sub,
+#'   group.by = "CellType",
+#'   features = example_regulons,
+#'   assay = "scenicplus",
+#'   layer = "data",
+#'   exp_method = "raw",
+#'   lib_normalize = FALSE
+#' )$plot
+#' FeatureStatPlot(
+#'   pancreas_sub,
+#'   stat.by = example_regulons,
+#'   group.by = "CellType",
+#'   assay = "scenicplus",
+#'   layer = "data",
+#'   plot_type = "violin"
+#' )
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   features = example_regulons,
 #'   assay = "scenicplus",
-#'   reduction = "StandardpcaUMAP2D"
+#'   layer = "data",
+#'   reduction = "UMAP"
 #' )
 #' SCENICPlusPlot(
 #'   pancreas_sub,
@@ -198,7 +214,6 @@ RunSCENICPlus <- function(
   rna_layer = "counts",
   atac_layer = "counts",
   backend = c("python", "cpp"),
-  allow_approximate = FALSE,
   grn_method = c("grnboost2", "regdiffusion", "genie3", "gniplr"),
   regulators = NULL,
   rna_expr = NULL,
@@ -259,10 +274,7 @@ RunSCENICPlus <- function(
   region_gene_method <- match.arg(region_gene_method)
   grn_target_scope <- match.arg(grn_target_scope)
   if (identical(backend, "cpp")) {
-    assert_cpp_approximation_opt_in(
-      allow_approximate,
-      "RunSCENICPlus(backend = \"cpp\")"
-    )
+    warn_cpp_approximation("RunSCENICPlus(backend = \"cpp\")", reference_backend = "python")
   }
   if (identical(backend, "python")) {
     return(run_scenicplus_python(
@@ -402,7 +414,7 @@ RunSCENICPlus <- function(
       max_region_gene = max_region_gene
     )
   } else {
-    scenicplus_region_gene_native(
+    scenicplus_region_gene(
       srt = srt,
       rna_counts = rna_counts,
       atac_counts = atac_counts,
@@ -437,7 +449,7 @@ RunSCENICPlus <- function(
       max_edges_per_target = grn_top_targets
     )
   } else {
-    scenicplus_tf_gene_native(
+    scenicplus_tf_gene(
       rna_counts = rna_counts,
       regulators = regulators,
       targets = grn_targets,
@@ -532,7 +544,7 @@ RunSCENICPlus <- function(
       gene_sets = eregulons
     )
   } else {
-    scenicplus_native_auc(auc_counts, eregulons, cores = cores)
+    scenicplus_auc(auc_counts, eregulons, cores = cores)
   }
   auc <- as.data.frame(auc, check.names = FALSE)[
     colnames(auc_counts), ,
@@ -544,7 +556,7 @@ RunSCENICPlus <- function(
   } else if (!is.null(region_auc_rankings)) {
     as.data.frame(run_aucell_scores_from_rankings(region_auc_rankings, region_sets), check.names = FALSE)
   } else {
-    as.data.frame(scenicplus_native_auc(atac_counts, region_sets, cores = cores), check.names = FALSE)
+    as.data.frame(scenicplus_auc(atac_counts, region_sets, cores = cores), check.names = FALSE)
   }
   auc_mat <- as_matrix(auc)
   scores <- Matrix::t(methods::as(methods::as(Matrix::Matrix(auc_mat, sparse = TRUE), "generalMatrix"), "CsparseMatrix"))
@@ -699,7 +711,7 @@ run_scenicplus_python <- function(
       "{.arg backend} = {.val python} reads official SCENIC+ results; it does not run the SCENIC+ pipeline.",
       "i" = "Supply {.arg python_result_dir} containing the exported standardized tables ({.file tf_gene.tsv}, {.file region_gene.tsv}, {.file tf_region.tsv}, {.file triplets.tsv} and {.file auc.tsv}).",
       "i" = "Or supply {.arg scplus_object} (a {.file .pkl}, {.file .pickle} or {.file .h5mu} SCENIC+ object) to extract those tables first.",
-      "i" = "To run scop's approximate C++ workflow instead, use {.code backend = \"cpp\"} with {.code allow_approximate = TRUE}."
+      "i" = "To run scop's approximate C++ workflow instead, use {.code backend = \"cpp\"}."
     )
     if (isTRUE(auto_prepare)) {
       detail <- c(
@@ -769,7 +781,7 @@ scenicplus_extract_python_tables <- function(python_path, scplus_object, output_
   invisible(NULL)
 }
 
-scenicplus_native_auc <- function(counts, signatures, cores = 1L) {
+scenicplus_auc <- function(counts, signatures, cores = 1L) {
   rankings <- scenicplus_rank_cpp(as_matrix(counts),
     random_seed = 123L,
     cores = scop_n_threads(cores)
@@ -1705,7 +1717,7 @@ scenicplus_calc_rss <- function(auc, srt, cells, group.by = NULL) {
   list(rss = rss, rss_matrix = rss_matrix)
 }
 
-scenicplus_tf_gene_native <- function(
+scenicplus_tf_gene <- function(
   rna_counts,
   regulators,
   targets = NULL,
@@ -1876,7 +1888,7 @@ scenicplus_inject_tf_self <- function(
   out
 }
 
-scenicplus_region_gene_native <- function(
+scenicplus_region_gene <- function(
   srt,
   rna_counts,
   atac_counts,

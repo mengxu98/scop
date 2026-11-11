@@ -36,9 +36,9 @@ RunDEtestCheckDesign <- function(design, contrast, test.use = "edgeR") {
   TRUE
 }
 
-RunDEtestEdgeRBackend <- function() {
+RunDEtestEdgeR <- function() {
   available <- check_r("edgeR", install = FALSE, verbose = FALSE)
-  if (!isTRUE(all(unlist(available, use.names = FALSE)))) {
+  if (!isTRUE(if (is.list(available)) available[["edgeR"]] else available)) {
     log_message("edgeR is required for sample-level edgeR testing; install it before running RunDEtest().", message_type = "error")
   }
   invisible(TRUE)
@@ -130,10 +130,8 @@ RunDEtestEdgeRModel <- function(
     format(contrast[contrast != 0], trim = TRUE), " * ",
     names(contrast)[contrast != 0]
   ), collapse = " + ")
-  RunDEtestEdgeRBackend()
-  if (!requireNamespace("statmod", quietly = TRUE)) {
-    log_message("statmod is required for robust edgeR quasi-likelihood fitting; install it before running RunDEtest().", message_type = "error")
-  }
+  RunDEtestEdgeR()
+  check_r("statmod", verbose = FALSE)
   dge <- edgeR::DGEList(counts = count_matrix)
   keep_features <- edgeR::filterByExpr(dge, design = model_matrix)
   full <- data.frame(
@@ -214,7 +212,7 @@ RunDEtestFeatureCoordinates <- function(object, assay, features, feature_type) {
   chromosomes <- as.character(GenomicRanges::seqnames(ranges))
   # GenomeInfoDb stores genome labels per seqlevel, not per peak. Resolve each
   # selected range by chromosome rather than recycling labels over count rows.
-  genomes <- atac_backend_fun("GenomeInfoDb", "genome")(ranges)
+  genomes <- GenomeInfoDb::genome(ranges)
   data.frame(
     feature = features, chromosome = chromosomes,
     start = GenomicRanges::start(ranges), end = GenomicRanges::end(ranges),

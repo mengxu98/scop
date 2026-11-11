@@ -27,15 +27,20 @@ SCOP itself does not guess chromosome styles or reference assemblies.
 data_dir <- "atac_data"
 atac <- readRDS(file.path(data_dir, "atac_counts.rds"))
 prefix <- "10k_pbmc_ATACv2_nextgem_Chromium_Controller_"
-base <- paste0("https://cf.10xgenomics.com/samples/cell-atac/2.1.0/",
-  "10k_pbmc_ATACv2_nextgem_Chromium_Controller/")
+base <- paste0(
+  "https://cf.10xgenomics.com/samples/cell-atac/2.1.0/",
+  "10k_pbmc_ATACv2_nextgem_Chromium_Controller/"
+)
 source_fragments <- file.path(data_dir, paste0(prefix, "fragments.tsv.gz"))
 utils::download.file(paste0(base, basename(source_fragments)), source_fragments, mode = "wb")
 select_fragments <- function(source, target, cells) {
   stopifnot(!file.exists(target))
   input <- gzfile(source, "rt")
   output <- file(target, "wt")
-  on.exit({ close(input); close(output) })
+  on.exit({
+    close(input)
+    close(output)
+  })
   repeat {
     lines <- readLines(input, n = 100000, warn = FALSE)
     if (!length(lines)) break
@@ -49,7 +54,9 @@ select_fragments(source_fragments, file.path(data_dir, "pbmc-chr1-selected.tsv")
 gtf <- file.path(data_dir, "Homo_sapiens.GRCh38.98.gtf.gz")
 utils::download.file(
   "https://ftp.ensembl.org/pub/release-98/gtf/homo_sapiens/Homo_sapiens.GRCh38.98.gtf.gz",
-  gtf, mode = "wb")
+  gtf,
+  mode = "wb"
+)
 annotation <- rtracklayer::import(gtf)
 annotation <- GenomeInfoDb::keepSeqlevels(annotation, "1", pruning.mode = "coarse")
 GenomeInfoDb::seqlevels(annotation) <- "chr1"
@@ -65,7 +72,8 @@ plain <- file.path(data_dir, "pbmc-chr1-selected.tsv")
 fragment_file <- Rsamtools::bgzip(plain, dest = paste0(plain, ".gz"))
 Rsamtools::indexTabix(fragment_file, format = "bed")
 fragment <- Signac::CreateFragmentObject(fragment_file,
-  cells = stats::setNames(colnames(atac), colnames(atac)))
+  cells = stats::setNames(colnames(atac), colnames(atac))
+)
 Signac::Fragments(atac[["peaks"]]) <- fragment
 Signac::Annotation(atac[["peaks"]]) <- annotation
 stopifnot(scop::CheckATACData(atac)$fragments_ready)
@@ -76,8 +84,10 @@ stopifnot(scop::CheckATACData(atac)$fragments_ready)
 ```{r qc}
 atac <- scop::RunATACQC(atac, assay = "peaks", frip = TRUE)
 summary(atac$frip)
-atac <- scop::RunDoubletCalling(atac, assay = "peaks", sample.by = "capture",
-  db_rate = 0.08, seed = 17)
+atac <- scop::RunDoubletCalling(atac,
+  assay = "peaks", sample.by = "capture",
+  db_rate = 0.08, seed = 17
+)
 table(atac$db.scDblFinder_class)
 saveRDS(atac, "pbmc_before_doublet_filter.rds")
 selected <- colnames(atac)[atac$db.scDblFinder_class == "singlet"]
@@ -108,13 +118,17 @@ not install containers, translate paths or choose an alternative caller.
 macs2_path <- "macs2" # A command on PATH, executable path, or configured container launcher.
 reference <- Rsamtools::FaFile(file.path(data_dir, "hg38-chr1.fa"))
 pfm <- TFBSTools::getMatrixSet(JASPAR2020::JASPAR2020, opts = list(
-  ID = c("MA0139.1", "MA0080.5", "MA0105.4", "MA0107.1", "MA0039.4", "MA0466.2", "MA0098.3")))
+  ID = c("MA0139.1", "MA0080.5", "MA0105.4", "MA0107.1", "MA0039.4", "MA0466.2", "MA0098.3")
+))
 effective_size <- sum(Biostrings::letterFrequency(
   Biostrings::readDNAStringSet(file.path(data_dir, "hg38-chr1.fa")),
-  c("A", "C", "G", "T")))
-called <- scop::CallATACPeaks(atac, sample.by = "capture",
+  c("A", "C", "G", "T")
+))
+called <- scop::CallATACPeaks(atac,
+  sample.by = "capture",
   macs2.path = macs2_path, outdir = "pbmc_peak_calls",
-  effective.genome.size = effective_size)
+  effective.genome.size = effective_size
+)
 called$groups
 lengths(called$peaks)
 common <- scop::CombineATACPeaks(called$peaks, genome = "hg38")
@@ -148,9 +162,11 @@ stopifnot(identical(rownames(final[["ATACFinal"]]), scanned$receipt$peaks))
 Signac::Motifs(final[["ATACFinal"]]) <- scanned$motifs
 final[["ATACFinal"]] <- SeuratObject::AddMetaData(final[["ATACFinal"]], scanned$statistics)
 Signac::Annotation(final[["ATACFinal"]]) <- annotation
-final <- scop::RunStandardWorkflow(final, assay = "ATACFinal", prefix = "ATACFinal",
+final <- scop::RunStandardWorkflow(final,
+  assay = "ATACFinal", prefix = "ATACFinal",
   nHVF = 5000, linear_reduction_dims = 25, linear_reduction_dims_use = 2:20,
-  cores = 1)
+  cores = 1
+)
 ```
 
 Native Signac FeatureMatrix computes the new counts. Recount creates a new assay
@@ -162,13 +178,21 @@ automatically appropriate after changing the feature universe.
 ## Gene activity, chromVAR, coverage and reload
 
 ```{r downstream}
-final <- scop::RunGeneActivity(final, assay = "ATACFinal",
-  features = c("C1QA", "C1QB", "C1QC", "FCGR1A", "IL6R", "CD247",
-    "RGS1", "SELL", "JUN", "CTSS", "CD53"))
-final <- scop::RunChromVAR(final, reference, genome.id = "hg38", assay = "ATACFinal",
-  new.assay = "chromvarFinal", niterations = 25, seed = 19)
-scop::CoverageTrackPlot(final, region = "chr1-22650000-22700000",
-  assay = "ATACFinal", group.by = "ATACFinallsiclusters")
+final <- scop::RunGeneActivity(final,
+  assay = "ATACFinal",
+  features = c(
+    "C1QA", "C1QB", "C1QC", "FCGR1A", "IL6R", "CD247",
+    "RGS1", "SELL", "JUN", "CTSS", "CD53"
+  )
+)
+final <- scop::RunChromVAR(final, reference,
+  genome.id = "hg38", assay = "ATACFinal",
+  new.assay = "chromvarFinal", niterations = 25, seed = 19
+)
+scop::CoverageTrackPlot(final,
+  region = "chr1-22650000-22700000",
+  assay = "ATACFinal", group.by = "ATACFinallsiclusters"
+)
 scop::ExportATACResults(final, outdir = "pbmc_fragments_export", assay = "ATACFinal", counts = TRUE)
 # In a fresh R session:
 restored <- readRDS("pbmc_fragments_export/object.rds")

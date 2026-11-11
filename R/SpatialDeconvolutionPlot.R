@@ -4,7 +4,7 @@
 #' Plot spot-by-cell-type proportions stored by [RunRCTD()], [RunCARD()],
 #' [RunSPOTlight()]. The plot reads the stored result
 #' directly from `srt@tools[[tool_name]]` and never reruns a deconvolution
-#' backend. [RunCSIDE()] is intentionally excluded because its output
+#' method. [RunCSIDE()] is intentionally excluded because its output
 #' represents differential or context effects rather than cell-type
 #' proportions.
 #'
@@ -28,8 +28,8 @@
 #' For dominant and pie maps, `cell_types` selects the types participating in
 #' the displayed comparison; pie fractions are relative to those selected types.
 #' @param image.scale Image scale factor matching the selected raster.
-#' @param ... Additional arguments passed to [SpatialSpotPlot()].
-#'
+#' @param image Image name or named sample-to-image mapping.
+#' @param ... Arguments passed to other functions.
 #' @return A `ggplot`, `patchwork`, or named list of `ggplot` objects.
 #' @export
 #'
@@ -65,9 +65,10 @@ SpatialDeconvolutionPlot <- function(
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE,
-  ...,
   image.scale = c("lowres", "hires"),
-  srt = NULL
+  srt = NULL,
+  image = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
@@ -118,6 +119,7 @@ SpatialDeconvolutionPlot <- function(
       srt,
       values = proportions,
       plot_type = "pie",
+      image = image,
       image.scale = image.scale,
       ...
     ))
@@ -128,6 +130,7 @@ SpatialDeconvolutionPlot <- function(
       srt,
       values = stats::setNames(dominant, rownames(proportions)),
       plot_type = "point",
+      image = image,
       image.scale = image.scale,
       combine = combine,
       nrow = nrow,
@@ -148,7 +151,7 @@ SpatialDeconvolutionPlot <- function(
     ncol = ncol,
     byrow = byrow,
     plot_args = c(
-      list(image.scale = image.scale),
+      list(image = image, image.scale = image.scale),
       dots
     )
   )

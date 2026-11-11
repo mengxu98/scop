@@ -49,7 +49,7 @@ generated in both directions.}
 If \code{NULL}, the default PCA-like reduction is used.}
 
 \item{backend}{Backend used to compute Milo neighborhoods and tests.
-\code{"r"} calls the upstream \code{miloR} implementation. \code{"cpp"} uses native
+\code{"r"} calls the upstream \code{miloR} implementation. \code{"cpp"} uses compiled
 \code{scop} graph/neighborhood/counting kernels and keeps edgeR for the
 neighborhood-level quasi-likelihood test.}
 

@@ -151,12 +151,15 @@ Defaults is \code{"Cell velocity"}.}
 \item{return_layer}{Whether to return the plot layers as a list.
 Defaults is \code{FALSE}.}
 
-\item{seed}{Random seed.}
+\item{seed}{Random seed for plot construction. The caller's RNG state is restored.}
 
 \item{verbose}{Whether to print messages.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+}
+\value{
+A ggplot, or a named list of ggplot layers when \code{return_layer = TRUE}.
 }
 \description{
 Creates a velocity plot for a given Seurat object.

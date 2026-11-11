@@ -22,9 +22,7 @@
 #' annotations.
 #' @param heatmap_palette,heatmap_palcolor Palette used for CNV heatmap values.
 #' @param title,subtitle Plot title and subtitle for ggplot-based views.
-#' @param ... Additional parameters forwarded to the underlying plotting
-#' function.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A plot object. For `"heatmap"`, returns a `ComplexHeatmap` object;
 #' for `"tree"`, returns an `hclust` object.
 #' @export
@@ -33,13 +31,37 @@
 #'
 #' @examples
 #' \dontrun{
-#' srt <- RunCNV(srt, method = "copykat", genome = "hg38")
+#' srt <- RunCNV(
+#'   srt,
+#'   method = "copykat",
+#'   genome = "hg38"
+#' )
 #'
-#' CNVPlot(srt, plot_type = "heatmap", group.by = "CNV_prediction")
-#' CNVPlot(srt, plot_type = "dim", value = "CNV_prediction")
-#' CNVPlot(srt, plot_type = "dim", value = "CNV_score")
-#' CNVPlot(srt, plot_type = "bar", group.by = "seurat_clusters")
-#' CNVPlot(srt, plot_type = "tree", cluster_tree_by = "cell")
+#' CNVPlot(
+#'   srt,
+#'   plot_type = "heatmap",
+#'   group.by = "CNV_prediction"
+#' )
+#' CNVPlot(
+#'   srt,
+#'   plot_type = "dim",
+#'   value = "CNV_prediction"
+#' )
+#' CNVPlot(
+#'   srt,
+#'   plot_type = "dim",
+#'   value = "CNV_score"
+#' )
+#' CNVPlot(
+#'   srt,
+#'   plot_type = "bar",
+#'   group.by = "seurat_clusters"
+#' )
+#' CNVPlot(
+#'   srt,
+#'   plot_type = "tree",
+#'   cluster_tree_by = "cell"
+#' )
 #' }
 CNVPlot <- function(
   object,
@@ -58,9 +80,11 @@ CNVPlot <- function(
   subtitle = NULL,
   theme_use = "theme_scop",
   theme_args = list(),
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
+  check_r("withr", verbose = FALSE)
+  withr::local_preserve_seed()
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message(
@@ -200,7 +224,10 @@ cnv_plot_heatmap <- function(
   } else {
     row_split <- bin_info$chr
     row_split[is.na(row_split) | !nzchar(as.character(row_split))] <- "unknown"
-    row_split <- factor(as.character(row_split), levels = unique(as.character(row_split)))
+    row_split <- factor(
+      as.character(row_split),
+      levels = unique(as.character(row_split))
+    )
   }
 
   group.by <- group.by %||% cnv_default_group_col(srt, method = method)
@@ -209,7 +236,10 @@ cnv_plot_heatmap <- function(
     cnv_validate_metadata(srt, group.by, "group.by")
     group_values <- srt@meta.data[cells, group.by, drop = TRUE]
     if (!is.factor(group_values)) {
-      group_values <- factor(as.character(group_values), levels = unique(as.character(group_values)))
+      group_values <- factor(
+        as.character(group_values),
+        levels = unique(as.character(group_values))
+      )
     }
     group_order <- order(group_values, na.last = TRUE)
     cells <- cells[group_order]
@@ -217,7 +247,13 @@ cnv_plot_heatmap <- function(
     group_values <- group_values[group_order]
     top_annotation <- get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation")(
       group = group_values,
-      col = list(group = cnv_discrete_colors(group_values, palette = palette, palcolor = palcolor)),
+      col = list(
+        group = cnv_discrete_colors(
+          group_values,
+          palette = palette,
+          palcolor = palcolor
+        )
+      ),
       show_annotation_name = TRUE
     )
   }
@@ -287,7 +323,11 @@ cnv_plot_dim <- function(
       ...
     )
   } else {
-    palcolor <- cnv_discrete_colors(value_data, palette = palette, palcolor = palcolor)
+    palcolor <- cnv_discrete_colors(
+      value_data,
+      palette = palette,
+      palcolor = palcolor
+    )
     CellDimPlot(
       object = srt,
       group.by = value,
@@ -321,7 +361,11 @@ cnv_plot_spatial <- function(
   cnv_validate_metadata(srt, value, "value")
   value_data <- srt@meta.data[[value]]
   if (!is.numeric(value_data) && !is.integer(value_data)) {
-    palcolor <- cnv_discrete_colors(value_data, palette = palette, palcolor = palcolor)
+    palcolor <- cnv_discrete_colors(
+      value_data,
+      palette = palette,
+      palcolor = palcolor
+    )
   }
   p <- SpatialSpotPlot(
     object = srt,
@@ -354,7 +398,9 @@ cnv_plot_bar <- function(
   ...
 ) {
   position <- match.arg(position)
-  value <- value %||% cnv_col(srt, method, "prediction") %||% cnv_col(srt, method, "cluster")
+  value <- value %||%
+    cnv_col(srt, method, "prediction") %||%
+    cnv_col(srt, method, "cluster")
   if (is.null(value) || !value %in% colnames(srt@meta.data)) {
     log_message(
       "No CNV prediction or cluster metadata column is available for bar plotting",
@@ -377,15 +423,33 @@ cnv_plot_bar <- function(
   group_levels <- unique(df$group)
   df$value <- factor(df$value, levels = value_levels)
   df$group <- factor(df$group, levels = group_levels)
-  summary_df <- as.data.frame(table(group = df$group, value = df$value), stringsAsFactors = FALSE)
+  summary_df <- as.data.frame(
+    table(group = df$group, value = df$value),
+    stringsAsFactors = FALSE
+  )
   summary_df$n <- as.numeric(summary_df$Freq)
   summary_df$Freq <- NULL
   totals <- tapply(summary_df$n, summary_df$group, sum)
   summary_df$fraction <- summary_df$n / totals[as.character(summary_df$group)]
-  summary_df$y <- if (identical(position, "fill")) summary_df$fraction else summary_df$n
-  colors <- cnv_discrete_colors(summary_df$value, palette = palette, palcolor = palcolor)
-  ggplot2::ggplot(summary_df, ggplot2::aes(x = .data$group, y = .data$y, fill = .data$value)) +
-    ggplot2::geom_col(position = if (identical(position, "fill")) "stack" else position, width = 0.72, ...) +
+  summary_df$y <- if (identical(position, "fill")) {
+    summary_df$fraction
+  } else {
+    summary_df$n
+  }
+  colors <- cnv_discrete_colors(
+    summary_df$value,
+    palette = palette,
+    palcolor = palcolor
+  )
+  ggplot2::ggplot(
+    summary_df,
+    ggplot2::aes(x = .data$group, y = .data$y, fill = .data$value)
+  ) +
+    ggplot2::geom_col(
+      position = if (identical(position, "fill")) "stack" else position,
+      width = 0.72,
+      ...
+    ) +
     ggplot2::scale_fill_manual(values = colors, name = value) +
     ggplot2::labs(
       x = group.by,
@@ -519,13 +583,18 @@ cnv_col <- function(srt, method, suffix) {
 cnv_bin_order <- function(bin_info) {
   chr <- as.character(bin_info$chr %||% rep(NA_character_, nrow(bin_info)))
   chr_clean <- sub("^chr", "", chr, ignore.case = TRUE)
-  chr_rank <- match(chr_clean, c(as.character(seq_len(22)), "X", "Y", "M", "MT"))
+  chr_rank <- match(
+    chr_clean,
+    c(as.character(seq_len(22)), "X", "Y", "M", "MT")
+  )
   missing_chr <- is.na(chr_rank)
   if (any(missing_chr)) {
     base_rank <- if (any(!missing_chr)) max(chr_rank[!missing_chr]) else 1000L
     chr_rank[missing_chr] <- base_rank + seq_len(sum(missing_chr))
   }
-  chr_rank[!is.finite(chr_rank)] <- seq_len(length(chr_rank))[!is.finite(chr_rank)]
+  chr_rank[!is.finite(chr_rank)] <- seq_len(length(chr_rank))[
+    !is.finite(chr_rank)
+  ]
   start <- suppressWarnings(as.numeric(bin_info$start))
   start[!is.finite(start)] <- seq_len(length(start))[!is.finite(start)]
   order(chr_rank, start, seq_along(chr_rank), na.last = TRUE)
@@ -561,10 +630,20 @@ cnv_discrete_colors <- function(values, palette = "Chinese", palcolor = NULL) {
 cnv_order_cnv_levels <- function(values) {
   values <- as.character(values)
   priority <- c(
-    "aneuploid", "tumor", "malignant", "altered",
-    "gain", "amplification", "amp",
-    "loss", "deletion", "del",
-    "diploid", "normal", "neutral", "NA"
+    "aneuploid",
+    "tumor",
+    "malignant",
+    "altered",
+    "gain",
+    "amplification",
+    "amp",
+    "loss",
+    "deletion",
+    "del",
+    "diploid",
+    "normal",
+    "neutral",
+    "NA"
   )
   keys <- tolower(values)
   rank <- match(keys, tolower(priority))

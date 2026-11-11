@@ -64,7 +64,7 @@ test_that("srt <-> adata roundtrip keeps var column names unique", {
       conv_err <- NULL
       out <- tryCatch(
         {
-          adata1 <- to_adata(srt, verbose = FALSE)
+          adata1 <- to_adata(srt, prepare_env = FALSE, verbose = FALSE)
           srt2 <- to_srt(adata1, prepare_env = FALSE, verbose = FALSE)
           adata2 <- to_adata(srt2, prepare_env = FALSE, verbose = FALSE)
 

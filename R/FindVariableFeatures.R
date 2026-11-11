@@ -1,60 +1,3 @@
-variable_features_vst_from_stats <- function(
-  mu,
-  variance,
-  nnz_per_row,
-  n_cells,
-  var_std,
-  nselect = 2000L,
-  span = 0.3,
-  clip = NULL,
-  verbose = TRUE,
-  ...
-) {
-  nfeatures <- length(mu)
-  var_expected <- numeric(nfeatures)
-  not.const <- variance > 0
-  log_mean_nc <- log10(mu[not.const])
-  log_var_nc <- log10(variance[not.const])
-  simple_loess <- utils::getFromNamespace("simpleLoess", "stats")
-  if (length(log_mean_nc) > 0L) {
-    fit_result <- simple_loess(
-      y = log_var_nc,
-      x = matrix(log_mean_nc, ncol = 1),
-      weights = rep.int(1, length(log_mean_nc)),
-      span = span,
-      degree = 2L,
-      parametric = FALSE,
-      drop.square = FALSE,
-      normalize = FALSE,
-      statistics = "approximate",
-      surface = "interpolate",
-      cell = 0.2,
-      iterations = 1L,
-      iterTrace = FALSE,
-      trace.hat = "approximate"
-    )
-    var_expected[not.const] <- 10^fit_result$fitted
-  }
-
-  sd_vec <- sqrt(var_expected)
-  vmax <- if (is.null(clip)) sqrt(n_cells) else clip
-  if (is.null(var_std)) {
-    log_message("variable_features_vst_from_stats requires standardized variance.", message_type = "error")
-  }
-
-  hvf.info <- SeuratObject::EmptyDF(n = nfeatures)
-  hvf.info$mean <- mu
-  hvf.info$variance <- variance
-  hvf.info$variance.expected <- var_expected
-  hvf.info$variance.standardized <- var_std
-  hvf.info$variable <- FALSE
-  hvf.info$rank <- NA
-  vf <- head(order(var_std, decreasing = TRUE), n = nselect)
-  hvf.info$variable[vf] <- TRUE
-  hvf.info$rank[vf] <- seq_along(vf)
-  hvf.info
-}
-
 variable_features_vst_sparse <- function(
   data,
   nselect = 2000L,
@@ -114,93 +57,17 @@ variable_features_vst_sparse <- function(
     nnzPerRow = nnz_per_row
   )
 
-  variable_features_vst_from_stats(
-    mu = mu,
-    variance = variance,
-    nnz_per_row = nnz_per_row,
-    n_cells = n_cells,
-    var_std = var_std,
-    nselect = nselect,
-    span = span,
-    clip = clip,
-    verbose = verbose,
-    ...
-  )
-}
-
-variable_features_vst_sparse_layers <- function(
-  layers,
-  nselect = 2000L,
-  span = 0.3,
-  clip = NULL,
-  verbose = TRUE,
-  ...
-) {
-  if (!length(layers)) {
-    log_message("No sparse layers were supplied.", message_type = "error")
-  }
-  nfeatures <- nrow(layers[[1L]])
-  feature_names <- rownames(layers[[1L]])
-  for (layer in layers) {
-    if (!inherits(layer, "dgCMatrix")) {
-      log_message("variable_features_vst_sparse_layers requires dgCMatrix layers.", message_type = "error")
-    }
-    if (nrow(layer) != nfeatures || !identical(rownames(layer), feature_names)) {
-      log_message("All sparse layers must have identical feature rows.", message_type = "error")
-    }
-  }
-  mv <- sparse_row_mean_var_dgc_list(layers, nfeatures)
-  mu <- mv$mean
-  variance <- mv$variance
-  nnz_per_row <- mv$nnz
-  n_cells <- mv$ncol
-
-  var_expected <- numeric(nfeatures)
-  not.const <- variance > 0
-  log_mean_nc <- log10(mu[not.const])
-  log_var_nc <- log10(variance[not.const])
-  if (length(log_mean_nc) > 0L) {
-    simple_loess <- utils::getFromNamespace("simpleLoess", "stats")
-    fit_result <- simple_loess(
-      y = log_var_nc,
-      x = matrix(log_mean_nc, ncol = 1),
-      weights = rep.int(1, length(log_mean_nc)),
-      span = span,
-      degree = 2L,
-      parametric = FALSE,
-      drop.square = FALSE,
-      normalize = FALSE,
-      statistics = "approximate",
-      surface = "interpolate",
-      cell = 0.2,
-      iterations = 1L,
-      iterTrace = FALSE,
-      trace.hat = "approximate"
-    )
-    var_expected[not.const] <- 10^fit_result$fitted
-  }
-  sd_vec <- sqrt(var_expected)
-  vmax <- if (is.null(clip)) sqrt(n_cells) else clip
-  var_std <- sparse_row_var_std_dgc_list(
-    mats = layers,
-    nrow = nfeatures,
-    mu = mu,
-    sd = sd_vec,
-    vmax = vmax
-  )
-
-  variable_features_vst_from_stats(
-    mu = mu,
-    variance = variance,
-    nnz_per_row = nnz_per_row,
-    n_cells = n_cells,
-    var_std = var_std,
-    nselect = nselect,
-    span = span,
-    clip = clip,
-    verbose = verbose,
-    ...
-  )
+  hvf.info <- SeuratObject::EmptyDF(n = nfeatures)
+  hvf.info$mean <- mu
+  hvf.info$variance <- variance
+  hvf.info$variance.expected <- var_expected
+  hvf.info$variance.standardized <- var_std
+  hvf.info$variable <- FALSE
+  hvf.info$rank <- NA
+  vf <- head(order(var_std, decreasing = TRUE), n = nselect)
+  hvf.info$variable[vf] <- TRUE
+  hvf.info$rank[vf] <- seq_along(vf)
+  hvf.info
 }
 
 #' @export
@@ -579,8 +446,7 @@ FindVariableFeatures.Seurat <- function(
 #' Find variable features
 #'
 #' @param object Object containing expression data.
-#' @param ... Passed to methods.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return The input object with variable features recorded.
 #' @export
 FindVariableFeatures <- function(object, ...) {

@@ -83,23 +83,7 @@ RunSingleR <- function(
       message_type = "error"
     )
   }
-  if (length(ref_group) == ncol(srt_ref)) {
-    srt_ref[["ref_group"]] <- ref_group
-  } else if (length(ref_group) == 1) {
-    if (!ref_group %in% colnames(srt_ref@meta.data)) {
-      log_message(
-        "{.arg ref_group} must be one of the column names in the meta.data",
-        message_type = "error"
-      )
-    } else {
-      srt_ref[["ref_group"]] <- srt_ref[[ref_group]]
-    }
-  } else {
-    log_message(
-      "Length of {.arg ref_group} must be one or length of {.arg srt_ref}",
-      message_type = "error"
-    )
-  }
+  srt_ref <- prepare_mapping_reference(srt_ref, ref_group)
   ref_group <- "ref_group"
 
   if (!is.null(query_group)) {

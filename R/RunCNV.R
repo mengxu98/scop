@@ -1,7 +1,7 @@
 #' @title Run copy-number alteration inference
 #'
 #' @description
-#' Run expression-based single-cell or spatial copy-number alteration backends
+#' Run expression-based single-cell or spatial copy-number alteration methods
 #' and store the results in a consistent SCOP result bundle.
 #'
 #' @md
@@ -10,10 +10,10 @@
 #' @param srt Deprecated alias for `object`; supply exactly one of the two. It
 #' will be removed in scop 1.0.0.
 #' @param object A `Seurat` object.
-#' @param method CNA/CNV backend. Supported backends are `"copykat"`,
+#' @param method CNA/CNV method. Supported methods are `"copykat"`,
 #' `"fastCNV"`, `"scevan"`, `"infercnv"`, and `"numbat"`.
 #' @param layer Assay layer used as the expression matrix.
-#' @param group.by Optional metadata column forwarded to supported backends and
+#' @param group.by Optional metadata column forwarded to supported methods and
 #' stored as cell annotation.
 #' @param reference.by Metadata column identifying reference/normal cells.
 #' Required for `"infercnv"` and `"fastCNV"`.
@@ -27,13 +27,12 @@
 #' to `numbat::run_numbat()` as `df_allele`.
 #' @param reference_counts Reference expression profile for `"numbat"`. This
 #' is forwarded to `numbat::run_numbat()` as `lambdas_ref`.
-#' @param output_dir Optional backend output directory.
+#' @param output_dir Optional output directory.
 #' @param prefix Prefix for metadata columns.
 #' @param tool_name Name used for `srt@tools`.
 #' @param store_matrix Whether to store the normalized CNV matrix in
 #' `srt@tools[[tool_name]]`.
-#' @param ... Additional parameters forwarded to the selected backend.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A `Seurat` object with CNV metadata columns and a result bundle in
 #' `srt@tools[[tool_name]]`.
 #' @export
@@ -96,8 +95,8 @@ RunCNV <- function(
   tool_name = "CNV",
   store_matrix = TRUE,
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
@@ -134,7 +133,7 @@ RunCNV <- function(
     method = method,
     required = method %in% c("infercnv")
   )
-  cnv_validate_backend_inputs(
+  cnv_validate_inputs(
     method = method,
     allele_counts = allele_counts,
     reference_counts = reference_counts,
@@ -161,7 +160,7 @@ RunCNV <- function(
     "Run {.pkg {method}} CNV backend with {.val {nrow(counts)}} features and {.val {ncol(counts)}} cells",
     verbose = verbose
   )
-  backend_result <- cnv_run_backend(
+  backend_result <- cnv_run_model(
     method = method,
     srt = srt,
     counts = counts,
@@ -229,7 +228,7 @@ RunCNV <- function(
   srt
 }
 
-cnv_run_backend <- function(
+cnv_run_model <- function(
   method,
   srt,
   counts,
@@ -301,6 +300,7 @@ cnv_run_backend <- function(
   )
 }
 
+
 cnv_run_copykat <- function(
   counts,
   group.by = NULL,
@@ -341,7 +341,7 @@ cnv_run_copykat <- function(
   oldwd <- getwd()
   setwd(run_dir)
   on.exit(setwd(oldwd), add = TRUE)
-  result <- cnv_call_backend_fun(copykat_fun, args)
+  result <- cnv_call_fun(copykat_fun, args)
   cnv_extract_copykat(result)
 }
 
@@ -403,7 +403,7 @@ cnv_run_fastcnv <- function(
     ),
     list(...)
   )
-  result <- cnv_call_backend_fun(fastcnv_fun, args)
+  result <- cnv_call_fun(fastcnv_fun, args)
   cnv_extract_fastcnv(
     result,
     cells = colnames(srt),
@@ -449,7 +449,7 @@ cnv_run_scevan <- function(
   oldwd <- getwd()
   setwd(run_dir)
   on.exit(setwd(oldwd), add = TRUE)
-  result <- cnv_call_backend_fun(scevan_fun, args)
+  result <- cnv_call_fun(scevan_fun, args)
   cnv_extract_scevan(
     result = result,
     cells = colnames(counts),
@@ -541,7 +541,7 @@ cnv_run_infercnv <- function(
     ),
     list(...)
   )
-  result <- cnv_call_backend_fun(run_fun, args)
+  result <- cnv_call_fun(run_fun, args)
   extracted <- cnv_extract_generic_result(result, method = "infercnv", cells = colnames(counts))
   gene_index <- match(rownames(extracted$cnv_matrix), gene_order$gene)
   coord_cols <- c("chr", "start", "end")
@@ -579,7 +579,7 @@ cnv_run_numbat <- function(
     ),
     list(...)
   )
-  result <- cnv_call_backend_fun(run_fun, args)
+  result <- cnv_call_fun(run_fun, args)
   cnv_extract_numbat(result = result, cells = colnames(counts), output_dir = out_dir)
 }
 
@@ -1202,7 +1202,7 @@ cnv_reference_cells <- function(srt, method, reference.by, reference) {
   cells
 }
 
-cnv_validate_backend_inputs <- function(
+cnv_validate_inputs <- function(
   method,
   allele_counts = NULL,
   reference_counts = NULL,
@@ -1254,6 +1254,7 @@ cnv_fastcnv_prediction_from_score <- function(score, meta, reference.by = NULL, 
     reference_cells = reference_cells
   )
 }
+
 
 cnv_resolve_gene_order <- function(
   gene_order,
@@ -1663,7 +1664,7 @@ cnv_first_name <- function(names, candidates) {
   hit[[1L]]
 }
 
-cnv_call_backend_fun <- function(fun, args) {
+cnv_call_fun <- function(fun, args) {
   formal_names <- names(formals(fun))
   if (is.null(formal_names)) {
     return(do.call(fun, args))

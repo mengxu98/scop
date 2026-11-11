@@ -107,7 +107,7 @@ is enabled for cell-level data.}
 \item{scale.distance}{Positive SpatialCellChat distance scaling parameter.}
 
 \item{min.cells, min.links}{Positive minimum group size and individual-link
-count used by backend filtering.}
+count used by filtering.}
 
 \item{avg.type}{Group-level probability aggregation method.}
 
@@ -115,12 +115,12 @@ count used by backend filtering.}
 
 \item{nboot}{Number of permutation replicates.}
 
-\item{seed.use}{Random seed passed to the backend.}
+\item{seed.use}{Random seed passed to the method.}
 
 \item{result.name}{Name used within the stored SpatialCellChat result bundle.}
 
 \item{store.object}{`"minimal"` stores normalized tables, coordinates, and
-diagnostics. `"full"` additionally stores each upstream backend object.}
+diagnostics. `"full"` additionally stores each upstream object.}
 
 \item{overwrite}{Whether an existing result with the same `result.name` may
 be replaced.}
@@ -139,7 +139,7 @@ The input `Seurat` object with a plain SpatialCellChat result bundle
   distinct method name `"SpatialCellChat"`.
 }
 \description{
-Run the SpatialCellChat v3 backend with explicit micron-scale coordinates
+Run SpatialCellChat v3 with explicit micron-scale coordinates
 and sample isolation. Cell-, spot-, and composition-level results retain
 distinct interpretations.
 }
@@ -171,7 +171,7 @@ plotting stored results.
 
 Objects with multiple images require an explicit `image` selection. When
 `sample.by` contains multiple samples, supply a named character vector that
-maps every sample to one image. Upstream backend objects are omitted by default
+maps every sample to one image. Upstream objects are omitted by default
 because they can be large; use `store.object = "full"` only if subsequent
 additional analysis with the upstream SpatialCellChat object is needed.
 }
@@ -193,7 +193,6 @@ spatial <- RunSpatialCellChat(
 )
 SpatialCellChatPlot(spatial, plot_type = "incoming")
 }
-
 }
 \references{
 [SpatialCellChat](https://github.com/jinworks/SpatialCellChat)

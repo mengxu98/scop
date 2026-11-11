@@ -17,8 +17,8 @@ RunLIANA(
   species = c("human", "mouse"),
   consensus = c("auto", "rank", "aggregate", "none"),
   consensus_args = list(),
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -56,10 +56,10 @@ specificity consensus ranks, \code{"aggregate"} uses \code{liana_aggregate()}, a
 \item{consensus_args}{Named arguments passed to the selected LIANA
 aggregation function.}
 
-\item{...}{Additional arguments passed to \code{liana::liana_wrap()}.}
-
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A \code{Seurat} object with LIANA results stored in

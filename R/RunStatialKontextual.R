@@ -34,10 +34,9 @@
 #' @param cores Number of cores passed to `Statial::Kontextual()`.
 #' @param tool_name Name used to store results in `srt@tools`.
 #' @param store_results Whether to store results in `srt@tools`.
-#' @param store_input Whether to store the backend input cell table in
+#' @param store_input Whether to store the input cell table in
 #' `object@tools`.
-#' @param ... Additional named arguments passed to `Statial::Kontextual()`.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A `Seurat` object with Statial results stored in
 #' `srt@tools[[tool_name]]` when `store_results = TRUE`.
 #' @export
@@ -77,8 +76,8 @@ RunStatialKontextual <- function(
   store_input = FALSE,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   coordinate_space <- match.arg(coordinate_space)

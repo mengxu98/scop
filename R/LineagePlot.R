@@ -73,6 +73,8 @@ LineagePlot <- function(
   verbose = TRUE,
   srt = NULL
 ) {
+  check_r("withr", verbose = FALSE)
+  withr::local_preserve_seed()
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   set.seed(seed)
 

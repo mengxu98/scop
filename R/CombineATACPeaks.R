@@ -2,7 +2,7 @@
 #'
 #' @md
 #' @description
-#' Apply native `GenomicRanges::reduce()` within declared groups, optionally
+#' Apply `GenomicRanges::reduce()` within declared groups, optionally
 #' require support from several input peak sets within each group, then take
 #' the union of retained group intervals. No count matrices are combined.
 #'
@@ -29,18 +29,18 @@
 #' Final metadata records contributing sets and retained support groups, not
 #' caller p-values or a newly calculated consensus significance score.
 #'
-#' @return A list with `ranges` in native sorted order, named by canonical peak
+#' @return A list with `ranges` in sorted order, named by canonical peak
 #'   IDs, and a `receipt` recording input sets, support groups, filtering and
-#'   backend versions. Recount fragments over these ranges before comparing
+#'   dependency versions. Recount fragments over these ranges before comparing
 #'   counts from previously different peak universes.
 #' @seealso [RecountATAC()]
+#' @export
 #' @examples
 #' first <- GenomicRanges::GRanges("chr1", IRanges::IRanges(c(1, 201), width = 100))
 #' second <- GenomicRanges::GRanges("chr1", IRanges::IRanges(c(51, 401), width = 100))
 #' common <- CombineATACPeaks(object = list(first = first, second = second), genome = "toy")
 #' common$ranges
 #' common$receipt$input_sets
-#' @export
 CombineATACPeaks <- function(
   object, groups = NULL, min.support = 1L,
   min.width = 1L, max.width = Inf, genome = NULL
@@ -70,7 +70,7 @@ CombineATACPeaks <- function(
     log_message("groups must assign every peak-set name to one non-empty support group.", message_type = "error")
   }
   groups <- groups[names(peaks)]
-  get_genome <- atac_backend_fun("GenomeInfoDb", "genome")
+  get_genome <- GenomeInfoDb::genome
   known <- unique(unlist(lapply(peaks, function(x) as.character(get_genome(x))), use.names = FALSE))
   known <- known[!is.na(known) & nzchar(known)]
   if (!is.null(genome) && (!is.character(genome) || length(genome) != 1L ||
@@ -89,7 +89,7 @@ CombineATACPeaks <- function(
   # reduce is a re-exported S4 generic, not defined in the GenomicRanges
   # namespace itself. Resolve its public export rather than a private lookup.
   reduce <- GenomicRanges::reduce
-  character_list <- atac_backend_fun("IRanges", "CharacterList")
+  character_list <- IRanges::CharacterList
   strip <- function(x) {
     S4Vectors::mcols(x) <- NULL
     names(x) <- NULL
@@ -138,7 +138,7 @@ CombineATACPeaks <- function(
   discarded <- atac_range_ids(ranges)[!keep]
   ranges <- ranges[keep]
   if (!length(ranges)) log_message("No peaks remain after final-union width filtering.", message_type = "error")
-  if (length(labels)) ranges <- atac_backend_fun("GenomeInfoDb", "genome<-")(ranges, value = labels)
+  if (length(labels)) ranges <- GenomeInfoDb::`genome<-`(ranges, value = labels)
   names(ranges) <- atac_range_ids(ranges)
   if (!atac_unique_ids(names(ranges))) log_message("Canonical peak IDs are not unique.", message_type = "error")
   list(ranges = ranges, receipt = list(

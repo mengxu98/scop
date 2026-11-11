@@ -23,8 +23,8 @@ RunSTdeconvolve(
   store_results = TRUE,
   round_counts = TRUE,
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -72,10 +72,10 @@ This is a preprocessing choice and does not recover original counts.}
 
 \item{verbose}{Whether to print messages.}
 
-\item{...}{Additional arguments passed to the STdeconvolve fit steps.}
-
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A \code{Seurat} object with topic proportions in metadata and detailed

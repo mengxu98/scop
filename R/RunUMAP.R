@@ -79,7 +79,7 @@ runumap_embedding <- function(
   }
   umap_fun <- get("umap", envir = asNamespace("uwot"))
   workers <- if (is.null(cores)) {
-    if (isTRUE(all(unlist(check_r("future", install = FALSE, verbose = FALSE), use.names = FALSE)))) {
+    if (isTRUE(check_r("future", install = FALSE, verbose = FALSE)[["future"]])) {
       get_namespace_fun("future", "nbrOfWorkers")()
     } else {
       1L
@@ -279,8 +279,7 @@ RunUMAP.Seurat <- function(
 #' Run UMAP
 #'
 #' @param object Object containing reduced-dimensional data.
-#' @param ... Passed to methods.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return The input object with a UMAP reduction added.
 #' @export
 RunUMAP <- function(object, ...) {

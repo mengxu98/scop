@@ -205,8 +205,7 @@ NormalizeData.Seurat <- function(
 #' Normalize a single-cell object
 #'
 #' @param object Object to normalize.
-#' @param ... Passed to methods.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A normalized object of the same class.
 #' @export
 NormalizeData <- function(object, ...) {

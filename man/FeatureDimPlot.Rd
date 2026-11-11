@@ -148,6 +148,9 @@ means. Cutoffs and \code{keep_scale} apply to the selected scale. \code{bg_cutof
 affects cell marks. When neither fill-color option is supplied, expression
 surfaces inherit \code{palette} and \code{palcolor}; explicit fill options override
 this default.
+The expression layer excludes cells with non-finite coordinates or values.
+Panels with fewer than three finite cells or a constant coordinate omit
+contours and issue a warning.
 For compatibility, explicitly supplying \code{density_color} retains the old
 fixed-color cell-density layer. Blended multi-feature plots using
 \code{compare_features = TRUE} also retain the original cell-density layer,
@@ -226,9 +229,9 @@ there are more than 100,000 cells.}
 
 \item{theme_args}{Theme name or function, plus extra theme arguments.}
 
-\item{combine}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE} returns a list of ggplots.}
+\item{combine}{Combine plots with \code{\link[patchwork:wrap_plots]{patchwork::wrap_plots()}}. \code{combine = FALSE} returns a list of ggplots.}
 
-\item{nrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE} returns a list of ggplots.}
+\item{nrow}{Combine plots with \code{\link[patchwork:wrap_plots]{patchwork::wrap_plots()}}. \code{combine = FALSE} returns a list of ggplots.}
 
 \item{ncol}{Number of columns of the combined plot.}
 
@@ -261,18 +264,6 @@ graph or lineage overlays are controlled separately. Defaults to \code{TRUE}.}
 \description{
 Color cells on a dimensionality reduction by feature values (assay genes or
 numeric metadata).
-}
-\details{
-Expression-colored contours use a 240 by 240 grid, Gaussian bandwidths from
-\code{\link[stats:bw.nrd]{stats::bw.nrd()}}, and nine density levels from 8\% to 92\% of peak density.
-Major contours use a wider stroke every third level. Grid limits extend three bandwidths beyond the finite coordinates to avoid
-clipping outer contours. Local means are interpolated onto contour vertices;
-filled surfaces omit grid points below 2\% of peak kernel support, fade in
-between 2\% and 3.5\% support, and interpolate raster pixels for smooth edges.
-Cells with non-finite coordinates or feature values are omitted from this
-calculation. Panels with fewer than three finite cells or no variation in
-either coordinate return no contours with a warning. No additional public
-plotting function or dependency is required.
 }
 \examples{
 data(pancreas_sub)
@@ -335,7 +326,8 @@ FeatureDimPlot(
 )
 
 FeatureDimPlot(
-  pancreas_sub, features = c("Rbp4", "Sst"), reduction = "UMAP",
+  pancreas_sub,
+  features = c("Rbp4", "Sst"), reduction = "UMAP",
   title.color = c(Rbp4 = "#2A6F97", Sst = "#B14B28")
 )
 
@@ -349,8 +341,10 @@ FeatureDimPlot(
   theme_use = "theme_blank",
   xlab = "UMAP_1",
   ylab = "UMAP_2",
-  palcolor = c("#345C96", "#349AA4", "#91C6B0", "#DDBF63",
-               "#D77A52", "#AC4968", "#753858")
+  palcolor = c(
+    "#345C96", "#349AA4", "#91C6B0", "#DDBF63",
+    "#D77A52", "#AC4968", "#753858"
+  )
 )
 
 FeatureDimPlot(
@@ -372,8 +366,10 @@ FeatureDimPlot(
   theme_use = "theme_blank",
   xlab = "UMAP_1",
   ylab = "UMAP_2",
-  density_filled_palcolor = c("#F2F7F5", "#C5DFD8", "#89BDB5",
-                             "#4A969E", "#286B87", "#253D63")
+  density_filled_palcolor = c(
+    "#F2F7F5", "#C5DFD8", "#89BDB5",
+    "#4A969E", "#286B87", "#253D63"
+  )
 )
 
 # Chane the plot type from point to the hexagonal bin
@@ -424,20 +420,16 @@ FeatureDimPlot(
 
 # Input a named feature list
 markers <- list(
-  "Ductal" = c("Sox9", "Anxa2", "Bicc1"),
-  "EPs" = c("Neurog3", "Hes6"),
-  "Pre-endocrine" = c("Fev", "Neurod1"),
-  "Endocrine" = c("Rbp4", "Pyy"),
-  "Beta" = "Ins1",
-  "Alpha" = "Gcg",
-  "Delta" = "Sst",
-  "Epsilon" = "Ghrl"
+  Ductal = c("Sox9", "Anxa2"),
+  Endocrine = c("Rbp4", "Pyy")
 )
 FeatureDimPlot(
   pancreas_sub,
   features = markers,
   reduction = "UMAP",
   theme_use = "theme_blank",
+  xlab = "UMAP 1",
+  ylab = "UMAP 2",
   theme_args = list(
     plot.subtitle = ggplot2::element_text(size = 10),
     strip.text = ggplot2::element_text(size = 8)

@@ -233,19 +233,11 @@ FeatureHeatmap <- function(
   cell_annotation = NULL,
   cell_annotation_palette = "Chinese",
   cell_annotation_palcolor = NULL,
-  cell_annotation_params = if (flip) {
-    list(width = grid::unit(5, "mm"))
-  } else {
-    list(height = grid::unit(5, "mm"))
-  },
+  cell_annotation_params = if (flip) list(width = grid::unit(5, "mm")) else list(height = grid::unit(5, "mm")),
   feature_annotation = NULL,
   feature_annotation_palette = "Dark2",
   feature_annotation_palcolor = NULL,
-  feature_annotation_params = if (flip) {
-    list(height = grid::unit(5, "mm"))
-  } else {
-    list(width = grid::unit(5, "mm"))
-  },
+  feature_annotation_params = if (flip) list(height = grid::unit(5, "mm")) else list(width = grid::unit(5, "mm")),
   use_raster = NULL,
   raster_device = "png",
   raster_by_magick = FALSE,
@@ -256,9 +248,11 @@ FeatureHeatmap <- function(
   legend.position = "right",
   ht_params = list(),
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
+  check_r("withr", verbose = FALSE)
+  withr::local_preserve_seed()
   check_r("ComplexHeatmap", verbose = FALSE)
 
   srt <- resolve_deprecated_srt(object, srt, missing(object))

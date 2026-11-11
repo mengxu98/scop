@@ -517,11 +517,6 @@ filter_de_data_group_use <- function(de_df, group_use = NULL) {
   de_df
 }
 
-clip_log2fc_symmetric <- function(df, fc_col = "avg_log2FC") {
-  res <- thisplot::clip_symmetric_range(data = df, value_col = fc_col)
-  list(df = res$data, fc_lim = res$limits)
-}
-
 filter_de_positive_results <- function(de_df) {
   de_df <- de_df[de_df[, "avg_log2FC"] > 0, , drop = FALSE]
   if (nrow(de_df) == 0) {
@@ -627,24 +622,6 @@ get_top_markers_for_label <- function(
     return(de_df_marker[0, , drop = FALSE])
   }
   do.call(rbind, top_marker_list)
-}
-
-add_volcano_plot_coords <- function(df, jitter_width = 0.2, jitter_height = 0.2, seed = 11) {
-  df[, "x_plot"] <- df[, "x"]
-  df[, "y_plot"] <- df[, "y"]
-
-  border_idx <- which(df[, "border"] & is.finite(df[, "x"]) & is.finite(df[, "y"]))
-  if (length(border_idx) == 0) {
-    return(df)
-  }
-
-  idx <- seq_along(border_idx)
-  x_offset <- ((((idx * 0.61803398875) + (seed * 0.01)) %% 1) - 0.5) * 2 * jitter_width
-  y_offset <- ((((idx * 0.41421356237) + (seed * 0.01)) %% 1) - 0.5) * 2 * jitter_height
-  df[border_idx, "x_plot"] <- df[border_idx, "x"] + x_offset
-  df[border_idx, "y_plot"] <- df[border_idx, "y"] + y_offset
-
-  df
 }
 
 get_safe_neglog10 <- function(padj, p_floor = .Machine$double.xmin) {
@@ -1058,9 +1035,9 @@ DEtestManhattanPlot <- function(
     de_df <- filter_de_positive_results(de_df)
   }
   de_df[, "avg_log2FC_raw"] <- de_df[, "avg_log2FC"]
-  clip_res <- clip_log2fc_symmetric(de_df)
-  de_df_marker <- clip_res$df
-  fc_lim <- clip_res$fc_lim
+  clip_res <- thisplot::clip_symmetric_range(data = de_df, value_col = "avg_log2FC")
+  de_df_marker <- clip_res$data
+  fc_lim <- clip_res$limits
   de_df_marker[, "type"] <- ifelse(
     de_df_marker[, "avg_log2FC_raw"] >= 0,
     "sigUp",
@@ -1260,6 +1237,8 @@ DEtestManhattanPlot <- function(
 #'
 #' @md
 #' @inheritParams DEtestPlot
+#' @param seed Random seed for jitter. The caller's RNG state is restored.
+#' @return A ggplot.
 #'
 #' @seealso [DEtestPlot], [RunDEtest], [VolcanoPlot], [DEtestManhattanPlot]
 #'
@@ -1312,6 +1291,8 @@ DEtestRingPlot <- function(
   srt = NULL
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
+  check_r("withr", verbose = FALSE)
+  withr::local_preserve_seed()
   label.by <- match.arg(label.by)
   check_r("geomtextpath", verbose = FALSE)
   if (is.null(group.by)) {
@@ -1322,9 +1303,9 @@ DEtestRingPlot <- function(
   if (isTRUE(only.pos)) {
     de_df <- filter_de_positive_results(de_df)
   }
-  clip_res <- clip_log2fc_symmetric(de_df)
-  de_df_marker <- clip_res$df
-  fc_lim <- clip_res$fc_lim
+  clip_res <- thisplot::clip_symmetric_range(data = de_df, value_col = "avg_log2FC")
+  de_df_marker <- clip_res$data
+  fc_lim <- clip_res$limits
   cluster_levels <- levels(de_df_marker[["group1"]])
   top_marker <- get_top_markers_for_label(
     de_df_marker, cluster_levels, nlabel, features_label,
@@ -1657,10 +1638,10 @@ VolcanoPlot <- function(
   de_df[, "p_val_adj_raw"] <- de_df[, "p_val_adj"]
   de_df[, "neglog10_pvalue"] <- get_safe_neglog10(de_df[, y_metric])
 
-  clip_res <- clip_log2fc_symmetric(de_df)
-  de_df <- clip_res$df
-  x_upper <- clip_res$fc_lim[2]
-  x_lower <- clip_res$fc_lim[1]
+  clip_res <- thisplot::clip_symmetric_range(data = de_df, value_col = "avg_log2FC")
+  de_df <- clip_res$data
+  x_upper <- clip_res$limits[2]
+  x_lower <- clip_res$limits[1]
   de_df[, "avg_log2FC_plot"] <- de_df[, "avg_log2FC"]
   de_df[, "avg_log2FC"] <- de_df[, "avg_log2FC_raw"]
   de_df[, "border"] <- (de_df[["avg_log2FC_plot"]] >= x_upper) | (de_df[["avg_log2FC_plot"]] <= x_lower)
@@ -1744,7 +1725,7 @@ VolcanoPlot <- function(
     if (nrow(df) == 0) {
       next
     }
-    df <- add_volcano_plot_coords(df = df, jitter_width = 0, jitter_height = 0, seed = 11)
+    df <- thisplot::jitter_highlighted_points(data = df, jitter_width = 0, jitter_height = 0, seed = 11)
     df_enrich <- enrichment_map[
       enrichment_map[["group1"]] == group & enrichment_map[["gene"]] %in% df[["gene"]], ,
       drop = FALSE

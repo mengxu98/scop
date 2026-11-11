@@ -6,10 +6,9 @@
 #' @inheritParams scop-params
 #' @param backend Backend used to compute Palantir. `"python"` keeps the
 #' reference Palantir workflow and remains the default. `"cpp"` uses an
-#' approximate C++ workflow and stores results in `srt@tools[["Palantir"]]`.
-#' The C++ backend never switches to Python implicitly.
-#' @param allow_approximate Whether to allow the approximate C++ workflow. This
-#' must be `TRUE` when `backend = "cpp"`.
+#' approximate C++ workflow, stores results in `srt@tools[["Palantir"]]`, and
+#' issues a warning that results may not be completely identical to the reference workflow.
+#' The C++ implementation never switches to Python implicitly.
 #' @param dm_n_components The number of diffusion components to calculate.
 #' @param dm_alpha Normalization parameter for the diffusion operator.
 #' @param dm_n_eigs Number of eigen vectors to use.
@@ -48,8 +47,7 @@
 #'   nonlinear_reduction = "UMAP",
 #'   early_group = "Ductal",
 #'   terminal_groups = c("Alpha", "Beta", "Delta", "Epsilon"),
-#'   backend = "cpp",
-#'   allow_approximate = TRUE
+#'   backend = "cpp"
 #' )
 #'
 #' FeatureDimPlot(
@@ -120,7 +118,6 @@ RunPalantir <- function(
   envname = NULL,
   conda = "auto",
   backend = c("python", "cpp"),
-  allow_approximate = FALSE,
   return_seurat = !is.null(srt),
   verbose = TRUE,
   srt = NULL
@@ -130,10 +127,7 @@ RunPalantir <- function(
   plot_format <- match.arg(plot_format)
 
   if (identical(backend, "cpp")) {
-    assert_cpp_approximation_opt_in(
-      allow_approximate,
-      "RunPalantir(backend = \"cpp\")"
-    )
+    warn_cpp_approximation("RunPalantir(backend = \"cpp\")", reference_backend = "python")
     if (is.null(srt)) {
       log_message(
         "{.arg backend = 'cpp'} requires {.arg srt}; use {.arg backend = 'python'} for AnnData input",
@@ -296,7 +290,6 @@ RunPalantir <- function(
     "legend.position",
     "cores",
     "backend",
-    "allow_approximate",
     "envname",
     "conda"
   )

@@ -50,20 +50,18 @@ assert_cpp_dense_budget <- function(
   estimated_gib
 }
 
-assert_cpp_approximation_opt_in <- function(
-  allow_approximate,
+warn_cpp_approximation <- function(
   context,
   reference_backend = "python"
 ) {
-  if (!isTRUE(allow_approximate)) {
-    log_message(
-      sprintf(
-        "%s is an approximate implementation. Set allow_approximate = TRUE to opt in, or use backend = \"%s\" for the reference workflow.",
-        context,
-        reference_backend
-      ),
-      message_type = "error"
-    )
-  }
+  log_message(
+    sprintf(
+      "%s uses an approximate C++ implementation; results may not be completely identical to the reference %s workflow.",
+      context,
+      reference_backend
+    ),
+    message_type = "warning",
+    verbose = TRUE
+  )
   invisible(TRUE)
 }

@@ -143,7 +143,7 @@ plot_cc_list <- function(
       logical(1)
     ))
   ) {
-    return(patchwork::wrap_plots(
+    return(combine_plot_list(
       plot_list,
       nrow = nrow,
       ncol = ncol,
@@ -161,16 +161,27 @@ simplify_cc_plot_list <- function(plot_list) {
   plot_list
 }
 
-ccc_alias_arg <- function(dots, names, current = NULL) {
-  if (is.null(dots) || length(dots) == 0L) {
-    return(current)
-  }
-  for (nm in names) {
-    if (nm %in% names(dots) && !is.null(dots[[nm]])) {
-      return(dots[[nm]])
+ccc_alias_arg <- function(dots, names, current = NULL, supplied = !is.null(current)) {
+  aliases <- dots[base::names(dots) %in% names]
+  if (!length(aliases)) return(current)
+  same <- function(x, y) isTRUE(all.equal(x, y, tolerance = 0))
+  for (i in seq_along(aliases)) {
+    if (!same(aliases[[1L]], aliases[[i]])) {
+      log_message(
+        "Conflicting aliases {.arg {base::names(aliases)[1L]}} and {.arg {base::names(aliases)[i]}} must agree.",
+        message_type = "error"
+      )
     }
   }
-  current
+  if (supplied && !same(current, aliases[[1L]])) {
+    canonical <- deparse(substitute(current))
+    log_message(
+      "Arguments {.arg {canonical}} and {.arg {base::names(aliases)[1L]}} must agree.",
+      message_type = "error"
+    )
+  }
+  if (supplied || is.null(aliases[[1L]])) return(current)
+  aliases[[1L]]
 }
 
 ccc_normalize_use_arg <- function(values) {
@@ -721,6 +732,60 @@ ccc_assign_plot_score <- function(df, value = "score") {
   }
   df$score <- df[[score_col]]
   df
+}
+
+ccc_plot_tables <- function(df, thresh = 0.05) {
+  df <- ccc_mark_significance(df, thresh = thresh)
+  df <- prepare_plot_df(df)
+  list(
+    long_df = df,
+    pair_df = pair_plot_df(df),
+    interaction_df = interaction_plot_df(df)
+  )
+}
+
+ccc_plot_data <- function(
+  srt,
+  method = NULL,
+  condition = NULL,
+  dataset = 1,
+  slot.name = "net",
+  signaling = NULL,
+  pairLR.use = NULL,
+  sender.use = NULL,
+  receiver.use = NULL,
+  ligand.use = NULL,
+  receptor.use = NULL,
+  interaction.use = NULL,
+  value = "score",
+  thresh = 0.05
+) {
+  method <- detect_method(srt = srt, method = method)
+  long_df <- ccc_long_table_for_method(
+    srt = srt,
+    method = method,
+    condition = condition,
+    dataset = dataset,
+    slot.name = slot.name,
+    signaling = signaling,
+    pairLR.use = pairLR.use,
+    sources.use = sender.use,
+    targets.use = receiver.use,
+    thresh = thresh
+  )
+  long_df <- standardize_long_df(long_df)
+  long_df <- filter_long_df(
+    df = long_df,
+    sender.use = sender.use,
+    receiver.use = receiver.use,
+    ligand.use = ligand.use,
+    receptor.use = receptor.use,
+    interaction.use = interaction.use,
+    signaling = signaling,
+    pairLR.use = pairLR.use
+  )
+  long_df <- ccc_assign_plot_score(df = long_df, value = value)
+  c(list(method = method), ccc_plot_tables(long_df, thresh = thresh))
 }
 
 ccc_filter_table_context <- function(

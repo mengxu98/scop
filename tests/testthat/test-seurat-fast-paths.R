@@ -390,9 +390,9 @@ test_that("AddModuleScore sparse path preserves Seurat sampling and scores", {
   )
   expected <- do.call(seurat_reference_add_module_score, args)
   native_calls <- 0L
-  native <- get("module_score_native", asNamespace("scop"))
+  native <- get("module_score_compute", asNamespace("scop"))
   testthat::local_mocked_bindings(
-    module_score_native = function(...) {
+    module_score_compute = function(...) {
       native_calls <<- native_calls + 1L
       native(...)
     },
@@ -457,9 +457,9 @@ test_that("AddModuleScore deduplicates features and delegates fractional nbin", 
   object <- make_fast_path_object(seed = 151)
   features <- list(c(rownames(object)[1:8], rownames(object)[1:2]))
   native_calls <- 0L
-  native <- get("module_score_native", asNamespace("scop"))
+  native <- get("module_score_compute", asNamespace("scop"))
   testthat::local_mocked_bindings(
-    module_score_native = function(...) {
+    module_score_compute = function(...) {
       native_calls <<- native_calls + 1L
       native(...)
     },
@@ -508,9 +508,9 @@ test_that("AddModuleScore accelerates inert search/dots and split layers", {
     name = "split"
   )
   native_calls <- 0L
-  native <- get("module_score_native", asNamespace("scop"))
+  native <- get("module_score_compute", asNamespace("scop"))
   testthat::local_mocked_bindings(
-    module_score_native = function(...) {
+    module_score_compute = function(...) {
       native_calls <<- native_calls + 1L
       native(...)
     },

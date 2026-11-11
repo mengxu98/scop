@@ -8,8 +8,7 @@
 #' @param layer Assay layer to use.
 #' @param species One of `"human"` or `"mouse"`, selecting the M168 scFEA files.
 #' @param n_epoch Number of scFEA training epochs.
-#' @param sc_imputation Whether to run MAGIC imputation inside the scFEA
-#' backend.
+#' @param sc_imputation Whether to run MAGIC imputation inside scFEA.
 #' @param assay_flux Name of the assay storing module flux scores.
 #' @param assay_balance Name of the assay storing metabolite balance scores.
 #' @param store_metadata Whether to also append flux and balance values to
@@ -17,7 +16,7 @@
 #' @param data_dir Optional directory containing scFEA M168 CSV resources. If
 #' `NULL`, files are downloaded from `mengxu98/datasets` and cached with
 #' `tools::R_user_dir("scop", "data")`.
-#' @param seed Random seed passed to R and the Python scFEA backend.
+#' @param seed Random seed passed to R and the Python scFEA implementation.
 #' @param max_cells Maximum number of cells used for GNN training. When the
 #' input has more cells, a random subset is sampled for training and the
 #' trained model predicts fluxes for all cells in batches. This drastically
@@ -720,6 +719,7 @@ scFEAHeatmap <- function(
 #' mode, a named list of single-contrast results is returned and combined
 #' statistics are stored in the outer `"data"` attribute.
 #'
+#' @export
 #' @examples
 #' \dontrun{
 #' data(pancreas_sub)
@@ -727,7 +727,6 @@ scFEAHeatmap <- function(
 #' pancreas_sub <- RunscFEA(pancreas_sub, group.by = "SubCellType")
 #' scFEAVolcanoPlot(pancreas_sub, group.by = "SubCellType", ident.1 = "Alpha", ident.2 = "Beta")
 #' }
-#' @export
 scFEAVolcanoPlot <- function(
   object,
   group.by,
@@ -1072,6 +1071,7 @@ scfea_volcano_plot_one <- function(
 #' automatic one-vs-rest mode, a named list of single-contrast results is
 #' returned and combined statistics are stored in the outer `"data"` attribute.
 #'
+#' @export
 #' @examples
 #' \dontrun{
 #' data(pancreas_sub)
@@ -1079,7 +1079,6 @@ scfea_volcano_plot_one <- function(
 #' pancreas_sub <- RunscFEA(pancreas_sub, group.by = "SubCellType")
 #' scFEABalanceBarPlot(pancreas_sub, group.by = "SubCellType", ident.1 = "Alpha", ident.2 = "Beta")
 #' }
-#' @export
 scFEABalanceBarPlot <- function(
   object,
   group.by,
@@ -1476,7 +1475,7 @@ resolve_scfea_dir <- function(data_dir = NULL, verbose = TRUE) {
   }
 
   cache_key <- list("scFEA", "M168", "2026-06-01")
-  if (isTRUE(all(unlist(check_r("R.cache", install = FALSE, verbose = FALSE), use.names = FALSE)))) {
+  if (isTRUE(check_r("R.cache", install = FALSE, verbose = FALSE)[["R.cache"]])) {
     cached <- get_namespace_fun("R.cache", "loadCache")(key = cache_key)
     cached_dir <- if (!is.null(cached$data_dir)) {
       normalizePath(cached$data_dir, mustWork = FALSE)
@@ -1528,7 +1527,7 @@ resolve_scfea_dir <- function(data_dir = NULL, verbose = TRUE) {
     }
   }
 
-  if (isTRUE(all(unlist(check_r("R.cache", install = FALSE, verbose = FALSE), use.names = FALSE)))) {
+  if (isTRUE(check_r("R.cache", install = FALSE, verbose = FALSE)[["R.cache"]])) {
     get_namespace_fun("R.cache", "saveCache")(
       list(
         data_dir = cache_dir,

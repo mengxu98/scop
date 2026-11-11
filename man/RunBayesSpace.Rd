@@ -72,7 +72,7 @@ coordinates passed to BayesSpace, overriding other metadata coordinate
 columns. The default selection preserves existing \code{array_col}/\code{array_row}
 or \code{col}/\code{row} indices when available. Standard array names (\code{col}/\code{row},
 \code{array_col}/\code{array_row}, or \code{arraycol}/\code{arrayrow}, case-insensitive) preserve
-native array indices; other column names are treated as pixel coordinates
+original array indices; other column names are treated as pixel coordinates
 from which a regular array grid is inferred.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It

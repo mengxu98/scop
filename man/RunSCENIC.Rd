@@ -88,7 +88,7 @@ object with \code{\link[=RunMetaCell]{RunMetaCell()}} and pass that object to \c
 \item{min_regulon_size}{Minimum regulon size kept after \verb{scenic ctx}.}
 
 \item{max_regulon_targets}{Maximum target genes retained per C++ regulon.
-The default preserves the native fast path's bounded regulon size.}
+The default preserves the fast path's bounded regulon size.}
 
 \item{include_negative_regulons}{Whether the C++ backend should also build
 negatively correlated regulons and label them as \verb{TF(-)}. The default
@@ -116,7 +116,7 @@ AUCell scoring. \code{NULL} (the default) keeps the process OpenMP team for the
 C++ kernels and uses one worker elsewhere. If multicore execution is not
 supported, this is automatically reduced to one core.}
 
-\item{parallel_backend}{Parallel backend used for native C++ cisTarget
+\item{parallel_backend}{Parallel backend used for C++ cisTarget
 module processing. \code{"auto"} preserves the current cross-platform PSOCK
 behavior. \code{"fork"} is an explicit opt-in on macOS and Linux and is not
 available on Windows.}
@@ -167,18 +167,30 @@ scenic_rss <- SCENICPlot(
   group.by = "CellType",
   plot_type = "rss_rank"
 )
-example_regulons <- unique(scenic_rss$top_table$regulon)[1:2]
+example_regulons <- head(rownames(pancreas_sub[["scenic"]]), 6)
+GroupHeatmap(
+  pancreas_sub,
+  group.by = "CellType",
+  features = example_regulons,
+  assay = "scenic",
+  layer = "data",
+  exp_method = "raw",
+  lib_normalize = FALSE
+)$plot
 FeatureDimPlot(
   pancreas_sub,
   features = example_regulons,
   assay = "scenic",
-  reduction = "StandardpcaUMAP2D"
+  layer = "data",
+  reduction = "UMAP"
 )
 FeatureStatPlot(
   pancreas_sub,
   stat.by = example_regulons,
   group.by = "CellType",
-  assay = "scenic"
+  assay = "scenic",
+  layer = "data",
+  plot_type = "violin"
 )
 SCENICPlot(
   pancreas_sub,

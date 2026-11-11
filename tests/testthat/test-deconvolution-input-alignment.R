@@ -31,8 +31,8 @@ capture_deconv_inputs <- function(method, pair, ...) {
   }
   testthat::local_mocked_bindings(
     rctd_run_spacexr = capture,
-    card_run_backend = capture,
-    spotlight_run_backend = capture,
+    card_run_model = capture,
+    spotlight_run_model = capture,
     check_r = function(...) TRUE,
     .package = "scop"
   )

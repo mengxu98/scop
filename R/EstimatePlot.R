@@ -15,17 +15,16 @@
 #' @param scores ESTIMATE score columns to plot.
 #' @param add_stat Whether to add group comparison labels to violin or box
 #' plots. Requires `ggpubr`.
-#' @param ... Additional plotting arguments.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A `ggplot` object.
 #'
 #'
+#' @export
 #' @examples
 #' data(pancreas_sub)
 #' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' pancreas_sub <- RunESTIMATE(pancreas_sub, group.by = "SubCellType")
 #' EstimateScorePlot(pancreas_sub, group.by = "SubCellType")
-#' @export
 EstimateScorePlot <- function(
   object = NULL,
   score.data = NULL,
@@ -229,6 +228,7 @@ EstimateScorePlot <- function(
 #' @return A `ggplot` object.
 #'
 #'
+#' @export
 #' @examples
 #' data(pancreas_sub)
 #' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
@@ -238,7 +238,6 @@ EstimateScorePlot <- function(
 #'   features = c("GCG", "INS"),
 #'   group.by = "SubCellType"
 #' )
-#' @export
 EstimateGenePlot <- function(
   object = NULL,
   score.data = NULL,

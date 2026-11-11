@@ -31,8 +31,8 @@ RunSpotSweeper(
   workers = NULL,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -50,13 +50,13 @@ are present; a single image is selected automatically when \code{NULL}.}
 
 \item{sample.by}{Optional metadata column identifying samples or images.
 If \code{NULL}, all spots are treated as one sample. The selected column must not
-contain missing values. The reserved backend output name \code{"artifact"} cannot
+contain missing values. The reserved output name \code{"artifact"} cannot
 be used when \code{run_artifact = TRUE}.}
 
 \item{metrics}{QC metrics used by \code{SpotSweeper::localOutliers()}. If \code{NULL},
 \verb{nCount_<assay>}, \verb{nFeature_<assay>}, and \code{percent.mito} are used.
 The corresponding \verb{<metric>_outliers} and \verb{<metric>_z} names are reserved for
-backend output and cannot also be requested as input columns.}
+output and cannot also be requested as input columns.}
 
 \item{directions}{Outlier direction for each metric. If \code{NULL}, count and
 feature metrics use \code{"lower"} and mitochondrial metrics use \code{"higher"}.}
@@ -78,12 +78,12 @@ returned metadata and stored result are marked as partial.}
 \code{mito_pattern} is ignored.}
 
 \item{mito_percent}{Metadata column used as mitochondrial percent for
-artifact detection. If \code{NULL}, \code{percent.mito} is used. The reserved backend
+artifact detection. If \code{NULL}, \code{percent.mito} is used. The reserved
 output name \code{"artifact"} cannot be used when \code{run_artifact = TRUE}.}
 
 \item{mito_sum}{Metadata column used as mitochondrial counts for artifact
 detection. If \code{NULL}, mitochondrial counts are computed. The reserved
-backend output name \code{"artifact"} cannot be used when \code{run_artifact = TRUE}.}
+output name \code{"artifact"} cannot be used when \code{run_artifact = TRUE}.}
 
 \item{n_order, shape}{Parameters passed to \code{SpotSweeper::findArtifacts()}.}
 
@@ -106,13 +106,12 @@ incomplete.}
 \item{coordinate_space}{Coordinate system used for spatial neighborhoods.
 The default is raw acquisition coordinates; \code{"legacy_display"} remains an
 explicit compatibility option. Neighbor counts are unitless, while any
-backend distance calculation uses the selected coordinate units.}
-
-\item{...}{Additional named arguments passed to matching SpotSweeper backend
-functions when those arguments are supported by the installed version.}
+distance calculation uses the selected coordinate units.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A \code{Seurat} object with SpotSweeper QC metadata. When

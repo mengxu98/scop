@@ -1,4 +1,4 @@
-#' @title Build a native spatial network
+#' @title Build a spatial network
 #'
 #' @description
 #' Build a k-nearest-neighbor or radius spatial network from raw Seurat spatial
@@ -28,13 +28,12 @@
 #' @return The input `Seurat` object with a `SpatialNetwork` result in
 #'   `srt@tools`.
 #'
+#' @export
 #' @examples
 #' data(visium_human_pancreas_sub)
 #' spatial <- visium_human_pancreas_sub
 #' spatial <- RunSpatialNetwork(object = spatial, k = 6, verbose = FALSE)
 #' SpatialNetworkPlot(object = spatial, group.by = "coda_label")
-#'
-#' @export
 RunSpatialNetwork <- function(
   object = NULL,
   method = c("knn", "radius"),
@@ -279,6 +278,7 @@ spatial_graph_validate <- function(graph) {
 #'
 #' @return A graph list, `dgCMatrix`, or Seurat `Graph` object.
 #'
+#' @export
 #' @examples
 #' data(visium_human_pancreas_sub)
 #' spatial <- RunSpatialNetwork(
@@ -294,8 +294,6 @@ spatial_graph_validate <- function(graph) {
 #'   seq_len(min(3, nrow(graph_sparse))),
 #'   seq_len(min(3, ncol(graph_sparse)))
 #' ]
-#'
-#' @export
 GetSpatialGraph <- function(
   object = NULL,
   res = NULL,
@@ -359,7 +357,7 @@ GetSpatialGraph <- function(
   methods::as(matrix, "Graph")
 }
 
-#' @title Plot a native spatial network
+#' @title Plot a spatial network
 #'
 #' @description
 #' Plot a graph produced by [RunSpatialNetwork()]. The graph can be read from a
@@ -380,6 +378,7 @@ GetSpatialGraph <- function(
 #'
 #' @return A `ggplot` object.
 #'
+#' @export
 #' @examples
 #' data(visium_human_pancreas_sub)
 #' spatial <- RunSpatialNetwork(
@@ -394,8 +393,6 @@ GetSpatialGraph <- function(
 #'   edge.linewidth = 0.15,
 #'   pt.size = 0.8
 #' )
-#'
-#' @export
 SpatialNetworkPlot <- function(
   object = NULL,
   res = NULL,

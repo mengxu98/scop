@@ -16,8 +16,8 @@ RunSpaNorm(
   store_spe = FALSE,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -38,7 +38,7 @@ a single image is selected automatically when \code{NULL}.}
 
 \item{store_results}{Whether to store the full result in \code{srt@tools}.}
 
-\item{store_spe}{Whether to store the backend \code{SpatialExperiment} returned
+\item{store_spe}{Whether to store the \code{SpatialExperiment} returned
 by \code{SpaNorm}.}
 
 \item{verbose}{Whether to print the message.
@@ -48,16 +48,15 @@ Default is \code{TRUE}.}
 is raw acquisition coordinates; use \code{"legacy_display"} explicitly to
 reproduce the display-scaled coordinates used before scop 0.9.0.}
 
-\item{...}{Additional arguments passed to \code{SpaNorm::SpaNorm()}, such as
-\code{sample.p}.}
-
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A \code{Seurat} object with SpaNorm-normalized expression stored in
 \code{new_assay}. When \code{store_results = TRUE}, parameters, coordinates, features,
-cells, and optional backend output are stored in \code{srt@tools[[tool_name]]}.
+cells, and optional method output are stored in \code{srt@tools[[tool_name]]}.
 }
 \description{
 Normalize spatial transcriptomics counts using SpaNorm and store the

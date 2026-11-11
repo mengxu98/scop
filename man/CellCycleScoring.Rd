@@ -22,7 +22,7 @@ CellCycleScoring(
 
 \item{set.ident}{Whether to set cell identities to the inferred phase.}
 
-\item{...}{Arguments passed to [AddModuleScore()].}
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A Seurat object containing `S.Score`, `G2M.Score`, and `Phase`.

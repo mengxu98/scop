@@ -17,14 +17,13 @@
 #' @param max_edges_per_target Maximum incoming regulator edges retained per
 #' target. The default `Inf` keeps all positive-importance links.
 #' @param output_file Optional path where the adjacency table is written.
-#' @param work_dir Working directory used by the Python backend.
+#' @param work_dir Working directory used by Python.
 #' @param prefix Prefix for temporary files.
-#' @param envname Python environment used by the Python backend.
-#' @param conda Conda-compatible executable used by the Python backend.
+#' @param envname Python environment used by Python.
+#' @param conda Conda-compatible executable used by Python.
 #' @param force Whether to rebuild existing `output_file`.
 #' @param verbose Whether to print progress messages.
-#' @param ... Additional backend-specific arguments.
-#'
+#' @param ... Arguments passed to other functions.
 #' @references
 #' Zhang Y, Chang X, Liu X. Inference of gene regulatory networks using
 #' pseudo-time series data. Bioinformatics. 2021;37(16):2423-2431.
@@ -34,6 +33,7 @@
 #' `pvalue`. The original GNIPLR p-value matrix is stored in
 #' `attr(result, "grn_matrix")` when the network is newly inferred.
 #'
+#' @export
 #' @examples
 #' data(pancreas_sub)
 #' expr <- GetAssayData5(
@@ -56,7 +56,6 @@
 #' )
 #' head(grn)
 #' attr(grn, "grn_matrix")[1:3, 1:3]
-#' @export
 RunGNIPLR <- function(object, ...) {
   UseMethod("RunGNIPLR", object)
 }

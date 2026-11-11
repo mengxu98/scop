@@ -27,8 +27,7 @@
 #' @param learning.rate,repulsion.strength Layout optimization rates.
 #' @param reduction.name,reduction.key Stored reduction name and embedding prefix.
 #' @param seed.use Random seed.
-#' @param ... Passed to the UMAP implementation.
-#'
+#' @param ... Arguments passed to other functions.
 #' @rdname RunUMAP2
 #' @export
 #'

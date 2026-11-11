@@ -6,7 +6,7 @@
 #' columns, normalizes output paths, and records provenance in Seurat tools or
 #' a result attribute. It prefers the upstream `scPagwas_main2` runner and
 #' applies Seurat 5 compatibility to local function copies without modifying
-#' the installed backend namespace.
+#' the installed package namespace.
 #'
 #' @md
 #' @inheritParams thisutils::log_message
@@ -27,11 +27,9 @@
 #' (`"hg38"` or `"hg37"`) or a custom annotation path.
 #' @param output.dirs Output directory passed to `scPagwas`.
 #' @param cleanup_soar Deprecated compatibility argument. SOAR cleanup is
-#' managed by the upstream `scPagwas` backend and is ignored by `scop`.
+#' managed by upstream `scPagwas` and is ignored by `scop`.
 #' @param return_seurat Whether to return a Seurat object when one is available.
-#' @param ... Additional arguments passed to the upstream `scPagwas` function
-#' after filtering by its formal arguments.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A Seurat object or upstream result list.
 #' @seealso [PlotscPagwas()]
 #' @export
@@ -49,8 +47,8 @@ RunscPagwas <- function(
   return_seurat = !is.null(srt) || inherits(single_data, "Seurat") ||
     !is.null(object),
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!is.null(single_data)) {

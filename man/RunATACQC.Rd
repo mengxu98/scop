@@ -90,7 +90,7 @@ Explicit FRiP source columns must not use names overwritten by fragment
 counting (\code{frequency_count}, \code{reads_count}, \code{mononucleosomal},
 \code{nucleosome_free}, \code{total.fragments}); retain upstream values under distinct
 names when attaching fragments. TSS enrichment uses Signac's R implementation
-and does not select an external backend merely because a newer Signac release
+and does not select an external method merely because a newer Signac release
 exports it.
 Missing optional inputs leave metrics unavailable. This function does not
 perform doublet detection or establish that all fragment QC is complete.

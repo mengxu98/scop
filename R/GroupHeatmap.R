@@ -80,8 +80,7 @@
 #' controls their placement independently. The percent entry is used only when
 #' `add_dot = TRUE`; other annotation legends are unchanged. Default: `list()`.
 #' @param ht_params Extra arguments passed to [ComplexHeatmap::Heatmap], overriding defaults.
-#' @param ... Additional arguments passed to helper functions.
-#'
+#' @param ... Arguments passed to other functions.
 #' @seealso [RunDEtest]
 #'
 #' @return A list with `plot`, `matrix_list`, `feature_split`, `cell_metadata`,
@@ -389,19 +388,11 @@ GroupHeatmap <- function(
   cell_annotation = NULL,
   cell_annotation_palette = "Chinese",
   cell_annotation_palcolor = NULL,
-  cell_annotation_params = if (flip) {
-    list(width = grid::unit(10, "mm"))
-  } else {
-    list(height = grid::unit(10, "mm"))
-  },
+  cell_annotation_params = if (flip) list(width = grid::unit(10, "mm")) else list(height = grid::unit(10, "mm")),
   feature_annotation = NULL,
   feature_annotation_palette = "Dark2",
   feature_annotation_palcolor = NULL,
-  feature_annotation_params = if (flip) {
-    list(height = grid::unit(5, "mm"))
-  } else {
-    list(width = grid::unit(5, "mm"))
-  },
+  feature_annotation_params = if (flip) list(height = grid::unit(5, "mm")) else list(width = grid::unit(5, "mm")),
   use_raster = NULL,
   raster_device = "png",
   raster_by_magick = FALSE,
@@ -412,10 +403,12 @@ GroupHeatmap <- function(
   legend.position = "right",
   ht_params = list(),
   verbose = TRUE,
-  ...,
   srt = NULL,
-  legend_params = list()
+  legend_params = list(),
+  ...
 ) {
+  check_r("withr", verbose = FALSE)
+  withr::local_preserve_seed()
   check_r("ComplexHeatmap", verbose = FALSE)
   legend_fun <- get_namespace_fun("ComplexHeatmap", "Legend")
 
@@ -2360,7 +2353,8 @@ group_heatmap_aggregate_matrix <- function(mat, groups, aggregate_fun = base::me
     )
     # vapply simplifies a single feature to a vector; retain the feature axis.
     out <- matrix(
-      out, nrow = nrow(mat),
+      out,
+      nrow = nrow(mat),
       dimnames = list(rownames(mat), group_levels)
     )
     return(group_heatmap_legacy_aggregate_layout(
@@ -2403,7 +2397,8 @@ group_heatmap_expression_fraction <- function(mat, groups, exp_cutoff = 0) {
     numeric(nrow(mat))
   )
   out <- matrix(
-    out, nrow = nrow(mat),
+    out,
+    nrow = nrow(mat),
     dimnames = list(rownames(mat), group_levels)
   )
   group_heatmap_legacy_aggregate_layout(

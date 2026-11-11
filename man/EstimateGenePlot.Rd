@@ -45,7 +45,7 @@ samples in columns.}
 \item{add_stat}{Whether to add group comparison labels to violin or box
 plots. Requires \code{ggpubr}.}
 
-\item{...}{Additional plotting arguments.}
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A `ggplot` object.

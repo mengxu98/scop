@@ -100,6 +100,34 @@ CellRankPlot(pancreas_sub, plot_type = "circular")
 Drivers are statistical associations with fate probabilities. Trend modules are
 similar expression-shape clusters, not causal regulatory modules.
 
+Use the common dynamic-feature workflow to fit and display expression along
+Palantir pseudotime. These fits use `RunDynamicFeatures()`; the separate
+CellRank GAM workflow below uses fate-probability weights.
+
+```{r dynamic-plots, eval=FALSE}
+pancreas_sub <- RunDynamicFeatures(
+  pancreas_sub,
+  lineages = "palantir_pseudotime",
+  features = c("Rbp4", "Sst", "Pyy"),
+  assay = "RNA"
+)
+DynamicHeatmap(
+  pancreas_sub,
+  lineages = "palantir_pseudotime",
+  features = c("Rbp4", "Sst", "Pyy"),
+  use_fitted = TRUE,
+  assay = "RNA",
+  cell_annotation = "SubCellType"
+)
+DynamicPlot(
+  pancreas_sub,
+  lineages = "palantir_pseudotime",
+  features = c("Rbp4", "Sst", "Pyy"),
+  assay = "RNA",
+  group.by = "SubCellType"
+)
+```
+
 ```{r trends, eval=FALSE}
 pancreas_sub <- RunCellRankTrends(
   pancreas_sub,
@@ -112,8 +140,6 @@ pancreas_sub <- RunCellRankTrends(
   output_dir = "cellrank_objects"
 )
 CellRankPlot(pancreas_sub, plot_type = "drivers", lineage = "Alpha")
-CellRankPlot(pancreas_sub, plot_type = "trends", lineage = "Alpha")
-CellRankPlot(pancreas_sub, plot_type = "clusters", lineage = "Alpha")
 
 pancreas_sub <- RunCellRankEnrichment(
   pancreas_sub,
@@ -122,11 +148,10 @@ pancreas_sub <- RunCellRankEnrichment(
   output_dir = "cellrank_objects"
 )
 pancreas_sub@tools$CellRank$enrichment$Alpha$manifest
-CellRankPlot(
-  pancreas_sub,
-  plot_type = "enrichment",
-  lineage = "Alpha",
-  database = "GO_BP"
+EnrichmentPlot(
+  res = list(enrichment = pancreas_sub@tools$CellRank$enrichment$Alpha$databases$GO_BP),
+  db = "GO_BP",
+  plot_type = "comparison"
 )
 ```
 

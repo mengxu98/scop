@@ -58,9 +58,19 @@ will be removed in scop 1.0.0.}
 }
 \value{
 The Seurat object with results under
-`srt@tools$CellRank$enrichment[[lineage]]`.
+`object@tools$CellRank$enrichment[[lineage]]`. Each table in `databases`
+includes `Groups` and `Database` columns accepted by [EnrichmentPlot].
 }
 \description{
 Run over-representation analysis for each stored CellRank trend module and
 keep complete tables and an execution manifest in the Seurat object.
+}
+\details{
+Plot a stored database table with
+`EnrichmentPlot(res = list(enrichment = table), db = "GO_BP")`.
+The `Groups` column identifies the fitted gene module. PDF exports use
+the same [EnrichmentPlot] interface.
+}
+\seealso{
+[EnrichmentPlot], [RunCellRankTrends], [RunDynamicEnrichment]
 }

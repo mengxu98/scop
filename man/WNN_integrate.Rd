@@ -89,7 +89,7 @@ and the number of available features.}
 \item{linear_reduction_dims_use}{Explicit component indices, or NULL for
 modality-specific selection. Inspect \code{WNN_dims_list} for the selected indices.}
 
-\item{linear_reduction_params}{Named arguments for the linear reduction backend.}
+\item{linear_reduction_params}{Named arguments for linear reduction.}
 
 \item{force_linear_reduction}{Whether to recompute existing linear reductions.}
 
@@ -130,7 +130,7 @@ nearest neighbors, retaining both modality reductions and the WNN graph.
 }
 \details{
 Cells must represent paired measurements. RNA and ATAC preprocessing is
-followed by native multimodal neighbor construction. This function does not
+followed by multimodal neighbor construction. This function does not
 use batch labels to correct either modality. Specify assays explicitly after
 adding derived assays, for example \code{assay = c("RNA", "peaks")}.
 Both assays must contain the same cells as the object. Subset to verified

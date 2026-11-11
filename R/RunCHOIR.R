@@ -1,7 +1,7 @@
 #' @title Run CHOIR clustering
 #'
 #' @description
-#' Runs the optional CHOIR backend on a single-modality `Seurat` object.
+#' Runs CHOIR on a single-modality `Seurat` object.
 #' CHOIR builds and prunes a hierarchical clustering tree using random-forest
 #' classifiers and permutation tests to identify statistically distinct cell
 #' populations.
@@ -30,11 +30,11 @@
 #' @param min_accuracy Minimum classifier accuracy required to keep clusters
 #'   separate.
 #' @param max_clusters Must be `"auto"`. Numeric limits are rejected because
-#'   the upstream backend can fail to terminate when the number of
+#'   the upstream method can fail to terminate when the number of
 #'   clusters plateaus.
 #' @param normalization_method Normalization performed inside CHOIR. Use
 #'   `"none"` for previously normalized data or `"SCTransform"` with a counts
-#'   layer. The upstream backend does not support `"SCTransform"` for Seurat v5
+#'   layer. The upstream method does not support `"SCTransform"` for Seurat v5
 #'   `Assay5` objects.
 #' @param batch.by Optional metadata column containing batch labels.
 #' @param batch_correction_method Batch correction performed by CHOIR. If
@@ -45,7 +45,7 @@
 #' @param var_features Features associated with `reduction`. If `NULL` and a
 #'   reduction is supplied, variable features from `assay` are used.
 #' @param atac Whether the selected assay contains ATAC-seq data.
-#' @param cores Number of cores used by CHOIR. The upstream backend supports
+#' @param cores Number of cores used by CHOIR. The upstream package supports
 #'   macOS and Linux; Windows execution is rejected before installation.
 #' @param seed Random seed passed to CHOIR.
 #' @param store_tool Whether to store a lightweight result summary in
@@ -53,14 +53,11 @@
 #' @param verbose Whether to print progress messages.
 #' @param overwrite Whether to replace existing CHOIR metadata, reduction, and
 #'   `misc` entries, plus the `tools` entry when `store_tool = TRUE`.
-#' @param ... Additional named arguments passed to the installed CHOIR entry
-#'   point. Unsupported arguments produce an error rather than being silently
-#'   ignored.
-#'
+#' @param ... Arguments passed to other functions.
 #' @details
 #' Stored results retain a private per-cell identity metadata column for
 #' [GetSpatialResult()]. Preserve this column when subsetting or renaming cells.
-#' The accessor returns current-cell assignments; stored native results and
+#' The accessor returns current-cell assignments; stored original results and
 #' fit parameters remain unchanged.
 #'
 #' @return A `Seurat` object containing CHOIR clusters in `cluster_colname`,
@@ -112,8 +109,8 @@ RunCHOIR <- function(
   store_tool = TRUE,
   verbose = TRUE,
   overwrite = FALSE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
@@ -241,7 +238,7 @@ RunCHOIR <- function(
     ),
     dots
   )
-  args <- choir_match_backend_args(choir_fun, args, dot_names = names(dots))
+  args <- choir_match_args(choir_fun, args, dot_names = names(dots))
   result <- do.call(choir_fun, args)
   result <- choir_validate_result(
     result = result,
@@ -641,7 +638,7 @@ choir_validate_dots <- function(dots) {
   invisible(TRUE)
 }
 
-choir_match_backend_args <- function(fun, args, dot_names = character()) {
+choir_match_args <- function(fun, args, dot_names = character()) {
   if (!is.function(fun)) {
     log_message(
       "The installed {.pkg CHOIR} package does not expose a callable {.fn CHOIR} entry point",

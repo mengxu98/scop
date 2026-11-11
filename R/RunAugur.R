@@ -13,7 +13,7 @@
 #' @param backend Backend used to run Augur. `"cpp"` uses a parity-preserving
 #' `scop` R/C++ backend that keeps Augur's feature selection, sampling, random
 #' forest, and metric semantics without requiring the Augur package. `"r"`
-#' calls the native `Augur::calculate_auc` implementation.
+#' calls `Augur::calculate_auc`.
 #' @param features Features used by Augur. If `NULL`, all features in `assay`
 #' are used.
 #' @param n_subsamples,subsample_size,folds,min_cells,var_quantile,feature_perc,select_var,augur_mode,classifier,rf_params,lr_params
@@ -23,9 +23,8 @@
 #' @param tool_name Name of the `srt@tools` entry used to store Augur results.
 #' @param add_meta Whether to write `prefix_auc` and `prefix_rank` metadata
 #' columns back to each cell by matching `celltype.by`.
-#' @param ... Additional arguments passed to `Augur::calculate_auc`.
-#'
-#' @return A `Seurat` object with native Augur results stored in
+#' @param ... Arguments passed to other functions.
+#' @return A `Seurat` object with Augur results stored in
 #' `srt@tools[[tool_name]]`. When `add_meta = TRUE`, cell-level metadata columns
 #' `prefix_auc` and `prefix_rank` are added for use with existing `scop`
 #' plotting functions such as [FeatureDimPlot()].
@@ -89,8 +88,8 @@ RunAugur <- function(
   tool_name = "Augur",
   add_meta = TRUE,
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {

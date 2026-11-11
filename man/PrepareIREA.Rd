@@ -28,7 +28,7 @@ The suffix is the exact portal cell-type identifier.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{Passed to helper functions.}
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A named species list with an \code{irea_reference} under each selector.

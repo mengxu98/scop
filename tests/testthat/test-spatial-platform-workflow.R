@@ -71,7 +71,7 @@ test_that("BANKSY and SmoothClust route to their own producers and reject stale 
     .package = "scop",
     RunStandardWorkflow = function(object, ...) object,
     RunBANKSY = producer,
-    RunSmoothClust = function(object, ..., tool_name = "SmoothClust") producer(object, ..., tool_name = tool_name)
+    RunSmoothClust = function(object, tool_name = "SmoothClust", ...) producer(object, ..., tool_name = tool_name)
   )
   for (method in c("BANKSY", "SmoothClust")) {
     out <- original(make_platform_object(),

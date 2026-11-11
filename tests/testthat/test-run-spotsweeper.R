@@ -23,11 +23,6 @@ make_spotsweeper_seurat <- function(include_mito = TRUE) {
   srt
 }
 
-skip_if_no_spotsweeper_infra <- function() {
-  testthat::skip_if_not_installed("SpatialExperiment")
-  testthat::skip_if_not_installed("SummarizedExperiment")
-  testthat::skip_if_not_installed("S4Vectors")
-}
 
 with_mock_spotsweeper <- function(
   code,
@@ -201,7 +196,7 @@ test_that("RunSpotSweeper validates Seurat input before backend work", {
 })
 
 test_that("RunSpotSweeper stores local outlier and artifact metadata", {
-  skip_if_no_spotsweeper_infra()
+  skip_if_not_installed("SpatialExperiment")
   srt <- make_spotsweeper_seurat()
   with_mock_spotsweeper({
     out <- RunSpotSweeper(
@@ -242,7 +237,7 @@ test_that("RunSpotSweeper stores local outlier and artifact metadata", {
 })
 
 test_that("RunSpotSweeper skips artifact detection when mitochondrial signal is unavailable", {
-  skip_if_no_spotsweeper_infra()
+  skip_if_not_installed("SpatialExperiment")
   srt <- make_spotsweeper_seurat(include_mito = FALSE)
   with_mock_spotsweeper({
     out <- RunSpotSweeper(
@@ -268,7 +263,7 @@ test_that("RunSpotSweeper skips artifact detection when mitochondrial signal is 
 })
 
 test_that("RunSpotSweeper marks artifact backend failures as partial", {
-  skip_if_no_spotsweeper_infra()
+  skip_if_not_installed("SpatialExperiment")
   srt <- make_spotsweeper_seurat()
   out <- suppressWarnings(with_mock_spotsweeper(
     {
@@ -294,7 +289,7 @@ test_that("RunSpotSweeper marks artifact backend failures as partial", {
 })
 
 test_that("RunSpotSweeper rejects missing or invalid artifact backend output truthfully", {
-  skip_if_no_spotsweeper_infra()
+  skip_if_not_installed("SpatialExperiment")
   expected_reason <- c(
     missing = "returned no artifact column",
     invalid = "returned invalid artifact values",
@@ -328,7 +323,7 @@ test_that("RunSpotSweeper rejects missing or invalid artifact backend output tru
 })
 
 test_that("RunSpotSweeper rejects artifact output with changed spot alignment", {
-  skip_if_no_spotsweeper_infra()
+  skip_if_not_installed("SpatialExperiment")
   for (artifact_mode in c("drop", "rename", "reorder")) {
     out <- suppressWarnings(with_mock_spotsweeper(
       {
@@ -362,7 +357,7 @@ test_that("RunSpotSweeper rejects artifact output with changed spot alignment", 
 })
 
 test_that("RunSpotSweeper marks incomplete local-outlier output partial", {
-  skip_if_no_spotsweeper_infra()
+  skip_if_not_installed("SpatialExperiment")
   for (local_mode in c("missing", "partial", "invalid")) {
     out <- suppressMessages(with_mock_spotsweeper(
       {
@@ -407,7 +402,7 @@ test_that("RunSpotSweeper marks incomplete local-outlier output partial", {
 })
 
 test_that("RunSpotSweeper does not reuse stale local-outlier metadata", {
-  skip_if_no_spotsweeper_infra()
+  skip_if_not_installed("SpatialExperiment")
   srt <- make_spotsweeper_seurat()
   metrics <- c("nCount_RNA", "nFeature_RNA", "percent.mito")
   for (metric in metrics) {
@@ -468,7 +463,7 @@ test_that("RunSpotSweeper rejects local-output input collisions before backend c
 })
 
 test_that("RunSpotSweeper does not reuse a stale artifact metadata column", {
-  skip_if_no_spotsweeper_infra()
+  skip_if_not_installed("SpatialExperiment")
   srt <- make_spotsweeper_seurat()
   srt$artifact <- rep(c(TRUE, FALSE), length.out = ncol(srt))
   artifact_before <- srt$artifact
@@ -560,7 +555,7 @@ test_that("RunSpotSweeper rejects missing sample labels before backend checks", 
 })
 
 test_that("RunSpotSweeper includes untested coordinate spots in overall status", {
-  skip_if_no_spotsweeper_infra()
+  skip_if_not_installed("SpatialExperiment")
   srt <- make_spotsweeper_seurat()
   coords <- data.frame(
     x = srt$x[seq_len(5)],
@@ -606,7 +601,7 @@ test_that("RunSpotSweeper includes untested coordinate spots in overall status",
 })
 
 test_that("RunSpotSweeper marks incomplete local-only coordinate scope partial", {
-  skip_if_no_spotsweeper_infra()
+  skip_if_not_installed("SpatialExperiment")
   srt <- make_spotsweeper_seurat()
   coords <- data.frame(
     x = srt$x[seq_len(5)],
@@ -675,7 +670,7 @@ test_that("RunSpotSweeper marks incomplete local-only coordinate scope partial",
 })
 
 test_that("RunSpotSweeper preserves mixed per-sample artifact statuses", {
-  skip_if_no_spotsweeper_infra()
+  skip_if_not_installed("SpatialExperiment")
   srt <- make_spotsweeper_seurat()
   srt$artifact_mito_percent <- c(1, 2, 3, 1, 1, 1)
   srt$artifact_mito_sum <- c(1, 2, 3, 1, 1, 1)
@@ -710,7 +705,7 @@ test_that("RunSpotSweeper preserves mixed per-sample artifact statuses", {
 })
 
 test_that("RunSpotSweeper preserves custom sample order when artifacts are not requested", {
-  skip_if_no_spotsweeper_infra()
+  skip_if_not_installed("SpatialExperiment")
   srt <- make_spotsweeper_seurat()
   srt$sample <- rep(c("S2", "S1"), each = 3)
   out <- with_mock_spotsweeper({
@@ -738,7 +733,7 @@ test_that("RunSpotSweeper preserves custom sample order when artifacts are not r
 })
 
 test_that("RunSpotSweeper refuses filtered output when artifact detection is partial", {
-  skip_if_no_spotsweeper_infra()
+  skip_if_not_installed("SpatialExperiment")
   srt <- make_spotsweeper_seurat()
   before <- list(
     meta.data = srt@meta.data,
@@ -775,7 +770,7 @@ test_that("RunSpotSweeper refuses filtered output when artifact detection is par
 })
 
 test_that("RunSpotSweeper keeps partial metadata when detailed storage is disabled", {
-  skip_if_no_spotsweeper_infra()
+  skip_if_not_installed("SpatialExperiment")
   srt <- make_spotsweeper_seurat(include_mito = FALSE)
   out <- with_mock_spotsweeper({
     RunSpotSweeper(
@@ -801,7 +796,7 @@ test_that("RunSpotSweeper keeps partial metadata when detailed storage is disabl
 })
 
 test_that("RunSpotSweeper console status is truthful and respects verbose", {
-  skip_if_no_spotsweeper_infra()
+  skip_if_not_installed("SpatialExperiment")
 
   partial_events <- capture_spotsweeper_logs(with_mock_spotsweeper({
     RunSpotSweeper(
@@ -862,7 +857,7 @@ test_that("RunSpotSweeper console status is truthful and respects verbose", {
 })
 
 test_that("RunSpotSweeper partial completion survives warning escalation", {
-  skip_if_no_spotsweeper_infra()
+  skip_if_not_installed("SpatialExperiment")
   old_options <- options(warn = 2)
   on.exit(options(old_options), add = TRUE)
 
@@ -906,7 +901,7 @@ test_that("RunSpotSweeper partial completion survives warning escalation", {
 })
 
 test_that("RunSpotSweeper supports return_filtered and store_results = FALSE", {
-  skip_if_no_spotsweeper_infra()
+  skip_if_not_installed("SpatialExperiment")
   srt <- make_spotsweeper_seurat()
   with_mock_spotsweeper({
     out <- RunSpotSweeper(
@@ -932,7 +927,7 @@ test_that("RunSpotSweeper supports return_filtered and store_results = FALSE", {
 })
 
 test_that("RunSpotSweeper output is directly plottable with SpatialSpotPlot", {
-  skip_if_no_spotsweeper_infra()
+  skip_if_not_installed("SpatialExperiment")
   srt <- make_spotsweeper_seurat()
   with_mock_spotsweeper({
     out <- RunSpotSweeper(

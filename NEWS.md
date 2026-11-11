@@ -1,16 +1,21 @@
-# Development: ATAC coaccessibility
-
-- Add `RunATACCoaccessibility()` with explicit assay/reference contracts and focused native/backend tests.
-
-# Development: ATAC footprint
-
-- Add `RunATACFootprint()`, `ATACFootprintPlot()` with explicit assay/reference contracts and focused native/backend tests.
-# Development: ATAC motif
-- Add `ATACMotifPlot()` with explicit assay/reference contracts and focused native/backend tests.
-
 # scop (development version)
 
-* **feat**: `CellStatePlot()` combines a cluster similarity tree, annotations, program and sample composition, marker expression and precomputed GSEA in a standard patchwork object with measured label spacing, short composition tracks and wrapping legends. It accepts Seurat and AnnData objects, supports categorical and continuous palettes, can place clusters in rows with the tree on the left and upright legends using `flip = TRUE`, and can return the underlying summaries.
+* **breaking**: Remove `allow_approximate` from `RunCellRank()`, `RunPalantir()` and `RunSCENICPlus()`; selecting their C++ implementations emits an approximation warning. `CellRankPlot()` removes `trends`, `clusters`, `enrichment` and `database`; use `DynamicHeatmap()`, `DynamicPlot()` and `EnrichmentPlot()` for these views.
+
+* **feat**: `CellStatePlot()` combines cluster similarity, annotations, compositions, marker expression and precomputed GSEA in a standard patchwork object. It supports Seurat and AnnData, default palettes, optional summaries and `flip = TRUE` with the tree on the left and upright legends.
+* **feat**: Add `RunATACCoaccessibility()`, `RunATACFootprint()`, `ATACFootprintPlot()` and `ATACMotifPlot()` with explicit assay and reference contracts.
+* **fix**: Plotting functions restore caller random-number state after construction, data returns and errors. Repelled dimension labels and score-plot jitter use the requested seed during delayed rendering.
+* **fix**: Synchronize and restore PCA BLAS and OpenMP thread counts across successive calls with different core counts.
+* **fix**: CCC gene plots retrieve stored target genes and support unified interaction results. Reject conflicting CCC argument aliases.
+* **fix**: Keep zero-P-value GSEA weights finite, forward GSEA `byrow`, remove ineffective alpha and expression colour scales, and select contrasting text for annotated and mirrored enrichment bars.
+* **fix**: ATAC coordinate conversion uses public accessors while preserving interval IDs and closed-coordinate semantics.
+* **refactor**: Share enrichment term selection, maps, networks, word clouds and comparison tables, retaining group matching, ordering, gene selection and score semantics.
+* **refactor**: Share CCC data preparation and panel composition, reference-label preparation, SCENIC and spatial gradient scales, and projection arrow layers. Remove unused helpers and identity wrappers; keep GSVA- and enrichment-rank-specific code with their entrypoints.
+* **refactor**: Reuse thisplot scatter, highlight, three-dimensional, streamline and rounded-rectangle layers while retaining object adaptation and interactive controls in scop.
+* **refactor**: Place `...` last in owned function signatures while retaining required external adapter contracts. `RunDEtest()` normalizes the deprecated named `srt` alias before standard S3 dispatch.
+* **deps**: ATAC checks optional packages in the analysis branches that use them. Word clouds check GO keyword dependencies only for GO workflows.
+* **test**: Consolidate ATAC and spatial fixtures and RNG assertions, remove redundant tests, and validate motif logos with ggseqlogo. Conversion tests use the existing Python runtime.
+* **ci**: Run the spatial coordinate source check directly and update renamed BANKSY and Presto test paths.
 
 * **fix**: `PrepareEnv()` no longer passes two conflicting pandas pins to pip during a default installation (#561). Environment requirements emit one pin per package, isolated profiles such as `scprep_env` no longer redefine shared package versions, and `include_optional` no longer pulls in `magic` (isolated `scprep_env`) or `moscot` (own JAX profile), so the `optional` shortcut stays usable.
 

@@ -38,7 +38,7 @@ the order of 'assays' (if specified) or object's assays}
 
 \item{verbose}{Print messages and show progress bar}
 
-\item{...}{Arguments to be passed to methods such as \code{\link[Seurat]{CreateSeuratObject}}}
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A named list of averaged matrices or a Seurat object.

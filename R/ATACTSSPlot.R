@@ -26,13 +26,13 @@
 #' }
 ATACTSSPlot <- function(object, assay = NULL, group.by = NULL, idents = NULL,
                         cells = NULL) {
-  checked <- atac_tss_plot_input(object, assay, cells, group.by)
+  checked <- atac_plot_input(object, assay, cells, group.by)
   object <- checked$object
   assay <- checked$assay
   groups <- if (is.null(group.by)) SeuratObject::Idents(object)[checked$cells] else object[[]][checked$cells, group.by]
   if (!is.null(idents) &&
-      (!is.character(idents) || !length(idents) || anyNA(idents) ||
-       any(!idents %in% as.character(groups)))) {
+    (!is.character(idents) || !length(idents) || anyNA(idents) ||
+      any(!idents %in% as.character(groups)))) {
     stop("idents must contain existing non-missing group labels.", call. = FALSE)
   }
   matrix <- object[[assay]]@positionEnrichment[["TSS"]]
@@ -40,7 +40,7 @@ ATACTSSPlot <- function(object, assay = NULL, group.by = NULL, idents = NULL,
     stop("TSS position enrichment is unavailable; run TSSEnrichment(fast = FALSE) or RunATACQC(tss.positions = tss, fast = FALSE) first.", call. = FALSE)
   }
   if (is.null(rownames(matrix)) || anyDuplicated(rownames(matrix)) ||
-      !all(checked$cells %in% rownames(matrix))) {
+    !all(checked$cells %in% rownames(matrix))) {
     stop("TSS position enrichment must have unique rows for every selected assay cell.", call. = FALSE)
   }
   positions <- suppressWarnings(as.numeric(colnames(matrix)))
@@ -58,28 +58,7 @@ ATACTSSPlot <- function(object, assay = NULL, group.by = NULL, idents = NULL,
     object <- subset(object, cells = checked$cells)
   }
   object[[assay]]@positionEnrichment[["TSS"]] <- matrix
-  atac_backend_fun("Signac", "TSSPlot")(
+  Signac::TSSPlot(
     object = object, assay = assay, group.by = group.by, idents = idents
   )
-}
-
-atac_tss_plot_input <- function(object, assay = NULL, cells = NULL, group.by = NULL) {
-  if (!inherits(object, "Seurat")) stop("object must be a Seurat object.", call. = FALSE)
-  assay <- if (is.null(assay)) SeuratObject::DefaultAssay(object) else assay
-  if (!is.character(assay) || length(assay) != 1L || is.na(assay) ||
-      !assay %in% SeuratObject::Assays(object) || !inherits(object[[assay]], "ChromatinAssay")) {
-    stop("assay must name a ChromatinAssay.", call. = FALSE)
-  }
-  assay.cells <- colnames(object[[assay]])
-  cells <- if (is.null(cells)) assay.cells else cells
-  if (!atac_unique_ids(cells) || !all(cells %in% assay.cells)) {
-    stop("cells must be unique cell names belonging to the selected assay.", call. = FALSE)
-  }
-  if (!is.null(group.by) && (!is.character(group.by) || length(group.by) != 1L ||
-      is.na(group.by) || !group.by %in% colnames(object[[]]))) {
-    stop("group.by must name one existing metadata column.", call. = FALSE)
-  }
-  groups <- if (is.null(group.by)) SeuratObject::Idents(object)[cells] else object[[]][cells, group.by]
-  if (anyNA(groups)) stop("Selected cells must have non-missing group labels.", call. = FALSE)
-  list(object = object, assay = assay, cells = cells)
 }

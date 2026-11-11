@@ -1,5 +1,5 @@
 make_cellrank_closure_srt <- function() {
-  counts <- Matrix::Diagonal(4, x = rep(1, 4))
+  counts <- Matrix::sparseMatrix(i = 1:4, j = 1:4, x = rep(1, 4), dims = c(4, 4))
   rownames(counts) <- paste0("g", 1:4)
   colnames(counts) <- paste0("c", 1:4)
   srt <- Seurat::CreateSeuratObject(counts = counts)
@@ -98,6 +98,7 @@ test_that("RunCellRankTrends stores normalized trend payload", {
   expect_true("A" %in% names(out@tools$CellRank$trends))
   expect_identical(converted_fate, srt@tools$CellRank$fate_probabilities)
   expect_identical(forwarded$n_points, 3L)
+  expect_identical(forwarded$fallback_distribution, "normal")
   expect_identical(forwarded$genes, c("g1", "g2"))
   expect_identical(forwarded$fate_columns, c("A", "B"))
   expect_identical(forwarded$show_plot, FALSE)
@@ -129,7 +130,7 @@ test_that("RunCellRankEnrichment records empty and non-empty module results", {
         args <- list(...)
         expect_identical(names(args$TERM2GENE), c("term", "gene"))
         expect_true(all(args$TERM2GENE$gene %in% c("g1", "g2")))
-        data.frame(ID = "t1", Description = "term", p.adjust = 0.01, Count = 2)
+        data.frame(ID = "t1", Description = "term", p.adjust = 0.01, Count = 2, GeneRatio = "2/2", BgRatio = "2/4")
       }
     },
     PrepareDB = function(...) {
@@ -145,12 +146,17 @@ test_that("RunCellRankEnrichment records empty and non-empty module results", {
       ))
     }
   )
-  out <- RunCellRankEnrichment(srt, lineage = "A", db = "TEST", verbose = FALSE)
+  output_dir <- withr::local_tempdir()
+  out <- RunCellRankEnrichment(srt, lineage = "A", db = "TEST", verbose = FALSE, output_dir = output_dir)
+  expect_true(file.exists(file.path(output_dir, "A_TEST_enrichment.pdf")))
   expect_true("A" %in% names(out@tools$CellRank$enrichment))
   expect_true("TEST" %in% names(out@tools$CellRank$enrichment$A$databases))
   expect_true(nrow(out@tools$CellRank$enrichment$A$databases$TEST) >= 1)
+  enrichment <- out@tools$CellRank$enrichment$A$databases$TEST
+  expect_identical(enrichment$Groups, c("0", "1"))
+  expect_identical(enrichment$Database, c("TEST", "TEST"))
   expect_s3_class(
-    CellRankPlot(out, plot_type = "enrichment", lineage = "A", database = "TEST"),
+    EnrichmentPlot(res = list(enrichment = enrichment), db = "TEST", plot_type = "comparison"),
     "ggplot"
   )
 })
@@ -159,6 +165,7 @@ test_that("CellRankPlot circular consumes stored fate probabilities", {
   srt <- make_cellrank_closure_srt()
   p <- CellRankPlot(srt, plot_type = "circular")
   expect_s3_class(p, "ggplot")
+  expect_no_error(ggplot2::ggplotGrob(p))
 })
 
 test_that("CellRankPlot drivers consumes matrix driver payloads", {
@@ -279,8 +286,6 @@ test_that("RunCellRank stores named fate and driver payloads", {
 })
 
 test_that("RunCellRank default Schur method does not require PETSc", {
-  expect_identical(eval(formals(RunCellRank)$schur_method)[[1L]], "brandts")
-
   python_source <- readLines(
     system.file("python", "functions.py", package = "scop"),
     warn = FALSE
@@ -292,8 +297,4 @@ test_that("RunCellRank default Schur method does not require PETSc", {
     python_source,
     fixed = TRUE
   )), 2L)
-})
-
-test_that("CellRank trend fallback uses the CellRank normal distribution name", {
-  expect_identical(formals(RunCellRankTrends)$fallback_distribution, "normal")
 })

@@ -26,7 +26,7 @@ MistyRPlot(
 
 \item{measure}{Numeric result column to display. For `type = "improvements"`
 use `"gain.R2"` or `"gain.RMSE"`; for `type = "contributions"`, use
-`"contribution"` or `"importance"` as provided by the backend. `NULL`
+`"contribution"` or `"importance"` as provided by the model. `NULL`
 defaults to `"gain.R2"` for improvements and `"contribution"` for
 contributions, and errors if that column is not present.}
 }
@@ -35,7 +35,7 @@ A `ggplot` object.
 }
 \description{
 Plot model improvements or view contributions from a result
-produced by [RunMistyR()] without rerunning the backend.
+produced by [RunMistyR()] without rerunning the model.
 }
 \seealso{
 [RunMistyR()]

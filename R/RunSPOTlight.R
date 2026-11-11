@@ -19,8 +19,7 @@
 #' @param min_prop Minimum cell-type proportion passed to `SPOTlight`.
 #' @param scale Whether `SPOTlight` scales expression internally.
 #' @param tool_name Name used to store detailed results in `srt@tools`.
-#' @param ... Additional parameters passed to `SPOTlight::SPOTlight()`.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A `Seurat` object with `SPOTlight` proportion columns in metadata and
 #' dominant cell type summaries. When `store_results = TRUE`, detailed results
 #' are stored in `srt@tools[[tool_name]]`.
@@ -83,8 +82,8 @@ RunSPOTlight <- function(
   tool_name = "SPOTlight",
   store_results = TRUE,
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
@@ -187,7 +186,7 @@ RunSPOTlight <- function(
     "Run {.pkg SPOTlight} with {.val {nrow(ref_counts)}} features, {.val {ncol(st_counts)}} spatial spots, and {.val {ncol(ref_counts)}} reference cells",
     verbose = verbose
   )
-  result <- spotlight_run_backend(
+  result <- spotlight_run_model(
     ref_counts = ref_counts,
     st_counts = st_counts,
     labels = labels,
@@ -416,7 +415,7 @@ spotlight_validate_mgs_groups <- function(mgs, labels, gene_id, group_id) {
   invisible(TRUE)
 }
 
-spotlight_run_backend <- function(
+spotlight_run_model <- function(
   ref_counts,
   st_counts,
   labels,
@@ -444,6 +443,7 @@ spotlight_run_backend <- function(
     ...
   )
 }
+
 
 spotlight_extract_weights <- function(result, spot_ids) {
   weights <- if (is.list(result) && !is.null(result$mat)) {

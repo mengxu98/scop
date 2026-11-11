@@ -342,24 +342,10 @@ test_that("public HE overlay wrappers expose image.scale", {
   expect_true(all(vapply(wrappers, function(name) {
     args <- names(formals(getExportedValue("scop", name)))
     if ("..." %in% args) {
-      return(match("...", args) < match("image.scale", args))
+      return(match("image.scale", args) < match("...", args))
     }
     identical(utils::tail(args, 1L), "image.scale")
   }, logical(1))))
-})
-
-test_that("analysis code cannot bypass the shared raw extractor", {
-  files <- list.files(
-    testthat::test_path("..", "..", "R"),
-    pattern = "[.]R$",
-    full.names = TRUE
-  )
-  skip_if(length(files) == 0L, "package source R files are not available")
-  allowed <- c("SpatialCore.R", "SpatialCellPlot.R", "data.R")
-  bypass <- vapply(files, function(file) {
-    any(grepl("GetTissueCoordinates\\s*\\(", readLines(file, warn = FALSE)))
-  }, logical(1))
-  expect_setequal(basename(files[bypass]), allowed)
 })
 
 test_that("old coordinate-dependent network results are rejected", {

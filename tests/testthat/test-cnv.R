@@ -58,7 +58,7 @@ mock_cnv_backend <- function(...) {
 test_that("RunCNV stores a unified result bundle and aligned metadata", {
   srt <- make_cnv_seurat()
   testthat::local_mocked_bindings(
-    cnv_run_backend = function(method, counts, ...) {
+    cnv_run_model = function(method, counts, ...) {
       expect_identical(method, "copykat")
       expect_s4_class(counts, "dgCMatrix")
       mock_cnv_backend()
@@ -81,7 +81,7 @@ test_that("RunCNV stores a unified result bundle and aligned metadata", {
 test_that("RunCNV orients cell-by-bin backend matrices", {
   srt <- make_cnv_seurat()
   testthat::local_mocked_bindings(
-    cnv_run_backend = function(...) {
+    cnv_run_model = function(...) {
       list(
         cnv_matrix = matrix(
           c(1, 2, 3, 4, 5, 6),
@@ -107,7 +107,7 @@ test_that("RunCNV validates reference and gene-order requirements before backend
     end = seq_len(nrow(srt)) * 100 + 99
   )
   testthat::local_mocked_bindings(
-    cnv_run_backend = function(...) stop("backend should not run")
+    cnv_run_model = function(...) stop("backend should not run")
   )
   expect_error(
     RunCNV(srt, method = "missing_method", verbose = FALSE),
@@ -162,7 +162,7 @@ test_that("RunCNV accepts common method aliases", {
   )
   seen <- character()
   testthat::local_mocked_bindings(
-    cnv_run_backend = function(method, ...) {
+    cnv_run_model = function(method, ...) {
       seen <<- c(seen, method)
       mock_cnv_backend()
     }
@@ -184,7 +184,7 @@ test_that("RunCNV accepts common method aliases", {
 test_that("RunCNV keeps method-specific metadata across multiple methods", {
   srt <- make_cnv_seurat()
   testthat::local_mocked_bindings(
-    cnv_run_backend = function(method, ...) {
+    cnv_run_model = function(method, ...) {
       out <- mock_cnv_backend()
       if (identical(method, "scevan")) {
         out$cell_info$prediction <- c("normal", "malignant")
@@ -216,7 +216,7 @@ test_that("RunCNV supports gene-order files and store_matrix = FALSE", {
   utils::write.table(gene_order, gene_file, sep = "\t", quote = FALSE, row.names = FALSE)
 
   testthat::local_mocked_bindings(
-    cnv_run_backend = function(method, gene_order, ...) {
+    cnv_run_model = function(method, gene_order, ...) {
       expect_identical(method, "infercnv")
       expect_equal(colnames(gene_order), c("gene", "chr", "start", "end"))
       mock_cnv_backend()
@@ -330,6 +330,10 @@ test_that("fastCNV runner skips expensive upstream preparation by default", {
 
   testthat::local_mocked_bindings(
     check_r = function(...) TRUE,
+    cnv_attach_package_data = function(package) {
+      expect_identical(package, "fastCNV")
+      FALSE
+    },
     get_namespace_fun = function(package, name) {
       expect_identical(package, "fastCNV")
       expect_identical(name, "fastCNV")
@@ -511,7 +515,7 @@ test_that("infercnv runner avoids subclusters by default and filters passthrough
 })
 
 test_that("backend argument filtering drops unsupported named arguments", {
-  out <- cnv_call_backend_fun(
+  out <- cnv_call_fun(
     function(a, b, ...) {
       list(a = a, b = b, passthrough = list(...))
     },
@@ -610,7 +614,7 @@ test_that("fastCNV rejects unsupported mouse genome before backend execution", {
 test_that("CNVPlot returns bar, heatmap, and tree objects from stored results", {
   srt <- make_cnv_seurat()
   testthat::local_mocked_bindings(
-    cnv_run_backend = function(...) mock_cnv_backend()
+    cnv_run_model = function(...) mock_cnv_backend()
   )
   out <- RunCNV(srt, method = "copykat", verbose = FALSE)
 

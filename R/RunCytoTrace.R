@@ -41,7 +41,7 @@
 #' binned CytoTRACE2 output.
 #' @param cores Number of cores for parallel processing. `NULL` (the default)
 #' uses the process OpenMP team for the C++ kernels and one worker for the
-#' CytoTRACE2 backend.
+#' CytoTRACE2 package.
 #' @param backend Backend used to run CytoTRACE2. `"r"` calls the official
 #' `CytoTRACE2::cytotrace2()` implementation and is the default. `"cpp"` uses
 #' the package R/C++ implementation.
@@ -49,9 +49,7 @@
 #' @param data_dir Path to the directory containing CytoTRACE2 model data files.
 #' Used only by `backend = "cpp"`. If `NULL`, uses model data prepared by
 #' `PrepareDB(db = "CytoTRACE2")`.
-#' @param ... Additional arguments passed to the official
-#' `CytoTRACE2::cytotrace2()` call when `backend = "r"`.
-#'
+#' @param ... Arguments passed to other functions.
 #' @rdname RunCytoTRACE
 #' @export
 #'

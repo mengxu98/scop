@@ -5,8 +5,7 @@
 #' preserves the complete Seurat contract for this step.
 #'
 #' @param object A Seurat object or graph accepted by Seurat.
-#' @param ... Arguments passed unchanged to [Seurat::FindClusters()].
-#'
+#' @param ... Arguments passed to other functions.
 #' @return The value returned by [Seurat::FindClusters()].
 #' @export
 FindClusters <- function(object, ...) {
@@ -20,8 +19,7 @@ FindClusters <- function(object, ...) {
 #' scop delegates rather than changing graph semantics.
 #'
 #' @param object A Seurat object.
-#' @param ... Arguments passed unchanged to [Seurat::FindMultiModalNeighbors()].
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A Seurat object returned by [Seurat::FindMultiModalNeighbors()].
 #' @export
 FindMultiModalNeighbors <- function(object, ...) {
@@ -89,7 +87,7 @@ module_score_supported <- function(
     identical(k, FALSE)
 }
 
-module_score_native <- function(
+module_score_compute <- function(
   object,
   context,
   features,
@@ -151,8 +149,7 @@ module_score_native <- function(
 #' @param features A list of feature vectors.
 #' @param pool,nbin,ctrl,k,assay,name,seed,search,slot Seurat-compatible
 #'   module-score parameters.
-#' @param ... Additional arguments passed to Seurat on fallback.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return The input Seurat object with module-score metadata columns.
 #' @export
 AddModuleScore <- function(
@@ -209,7 +206,7 @@ AddModuleScore <- function(
   )) {
     return(fallback())
   }
-  module_score_native(
+  module_score_compute(
     object = object,
     context = context,
     features = features,
@@ -232,8 +229,7 @@ AddModuleScore <- function(
 #' @param s.features,g2m.features Feature vectors for S and G2M phases.
 #' @param ctrl Number of control features; defaults to the smaller feature set.
 #' @param set.ident Whether to set cell identities to the inferred phase.
-#' @param ... Arguments passed to [AddModuleScore()].
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A Seurat object containing `S.Score`, `G2M.Score`, and `Phase`.
 #' @export
 CellCycleScoring <- function(
@@ -298,8 +294,7 @@ CellCycleScoring <- function(
 #' @param assay Assay names, one per object.
 #' @param verbose Show Seurat progress messages on delegated paths.
 #' @param fvf.nfeatures Features requested if Seurat must calculate them.
-#' @param ... Passed to Seurat on delegated paths.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A character vector of integration features.
 #' @export
 SelectIntegrationFeatures <- function(
@@ -325,7 +320,7 @@ SelectIntegrationFeatures <- function(
       !is.numeric(nfeatures) || length(nfeatures) != 1L ||
       !is.finite(nfeatures) || nfeatures < 1 ||
       nfeatures != as.integer(nfeatures) ||
-      !isTRUE(all(unlist(check_r("matrixStats", install = FALSE, verbose = FALSE), use.names = FALSE)))
+      !isTRUE(check_r("matrixStats", install = FALSE, verbose = FALSE)[["matrixStats"]])
   ) {
     return(fallback())
   }

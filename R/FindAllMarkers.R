@@ -150,7 +150,7 @@ marker_bind <- function(pieces) {
   }
   out <- if (length(pieces) == 1L) {
     pieces[[1L]]
-  } else if (isTRUE(all(unlist(check_r("data.table", install = FALSE, verbose = FALSE), use.names = FALSE)))) {
+  } else if (isTRUE(check_r("data.table", install = FALSE, verbose = FALSE)[["data.table"]])) {
     as.data.frame(
       get_namespace_fun("data.table", "rbindlist")(pieces, use.names = TRUE)
     )
@@ -409,10 +409,7 @@ FindAllMarkers.Seurat <- function(
     return(run_seurat())
   }
 
-  presto_ready <- isTRUE(all(unlist(
-    check_r("presto", install = FALSE, verbose = FALSE),
-    use.names = FALSE
-  )))
+  presto_ready <- isTRUE(check_r("presto", install = FALSE, verbose = FALSE)[["presto"]])
   presto_fun <- if (presto_ready) get_namespace_fun("presto", "wilcoxauc")
   if (is.null(presto_fun)) {
     return(run_seurat())
@@ -458,8 +455,7 @@ FindAllMarkers.Seurat <- function(
 #' Find markers for all groups
 #'
 #' @param object Object containing expression data.
-#' @param ... Passed to methods.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A data frame of marker statistics.
 #' @export
 FindAllMarkers <- function(object, ...) {

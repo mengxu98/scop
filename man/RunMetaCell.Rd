@@ -16,8 +16,8 @@ RunMetaCell(
   prefix = "Metacell",
   tool_name = "Metacell",
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -51,10 +51,10 @@ metacells from crossing group boundaries.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{Additional arguments passed to the underlying metacell method.}
-
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A metacell-level \code{Seurat} object. The original single-cell Seurat

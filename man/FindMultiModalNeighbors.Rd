@@ -9,7 +9,7 @@ FindMultiModalNeighbors(object, ...)
 \arguments{
 \item{object}{A Seurat object.}
 
-\item{...}{Arguments passed unchanged to [Seurat::FindMultiModalNeighbors()].}
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A Seurat object returned by [Seurat::FindMultiModalNeighbors()].

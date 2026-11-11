@@ -9,9 +9,9 @@ RunScrublet(
   assay = "RNA",
   db_rate = ncol(srt)/1000 * 0.01,
   data_type = NULL,
-  ...,
   verbose = TRUE,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -24,12 +24,12 @@ RunScrublet(
 \item{data_type}{Optional \link{CheckDataType} result, used internally to avoid
 rescanning the count matrix.}
 
-\item{...}{Additional arguments to be passed to \href{https://github.com/swolock/scrublet}{scrublet.Scrublet}.}
-
 \item{verbose}{Whether to print messages.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \description{
 Run doublet-calling with Scrublet

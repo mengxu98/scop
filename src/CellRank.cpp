@@ -1183,7 +1183,6 @@ NumericMatrix cellrank_pseudotime_kernel_cpp(
 
   for (int cell = 0; cell < n_cells; ++cell) {
     double pt_cell = pseudotime[cell];
-    double w_cell = (cell_weights.size() >= n_cells) ? cell_weights[cell] : 1.0;
 
     double row_sum = 0.0;
     for (int col = 0; col < n_neighbors; ++col) {
@@ -1228,7 +1227,6 @@ NumericMatrix cellrank_cytotrace_kernel_cpp(
     bool backward = false)
 {
   const int n_cells = gene_counts.size();
-  const int n_neighbors = knn_idx.ncol();
 
   double gc_min = gene_counts[0], gc_max = gene_counts[0];
   for (int i = 1; i < n_cells; ++i) {

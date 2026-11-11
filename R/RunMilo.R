@@ -19,7 +19,7 @@
 #' @param reduction Dimensional reduction used for Milo graph construction.
 #' If `NULL`, the default PCA-like reduction is used.
 #' @param backend Backend used to compute Milo neighborhoods and tests.
-#' `"r"` calls the upstream `miloR` implementation. `"cpp"` uses native
+#' `"r"` calls the upstream `miloR` implementation. `"cpp"` uses compiled
 #' `scop` graph/neighborhood/counting kernels and keeps edgeR for the
 #' neighborhood-level quasi-likelihood test.
 #' @param n_bootstrap Number of bootstrap iterations used by the group-level summary.

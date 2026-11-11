@@ -21,9 +21,9 @@
 #' @param min_cells_per_bin Minimum number of cells required in a bin.
 #' @param smooth Whether to smooth the trajectory with [stats::loess].
 #' @param trajectory_method Method used to fit trajectory coordinates along
-#' pseudotime. `"loess"` uses a fully R-native smoother over a Palantir-style
+#' pseudotime. `"loess"` uses a loess smoother over a Palantir-style
 #' pseudotime grid; `"bin"` uses binned median coordinates.
-#' @param smoothness Smoothing multiplier for the R-native loess span. Higher
+#' @param smoothness Smoothing multiplier for the loess span. Higher
 #' values yield smoother curves.
 #' @param span Base span used for loess smoothing.
 #' @param n_path_points Number of pseudotime points used to draw each smoothed
@@ -39,8 +39,11 @@
 #' @param trajectory_bg Color for the trajectory background stroke.
 #' @param trajectory_bg_stroke Width added to the trajectory background stroke.
 #' @param trajectory_arrow Arrow used for trajectories. See [grid::arrow].
+#' @param seed Random seed for plot construction. The caller's RNG state is restored.
 #' @param return_layer Logical. If `TRUE`, returns ggplot2 layers instead of a
 #' complete plot.
+#'
+#' @return A ggplot, or a named list of ggplot layers when `return_layer = TRUE`.
 #'
 #' @seealso [RunPalantir], [FeatureDimPlot], [CellDimPlot]
 #'
@@ -113,6 +116,8 @@ PalantirTrajectoryPlot <- function(
   srt = NULL
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
+  check_r("withr", verbose = FALSE)
+  withr::local_preserve_seed()
   set.seed(seed)
   trajectory_method <- match.arg(trajectory_method)
 
@@ -542,69 +547,43 @@ palantir_cell_layer <- function(
   }
   if (identical(cell_color, "pseudotime")) {
     dat[[".cell_color"]] <- dat[[pseudotime_key]]
-    return(list(
-      geom_point(
-        data = dat,
-        mapping = aes(x = .data[[axes[1]]], y = .data[[axes[2]]], color = .data[[".cell_color"]]),
-        size = pt.size,
-        alpha = pt.alpha,
-        inherit.aes = FALSE
-      ),
-      scale_color_viridis_c(name = pseudotime_key)
-    ))
-  }
-  if (identical(cell_color, "branch_selection")) {
+    color_scale <- scale_color_viridis_c(name = pseudotime_key)
+  } else if (identical(cell_color, "branch_selection")) {
     dat[[".cell_color"]] <- dat[["branch_selection"]]
     colors <- palette_colors(branch_cols, palette = palette, palcolor = palcolor)
     names(colors) <- branch_cols
-    return(list(
-      geom_point(
-        data = dat,
-        mapping = aes(x = .data[[axes[1]]], y = .data[[axes[2]]], color = .data[[".cell_color"]]),
-        size = pt.size,
-        alpha = pt.alpha,
-        inherit.aes = FALSE
-      ),
-      scale_color_manual(
-        name = "branch_selection",
-        values = colors,
-        labels = palantir_branch_labels(branch_cols),
-        na.value = "grey80"
-      )
-    ))
-  }
-  if (!cell_color %in% colnames(dat)) {
-    log_message(
-      "{.arg cell_color} must be {.val pseudotime}, {.val branch_selection}, {.val none}, or a metadata column in the plotted data.",
-      message_type = "error"
-    )
-  }
-  dat[[".cell_color"]] <- dat[[cell_color]]
-  if (is.numeric(dat[[".cell_color"]])) {
-    list(
-      geom_point(
-        data = dat,
-        mapping = aes(x = .data[[axes[1]]], y = .data[[axes[2]]], color = .data[[".cell_color"]]),
-        size = pt.size,
-        alpha = pt.alpha,
-        inherit.aes = FALSE
-      ),
-      scale_color_viridis_c(name = cell_color)
+    color_scale <- scale_color_manual(
+      name = "branch_selection",
+      values = colors,
+      labels = palantir_branch_labels(branch_cols),
+      na.value = "grey80"
     )
   } else {
-    list(
-      geom_point(
-        data = dat,
-        mapping = aes(x = .data[[axes[1]]], y = .data[[axes[2]]], color = .data[[".cell_color"]]),
-        size = pt.size,
-        alpha = pt.alpha,
-        inherit.aes = FALSE
-      ),
+    if (!cell_color %in% colnames(dat)) {
+      log_message(
+        "{.arg cell_color} must be {.val pseudotime}, {.val branch_selection}, {.val none}, or a metadata column in the plotted data.",
+        message_type = "error"
+      )
+    }
+    dat[[".cell_color"]] <- dat[[cell_color]]
+    color_scale <- if (is.numeric(dat[[".cell_color"]])) {
+      scale_color_viridis_c(name = cell_color)
+    } else {
       scale_color_manual(
         name = cell_color,
         values = palette_colors(dat[[".cell_color"]], palette = palette, palcolor = palcolor),
         na.value = "grey80"
       )
-    )
+    }
   }
+  list(
+    geom_point(
+      data = dat,
+      mapping = aes(x = .data[[axes[1]]], y = .data[[axes[2]]], color = .data[[".cell_color"]]),
+      size = pt.size,
+      alpha = pt.alpha,
+      inherit.aes = FALSE
+    ),
+    color_scale
+  )
 }

@@ -37,16 +37,16 @@ output of \code{\link[=RunGRNBoost2]{RunGRNBoost2()}}, \code{\link[=RunGENIE3]{R
 values are \code{"Homo_sapiens"}, \code{"Mus_musculus"}, and
 \code{"Drosophila_melanogaster"}.}
 
-\item{backend}{CisTarget runtime backend.
+\item{backend}{CisTarget runtime engine.
 \describe{
 \item{\code{"python"}}{Uses the pySCENIC/ctxcore Python pipeline. This is the
-most tested backend and produces results identical to official SCENIC.}
+most tested path and produces results identical to official SCENIC.}
 \item{\code{"cpp"}}{Uses a compiled cisTarget workflow with recovery, AUC/NES,
 and leading-edge kernels while retaining the same ranking
 database and motif annotation inputs.}
 \item{\code{"r"}}{Uses the \code{RcisTarget} Bioconductor package. Requires the
 cisTarget ranking databases and motif annotations to be available in
-the same format as the Python backend (feather files and motif2tf
+the same format as the Python path (feather files and motif2tf
 table).}
 }}
 
@@ -66,7 +66,7 @@ from the unique genes in \code{adj} as a minimal stub.}
 
 \item{txt_output}{Optional output path for the regulon TXT file.}
 
-\item{work_dir}{Working directory used by Python backend.}
+\item{work_dir}{Working directory used by Python.}
 
 \item{prefix}{Prefix for output files.}
 
@@ -80,7 +80,7 @@ reference files. If \code{NULL}, files are stored under
 
 \item{cores}{Number of workers.}
 
-\item{parallel_backend}{Parallel backend used for native C++ cisTarget
+\item{parallel_backend}{Parallel backend used for C++ cisTarget
 module processing. \code{"auto"} preserves the current cross-platform PSOCK
 behavior. \code{"fork"} is an explicit opt-in on macOS and Linux and is not
 available on Windows.}
@@ -89,7 +89,7 @@ available on Windows.}
 
 \item{verbose}{Whether to print progress messages.}
 
-\item{...}{Additional arguments passed to the backend.}
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A named list with components \code{regulons} (list of gene vectors),

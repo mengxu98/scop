@@ -118,7 +118,7 @@ test_that("cisTarget worker closure contains only minimal state", {
   original_parallelize_fun <- thisutils::parallelize_fun
   testthat::local_mocked_bindings(
     .package = "thisutils",
-    parallelize_fun = function(x, fun, ..., backend) {
+    parallelize_fun = function(x, fun, backend, ...) {
       captured$backend <- backend
       captured$environment_names <- ls(environment(fun), all.names = TRUE)
       captured$serialized_bytes <- length(serialize(fun, NULL))
@@ -181,7 +181,7 @@ test_that("native cisTarget normalizes NULL cores before the worker-state guard"
   original_modules <- getFromNamespace("scenic_modules_from_adjacencies", "scop")
   testthat::local_mocked_bindings(
     .package = "thisutils",
-    parallelize_fun = function(x, fun, ..., cores, backend) {
+    parallelize_fun = function(x, fun, cores, backend, ...) {
       captured$r_workers <- cores
       original_parallelize_fun(x, fun, ..., cores = cores, backend = backend)
     }

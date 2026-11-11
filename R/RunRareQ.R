@@ -34,7 +34,7 @@
 #' @details
 #' Stored results retain a private per-cell identity metadata column for
 #' [GetSpatialResult()]. Preserve this column when subsetting or renaming cells.
-#' The accessor returns current-cell assignments; stored native results and
+#' The accessor returns current-cell assignments; stored results and
 #' fit parameters remain unchanged.
 #'
 #' @return A `Seurat` object with RareQ results in metadata and

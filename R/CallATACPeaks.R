@@ -2,7 +2,7 @@
 #'
 #' @md
 #' @description
-#' Split selected cells with native Signac, run the installed MACS2 executable,
+#' Split selected cells with Signac, run the installed MACS2 executable,
 #' and retain separate peak sets, command arguments and logs. Peak inference is
 #' performed by MACS2; no caller is installed or silently substituted.
 #' @param object A validated Seurat object containing a ChromatinAssay and local
@@ -16,7 +16,7 @@
 #'   runtime. On Windows use a prepared Linux container with explicit mounted
 #'   paths. This function does not manage containers or translate host paths.
 #' @param outdir New output directory. Existing paths are rejected. Split BEDs,
-#'   native outputs and logs remain here, including when a call fails.
+#'   MACS2 outputs and logs remain here, including when a call fails.
 #' @param effective.genome.size Explicit effective genome size passed to MACS2.
 #' @param qvalue MACS2 q-value cutoff, strictly between zero and one.
 #' @param extsize,shift MACS2 fragment extension size and shift. The supported
@@ -37,7 +37,7 @@
 #' a caller wrapper that ignores the process exit status.
 #' @return A list with named `peaks` (`GRanges` per call), `groups` with columns
 #'   `call_id`, `sample` and optional `group`, and `receipt` containing actual
-#'   cell membership, reference, fragment resources, backend versions, command
+#'   cell membership, reference, fragment resources, dependency versions, command
 #'   arguments, logs, exit status and output files. The receipt identifies the
 #'   original `sample.by` and `group.by` metadata fields; their names cannot collide
 #'   with the fixed output columns. Counts represent the supplied
@@ -135,12 +135,15 @@ CallATACPeaks <- function(object, sample.by, group.by = NULL, cells = NULL,
     outdir = splitdir, append = TRUE, verbose = verbose
   )
   peaks <- commands <- stats::setNames(vector("list", length(ids)), ids)
-  on.exit({
-    saveRDS(commands, file.path(outdir, "commands.rds"))
-    state <- receipt
-    state$commands <- commands
-    saveRDS(state, file.path(outdir, "receipt.rds"))
-  }, add = TRUE)
+  on.exit(
+    {
+      saveRDS(commands, file.path(outdir, "commands.rds"))
+      state <- receipt
+      state$commands <- commands
+      saveRDS(state, file.path(outdir, "receipt.rds"))
+    },
+    add = TRUE
+  )
   for (id in ids) {
     bed <- file.path(splitdir, paste0(id, ".bed"))
     if (!file.exists(bed) || file.info(bed)$size == 0) {
@@ -187,5 +190,5 @@ atac_read_narrowpeaks <- function(file, genome) {
   ranges <- GenomicRanges::makeGRangesFromDataFrame(table,
     keep.extra.columns = TRUE, starts.in.df.are.0based = TRUE
   )
-  atac_backend_fun("GenomeInfoDb", "genome<-")(ranges, value = genome)
+  GenomeInfoDb::`genome<-`(ranges, value = genome)
 }

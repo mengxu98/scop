@@ -17,9 +17,9 @@ Cell2locationPlot(
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE,
-  ...,
   image.scale = c("lowres", "hires"),
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -47,14 +47,14 @@ named list of plots.}
 
 \item{nrow, ncol, byrow}{Point-map layout controls.}
 
-\item{...}{Additional arguments passed to \code{\link[=SpatialSpotPlot]{SpatialSpotPlot()}}.}
-
 \item{image.scale}{Image scale factor matching the raster stored in the
 selected image. Use \code{"hires"} for a hires raster; do not modify Seurat
 scale-factor slots.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A \code{ggplot}, \code{patchwork}, or list of plots.

@@ -24,8 +24,8 @@ RunSpatialVariableFeatures(
   backend = c("cpp", "r"),
   cores = NULL,
   max_dense_gb = 2,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -80,12 +80,12 @@ uses the process OpenMP default.}
 
 \item{max_dense_gb}{Maximum estimated GB for an expression matrix conversion
 in the R-reference or nnSVG path. The C++ and SPARK-X paths retain sparse
-input. This guard bounds one conversion, not total backend memory.}
-
-\item{...}{Additional arguments passed to external backends.}
+input. This guard bounds one conversion, not total memory.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A \code{Seurat} object with spatial variable feature results stored in
@@ -95,7 +95,7 @@ at \code{srt@tools[["SpatialVariableFeatures"]]$summary$top_features}.
 \description{
 Score genes by spot-level spatial autocorrelation. The package \code{"moran"} and
 \code{"geary"} methods use a lightweight coordinate KNN graph. \code{"SPARKX"} and
-\code{"nnSVG"} use optional external backends when their packages are installed.
+\code{"nnSVG"} use optional external packages when installed.
 }
 \examples{
 data(visium_human_pancreas_sub)

@@ -24,12 +24,12 @@ receptor-TF view.}
 \item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.
 Applied to every plot type, including the delegated CCC views.}
 
-\item{...}{Arguments passed to the corresponding SCOP CCC plot.}
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A `ggplot` or compatible plot object.
 }
 \description{
 Plot a stored SpaTalk communication result without rerunning
-the optional backend.
+the analysis.
 }

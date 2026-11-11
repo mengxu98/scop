@@ -10,8 +10,7 @@
 #' conda-compatible environment manager (`FALSE`) for installation.
 #' Default is `TRUE`. When `TRUE`, uv is used as the primary installer with pip as fallback.
 #' @param pip_options Additional command line arguments to be passed to `uv`/`pip` when `pip = TRUE`.
-#' @param ... Other arguments to be passed to other functions.
-#'
+#' @param ... Arguments passed to other functions.
 #' @export
 #'
 #' @examples

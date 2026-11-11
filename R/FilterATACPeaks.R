@@ -23,11 +23,11 @@
 #' @return The Seurat object with the filtered `ChromatinAssay`. All cells and
 #'   retained peak order/counts are preserved. The new assay retains reference,
 #'   gene annotation and fragment references, but not normalized/scaled data,
-#'   variable features, motifs, links or downstream results. Native initialization
+#'   variable features, motifs, links or downstream results. Assay initialization
 #'   puts raw counts in the data layer. Source assays, active assay and existing
 #'   reductions are unchanged. `Misc(object[[new.assay]], "scop_peak_filter")`
 #'   stores one row per source peak with each criterion and the final keep flag.
-#'   At least two peaks and two cells must remain for native assay construction.
+#'   At least two peaks and two cells must remain for assay construction.
 #' @seealso [CheckATACData()], [AnnotateATACPeaks()]
 #' @export
 #' @examples
@@ -63,7 +63,7 @@ FilterATACPeaks <- function(
   ranges <- Signac::granges(chromatin)
   chromosomes <- as.character(GenomicRanges::seqnames(ranges))
   if (!is.null(seqlevels) && (!atac_unique_ids(seqlevels) ||
-    !all(seqlevels %in% atac_backend_fun("GenomeInfoDb", "seqlevels")(chromatin)))) {
+    !all(seqlevels %in% GenomeInfoDb::seqlevels(chromatin)))) {
     log_message("seqlevels must contain unique chromosome names from the source reference.", message_type = "error")
   }
   blacklisted <- rep(FALSE, length(ranges))
@@ -93,7 +93,7 @@ FilterATACPeaks <- function(
   log_message("Retaining {sum(keep)} of {length(keep)} ATAC peaks.", message_type = "info", verbose = verbose)
   filtered <- Signac::CreateChromatinAssay(
     counts = counts[keep, , drop = FALSE],
-    ranges = ranges[keep], genome = atac_backend_fun("GenomeInfoDb", "seqinfo")(chromatin),
+    ranges = ranges[keep], genome = GenomeInfoDb::seqinfo(chromatin),
     annotation = Signac::Annotation(chromatin), fragments = Signac::Fragments(chromatin),
     min.cells = 0, min.features = 0, verbose = verbose
   )
@@ -117,7 +117,7 @@ atac_peak_reference <- function(regions, chromatin, genome, label) {
     GenomicRanges::end(regions) < GenomicRanges::start(regions))) {
     log_message(paste0(label, " requires positive 1-based closed intervals."), message_type = "error")
   }
-  get_lengths <- atac_backend_fun("GenomeInfoDb", "seqlengths")
+  get_lengths <- GenomeInfoDb::seqlengths
   source_lengths <- get_lengths(chromatin)
   region_lengths <- get_lengths(regions)
   shared <- intersect(names(source_lengths), names(region_lengths))
@@ -129,7 +129,7 @@ atac_peak_reference <- function(regions, chromatin, genome, label) {
     GenomicRanges::end(regions) > region_lengths[chromosomes], na.rm = TRUE)) {
     log_message(paste0(label, " intervals exceed known chromosome lengths."), message_type = "error")
   }
-  labels <- unique(as.character(atac_backend_fun("GenomeInfoDb", "genome")(regions)))
+  labels <- unique(as.character(GenomeInfoDb::genome(regions)))
   if (length(genome) != 1L || !identical(labels, genome)) {
     log_message(paste0(label, " and assay genome labels must declare the same verified reference."), message_type = "error")
   }

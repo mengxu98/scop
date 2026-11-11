@@ -17,6 +17,40 @@ make_scoreplot_srt <- function(n_cells = 24L, n_genes = 6L) {
   srt
 }
 
+test_that("CellScoringPlot initializes composition in a fresh session", {
+  skip_if_not_installed("callr")
+  result <- callr::r(
+    function(paths, fixture) {
+      .libPaths(paths)
+      stopifnot(!"patchwork" %in% loadedNamespaces())
+      make_object <- eval(parse(text = fixture))
+      plots <- scop::CellScoringPlot(
+        make_object(),
+        features = "AUC_one", group.by = "celltype", reduction = "umap",
+        combine = FALSE, verbose = FALSE
+      )
+      c(components = length(plots), group_plot = inherits(plots$group_umap, "ggplot"))
+    },
+    args = list(paths = .libPaths(), fixture = paste(deparse(make_scoreplot_srt), collapse = "\n"))
+  )
+  expect_equal(result, c(components = 4, group_plot = 1))
+})
+
+test_that("score plot jitter is determined by the plotting seed", {
+  srt <- make_scoreplot_srt()
+  plots <- CellScoringPlot(
+    srt,
+    features = "AUC_one", group.by = "celltype", reduction = "umap",
+    point.fraction = 1, combine = FALSE, seed = 17, verbose = FALSE
+  )
+  stat <- plots[["stats_AUC_one"]]
+  set.seed(21)
+  first <- ggplot2::ggplot_build(stat)$data
+  set.seed(91)
+  second <- ggplot2::ggplot_build(stat)$data
+  expect_identical(first, second)
+})
+
 test_that("CellScoringPlot returns group/feature component pairs", {
   srt <- make_scoreplot_srt()
   original_meta <- srt@meta.data

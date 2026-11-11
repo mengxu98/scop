@@ -10,6 +10,7 @@
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams CellDimPlot
+#' @param ... Arguments passed to other functions.
 #' @param srt Deprecated alias for `object`; supply exactly one of the two. It
 #' will be removed in scop 1.0.0.
 #' @param object A `Seurat` object.
@@ -47,6 +48,8 @@
 #' mode. If `combine = FALSE` in per-cell mode, a named list of plots is
 #' returned.
 #'
+#' @seealso [RunSpatialBenchmark], [IntegrationBenchmarkPlot]
+#' @export
 #' @examples
 #' metrics_df <- data.frame(
 #'   method = c("Raw", "Raw", "Harmony", "Harmony"),
@@ -68,9 +71,6 @@
 #'   features = c("MethodA_batch_LISI", "MethodB_batch_LISI"),
 #'   plot_type = "boxplot"
 #' )
-#'
-#' @seealso [RunSpatialBenchmark], [IntegrationBenchmarkPlot]
-#' @export
 SpatialBenchmarkPlot <- function(
   object = NULL,
   data = NULL,
@@ -96,8 +96,8 @@ SpatialBenchmarkPlot <- function(
   theme_use = "theme_scop",
   theme_args = list(),
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   plot_type <- match.arg(plot_type)
@@ -831,7 +831,7 @@ benchmark_feature_plot <- function(
   }
 
   if (identical(plot_type, "boxplot")) {
-    return(benchmark_feature_boxplot(
+    return(feature_boxplot(
       srt = srt,
       features = features,
       palette = palette,
@@ -855,7 +855,7 @@ benchmark_feature_plot <- function(
     )
   }
 
-  feature_title_map <- benchmark_clean_feature_labels(features)
+  feature_title_map <- feature_boxplot_labels(features)
   feature_mean_df <- data.frame(
     feature = features,
     title = unname(feature_title_map[features]),
@@ -892,7 +892,7 @@ benchmark_feature_plot <- function(
   }
 
   if (!identical(plot_type, "feature") && isTRUE(plot_boxplot)) {
-    plots[["benchmark_boxplot"]] <- benchmark_feature_boxplot(
+    plots[["benchmark_boxplot"]] <- feature_boxplot(
       srt = srt,
       features = features,
       palette = palette,
@@ -904,15 +904,9 @@ benchmark_feature_plot <- function(
     )
   }
 
-  if (!isTRUE(combine)) {
-    return(plots)
-  }
-  if (length(plots) == 1) {
-    return(plots[[1]])
-  }
-
-  patchwork::wrap_plots(
-    plotlist = plots,
+  combine_plot_list(
+    plots,
+    combine = combine,
     nrow = nrow,
     ncol = ncol,
     byrow = byrow
@@ -1212,7 +1206,6 @@ feature_boxplot_labels <- function(features) {
   stats::setNames(feature_labels, features)
 }
 
-benchmark_clean_feature_labels <- feature_boxplot_labels
 
 feature_boxplot_data <- function(meta_data, features) {
   plot_list <- lapply(features, function(feature) {
@@ -1330,28 +1323,4 @@ feature_boxplot <- function(
       panel.grid.minor = ggplot2::element_blank(),
       plot.title = ggplot2::element_text(hjust = 0.5)
     )
-}
-
-benchmark_feature_boxplot <- function(
-  srt,
-  features,
-  palette = "Chinese",
-  palcolor = NULL,
-  boxplot_jitter = FALSE,
-  theme_use = "theme_scop",
-  theme_args = list(),
-  verbose = TRUE
-) {
-  feature_boxplot(
-    srt = srt,
-    features = features,
-    palette = palette,
-    palcolor = palcolor,
-    boxplot_jitter = boxplot_jitter,
-    theme_use = theme_use,
-    theme_args = theme_args,
-    verbose = verbose,
-    y_label = "Score",
-    empty_message = "No valid observations available for benchmark boxplot"
-  )
 }

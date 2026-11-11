@@ -14,8 +14,7 @@
 #' compatibility with `harmony::RunHarmony.Seurat`.
 #' @param reduction.key The prefix for the column names of the Harmony embeddings.
 #' @param project.dim Whether to project dimension reduction loadings.
-#' @param ... Passed to [harmony::RunHarmony].
-#'
+#' @param ... Arguments passed to other functions.
 #' @rdname RunHarmony2
 #' @export
 #'

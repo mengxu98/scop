@@ -71,13 +71,7 @@ Default is \code{TRUE}.}
 and aligned-coordinate input. The default is raw acquisition coordinates;
 \code{"legacy_display"} remains an explicit compatibility option.}
 
-\item{...}{Named backend argument lists: \code{create_params}, \code{adj_params},
-\code{par_params}, \code{run_params}, and \code{select_params}. The default adjacency is
-\code{adj_params = list(type = "fixed_number", number = 6)}, using distances in
-the selected coordinate space and SCOP's exact spatial KNN implementation.
-PRECAST's fixed-distance Visium/ST array-index
-mode is not compatible with these coordinates and is rejected. For generic
-distance-based adjacency, explicitly choose \code{platform = "Other_SRT"}.}
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A \code{Seurat} object with spatial integration results stored in

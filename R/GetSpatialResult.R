@@ -11,7 +11,7 @@
 #' Results describe cells present in `object`, in its current cell order, rather
 #' than the original fit's full cell set. BANKSY domain counts and PRECAST cell,
 #' domain, and sample counts are recomputed from the returned assignments.
-#' Unfitted PRECAST cells are excluded. Parameters and the native bundles in
+#' Unfitted PRECAST cells are excluded. Parameters and the stored bundles in
 #' `object@tools` still describe the original fit; other methods' stored summaries
 #' are omitted when their cell set changes. PRECAST can be selected by its tool
 #' name or by `"PRECAST"` when that method identifies a unique stored bundle.
@@ -344,7 +344,7 @@ spatial_record_cell_identity <- function(srt, tool_name, previous_index = NULL,
   }
   if (!reusable) {
     base <- paste0(".scop_", make.names(tool_name), "_cell_id")
-    column <- tail(make.unique(c(colnames(srt@meta.data), base)), 1L)
+    column <- utils::tail(make.unique(c(colnames(srt@meta.data), base)), 1L)
   }
   srt@meta.data[[column]] <- rownames(srt@meta.data)
   index$cell_id_colname <- column

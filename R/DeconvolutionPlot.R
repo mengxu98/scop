@@ -31,16 +31,30 @@
 #' `"heatmap"` mode.
 #' @param grid_major Whether to show major grid lines for `"bar"` and `"box"`
 #' plots.
-#' @param ... Reserved for future use.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A `ggplot` object.
 #' For `plot_type = "heatmap"`, returns a `ComplexHeatmap::Heatmap` object.
 #'
-#' @seealso [RunDeconvolution]
+#' @details
+#' Bar plots use [ImmuneAbundancePlot] with stacked stored proportions.
+#' Box plots use the shared expression-statistics renderer. Neither view
+#' estimates cell-type proportions again. The constructed result table below
+#' demonstrates plotting previously computed proportions.
+#'
+#' @seealso [RunDeconvolution], [ImmuneAbundancePlot], [FeatureStatPlot]
 #'
 #' @export
 #'
 #' @examples
+#' proportions <- data.frame(
+#'   sample = rep(paste0("Sample", 1:4), each = 2),
+#'   cell_type = rep(c("Alpha", "Beta"), 4),
+#'   proportion = c(0.7, 0.3, 0.6, 0.4, 0.4, 0.6, 0.3, 0.7),
+#'   method = "CIBERSORT"
+#' )
+#' DeconvolutionPlot(res = proportions, plot_type = "bar")
+#' DeconvolutionPlot(res = proportions, plot_type = "box")
+#'
 #' data(islet_bulk)
 #' islet_bulk <- RunDeconvolution(
 #'   islet_bulk,
@@ -96,49 +110,16 @@ DeconvolutionPlot <- function(
 
   df$sample <- bulk_match_levels(df$sample, sample_order)
   df$cell_type <- bulk_match_levels(df$cell_type, cell_type_order)
-  fill_cols <- palette_colors(
-    levels(df$cell_type),
-    palette = palette,
-    palcolor = palcolor
-  )
-  theme_obj <- apply_plot_theme(
-    theme_use = theme_use,
-    theme_args = theme_args
-  )
-
   if (identical(plot_type, "bar")) {
-    plot <- ggplot2::ggplot(df, ggplot2::aes(
-      x = sample,
-      y = proportion,
-      fill = cell_type
-    )) +
-      ggplot2::geom_col(
-        width = 0.78,
-        color = "black",
-        linewidth = 0.2
-      ) +
-      ggplot2::scale_fill_manual(
-        values = fill_cols,
-        drop = FALSE
-      ) +
-      ggplot2::labs(
-        x = NULL,
-        y = "Proportion",
-        fill = "Cell type"
-      ) +
-      theme_obj +
-      ggplot2::theme(
-        axis.text.x = ggplot2::element_text(
-          angle = 45,
-          hjust = 1,
-          vjust = 1
-        ),
-        legend.position = legend.position,
-        legend.direction = legend.direction,
-        panel.grid.major.x = ggplot2::element_blank(),
-        panel.grid.minor = ggplot2::element_blank()
-      )
-    return(thisplot::major_grid(plot = plot, grid_major = grid_major))
+    proportions <- deconv_mat(df)
+    proportions <- proportions[levels(df$sample), levels(df$cell_type), drop = FALSE]
+    return(ImmuneAbundancePlot(
+      immune.data = proportions, plot_type = "bar", bar_position = "stack",
+      show_sample_names = TRUE, palette = palette, palcolor = palcolor,
+      theme_use = theme_use, theme_args = theme_args,
+      legend.position = legend.position, legend.direction = legend.direction,
+      grid_major = grid_major
+    ) + ggplot2::labs(y = "Proportion", fill = "Cell type"))
   }
 
   if (identical(plot_type, "heatmap")) {
@@ -160,49 +141,16 @@ DeconvolutionPlot <- function(
     )
   }
 
-  plot <- ggplot2::ggplot(df, ggplot2::aes(
-    x = cell_type,
-    y = proportion,
-    fill = cell_type
-  )) +
-    ggplot2::geom_boxplot(
-      outlier.shape = NA,
-      width = 0.68,
-      linewidth = 0.35,
-      alpha = 0.92
-    ) +
-    ggplot2::geom_point(
-      ggplot2::aes(color = cell_type),
-      position = ggplot2::position_jitter(width = 0.14, height = 0),
-      size = 1.3,
-      alpha = 0.75,
-      show.legend = FALSE
-    ) +
-    ggplot2::scale_fill_manual(
-      values = fill_cols,
-      drop = FALSE
-    ) +
-    ggplot2::scale_color_manual(
-      values = fill_cols,
-      drop = FALSE
-    ) +
-    ggplot2::labs(
-      x = NULL,
-      y = "Proportion",
-      fill = "Cell type"
-    ) +
-    theme_obj +
-    ggplot2::theme(
-      axis.text.x = ggplot2::element_text(
-        angle = 45,
-        hjust = 1,
-        vjust = 1
-      ),
-      legend.position = "none",
-      panel.grid.major.x = ggplot2::element_blank(),
-      panel.grid.minor = ggplot2::element_blank()
-    )
-  thisplot::major_grid(plot = plot, grid_major = grid_major)
+  df$cells <- rownames(df)
+  rownames(df) <- make.unique(paste(df$sample, df$cell_type, sep = "::"))
+  ExpressionStatPlot(
+    meta.data = df, stat.by = "proportion", group.by = "cell_type",
+    plot_type = "box", palette = palette, palcolor = palcolor,
+    add_point = TRUE, pt.size = 1.3, pt.alpha = 0.75,
+    jitter.width = 0.14, jitter.height = 0, box_width = 0.68,
+    xlab = "", ylab = "Proportion", legend.position = "none",
+    theme_use = theme_use, theme_args = theme_args, grid_major = grid_major
+  )[[1L]] + ggplot2::facet_null()
 }
 
 bulk_match_levels <- function(x, levels_use = NULL) {

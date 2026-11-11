@@ -46,7 +46,6 @@ RunPalantir(
   envname = NULL,
   conda = "auto",
   backend = c("python", "cpp"),
-  allow_approximate = FALSE,
   return_seurat = !is.null(srt),
   verbose = TRUE,
   srt = NULL
@@ -143,11 +142,9 @@ SCOP environment selection.}
 
 \item{backend}{Backend used to compute Palantir. \code{"python"} keeps the
 reference Palantir workflow and remains the default. \code{"cpp"} uses an
-approximate C++ workflow and stores results in \code{srt@tools[["Palantir"]]}.
-The C++ backend never switches to Python implicitly.}
-
-\item{allow_approximate}{Whether to allow the approximate C++ workflow. This
-must be \code{TRUE} when \code{backend = "cpp"}.}
+approximate C++ workflow, stores results in \code{srt@tools[["Palantir"]]}, and
+issues a warning that results may not be completely identical to the reference workflow.
+The C++ implementation never switches to Python implicitly.}
 
 \item{return_seurat}{Whether to return a Seurat object instead of an anndata object.}
 
@@ -170,8 +167,7 @@ pancreas_sub <- RunPalantir(
   nonlinear_reduction = "UMAP",
   early_group = "Ductal",
   terminal_groups = c("Alpha", "Beta", "Delta", "Epsilon"),
-  backend = "cpp",
-  allow_approximate = TRUE
+  backend = "cpp"
 )
 
 FeatureDimPlot(

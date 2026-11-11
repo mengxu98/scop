@@ -52,8 +52,8 @@ CellStatPlot(
   byrow = TRUE,
   force = FALSE,
   seed = 11,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -141,10 +141,10 @@ returns a list of ggplots.}
 
 \item{seed}{Random seed.}
 
-\item{...}{Additional arguments passed to the plotting helpers.}
-
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \description{
 Statistical plot of cells
