@@ -1,5 +1,7 @@
 # scop (development version)
 
+* **feat**: Add `CellTreePlot()` for hierarchical cell annotations with group-colored leaf tiles, cell proportions, and optional numeric rings.
+
 * **breaking**: Remove `allow_approximate` from `RunCellRank()`, `RunPalantir()` and `RunSCENICPlus()`; selecting their C++ implementations emits an approximation warning. `CellRankPlot()` removes `trends`, `clusters`, `enrichment` and `database`; use `DynamicHeatmap()`, `DynamicPlot()` and `EnrichmentPlot()` for these views.
 
 * **feat**: `CellStatePlot()` combines cluster similarity, annotations, compositions, marker expression and precomputed GSEA in a standard patchwork object. It supports Seurat and AnnData, default palettes, optional summaries and `flip = TRUE` with the tree on the left and upright legends.
