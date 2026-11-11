@@ -16,7 +16,6 @@ test_that("real BANKSY independent sample fits match standalone fits in both sto
     counts = methods::as(Matrix::Matrix(counts, sparse = TRUE), "dgCMatrix")
   )
   srt$sample <- rep(c("S1", "S1_A"), each = n_per_sample)
-  # Samples deliberately share coordinates. They must be fitted separately.
   srt$col <- rep(rep(seq_len(8L), 6L), 2L)
   srt$row <- rep(rep(seq_len(6L), each = 8L), 2L)
   srt$BANKSY_cluster <- "old"
@@ -52,8 +51,6 @@ test_that("real BANKSY independent sample fits match standalone fits in both sto
       paste0(sample_name, "_", observed$clusters$domains)
     )
   }
-  # Sample selection still uses exact fitted membership after a rename and
-  # arbitrary current-object ordering, including an absent sample.
   renamed <- lapply(list(detailed, compact), SeuratObject::RenameCells,
     new.names = rev(colnames(srt))
   )
@@ -74,7 +71,6 @@ test_that("real BANKSY independent sample fits match standalone fits in both sto
     expect_equal(empty$summary$n_spots, 0L)
     expect_equal(nrow(empty$summary$domains), 0L)
   }
-  # Prefixes distinguish independent fits; they do not imply aligned domains.
   expect_true(all(grepl("^S1_|^S1_A_", compact$domains)))
 })
 

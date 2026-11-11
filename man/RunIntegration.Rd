@@ -132,7 +132,7 @@ Default is \code{TRUE}.}
 
 \item{integration_method}{Deprecated alias of \code{integration_methods}.}
 
-\item{...}{Passed to the integration method functions.}
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A \code{Seurat} object. For \code{ChromatinAssay}, names follow the ATAC

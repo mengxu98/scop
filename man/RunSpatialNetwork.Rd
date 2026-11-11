@@ -2,7 +2,7 @@
 % Please edit documentation in R/RunSpatialNetwork.R
 \name{RunSpatialNetwork}
 \alias{RunSpatialNetwork}
-\title{Build a native spatial network}
+\title{Build a spatial network}
 \usage{
 RunSpatialNetwork(
   object = NULL,
@@ -64,5 +64,4 @@ data(visium_human_pancreas_sub)
 spatial <- visium_human_pancreas_sub
 spatial <- RunSpatialNetwork(object = spatial, k = 6, verbose = FALSE)
 SpatialNetworkPlot(object = spatial, group.by = "coda_label")
-
 }

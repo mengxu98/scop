@@ -17,8 +17,7 @@
 #' @param cores The number of threads to be used in older `RcppML` releases
 #' that expose a global OpenMP thread setter. Newer releases manage their
 #' thread count internally.
-#' @param ... Additional arguments passed to [RcppML::nmf] or [NMF::nmf].
-#'
+#' @param ... Arguments passed to other functions.
 #' @rdname RunNMF
 #' @export
 #'

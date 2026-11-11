@@ -2,7 +2,7 @@
 #'
 #' Draw independent ranked GO or other database results on opposite sides of zero.
 #' No enrichment or differential comparison is computed. Group colors and shared
-#' significance opacity encode the saved results; full black term labels may
+#' significance opacity encode the saved results; full term labels may
 #' extend past bars. Hit genes appear below each bar and database bands are rounded.
 #' @param object Seurat object containing saved RunEnrichment results; NULL when res is supplied.
 #' @param res Result list with an enrichment data.frame, as returned by RunEnrichment. Overrides object.
@@ -35,12 +35,16 @@
 #' may need additional space. No automatic font-size fitting is performed.
 #' Missing or blank descriptions use the term ID; if that is also missing or
 #' blank, the display label is `(unnamed term)`. Original rows are preserved.
+#' Term text switches between black and white for contrast with each bar's
+#' displayed fill. A thin contrasting outline keeps overflow text readable.
 #' @seealso [RunEnrichment()], [EnrichmentPlot()]
 #' @export
 #' @examples
-#' tab <- data.frame(ID = c("a", "b"), Description = c("Process A", "Process B"),
+#' tab <- data.frame(
+#'   ID = c("a", "b"), Description = c("Process A", "Process B"),
 #'   Database = "GO_BP", Groups = c("A", "B"), p.adjust = c(0.01, 0.001),
-#'   geneID = c("Gene1/Gene2", "Gene3/Gene4"))
+#'   geneID = c("Gene1/Gene2", "Gene3/Gene4")
+#' )
 #' EnrichmentMirrorPlot(res = list(enrichment = tab), group_use = c("A", "B"), db = "GO_BP")
 EnrichmentMirrorPlot <- function(
   object = NULL, group.by = NULL, group_use = NULL,
@@ -56,10 +60,12 @@ EnrichmentMirrorPlot <- function(
     log_message("group_use must specify exactly two distinct groups, left then right", message_type = "error")
   }
   group_use <- as.character(group_use)
-  values <- list(topTerm = topTerm, row_step = row_step, bar_height = bar_height,
-    term_size = term_size, gene_size = gene_size, corner_mm = corner_mm, base_size = base_size)
+  values <- list(
+    topTerm = topTerm, row_step = row_step, bar_height = bar_height,
+    term_size = term_size, gene_size = gene_size, corner_mm = corner_mm, base_size = base_size
+  )
   if (any(!vapply(values, function(x) is.numeric(x) && length(x) == 1L && is.finite(x) && x > 0, logical(1))) ||
-      topTerm != floor(topTerm)) {
+    topTerm != floor(topTerm)) {
     log_message("topTerm must be a positive integer and size/spacing parameters must be positive finite numbers", message_type = "error")
   }
   for (x in list(db_gap, band_gap)) {
@@ -68,13 +74,13 @@ EnrichmentMirrorPlot <- function(
     }
   }
   if (!is.logical(symmetric_axis) || length(symmetric_axis) != 1L || is.na(symmetric_axis) ||
-      !is.numeric(alpha_range) || length(alpha_range) != 2L || anyNA(alpha_range) ||
-      any(alpha_range < 0 | alpha_range > 1) || alpha_range[1] > alpha_range[2]) {
+    !is.numeric(alpha_range) || length(alpha_range) != 2L || anyNA(alpha_range) ||
+    any(alpha_range < 0 | alpha_range > 1) || alpha_range[1] > alpha_range[2]) {
     log_message("symmetric_axis must be logical and alpha_range must be increasing within [0, 1]", message_type = "error")
   }
   if (!is.numeric(gene_width) || length(gene_width) != 1L || is.na(gene_width) || gene_width < 4 ||
-      !is.numeric(padjustCutoff) || length(padjustCutoff) != 1L || !is.finite(padjustCutoff) ||
-      padjustCutoff <= 0 || padjustCutoff > 1) {
+    !is.numeric(padjustCutoff) || length(padjustCutoff) != 1L || !is.finite(padjustCutoff) ||
+    padjustCutoff <= 0 || padjustCutoff > 1) {
     log_message("gene_width must be at least 4 or Inf; padjustCutoff must be in (0, 1]", message_type = "error")
   }
   if (length(palcolor) != 2L || anyNA(palcolor)) {
@@ -122,8 +128,10 @@ EnrichmentMirrorPlot <- function(
     keep <- d$Database == present[i]
     d$.y[keep] <- total_height - offset - (d$.rank[keep] - 1) * row_step
     yy <- d$.y[keep]
-    bands[[i]] <- data.frame(label = sub("^GO_", "", present[i]),
-      ymin = min(yy) - 0.42, ymax = max(yy) + 0.38, ymid = mean(range(yy)))
+    bands[[i]] <- data.frame(
+      label = sub("^GO_", "", present[i]),
+      ymin = min(yy) - 0.42, ymax = max(yy) + 0.38, ymid = mean(range(yy))
+    )
     offset <- offset + n_rows[i] * row_step + db_gap
   }
   bands <- do.call(rbind, bands)
@@ -134,7 +142,6 @@ EnrichmentMirrorPlot <- function(
   xmax <- max(1, d$.score)
   d$.text_x <- d$.side * 0.018 * xmax
   d$.hjust <- ifelse(d$.side == -1, 1, 0)
-  # Resolve display-only labels before estimating their widths.
   d$.term <- gsub("[\r\n]+", " ", as.character(d$Description))
   missing_term <- is.na(d$.term) | !nzchar(trimws(d$.term))
   d$.term[missing_term] <- as.character(d$ID[missing_term])
@@ -144,68 +151,90 @@ EnrichmentMirrorPlot <- function(
   if (symmetric_axis) left_span <- right_span <- max(left_span, right_span)
   band_right <- -left_span - band_gap
   band_left <- band_right - 0.045 * xmax
-  # Pathway names remain complete and black, even when longer than their bars.
   d$.genes <- gsub("/", ", ", as.character(d$geneID), fixed = TRUE)
   d$.genes[is.na(d$.genes)] <- ""
   if (is.finite(gene_width)) {
     long <- nchar(d$.genes) > gene_width
     d$.genes[long] <- paste0(substr(d$.genes[long], 1, gene_width - 3), "...")
   }
-  RoundBand <- ggplot2::ggproto("RoundBand", ggplot2::GeomRect,
-    draw_panel = function(data, panel_params, coord) {
-      z <- coord$transform(data, panel_params)
-      do.call(grid::grobTree, lapply(seq_len(nrow(z)), function(i) {
-        grid::roundrectGrob(
-          x = (z$xmin[i] + z$xmax[i]) / 2,
-          y = (z$ymin[i] + z$ymax[i]) / 2,
-          width = abs(z$xmax[i] - z$xmin[i]),
-          height = abs(z$ymax[i] - z$ymin[i]),
-          default.units = "native", r = grid::unit(corner_mm, "mm"),
-          gp = grid::gpar(fill = "#EEF1F5", col = NA))
-      }))
-    })
   if (is.null(title)) title <- paste(paste(group_use, collapse = " vs "), "| enrichment")
+  text_colors <- thisplot::contrast_text(
+    unname(palcolor[as.character(d$Groups)]),
+    alpha = scales::rescale(d$.score, to = alpha_range, from = range(d$.score))
+  )
+  check_r("shadowtext", verbose = FALSE)
   p <- ggplot2::ggplot(d) +
-    ggplot2::layer(data = bands, mapping = ggplot2::aes(ymin = ymin, ymax = ymax),
-      geom = RoundBand, stat = "identity", position = "identity", inherit.aes = FALSE,
-      params = list(xmin = band_left, xmax = band_right)) +
-    ggplot2::geom_text(data = bands, ggplot2::aes(y = ymid, label = label),
-      x = (band_left + band_right) / 2, angle = 90, fontface = "bold", colour = "#485466", size = 3.4) +
+    thisplot::geom_round_rect(
+      data = bands, mapping = ggplot2::aes(ymin = .data$ymin, ymax = .data$ymax),
+      inherit.aes = FALSE, xmin = band_left, xmax = band_right,
+      fill = "#EEF1F5", colour = NA, radius = corner_mm
+    ) +
+    ggplot2::geom_text(
+      data = bands, ggplot2::aes(y = .data$ymid, label = label),
+      x = (band_left + band_right) / 2, angle = 90, fontface = "bold", colour = "#485466", size = 3.4
+    ) +
     ggplot2::geom_vline(xintercept = 0, linewidth = 0.4, colour = "#6E7781") +
-    ggplot2::geom_rect(ggplot2::aes(xmin = .xmin, xmax = .xmax,
-      ymin = .y + 0.10 - bar_height / 2, ymax = .y + 0.10 + bar_height / 2,
-      fill = Groups, alpha = .score), colour = NA) +
-    ggplot2::geom_text(ggplot2::aes(x = .text_x, y = .y + 0.10,
-      label = .term, hjust = .hjust), size = term_size, colour = "black", family = font_family) +
-    ggplot2::geom_text(ggplot2::aes(x = .text_x,
-      y = .y + 0.10 - bar_height / 2 - 0.15,
-      label = .genes, hjust = .hjust, colour = Groups, alpha = .score),
-      size = gene_size, family = font_family, fontface = "italic", show.legend = FALSE) +
-    ggplot2::annotate("text", x = -0.5 * left_span, y = max(d$.y) + 0.9,
-      label = group_use[1], colour = palcolor[group_use[1]], fontface = "bold", size = 4.7) +
-    ggplot2::annotate("text", x = 0.5 * right_span, y = max(d$.y) + 0.9,
-      label = group_use[2], colour = palcolor[group_use[2]], fontface = "bold", size = 4.7) +
+    ggplot2::geom_rect(ggplot2::aes(
+      xmin = .data$.xmin, xmax = .data$.xmax,
+      ymin = .data$.y + 0.10 - bar_height / 2, ymax = .data$.y + 0.10 + bar_height / 2,
+      fill = Groups, alpha = .data$.score
+    ), colour = NA) +
+    shadowtext::geom_shadowtext(
+      ggplot2::aes(
+        x = .data$.text_x, y = .data$.y + 0.10,
+        label = .data$.term, hjust = .data$.hjust
+      ),
+      size = term_size, colour = text_colors, family = font_family, alpha = 1,
+      bg.colour = ifelse(text_colors == "white", "black", "white"), bg.r = 0.04,
+      show.legend = FALSE
+    ) +
+    ggplot2::geom_text(
+      ggplot2::aes(
+        x = .data$.text_x,
+        y = .data$.y + 0.10 - bar_height / 2 - 0.15,
+        label = .data$.genes, hjust = .data$.hjust, colour = Groups, alpha = .data$.score
+      ),
+      size = gene_size, family = font_family, fontface = "italic", show.legend = FALSE
+    ) +
+    ggplot2::annotate("text",
+      x = -0.5 * left_span, y = max(d$.y) + 0.9,
+      label = group_use[1], colour = palcolor[group_use[1]], fontface = "bold", size = 4.7
+    ) +
+    ggplot2::annotate("text",
+      x = 0.5 * right_span, y = max(d$.y) + 0.9,
+      label = group_use[2], colour = palcolor[group_use[2]], fontface = "bold", size = 4.7
+    ) +
     ggplot2::scale_fill_manual(values = palcolor, guide = "none") +
     ggplot2::scale_colour_manual(values = palcolor, guide = "none") +
-    ggplot2::scale_alpha_continuous(name = "-log10(adjusted P)", range = alpha_range,
+    ggplot2::scale_alpha_continuous(
+      name = "-log10(adjusted P)", range = alpha_range,
       limits = range(d$.score), n.breaks = 3,
-      guide = ggplot2::guide_legend(override.aes = list(fill = "grey30", colour = "grey30"))) +
-    ggplot2::scale_x_continuous(limits = c(band_left - 0.15, right_span * 1.06),
+      guide = ggplot2::guide_legend(override.aes = list(fill = "grey30", colour = "grey30"))
+    ) +
+    ggplot2::scale_x_continuous(
+      limits = c(band_left - 0.15, right_span * 1.06),
       breaks = pretty(c(-left_span, right_span), n = 7), labels = function(x) abs(x),
-      expand = ggplot2::expansion(mult = 0)) +
-    ggplot2::scale_y_continuous(breaks = NULL,
-      expand = ggplot2::expansion(add = c(0.35, 0.15))) +
+      expand = ggplot2::expansion(mult = 0)
+    ) +
+    ggplot2::scale_y_continuous(
+      breaks = NULL,
+      expand = ggplot2::expansion(add = c(0.35, 0.15))
+    ) +
     ggplot2::coord_cartesian(clip = "off") +
-    ggplot2::labs(title = title, x = "-log10(adjusted P)", y = NULL,
+    ggplot2::labs(
+      title = title, x = "-log10(adjusted P)", y = NULL,
       subtitle = paste0("Top ", topTerm, " terms per database and group; adjusted P < ", padjustCutoff),
-      caption = "Independent group-wise rankings; opposite rows need not represent the same pathway.\nLeftward bars do not indicate negative enrichment or downregulation.") +
+      caption = "Independent group-wise rankings; opposite rows need not represent the same pathway.\nLeftward bars do not indicate negative enrichment or downregulation."
+    ) +
     ggplot2::theme_classic(base_size = base_size, base_family = font_family) +
-    ggplot2::theme(axis.line.y = ggplot2::element_blank(), axis.ticks.y = ggplot2::element_blank(),
+    ggplot2::theme(
+      axis.line.y = ggplot2::element_blank(), axis.ticks.y = ggplot2::element_blank(),
       axis.line.x = ggplot2::element_line(linewidth = 0.35),
       plot.title = ggplot2::element_text(size = 16),
       plot.subtitle = ggplot2::element_text(size = 10, colour = "grey35"),
       plot.caption = ggplot2::element_text(size = 8, hjust = 0, colour = "grey40"),
       legend.position = "bottom", legend.direction = "horizontal",
-      plot.margin = ggplot2::margin(10, 20, 8, 20))
+      plot.margin = ggplot2::margin(10, 20, 8, 20)
+    )
   p
 }

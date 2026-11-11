@@ -11,7 +11,7 @@
 #' Results describe cells present in `object`, in its current cell order, rather
 #' than the original fit's full cell set. BANKSY domain counts and PRECAST cell,
 #' domain, and sample counts are recomputed from the returned assignments.
-#' Unfitted PRECAST cells are excluded. Parameters and the native bundles in
+#' Unfitted PRECAST cells are excluded. Parameters and the stored bundles in
 #' `object@tools` still describe the original fit; other methods' stored summaries
 #' are omitted when their cell set changes. PRECAST can be selected by its tool
 #' name or by `"PRECAST"` when that method identifies a unique stored bundle.
@@ -67,8 +67,6 @@ GetSpatialResult <- function(object, method, sample = NULL) {
   }
 
   bundle <- object@tools[[method]]
-  # Integration producers nest each method under a named tool. Resolve only
-  # an exact, unique method entry; never guess a metadata column by prefix.
   if (is.null(bundle)) {
     matches <- Filter(
       function(x) is.list(x) && is.list(x$methods) && !is.null(x$methods[[method]]),
@@ -138,7 +136,6 @@ GetSpatialResult <- function(object, method, sample = NULL) {
     }
     cells <- names(cell_map)
     if (!is.null(sample)) {
-      # Membership comes from the analyzed cells, never a cluster-label prefix.
       fitted_cells <- names(index$samples)[index$samples == sample]
       cells <- cells[cell_map[cells] %in% fitted_cells]
     } else if (!is.null(index$cells)) {
@@ -183,8 +180,6 @@ GetSpatialResult <- function(object, method, sample = NULL) {
       summary <- NULL
     }
   } else if (identical(producer_method, "PRECAST")) {
-    # Fit parameters/native results remain untouched in tools. Only descriptive
-    # counts that can be derived from the returned cells belong in this view.
     summary <- list(
       n_cells = length(cells),
       domains = spatial_domain_summary(spatial_result_cluster_labels(clusters))
@@ -200,7 +195,6 @@ GetSpatialResult <- function(object, method, sample = NULL) {
     }
   } else if (!is.null(original_cells) &&
     !setequal(original_cells, unname(cell_map[cells]))) {
-    # An arbitrary method's fit statistics cannot be recomputed from labels.
     summary <- NULL
   }
   list(clusters = clusters, parameters = parameters, summary = summary)
@@ -332,7 +326,6 @@ spatial_record_cell_identity <- function(srt, tool_name, previous_index = NULL,
   index <- srt@tools[[tool_name]]$result_index
   column <- previous_index$cell_id_colname
   other_columns <- spatial_other_identity_columns(srt, tool_name)
-  # Reuse only our own tracked field, never a result/user field or another fit's.
   reusable <- length(column) == 1L && !is.na(column) &&
     !is.null(previous_index$object_cells) &&
     column %in% colnames(srt@meta.data) &&
@@ -344,7 +337,7 @@ spatial_record_cell_identity <- function(srt, tool_name, previous_index = NULL,
   }
   if (!reusable) {
     base <- paste0(".scop_", make.names(tool_name), "_cell_id")
-    column <- tail(make.unique(c(colnames(srt@meta.data), base)), 1L)
+    column <- utils::tail(make.unique(c(colnames(srt@meta.data), base)), 1L)
   }
   srt@meta.data[[column]] <- rownames(srt@meta.data)
   index$cell_id_colname <- column

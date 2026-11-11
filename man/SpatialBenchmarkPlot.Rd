@@ -30,8 +30,8 @@ SpatialBenchmarkPlot(
   theme_use = "theme_scop",
   theme_args = list(),
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -91,10 +91,10 @@ radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{The message to print.}
-
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A ggplot, patchwork plot, or \code{funkyheatmap} object depending on the selected
@@ -129,7 +129,6 @@ SpatialBenchmarkPlot(
   features = c("MethodA_batch_LISI", "MethodB_batch_LISI"),
   plot_type = "boxplot"
 )
-
 }
 \seealso{
 \link{RunSpatialBenchmark}, \link{IntegrationBenchmarkPlot}

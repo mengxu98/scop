@@ -56,23 +56,15 @@
 #' affects cell marks. When neither fill-color option is supplied, expression
 #' surfaces inherit `palette` and `palcolor`; explicit fill options override
 #' this default.
+#' The expression layer excludes cells with non-finite coordinates or values.
+#' Panels with fewer than three finite cells or a constant coordinate omit
+#' contours and issue a warning.
 #' For compatibility, explicitly supplying `density_color` retains the old
 #' fixed-color cell-density layer. Blended multi-feature plots using
 #' `compare_features = TRUE` also retain the original cell-density layer,
 #' including filled density bands and their original default colors.
 #' Use [CellDimPlot()] for cell-distribution density layers.
 #' @param force Draw even when more than 100 features are requested.
-#' @details
-#' Expression-colored contours use a 240 by 240 grid, Gaussian bandwidths from
-#' [stats::bw.nrd()], and nine density levels from 8% to 92% of peak density.
-#' Major contours use a wider stroke every third level. Grid limits extend three bandwidths beyond the finite coordinates to avoid
-#' clipping outer contours. Local means are interpolated onto contour vertices;
-#' filled surfaces omit grid points below 2% of peak kernel support, fade in
-#' between 2% and 3.5% support, and interpolate raster pixels for smooth edges.
-#' Cells with non-finite coordinates or feature values are omitted from this
-#' calculation. Panels with fewer than three finite cells or no variation in
-#' either coordinate return no contours with a warning. No additional public
-#' plotting function or dependency is required.
 #'
 #' @seealso [CellDimPlot]
 #'
@@ -233,20 +225,16 @@
 #'
 #' # Input a named feature list
 #' markers <- list(
-#'   "Ductal" = c("Sox9", "Anxa2", "Bicc1"),
-#'   "EPs" = c("Neurog3", "Hes6"),
-#'   "Pre-endocrine" = c("Fev", "Neurod1"),
-#'   "Endocrine" = c("Rbp4", "Pyy"),
-#'   "Beta" = "Ins1",
-#'   "Alpha" = "Gcg",
-#'   "Delta" = "Sst",
-#'   "Epsilon" = "Ghrl"
+#'   Ductal = c("Sox9", "Anxa2"),
+#'   Endocrine = c("Rbp4", "Pyy")
 #' )
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   features = markers,
 #'   reduction = "UMAP",
 #'   theme_use = "theme_blank",
+#'   xlab = "UMAP 1",
+#'   ylab = "UMAP 2",
 #'   theme_args = list(
 #'     plot.subtitle = ggplot2::element_text(size = 10),
 #'     strip.text = ggplot2::element_text(size = 8)
@@ -440,6 +428,8 @@ FeatureDimPlot <- function(
   title.color = NULL,
   show_points = TRUE
 ) {
+  check_r("withr", verbose = FALSE)
+  withr::local_preserve_seed()
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   set.seed(seed)
   if (!is.logical(show_points) || length(show_points) != 1L || is.na(show_points)) {
@@ -743,9 +733,6 @@ FeatureDimPlot <- function(
   raster <- point_config$raster
   raster_pt_size <- point_config$raster_pt_size
   raster.dpi <- point_config$raster.dpi
-  if (isTRUE(raster)) {
-    check_r("scattermore", verbose = FALSE)
-  }
 
   if (!is.null(lineages)) {
     lineages_layers <- LineagePlot(
@@ -980,42 +967,42 @@ FeatureDimPlot <- function(
 
         if (isTRUE(show_points) && isTRUE(raster)) {
           p <- p +
-            scattermore::geom_scattermore(
+            thisplot::scatter_layers(
               data = dat[dat[, "color_blend"] == bg_color, , drop = FALSE],
               mapping = aes(
                 x = .data[["x"]],
                 y = .data[["y"]],
                 color = .data[["color_blend"]]
               ),
-              pointsize = raster_pt_size,
-              alpha = pt.alpha,
-              pixels = raster.dpi
+              raster.pt.size = raster_pt_size,
+              pt.alpha = pt.alpha,
+              raster.dpi = raster.dpi,
+              raster = TRUE
             ) +
-            scattermore::geom_scattermore(
+            thisplot::scatter_layers(
               data = dat[dat[, "color_blend"] != bg_color, , drop = FALSE],
               mapping = aes(
                 x = .data[["x"]],
                 y = .data[["y"]],
                 color = .data[["color_blend"]]
               ),
-              pointsize = raster_pt_size,
-              alpha = pt.alpha,
-              pixels = raster.dpi
+              raster.pt.size = raster_pt_size,
+              pt.alpha = pt.alpha,
+              raster.dpi = raster.dpi,
+              raster = TRUE
             ) +
             scale_color_identity() +
             ggnewscale::new_scale_color()
         } else if (isTRUE(show_points)) {
           p <- p +
-            geom_point(
+            thisplot::scatter_layers(
               mapping = aes(
                 x = .data[["x"]],
                 y = .data[["y"]],
                 color = .data[["color_blend"]]
               ),
-              shape = "circle",
-              size = pt.size,
-              stroke = 0,
-              alpha = pt.alpha
+              pt.size = pt.size,
+              pt.alpha = pt.alpha
             ) +
             scale_color_identity() +
             ggnewscale::new_scale_color()
@@ -1024,53 +1011,25 @@ FeatureDimPlot <- function(
         if (isTRUE(show_points) && !is.null(cells.highlight_use)) {
           cell_df <- subset(p$data, rownames(p$data) %in% cells.highlight_use)
           if (nrow(cell_df) > 0) {
-            if (isTRUE(raster)) {
-              p <- p +
-                scattermore::geom_scattermore(
-                  data = cell_df,
-                  aes(x = .data[["x"]], y = .data[["y"]]),
-                  color = cols.highlight,
-                  pointsize = floor(sizes.highlight) + stroke.highlight,
-                  alpha = alpha.highlight,
-                  pixels = raster.dpi
-                ) +
-                scattermore::geom_scattermore(
-                  data = cell_df,
-                  aes(
-                    x = .data[["x"]],
-                    y = .data[["y"]],
-                    color = .data[["color_blend"]]
-                  ),
-                  pointsize = floor(sizes.highlight),
-                  alpha = alpha.highlight,
-                  pixels = raster.dpi
-                ) +
-                scale_color_identity() +
-                ggnewscale::new_scale_color()
-            } else {
-              p <- p +
-                geom_point(
-                  data = cell_df,
-                  aes(x = .data[["x"]], y = .data[["y"]]),
-                  shape = "circle",
-                  color = cols.highlight,
-                  size = sizes.highlight + stroke.highlight,
-                  alpha = alpha.highlight
-                ) +
-                geom_point(
-                  data = cell_df,
-                  aes(
-                    x = .data[["x"]],
-                    y = .data[["y"]],
-                    color = .data[["color_blend"]]
-                  ),
-                  shape = "circle",
-                  size = sizes.highlight,
-                  alpha = alpha.highlight
-                ) +
-                scale_color_identity() +
-                ggnewscale::new_scale_color()
-            }
+            p <- p +
+              thisplot::scatter_layers(
+                data = cell_df,
+                mapping = aes(
+                  x = .data[["x"]], y = .data[["y"]],
+                  color = .data[["color_blend"]]
+                ),
+                pt.size = sizes.highlight,
+                pt.alpha = alpha.highlight,
+                raster = isTRUE(raster),
+                raster.pt.size = floor(sizes.highlight),
+                raster.dpi = raster.dpi,
+                stroke = NULL,
+                outline = TRUE,
+                outline.color = cols.highlight,
+                outline.stroke = stroke.highlight
+              ) +
+              scale_color_identity() +
+              ggnewscale::new_scale_color()
           }
         }
 
@@ -1102,6 +1061,7 @@ FeatureDimPlot <- function(
                   size = label_point_size
                 ) +
                 ggrepel::geom_text_repel(
+                  seed = seed,
                   data = label_df,
                   aes(
                     x = .data[["x"]],
@@ -1125,6 +1085,7 @@ FeatureDimPlot <- function(
             } else {
               p <- p +
                 ggrepel::geom_text_repel(
+                  seed = seed,
                   data = label_df,
                   aes(
                     x = .data[["x"]],
@@ -1164,6 +1125,7 @@ FeatureDimPlot <- function(
                   size = pt.size + 1
                 ) +
                 ggrepel::geom_text_repel(
+                  seed = seed,
                   data = label_df,
                   aes(
                     x = .data[["x"]],
@@ -1186,6 +1148,7 @@ FeatureDimPlot <- function(
             } else {
               p <- p +
                 ggrepel::geom_text_repel(
+                  seed = seed,
                   data = label_df,
                   aes(
                     x = .data[["x"]],
@@ -1545,27 +1508,29 @@ FeatureDimPlot <- function(
           )
         if (isTRUE(show_points) && isTRUE(raster)) {
           p <- p +
-            scattermore::geom_scattermore(
+            thisplot::scatter_layers(
               data = dat[is.na(dat[, "value"]), , drop = FALSE],
               mapping = aes(
                 x = .data[["x"]],
                 y = .data[["y"]],
                 color = .data[["value"]]
               ),
-              pointsize = raster_pt_size,
-              alpha = pt.alpha,
-              pixels = raster.dpi
+              raster.pt.size = raster_pt_size,
+              pt.alpha = pt.alpha,
+              raster.dpi = raster.dpi,
+              raster = TRUE
             ) +
-            scattermore::geom_scattermore(
+            thisplot::scatter_layers(
               data = dat[!is.na(dat[, "value"]), , drop = FALSE],
               mapping = aes(
                 x = .data[["x"]],
                 y = .data[["y"]],
                 color = .data[["value"]]
               ),
-              pointsize = raster_pt_size,
-              alpha = pt.alpha,
-              pixels = raster.dpi
+              raster.pt.size = raster_pt_size,
+              pt.alpha = pt.alpha,
+              raster.dpi = raster.dpi,
+              raster = TRUE
             )
         } else if (isTRUE(show_points) && isTRUE(hex)) {
           check_r("hexbin", verbose = FALSE)
@@ -1618,64 +1583,36 @@ FeatureDimPlot <- function(
           }
         } else if (isTRUE(show_points)) {
           p <- p +
-            geom_point(
+            thisplot::scatter_layers(
               mapping = aes(
                 x = .data[["x"]],
                 y = .data[["y"]],
                 color = .data[["value"]]
               ),
-              shape = "circle",
-              size = pt.size,
-              stroke = 0,
-              alpha = pt.alpha
+              pt.size = pt.size,
+              pt.alpha = pt.alpha
             )
         }
         if (isTRUE(show_points) && !is.null(cells.highlight_use) && isFALSE(hex)) {
           cell_df <- subset(p$data, rownames(p$data) %in% cells.highlight_use)
           if (nrow(cell_df) > 0) {
-            if (isTRUE(raster)) {
-              p <- p +
-                scattermore::geom_scattermore(
-                  data = cell_df,
-                  aes(x = .data[["x"]], y = .data[["y"]]),
-                  color = cols.highlight,
-                  pointsize = floor(sizes.highlight) + stroke.highlight,
-                  alpha = alpha.highlight,
-                  pixels = raster.dpi
-                ) +
-                scattermore::geom_scattermore(
-                  data = cell_df,
-                  aes(
-                    x = .data[["x"]],
-                    y = .data[["y"]],
-                    color = .data[["value"]]
-                  ),
-                  pointsize = floor(sizes.highlight),
-                  alpha = alpha.highlight,
-                  pixels = raster.dpi
-                )
-            } else {
-              p <- p +
-                geom_point(
-                  data = cell_df,
-                  aes(x = .data[["x"]], y = .data[["y"]]),
-                  shape = "circle",
-                  color = cols.highlight,
-                  size = sizes.highlight + stroke.highlight,
-                  alpha = alpha.highlight
-                ) +
-                geom_point(
-                  data = cell_df,
-                  aes(
-                    x = .data[["x"]],
-                    y = .data[["y"]],
-                    color = .data[["value"]]
-                  ),
-                  shape = "circle",
-                  size = sizes.highlight,
-                  alpha = alpha.highlight
-                )
-            }
+            p <- p +
+              thisplot::scatter_layers(
+                data = cell_df,
+                mapping = aes(
+                  x = .data[["x"]], y = .data[["y"]],
+                  color = .data[["value"]]
+                ),
+                pt.size = sizes.highlight,
+                pt.alpha = alpha.highlight,
+                raster = isTRUE(raster),
+                raster.pt.size = floor(sizes.highlight),
+                raster.dpi = raster.dpi,
+                stroke = NULL,
+                outline = TRUE,
+                outline.color = cols.highlight,
+                outline.stroke = stroke.highlight
+              )
           }
         }
         heading_color <- if (is.null(names(title.color))) {
@@ -1780,6 +1717,7 @@ FeatureDimPlot <- function(
               ) +
               annotate(
                 geom = GeomTextRepel,
+                seed = seed,
                 x = label_df[["x"]],
                 y = label_df[["y"]],
                 label = label_df[["label"]],
@@ -1798,6 +1736,7 @@ FeatureDimPlot <- function(
             p <- p +
               annotate(
                 geom = GeomTextRepel,
+                seed = seed,
                 x = label_df[["x"]],
                 y = label_df[["y"]],
                 label = label_df[["label"]],
@@ -2180,114 +2119,68 @@ FeatureDimPlot3D <- function(
     dat_sp[rownames(dat_exp), , drop = FALSE]
   )
 
-  dat_use[[paste0(reduction_key, dims[1], "All_cells")]] <- dat_use[[paste0(
-    reduction_key,
-    dims[1]
-  )]]
-  dat_use[[paste0(reduction_key, dims[2], "All_cells")]] <- dat_use[[paste0(
-    reduction_key,
-    dims[2]
-  )]]
-  dat_use[[paste0(reduction_key, dims[3], "All_cells")]] <- dat_use[[paste0(
-    reduction_key,
-    dims[3]
-  )]]
-  for (i in levels(dat_use[[split.by]])) {
-    dat_use[[paste0(reduction_key, dims[1], i)]] <- ifelse(
-      dat_use[[split.by]] == i,
-      dat_use[[paste0(reduction_key, dims[1])]],
-      NA
-    )
-    dat_use[[paste0(reduction_key, dims[2], i)]] <- ifelse(
-      dat_use[[split.by]] == i,
-      dat_use[[paste0(reduction_key, dims[2])]],
-      NA
-    )
-    dat_use[[paste0(reduction_key, dims[3], i)]] <- ifelse(
-      dat_use[[split.by]] == i,
-      dat_use[[paste0(reduction_key, dims[3])]],
-      NA
-    )
+  coordinate_names <- paste0(reduction_key, dims[seq_len(3L)])
+  for (coordinate in coordinate_names) {
+    dat_use[[paste0(coordinate, "All_cells")]] <- dat_use[[coordinate]]
   }
-  if (!is.null(cells.highlight)) {
-    cells.highlight <- cells.highlight[cells.highlight %in% rownames(dat_use)]
-    dat_use_highlight <- dat_use[cells.highlight, , drop = FALSE]
-    for (i in levels(dat_use_highlight[[split.by]])) {
-      dat_use_highlight[[paste0(reduction_key, dims[1], i)]] <- ifelse(
-        dat_use_highlight[[split.by]] == i,
-        dat_use_highlight[[paste0(reduction_key, dims[1])]],
-        NA
-      )
-      dat_use_highlight[[paste0(reduction_key, dims[2], i)]] <- ifelse(
-        dat_use_highlight[[split.by]] == i,
-        dat_use_highlight[[paste0(reduction_key, dims[2])]],
-        NA
-      )
-      dat_use_highlight[[paste0(reduction_key, dims[3], i)]] <- ifelse(
-        dat_use_highlight[[split.by]] == i,
-        dat_use_highlight[[paste0(reduction_key, dims[3])]],
+  for (i in levels(dat_use[[split.by]])) {
+    for (coordinate in coordinate_names) {
+      dat_use[[paste0(coordinate, i)]] <- ifelse(
+        dat_use[[split.by]] == i,
+        dat_use[[coordinate]],
         NA
       )
     }
   }
-
-  p <- plotly::plot_ly(data = dat_use, width = width, height = height)
-  p <- plotly::add_trace(
-    p = p,
-    data = dat_use,
-    x = dat_use[[paste0(reduction_key, dims[1], "All_cells")]],
-    y = dat_use[[paste0(reduction_key, dims[2], "All_cells")]],
-    z = dat_use[[paste0(reduction_key, dims[3], "All_cells")]],
-    text = paste0(
-      "Cell:",
-      rownames(dat_use),
-      "\nExp:",
-      round(dat_use[[features[1]]], 3)
-    ),
-    type = "scatter3d",
-    mode = "markers",
-    marker = list(
-      color = dat_use[[features[1]]],
+  if (!is.null(cells.highlight)) {
+    cells.highlight <- cells.highlight[cells.highlight %in% rownames(dat_use)]
+    dat_use_highlight <- dat_use[cells.highlight, , drop = FALSE]
+  }
+  feature_markers <- lapply(features, function(feature) {
+    list(
+      color = dat_use[[feature]],
       colorbar = list(
-        title = list(
-          text = features[1],
-          font = list(color = "black", size = 14)
-        ),
+        title = list(text = feature, font = list(color = "black", size = 14)),
         len = 0.5
       ),
       size = pt.size,
       showscale = TRUE
-    ),
-    name = "All_cells",
-    showlegend = TRUE,
-    visible = TRUE
+    )
+  })
+  highlight_marker <- list(
+    size = sizes.highlight, color = cols.highlight, symbol = shape.highlight
   )
 
-  if (!is.null(cells.highlight)) {
-    p <- plotly::add_trace(
-      p = p,
-      x = dat_use_highlight[[paste0(reduction_key, dims[1], "All_cells")]],
-      y = dat_use_highlight[[paste0(reduction_key, dims[2], "All_cells")]],
-      z = dat_use_highlight[[paste0(reduction_key, dims[3], "All_cells")]],
-      text = paste0(
-        "Cell:",
-        rownames(dat_use_highlight),
-        "\nExp:",
-        round(dat_use_highlight[[features[1]]], 3)
-      ),
-      type = "scatter3d",
-      mode = "markers",
-      marker = list(
-        size = sizes.highlight,
-        color = cols.highlight,
-        symbol = shape.highlight
-      ),
-      name = "highlight",
-      showlegend = TRUE,
-      visible = TRUE
-    )
-  }
-
+  p <- thisplot::plot_scatter3d(
+    data = dat_use,
+    x = paste0(reduction_key, dims[1], "All_cells"),
+    y = paste0(reduction_key, dims[2], "All_cells"),
+    z = paste0(reduction_key, dims[3], "All_cells"),
+    text = paste0(
+      "Cell:", rownames(dat_use),
+      "\nExp:", round(dat_use[[features[1]]], 3)
+    ),
+    name = "All_cells",
+    marker = feature_markers[[1L]],
+    highlight = if (!is.null(cells.highlight)) dat_use_highlight else NULL,
+    highlight_text = if (!is.null(cells.highlight)) {
+      paste0(
+        "Cell:", rownames(dat_use_highlight),
+        "\nExp:", round(dat_use_highlight[[features[1]]], 3)
+      )
+    } else {
+      NULL
+    },
+    highlight_marker = highlight_marker,
+    title = list(
+      text = paste0("All_cells", " (nCells:", nrow(dat_use), ")"),
+      font = list(size = 16, color = "black"),
+      y = 0.95
+    ),
+    xlab = xlab, ylab = ylab, zlab = zlab,
+    legend = list(itemsizing = "constant", y = -0.2, x = 0.5, xanchor = "center"),
+    width = width, height = height
+  )
   split_option <- list()
   genes_option <- list()
   for (i in 0:nlevels(dat_use[[split.by]])) {
@@ -2296,14 +2189,15 @@ FeatureDimPlot3D <- function(
     if (i != 0 && sp == "All.cells") {
       next
     }
-    x <- list(dat_use[[paste0(reduction_key, dims[1], sp)]])
-    y <- list(dat_use[[paste0(reduction_key, dims[2], sp)]])
-    z <- list(dat_use[[paste0(reduction_key, dims[3], sp)]])
+    suffix <- if (i == 0) "" else sp
+    x <- list(dat_use[[paste0(reduction_key, dims[1], suffix)]])
+    y <- list(dat_use[[paste0(reduction_key, dims[2], suffix)]])
+    z <- list(dat_use[[paste0(reduction_key, dims[3], suffix)]])
     name <- sp
     if (!is.null(cells.highlight)) {
-      x <- c(x, list(dat_use_highlight[[paste0(reduction_key, dims[1], sp)]]))
-      y <- c(y, list(dat_use_highlight[[paste0(reduction_key, dims[2], sp)]]))
-      z <- c(z, list(dat_use_highlight[[paste0(reduction_key, dims[3], sp)]]))
+      x <- c(x, list(dat_use_highlight[[paste0(reduction_key, dims[1], suffix)]]))
+      y <- c(y, list(dat_use_highlight[[paste0(reduction_key, dims[2], suffix)]]))
+      z <- c(z, list(dat_use_highlight[[paste0(reduction_key, dims[3], suffix)]]))
       name <- c(sp, "highlight")
     }
     split_option[[i + 1]] <- list(
@@ -2328,28 +2222,9 @@ FeatureDimPlot3D <- function(
     )
   }
   for (j in seq_along(features)) {
-    marker <- list(
-      color = dat_use[[features[j]]],
-      colorbar = list(
-        title = list(
-          text = features[j],
-          font = list(color = "black", size = 14)
-        ),
-        len = 0.5
-      ),
-      size = pt.size,
-      showscale = TRUE
-    )
-
+    marker <- feature_markers[[j]]
     if (!is.null(cells.highlight)) {
-      marker <- list(
-        marker,
-        list(
-          size = sizes.highlight,
-          color = cols.highlight,
-          symbol = shape.highlight
-        )
-      )
+      marker <- list(marker, highlight_marker)
     }
     genes_option[[j]] <- list(
       method = "update",
@@ -2368,53 +2243,10 @@ FeatureDimPlot3D <- function(
 
   p <- plotly::layout(
     p = p,
-    title = list(
-      text = paste0("All_cells", " (nCells:", nrow(dat_use), ")"),
-      font = list(size = 16, color = "black"),
-      y = 0.95
-    ),
-    showlegend = TRUE,
-    legend = list(
-      itemsizing = "constant",
-      y = -0.2,
-      x = 0.5,
-      xanchor = "center"
-    ),
-    scene = list(
-      xaxis = list(
-        title = xlab,
-        range = c(
-          min(dat_use[[paste0(reduction_key, dims[1])]], na.rm = TRUE),
-          max(dat_use[[paste0(reduction_key, dims[1])]], na.rm = TRUE)
-        )
-      ),
-      yaxis = list(
-        title = ylab,
-        range = c(
-          min(dat_use[[paste0(reduction_key, dims[2])]], na.rm = TRUE),
-          max(dat_use[[paste0(reduction_key, dims[2])]], na.rm = TRUE)
-        )
-      ),
-      zaxis = list(
-        title = zlab,
-        range = c(
-          min(dat_use[[paste0(reduction_key, dims[3])]], na.rm = TRUE),
-          max(dat_use[[paste0(reduction_key, dims[3])]], na.rm = TRUE)
-        )
-      ),
-      aspectratio = list(x = 1, y = 1, z = 1)
-    ),
     updatemenus = list(
-      list(
-        y = 0.67,
-        buttons = split_option
-      ),
-      list(
-        y = 0.33,
-        buttons = genes_option
-      )
-    ),
-    autosize = FALSE
+      list(y = 0.67, buttons = split_option),
+      list(y = 0.33, buttons = genes_option)
+    )
   )
 
   if ((!is.null(save) && is.character(save) && nchar(save) > 0)) {

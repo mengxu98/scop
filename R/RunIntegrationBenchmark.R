@@ -11,6 +11,7 @@
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams RunIntegration
+#' @param ... Arguments passed to other functions.
 #' @param linear_reduction Linear reduction (`"pca"`, `"svd"`, `"ica"`, `"nmf"`, `"mds"`, `"glmpca"`).
 #' @param nHVF Number of highly variable features.
 #' @param linear_reduction_dims Total number of dimensions to compute and store for `linear_reduction`.
@@ -78,8 +79,8 @@ RunIntegrationBenchmark <- function(
   skip_failed = TRUE,
   tool_name = "IntegrationBenchmark",
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {

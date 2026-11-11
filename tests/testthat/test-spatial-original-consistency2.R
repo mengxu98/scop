@@ -1,23 +1,3 @@
-real_visium_subset2 <- function(n = 150, seed = 42, assay = NULL) {
-  data(visium_human_pancreas_sub)
-  srt <- visium_human_pancreas_sub
-  srt <- Seurat::NormalizeData(srt, verbose = FALSE)
-  srt@images <- list()
-  set.seed(seed)
-  srt <- srt[, sample(colnames(srt), n)]
-  srt
-}
-
-visium_assay2 <- function(srt) {
-  SeuratObject::DefaultAssay(srt)
-}
-
-real_panc8_reference2 <- function(n = 300, seed = 7) {
-  data(panc8_sub)
-  set.seed(seed)
-  panc8_sub[, sample(colnames(panc8_sub), n)]
-}
-
 real_pancreas_reference2 <- function(n = 400, seed = 5) {
   data(pancreas_sub)
   set.seed(seed)
@@ -29,21 +9,26 @@ real_pancreas_reference2 <- function(n = 400, seed = 5) {
 test_that("RunRCTD weights match the original spacexr pipeline", {
   skip_on_cran()
   skip_if_not_installed("spacexr")
+  exports <- getNamespaceExports("spacexr")
+  uses_spe <- all(c("createRctd", "runRctd") %in% exports)
 
-  srt <- real_visium_subset2(n = 120)
-  reference <- real_panc8_reference2()
+  srt <- make_visium_test_subset(n = 120)
+  reference <- make_panc8_test_subset(n = 300)
   tb <- table(reference$celltype)
   reference <- reference[, reference$celltype %in% names(tb)[tb >= 30]]
   reference$celltype <- factor(reference$celltype)
 
-  wrapped <- RunRCTD(
-    srt,
-    reference = reference,
-    reference_label = "celltype",
-    min_cells = 25,
-    rctd_mode = "multi",
-    max_cores = 1,
-    verbose = FALSE
+  expect_warning(
+    wrapped <- RunRCTD(
+      srt,
+      reference = reference,
+      reference_label = "celltype",
+      min_cells = 25,
+      rctd_mode = "multi",
+      max_cores = 1,
+      verbose = FALSE
+    ),
+    if (uses_spe) NA_character_ else "nUMI does not match colSums"
   )
   wrapped_weights <- as.matrix(wrapped@tools$RCTD$weights)
 
@@ -54,10 +39,10 @@ test_that("RunRCTD weights match the original spacexr pipeline", {
   reference2 <- reference[, names(labels)]
   labels <- factor(as.character(labels), levels = unique(as.character(labels)))
   names(labels) <- colnames(reference2)
-  label_map <- getFromNamespace("rctd_backend_label_map", "scop")(labels)
+  label_map <- getFromNamespace("rctd_normalize_labels", "scop")(labels)
   features <- intersect(rownames(srt), rownames(reference2))
-  st <- getFromNamespace("rctd_get_count_matrix", "scop")(srt, visium_assay2(srt), "counts", NULL, "Spatial", TRUE, FALSE)
-  rf <- getFromNamespace("rctd_get_count_matrix", "scop")(reference2, visium_assay2(reference2), "counts", NULL, "Reference", TRUE, FALSE)
+  st <- getFromNamespace("rctd_get_count_matrix", "scop")(srt, SeuratObject::DefaultAssay(srt), "counts", NULL, "Spatial", TRUE, FALSE)
+  rf <- getFromNamespace("rctd_get_count_matrix", "scop")(reference2, SeuratObject::DefaultAssay(reference2), "counts", NULL, "Reference", TRUE, FALSE)
   # Preserve full-assay library depths, as required by both spacexr APIs.
   st_numi <- Matrix::colSums(st)
   ref_numi <- Matrix::colSums(rf)
@@ -71,8 +56,7 @@ test_that("RunRCTD weights match the original spacexr pipeline", {
   st_numi <- st_numi[keep_spots]
   coords <- getFromNamespace("resolve_spatial_spot_coords", "scop")(srt, colnames(st), NULL, c("x", "y"), "raw")
 
-  exports <- getNamespaceExports("spacexr")
-  if (all(c("createRctd", "runRctd") %in% exports)) {
+  if (uses_spe) {
     testthat::skip_if_not_installed("SpatialExperiment")
     spatial_spe <- SpatialExperiment::SpatialExperiment(
       assays = list(counts = st),
@@ -94,8 +78,14 @@ test_that("RunRCTD weights match the original spacexr pipeline", {
       original <- t(original)
     }
   } else {
-    puck <- spacexr::SpatialRNA(coords, st, st_numi)
-    ref <- spacexr::Reference(rf, label_map$labels, ref_numi)
+    expect_warning(
+      puck <- spacexr::SpatialRNA(coords, st, st_numi),
+      "SpatialRNA: nUMI does not match colSums"
+    )
+    expect_warning(
+      ref <- spacexr::Reference(rf, label_map$labels, ref_numi),
+      "Reference: nUMI does not match colSums"
+    )
     rctd <- spacexr::create.RCTD(puck, ref, max_cores = 1)
     rctd <- spacexr::run.RCTD(rctd, doublet_mode = "multi")
     cell_types <- rctd@cell_type_info$renorm[[2]]
@@ -124,11 +114,11 @@ test_that("RunBANKSY clusters match the original Banksy pipeline", {
   skip_if_not_installed("Banksy")
   skip_if_not_installed("SpatialExperiment")
 
-  srt <- real_visium_subset2(n = 150)
+  srt <- make_visium_test_subset(n = 150)
   set.seed(1)
   wrapped <- RunBANKSY(
     srt,
-    assay = visium_assay2(srt),
+    assay = SeuratObject::DefaultAssay(srt),
     layer = "data",
     lambda = 0.2,
     k_geom = 10,
@@ -142,7 +132,7 @@ test_that("RunBANKSY clusters match the original Banksy pipeline", {
   wrapped_clusters <- as.character(wrapped$BANKSY_cluster)
   names(wrapped_clusters) <- rownames(wrapped[[]])
 
-  expr <- Seurat::GetAssayData(srt, assay = visium_assay2(srt), layer = "data")
+  expr <- Seurat::GetAssayData(srt, assay = SeuratObject::DefaultAssay(srt), layer = "data")
   coords <- getFromNamespace("spatial_analysis_coords", "scop")(
     srt = srt, image = NULL, coord.cols = c("x", "y"), coordinate_space = "raw"
   )$data
@@ -191,8 +181,8 @@ test_that("RunCARD(CARDspa) proportions match the original CARDspa pipeline", {
   skip_on_cran()
   skip_if_not_installed("CARDspa")
 
-  srt <- real_visium_subset2(n = 120, seed = 3)
-  reference <- real_panc8_reference2()
+  srt <- make_visium_test_subset(n = 120, seed = 3)
+  reference <- make_panc8_test_subset(n = 300)
   tb <- table(reference$celltype)
   reference <- reference[, reference$celltype %in% names(tb)[tb >= 30]]
   reference$celltype <- factor(reference$celltype)
@@ -210,8 +200,8 @@ test_that("RunCARD(CARDspa) proportions match the original CARDspa pipeline", {
   )
   wrapped_weights <- as.matrix(wrapped@tools$CARD$weights)
 
-  st_counts <- Seurat::GetAssayData(srt, assay = visium_assay2(srt), layer = "counts")
-  ref_counts <- Seurat::GetAssayData(reference, assay = visium_assay2(reference), layer = "counts")
+  st_counts <- Seurat::GetAssayData(srt, assay = SeuratObject::DefaultAssay(srt), layer = "counts")
+  ref_counts <- Seurat::GetAssayData(reference, assay = SeuratObject::DefaultAssay(reference), layer = "counts")
   coords <- getFromNamespace("spatial_analysis_coords", "scop")(
     srt = srt, image = NULL, coord.cols = c("x", "y"), coordinate_space = "raw"
   )$data
@@ -285,16 +275,16 @@ test_that("RunSpotSweeper local outliers match the original SpotSweeper pipeline
   skip_if_not_installed("SpotSweeper")
   skip_if_not_installed("SpatialExperiment")
 
-  srt <- real_visium_subset2(n = 120)
+  srt <- make_visium_test_subset(n = 120)
   wrapped <- RunSpotSweeper(
     srt,
-    assay = visium_assay2(srt),
+    assay = SeuratObject::DefaultAssay(srt),
     layer = "counts",
     n_neighbors = 20,
     verbose = FALSE
   )
 
-  expr <- Seurat::GetAssayData(srt, assay = visium_assay2(srt), layer = "counts")
+  expr <- Seurat::GetAssayData(srt, assay = SeuratObject::DefaultAssay(srt), layer = "counts")
   coords <- getFromNamespace("spatial_analysis_coords", "scop")(
     srt = srt, image = NULL, coord.cols = c("x", "y"), coordinate_space = "raw"
   )$data
@@ -374,8 +364,8 @@ test_that("RunSpatialIntegration PRECAST domains match the original PRECAST pipe
   )
   wrapped_domains <- wrapped@tools$SpatialIntegration$methods$PRECAST$domains
 
-  expr1 <- Seurat::GetAssayData(s1, assay = visium_assay2(s1), layer = "counts")
-  expr2 <- Seurat::GetAssayData(s2, assay = visium_assay2(s2), layer = "counts")
+  expr1 <- Seurat::GetAssayData(s1, assay = SeuratObject::DefaultAssay(s1), layer = "counts")
+  expr2 <- Seurat::GetAssayData(s2, assay = SeuratObject::DefaultAssay(s2), layer = "counts")
   common_genes <- intersect(rownames(expr1), rownames(expr2))
   expr1 <- expr1[common_genes, ]
   expr2 <- expr2[common_genes, ]
@@ -395,8 +385,6 @@ test_that("RunSpatialIntegration PRECAST domains match the original PRECAST pipe
     project = "spatial_integration",
     customGenelist = common_genes
   )
-  # Compare the original model on the same exact graph; independent distance
-  # assertions for this graph are in test-spatial-precast-native.R.
   precast@AdjList <- lapply(precast@seulist, function(sample) {
     coords <- data.frame(cell_id = colnames(sample), x = sample$col, y = sample$row)
     graph <- spatial_graph_compute(coords, method = "knn", k = 6, directed = TRUE)

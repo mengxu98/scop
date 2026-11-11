@@ -21,7 +21,7 @@ make_spatial_integration_seurat <- function(samples = c("S1", "S2")) {
 
 mock_spatial_integration_backend <- function(code) {
   testthat::local_mocked_bindings(
-    spatial_integration_run_backend = function(method, input, verbose = TRUE, ...) {
+    spatial_integration_run_model = function(method, input, verbose = TRUE, ...) {
       expect_identical(method, "PRECAST")
       expect_equal(input$samples, c("S1", "S2"))
       expect_s4_class(input$expr, "dgCMatrix")
@@ -116,7 +116,7 @@ test_that("RunSpatialIntegration supports list input and preserves sample labels
 test_that("RunSpatialIntegration validates required inputs before backend work", {
   srt <- make_spatial_integration_seurat()
   testthat::local_mocked_bindings(
-    spatial_integration_run_backend = function(...) stop("backend should not run")
+    spatial_integration_run_model = function(...) stop("backend should not run")
   )
   expect_error(
     RunSpatialIntegration(srt, method = "PRECAST", verbose = FALSE),
@@ -208,7 +208,7 @@ test_that("PRECAST receives selected features and its SelectModel object argumen
     spatial_integration_extract_precast = function(raw_result, input) raw_result
   )
 
-  out <- spatial_integration_run_backend("PRECAST", input, verbose = FALSE)
+  out <- spatial_integration_run_model("PRECAST", input, verbose = FALSE)
   expect_identical(observed$features, input$features)
   expect_identical(observed$selected, list(step = "created"))
   expect_identical(out$step, "created")

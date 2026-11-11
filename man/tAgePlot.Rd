@@ -71,9 +71,8 @@ axis.}
 
 \item{title, subtitle, xlab, ylab}{Plot labels.}
 
-\item{theme_use}{Theme function name. Default is \code{"theme_scop"}, which
-maps to \code{thisplot::theme_this()}, matching the style used by
-\code{thisplot::StatPlot()}.}
+\item{theme_use}{Theme function name passed to the shared
+expression-statistics renderer. Default is \code{"theme_scop"}.}
 
 \item{theme_args}{Additional arguments passed to \code{theme_use}.}
 
@@ -90,7 +89,7 @@ maps to \code{thisplot::theme_this()}, matching the style used by
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{Reserved for future use.}
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A \code{ggplot} object.
@@ -99,11 +98,17 @@ A \code{ggplot} object.
 Plot tAge transcriptomic aging-clock predictions
 }
 \examples{
+predictions <- data.frame(
+  group = rep(c("Young", "Aged"), each = 4),
+  Mouse_tAge = c(3.1, 4.2, 5.0, 4.6, 18.2, 20.1, 21.3, 19.6)
+)
+tAgePlot(predictions, group.by = "group")
+
 \dontrun{
 pancreas_sub <- RuntAge(pancreas_sub, group.by = "CellType")
 tAgePlot(pancreas_sub, group.by = "CellType")
 }
 }
 \seealso{
-\link{RuntAge}
+\link{RuntAge}, \link{FeatureStatPlot}
 }

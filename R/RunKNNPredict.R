@@ -251,23 +251,11 @@ RunKNNPredict <- function(
   } else if (!is.null(srt_ref)) {
     ref_assay <- ref_assay %||% SeuratObject::DefaultAssay(srt_ref)
     if (!is.null(ref_group)) {
-      if (length(ref_group) == ncol(srt_ref)) {
-        srt_ref[["ref_group"]] <- ref_group
-      } else if (length(ref_group) == 1) {
-        if (!ref_group %in% colnames(srt_ref@meta.data)) {
-          log_message(
-            "ref_group must be one of the column names in the meta.data",
-            message_type = "error"
-          )
-        } else {
-          srt_ref[["ref_group"]] <- srt_ref[[ref_group]]
-        }
-      } else {
-        log_message(
-          "Length of ref_group must be one or length of srt_ref.",
-          message_type = "error"
-        )
-      }
+      srt_ref <- prepare_mapping_reference(
+        srt_ref, ref_group,
+        column_error = "ref_group must be one of the column names in the meta.data",
+        length_error = "Length of ref_group must be one or length of srt_ref."
+      )
     } else {
       log_message(
         "ref_group must be provided.",
@@ -575,7 +563,7 @@ RunKNNPredict <- function(
     identical(nn_method, "raw") &&
       !isTRUE(return_full_distance_matrix)
   ) {
-    knn_cross_topk_native(
+    knn_cross_topk(
       reference = ref,
       query = query,
       k = k,

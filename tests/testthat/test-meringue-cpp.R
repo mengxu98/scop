@@ -1,13 +1,3 @@
-meringue_real_input <- function(n = 120, seed = 42) {
-  data(visium_human_pancreas_sub)
-  srt <- visium_human_pancreas_sub
-  srt <- Seurat::NormalizeData(srt, verbose = FALSE)
-  srt@images <- list()
-  set.seed(seed)
-  srt <- srt[, sample(colnames(srt), n)]
-  srt
-}
-
 meringue_real_features <- function(srt, k = 12, seed = 1) {
   expr <- Seurat::GetAssayData(srt, assay = SeuratObject::DefaultAssay(srt), layer = "data")
   set.seed(seed)
@@ -33,7 +23,7 @@ test_that("meringue_moran_cpp matches MERINGUE::moranTest exactly", {
   skip_on_cran()
   skip_if_not_installed("MERINGUE")
 
-  srt <- meringue_real_input()
+  srt <- make_visium_test_subset(n = 120)
   expr <- Seurat::GetAssayData(srt, assay = SeuratObject::DefaultAssay(srt), layer = "data")
   features <- meringue_real_features(srt)
   weight <- meringue_test_weight(srt)
@@ -76,7 +66,7 @@ test_that("meringue_moran_matrix_cpp batch matches per-gene kernel and moranTest
   skip_on_cran()
   skip_if_not_installed("MERINGUE")
 
-  srt <- meringue_real_input()
+  srt <- make_visium_test_subset(n = 120)
   expr <- Seurat::GetAssayData(srt, assay = SeuratObject::DefaultAssay(srt), layer = "data")
   features <- meringue_real_features(srt, k = 20)
   weight <- meringue_test_weight(srt)
@@ -110,7 +100,7 @@ test_that("RunMERINGUE batch cpp path matches the r backend end to end", {
   skip_on_cran()
   skip_if_not_installed("MERINGUE")
 
-  srt <- meringue_real_input(n = 150)
+  srt <- make_visium_test_subset(n = 150)
   features <- meringue_real_features(srt, k = 100)
 
   cpp_out <- RunMERINGUE(
@@ -136,7 +126,7 @@ test_that("meringue_moran_cpp permutation matches MERINGUE::moranPermutationTest
   skip_on_cran()
   skip_if_not_installed("MERINGUE")
 
-  srt <- meringue_real_input()
+  srt <- make_visium_test_subset(n = 120)
   expr <- Seurat::GetAssayData(srt, assay = SeuratObject::DefaultAssay(srt), layer = "data")
   features <- meringue_real_features(srt, k = 6)
   weight <- meringue_test_weight(srt)
@@ -189,7 +179,7 @@ test_that("meringue permutation batch matches the seeded per-gene kernel", {
   skip_on_cran()
   skip_if_not_installed("MERINGUE")
 
-  srt <- meringue_real_input()
+  srt <- make_visium_test_subset(n = 120)
   expr <- Seurat::GetAssayData(
     srt,
     assay = SeuratObject::DefaultAssay(srt),
@@ -235,7 +225,7 @@ test_that("RunMERINGUE cpp and r backends give identical autocorrelation tables"
   skip_on_cran()
   skip_if_not_installed("MERINGUE")
 
-  srt <- meringue_real_input()
+  srt <- make_visium_test_subset(n = 120)
   features <- meringue_real_features(srt, k = 30)
 
   set.seed(42)
@@ -294,7 +284,7 @@ test_that("RunMERINGUE cpp backend matches r for permutations", {
   skip_on_cran()
   skip_if_not_installed("MERINGUE")
 
-  srt <- meringue_real_input(n = 120)
+  srt <- make_visium_test_subset(n = 120)
   features <- meringue_real_features(srt, k = 20)
 
   cpp_out <- RunMERINGUE(
@@ -340,7 +330,7 @@ test_that("RunMERINGUE cpp backend honors moran_params with a warning", {
   skip_on_cran()
   skip_if_not_installed("MERINGUE")
 
-  srt <- meringue_real_input(n = 80)
+  srt <- make_visium_test_subset(n = 80)
   features <- meringue_real_features(srt, k = 5)
 
   warnings_seen <- character(0)
@@ -371,7 +361,7 @@ test_that("RunMERINGUE cpp default stores kernel-produced autocorrelation", {
   skip_on_cran()
   skip_if_not_installed("MERINGUE")
 
-  srt <- meringue_real_input(n = 80)
+  srt <- make_visium_test_subset(n = 80)
   features <- meringue_real_features(srt, k = 5)
 
   out <- RunMERINGUE(

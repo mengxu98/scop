@@ -24,7 +24,16 @@
 #' @param verbose Whether to print progress messages.
 #'
 #' @return The Seurat object with results under
-#' `srt@tools$CellRank$enrichment[[lineage]]`.
+#' `object@tools$CellRank$enrichment[[lineage]]`. Each table in `databases`
+#' includes `Groups` and `Database` columns accepted by [EnrichmentPlot].
+#'
+#' @details
+#' Plot a stored database table with
+#' `EnrichmentPlot(res = list(enrichment = table), db = "GO_BP")`.
+#' The `Groups` column identifies the fitted gene module. PDF exports use
+#' the same [EnrichmentPlot] interface.
+#'
+#' @seealso [EnrichmentPlot], [RunCellRankTrends], [RunDynamicEnrichment]
 #' @export
 RunCellRankEnrichment <- function(
   object,
@@ -123,6 +132,8 @@ RunCellRankEnrichment <- function(
       if (nrow(tab)) {
         tab$cluster <- cluster_i
         tab$database <- db_i
+        tab$Groups <- cluster_i
+        tab$Database <- db_i
       }
       db_results[[cluster_i]] <- tab
     }
@@ -143,21 +154,6 @@ RunCellRankEnrichment <- function(
         file.path(output_dir, paste0(make.names(lineage), "_", make.names(db_i), "_enrichment.csv")),
         row.names = FALSE
       )
-      if (nrow(combined)) {
-        p <- ggplot2::ggplot(
-          head(combined[order(combined$p.adjust), , drop = FALSE], as.integer(show_category)),
-          ggplot2::aes(x = cluster, y = stats::reorder(Description, -log10(p.adjust)), size = Count, color = p.adjust)
-        ) +
-          ggplot2::geom_point() +
-          ggplot2::scale_color_viridis_c(trans = "log10", direction = -1) +
-          ggplot2::labs(x = "Trend module", y = NULL, title = paste(lineage, db_i)) +
-          ggplot2::theme_bw()
-        ggplot2::ggsave(
-          file.path(output_dir, paste0(make.names(lineage), "_", make.names(db_i), "_enrichment.pdf")),
-          p,
-          width = 8, height = 5
-        )
-      }
     }
   }
   bundle <- list(
@@ -175,6 +171,23 @@ RunCellRankEnrichment <- function(
     )
   )
   srt@tools$CellRank$enrichment[[lineage]] <- bundle
+  if (!is.null(output_dir)) {
+    for (database in names(results)) {
+      if (!nrow(results[[database]])) next
+      plot <- EnrichmentPlot(
+        res = list(enrichment = results[[database]]),
+        db = database,
+        plot_type = "comparison",
+        topTerm = show_category,
+        padjustCutoff = 1
+      )
+      ggplot2::ggsave(
+        file.path(output_dir, paste0(make.names(lineage), "_", make.names(database), "_enrichment.pdf")),
+        plot,
+        width = 8, height = 5
+      )
+    }
+  }
   srt
 }
 

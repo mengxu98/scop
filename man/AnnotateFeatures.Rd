@@ -20,9 +20,9 @@ AnnotateFeatures(
     "gene_type"),
   assays = "RNA",
   overwrite = FALSE,
-  ...,
   verbose = TRUE,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -65,13 +65,13 @@ Default is \code{"seqname"}, \code{"feature"}, \code{"start"}, \code{"end"},
 
 \item{overwrite}{Whether to overwrite existing metadata.}
 
-\item{...}{Passed to helper functions.}
-
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \description{
 Annotate features in a Seurat object with additional metadata from databases or a GTF file.

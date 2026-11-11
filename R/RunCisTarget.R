@@ -11,16 +11,16 @@
 #' @param adj A data frame with columns `TF`, `target`, and optionally
 #' `importance`, or a path to a TSV adjacency file. This is typically the
 #' output of [RunGRNBoost2()], [RunGENIE3()], or [RunSCENIC()] step 1.
-#' @param backend CisTarget runtime backend.
+#' @param backend CisTarget runtime engine.
 #' \describe{
 #'   \item{`"python"`}{Uses the pySCENIC/ctxcore Python pipeline. This is the
-#'     most tested backend and produces results identical to official SCENIC.}
+#'     most tested path and produces results identical to official SCENIC.}
 #'   \item{`"cpp"`}{Uses a compiled cisTarget workflow with recovery, AUC/NES,
 #'     and leading-edge kernels while retaining the same ranking
 #'     database and motif annotation inputs.}
 #'   \item{`"r"`}{Uses the `RcisTarget` Bioconductor package. Requires the
 #'     cisTarget ranking databases and motif annotations to be available in
-#'     the same format as the Python backend (feather files and motif2tf
+#'     the same format as the Python path (feather files and motif2tf
 #'     table).}
 #' }
 #' @param ranking_dbs Character vector of cisTarget ranking feather files.
@@ -32,15 +32,14 @@
 #' @param min_regulon_size Minimum number of target genes per regulon.
 #' @param gmt_output Optional output path for the regulon GMT file.
 #' @param txt_output Optional output path for the regulon TXT file.
-#' @param work_dir Working directory used by Python backend.
+#' @param work_dir Working directory used by Python.
 #' @param prefix Prefix for output files.
 #' @param envname Python environment name (Python backend only).
 #' @param conda Conda-compatible executable (Python backend only).
 #' @param cores Number of workers.
 #' @param force Whether to rebuild existing outputs.
 #' @param verbose Whether to print progress messages.
-#' @param ... Additional arguments passed to the backend.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A named list with components `regulons` (list of gene vectors),
 #' `ctx_file` (path to raw cisTarget output), `gmt_file`, and `txt_file`.
 #' @export

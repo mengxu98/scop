@@ -37,7 +37,7 @@ runtime. On Windows use a prepared Linux container with explicit mounted
 paths. This function does not manage containers or translate host paths.}
 
 \item{outdir}{New output directory. Existing paths are rejected. Split BEDs,
-native outputs and logs remain here, including when a call fails.}
+MACS2 outputs and logs remain here, including when a call fails.}
 
 \item{effective.genome.size}{Explicit effective genome size passed to MACS2.}
 
@@ -51,7 +51,7 @@ path uses BED input and \code{--nomodel}; MACS3 FRAG arguments are not used.}
 \value{
 A list with named \code{peaks} (\code{GRanges} per call), \code{groups} with columns
 \code{call_id}, \code{sample} and optional \code{group}, and \code{receipt} containing actual
-cell membership, reference, fragment resources, backend versions, command
+cell membership, reference, fragment resources, dependency versions, command
 arguments, logs, exit status and output files. The receipt identifies the
 original \code{sample.by} and \code{group.by} metadata fields; their names cannot collide
 with the fixed output columns. Counts represent the supplied
@@ -59,7 +59,7 @@ fragment records, not fifth-column read-support weights. Peak significance
 is a caller result, not a biological-replicate condition comparison.
 }
 \description{
-Split selected cells with native Signac, run the installed MACS2 executable,
+Split selected cells with Signac, run the installed MACS2 executable,
 and retain separate peak sets, command arguments and logs. Peak inference is
 performed by MACS2; no caller is installed or silently substituted.
 }

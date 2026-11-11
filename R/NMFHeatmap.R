@@ -172,6 +172,8 @@ NMFHeatmap <- function(
   verbose = TRUE,
   srt = NULL
 ) {
+  check_r("withr", verbose = FALSE)
+  withr::local_preserve_seed()
   check_r("ComplexHeatmap", verbose = FALSE)
 
   srt <- resolve_deprecated_srt(object, srt, missing(object))

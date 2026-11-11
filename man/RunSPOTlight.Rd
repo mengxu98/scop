@@ -25,8 +25,8 @@ RunSPOTlight(
   tool_name = "SPOTlight",
   store_results = TRUE,
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -72,10 +72,10 @@ type labels, and marker weights.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{Additional parameters passed to \code{SPOTlight::SPOTlight()}.}
-
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A \code{Seurat} object with \code{SPOTlight} proportion columns in metadata and

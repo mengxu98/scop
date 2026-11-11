@@ -292,7 +292,7 @@ commot_execute <- function(
 #' @param output.dir External directory for a requested H5AD artifact.
 #' @param store.h5ad Whether to retain the complete AnnData as an external H5AD.
 #' @param overwrite Whether to replace an existing named result or H5AD artifact.
-#' @param backend Backend used only for SCOP CCC result aggregation.
+#' @param backend Post-processing engine used for SCOP CCC result aggregation.
 #' @param verbose Whether to print progress messages.
 #'
 #' @return The input `Seurat` object with `srt@tools$COMMOT` and unified CCC
@@ -444,10 +444,10 @@ commot_select_key <- function(table, key, label) {
 #' @param theme_use,theme_args Theme name or function, plus extra theme arguments.
 #' Applied to every plot type, including the network view.
 #' @param key Stored cluster or direction selection key.
-#' @param ... Arguments passed to the SCOP network plot for `"network"`.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A `ggplot` or compatible plot object.
 #'
+#' @export
 #' @examples
 #' \dontrun{
 #' data(visium_human_pancreas_sub)
@@ -463,7 +463,6 @@ commot_select_key <- function(table, key, label) {
 #' COMMOTPlot(spatial, plot_type = "direction")
 #' COMMOTPlot(spatial, plot_type = "network")
 #' }
-#' @export
 COMMOTPlot <- function(
   object,
   result.name = NULL,

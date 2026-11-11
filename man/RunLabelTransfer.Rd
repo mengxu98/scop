@@ -42,7 +42,7 @@ RunLabelTransfer(
 
 \item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
-\item{method}{Label-transfer backend. One of \code{"Seurat"} or \code{"scOMM"}.}
+\item{method}{Label-transfer method. One of \code{"Seurat"} or \code{"scOMM"}.}
 
 \item{prefix}{Prefix used to resolve ATAC reductions.}
 
@@ -106,7 +106,7 @@ A \code{Seurat} object with prediction metadata added. For the Seurat
 backend, the tool result records actual anchor features and current prediction
 columns. This is a calculation-time snapshot, not automatically updated by
 later subsetting or renaming. Caller RNG state and original cell IDs are
-preserved; temporary query IDs isolate native suffix handling. Predictions
+preserved; temporary query IDs isolate suffix handling. Predictions
 describe similarity to the supplied reference, not independently established
 biological accuracy.
 }

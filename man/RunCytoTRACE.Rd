@@ -42,8 +42,7 @@ RunCytoTRACE(object, ...)
 \item{object}{An object.
 This can be a Seurat object or a matrix-like object (genes as rows, cells as columns).}
 
-\item{...}{Additional arguments passed to the official
-\code{CytoTRACE2::cytotrace2()} call when \code{backend = "r"}.}
+\item{...}{Arguments passed to other functions.}
 
 \item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
@@ -67,7 +66,7 @@ binned CytoTRACE2 output.}
 
 \item{cores}{Number of cores for parallel processing. \code{NULL} (the default)
 uses the process OpenMP team for the C++ kernels and one worker for the
-CytoTRACE2 backend.}
+CytoTRACE2 package.}
 
 \item{backend}{Backend used to run CytoTRACE2. \code{"r"} calls the official
 \code{CytoTRACE2::cytotrace2()} implementation and is the default. \code{"cpp"} uses

@@ -60,7 +60,7 @@ test_that("CoverageTrackPlot preserves factor level order for palette_colors", {
   data("pbmcmultiome_sub", package = "scop")
   called_cols <- NULL
   testthat::local_mocked_bindings(
-    CoveragePlot = function(..., cols) {
+    CoveragePlot = function(cols, ...) {
       called_cols <<- cols
       NULL
     },

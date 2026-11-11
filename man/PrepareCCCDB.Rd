@@ -36,7 +36,7 @@ If \code{FALSE}, cached databases are reused when available.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{Passed to helper functions.}
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A list with the same structure as \link{PrepareDB}: for each species a

@@ -45,7 +45,7 @@ RunDM(object, ...)
 \arguments{
 \item{object}{An object. This can be a Seurat object or a matrix-like object.}
 
-\item{...}{Passed to \code{destiny::DiffusionMap}.}
+\item{...}{Arguments passed to other functions.}
 
 \item{reduction}{Linear reduction used as input.}
 

@@ -15,7 +15,7 @@ CheckDataType(object, ...)
 \arguments{
 \item{object}{A \code{Seurat} object or a matrix.}
 
-\item{...}{The message to print.}
+\item{...}{Arguments passed to other functions.}
 
 \item{layer}{Assay layer to use.}
 

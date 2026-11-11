@@ -1,6 +1,8 @@
 mirror_fixture <- function() {
-  tab <- expand.grid(ID = c("one", "two", "three"), Database = c("GO_BP", "GO_CC"),
-    Groups = c("A", "B"), stringsAsFactors = FALSE)
+  tab <- expand.grid(
+    ID = c("one", "two", "three"), Database = c("GO_BP", "GO_CC"),
+    Groups = c("A", "B"), stringsAsFactors = FALSE
+  )
   tab$Description <- paste("Complete pathway", tab$ID)
   tab$p.adjust <- rep(c(0.001, 0.01, 0.03), 4)
   tab$p.adjust[tab$Groups == "B"] <- tab$p.adjust[tab$Groups == "B"]^2
@@ -9,8 +11,10 @@ mirror_fixture <- function() {
 }
 
 test_that("mirror results preserve ranking, full labels, colors and numeric geometry", {
-  p <- EnrichmentMirrorPlot(res = mirror_fixture(), group_use = c("A", "B"),
-    db = c("GO_CC", "GO_BP"), topTerm = 2, palcolor = c(B = "red", A = "blue"))
+  p <- EnrichmentMirrorPlot(
+    res = mirror_fixture(), group_use = c("A", "B"),
+    db = c("GO_CC", "GO_BP"), topTerm = 2, palcolor = c(B = "red", A = "blue")
+  )
   expect_equal(nrow(p$data), 8)
   expect_equal(p$data$.term, p$data$Description)
   expect_equal(p$data$.xmax - p$data$.xmin, -log10(p$data$p.adjust))
@@ -18,7 +22,9 @@ test_that("mirror results preserve ranking, full labels, colors and numeric geom
   expect_true(all(p$data$.xmax[p$data$Groups == "B"] > 0))
   expect_false(any(vapply(p$layers, function(x) inherits(x$geom, "GeomPoint"), logical(1))))
   built <- ggplot2::ggplot_build(p)
-  expect_true(all(built$data[[5]]$colour == "black"))
+  expect_true(all(built$data[[5]]$colour %in% c("black", "white")))
+  expect_equal(built$data[[5]]$colour[1L], "white")
+  expect_equal(built$data[[5]]$colour[which.max(p$data$.score)], "black")
   expect_equal(built$data[[4]]$fill, built$data[[6]]$colour)
   expect_equal(built$data[[4]]$alpha, built$data[[6]]$alpha)
   expect_equal(built$data[[4]]$fill[p$data$Groups == "A"], rep("blue", 4))
@@ -28,8 +34,10 @@ test_that("mirror results preserve ranking, full labels, colors and numeric geom
 test_that("mirror axes and group order adapt without changing result values", {
   p <- EnrichmentMirrorPlot(res = mirror_fixture(), group_use = c("B", "A"), db = "GO")
   expect_true(all(p$data$.xmin[p$data$Groups == "B"] < 0))
-  q <- EnrichmentMirrorPlot(res = mirror_fixture(), group_use = c("B", "A"),
-    db = "GO", symmetric_axis = TRUE, term_size = 4, font_family = "sans")
+  q <- EnrichmentMirrorPlot(
+    res = mirror_fixture(), group_use = c("B", "A"),
+    db = "GO", symmetric_axis = TRUE, term_size = 4, font_family = "sans"
+  )
   expect_equal(p$data$.score, q$data$.score)
   expect_equal(q$layers[[7]]$data$x, -q$layers[[8]]$data$x)
   expect_no_warning(ggplot2::ggplotGrob(q))
@@ -51,7 +59,8 @@ test_that("mirror handles zero, missing and unbalanced database results", {
 
 test_that("mirror reads the saved object key and permits custom result lists", {
   object <- SeuratObject::CreateSeuratObject(Matrix::Matrix(matrix(1:12, 3,
-    dimnames = list(letters[1:3], paste0("c", 1:4))), sparse = TRUE))
+    dimnames = list(letters[1:3], paste0("c", 1:4))
+  ), sparse = TRUE))
   object@tools$Enrichment_custom_wilcox <- mirror_fixture()
   p <- EnrichmentMirrorPlot(object, group_use = c("A", "B"), db = "GO")
   expect_equal(nrow(p$data), 12)
@@ -78,4 +87,23 @@ test_that("mirror default titles do not mislabel non-GO enrichment", {
   expect_equal(p$labels$title, "A vs B | enrichment")
   p <- EnrichmentMirrorPlot(res = res, group_use = c("A", "B"), db = "custom", title = "My comparison")
   expect_equal(p$labels$title, "My comparison")
+})
+
+test_that("mirror term text follows displayed fill without truncating long names", {
+  res <- mirror_fixture()
+  res$enrichment$p.adjust <- rep(c(0.001, 0.01, 0.03), 4)
+  res$enrichment$Groups <- factor(res$enrichment$Groups, levels = c("B", "A"))
+  res$enrichment$Description <- paste(rep("Complete pathway name", 4), collapse = " ")
+  original <- res
+  p <- EnrichmentMirrorPlot(
+    res = res, group_use = c("A", "B"), db = "GO",
+    palcolor = c(A = "black", B = "white"), alpha_range = c(0.1, 1)
+  )
+  layers <- ggplot2::ggplot_build(p)$data
+  expect_equal(layers[[5]]$colour[which.max(p$data$.score[p$data$Groups == "A"])], "white")
+  expect_true(all(layers[[5]]$colour[p$data$Groups == "B"] == "black"))
+  expect_true(all(layers[[5]]$alpha == 1))
+  expect_equal(layers[[5]]$label, p$data$Description)
+  expect_identical(res, original)
+  expect_no_warning(ggplot2::ggplotGrob(p))
 })

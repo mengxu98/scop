@@ -55,8 +55,8 @@ RunStandardWorkflow(
   spatial_qc_params = list(),
   spanorm_params = list(),
   spatial_data_type = "auto",
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -114,9 +114,9 @@ specifies a different default; explicit values select computed components.}
 \item{cluster_algorithm, cluster_resolution}{Clustering (\code{"louvain"}, \code{"slm"},
 \code{"leiden"}). Larger \code{cluster_resolution} yields fewer clusters.}
 
-\item{cores}{Number of CPU cores. \code{NULL} lets each backend pick its own
+\item{cores}{Number of CPU cores. \code{NULL} lets each method pick its own
 default: the process OpenMP team (\code{OMP_NUM_THREADS}) for C++ kernels and one
-worker for R/Python parallel backends.}
+worker for R/Python parallel execution.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
@@ -131,16 +131,16 @@ before preprocessing. Filtering is disabled; inspect its QC labels first.}
 
 \item{spanorm_params}{Arguments for \code{\link[=RunSpaNorm]{RunSpaNorm()}} when
 \code{normalization_method = "SpaNorm"}. Creates a separate normalized assay;
-count-based backends continue to use the original assay.}
+count-based methods continue to use the original assay.}
 
 \item{spatial_data_type}{Observation type: \code{"auto"}, \code{"spot"}, \code{"bin"}, or
 \code{"cell"}. Auto uses import provenance or image evidence, otherwise unknown.
 Cell observations cannot use BayesSpace or spot deconvolution in this workflow.}
 
-\item{...}{Additional arguments passed to reduction methods.}
-
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A \code{Seurat} object. Spatial workflows store per-stage execution and

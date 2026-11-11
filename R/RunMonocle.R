@@ -23,8 +23,8 @@
 #' @param root_state The state to use as the root of the trajectory.
 #' If NULL, the trajectory is rooted at the first state after an initial
 #' ordering.
-#' @param backend Deprecated and ignored. Monocle now accelerates cell ordering
-#' natively with C++, so the separate `"cpp"` backend has been removed.
+#' @param backend Deprecated and ignored. Monocle accelerates cell ordering
+#' with compiled C++, so the separate `"cpp"` option has been removed.
 #' @param n_neighbors Deprecated and ignored.
 #' @param ddrtree_maxIter Optional maximum iteration count passed to
 #' `DDRTree::DDRTree()` when `reduction_method = "DDRTree"`. Lower values can

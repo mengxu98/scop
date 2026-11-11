@@ -46,5 +46,4 @@ graph_sparse[
   seq_len(min(3, nrow(graph_sparse))),
   seq_len(min(3, ncol(graph_sparse)))
 ]
-
 }

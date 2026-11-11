@@ -15,7 +15,7 @@
 #' columns. The default selection preserves existing `array_col`/`array_row`
 #' or `col`/`row` indices when available. Standard array names (`col`/`row`,
 #' `array_col`/`array_row`, or `arraycol`/`arrayrow`, case-insensitive) preserve
-#' native array indices; other column names are treated as pixel coordinates
+#' original array indices; other column names are treated as pixel coordinates
 #' from which a regular array grid is inferred.
 #' @param use_reduction Optional Seurat reduction to pass to BayesSpace as PCA.
 #' @param dims Dimensions from `use_reduction` to use.
@@ -178,7 +178,7 @@ RunBayesSpace <- function(
       message_type = "error"
     )
   }
-  bayesspace_validate_backend_output(
+  bayesspace_validate_output(
     cdata = cdata,
     cells = colnames(srt),
     cluster_col = "spatial.cluster",
@@ -371,8 +371,6 @@ bayesspace_add_spatial_coords <- function(
   coords <- if (
     is.null(resolved_image$image) && !identical(coord.cols, c("col", "row"))
   ) {
-    # Normalize only the selected, parsed pair. Unrelated metadata coordinate
-    # names must not override coord.cols or disagree with the raw provenance.
     metadata_coords <- raw$data[, c("x", "y"), drop = FALSE]
     selected_cols <- tolower(raw$source$coord.cols)
     if (
@@ -456,7 +454,7 @@ bayesspace_validate_normalized_coords <- function(coords) {
   invisible(TRUE)
 }
 
-bayesspace_validate_backend_output <- function(
+bayesspace_validate_output <- function(
   cdata,
   cells,
   cluster_col,

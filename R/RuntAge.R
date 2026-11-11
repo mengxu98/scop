@@ -9,7 +9,7 @@
 #' (`.rds` for `backend = "cpp"`, `.pkl` for `backend = "python"`).
 #' Names must match one or more of `"scaled"`, `"scaled_diff"`, `"yugene"`,
 #' and `"yugene_diff"`. If `NULL`, model files are downloaded from
-#' `mengxu98/datasets` for the C++ backend or Zenodo for the Python backend.
+#' `mengxu98/datasets` for the C++ implementation or Zenodo for Python.
 #' @param backend Model prediction backend. `"cpp"` uses converted Elastic Net
 #' models and C++ prediction. `"python"` uses `tAge::predict_tAge()`.
 #' @param clock TAge clock family used when `model_paths = NULL`.

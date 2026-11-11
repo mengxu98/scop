@@ -103,7 +103,7 @@ test_that("documented bridge counts and merged image auto-resolution work", {
   restored <- spe_to_srt(spe, assay = "Spatial", layer = "scop_input")
   p <- SpatialSpotPlot(restored, features = rownames(restored)[1], assay = "Spatial", layer = "counts")
   expect_equal(p$data$.value, as.numeric(GetAssayData5(object, assay = "Spatial", layer = "counts")[1, ]))
-  testthat::local_mocked_bindings(spatial_integration_run_backend = function(method, input, ...) {
+  testthat::local_mocked_bindings(spatial_integration_run_model = function(method, input, ...) {
     list(domains = stats::setNames(rep("D1", length(input$cells)), input$cells), raw_result = list())
   })
   integrated <- suppressWarnings(RunSpatialIntegration(

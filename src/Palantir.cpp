@@ -358,7 +358,6 @@ List palantir_pseudotime_cpp(
     }
   }
 
-  int n_sources = n_wp;
   std::vector<int> wp_offsets(n_wp);
   for (int w = 0; w < n_wp; ++w) wp_offsets[w] = waypoints[w] - 1;
   std::vector<std::vector<std::pair<int,double>>> graph(n);

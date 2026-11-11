@@ -49,3 +49,4 @@
 ^\.env$
 ^\.codegraph$
 ^\.omicos$
+^\.workbuddy(-ai)?$

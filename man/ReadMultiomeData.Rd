@@ -24,7 +24,7 @@ ReadMultiomeData(
 \code{matrix.mtx.gz}, \code{features.tsv.gz} and \code{barcodes.tsv.gz}. The input must
 contain exactly the \verb{Gene Expression} and \code{Peaks} modalities. H5 input
 requires at least two features per modality and two cells because the
-native Seurat H5 reader otherwise drops matrix dimensions.}
+Seurat H5 reader otherwise drops matrix dimensions.}
 
 \item{metadata, cell.names, sample, genome, annotation, fragments, fragment.cells, project, verbose}{Passed to \code{\link[=ReadATACData]{ReadATACData()}}. Metadata and sample vectors use original
 barcodes; fragment mappings use final cell names.}
@@ -37,7 +37,7 @@ barcodes; fragment mappings use final cell names.}
 A Seurat object with a \code{ChromatinAssay} and a measured RNA \code{Assay},
 both containing raw counts for the same ordered cells. The active assay is
 \code{assay}. Provenance is stored in \code{Misc(object, "scop_multiome_input")} and
-in the native ATAC import receipt. Native assay initialization also copies
+in the ATAC import receipt. Assay initialization also copies
 raw counts to the data layer; this is not normalized expression.
 }
 \description{

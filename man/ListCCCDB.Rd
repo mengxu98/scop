@@ -10,9 +10,9 @@ ListCCCDB(
 )
 }
 \arguments{
-\item{db}{CCC backends to inspect. Any subset of `"LIANA"`,
+\item{db}{CCC methods or resources to inspect. Any subset of `"LIANA"`,
 `"CellChat"`, `"Nichenetr"`, and `"CellphoneDB"`; the default inspects all
-supported backends.}
+supported resources.}
 
 \item{species}{Optional species filter: any subset of `"human"`,
 `"mouse"`, and `"zebrafish"`.}
@@ -20,13 +20,13 @@ supported backends.}
 \value{
 A data frame with columns `db`, `resource`, `species`,
 `default`, `status`, and `description`. A row with an `NA` resource and a
-non-`"available"` status describes a backend that could not be inspected.
+non-`"available"` status describes a resource that could not be inspected.
 }
 \description{
 Enumerates the ligand-receptor databases and prior models exposed by the
-installed cell-cell communication backends: LIANA resources,
+installed cell-cell communication methods: LIANA resources,
 CellChat databases, NicheNet prior models, and CellphoneDB input data.
-Databases are listed without being loaded, and backends that are not
+Databases are listed without being loaded, and resources that are not
 installed or not configured are reported with their status instead of
 failing.
 }

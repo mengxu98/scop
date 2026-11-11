@@ -10,11 +10,10 @@ SCENICPlusPlot(
   tool_name = "SCENICPlus",
   assay = "scenicplus",
   plot_type = c("heatmap_dotplot", "rss_rank", "rss_heatmap", "rss_dotplot",
-    "activity_heatmap", "activity_violin", "activity_dim", "eregulon_dim",
-    "activity_cor_dumbbell", "regulon_size", "network_graph", "network", "egrn",
-    "overlap", "target_bar", "coverage"),
-  ...,
-  srt = NULL
+    "eregulon_dim", "activity_cor_dumbbell", "regulon_size", "network_graph", "network",
+    "egrn", "overlap", "target_bar", "coverage"),
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -28,10 +27,10 @@ SCENICPlusPlot(
 
 \item{plot_type}{Plot type. Default \code{"heatmap_dotplot"}.}
 
-\item{...}{Passed to \code{\link[=SCENICPlot]{SCENICPlot()}}.}
-
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 Same as \code{\link[=SCENICPlot]{SCENICPlot()}}.
@@ -51,6 +50,20 @@ pancreas_sub <- RunSCENICPlus(
 )
 scenicplus_dot <- SCENICPlusPlot(pancreas_sub, group.by = "CellType")
 example_tfs <- unique(scenicplus_dot$top_table$TF)[1:3]
+regulons <- head(rownames(pancreas_sub[["scenicplus"]]), 6)
+GroupHeatmap(
+  pancreas_sub, group.by = "CellType", features = regulons,
+  assay = "scenicplus", layer = "data", exp_method = "raw",
+  lib_normalize = FALSE
+)$plot
+FeatureStatPlot(
+  pancreas_sub, group.by = "CellType", stat.by = regulons,
+  assay = "scenicplus", layer = "data", plot_type = "violin"
+)
+FeatureDimPlot(
+  pancreas_sub, features = regulons, assay = "scenicplus",
+  layer = "data", reduction = "UMAP"
+)
 SCENICPlusPlot(pancreas_sub, group.by = "CellType", plot_type = "egrn", features = example_tfs)
 SCENICPlusPlot(
   pancreas_sub,
@@ -59,5 +72,6 @@ SCENICPlusPlot(
 }
 }
 \seealso{
-\link{RunSCENICPlus}, \link{SCENICPlot}
+\link{RunSCENICPlus}, \link{SCENICPlot}, \link{GroupHeatmap},
+\link{FeatureStatPlot}, \link{FeatureDimPlot}
 }

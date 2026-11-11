@@ -417,9 +417,10 @@ GetSpatialDMResult <- function(object, result.name = NULL, type = c("global", "l
 #' @param image.scale Image scale factor matching the selected raster.
 #' @param highlight LR interactions to label in the global plot.
 #' @param palette,palcolor,theme_use,theme_args SCOP plotting controls.
-#' @param ... Additional arguments passed to SCOP spatial plotting functions.
+#' @param ... Arguments passed to other functions.
 #' @return A `ggplot` or `patchwork` object.
 #'
+#' @export
 #' @examples
 #' \dontrun{
 #' data(visium_human_pancreas_sub)
@@ -430,13 +431,12 @@ GetSpatialDMResult <- function(object, result.name = NULL, type = c("global", "l
 #' SpatialDMPlot(spatial, plot_type = "global")
 #' SpatialDMPlot(spatial, plot_type = "weights", spot = colnames(spatial)[1])
 #' }
-#' @export
 SpatialDMPlot <- function(
   object, result.name = NULL, plot_type = c("weights", "global", "local"),
   pair = NULL, spot = NULL, signaling = c("secreted", "contact"),
   highlight = NULL, palette = "RdBu", palcolor = NULL,
   theme_use = "theme_scop", theme_args = list(),
-  ..., image.scale = c("lowres", "hires")
+  image.scale = c("lowres", "hires"), ...
 ) {
   plot_type <- match.arg(plot_type)
   image.scale <- match.arg(image.scale)

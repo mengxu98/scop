@@ -8,6 +8,23 @@ make_feature_stat_meta <- function(score, group, group_levels = unique(group)) {
   )
 }
 
+test_that("ExpressionStatPlot retains fill colours without unused colour warnings", {
+  meta <- make_feature_stat_meta(seq_len(12), rep(c("A", "B"), each = 6))
+  colors <- c(A = "#123456", B = "#FEDCBA")
+  for (type in c("violin", "box", "bar", "dot", "col")) {
+    plot <- ExpressionStatPlot(
+      meta.data = meta, stat.by = "score", group.by = "group",
+      plot_type = type, palcolor = colors, force = TRUE
+    )[[1L]]
+    expect_no_warning(ggplot2::ggplotGrob(plot))
+    built <- ggplot2::ggplot_build(plot)
+    expect_identical(
+      unname(built$plot$scales$get_scales("fill")$map(c("A", "B"))),
+      unname(colors)
+    )
+  }
+})
+
 get_stat_compare_layer <- function(plot) {
   compare_layers <- Filter(
     function(layer) inherits(layer$stat, "StatSignif"),
@@ -226,15 +243,18 @@ test_that("auto_comparison is disabled for split comparisons", {
   )
   meta$split <- factor(rep(c("S1", "S2", "S1"), times = 3))
 
-  plots <- ExpressionStatPlot(
-    meta.data = meta,
-    stat.by = "score",
-    group.by = "group",
-    split.by = "split",
-    plot_type = "box",
-    auto_comparison = TRUE,
-    sig_label = "p.format",
-    force = TRUE
+  expect_warning(
+    plots <- ExpressionStatPlot(
+      meta.data = meta,
+      stat.by = "score",
+      group.by = "group",
+      split.by = "split",
+      plot_type = "box",
+      auto_comparison = TRUE,
+      sig_label = "p.format",
+      force = TRUE
+    ),
+    "only supported"
   )
 
   expect_null(get_stat_compare_layer(plots[[1]]))
@@ -249,15 +269,18 @@ test_that("explicit comparisons take precedence over auto_comparison", {
     group_levels = c("A", "B", "C")
   )
 
-  plots <- ExpressionStatPlot(
-    meta.data = meta,
-    stat.by = "score",
-    group.by = "group",
-    plot_type = "box",
-    comparisons = list(c("A", "C")),
-    auto_comparison = TRUE,
-    sig_label = "p.format",
-    force = TRUE
+  expect_warning(
+    plots <- ExpressionStatPlot(
+      meta.data = meta,
+      stat.by = "score",
+      group.by = "group",
+      plot_type = "box",
+      comparisons = list(c("A", "C")),
+      auto_comparison = TRUE,
+      sig_label = "p.format",
+      force = TRUE
+    ),
+    "explicit.*comparisons"
   )
 
   compare_layer <- get_stat_compare_layer(plots[[1]])

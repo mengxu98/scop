@@ -1,26 +1,14 @@
-make_atac_tss_plot_fixture <- function() {
-  skip_if_not_installed("Signac")
-  skip_if_not_installed("GenomicRanges")
-  counts <- Matrix::Matrix(matrix(c(1, 2, 2, 3, 3, 4, 4, 5), 2L,
-    dimnames = list(c("chr1-1-100", "chr1-101-200"), c("A", "B", "C", "D"))), sparse = TRUE)
-  ranges <- GenomicRanges::GRanges("chr1", IRanges::IRanges(c(1, 101), width = 100))
-  object <- ReadATACData(counts, ranges = ranges, genome = "toy", verbose = FALSE)
-  object$group <- c("one", "one", "two", "two")
-  object$verified.depth <- c(10, 20, 30, 40)
-  embedding <- cbind(LSI_1 = 1:4, LSI_2 = 4:1, LSI_3 = rep(1, 4))
-  rownames(embedding) <- colnames(object)
-  object[["lsi"]] <- SeuratObject::CreateDimReducObject(embedding, assay = "peaks", key = "LSI_")
-  object
-}
-
 test_that("TSS profiles require genuine positional matrices and match Signac", {
-  object <- make_atac_tss_plot_fixture()
+  object <- make_atac_plot_test_object()
   object$TSS.enrichment <- 5
   expect_error(ATACTSSPlot(object), "fast = FALSE")
-  matrix <- matrix(seq_len(20) / 5, nrow = 4,
-    dimnames = list(colnames(object), as.character(-2:2)))
+  matrix <- matrix(seq_len(20) / 5,
+    nrow = 4,
+    dimnames = list(colnames(object), as.character(-2:2))
+  )
   object[["peaks"]]@positionEnrichment[["TSS"]] <- rbind(matrix,
-    expected = rep(1, 5), motif = c(0, 0, 1, 0, 0))
+    expected = rep(1, 5), motif = c(0, 0, 1, 0, 0)
+  )
   before <- serialize(object, NULL)
   actual <- suppressWarnings(ATACTSSPlot(object, group.by = "group"))
   native <- suppressWarnings(Signac::TSSPlot(object, group.by = "group"))
@@ -38,12 +26,15 @@ test_that("TSS profiles require genuine positional matrices and match Signac", {
 
 
 test_that("TSS profiles use selected-assay cells in partial-assay objects", {
-  object <- make_atac_tss_plot_fixture()
-  matrix <- matrix(seq_len(20), nrow = 4,
-    dimnames = list(colnames(object), as.character(-2:2)))
+  object <- make_atac_plot_test_object()
+  matrix <- matrix(seq_len(20),
+    nrow = 4,
+    dimnames = list(colnames(object), as.character(-2:2))
+  )
   object[["peaks"]]@positionEnrichment[["TSS"]] <- matrix
   rna <- Matrix::Matrix(matrix(1, 2, 5,
-    dimnames = list(c("g1", "g2"), c("D", "RNA_only", "A", "B", "C"))), sparse = TRUE)
+    dimnames = list(c("g1", "g2"), c("D", "RNA_only", "A", "B", "C"))
+  ), sparse = TRUE)
   partial <- SeuratObject::CreateSeuratObject(rna, assay = "RNA")
   partial[["peaks"]] <- object[["peaks"]]
   partial[["lsi"]] <- object[["lsi"]]
@@ -60,7 +51,7 @@ test_that("TSS profiles use selected-assay cells in partial-assay objects", {
 
 test_that("tss plot input errors are actionable", {
   expect_error(ATACTSSPlot(list()), "Seurat")
-  object <- make_atac_tss_plot_fixture()
+  object <- make_atac_plot_test_object()
   expect_error(ATACTSSPlot(object, assay = "missing"), "ChromatinAssay")
   expect_error(ATACTSSPlot(object, group.by = "missing"), "metadata column")
   object$group[1] <- NA

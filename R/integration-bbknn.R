@@ -214,7 +214,7 @@ BBKNN_integrate <- function(
     }
     bem <- invoke_fun(bbknn$matrix$bbknn, params)
   } else {
-    bem <- bbknn_native_matrix(
+    bem <- bbknn_graph_matrix(
       embedding = emb,
       batches = srt_merge[[batch, drop = TRUE]],
       params = bbknn_params
@@ -363,7 +363,7 @@ bbknn_seurat_annoy_cross <- function(reference, query, k, n_trees, metric) {
 }
 
 
-bbknn_native_matrix <- function(embedding, batches, params = list()) {
+bbknn_graph_matrix <- function(embedding, batches, params = list()) {
   embedding <- as.matrix(embedding)
   batches <- as.factor(batches)
   if (anyNA(batches)) {

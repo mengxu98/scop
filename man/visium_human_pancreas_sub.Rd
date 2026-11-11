@@ -28,10 +28,6 @@ keep the package data small and directly usable with the bundled \code{panc8_sub
 reference, the object retains the top 5000 genes shared with \code{panc8_sub},
 ranked by total spatial counts.
 }
-\details{
-\code{coda_label} describes tissue components at Visium spots. Feature-dependent
-QC requires the full expression assay.
-}
 \examples{
 if (interactive()) {
   download.file(
@@ -63,7 +59,10 @@ if (interactive()) {
   )
   spatial <- subset(
     spatial,
-    cells = intersect(colnames(spatial), rownames(tissue_pos)[tissue_pos$V2 == 1])
+    cells = intersect(
+      colnames(spatial),
+      rownames(tissue_pos)[tissue_pos$V2 == 1]
+    )
   )
   coords <- SeuratObject::GetTissueCoordinates(spatial)
   spatial$x <- coords[colnames(spatial), "x"]
@@ -72,14 +71,18 @@ if (interactive()) {
   spatial$geo_accession <- "GSE254829"
   spatial$patient_sample <- "PanIN-LG2"
 
-  coda <- utils::read.csv("GSE254829_codatable_may202024.csv.gz", check.names = FALSE)
+  coda <- utils::read.csv(
+    "GSE254829_codatable_may202024.csv.gz",
+    check.names = FALSE
+  )
   coda$barcode <- sub("_[0-9]+$", "", coda[[1]])
   coda <- coda[coda$sample == "PanIN-LG2" & coda$barcode \%in\% colnames(spatial), ]
   rownames(coda) <- coda$barcode
   coda <- coda[colnames(spatial), ]
   comp_cols <- c(
-    "islets", "normal epithelium", "smooth muscle", "fat", "acini", "collagen",
-    "panin"
+    "islets", "normal epithelium",
+    "smooth muscle", "fat", "acini",
+    "collagen", "panin"
   )
   coda$coda_label <- names(coda[comp_cols])[
     max.col(as.matrix(coda[comp_cols]), ties.method = "first")
@@ -111,5 +114,4 @@ if (interactive()) {
     overwrite = TRUE
   )
 }
-
 }

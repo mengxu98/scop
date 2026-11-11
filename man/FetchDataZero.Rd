@@ -10,8 +10,8 @@ FetchDataZero(
   assay = "RNA",
   layer = "data",
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -26,10 +26,10 @@ FetchDataZero(
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{Other arguments to pass to \link[Seurat:FetchData]{Seurat::FetchData}.}
-
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \description{
 FetchData but with zeroes for unavailable genes

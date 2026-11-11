@@ -15,8 +15,7 @@
 #' Default is `NULL` (auto-determined based on the number of features).
 #' @param reduction.name Reduction to be stored in the Seurat object.
 #' @param reduction.key The prefix for the column names of the basis vectors.
-#' @param ... Passed to `destiny::DiffusionMap`.
-#'
+#' @param ... Arguments passed to other functions.
 #' @rdname RunDM
 #' @export
 RunDM <- function(object, ...) {

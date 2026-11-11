@@ -180,11 +180,44 @@ test_that("integration image maps retain all samples and consistent named colors
     expect_identical(ggplot2::ggplot_build(p)$plot$scales$get_scales("fill")$map(c("B", "A")), unname(colors[c("B", "A")]))
   }
   expect_s3_class(SpatialIntegrationPlot(object, ncol = 1), "patchwork")
+  explicit <- SpatialIntegrationPlot(
+    object, image = c(S1 = "slice1", S2 = "slice2"),
+    combine = FALSE, palcolor = colors
+  )
+  expect_equal(lapply(explicit, function(p) p$data), lapply(plots, function(p) p$data))
   numeric_plots <- SpatialIntegrationPlot(object, group.by = "aligned_x", combine = FALSE)
   expect_true(all(vapply(numeric_plots, function(p) is.numeric(p$data$.value), logical(1))))
   expect_equal(numeric_plots$S1$scales$get_scales("colour")$limits, numeric_plots$S2$scales$get_scales("colour")$limits)
   expect_error(SpatialIntegrationPlot(object, image = "slice1"), "covering image")
   expect_error(SpatialIntegrationPlot(object, image = c(S1 = "slice1")), "cover every sample")
+  expect_identical(object, before)
+})
+
+test_that("stored proportion maps retain explicitly selected image cells", {
+  object <- integration_plot_contract_object()
+  proportions <- matrix(rep(c(.25, .75), 8), 8, byrow = TRUE,
+    dimnames = list(colnames(object), c("A", "B"))
+  )
+  object@tools$Custom <- list(proportions = proportions)
+  object@tools$STdeconvolve <- list(
+    theta = proportions, parameters = list(prefix = "STdeconvolve")
+  )
+  before <- object
+  plots <- list(
+    SpatialDeconvolutionPlot(
+      object, tool_name = "Custom", cell_types = "A",
+      image = "slice2", combine = FALSE
+    )[[1L]],
+    STdeconvolvePlot(
+      object, topics = "A", image = "slice2", combine = FALSE
+    )[[1L]]
+  )
+  for (plot in plots) {
+    expect_identical(rownames(plot$data), colnames(object)[5:8])
+    expect_equal(plot$data$x, c(10, 20, 30, 40))
+    expect_equal(unname(plot$data$.value), rep(.25, 4))
+    expect_no_warning(ggplot2::ggplotGrob(plot))
+  }
   expect_identical(object, before)
 })
 

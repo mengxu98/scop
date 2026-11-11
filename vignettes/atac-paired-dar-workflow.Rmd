@@ -34,16 +34,22 @@ for (file in c("GSE178428_PBMCs_stim_peaks.bed.gz", "GSE178428_PBMCs_stim_scATAC
 }
 archive <- file.path(data_dir, "stimFigRShiny.zip")
 utils::download.file("https://zenodo.org/api/records/6820097/files/stimFigRShiny.zip/content",
-  archive, mode = "wb")
+  archive,
+  mode = "wb"
+)
 annotation_file <- "stimFigRShiny/prep/stim_ATAC_paired_cellMeta.rds"
 utils::unzip(archive, files = annotation_file, exdir = data_dir)
 author <- readRDS(file.path(data_dir, annotation_file))
-geo <- utils::read.delim(gzfile(file.path(data_dir,
-  "GSE178428_PBMCs_stim_scATACseq_cellMeta.txt.gz")), row.names = 1)
+geo <- utils::read.delim(gzfile(file.path(
+  data_dir,
+  "GSE178428_PBMCs_stim_scATACseq_cellMeta.txt.gz"
+)), row.names = 1)
 stopifnot(all(rownames(author) %in% rownames(geo)))
 for (field in c("Condition", "StimType", "Experiment", "Donor")) {
-  stopifnot(identical(as.character(author[[field]]),
-    as.character(geo[rownames(author), field])))
+  stopifnot(identical(
+    as.character(author[[field]]),
+    as.character(geo[rownames(author), field])
+  ))
 }
 metadata <- author[author$Condition %in% c("Control_6h", "LPS_6h") &
   author$pairedLabel == "CD14_Mono", , drop = FALSE]
@@ -68,8 +74,10 @@ chosen interpretation and retain this limitation; do not silently shift starts
 or claim an exact reconstruction of the authors' original peak ranges.
 
 ```{r peak-universe}
-bed <- utils::read.delim(gzfile(file.path(data_dir,
-  "GSE178428_PBMCs_stim_peaks.bed.gz")), header = FALSE)
+bed <- utils::read.delim(gzfile(file.path(
+  data_dir,
+  "GSE178428_PBMCs_stim_peaks.bed.gz"
+)), header = FALSE)
 bed <- bed[bed[[1]] == "chr1", 1:3]
 names(bed) <- c("seqnames", "start", "end")
 peaks <- GenomicRanges::makeGRangesFromDataFrame(bed, starts.in.df.are.0based = TRUE)
@@ -95,8 +103,10 @@ despite `6hr` in the filename. Verify actual barcode membership for all cells.
 suffix <- sub("^.*(_BC[0-9]+_N[0-9]+)$", "\\1", rownames(metadata))
 stopifnot(all(paste0(sub("_6hr_", "_6h_", metadata$Experiment, fixed = TRUE), suffix) == rownames(metadata)))
 metadata$fragment_barcode <- paste0(metadata$Experiment, suffix)
-sample_ids <- c(paste0("Control_6hr_Donor", 1:4, "_S1"),
-  "LPS_6hr_Donor1_S1", "LPS_6h_Donor2_S1", "LPS_6hr_Donor3_S1", "LPS_6hr_Donor4_S1")
+sample_ids <- c(
+  paste0("Control_6hr_Donor", 1:4, "_S1"),
+  "LPS_6hr_Donor1_S1", "LPS_6h_Donor2_S1", "LPS_6hr_Donor3_S1", "LPS_6hr_Donor4_S1"
+)
 gsm <- c(5390937:5390940, 5390957:5390960)
 file_ids <- sample_ids
 file_ids[[6]] <- "LPS_6hr_Donor2_S1" # Verified filename; barcode prefix remains 6h.
@@ -109,7 +119,10 @@ prepare_bap <- function(source, target, barcodes) {
   stopifnot(!file.exists(target))
   input <- gzfile(source, "rt")
   output <- file(target, "wt")
-  on.exit({ close(input); close(output) })
+  on.exit({
+    close(input)
+    close(output)
+  })
   repeat {
     lines <- readLines(input, n = 100000, warn = FALSE)
     if (!length(lines)) break
@@ -129,15 +142,19 @@ for (i in seq_along(sample_ids)) {
   Rsamtools::bgzip(plain, dest = fragment_files[i])
   Rsamtools::indexTabix(fragment_files[i], format = "bed")
 }
-fragments <- Map(function(file, cells) Signac::CreateFragmentObject(file, cells = cells),
-  fragment_files, maps)
+fragments <- Map(
+  function(file, cells) Signac::CreateFragmentObject(file, cells = cells),
+  fragment_files, maps
+)
 matrices <- Map(function(fragment, mapping) {
   Signac::FeatureMatrix(fragment, features = peaks, cells = names(mapping))
 }, fragments, maps)
 counts <- do.call(cbind, unname(matrices))
-atac <- scop::ReadATACData(counts, ranges = peaks, genome = "hg19",
+atac <- scop::ReadATACData(counts,
+  ranges = peaks, genome = "hg19",
   metadata = metadata[colnames(counts), , drop = FALSE],
-  fragments = unname(fragment_files), fragment.cells = maps)
+  fragments = unname(fragment_files), fragment.cells = maps
+)
 ```
 
 ## Paired edgeR QL model
@@ -156,7 +173,8 @@ atac <- scop::RunDEtest(atac,
   group.by = "celltype", sample_col = "sample", condition_col = "condition",
   group1 = "Control", group2 = "LPS", min.cells.sample = 10,
   design = ~ donor + condition, contrast = contrast,
-  only.pos = FALSE, fc.threshold = 1, p.adjust.method = "BH")
+  only.pos = FALSE, fc.threshold = 1, p.adjust.method = "BH"
+)
 model <- atac@tools$DEtest_celltype$edgeR_models$CD14_Mono
 model$sample_inventory
 model$design
@@ -184,13 +202,16 @@ Prepare a matching hg19 reference and the desired PWM collection explicitly:
 fasta_gz <- file.path(data_dir, "hg19-chr1.fa.gz")
 utils::download.file(
   "https://hgdownload.soe.ucsc.edu/goldenPath/hg19/chromosomes/chr1.fa.gz",
-  fasta_gz, mode = "wb")
+  fasta_gz,
+  mode = "wb"
+)
 fasta <- file.path(data_dir, "hg19-chr1.fa")
 Biostrings::writeXStringSet(Biostrings::readDNAStringSet(fasta_gz), fasta)
 Rsamtools::indexFa(fasta)
 hg19_reference <- Rsamtools::FaFile(fasta)
 pfm <- TFBSTools::getMatrixSet(JASPAR2020::JASPAR2020, opts = list(
-  ID = c("MA0139.1", "MA0080.5", "MA0105.4", "MA0107.1", "MA0039.4", "MA0466.2", "MA0098.3")))
+  ID = c("MA0139.1", "MA0080.5", "MA0105.4", "MA0107.1", "MA0039.4", "MA0466.2", "MA0098.3")
+))
 ```
 
 Keep
@@ -203,15 +224,19 @@ foreground <- rownames(complete_results)[complete_results$p_val_BH < 0.05 &
 tables <- list(DAR = complete_results, samples = model$sample_inventory)
 if (length(foreground)) {
   atac <- scop::AddATACMotifs(atac, hg19_reference, pfm, genome.id = "hg19")
-  enriched <- scop::RunMotifEnrichment(atac, features = foreground,
-    universe = model$tested_features, n.background = 1000, seed = 19)
+  enriched <- scop::RunMotifEnrichment(atac,
+    features = foreground,
+    universe = model$tested_features, n.background = 1000, seed = 19
+  )
   enriched$receipt
   tables$motifs <- enriched$results
 } else {
   message("No positive BH-significant peaks; save the complete DAR results without a motif test.")
 }
-scop::ExportATACResults(atac, outdir = "paired_DAR_export", assay = "peaks",
-  tables = tables)
+scop::ExportATACResults(atac,
+  outdir = "paired_DAR_export", assay = "peaks",
+  tables = tables
+)
 # In a fresh session:
 restored <- readRDS("paired_DAR_export/object.rds")
 stopifnot(scop::CheckATACData(restored)$valid)

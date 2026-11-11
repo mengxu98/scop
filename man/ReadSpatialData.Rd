@@ -22,9 +22,7 @@ technologies; Seurat stores each resolution in a separate assay/image.}
 
 \item{sample_id}{Nonempty sample identifier stored in spatial_sample.}
 
-\item{...}{Extra arguments to Seurat's Load10X_Spatial or LoadXenium. Xenium
-defaults to cell segmentation and does not load molecule coordinates unless
-requested; cell segmentation must already exist in the vendor output.}
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A validated Seurat object with misc$scop_spatial_input provenance.

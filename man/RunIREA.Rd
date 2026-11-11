@@ -38,7 +38,7 @@ or a Seurat object. Positive contrasts mean higher expression in the case.
 Factors and text contrast columns are rejected. Missing/empty gene names and
 nonfinite contrasts are omitted; duplicated contrast gene names are rejected.}
 
-\item{...}{Arguments passed to the dispatched method.}
+\item{...}{Arguments passed to other functions.}
 
 \item{reference}{An \code{irea_reference} from \code{\link[=PrepareDB]{PrepareDB()}} or \code{\link[=PrepareIREA]{PrepareIREA()}}.}
 

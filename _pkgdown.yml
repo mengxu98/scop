@@ -44,6 +44,7 @@ articles:
   - integration-workflow
   - integration-benchmark-workflow
   - cell-annotation-workflow
+  - cell-tree-advanced
 - title: Explain cell states and changing programs
   navbar: Interpret cell states
   contents:
@@ -130,6 +131,7 @@ reference:
   - FindNeighbors
   - FindClusters
   - ClusterTreePlot
+  - CellStatePlot
   - RunCHOIR
   - RunRareQ
 
@@ -203,6 +205,10 @@ reference:
   - RunLISI
 
 - title: "Cell Type Annotation"
+
+- subtitle: "Annotation Visualization"
+  contents:
+  - CellTreePlot
 
 - subtitle: "Reference-Based Annotation and Models"
   contents:

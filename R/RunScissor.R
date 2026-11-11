@@ -646,7 +646,7 @@ scissor_fit_apml1 <- function(
 
   fit <- switch(family,
     "gaussian" = {
-      scissor_validate_native_net(
+      scissor_validate_net(
         family = family,
         penalty = penalty,
         Omega = Omega,
@@ -673,7 +673,7 @@ scissor_fit_apml1 <- function(
       )
     },
     "binomial" = {
-      scissor_validate_native_net(
+      scissor_validate_net(
         family = family,
         penalty = penalty,
         Omega = Omega,
@@ -726,7 +726,7 @@ scissor_fit_apml1 <- function(
 }
 
 
-scissor_validate_native_net <- function(
+scissor_validate_net <- function(
   family,
   penalty,
   Omega,
@@ -739,13 +739,13 @@ scissor_validate_native_net <- function(
 ) {
   if (!identical(penalty, "Net")) {
     log_message(
-      "The native {.val {family}} Scissor wrapper supports {.val Net} penalty only",
+      "The compiled {.val {family}} Scissor wrapper supports {.val Net} penalty only",
       message_type = "error"
     )
   }
   if (is.null(Omega) || alpha == 1.0) {
     log_message(
-      "The native {.val {family}} Scissor wrapper requires {.arg Omega} and {.arg alpha < 1}",
+      "The compiled {.val {family}} Scissor wrapper requires {.arg Omega} and {.arg alpha < 1}",
       message_type = "error"
     )
   }
@@ -757,7 +757,7 @@ scissor_validate_native_net <- function(
       any(sgn != 1)
   ) {
     log_message(
-      "The native {.val {family}} Scissor wrapper supports the RunScissor Net path only",
+      "The compiled {.val {family}} Scissor wrapper supports the RunScissor Net path only",
       message_type = "error"
     )
   }

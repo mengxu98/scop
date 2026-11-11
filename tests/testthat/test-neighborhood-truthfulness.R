@@ -16,9 +16,9 @@ test_that("neighborhood counts preserve saved scope, zero and unknown values", {
     },
     .package = "scop"
   )
-  srt <- Seurat::CreateSeuratObject(matrix(1:12, 2,
+  srt <- Seurat::CreateSeuratObject(methods::as(matrix(1:12, 2,
     dimnames = list(c("g1", "g2"), paste0("s", 1:6))
-  ))
+  ), "dgCMatrix"))
   srt$x <- c(0, 1, 20, 30, 31, 90)
   srt$y <- rep(0, 6)
   srt$label <- c("A", "B", "A", "A", "B", NA)

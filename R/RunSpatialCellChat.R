@@ -807,7 +807,7 @@ spatialcellchat_run_one <- function(
 #' @title Run Spatial CellChat analysis
 #'
 #' @description
-#' Run the SpatialCellChat v3 backend with explicit micron-scale coordinates
+#' Run SpatialCellChat v3 with explicit micron-scale coordinates
 #' and sample isolation. Cell-, spot-, and composition-level results retain
 #' distinct interpretations.
 #'
@@ -839,7 +839,7 @@ spatialcellchat_run_one <- function(
 #'
 #' Objects with multiple images require an explicit `image` selection. When
 #' `sample.by` contains multiple samples, supply a named character vector that
-#' maps every sample to one image. Upstream backend objects are omitted by default
+#' maps every sample to one image. Upstream objects are omitted by default
 #' because they can be large; use `store.object = "full"` only if subsequent
 #' additional analysis with the upstream SpatialCellChat object is needed.
 #'
@@ -891,14 +891,14 @@ spatialcellchat_run_one <- function(
 #'   is enabled for cell-level data.
 #' @param scale.distance Positive SpatialCellChat distance scaling parameter.
 #' @param min.cells,min.links Positive minimum group size and individual-link
-#'   count used by backend filtering.
+#'   count used by filtering.
 #' @param avg.type Group-level probability aggregation method.
 #' @param do.permutation Whether to run the spatial permutation procedure.
 #' @param nboot Number of permutation replicates.
-#' @param seed.use Random seed passed to the backend.
+#' @param seed.use Random seed passed to the method.
 #' @param result.name Name used within the stored SpatialCellChat result bundle.
 #' @param store.object `"minimal"` stores normalized tables, coordinates, and
-#'   diagnostics. `"full"` additionally stores each upstream backend object.
+#'   diagnostics. `"full"` additionally stores each upstream object.
 #' @param overwrite Whether an existing result with the same `result.name` may
 #'   be replaced.
 #' @param backend Backend for unified CCC post-processing only; it does
@@ -909,6 +909,13 @@ spatialcellchat_run_one <- function(
 #'   in `srt@tools$SpatialCellChat` and standardized CCC results under the
 #'   distinct method name `"SpatialCellChat"`.
 #'
+#' @references
+#' [SpatialCellChat](https://github.com/jinworks/SpatialCellChat)
+#'
+#' @seealso [GetCCCObject], [SpatialCellChatPlot],
+#' [CCCNetworkPlot], [CCCHeatmap], [CCCStatPlot]
+#'
+#' @export
 #' @examples
 #' \dontrun{
 #' data(visium_human_pancreas_sub)
@@ -927,14 +934,6 @@ spatialcellchat_run_one <- function(
 #' )
 #' SpatialCellChatPlot(spatial, plot_type = "incoming")
 #' }
-#'
-#' @references
-#' [SpatialCellChat](https://github.com/jinworks/SpatialCellChat)
-#'
-#' @seealso [GetCCCObject], [SpatialCellChatPlot],
-#' [CCCNetworkPlot], [CCCHeatmap], [CCCStatPlot]
-#'
-#' @export
 RunSpatialCellChat <- function(
   object,
   group.by,
@@ -1274,7 +1273,7 @@ RunSpatialCellChat <- function(
 #' @param result.name A CellChat condition or SpatialCellChat named result.
 #' @param sample Spatial sample for SpatialCellChat results.
 #'
-#' @return An upstream backend object.
+#' @return An upstream CellChat or SpatialCellChat object.
 #' @export
 GetCCCObject <- function(
   object,
@@ -1337,7 +1336,7 @@ spatialcellchat_get_stored_sample <- function(object, result.name = NULL, sample
 #' @title Plot stored SpatialCellChat results
 #'
 #' @description
-#' Plot normalized SpatialCellChat results without rerunning the backend. The
+#' Plot normalized SpatialCellChat results without rerunning the model. The
 #' network view is a group-aggregated network over group centroids, not a
 #' materialized individual cell-by-cell edge table.
 #'

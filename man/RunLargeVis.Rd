@@ -86,7 +86,7 @@ RunLargeVis(object, ...)
 \arguments{
 \item{object}{A \code{Seurat} object, matrix-like object, \code{Neighbor}, or \code{Graph}.}
 
-\item{...}{Passed to \link[uwot:lvish]{uwot::lvish}.}
+\item{...}{Arguments passed to other functions.}
 
 \item{reduction}{Linear reduction used as input.}
 

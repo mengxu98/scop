@@ -462,7 +462,7 @@ test_that("dependent CellphoneDB evidence is disclosed before combination", {
     metadata = list()
   )
 
-  expect_message(
+  expect_warning(
     getFromNamespace("ccc_prepare_combined_object", "scop")(
       srt, method = "CCC", combine_methods = "support"
     ),
@@ -908,4 +908,43 @@ test_that("unified resource and sample filters are exact and explicit", {
     ),
     "does not provide.*resource"
   )
+})
+
+test_that("CCC gene views retrieve stored targets and accept unified-only edges", {
+  counts <- Matrix::sparseMatrix(
+    i = rep(seq_len(4), 4), j = rep(seq_len(4), each = 4), x = 1,
+    dimnames = list(c("L1", "R1", "G1", "G2"), paste0("Cell", seq_len(4)))
+  )
+  object <- SeuratObject::CreateSeuratObject(counts)
+  object$celltype <- c("Sender", "Sender", "Receiver", "Receiver")
+  long <- data.frame(
+    sender = "Sender", receiver = "Receiver", ligand = "L1", receptor = "R1",
+    interaction_name = "L1_R1", score = 0.5, pvalue = 0.01, method = "Nichenetr"
+  )
+  object@tools$Nichenetr <- list(
+    long_table = long,
+    ligand_target_df = data.frame(
+      ligand = c("L1", "L1"), target = c("G1", "G2"), weight = c(0.3, 0.8)
+    ),
+    parameters = list(group.by = "celltype")
+  )
+  original <- serialize(object, NULL)
+  expected <- data.frame(
+    panel = c("Ligand", "Receptor", "Target", "Target"),
+    gene = c("L1", "R1", "G2", "G1")
+  )
+  expect_equal(CCCStatPlot(
+    object,
+    method = "Nichenetr", plot_type = "gene", return.data = TRUE
+  ), expected)
+  expect_identical(serialize(object, NULL), original)
+  object@tools$Nichenetr <- NULL
+  object@tools$CCC <- list(methods = "Nichenetr", long_table = long, metadata = list())
+  for (method in c("Nichenetr", "CCC")) {
+    expect_equal(CCCStatPlot(
+      object,
+      method = method, plot_type = "gene", combine_methods = "support",
+      return.data = TRUE
+    ), expected[seq_len(2), , drop = FALSE])
+  }
 })

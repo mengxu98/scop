@@ -92,7 +92,7 @@ RareQ rare-cell population detection
 \details{
 Stored results retain a private per-cell identity metadata column for
 \code{\link[=GetSpatialResult]{GetSpatialResult()}}. Preserve this column when subsetting or renaming cells.
-The accessor returns current-cell assignments; stored native results and
+The accessor returns current-cell assignments; stored results and
 fit parameters remain unchanged.
 }
 \examples{

@@ -441,7 +441,7 @@ test_that("cluster-tree compact breaks are finite and bounded", {
 
 test_that("cluster-tree labels choose readable black or white text", {
   expect_identical(
-    clustertree_contrast_text(c(
+    thisplot::contrast_text(c(
       "#111111",
       "#FFFFFF",
       "#FEE08B",
@@ -458,7 +458,7 @@ test_that("cluster-tree labels choose readable black or white text", {
   expect_length(gradient_colors, 4L)
   expect_identical(gradient_colors[4L], "grey85")
   expect_true(all(
-    clustertree_contrast_text(gradient_colors) %in% c("black", "white")
+    thisplot::contrast_text(gradient_colors) %in% c("black", "white")
   ))
 })
 

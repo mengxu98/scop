@@ -26,21 +26,21 @@ RunCNV(
   tool_name = "CNV",
   store_matrix = TRUE,
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
 \item{object}{A \code{Seurat} object.}
 
-\item{method}{CNA/CNV backend. Supported backends are \code{"copykat"},
+\item{method}{CNA/CNV method. Supported methods are \code{"copykat"},
 \code{"fastCNV"}, \code{"scevan"}, \code{"infercnv"}, and \code{"numbat"}.}
 
 \item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
 \item{layer}{Assay layer used as the expression matrix.}
 
-\item{group.by}{Optional metadata column forwarded to supported backends and
+\item{group.by}{Optional metadata column forwarded to supported methods and
 stored as cell annotation.}
 
 \item{reference.by}{Metadata column identifying reference/normal cells.
@@ -62,7 +62,7 @@ to \code{numbat::run_numbat()} as \code{df_allele}.}
 \item{reference_counts}{Reference expression profile for \code{"numbat"}. This
 is forwarded to \code{numbat::run_numbat()} as \code{lambdas_ref}.}
 
-\item{output_dir}{Optional backend output directory.}
+\item{output_dir}{Optional output directory.}
 
 \item{prefix}{Prefix for metadata columns.}
 
@@ -74,10 +74,10 @@ is forwarded to \code{numbat::run_numbat()} as \code{lambdas_ref}.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{Additional parameters to other functions.}
-
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Additional parameters to other functions.}
 }
 \value{
 A \code{Seurat} object with CNV metadata columns and a result bundle in

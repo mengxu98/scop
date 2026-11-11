@@ -18,17 +18,37 @@
 #' are stored. Networks are never silently pooled across clusters.
 #' @param theme_use Theme function or function name.
 #' @param theme_args Named list of arguments passed to the theme function.
+#' @param palette,palcolor Palette and optional colors passed to
+#' [thisplot::StatPlot()] for effect bars.
 #' @return A ggplot object. Flow plots apply the stored upstream `mass_filter`
 #' (`TRUE` means excluded), without smoothing or resampling. Effect bars display
 #' mean absolute `delta_X` across cells, not fold changes or p-values. Network
 #' arrow widths reflect absolute upstream coefficients, not activation/repression.
-#' @seealso [RunCellOracle()]
+#' @details
+#' The effect example uses constructed stored predictions to demonstrate
+#' plotting without running a perturbation model. Effect bars use
+#' [thisplot::StatPlot()] with the stored values.
+#' @seealso [RunCellOracle()], [thisplot::StatPlot()]
 #' @export
+#' @examples
+#' demo <- Seurat::CreateSeuratObject(
+#'   counts = matrix(
+#'     c(3, 1, 0, 2, 1, 4), nrow = 3,
+#'     dimnames = list(c("GeneA", "GeneB", "GeneC"), c("Cell1", "Cell2"))
+#'   )
+#' )
+#' demo@tools$CellOracle <- list(gene_effect = data.frame(
+#'   gene = c("GeneA", "GeneB", "GeneC"),
+#'   mean_delta = c(-0.4, 0.8, 0.1),
+#'   mean_abs_delta = c(0.6, 0.8, 0.2)
+#' ))
+#' CellOraclePlot(demo, plot_type = "effect")
 CellOraclePlot <- function(
   object, tool_name = "CellOracle",
   plot_type = c("quiver", "flow", "effect", "network"),
   randomized = FALSE, arrow_scale = 1, pt.size = 0.5, pt.alpha = 0.4,
-  top_n = 20L, cluster = NULL, theme_use = "theme_scop", theme_args = list()
+  top_n = 20L, cluster = NULL, theme_use = "theme_scop", theme_args = list(),
+  palette = "Chinese", palcolor = NULL
 ) {
   plot_type <- match.arg(plot_type)
   if (!inherits(object, "Seurat") || !tool_name %in% names(object@tools)) {
@@ -36,9 +56,9 @@ CellOraclePlot <- function(
   }
   result <- object@tools[[tool_name]]
   if (!is.numeric(arrow_scale) || length(arrow_scale) != 1L ||
-      !is.finite(arrow_scale) || arrow_scale <= 0 ||
-      !is.numeric(top_n) || length(top_n) != 1L || !is.finite(top_n) ||
-      top_n < 1 || top_n != as.integer(top_n)) {
+    !is.finite(arrow_scale) || arrow_scale <= 0 ||
+    !is.numeric(top_n) || length(top_n) != 1L || !is.finite(top_n) ||
+    top_n < 1 || top_n != as.integer(top_n)) {
     log_message("{.arg arrow_scale} must be positive and {.arg top_n} a positive integer", message_type = "error")
   }
   if (!is.logical(randomized) || length(randomized) != 1L || is.na(randomized)) {
@@ -62,9 +82,14 @@ CellOraclePlot <- function(
     edges$yend <- nodes[edges$target, "y"]
     # Keep directed edges separately: a net-flow matrix would cancel reciprocal regulation.
     plot <- ggplot2::ggplot(edges, ggplot2::aes(x = .data$x, y = .data$y)) +
-      ggplot2::geom_curve(ggplot2::aes(xend = .data$xend, yend = .data$yend,
-        linewidth = .data$coef_abs), curvature = 0.15,
-        arrow = grid::arrow(length = grid::unit(0.1, "inches"))) +
+      ggplot2::geom_curve(
+        ggplot2::aes(
+          xend = .data$xend, yend = .data$yend,
+          linewidth = .data$coef_abs
+        ),
+        curvature = 0.15,
+        arrow = grid::arrow(length = grid::unit(0.1, "inches"))
+      ) +
       ggplot2::geom_point(data = nodes, size = 3, color = "#336699") +
       ggplot2::geom_text(data = nodes, ggplot2::aes(label = .data$gene), nudge_y = 0.1) +
       ggplot2::scale_linewidth_continuous(range = c(0.3, 1.2), name = "Absolute coefficient") +
@@ -76,10 +101,13 @@ CellOraclePlot <- function(
   if (plot_type == "effect") {
     data <- result$gene_effect
     data <- utils::head(data[order(-data$mean_abs_delta), , drop = FALSE], top_n)
-    data$gene <- factor(data$gene, levels = rev(data$gene))
-    plot <- ggplot2::ggplot(data, ggplot2::aes(x = .data$mean_abs_delta, y = .data$gene)) +
-      ggplot2::geom_col(fill = "#336699") +
-      ggplot2::labs(x = "Mean absolute predicted expression change", y = NULL)
+    return(thisplot::StatPlot(
+      meta.data = data, stat.by = "gene", value.by = "mean_abs_delta",
+      stat_type = "value", plot_type = "bar", rank.by = "value", flip = TRUE,
+      palette = palette, palcolor = palcolor,
+      xlab = NULL, ylab = "Mean absolute predicted expression change",
+      legend.position = "none", theme_use = theme_use, theme_args = theme_args
+    ))
   } else {
     cells <- result$cell_shift
     vectors <- if (plot_type == "quiver") cells else result$grid_flow[!result$grid_flow$filtered, , drop = FALSE]
@@ -92,8 +120,10 @@ CellOraclePlot <- function(
         arrow = grid::arrow(length = grid::unit(0.06, "inches")), linewidth = 0.25
       ) +
       ggplot2::coord_equal() +
-      ggplot2::labs(x = "Embedding 1", y = "Embedding 2",
-        title = if (randomized) "CellOracle randomized reference" else "CellOracle predicted shift")
+      ggplot2::labs(
+        x = "Embedding 1", y = "Embedding 2",
+        title = if (randomized) "CellOracle randomized reference" else "CellOracle predicted shift"
+      )
   }
   plot + do.call(match.fun(theme_use), theme_args)
 }

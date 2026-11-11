@@ -76,7 +76,7 @@ RunGRNBoost2(object, ...)
 \arguments{
 \item{object}{A Seurat object or expression matrix.}
 
-\item{...}{Additional backend-specific arguments.}
+\item{...}{Arguments passed to other functions.}
 
 \item{assay}{Assay used when `object` is a Seurat object.}
 
@@ -108,27 +108,27 @@ split.}
 \item{early_stop_window_length}{Out-of-bag improvement window used for
 GRNBoost2 early stopping.}
 
-\item{exclude_self}{Whether native GRNBoost2-like inference excludes a target
+\item{exclude_self}{Whether GRNBoost2-like inference excludes a target
 gene from its own regulator feature set.}
 
-\item{importance_norm_power}{Power used to normalize native GRNBoost2-like
+\item{importance_norm_power}{Power used to normalize GRNBoost2-like
 edge importance by the total importance for each target. Set to `0` to
 disable normalization.}
 
-\item{correlation_fill}{Whether native GRNBoost2-like inference should fill
+\item{correlation_fill}{Whether GRNBoost2-like inference should fill
 missing TF-target candidates with expression-correlation support before
 applying `max_edges_per_target`.}
 
-\item{boost_weight}{Weight of the native boosting score used when
+\item{boost_weight}{Weight of the boosting score used when
 correlation fill is enabled.}
 
 \item{correlation_weight}{Weight of the correlation-fill score relative to
-native boosting importance.}
+boosting importance.}
 
 \item{covariance_weight}{Weight of the covariance score used when
 correlation fill is enabled.}
 
-\item{correlation_method}{Correlation method used for native GRNBoost2-like
+\item{correlation_method}{Correlation method used for GRNBoost2-like
 candidate filling.}
 
 \item{output_file}{Optional path where the adjacency table is written.}
@@ -142,7 +142,7 @@ candidate filling.}
 
 \item{conda}{Conda-compatible executable used by Python backends.}
 
-\item{cores}{Number of workers used by native/Python GRNBoost2.}
+\item{cores}{Number of workers used by GRNBoost2.}
 
 \item{seed}{Random seed passed to supported backends.}
 

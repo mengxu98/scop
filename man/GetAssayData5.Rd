@@ -25,7 +25,7 @@ GetAssayData5(object, ...)
 \arguments{
 \item{object}{An object}
 
-\item{...}{Additional arguments passed to \link[SeuratObject:GetAssayData]{SeuratObject::GetAssayData}.}
+\item{...}{Arguments passed to other functions.}
 
 \item{layer}{Name of layer to get or set}
 

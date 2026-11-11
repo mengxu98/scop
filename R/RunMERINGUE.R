@@ -21,7 +21,7 @@
 #' @param binary Whether to binarize the MERINGUE spatial neighbor matrix.
 #' @param alternative Alternative hypothesis passed to MERINGUE Moran tests.
 #' @param cores Number of cores passed to MERINGUE permutation tests.
-#' Mapped to `ncores` for the R backend and `n_threads` for the native backend.
+#' Mapped to `ncores` for the R backend and `n_threads` for the C++ backend.
 #' will be removed in scop 1.0.0.
 #' @param pairwise_features Features used for spatial cross-correlation. If
 #' `NULL`, top spatially autocorrelated features are used.

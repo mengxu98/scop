@@ -21,8 +21,8 @@ RunIntegrationBenchmark(
   skip_failed = TRUE,
   tool_name = "IntegrationBenchmark",
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -58,10 +58,10 @@ Defaults follow scIB (\code{0.6} bio conservation, \code{0.4} batch correction).
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{The message to print.}
-
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 The input \code{Seurat} object with integration reductions, per-cell

@@ -431,3 +431,54 @@ test_that("the deprecated single_data alias warns before it is used", {
     "only one of"
   )
 })
+
+test_that("PCA preserves thread state across successive core counts", {
+  package_path <- getNamespaceInfo(asNamespace("scop"), "path")
+  source_tree <- file.exists(file.path(package_path, ".Rbuildignore"))
+  result <- callr::r(
+    function(package_path, source_tree, libpath) {
+      .libPaths(unique(c(if (!source_tree) dirname(package_path), libpath)))
+      if (source_tree) {
+        pkgload::load_all(package_path, quiet = TRUE)
+      }
+      run_pca <- get("pca_backend_run", asNamespace("scop"))
+      set.seed(17)
+      x <- matrix(stats::rnorm(40L * 400L), nrow = 40L)
+      reference <- svd(t(x), nu = 0L, nv = 8L)
+      before <- c(
+        blas = RhpcBLASctl::blas_get_num_procs(),
+        omp = RhpcBLASctl::omp_get_max_threads()
+      )
+      fits <- lapply(c(1L, 2L, 1L, 2L), function(cores) {
+        fit <- run_pca(x, npcs = 8L, weight_by_var = TRUE, n_threads = cores)
+        after <- c(
+          blas = RhpcBLASctl::blas_get_num_procs(),
+          omp = RhpcBLASctl::omp_get_max_threads()
+        )
+        list(fit = fit, state = after)
+      })
+      list(fits = fits, reference = reference, before = before)
+    },
+    args = list(package_path, source_tree, .libPaths()),
+    env = c(OMP_NUM_THREADS = "1", OPENBLAS_NUM_THREADS = "1"),
+    timeout = 120
+  )
+
+  for (item in result$fits) {
+    expect_identical(item$state, result$before)
+    expected_sdev <- result$reference$d[seq_len(8L)] / sqrt(399)
+    expected_projector <- tcrossprod(result$reference$v)
+    expected_embeddings <- result$fits[[1L]]$fit$embeddings
+    expect_true(all(
+      abs(drop(item$fit$sdev) - expected_sdev) <= 1e-12 + 1e-10 * abs(expected_sdev)
+    ))
+    expect_true(all(
+      abs(tcrossprod(item$fit$loadings) - expected_projector) <=
+        1e-12 + 1e-10 * abs(expected_projector)
+    ))
+    expect_true(all(
+      abs(item$fit$embeddings - expected_embeddings) <=
+        1e-12 + 1e-10 * abs(expected_embeddings)
+    ))
+  }
+})

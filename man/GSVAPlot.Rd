@@ -131,7 +131,8 @@ Default is \code{NULL} (all groups).}
 \item{features}{Features to plot.}
 
 \item{topTerm}{The number of top terms to display.
-Default is \code{6}, or \code{100} if \code{plot_type} is \code{"enrichmap"}.}
+Default is \code{6}, \code{100} for \code{"enrichmap"}, or \code{80} for \code{"rank"}.
+Rank plots select the highest \code{rank_by} values after significance filtering.}
 
 \item{score_cutoff}{The score cutoff for the GSVA plot.
 Default is \code{NULL} (no cutoff).}
@@ -260,7 +261,8 @@ a plot.}
 
 \item{nlabel}{The maximum number of labels to show on each side of the heatmap. If set to 0, no labels will be shown. This can be useful for reducing clutter in large heatmaps.}
 
-\item{seed}{Random seed.}
+\item{seed}{Random seed used for plot construction. The caller's RNG state
+is restored on return, including errors.}
 
 \item{verbose}{Whether to print messages.}
 

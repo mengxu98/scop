@@ -22,8 +22,7 @@
 #' @param reduction.key The prefix for the column names of the PaCMAP embeddings.
 #' @param backend PaCMAP backend. `"cpp"` uses a compiled pair sampler and
 #' Adam optimizer; `"python"` retains the official pacmap package.
-#' @param ... Passed to pacmap.PaCMAP.
-#'
+#' @param ... Arguments passed to other functions.
 #' @rdname RunPaCMAP
 #' @export
 #'
@@ -191,20 +190,20 @@ RunPaCMAP.default <- function(
         "Additional PaCMAP arguments are used only by {.arg backend = 'python'}."
       )
     }
-    data <- native_pacmap_prepare_data(object, apply_pca = apply_pca)
+    data <- pacmap_prepare_data(object, apply_pca = apply_pca)
     n.neighbors <- n.neighbors %||% if (nrow(data) <= 10000L) {
       10L
     } else {
       as.integer(round(10 + 15 * (log10(nrow(data)) - 4)))
     }
     n.neighbors <- min(as.integer(n.neighbors), nrow(data) - 1L)
-    metric_id <- native_manifold_metric_id(distance_method)
+    metric_id <- manifold_metric_id(distance_method)
     knn <- manifold_exact_knn_cpp(
       data,
       k = n.neighbors + 1L,
       metric = metric_id
     )
-    initial <- native_manifold_initialization(
+    initial <- manifold_initialization(
       data,
       n_components = as.integer(n_components),
       init = match.arg(init, c("pca", "random")),

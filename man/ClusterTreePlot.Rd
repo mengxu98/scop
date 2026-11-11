@@ -89,7 +89,7 @@ starting side, while vertical trees place guides on the right. Use
 
 \item{theme_use, theme_args}{Plot theme and additional theme arguments.}
 
-\item{combine}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE} returns a list of ggplots.}
+\item{combine}{Combine plots with \code{\link[patchwork:wrap_plots]{patchwork::wrap_plots()}}. \code{combine = FALSE} returns a list of ggplots.}
 
 \item{ncol}{Number of columns of the combined plot.}
 

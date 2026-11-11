@@ -43,8 +43,7 @@
 #' @param store_results Whether to store results in `srt@tools`.
 #' @param store_views Whether to store the mistyR view composition in
 #' `object@tools`. This can be large.
-#' @param ... Additional named arguments passed to `mistyR::run_misty()`.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A `Seurat` object with results stored in `srt@tools[[tool_name]]`
 #' when `store_results = TRUE`.
 #' @export
@@ -90,8 +89,8 @@ RunMistyR <- function(
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
   sample.by = NULL,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   coordinate_space <- match.arg(coordinate_space)
@@ -345,14 +344,14 @@ mistyr_summary <- function(results, views = character()) {
 #' @title Plot stored MISTy results
 #'
 #' @description Plot model improvements or view contributions from a result
-#' produced by [RunMistyR()] without rerunning the backend.
+#' produced by [RunMistyR()] without rerunning the model.
 #'
 #' @param object Optional `Seurat` object containing `MistyR` results.
 #' @param res Optional result list, usually `object@tools$MistyR`.
 #' @param type Result table to plot.
 #' @param measure Numeric result column to display. For `type = "improvements"`
 #' use `"gain.R2"` or `"gain.RMSE"`; for `type = "contributions"`, use
-#' `"contribution"` or `"importance"` as provided by the backend. `NULL`
+#' `"contribution"` or `"importance"` as provided by the model. `NULL`
 #' defaults to `"gain.R2"` for improvements and `"contribution"` for
 #' contributions, and errors if that column is not present.
 #' @param top_n Maximum number of records shown after ranking by absolute value.

@@ -20,9 +20,10 @@ SpatialIntegrationPlot(
   palcolor = NULL,
   theme_use = "theme_scop",
   theme_args = list(),
-  ...,
   image.scale = c("lowres", "hires"),
-  srt = NULL
+  srt = NULL,
+  image = NULL,
+  ...
 )
 }
 \arguments{
@@ -62,18 +63,17 @@ list.}
 
 \item{theme_args}{Theme name or function, plus extra theme arguments.}
 
-\item{...}{Additional arguments passed to \code{\link[=SpatialSpotPlot]{SpatialSpotPlot()}} or
-\code{\link[=CellDimPlot]{CellDimPlot()}}. For spatial maps, \code{image} can be one image or a named
-sample-to-image vector using names in the merged object. By default, each
-sample uses its uniquely matching image. \code{nrow}, \code{ncol} and \code{byrow} control
-the layout of separate image panels.}
-
 \item{image.scale}{Image scale factor matching the raster stored in the
 selected image. Use \code{"hires"} for a hires raster; do not modify Seurat
 scale-factor slots.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{image}{Spatial image name. Required when multiple images are present;
+a single image is selected automatically when \code{NULL}.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A \code{ggplot}, patchwork object, or list of plots.
@@ -97,6 +97,7 @@ spatial <- RunSpatialIntegration(
 )
 SpatialIntegrationPlot(spatial, method = "PRECAST", plot_type = "spatial")
 }
+
 }
 \seealso{
 \code{\link[=RunSpatialIntegration]{RunSpatialIntegration()}}

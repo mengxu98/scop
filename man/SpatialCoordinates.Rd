@@ -67,5 +67,4 @@ coords_display <- SpatialCoordinates(
 )
 head(coords_raw$data[, c("cell_id", "x", "y")])
 head(coords_display$data[, c("cell_id", "x", "y")])
-
 }

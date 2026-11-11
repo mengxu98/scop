@@ -75,9 +75,7 @@ spatial_input_info <- function(object, assay = NULL, image = NULL,
 #' @param bin.size Positive integer HD bin sizes in microns. Ignored for other
 #'   technologies; Seurat stores each resolution in a separate assay/image.
 #' @param sample_id Nonempty sample identifier stored in spatial_sample.
-#' @param ... Extra arguments to Seurat's Load10X_Spatial or LoadXenium. Xenium
-#'   defaults to cell segmentation and does not load molecule coordinates unless
-#'   requested; cell segmentation must already exist in the vendor output.
+#' @param ... Arguments passed to other functions.
 #' @return A validated Seurat object with misc$scop_spatial_input provenance.
 #' @seealso SpatialCellPlot
 #' @export

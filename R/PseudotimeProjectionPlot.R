@@ -32,6 +32,8 @@
 #' Defaults is `"black"`.
 #' @param label.bg Background color of labels.
 #' Defaults is `"white"`.
+#' @param seed Random seed for plot construction. The caller's RNG state is restored.
+#' @return A ggplot, or a named list of ggplot layers when `return_layer = TRUE`.
 #'
 #' @seealso
 #' [VelocityPlot], [CellDimPlot]
@@ -137,6 +139,8 @@ PseudotimeProjectionPlot <- function(
   srt = NULL
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
+  check_r("withr", verbose = FALSE)
+  withr::local_preserve_seed()
   set.seed(seed)
 
   plot_type <- match.arg(plot_type)
@@ -218,105 +222,80 @@ PseudotimeProjectionPlot <- function(
     )
   }
 
-  if (plot_type == "raw") {
-    if (!is.null(density) && (density > 0 && density < 1)) {
-      s <- ceiling(density * nrow(x_emb))
-      ix_choice <- sample(seq_len(nrow(x_emb)), size = s, replace = FALSE)
-      x_emb <- x_emb[ix_choice, , drop = FALSE]
-      v_emb <- v_emb[ix_choice, , drop = FALSE]
+  if (plot_type %in% c("raw", "grid")) {
+    if (plot_type == "raw") {
+      if (!is.null(density) && (density > 0 && density < 1)) {
+        s <- ceiling(density * nrow(x_emb))
+        ix_choice <- sample(seq_len(nrow(x_emb)), size = s, replace = FALSE)
+        x_emb <- x_emb[ix_choice, , drop = FALSE]
+        v_emb <- v_emb[ix_choice, , drop = FALSE]
+      }
+      if (!is.null(scale)) {
+        v_emb <- v_emb * scale
+      }
+      field_x <- x_emb
+      field_v <- v_emb
+    } else {
+      res <- compute_velocity_on_grid(
+        x_emb,
+        v_emb,
+        density = density,
+        smooth = smooth,
+        n_neighbors = n_neighbors,
+        min_mass = min_mass,
+        scale = scale
+      )
+      field_x <- res$x_grid
+      field_v <- res$v_grid
     }
-    if (!is.null(scale)) {
-      v_emb <- v_emb * scale
-    }
-    df_field <- cbind.data.frame(x_emb, v_emb)
+    df_field <- cbind.data.frame(field_x, field_v)
     colnames(df_field) <- c("x", "y", "u", "v")
-    arrow_length <- grid::unit(1.5, "mm")
 
-    if (!is.null(group.by)) {
+    grouped <- plot_type == "raw" && !is.null(group.by)
+    if (grouped) {
       df_field[["group.by"]] <- srt@meta.data[
         rownames(df_field),
         group.by,
         drop = TRUE
       ]
-      velocity_layer <- list(
-        geom_segment(
-          data = df_field,
-          aes(x = x, y = y, xend = x + u, yend = y + v, color = group.by),
-          arrow = grid::arrow(
-            length = arrow_length,
-            type = "closed",
-            angle = arrow_angle
-          ),
-          lineend = "round",
-          linejoin = "mitre",
-          inherit.aes = FALSE
+    }
+    segment_args <- list(
+      data = df_field,
+      mapping = if (grouped) {
+        aes(x = x, y = y, xend = x + .data$u, yend = y + .data$v, color = group.by)
+      } else {
+        aes(x = x, y = y, xend = x + .data$u, yend = y + .data$v)
+      },
+      arrow = grid::arrow(
+        length = grid::unit(1.5, "mm"),
+        type = "closed",
+        angle = arrow_angle
+      ),
+      lineend = "round",
+      linejoin = "mitre",
+      inherit.aes = FALSE
+    )
+    if (!grouped) {
+      segment_args["color"] <- list(arrow_color)
+    }
+    velocity_layer <- list(do.call(geom_segment, segment_args))
+    if (grouped) {
+      velocity_layer[[2L]] <- scale_color_manual(
+        name = group.by,
+        values = palette_colors(
+          df_field[["group.by"]],
+          palette = group_palette,
+          palcolor = group_palcolor
         ),
-        scale_color_manual(
-          name = group.by,
-          values = palette_colors(
-            df_field[["group.by"]],
-            palette = group_palette,
-            palcolor = group_palcolor
-          ),
-          guide = guide_legend(
-            title.hjust = 0,
-            order = 1,
-            override.aes = list(linewidth = 2, alpha = 1)
-          )
-        )
-      )
-    } else {
-      velocity_layer <- list(
-        geom_segment(
-          data = df_field,
-          aes(x = x, y = y, xend = x + u, yend = y + v),
-          color = arrow_color,
-          arrow = grid::arrow(
-            length = arrow_length,
-            type = "closed",
-            angle = arrow_angle
-          ),
-          lineend = "round",
-          linejoin = "mitre",
-          inherit.aes = FALSE
+        guide = guide_legend(
+          title.hjust = 0,
+          order = 1,
+          override.aes = list(linewidth = 2, alpha = 1)
         )
       )
     }
   }
-  if (plot_type == "grid") {
-    res <- compute_velocity_on_grid(
-      x_emb,
-      v_emb,
-      density = density,
-      smooth = smooth,
-      n_neighbors = n_neighbors,
-      min_mass = min_mass,
-      scale = scale
-    )
-    x_grid <- res$x_grid
-    v_grid <- res$v_grid
-
-    df_field <- cbind.data.frame(x_grid, v_grid)
-    colnames(df_field) <- c("x", "y", "u", "v")
-    arrow_length <- grid::unit(1.5, "mm")
-    velocity_layer <- list(
-      geom_segment(
-        data = df_field,
-        aes(x = x, y = y, xend = x + u, yend = y + v),
-        color = arrow_color,
-        arrow = grid::arrow(
-          length = arrow_length,
-          type = "closed",
-          angle = arrow_angle
-        ),
-        lineend = "round",
-        linejoin = "mitre",
-        inherit.aes = FALSE
-      )
-    )
-  }
   if (plot_type == "stream") {
-    check_r("metR", verbose = FALSE)
     res <- compute_velocity_on_grid(
       x_emb,
       v_emb,
@@ -328,138 +307,23 @@ PseudotimeProjectionPlot <- function(
       cutoff_perc = cutoff_perc,
       adjust_for_stream = TRUE
     )
-    x_grid <- res$x_grid
-    v_grid <- res$v_grid
-
-    df_field <- expand.grid(x_grid[1, ], x_grid[2, ])
-    colnames(df_field) <- c("x", "y")
-    u <- reshape2::melt(Matrix::t(v_grid[1, , ]))
-    v <- reshape2::melt(Matrix::t(v_grid[2, , ]))
-    df_field[, "u"] <- u$value
-    df_field[, "v"] <- v$value
-    df_field[is.na(df_field)] <- 0
-
-    if (!is.null(streamline_color)) {
-      velocity_layer <- list(
-        metR::geom_streamline(
-          data = df_field,
-          aes(x = x, y = y, dx = u, dy = v),
-          L = streamline_L,
-          min.L = streamline_minL,
-          res = streamline_res,
-          n = streamline_n,
-          linewidth = max(streamline_width, na.rm = TRUE) +
-            streamline_bg_stroke,
-          color = streamline_bg_color,
-          alpha = streamline_alpha,
-          arrow.type = "closed",
-          arrow.angle = arrow_angle,
-          lineend = "round",
-          linejoin = "mitre",
-          inherit.aes = FALSE
-        ),
-        metR::geom_streamline(
-          data = df_field,
-          aes(x = x, y = y, dx = u, dy = v),
-          L = streamline_L,
-          min.L = streamline_minL,
-          res = streamline_res,
-          n = streamline_n,
-          linewidth = max(streamline_width, na.rm = TRUE),
-          color = streamline_color,
-          alpha = streamline_alpha,
-          arrow.type = "closed",
-          arrow.angle = arrow_angle,
-          lineend = "round",
-          linejoin = "mitre",
-          inherit.aes = FALSE
-        ),
-        metR::geom_streamline(
-          data = df_field,
-          aes(x = x, y = y, dx = u, dy = v),
-          L = streamline_L,
-          min.L = streamline_minL,
-          res = streamline_res,
-          n = streamline_n,
-          linetype = 0,
-          color = arrow_color,
-          arrow.type = "closed",
-          arrow.angle = arrow_angle,
-          lineend = "round",
-          linejoin = "mitre",
-          inherit.aes = FALSE
-        )
-      )
-    } else {
-      velocity_layer <- list(
-        metR::geom_streamline(
-          data = df_field,
-          aes(x = x, y = y, dx = u, dy = v),
-          L = streamline_L,
-          min.L = streamline_minL,
-          res = streamline_res,
-          n = streamline_n,
-          linewidth = max(streamline_width, na.rm = TRUE) +
-            streamline_bg_stroke,
-          color = streamline_bg_color,
-          alpha = streamline_alpha,
-          arrow.type = "closed",
-          arrow.angle = arrow_angle,
-          lineend = "round",
-          linejoin = "mitre",
-          inherit.aes = FALSE
-        ),
-        metR::geom_streamline(
-          data = df_field,
-          aes(
-            x = x,
-            y = y,
-            dx = u,
-            dy = v,
-            linewidth = after_stat(step),
-            color = sqrt(after_stat(dx)^2 + after_stat(dy)^2)
-          ),
-          L = streamline_L,
-          min.L = streamline_minL,
-          res = streamline_res,
-          n = streamline_n,
-          alpha = streamline_alpha,
-          arrow = NULL,
-          lineend = "round",
-          linejoin = "mitre",
-          inherit.aes = FALSE
-        ),
-        metR::geom_streamline(
-          data = df_field,
-          aes(x = x, y = y, dx = u, dy = v),
-          L = streamline_L,
-          min.L = streamline_minL,
-          res = streamline_res,
-          n = streamline_n,
-          linetype = 0,
-          color = arrow_color,
-          arrow.type = "closed",
-          arrow.angle = arrow_angle,
-          lineend = "round",
-          linejoin = "mitre",
-          inherit.aes = FALSE
-        ),
-        scale_color_gradientn(
-          name = "Velocity",
-          colors = palette_colors(
-            palette = streamline_palette,
-            palcolor = streamline_palcolor
-          ),
-          guide = guide_colorbar(
-            frame.colour = "black",
-            ticks.colour = "black",
-            title.hjust = 0,
-            order = 1
-          )
-        ),
-        scale_linewidth(range = range(streamline_width), guide = "none")
-      )
-    }
+    velocity_layer <- thisplot::streamline_layers(
+      x_grid = res$x_grid,
+      v_grid = res$v_grid,
+      L = streamline_L,
+      min.L = streamline_minL,
+      res = streamline_res,
+      n = streamline_n,
+      linewidth = streamline_width,
+      alpha = streamline_alpha,
+      color = streamline_color,
+      palette = streamline_palette,
+      palcolor = streamline_palcolor,
+      bg.color = streamline_bg_color,
+      bg.stroke = streamline_bg_stroke,
+      arrow.color = arrow_color,
+      arrow.angle = arrow_angle
+    )
   }
 
   velocity_uses_group_color <- plot_type == "raw" && !is.null(group.by)
@@ -580,30 +444,19 @@ PseudotimeProjectionPlot <- function(
       )
   )
 
+  plot_layers <- list(
+    cell_layer = cell_layer,
+    cell_scale_layer = cell_scale_layer,
+    color_reset_layer = color_reset_layer,
+    velocity_layer = velocity_layer,
+    label_layer = label_layer,
+    lab_layer = lab_layer,
+    theme_layer = theme_layer
+  )
   if (isTRUE(return_layer)) {
-    return(
-      list(
-        cell_layer = cell_layer,
-        cell_scale_layer = cell_scale_layer,
-        color_reset_layer = color_reset_layer,
-        velocity_layer = velocity_layer,
-        label_layer = label_layer,
-        lab_layer = lab_layer,
-        theme_layer = theme_layer
-      )
-    )
-  } else {
-    return(
-      ggplot() +
-        cell_layer +
-        cell_scale_layer +
-        color_reset_layer +
-        velocity_layer +
-        label_layer +
-        lab_layer +
-        theme_layer
-    )
+    return(plot_layers)
   }
+  ggplot() + plot_layers
 }
 
 compute_pseudotime_on_knn <- function(

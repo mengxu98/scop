@@ -24,8 +24,8 @@ RunSpaTalk(
   overwrite = FALSE,
   backend = c("cpp", "r"),
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -68,17 +68,17 @@ explicitly supplied `dec_result`); `"none"` requires a named external
 
 \item{verbose}{Whether to print progress messages.}
 
-\item{...}{Named arguments forwarded to compatible official SpaTalk steps.}
-
 \item{srt}{Deprecated alias for `object`; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 The input `Seurat` object with `srt@tools$SpaTalk` and unified CCC
   results updated.
 }
 \description{
-Run the official SpaTalk R backend for single-cell spatial data or spot data
+Run official SpaTalk for single-cell spatial data or spot data
 with a single-cell reference. Results are stored as a compact method bundle
 and added to SCOP's unified CCC table.
 }

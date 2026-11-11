@@ -28,7 +28,7 @@
 #' before preprocessing. Filtering is disabled; inspect its QC labels first.
 #' @param spanorm_params Arguments for [RunSpaNorm()] when
 #' `normalization_method = "SpaNorm"`. Creates a separate normalized assay;
-#' count-based backends continue to use the original assay.
+#' count-based methods continue to use the original assay.
 #' @param spatial_data_type Observation type: `"auto"`, `"spot"`, `"bin"`, or
 #' `"cell"`. Auto uses import provenance or image evidence, otherwise unknown.
 #' Cell observations cannot use BayesSpace or spot deconvolution in this workflow.
@@ -56,8 +56,7 @@
 #' `"manhattan"`, `"hamming"`).
 #' @param cluster_algorithm,cluster_resolution Clustering (`"louvain"`, `"slm"`,
 #' `"leiden"`). Larger `cluster_resolution` yields fewer clusters.
-#' @param ... Additional arguments passed to reduction methods.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A `Seurat` object. Spatial workflows store per-stage execution and
 #' result-storage state in `srt@tools[["run_standard_spatial_workflow"]]`,
 #' including the effective `set_variable_features` value, `result_stored`, and
@@ -228,8 +227,8 @@ RunStandardWorkflow <- function(
   spatial_qc_params = list(),
   spanorm_params = list(),
   spatial_data_type = "auto",
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   workflow <- match.arg(workflow)

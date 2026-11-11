@@ -19,7 +19,9 @@ test_that("giotto bridges request the converter matching the installed Seurat ve
   expected <- if (seurat_major >= 5L) "V5" else "V4"
   seen <- character(0)
   testthat::local_mocked_bindings(
-    check_r = function(...) invisible(TRUE),
+    check_r = function(packages, ...) {
+      invisible(stats::setNames(as.list(rep(TRUE, length(packages))), packages))
+    },
     get_namespace_fun = function(package, name) {
       expect_identical(package, "GiottoClass")
       seen <<- c(seen, name)
@@ -43,7 +45,9 @@ test_that("srt_to_giotto calls the official forward converter with the selected 
   ))
   seen <- NULL
   testthat::local_mocked_bindings(
-    check_r = function(...) invisible(TRUE),
+    check_r = function(packages, ...) {
+      invisible(stats::setNames(as.list(rep(TRUE, length(packages))), packages))
+    },
     get_namespace_fun = function(package, name) {
       expect_identical(package, "GiottoClass")
       function(...) {
@@ -64,7 +68,9 @@ test_that("srt_to_giotto calls the official forward converter with the selected 
 test_that("srt_to_giotto lets callers override converter defaults", {
   seen <- NULL
   testthat::local_mocked_bindings(
-    check_r = function(...) invisible(TRUE),
+    check_r = function(packages, ...) {
+      invisible(stats::setNames(as.list(rep(TRUE, length(packages))), packages))
+    },
     get_namespace_fun = function(package, name) {
       expect_identical(package, "GiottoClass")
       function(sobject, spatial_assay = "Spatial", verbose = TRUE) {
@@ -108,7 +114,9 @@ test_that("giotto_to_srt calls the official reverse converter", {
   gobject <- structure(list(mock = TRUE), class = "giotto")
   seen <- NULL
   testthat::local_mocked_bindings(
-    check_r = function(...) invisible(TRUE),
+    check_r = function(packages, ...) {
+      invisible(stats::setNames(as.list(rep(TRUE, length(packages))), packages))
+    },
     get_namespace_fun = function(package, name) {
       expect_identical(package, "GiottoClass")
       expect_match(name, "^giottoToSeurat")
@@ -141,9 +149,9 @@ test_that("installed GiottoClass is reused instead of reinstalling drieslab/Giot
     check_r = function(packages, install = TRUE, ...) {
       seen <<- c(seen, list(list(packages = packages, install = install)))
       if (identical(packages, "GiottoClass") && !isTRUE(install)) {
-        return(TRUE)
+        return(list(GiottoClass = TRUE))
       }
-      invisible(TRUE)
+      invisible(stats::setNames(as.list(rep(TRUE, length(packages))), packages))
     },
     get_namespace_fun = function(...) {
       function(...) "converted"
@@ -165,9 +173,9 @@ test_that("missing GiottoClass requests drieslab/Giotto", {
     check_r = function(packages, install = TRUE, ...) {
       seen <<- c(seen, list(list(packages = packages, install = install)))
       if (identical(packages, "GiottoClass") && !isTRUE(install)) {
-        return(FALSE)
+        return(list(GiottoClass = FALSE))
       }
-      invisible(TRUE)
+      invisible(stats::setNames(as.list(rep(TRUE, length(packages))), packages))
     },
     get_namespace_fun = function(...) {
       function(...) "converted"

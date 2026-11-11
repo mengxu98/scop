@@ -63,8 +63,8 @@ CCCHeatmap(
   combine_methods = c("separate", "support", "rank", "legacy"),
   resource = NULL,
   sample = NULL,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -189,16 +189,20 @@ retains the deprecated raw-score aggregation.}
 \item{resource, sample}{Optional resource and sample/context filters for
 unified CCC results.}
 
-\item{...}{Additional plot-specific options.}
-
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A ggplot / patchwork object wrapping the ComplexHeatmap grob.
 }
 \description{
 CCC heatmap and dot matrix plot
+}
+\details{
+Canonical selection parameters and legacy aliases may be supplied
+together only when their values agree. Conflicting values raise an error.
 }
 \examples{
 data(pancreas_sub)

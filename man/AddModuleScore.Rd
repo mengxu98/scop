@@ -27,7 +27,7 @@ AddModuleScore(
 \item{pool, nbin, ctrl, k, assay, name, seed, search, slot}{Seurat-compatible
 module-score parameters.}
 
-\item{...}{Additional arguments passed to Seurat on fallback.}
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 The input Seurat object with module-score metadata columns.

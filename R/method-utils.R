@@ -114,6 +114,26 @@ validate_positive_integer <- function(x, arg) {
   as.integer(x)
 }
 
+prepare_mapping_reference <- function(
+  reference,
+  ref_group,
+  column_error = "{.arg ref_group} must be one of the column names in the meta.data",
+  length_error = "Length of {.arg ref_group} must be one or length of {.arg srt_ref}"
+) {
+  if (length(ref_group) == ncol(reference)) {
+    reference[["ref_group"]] <- ref_group
+  } else if (length(ref_group) == 1) {
+    if (!ref_group %in% colnames(reference@meta.data)) {
+      log_message(column_error, message_type = "error")
+    } else {
+      reference[["ref_group"]] <- reference[[ref_group]]
+    }
+  } else {
+    log_message(length_error, message_type = "error")
+  }
+  reference
+}
+
 resolve_reference_labels <- function(reference, reference_label) {
   if (
     missing(reference_label) ||
@@ -134,8 +154,6 @@ resolve_reference_labels <- function(reference, reference_label) {
   reference[[reference_label, drop = TRUE]]
 }
 
-# Deconvolution matrices may contain only a subset of a Seurat object's cells.
-# Metadata is keyed by identity, never by its position in the whole object.
 deconv_validate_cell_ids <- function(ids, data_label) {
   if (is.null(ids) || anyNA(ids) || any(!nzchar(ids)) || anyDuplicated(ids)) {
     log_message(
@@ -445,23 +463,23 @@ vector_weighted_arrows <- function(
       min(emb[, 2], na.rm = TRUE),
       max(emb[, 2], na.rm = TRUE)
     )
-    native <- vector_weighted_arrows_cpp(
+    arrows_mat <- vector_weighted_arrows_cpp(
       centers = centers,
       scores = scores,
       embedding_range = emb_range,
       p = p,
       arrow_length = ol
     )
-    if (nrow(native) == 0L) {
+    if (nrow(arrows_mat) == 0L) {
       return(NULL)
     }
-    native <- as.data.frame(native)
-    colnames(native) <- c(
+    arrows_df <- as.data.frame(arrows_mat)
+    colnames(arrows_df) <- c(
       "index", "x", "y", "dx", "dy", "xend", "yend", "length"
     )
-    native$grid <- grid_df$grid[as.integer(native$index)]
-    native$index <- NULL
-    return(native[, c(
+    arrows_df$grid <- grid_df$grid[as.integer(arrows_df$index)]
+    arrows_df$index <- NULL
+    return(arrows_df[, c(
       "grid", "x", "y", "dx", "dy", "xend", "yend", "length"
     ), drop = FALSE])
   }

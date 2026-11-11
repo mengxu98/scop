@@ -16,8 +16,8 @@ SpatialDMPlot(
   palcolor = NULL,
   theme_use = "theme_scop",
   theme_args = list(),
-  ...,
-  image.scale = c("lowres", "hires")
+  image.scale = c("lowres", "hires"),
+  ...
 )
 }
 \arguments{
@@ -37,9 +37,9 @@ SpatialDMPlot(
 
 \item{palette, palcolor, theme_use, theme_args}{SCOP plotting controls.}
 
-\item{...}{Additional arguments passed to SCOP spatial plotting functions.}
-
 \item{image.scale}{Image scale factor matching the selected raster.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A `ggplot` or `patchwork` object.

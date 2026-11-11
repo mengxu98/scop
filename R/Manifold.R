@@ -1,4 +1,4 @@
-native_manifold_metric_id <- function(metric) {
+manifold_metric_id <- function(metric) {
   metric <- tolower(metric)
   if (identical(metric, "angular")) {
     metric <- "cosine"
@@ -6,19 +6,19 @@ native_manifold_metric_id <- function(metric) {
   metric_id <- match(metric, c("euclidean", "manhattan", "cosine", "hamming"))
   if (is.na(metric_id)) {
     log_message(
-      "Native manifold backend does not support distance {.val {metric}}",
+      "Manifold algorithm does not support distance {.val {metric}}",
       message_type = "error"
     )
   }
   metric_id
 }
 
-native_manifold_prepare_data <- function(data, apply_pca = TRUE) {
+manifold_prepare_data <- function(data, apply_pca = TRUE) {
   data <- as.matrix(data)
   storage.mode(data) <- "double"
   if (any(!is.finite(data))) {
     log_message(
-      "Native manifold backends require finite input values",
+      "Manifold algorithm requires finite input values",
       message_type = "error"
     )
   }
@@ -34,12 +34,12 @@ native_manifold_prepare_data <- function(data, apply_pca = TRUE) {
   data
 }
 
-native_pacmap_prepare_data <- function(data, apply_pca = TRUE) {
+pacmap_prepare_data <- function(data, apply_pca = TRUE) {
   data <- as.matrix(data)
   storage.mode(data) <- "double"
   if (any(!is.finite(data))) {
     log_message(
-      "Native PaCMAP requires finite input values",
+      "PaCMAP requires finite input values",
       message_type = "error"
     )
   }
@@ -60,7 +60,7 @@ native_pacmap_prepare_data <- function(data, apply_pca = TRUE) {
   sweep(data, 2L, colMeans(data), "-")
 }
 
-native_manifold_initialization <- function(
+manifold_initialization <- function(
   data,
   n_components,
   init = c("pca", "random"),

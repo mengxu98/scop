@@ -13,10 +13,10 @@
 #' @param reference Spatial reference type: `"trajectory"` for STS or
 #' `"annotation"` for SAS.
 #' @param backend Computation backend. The supported backend is `"cpp"`, which
-#' uses the compiled native spatial implementation.
+#' uses the compiled spatial implementation.
 #' @param result_name Name used to store this result. If `NULL`, a name is
 #' generated from `reference`.
-#' @param variables Numeric variables or genes tested by the native backend. If `NULL`,
+#' @param variables Numeric variables or genes to test. If `NULL`,
 #' `srt@tools[["SpatialVariableFeatures"]]` is used first, then variable
 #' features, then all assay features.
 #' @param coord.cols Metadata coordinate columns used by the `"cpp"`
@@ -25,21 +25,20 @@
 #' calculations. The default is raw acquisition coordinates, so `start`,
 #' `end`, trajectory positions, and C++ distances share raw
 #' coordinate units. Use `"legacy_display"` explicitly for pre-0.9.0 display
-#' coordinates. Results retain the raw coordinate units used by the native
-#' backend.
-#' @param start,end,traj_df Trajectory geometry used by the native backend when
+#' coordinates. Results retain the raw coordinate units.
+#' @param start,end,traj_df Trajectory geometry used when
 #' `reference = "trajectory"`.
 #' @param annotation.by,annotation.groups Metadata grouping used to create the
-#' native annotation mask.
+#' annotation mask.
 #' @param annotation.variable,annotation.threshold Numeric variable and
-#' threshold used to create a native numeric annotation mask. Numeric
+#' threshold used to create a numeric annotation mask. Numeric
 #' thresholds are interpreted as `">{threshold}"`.
 #' @param unit Optional coordinate-unit label stored in the result source. It
 #' does not transform coordinates.
 #' @param sign_var,sign_threshold Column and cutoff used to select top gradient
-#' variables from the native significance table.
-#' @param n_random,seed Permutation count and random seed used by the native
-#' screening backend.
+#' variables from the significance table.
+#' @param n_random,seed Permutation count and random seed used for
+#' screening.
 #' @param n_bins Number of distance bins used for the `"cpp"` backend
 #' screening curve.
 #' @param min_spots Minimum number of non-zero spots required for a variable in
@@ -51,7 +50,7 @@
 #' an empty selection clears the target assay's variable features.
 #' @param store_results Whether to store the normalized result in `srt@tools`.
 #' @details
-#' The current native interface is intentionally small. Older calls that pass
+#' The current interface is intentionally small. Older calls that pass
 #' `sample_name`, `platform`, `img_scale_fct`, `assay_modality`,
 #' `trajectory_id`, `width`, `annotation_id`, `core`, `distance`,
 #' `angle_span`, `resolution`, `model_add`, `model_subset`, `model_remove`,
@@ -60,7 +59,7 @@
 #' `annotation.by`/`annotation.groups` or
 #' `annotation.variable`/`annotation.threshold` for annotation references;
 #' and use `n_random`, `n_bins`, `min_spots`, `sign_threshold`, and
-#' `nfeatures` for native screening controls.
+#' `nfeatures` for screening controls.
 #'
 #' @return A `Seurat` object. When `store_results = TRUE`, spatial gradient
 #' screening results are stored in `srt@tools[["SpatialGradientFeatures"]]`.

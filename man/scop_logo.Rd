@@ -15,7 +15,7 @@ Default is \link[cli:is_utf8_output]{cli::is_utf8_output}.}
 
 \item{x}{Input logo object.}
 
-\item{...}{Additional arguments passed to [cat()].}
+\item{...}{Arguments passed to other functions.}
 }
 \description{
 The scop logo, using ASCII or Unicode characters

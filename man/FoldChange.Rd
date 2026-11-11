@@ -9,7 +9,7 @@ FoldChange(object, ...)
 \arguments{
 \item{object}{Object containing expression data.}
 
-\item{...}{Passed to methods.}
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A data frame of fold-change statistics.

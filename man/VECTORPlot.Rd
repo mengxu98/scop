@@ -75,8 +75,7 @@ will be removed in scop 1.0.0.}
 
 \item{theme_use, theme_args}{Theme function and arguments.}
 
-\item{...}{Additional arguments passed to \code{\link[=FeatureDimPlot]{FeatureDimPlot()}} or
-\code{\link[=CellDimPlot]{CellDimPlot()}} when a cell background is requested.}
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A \code{ggplot} object.

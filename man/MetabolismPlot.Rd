@@ -9,9 +9,9 @@ MetabolismPlot(
   res = NULL,
   group.by = NULL,
   assay_name = "METABOLISM",
-  ...,
   verbose = TRUE,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -24,12 +24,12 @@ If provided, 'srt' and 'group.by' are ignored.}
 
 \item{assay_name}{Assay or tools slot containing metabolism results.}
 
-\item{...}{Additional arguments passed to \link{GSVAPlot}.}
-
 \item{verbose}{Whether to print messages.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \description{
 Plots for metabolism pathway scoring

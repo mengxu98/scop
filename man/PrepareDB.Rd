@@ -69,7 +69,7 @@ Possible options include \code{"ensembl"}, \code{"protists_mart"}, \code{"fungi_
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{Passed to helper functions.}
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A named list of prepared resources. Gene annotation databases are

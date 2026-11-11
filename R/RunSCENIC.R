@@ -43,7 +43,7 @@
 #' object with [RunMetaCell()] and pass that object to `RunSCENIC()`.
 #' @param min_regulon_size Minimum regulon size kept after `scenic ctx`.
 #' @param max_regulon_targets Maximum target genes retained per C++ regulon.
-#' The default preserves the native fast path's bounded regulon size.
+#' The default preserves the fast path's bounded regulon size.
 #' @param include_negative_regulons Whether the C++ backend should also build
 #' negatively correlated regulons and label them as `TF(-)`. The default
 #' matches pySCENIC's positive-regulon workflow and labels C++ regulons as
@@ -61,7 +61,7 @@
 #' AUCell scoring. `NULL` (the default) keeps the process OpenMP team for the
 #' C++ kernels and uses one worker elsewhere. If multicore execution is not
 #' supported, this is automatically reduced to one core.
-#' @param parallel_backend Parallel backend used for native C++ cisTarget
+#' @param parallel_backend Parallel backend used for C++ cisTarget
 #' module processing. `"auto"` preserves the current cross-platform PSOCK
 #' behavior. `"fork"` is an explicit opt-in on macOS and Linux and is not
 #' available on Windows.
@@ -92,18 +92,30 @@
 #'   group.by = "CellType",
 #'   plot_type = "rss_rank"
 #' )
-#' example_regulons <- unique(scenic_rss$top_table$regulon)[1:2]
+#' example_regulons <- head(rownames(pancreas_sub[["scenic"]]), 6)
+#' GroupHeatmap(
+#'   pancreas_sub,
+#'   group.by = "CellType",
+#'   features = example_regulons,
+#'   assay = "scenic",
+#'   layer = "data",
+#'   exp_method = "raw",
+#'   lib_normalize = FALSE
+#' )$plot
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   features = example_regulons,
 #'   assay = "scenic",
-#'   reduction = "StandardpcaUMAP2D"
+#'   layer = "data",
+#'   reduction = "UMAP"
 #' )
 #' FeatureStatPlot(
 #'   pancreas_sub,
 #'   stat.by = example_regulons,
 #'   group.by = "CellType",
-#'   assay = "scenic"
+#'   assay = "scenic",
+#'   layer = "data",
+#'   plot_type = "violin"
 #' )
 #' SCENICPlot(
 #'   pancreas_sub,
@@ -273,7 +285,7 @@ RunSCENIC <- function(
   }
   envname <- envname %||% "scenic_env"
   scenic_python_packages <- c(
-    scenic_backend_requirement(),
+    scenic_requirement(),
     "arboreto==0.1.6",
     "ctxcore==0.2.0",
     "numpy==1.23.5",
@@ -1101,40 +1113,6 @@ scenic_cpp <- function(
   srt
 }
 
-build_regulons <- function(
-  adjacency,
-  max_targets = Inf,
-  min_regulon_size = 10,
-  suffix = "(+)"
-) {
-  if (!all(c("TF", "target", "importance") %in% colnames(adjacency))) {
-    log_message(
-      "{.arg adjacency} must have columns TF, target, importance",
-      message_type = "error"
-    )
-  }
-
-  adj_sorted <- adjacency[
-    order(
-      adjacency[["TF"]],
-      -as.numeric(adjacency[["importance"]])
-    ),
-  ]
-
-  adj_split <- split(adj_sorted, adj_sorted[["TF"]])
-  regulons <- lapply(adj_split, function(df) {
-    targets <- unique(df[["target"]])
-    if (is.finite(max_targets)) {
-      targets <- utils::head(targets, max_targets)
-    }
-    targets
-  })
-
-  regulons <- regulons[lengths(regulons) >= min_regulon_size]
-  names(regulons) <- scenic_regulon_name(names(regulons), suffix = suffix)
-  regulons
-}
-
 scenic_feather_column_names <- function(path) {
   check_r("arrow", verbose = FALSE)
   tryCatch(
@@ -1359,12 +1337,6 @@ cistarget2 <- function(
   gc()
 
   if (length(rank_matrices) == 0) {
-    if (!requireNamespace("arrow", quietly = TRUE)) {
-      log_message(
-        "The cistarget backend reads its ranking databases with the optional {.pkg arrow} package. Install it with {.code install.packages('arrow')}.",
-        message_type = "error"
-      )
-    }
     log_message(
       "None of the ranking databases in the resolved cistarget directory could be read, so the regulons cannot be scored.",
       message_type = "error"

@@ -27,8 +27,7 @@
 #' @param Ensembl_version Ensembl version. `NULL` uses the latest.
 #' @param custom_TERM2GENE,custom_TERM2NAME Custom mappings for `custom_species`.
 #' @param custom_species,custom_IDtype,custom_version Metadata for a custom database.
-#' @param ... Passed to helper functions.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A named list of prepared resources. Gene annotation databases are
 #' nested by species and database, with `TERM2GENE` (gene-to-term mappings),
 #' `TERM2NAME` (term names) and `version`. Additional resource fields follow the
@@ -369,7 +368,7 @@ preparedb_annotation <- function(
       )
       if (any(orgdb_dependent %in% db)) {
         check_r(c(org_sp, "GO.db", "GOSemSim"), verbose = FALSE)
-        if (!isTRUE(all(unlist(check_r(org_sp, install = FALSE, verbose = FALSE), use.names = FALSE)))) {
+        if (!isTRUE(check_r(org_sp, install = FALSE, verbose = FALSE)[[org_sp]])) {
           log_message(
             "Annotation package {.pkg {org_sp}} is not installed. Install it with {.code BiocManager::install('{org_sp}')}.",
             message_type = "warning"
@@ -1003,7 +1002,7 @@ preparedb_local_orgdb_id_map <- function(
   org_key,
   verbose = TRUE
 ) {
-  if (is.null(org_sp) || !isTRUE(all(unlist(check_r(org_sp, install = FALSE, verbose = FALSE), use.names = FALSE)))) {
+  if (is.null(org_sp) || !isTRUE(check_r(org_sp, install = FALSE, verbose = FALSE)[[org_sp]])) {
     return(NULL)
   }
   idtype_to_orgdb_column <- function(idtype) {
@@ -1316,7 +1315,7 @@ preparedb_read_irea <- function(directory, db, species = c("Mouse", "Human")) {
   suffix <- if (species == "Human") "_Human" else ""
   cytokine_path <- find_file(paste0("dataFiles/SuppTable3_Cytokine_Signatures", suffix, ".xlsx"))
   polarization_path <- find_file(paste0("dataFiles/SuppTable7_Polarization_Signatures", suffix, ".xlsx"))
-  thisutils::check_r("readxl", install = FALSE, verbose = FALSE)
+  check_r("readxl", verbose = FALSE)
   x <- readRDS(object_path)
   if (!inherits(x, "Seurat")) log_message("The reference RDS is not a Seurat object.", message_type = "error")
   if (!all(c("sample", "polarization") %in% colnames(x@meta.data))) {
@@ -1368,7 +1367,7 @@ preparedb_irea_reference <- function(directory, db, species, update, verbose = T
   if (!is.logical(update) || length(update) != 1L || is.na(update)) {
     log_message("db_update must be TRUE or FALSE.", message_type = "error")
   }
-  thisutils::check_r("readxl", install = FALSE, verbose = FALSE)
+  check_r("readxl", verbose = FALSE)
   suffix <- if (species == "Human") "_Human" else ""
   paths <- c(
     paste0("downloadableData/ligands-seurat-", cell_type, ".RDS"),

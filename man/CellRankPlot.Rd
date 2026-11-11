@@ -2,14 +2,13 @@
 % Please edit documentation in R/CellRankPlot.R
 \name{CellRankPlot}
 \alias{CellRankPlot}
-\title{Plot stored CellRank results}
+\title{Plot CellRank results}
 \usage{
 CellRankPlot(
   object,
-  plot_type = c("fate", "states", "circular", "drivers", "trends", "clusters",
-    "enrichment", "projection", "random_walks", "flow"),
+  plot_type = c("fate", "states", "circular", "drivers", "projection", "random_walks",
+    "flow"),
   lineage = NULL,
-  database = NULL,
   reduction = NULL,
   group.by = NULL,
   top_n = 20L,
@@ -25,21 +24,17 @@ CellRankPlot(
   feature_palcolor = NULL,
   theme_use = "theme_scop",
   theme_args = list(),
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
 \item{object}{A Seurat object returned by [RunCellRank].}
 
 \item{plot_type}{One of `"fate"`, `"states"`, `"circular"`, `"drivers"`,
-`"trends"`, `"clusters"`, `"enrichment"`, `"projection"`, or
-`"random_walks"`, or `"flow"`.}
+`"projection"`, `"random_walks"`, or `"flow"`.}
 
-\item{lineage}{Lineage used for driver/trend plots.}
-
-\item{database}{Enrichment database used when `plot_type = "enrichment"`.
-If `NULL`, the first stored non-empty database is used.}
+\item{lineage}{Lineage used for driver plots.}
 
 \item{reduction}{Reduction used for cell-space plots.}
 
@@ -51,7 +46,8 @@ If `NULL`, the first stored non-empty database is used.}
 
 \item{max_iter}{Maximum length of each random walk.}
 
-\item{seed}{Random seed.}
+\item{seed}{Random seed. Random-walk plotting restores the caller's RNG state,
+including when plotting fails.}
 
 \item{start_cells}{Optional cell names used as random-walk starts. For a
 moscot result, omitted starts default to cells in the earliest time point.}
@@ -60,27 +56,26 @@ moscot result, omitted starts default to cells in the earliest time point.}
 
 \item{clusters}{Optional groups to display in a real-time flow plot.}
 
-\item{palette, palcolor}{Discrete SCOP palette for states, modules, and cell
+\item{palette, palcolor}{Discrete SCOP palette for states and cell
 groups.}
 
 \item{feature_palette, feature_palcolor}{Continuous SCOP palette for fate,
-trends, pseudotime, and enrichment strength.}
+confidence, and pseudotime.}
 
 \item{theme_use, theme_args}{SCOP plot theme and arguments passed to it.}
 
-\item{...}{Arguments passed to the underlying SCOP plotting function.}
-
 \item{srt}{Deprecated alias for `object`; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
-A ggplot object or a SCOP plot object.
+A ggplot or patchwork object.
 }
 \description{
-Plot CellRank outputs without rerunning a Python backend.
+Plot CellRank results
 }
 \examples{
-\dontrun{
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 pancreas_sub <- RunCellRank(
@@ -89,9 +84,21 @@ pancreas_sub <- RunCellRank(
   kernel_type = "pseudotime",
   time_key = "palantir_pseudotime",
   schur_method = "brandts",
-  backend = "python"
+  backend = "cpp"
 )
-CellRankPlot(pancreas_sub, plot_type = "fate", reduction = "UMAP")
-CellRankPlot(pancreas_sub, plot_type = "circular")
+CellRankPlot(
+  pancreas_sub,
+  plot_type = "fate",
+  reduction = "UMAP",
+  xlab = "UMAP_1",
+  ylab = "UMAP_2"
+)
+CellRankPlot(
+  pancreas_sub,
+  plot_type = "circular"
+)
 }
+\seealso{
+[DynamicHeatmap] and [DynamicPlot] for feature dynamics;
+[EnrichmentPlot] for enrichment results.
 }

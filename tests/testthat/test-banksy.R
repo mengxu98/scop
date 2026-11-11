@@ -19,11 +19,6 @@ make_banksy_seurat <- function() {
   srt
 }
 
-skip_if_missing_banksy_test_dependencies <- function() {
-  testthat::skip_if_not_installed("SpatialExperiment")
-  testthat::skip_if_not_installed("SummarizedExperiment")
-  testthat::skip_if_not_installed("S4Vectors")
-}
 
 with_mock_banksy <- function(code, fail_sample = NULL, expected_group = "sample") {
   compute_fun <- function(se, assay_name, coord_names, compute_agf, M, k_geom, ...) {
@@ -133,7 +128,7 @@ test_that("BANKSY uses an image-associated assay and reports a missing layer", {
 })
 
 test_that("RunBANKSY auto-selects its single image and associated assay", {
-  skip_if_missing_banksy_test_dependencies()
+  skip_if_not_installed("SpatialExperiment")
   data(visium_human_pancreas_sub)
   srt <- suppressWarnings(visium_human_pancreas_sub[, seq_len(4)])
   expected_coords <- suppressWarnings(attr(
@@ -159,7 +154,7 @@ test_that("RunBANKSY auto-selects its single image and associated assay", {
 })
 
 test_that("BANKSY keeps metadata clusters accessible without detailed storage", {
-  skip_if_missing_banksy_test_dependencies()
+  skip_if_not_installed("SpatialExperiment")
   srt <- make_banksy_seurat()
   suppressWarnings(with_mock_banksy({
     out <- RunBANKSY(
@@ -180,7 +175,7 @@ test_that("BANKSY keeps metadata clusters accessible without detailed storage", 
 })
 
 test_that("BANKSY receipt shows resolved inputs, stored results, and a plot call", {
-  skip_if_missing_banksy_test_dependencies()
+  skip_if_not_installed("SpatialExperiment")
   srt <- make_banksy_seurat()
   messages <- testthat::capture_messages(with_mock_banksy({
     RunBANKSY(srt, layer = "counts", group = "sample", verbose = TRUE)
@@ -212,7 +207,7 @@ make_banksy_multi_image_seurat <- function() {
 }
 
 test_that("BANKSY fits samples independently and returns prefixed labels", {
-  skip_if_missing_banksy_test_dependencies()
+  skip_if_not_installed("SpatialExperiment")
   srt <- make_banksy_multi_image_seurat()
   suppressWarnings(with_mock_banksy({
     out <- RunBANKSY(
@@ -255,7 +250,7 @@ test_that("BANKSY fits samples independently and returns prefixed labels", {
 })
 
 test_that("BANKSY sample failures are reported without returning partial results", {
-  skip_if_missing_banksy_test_dependencies()
+  skip_if_not_installed("SpatialExperiment")
   srt <- make_banksy_seurat()
   srt$BANKSY_cluster <- "old"
   original <- srt
@@ -299,11 +294,10 @@ test_that("RunBANKSY validates inputs before backend work", {
 })
 
 test_that("BANKSY lightweight results retain exact samples and custom columns", {
-  skip_if_missing_banksy_test_dependencies()
+  skip_if_not_installed("SpatialExperiment")
   srt <- make_banksy_seurat()
   srt$sample <- c("S1", "S1", "S1_A", "S1_A")
   srt$BANKSY_cluster <- rep("stale", 4)
-  # An earlier default result must not override the newest custom column.
   srt@tools$BANKSY <- list(clusters = data.frame(
     BANKSY_cluster = rep("stale", 4), row.names = colnames(srt)
   ))
@@ -340,14 +334,13 @@ test_that("BANKSY lightweight results retain exact samples and custom columns", 
     }
     expect_error(GetSpatialResult(compact, tool, sample = "S"), "No .* results")
     expect_error(GetSpatialResult(compact, tool, sample = "missing"), "No .* results")
-    # Retrieval uses the captured run membership even after metadata changes.
     compact$sample <- "changed"
     expect_equal(nrow(GetSpatialResult(compact, tool, sample = "S1")$clusters), 2L)
   }
 })
 
 test_that("BANKSY compact single fits resolve custom columns without stale labels", {
-  skip_if_missing_banksy_test_dependencies()
+  skip_if_not_installed("SpatialExperiment")
   for (previous in c(FALSE, TRUE)) {
     srt <- make_banksy_seurat()
     if (previous) srt$BANKSY_cluster <- "stale"
@@ -375,7 +368,7 @@ test_that("BANKSY compact single fits resolve custom columns without stale label
 })
 
 test_that("BANKSY reruns clear stale labels from unanalyzed zero-count cells", {
-  skip_if_missing_banksy_test_dependencies()
+  skip_if_not_installed("SpatialExperiment")
   srt <- make_banksy_seurat()
   counts <- Seurat::GetAssayData(srt, layer = "counts")
   counts[, "Spot2"] <- 0
@@ -439,7 +432,7 @@ test_that("BANKSY clusters reuse SCOP SpatialSpotPlot", {
 })
 
 test_that("BANKSY getters follow current cells and order in both storage modes", {
-  skip_if_missing_banksy_test_dependencies()
+  skip_if_not_installed("SpatialExperiment")
   for (by_sample in c(FALSE, TRUE)) {
     srt <- make_banksy_seurat()
     srt$sample <- c("S1", "S1", "S1_A", "S1_A")
@@ -453,7 +446,6 @@ test_that("BANKSY getters follow current cells and order in both storage modes",
       compact <- do.call(RunBANKSY, c(list(object = srt, store_results = FALSE), args))
     })
     for (rename in c(FALSE, TRUE)) {
-      # Reversing the existing IDs is a permutation, not detectable from sets.
       outputs <- list(detailed, compact)
       if (rename) {
         outputs <- lapply(outputs, SeuratObject::RenameCells,
@@ -499,7 +491,7 @@ test_that("BANKSY getters follow current cells and order in both storage modes",
 })
 
 test_that("BANKSY getters return typed empty results for absent fitted cells", {
-  skip_if_missing_banksy_test_dependencies()
+  skip_if_not_installed("SpatialExperiment")
   srt <- make_banksy_seurat()
   counts <- Seurat::GetAssayData(srt, layer = "counts")
   counts[, "Spot2"] <- 0
@@ -526,8 +518,6 @@ test_that("BANKSY getters return typed empty results for absent fitted cells", {
         data.frame(domain = character(), count = integer())
       )
     }
-    # With detailed storage, neither assignments nor subsets require the label
-    # metadata column. The identity marker is retained independently.
     if (store) {
       single$BANKSY_cluster <- NULL
       expect_equal(nrow(GetSpatialResult(single[, "Spot2"], "BANKSY")$clusters), 0L)
@@ -540,7 +530,7 @@ test_that("BANKSY getters return typed empty results for absent fitted cells", {
 })
 
 test_that("BANKSY identity markers are collision safe and reused on reruns", {
-  skip_if_missing_banksy_test_dependencies()
+  skip_if_not_installed("SpatialExperiment")
   srt <- make_banksy_seurat()
   srt$.scop_BANKSY_cell_id <- "user data"
   with_mock_banksy({
@@ -587,8 +577,6 @@ test_that("BANKSY identity markers are collision safe and reused on reruns", {
       rownames(GetSpatialResult(renamed_rerun, "other_fit")$clusters),
       colnames(renamed_rerun)
     )
-    # A requested output column that collides with the old identity locator
-    # must retain its cluster labels and receive a new independent locator.
     collision <- RunBANKSY(out,
       layer = "counts", group = "sample",
       cluster_colname = column, verbose = FALSE
@@ -602,7 +590,7 @@ test_that("BANKSY identity markers are collision safe and reused on reruns", {
 })
 
 test_that("BANKSY rejects missing or invalid tracked cell identities", {
-  skip_if_missing_banksy_test_dependencies()
+  skip_if_not_installed("SpatialExperiment")
   for (store in c(TRUE, FALSE)) {
     with_mock_banksy({
       out <- RunBANKSY(make_banksy_seurat(),
@@ -629,7 +617,7 @@ test_that("BANKSY rejects missing or invalid tracked cell identities", {
 })
 
 test_that("legacy spatial results retain exact-ID subsets and diagnose stale names", {
-  skip_if_missing_banksy_test_dependencies()
+  skip_if_not_installed("SpatialExperiment")
   for (store in c(TRUE, FALSE)) {
     with_mock_banksy({
       out <- RunBANKSY(make_banksy_seurat(),
@@ -695,7 +683,7 @@ test_that("other spatial summaries are not misrepresented after subsetting", {
 })
 
 test_that("a BANKSY cluster column named cell is not mistaken for an identity field", {
-  skip_if_missing_banksy_test_dependencies()
+  skip_if_not_installed("SpatialExperiment")
   with_mock_banksy({
     out <- RunBANKSY(make_banksy_seurat(),
       layer = "counts", group = "sample",

@@ -11,7 +11,7 @@ RunCCA(object1, object2, ...)
 
 \item{object2}{Second object or matrix.}
 
-\item{...}{Passed to methods.}
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 CCA results or an object containing CCA results.

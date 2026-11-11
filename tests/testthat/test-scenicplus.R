@@ -3,7 +3,7 @@ test_that("SCENICPlus fits TF targets without self predictors", {
   expr <- matrix(rnorm(80 * 4), 4, 80,
     dimnames = list(c("TF1", "TF2", "G1", "G2"), paste0("c", 1:80))
   )
-  observed <- scenicplus_tf_gene_native(
+  observed <- scenicplus_tf_gene(
     expr, c("TF1", "TF2"),
     targets = "TF1", n_rounds = 40,
     early_stop_window_length = 0, cores = 1, verbose = FALSE
@@ -123,7 +123,7 @@ test_that("SCENICPlus native fitting never initializes Python", {
   expr <- matrix(rnorm(3 * 40), 3, 40,
     dimnames = list(c("TF1", "TF2", "G"), paste0("c", 1:40))
   )
-  expect_no_error(scenicplus_tf_gene_native(expr, c("TF1", "TF2"),
+  expect_no_error(scenicplus_tf_gene(expr, c("TF1", "TF2"),
     targets = "G", n_rounds = 30, verbose = FALSE
   ))
 })
@@ -157,7 +157,7 @@ test_that("the native object workflow and its errors stay independent of Python"
     sep = c("-", "-"), min.cells = 0, min.features = 0
   )
   args <- list(
-    object = object, backend = "cpp", allow_approximate = TRUE, regulators = "TF",
+    object = object, backend = "cpp", regulators = "TF",
     tf_region_prior = data.frame(TF = "TF", region = regions[1:2], score = 1),
     region_gene_search_space = expand.grid(region = regions[1:2], gene = genes[2:5]),
     eregulons_prior = data.frame(regulon = "TF_direct_+/+_(4g)", target = genes[2:5]),

@@ -21,7 +21,7 @@
 #' This argument is used to convert the gene IDs to a different type if `IDtype` is different from `result_IDtype`.
 #' @param result_IDtype Desired type of gene ID to be used in the output.
 #' This argument is used to convert the gene IDs from `IDtype` to `result_IDtype`.
-#' @param backend Enrichment backend. `"cpp"` is the default and uses a fast native
+#' @param backend Enrichment backend. `"cpp"` is the default and uses a fast
 #' hypergeometric ORA implementation and returns the enrichment table without
 #' `enrichResult` objects. `"r"` uses [clusterProfiler::enricher()] and returns
 #' `enrichResult` objects in `results`. `GO_simplify = TRUE` currently uses the R backend.
@@ -122,8 +122,8 @@ RunEnrichment <- function(
   simplify_method = "Wang",
   simplify_similarityCutoff = 0.7,
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   log_message("Start {.pkg Enrichment} analysis", verbose = verbose)

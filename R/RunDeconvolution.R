@@ -14,19 +14,17 @@
 #' @param group.by Metadata column in `reference` defining reference cell
 #' types.
 #' @param sample.by Metadata column in `reference` defining biological
-#' sample / donor IDs. Used by the `r` backends of `MuSiC` and `BisqueRNA`. If
+#' sample / donor IDs. Used by the `r` implementation of `MuSiC` and `BisqueRNA`. If
 #' `NULL`, SCOP will try to infer a suitable column automatically.
 #' @param cellstate.by Metadata column in `reference` defining cell states for
-#' the `r` backend of `BayesPrism`. If `NULL`, `group.by` is reused.
+#' the `r` implementation of `BayesPrism`. If `NULL`, `group.by` is reused.
 #' @param bulk_assay Assay name in `object` used as the bulk counts matrix.
 #' @param ref_assay Assay name in `reference` used for the reference profiles.
 #' @param ref_layer Layer name in `reference` used for reference counts.
 #' @param backend Deconvolution engine backend. `"r"` uses the original method
 #' package implementation. `"cpp"` selects package C++ implementations
 #' when available.
-#' @param ... Additional parameters forwarded to the internal deconvolution
-#' backend.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A `SummarizedExperiment` object with results stored in
 #' `S4Vectors::metadata(object)[["Deconvolution"]]`.
 #'
@@ -54,7 +52,7 @@
 #' DeconvolutionPlot(islet_bulk, plot_type = "box")
 #'
 #' \dontrun{
-#' # MuSiC needs the optional MuSiC backend pre-installed.
+#' # MuSiC needs the optional MuSiC package pre-installed.
 #' data(panc8_sub)
 #' islet_bulk <- RunDeconvolution(
 #'   islet_bulk,
@@ -807,13 +805,13 @@ RunBayesPrism <- function(
 #' @param perm Number of CIBERSORT permutations.
 #' @param QN Whether CIBERSORT should use quantile normalization.
 #' @param absolute Passed to CIBERSORT when supported by the installed package.
-#' The C++ backend currently returns relative fractions.
+#' The C++ implementation currently returns relative fractions.
 #' @param backend CIBERSORT backend. `"cpp"` uses the package LIBSVM
 #' implementation. `"r"` is an optional reference backend from
 #' `Moonerss/CIBERSORT`.
-#' @param cores Number of CPU cores used by the C++ backend. `NULL` uses up to
+#' @param cores Number of CPU cores used by CIBERSORT. `NULL` uses up to
 #' 4 local cores.
-#' @param seed Random seed used by the C++ permutation backend.
+#' @param seed Random seed used by CIBERSORT permutation testing.
 #'
 #' @return A deconvolution result bundle for matrix input, or the modified
 #' `SummarizedExperiment` object for `SummarizedExperiment` input.

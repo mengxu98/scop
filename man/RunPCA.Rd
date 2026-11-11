@@ -9,10 +9,7 @@ RunPCA(object, ...)
 \arguments{
 \item{object}{Object containing expression data.}
 
-\item{...}{Passed to methods. The `"cpp"` backend of the `matrix` and assay
-methods accepts `cores` to bound its BLAS calls; `NULL` keeps the process
-default. The `Seurat` method also accepts `features`, `layer`,
-`reduction.name` and the remaining `Seurat::RunPCA()` arguments.}
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 PCA results or an object containing PCA results.

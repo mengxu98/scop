@@ -4,7 +4,7 @@
 #' Run supported spatial domain clustering methods from the same immutable
 #' input, compare their aligned labels with a gold standard, and record
 #' classification quality, elapsed time, and sampled peak process-tree memory.
-#' Each method runs in an isolated R process so one failed backend does not
+#' Each method runs in an isolated R process so one failed method does not
 #' corrupt the input or prevent the remaining methods from being assessed.
 #'
 #' @md
@@ -18,7 +18,7 @@
 #' benchmarked producer (`BayesSpace`, `BANKSY`, and `SmoothClust`). Method
 #' names may be written with or without the `Run` prefix.
 #' @param method_params Named list of per-method argument lists. Arguments are
-#' passed to the corresponding SCOP producer, never directly to its backend.
+#' passed to the corresponding SCOP producer.
 #' @param n_clusters Optional common number of domains. When `NULL`, methods
 #' that require a cluster count use the number of non-missing gold-standard
 #' classes. A method-specific `q` or `n_clusters` in `method_params` wins.
@@ -27,7 +27,7 @@
 #' the result summary.
 #' @param keep_objects Whether to keep each successful method's full producer
 #' result. The default keeps only aligned labels and compact run metadata.
-#' @param install_missing Whether missing optional backends may enter their
+#' @param install_missing Whether missing optional packages may enter their
 #' producer's normal `check_r()` installation path. The default records them as
 #' unavailable without changing the R library.
 #' @param seed Seed set inside each isolated method process and forwarded to
@@ -454,11 +454,11 @@ benchmark_require_runtime <- function() {
 
 benchmark_method_availability <- function(method) {
   package <- benchmark_method_package(method)
-  installed <- isTRUE(all(unlist(check_r(package, install = FALSE, verbose = FALSE), use.names = FALSE)))
+  installed <- all(vapply(check_r(package, install = FALSE, verbose = FALSE), isTRUE, logical(1)))
   list(
     status = if (installed) "available" else "missing",
     detail = paste0(package, "=", if (installed) "available" else "missing"),
-    versions = benchmark_backend_versions(package)
+    versions = benchmark_package_versions(package)
   )
 }
 
@@ -488,7 +488,7 @@ benchmark_method_availability_safe <- function(method) {
   )
 }
 
-benchmark_backend_versions <- function(package) {
+benchmark_package_versions <- function(package) {
   version <- tryCatch(
     as.character(utils::packageVersion(package)),
     error = function(e) NA_character_
@@ -704,7 +704,7 @@ benchmark_run_isolated <- function(
   child$started_at <- started_at
   child$finished_at <- Sys.time()
   child$parameters <- params
-  child$backend_versions <- benchmark_backend_versions(benchmark_method_package(method))
+  child$backend_versions <- benchmark_package_versions(benchmark_method_package(method))
   child$memory_method <- "sampled process-tree RSS"
   child$poll_interval <- poll_interval
   child
@@ -911,7 +911,7 @@ benchmark_failed_isolated_result <- function(
     cluster_colname = benchmark_param_string(
       params, "cluster_colname", paste0(method, "_cluster")
     ),
-    backend_versions = benchmark_backend_versions(benchmark_method_package(method)),
+    backend_versions = benchmark_package_versions(benchmark_method_package(method)),
     memory_method = "sampled process-tree RSS",
     poll_interval = poll_interval
   )

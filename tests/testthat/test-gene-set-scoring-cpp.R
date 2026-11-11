@@ -529,7 +529,7 @@ test_that("RunGSVA selects the native Gaussian kernel through backend", {
     nrow = 50,
     dimnames = list(paste0("g", seq_len(50)), paste0("c", seq_len(30)))
   )
-  srt <- Seurat::CreateSeuratObject(counts = counts)
+  srt <- Seurat::CreateSeuratObject(counts = methods::as(counts, "dgCMatrix"))
   srt <- Seurat::NormalizeData(srt, verbose = FALSE)
 
   out <- RunGSVA(

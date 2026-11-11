@@ -66,7 +66,7 @@ RunPHATE(object, ...)
 \arguments{
 \item{object}{A \code{Seurat} object, matrix-like object, \code{Neighbor}, or \code{Graph}.}
 
-\item{...}{Passed to phate.PHATE.}
+\item{...}{Arguments passed to other functions.}
 
 \item{reduction}{Linear reduction used as input.}
 
@@ -108,15 +108,15 @@ For very large datasets, setting \code{knn_max} to a small multiple of \code{knn
 \item{do_cluster}{Whether to perform clustering on the PHATE embeddings.}
 
 \item{backend}{PHATE backend. \code{"python"} calls the upstream \code{phate} Python
-package and \code{"cpp"} uses the native C++ helper path.
-The selected backend is stable; native arguments never trigger an implicit
+package and \code{"cpp"} uses the C++ helper path.
+The selected backend is stable; C++ arguments never trigger an implicit
 Python workflow. When another Python environment is already initialized,
 run the Python backend in a separate process without changing the active interpreter.}
 
-\item{mds}{MDS algorithm passed to PHATE. The native backend uses its C++
-classical MDS or R's native metric MDS implementation.}
+\item{mds}{MDS algorithm passed to PHATE. The C++ backend uses its C++
+classical MDS or R's metric MDS implementation.}
 
-\item{mds_solver}{Metric MDS solver; recorded by the native backend and
+\item{mds_solver}{Metric MDS solver; recorded by the C++ backend and
 passed through to Python when that backend is selected.}
 
 \item{n_clusters}{A number of clusters to be identified.}

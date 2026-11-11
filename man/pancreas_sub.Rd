@@ -2,13 +2,12 @@
 % Please edit documentation in R/data.R
 \name{pancreas_sub}
 \alias{pancreas_sub}
-\title{A subsetted version of mouse 'pancreas' datasets}
+\title{A subsetted mouse 'pancreas' datasets}
 \format{
 A \code{Seurat} object.
 }
 \source{
 \href{https://scvelo.readthedocs.io/en/stable/scvelo.datasets.pancreas.html}{scvelo.datasets.pancreas},
-
 \href{https://github.com/theislab/scvelo_notebooks/raw/master/data/Pancreas/endocrinogenesis_day15.h5ad}{endocrinogenesis_day15.h5ad}
 }
 \description{

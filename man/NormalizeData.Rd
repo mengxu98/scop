@@ -9,7 +9,7 @@ NormalizeData(object, ...)
 \arguments{
 \item{object}{Object to normalize.}
 
-\item{...}{Passed to methods.}
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A normalized object of the same class.

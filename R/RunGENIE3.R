@@ -17,8 +17,7 @@
 #' @param cores Number of workers used by GENIE3.
 #' @param force Whether to rebuild existing `output_file`.
 #' @param verbose Whether to print progress messages.
-#' @param ... Additional backend-specific arguments.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A data frame with columns `TF`, `target`, and `importance`.
 #' @export
 RunGENIE3 <- function(object, ...) {

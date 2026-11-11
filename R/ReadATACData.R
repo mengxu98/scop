@@ -4,8 +4,9 @@
 #' @description
 #' Import one explicitly shared peak universe from a sparse matrix and genomic
 #' ranges, a 10x ATAC/ARC H5 file, or Matrix Market/peaks BED/barcodes files.
-#' SCOP checks and aligns identifiers; Signac creates the native assay. No cells
-#' or peaks are filtered, and no resources are downloaded or installed.
+#' SCOP checks and aligns identifiers; Signac creates the chromatin assay. No cells
+#' or peaks are filtered. Required R packages are checked and installed through
+#' `thisutils::check_r()` as needed; genomic resources must be supplied locally.
 #'
 #' @param object A numeric sparse peak-by-cell matrix, a local 10x ATAC/ARC
 #'   H5 path, or a local Matrix Market path. Separate matrices with different peak
@@ -110,7 +111,7 @@ ReadATACData <- function(
       log_message("h5 already defines peaks and barcodes; do not supply ranges or companion files.", message_type = "error")
     }
     h5 <- atac_input_path(h5, "h5")
-    atac_backend_fun("hdf5r", "h5version")
+    check_r("hdf5r", verbose = FALSE)
     h5_file <- hdf5r::H5File$new(h5, mode = "r")
     feature_types <- tryCatch(
       {
@@ -240,7 +241,7 @@ ReadATACData <- function(
   fragment_objects <- atac_import_fragments(fragments, fragment.cells, input_cells, cell.names, verbose)
   chromatin <- get_namespace_fun("Signac", "CreateChromatinAssay")(
     counts = counts, ranges = ranges,
-    genome = atac_backend_fun("GenomeInfoDb", "seqinfo")(ranges),
+    genome = GenomeInfoDb::seqinfo(ranges),
     annotation = annotation, fragments = fragment_objects,
     min.cells = 0, min.features = 0, verbose = verbose
   )
@@ -281,18 +282,6 @@ ReadATACData <- function(
   result
 }
 
-atac_backend_fun <- function(package, fun) {
-  available <- check_r(package, install = FALSE, verbose = FALSE)
-  if (!isTRUE(all(unlist(available, use.names = FALSE)))) {
-    log_message(sprintf("Package '%s' is required; install it separately before ATAC analysis.", package), message_type = "error")
-  }
-  resolved <- getExportedValue(package, fun)
-  if (!is.function(resolved)) {
-    log_message(sprintf("Function '%s' is not available in package '%s'.", fun, package), message_type = "error")
-  }
-  resolved
-}
-
 atac_unique_ids <- function(x) {
   is.character(x) && length(x) > 0L && !anyNA(x) && all(nzchar(x)) && !anyDuplicated(x)
 }
@@ -326,8 +315,8 @@ atac_ranges_problems <- function(ranges) {
   }
   start <- GenomicRanges::start(ranges)
   end <- GenomicRanges::end(ranges)
-  seqnames <- as.character(atac_backend_fun("GenomeInfoDb", "seqnames")(ranges))
-  lengths <- atac_backend_fun("GenomeInfoDb", "seqlengths")(ranges)[seqnames]
+  seqnames <- as.character(GenomeInfoDb::seqnames(ranges))
+  lengths <- GenomeInfoDb::seqlengths(ranges)[seqnames]
   errors <- character()
   if (any(start < 1L | end < start) || any(!nzchar(seqnames))) {
     errors <- c(errors, "Ranges require positive 1-based starts and non-empty closed intervals.")
@@ -340,7 +329,11 @@ atac_ranges_problems <- function(ranges) {
 }
 
 atac_range_ids <- function(ranges) {
-  gsub("[_|]", "-", get_namespace_fun("Signac", "GRangesToString")(ranges, sep = c("-", "-")))
+  ids <- paste0(
+    as.character(GenomicRanges::seqnames(ranges)), "-",
+    GenomicRanges::start(ranges), "-", GenomicRanges::end(ranges)
+  )
+  gsub("[_|]", "-", ids)
 }
 
 atac_bed_ranges <- function(bed) {
@@ -351,13 +344,13 @@ atac_bed_ranges <- function(bed) {
       start %% 1 != 0 | end %% 1 != 0 | end > .Machine$integer.max)) {
     log_message("BED requires chromosome, non-negative integer start, and end greater than start.", message_type = "error")
   }
-  atac_backend_fun("GenomicRanges", "makeGRangesFromDataFrame")(
+  GenomicRanges::makeGRangesFromDataFrame(
     data.frame(seqnames = bed[[1]], start = start, end = end), starts.in.df.are.0based = TRUE
   )
 }
 
 atac_set_genome <- function(ranges, genome, annotation) {
-  get_genome <- atac_backend_fun("GenomeInfoDb", "genome")
+  get_genome <- GenomeInfoDb::genome
   known <- unique(as.character(get_genome(ranges)))
   if (!is.null(annotation)) {
     if (!inherits(annotation, "GRanges")) log_message("annotation must be a GRanges object.", message_type = "error")
@@ -370,7 +363,7 @@ atac_set_genome <- function(ranges, genome, annotation) {
     log_message("Genome labels on ranges, annotation, and genome must agree.", message_type = "error")
   }
   if (!is.null(genome)) {
-    ranges <- atac_backend_fun("GenomeInfoDb", "genome<-")(ranges, value = genome)
+    ranges <- GenomeInfoDb::`genome<-`(ranges, value = genome)
   }
   ranges
 }
@@ -421,7 +414,7 @@ atac_qc_ranges <- function(regions, chromatin, label) {
     GenomicRanges::end(regions) < GenomicRanges::start(regions))) {
     log_message(paste0(label, " requires positive 1-based closed intervals."), message_type = "error")
   }
-  get_genome <- atac_backend_fun("GenomeInfoDb", "genome")
+  get_genome <- GenomeInfoDb::genome
   labels <- unique(c(
     as.character(get_genome(chromatin)),
     as.character(get_genome(Signac::granges(chromatin))), as.character(get_genome(regions))

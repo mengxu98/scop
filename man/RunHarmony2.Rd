@@ -25,7 +25,7 @@ RunHarmony2(object, ...)
 \arguments{
 \item{object}{A Seurat object.}
 
-\item{...}{Passed to \link[harmony:RunHarmony]{harmony::RunHarmony}.}
+\item{...}{Arguments passed to other functions.}
 
 \item{group.by.vars}{The batch variable name.}
 

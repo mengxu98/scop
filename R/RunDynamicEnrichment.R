@@ -81,8 +81,8 @@ RunDynamicEnrichment <- function(
   cores = 1,
   verbose = TRUE,
   seed = 11,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   species <- normalize_species_name(species)

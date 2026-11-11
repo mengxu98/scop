@@ -43,8 +43,7 @@
 #' `spacexr::createRctd()` or `spacexr::create.RCTD()`.
 #' @param run_rctd_params Additional parameters passed to
 #' `spacexr::runRctd()` or `spacexr::run.RCTD()`.
-#' @param ... Additional parameters passed to the RCTD run step.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A `Seurat` object with RCTD proportion columns in metadata and
 #' dominant cell type summaries. When `store_results = TRUE`, detailed results
 #' are also stored in `srt@tools[[tool_name]]`.
@@ -110,10 +109,10 @@ RunRCTD <- function(
   create_rctd_params = list(),
   run_rctd_params = list(),
   verbose = TRUE,
-  ...,
   coordinate_space = c("raw", "legacy_display"),
   tool_name = "RCTD",
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
@@ -244,7 +243,7 @@ RunRCTD <- function(
     )
   }
 
-  label_map <- rctd_backend_label_map(labels)
+  label_map <- rctd_normalize_labels(labels)
 
   keep_spots <- count_quality$st_numi > 0
   if (!all(keep_spots)) {
@@ -402,7 +401,7 @@ rctd_filter_labels_by_min_cells <- function(labels, min_cells, verbose = TRUE) {
   labels
 }
 
-rctd_backend_label_map <- function(labels) {
+rctd_normalize_labels <- function(labels) {
   labels_chr <- as.character(labels)
   cell_types <- unique(labels_chr)
   backend <- make.names(cell_types)

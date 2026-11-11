@@ -10,9 +10,9 @@ Runscds(
   db_rate = ncol(srt)/1000 * 0.01,
   method = c("hybrid", "cxds", "bcds"),
   data_type = NULL,
-  ...,
   verbose = TRUE,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -28,12 +28,12 @@ Options are \code{"hybrid"}, \code{"cxds"}, or \code{"bcds"}.}
 \item{data_type}{Optional \link{CheckDataType} result, used internally to avoid
 rescanning the count matrix.}
 
-\item{...}{Additional arguments passed to the selected \code{scds} method.}
-
 \item{verbose}{Whether to print messages.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \description{
 Run doublet-calling with scds

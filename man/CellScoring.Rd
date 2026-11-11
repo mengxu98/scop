@@ -30,8 +30,8 @@ CellScoring(
   seed = 11,
   cores = NULL,
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -113,10 +113,10 @@ OpenMP team for the C++ kernels and one R worker otherwise.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{Passed to the scoring methods.}
-
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \description{
 Performs cell scoring on a Seurat object.

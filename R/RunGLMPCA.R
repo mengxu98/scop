@@ -13,8 +13,7 @@
 #' @param nfeatures.print The number of features to print in the output.
 #' @param reduction.name Reduction to be stored in the Seurat object.
 #' @param reduction.key The prefix for the column names of the basis vectors.
-#' @param ... Passed to the [glmpca::glmpca] function.
-#'
+#' @param ... Arguments passed to other functions.
 #' @rdname RunGLMPCA
 #' @export
 #'

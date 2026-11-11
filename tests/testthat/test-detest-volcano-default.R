@@ -18,6 +18,25 @@ test_that("DE plots accept result tables without an object", {
     list(fun = "DEtestManhattanPlot", args = list()),
     list(fun = "DEtestRingPlot", args = list())
   )
+  for (plotter in list(DEtestRingPlot, function(...) DEtestPlot(..., plot_type = "ring"))) {
+    for (has_seed in c(TRUE, FALSE)) {
+      for (kind in c("Mersenne-Twister", "L'Ecuyer-CMRG")) {
+        expect_rng_restored(
+          plotter(res = res, nlabel = 0, seed = 37), has_seed, kind
+        )
+        expect_rng_restored(
+          expect_error(plotter(res = res, nlabel = 0, seed = 37,
+            theme_use = function() stop("theme failure")
+          ), "theme failure"),
+          has_seed, kind
+        )
+        expect_rng_restored(
+          expect_error(plotter(res = res, label.by = "invalid", seed = 37), "arg"),
+          has_seed, kind
+        )
+      }
+    }
+  }
   for (call in calls) {
     args <- c(list(res = res, nlabel = 0), call$args)
     actual <- do.call(call$fun, args)

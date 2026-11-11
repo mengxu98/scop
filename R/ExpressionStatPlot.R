@@ -79,6 +79,8 @@ ExpressionStatPlot <- function(
   seed = 11,
   x_text_angle = 45
 ) {
+  check_r("withr", verbose = FALSE)
+  withr::local_preserve_seed()
   set.seed(seed)
 
   plot.by <- match.arg(plot.by)
@@ -1287,23 +1289,10 @@ ExpressionStatPlot <- function(
               breaks = levels_order,
               limits = levels_order,
               drop = FALSE
-            ) +
-            scale_color_manual(
-              name = legend_title_use,
-              values = colors,
-              breaks = levels_order,
-              limits = levels_order,
-              drop = FALSE
             )
         } else {
           p <- p +
             scale_fill_manual(
-              name = legend_title_use,
-              values = colors,
-              breaks = levels_order,
-              drop = FALSE
-            ) +
-            scale_color_manual(
               name = legend_title_use,
               values = colors,
               breaks = levels_order,

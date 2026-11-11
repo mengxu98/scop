@@ -51,7 +51,7 @@ supplied. If \code{FALSE}, returns a data frame of predictions.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{backend}{State-scoring backend. \code{"cpp"} uses a compiled sparse
+\item{backend}{State-scoring engine. \code{"cpp"} uses a compiled sparse
 AUCell implementation for Seurat input. \code{"python"} retains the official
 scMalignantFinder path and is used for AnnData or h5ad input.}
 
