@@ -1,5 +1,3 @@
-# Discover an existing interpreter without provisioning a Python environment.
-# Run in a child R process so other tests cannot select a different interpreter.
 test_that("real large-data RunPAGA roundtrips Seurat through AnnData", {
   skip_if_not_installed("callr")
   config <- reticulate::py_discover_config()
@@ -29,8 +27,6 @@ test_that("real large-data RunPAGA roundtrips Seurat through AnnData", {
       loadNamespace("scop")
     }
 
-    # The Python environment is prepared before this test. Mock only package
-    # provisioning so the regression test cannot install or update dependencies.
     testthat::local_mocked_bindings(
       PrepareEnv = function(...) invisible(NULL),
       .package = "scop"
