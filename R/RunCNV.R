@@ -371,7 +371,7 @@ cnv_run_fastcnv <- function(
     )
   }
   check_r(c(
-    "satijalab/seurat-wrappers@8df83435cf10ca76f28ddfc658ad3f6bec61824c",
+    "satijalab/seurat-wrappers",
     "must-bioinfo/fastCNV"
   ), verbose = FALSE)
   fastcnv_fun <- get_namespace_fun("fastCNV", "fastCNV")
@@ -407,7 +407,7 @@ cnv_run_scevan <- function(
   verbose = TRUE,
   ...
 ) {
-  check_r(c("Yunuuuu/yaGST@0dba93af569297120c187134eb2e6864cd2da418", "AntonioDeFalco/SCEVAN"), verbose = FALSE)
+  check_r(c("Yunuuuu/yaGST", "AntonioDeFalco/SCEVAN"), verbose = FALSE)
   sample_name <- "scop_cnv"
   scevan_fun <- get_namespace_fun("SCEVAN", "pipelineCNA")
   if (!is.function(scevan_fun)) {
