@@ -2592,6 +2592,38 @@
       "Maintainer": "Dirk Eddelbuettel <edd@debian.org>",
       "Repository": "CRAN"
     },
+    "doParallel": {
+      "Package": "doParallel",
+      "Version": "1.0.17",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Foreach Parallel Adaptor for the 'parallel' Package",
+      "Authors@R": "c(person(\"Folashade\", \"Daniel\", role=\"cre\", email=\"fdaniel@microsoft.com\"), person(\"Microsoft\", \"Corporation\", role=c(\"aut\", \"cph\")), person(\"Steve\", \"Weston\", role=\"aut\"), person(\"Dan\", \"Tenenbaum\", role=\"ctb\"))",
+      "Description": "Provides a parallel backend for the %dopar% function using the parallel package.",
+      "Depends": [
+        "R (>= 2.14.0)",
+        "foreach (>= 1.2.0)",
+        "iterators (>= 1.0.0)",
+        "parallel",
+        "utils"
+      ],
+      "Suggests": [
+        "caret",
+        "mlbench",
+        "rpart",
+        "RUnit"
+      ],
+      "Enhances": [
+        "compiler"
+      ],
+      "License": "GPL-2",
+      "URL": "https://github.com/RevolutionAnalytics/doparallel",
+      "BugReports": "https://github.com/RevolutionAnalytics/doparallel/issues",
+      "NeedsCompilation": "no",
+      "Author": "Folashade Daniel [cre], Microsoft Corporation [aut, cph], Steve Weston [aut], Dan Tenenbaum [ctb]",
+      "Maintainer": "Folashade Daniel <fdaniel@microsoft.com>",
+      "Repository": "CRAN"
+    },
     "dotCall64": {
       "Package": "dotCall64",
       "Version": "1.2",
@@ -3044,6 +3076,41 @@
       "NeedsCompilation": "no",
       "Author": "Lionel Henry [cre, aut], RStudio [cph], George Douros [cph] (Symbola font)",
       "Maintainer": "Lionel Henry <lionel@rstudio.com>",
+      "Repository": "CRAN"
+    },
+    "foreach": {
+      "Package": "foreach",
+      "Version": "1.5.2",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Provides Foreach Looping Construct",
+      "Authors@R": "c(person(\"Folashade\", \"Daniel\", role=\"cre\", email=\"fdaniel@microsoft.com\"), person(\"Hong\", \"Ooi\", role=\"ctb\"), person(\"Rich\", \"Calaway\", role=\"ctb\"), person(\"Microsoft\", role=c(\"aut\", \"cph\")), person(\"Steve\", \"Weston\", role=\"aut\"))",
+      "Description": "Support for the foreach looping construct.  Foreach is an idiom that allows for iterating over elements in a collection, without the use of an explicit loop counter.  This package in particular is intended to be used for its return value, rather than for its side effects.  In that sense, it is similar to the standard lapply function, but doesn't require the evaluation of a function.  Using foreach without side effects also facilitates executing the loop in parallel.",
+      "License": "Apache License (== 2.0)",
+      "URL": "https://github.com/RevolutionAnalytics/foreach",
+      "BugReports": "https://github.com/RevolutionAnalytics/foreach/issues",
+      "Depends": [
+        "R (>= 2.5.0)"
+      ],
+      "Imports": [
+        "codetools",
+        "utils",
+        "iterators"
+      ],
+      "Suggests": [
+        "randomForest",
+        "doMC",
+        "doParallel",
+        "testthat",
+        "knitr",
+        "rmarkdown"
+      ],
+      "VignetteBuilder": "knitr",
+      "RoxygenNote": "7.1.1",
+      "Collate": "'callCombine.R' 'foreach.R' 'do.R' 'foreach-ext.R' 'foreach-pkg.R' 'getDoPar.R' 'getDoSeq.R' 'getsyms.R' 'iter.R' 'nextElem.R' 'onLoad.R' 'setDoPar.R' 'setDoSeq.R' 'times.R' 'utils.R'",
+      "NeedsCompilation": "no",
+      "Author": "Folashade Daniel [cre], Hong Ooi [ctb], Rich Calaway [ctb], Microsoft [aut, cph], Steve Weston [aut]",
+      "Maintainer": "Folashade Daniel <fdaniel@microsoft.com>",
       "Repository": "CRAN"
     },
     "foreign": {
@@ -4369,6 +4436,29 @@
       "NeedsCompilation": "yes",
       "Author": "Hadley Wickham [aut] (ORCID: <https://orcid.org/0000-0003-4757-117X>), Claus O. Wilke [aut] (Original author, ORCID: <https://orcid.org/0000-0002-7470-9261>), Thomas Lin Pedersen [aut, cre] (ORCID: <https://orcid.org/0000-0002-5147-4711>), Posit, PBC [cph, fnd] (ROR: <https://ror.org/03wc8by49>)",
       "Maintainer": "Thomas Lin Pedersen <thomas.pedersen@posit.co>",
+      "Repository": "CRAN"
+    },
+    "iterators": {
+      "Package": "iterators",
+      "Version": "1.0.14",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Provides Iterator Construct",
+      "Authors@R": "c(person(\"Folashade\", \"Daniel\", role=\"cre\", email=\"fdaniel@microsoft.com\"), person(\"Revolution\", \"Analytics\", role=c(\"aut\", \"cph\")), person(\"Steve\", \"Weston\", role=\"aut\"))",
+      "Description": "Support for iterators, which allow a programmer to traverse through all the elements of a vector, list, or other collection of data.",
+      "URL": "https://github.com/RevolutionAnalytics/iterators",
+      "Depends": [
+        "R (>= 2.5.0)",
+        "utils"
+      ],
+      "Suggests": [
+        "RUnit",
+        "foreach"
+      ],
+      "License": "Apache License (== 2.0)",
+      "NeedsCompilation": "no",
+      "Author": "Folashade Daniel [cre], Revolution Analytics [aut, cph], Steve Weston [aut]",
+      "Maintainer": "Folashade Daniel <fdaniel@microsoft.com>",
       "Repository": "CRAN"
     },
     "jquerylib": {
@@ -8047,6 +8137,37 @@
       "Repository": "CRAN",
       "NeedsCompilation": "no",
       "Author": "David B. Dahl [aut], David Scott [aut, cre], Charles Roosen [aut], Arni Magnusson [aut], Jonathan Swinton [aut], Ajay Shah [ctb], Arne Henningsen [ctb], Benno Puetz [ctb], Bernhard Pfaff [ctb], Claudio Agostinelli [ctb], Claudius Loehnert [ctb], David Mitchell [ctb], David Whiting [ctb], Fernando da Rosa [ctb], Guido Gay [ctb], Guido Schulz [ctb], Ian Fellows [ctb], Jeff Laake [ctb], John Walker [ctb], Jun Yan [ctb], Liviu Andronic [ctb], Markus Loecher [ctb], Martin Gubri [ctb], Matthieu Stigler [ctb], Robert Castelo [ctb], Seth Falcon [ctb], Stefan Edwards [ctb], Sven Garbade [ctb], Uwe Ligges [ctb]"
+    },
+    "yaGST": {
+      "Package": "yaGST",
+      "Version": "2017.08.25",
+      "Source": "GitHub",
+      "Type": "Package",
+      "Title": "Competitive gene set and regulon tests.",
+      "Date": "2017-08-01",
+      "Author": "Stefano M. Pagnotta",
+      "Maintainer": "Stefano M. Pagnotta <smpagnotta@gmail.com>",
+      "Description": "This is a collection of wrappers to the Wilcoxon test to run competitive gene set and regulon tests.",
+      "Imports": [
+        "ggplot2",
+        "doParallel"
+      ],
+      "Suggests": [
+        "knitr",
+        "rmarkdown"
+      ],
+      "VignetteBuilder": "knitr",
+      "Depends": [
+        "doParallel (>= 1.0.10)",
+        "R (>= 3.0)"
+      ],
+      "License": "GPL (>= 3)",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "Yunuuuu",
+      "RemoteRepo": "yaGST",
+      "RemoteRef": "0dba93af569297120c187134eb2e6864cd2da418",
+      "RemoteSha": "0dba93af569297120c187134eb2e6864cd2da418"
     },
     "yaml": {
       "Package": "yaml",
