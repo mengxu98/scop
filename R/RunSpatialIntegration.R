@@ -33,14 +33,7 @@
 #' the stored method result. Set `FALSE` for a lighter result bundle; standard
 #' embeddings, domains, coordinates, parameters, summaries, and plotting do
 #' not require the native object.
-#' @param ... Named backend argument lists: `create_params`, `adj_params`,
-#' `par_params`, `run_params`, and `select_params`. The default adjacency is
-#' `adj_params = list(type = "fixed_number", number = 6)`, using distances in
-#' the selected coordinate space and SCOP's exact spatial KNN implementation.
-#' PRECAST's fixed-distance Visium/ST array-index
-#' mode is not compatible with these coordinates and is rejected. For generic
-#' distance-based adjacency, explicitly choose `platform = "Other_SRT"`.
-#'
+#' @param ... Arguments passed to other functions.
 #' @details
 #' Provide spatial samples with shared genes and raw coordinates. Use
 #' `sample.by` to identify samples and `image` to select their spatial images.
@@ -100,7 +93,7 @@ RunSpatialIntegration <- function(
     "Run {.pkg {method}} spatial integration with {.val {length(input$samples)}} sample{?s} and {.val {length(input$cells)}} spot{?s}",
     verbose = verbose
   )
-  backend <- spatial_integration_run_backend(
+  backend <- spatial_integration_run_model(
     method = method,
     input = input,
     verbose = verbose,
@@ -168,11 +161,7 @@ RunSpatialIntegration <- function(
 #' [RunSpatialIntegration()].
 #' @param combine Whether to combine plots when delegated plotting returns a
 #' list.
-#' @param ... Additional arguments passed to [SpatialSpotPlot()] or
-#' [CellDimPlot()]. For spatial maps, `image` can be one image or a named
-#' sample-to-image vector using names in the merged object. By default, each
-#' sample uses its uniquely matching image. `nrow`, `ncol` and `byrow` control
-#' the layout of separate image panels.
+#' @param ... Arguments passed to other functions.
 #' @details
 #' Raw spatial maps retain every sample and use consistent category colors.
 #' Aligned maps use the stored aligned coordinates without a raw tissue-image
@@ -181,6 +170,7 @@ RunSpatialIntegration <- function(
 #' @return A `ggplot`, patchwork object, or list of plots.
 #' @seealso [RunSpatialIntegration()]
 #'
+#' @export
 #' @examples
 #' \dontrun{
 #' # Template: visium_S1 and visium_S2 are existing spatial Seurat samples.
@@ -192,7 +182,6 @@ RunSpatialIntegration <- function(
 #' )
 #' SpatialIntegrationPlot(spatial, method = "PRECAST", plot_type = "spatial")
 #' }
-#' @export
 #'
 SpatialIntegrationPlot <- function(
   object,
@@ -210,9 +199,10 @@ SpatialIntegrationPlot <- function(
   palcolor = NULL,
   theme_use = "theme_scop",
   theme_args = list(),
-  ...,
   image.scale = c("lowres", "hires"),
-  srt = NULL
+  srt = NULL,
+  image = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
@@ -250,6 +240,7 @@ SpatialIntegrationPlot <- function(
   if (identical(plot_type, "spatial")) {
     coord_use <- if (missing(coord.cols)) parameters$coord.cols %||% coord.cols else coord.cols
     dots <- list(...)
+    if (!missing(image)) dots$image <- image
     if (isTRUE(use_aligned)) {
       coord_use <- parameters$aligned_coord_cols
       if (is.null(coord_use) || !all(coord_use %in% colnames(srt@meta.data))) {
@@ -330,6 +321,7 @@ SpatialIntegrationPlot <- function(
       )
     }
     dots <- list(...)
+    if (!missing(image)) dots$image <- image
     if (is.null(dots$show_stat)) {
       dots$show_stat <- FALSE
     }
@@ -671,7 +663,7 @@ spatial_integration_sparse_matrix <- function(mat) {
   Matrix::drop0(mat)
 }
 
-spatial_integration_run_backend <- function(method, input, verbose = TRUE, ...) {
+spatial_integration_run_model <- function(method, input, verbose = TRUE, ...) {
   if (!identical(method, "PRECAST")) {
     log_message("Unsupported spatial integration method {.val {method}}", message_type = "error")
   }

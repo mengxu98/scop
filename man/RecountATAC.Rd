@@ -35,23 +35,23 @@ records both requested and stored orders.}
 
 \item{new.assay}{Optional unused syntactically valid assay name. \code{NULL} returns a list; a name
 returns a Seurat object with a new assay, leaving the source assay and its
-analysis results unchanged. The native constructor requires at least two
+analysis results unchanged. The constructor requires at least two
 peaks and two cells for this writeback route.}
 
-\item{process_n}{Number of regions per native FeatureMatrix chunk.}
+\item{process_n}{Number of regions per FeatureMatrix chunk.}
 
-\item{verbose}{Whether native backends print progress messages.}
+\item{verbose}{Whether to print progress messages.}
 }
 \value{
 With \code{new.assay = NULL}, a list containing sparse \code{counts}, aligned
 \code{ranges} named by the output peak IDs, and a \code{receipt} with original range
 names, cell/peak IDs, file and reference information,
-native count semantics and backend version. With \code{new.assay} specified,
+count semantics and dependency version. With \code{new.assay} specified,
 a Seurat object; its receipt is stored at
 \code{Misc(object[[new.assay]], "scop_atac_recount")}.
 }
 \description{
-Use native \code{Signac::FeatureMatrix()} to count local indexed fragments over
+Use \code{Signac::FeatureMatrix()} to count local indexed fragments over
 one supplied set of genomic ranges. Rows and cells are explicitly aligned;
 no existing peak matrices are merged, padded, normalized or binarized.
 }
@@ -62,7 +62,7 @@ may overlap several peaks, including disjoint peaks. Counts are not split or
 reweighted, so matrix column sums are not necessarily unique fragments in peaks.
 
 Requested raw barcodes and stored file/index hashes are checked with Signac's
-native validators before counting. Different captures may reuse raw barcodes,
+validators before counting. Different captures may reuse raw barcodes,
 but each final cell must map to exactly one file. No barcode suffixes, genome
 labels or chromosome styles are guessed. Only files needed by selected cells
 are read. Features on chromosomes present in each index are counted with
@@ -77,37 +77,36 @@ chromosome fails clearly. Genuine zero-overlap features and cells are kept.
 
 Writeback happens only after validation and counting succeed. The new assay
 contains the recounted matrix, supplied ranges, reference labels and selected
-fragment references. Native initialization puts raw counts in its data layer;
+fragment references. Assay initialization puts raw counts in its data layer;
 no normalized data, scaled data, variable features, gene annotation, motifs,
 links or old peak metadata are copied from the source. Existing reductions
 remain associated with their original assay; compute a new representation
-explicitly. The default assay is not changed. No resources are downloaded,
-dependencies installed or external paths repaired.
+explicitly. The default assay is not changed. R dependencies follow
+\code{thisutils::check_r()} defaults. Genomic resources are not downloaded and
+external paths are not repaired.
 }
 \examples{
-if (requireNamespace("Rsamtools", quietly = TRUE)) {
-  (function() {
-    directory <- tempfile("atac-recount-")
-    dir.create(directory)
-    on.exit(unlink(directory, recursive = TRUE), add = TRUE)
-    path <- file.path(directory, "fragments.tsv")
-    writeLines(c("chr1\t10\t20\tA\t5", "chr1\t110\t120\tB\t3"), path)
-    compressed <- Rsamtools::bgzip(path, dest = paste0(path, ".gz"))
-    Rsamtools::indexTabix(compressed, format = "bed")
-    peaks <- GenomicRanges::GRanges(c("chr1:1-50", "chr1:101-150"))
-    counts <- Matrix::sparseMatrix(
-      i = 1:2, j = 1:2, x = 1, dims = c(2, 2),
-      dimnames = list(c("p1", "p2"), c("cellA", "cellB"))
-    )
-    atac <- ReadATACData(counts,
-      ranges = peaks, genome = "toy",
-      fragments = compressed, fragment.cells = c(cellA = "A", cellB = "B"),
-      verbose = FALSE
-    )
-    recounted <- RecountATAC(atac, ranges = peaks, verbose = FALSE)
-    recounted$counts
-  })()
-}
+(function() {
+  directory <- tempfile("atac-recount-")
+  dir.create(directory)
+  on.exit(unlink(directory, recursive = TRUE), add = TRUE)
+  path <- file.path(directory, "fragments.tsv")
+  writeLines(c("chr1\t10\t20\tA\t5", "chr1\t110\t120\tB\t3"), path)
+  compressed <- Rsamtools::bgzip(path, dest = paste0(path, ".gz"))
+  Rsamtools::indexTabix(compressed, format = "bed")
+  peaks <- GenomicRanges::GRanges(c("chr1:1-50", "chr1:101-150"))
+  counts <- Matrix::sparseMatrix(
+    i = 1:2, j = 1:2, x = 1, dims = c(2, 2),
+    dimnames = list(c("p1", "p2"), c("cellA", "cellB"))
+  )
+  atac <- ReadATACData(counts,
+    ranges = peaks, genome = "toy",
+    fragments = compressed, fragment.cells = c(cellA = "A", cellB = "B"),
+    verbose = FALSE
+  )
+  recounted <- RecountATAC(atac, ranges = peaks, verbose = FALSE)
+  recounted$counts
+})()
 }
 \seealso{
 \code{\link[=ReadATACData]{ReadATACData()}}, \code{\link[=CheckATACData]{CheckATACData()}}, \code{\link[=RunATACQC]{RunATACQC()}}

@@ -241,7 +241,6 @@ static double scenic_tree_feature_value(const NumericMatrix& expr, int row, int 
   return static_cast<double>(static_cast<float>(scenic_target_value(expr, row, feature)));
 }
 
-// Read-only columns keep per-gene candidate matrices inside the existing GBM kernel.
 struct ScenicColumnView {
   int rows;
   std::vector<const double*> columns;
@@ -307,26 +306,6 @@ static double scenic_tree_feature_value(const ScenicSparseTreeView& view, int ro
     return rank < 0 ? 0.0 : view.values[feature][rank];
   }
   return scenic_tree_feature_value(view.matrix, row, feature);
-}
-
-static double scenic_node_mean(
-    const std::vector<int>& rows,
-    const std::vector<double>& residual) {
-  if (rows.empty()) return 0.0;
-  double sum = 0.0;
-  for (std::size_t i = 0; i < rows.size(); ++i) sum += residual[rows[i]];
-  return sum / static_cast<double>(rows.size());
-}
-
-static double scenic_node_mean(
-    const std::vector<int>& samples,
-    int start,
-    int end,
-    const std::vector<double>& residual) {
-  if (end <= start) return 0.0;
-  double sum = 0.0;
-  for (int i = start; i < end; ++i) sum += residual[samples[i]];
-  return sum / static_cast<double>(end - start);
 }
 
 static double scenic_node_sse(
@@ -456,26 +435,6 @@ static int scenic_numpy_randint(std::mt19937& rng, int low, int high) {
     value = static_cast<std::uint32_t>(rng()) & mask;
   } while (value > max_value);
   return low + static_cast<int>(value);
-}
-
-static std::vector<unsigned char> scenic_sample_mask(
-    int n_samples,
-    int n_inbag,
-    std::mt19937& rng) {
-  std::vector<unsigned char> mask(n_samples, 0);
-  if (n_inbag >= n_samples) {
-    std::fill(mask.begin(), mask.end(), 1);
-    return mask;
-  }
-  int n_bagged = 0;
-  for (int i = 0; i < n_samples; ++i) {
-    if (scenic_numpy_random_sample(rng) * static_cast<double>(n_samples - i) <
-        static_cast<double>(n_inbag - n_bagged)) {
-      mask[i] = 1;
-      ++n_bagged;
-    }
-  }
-  return mask;
 }
 
 static void scenic_sample_mask_fill(
@@ -671,7 +630,6 @@ static ScenicSplit scenic_best_split(
     int feature_best_right = 0;
     double left_sum = 0.0;
     int n_left = 0;
-    // Reuse cached float32 values, while sorting the current node sample order.
     const bool cached = feature >= 0 && feature < static_cast<int>(feature_order_ranks.size()) &&
       static_cast<int>(feature_order_ranks[feature].size()) == expr.nrow();
     if (cached) {
@@ -880,8 +838,6 @@ static double scenic_predict_tree(
   return 0.0;
 }
 
-// Accumulate fitted predictions, then derive residuals from the original response.
-// The same update is used by production fitting and diagnostic tree traces.
 template <typename Expr>
 static void scenic_boost_update(
     const Expr& expr, const std::vector<ScenicTreeNode>& nodes,
@@ -961,8 +917,6 @@ static void scenic_grnboost_run_targets(
       prediction[i] = means[target];
       residual[i] = y - means[target];
     }
-    // A constant response cannot yield a split or a nonzero importance. The
-    // OOB monitor otherwise repeats all rounds because its improvement is zero.
     if (constant_target) {
       scenic_profile_add_elapsed(
         profile, &ScenicGrnProfile::target_setup_seconds, target_setup_start);
@@ -1372,7 +1326,6 @@ List scenicplus_region_gbm_cpp(
     }
     means[n_regions] /= static_cast<double>(n_cells);
     weights[task].assign(n_regions, 0.0);
-    // A constant target has no edges; avoid preparing predictor caches for it.
     if (constant_response) return;
     std::vector<std::vector<double> > values;
     std::vector<std::vector<int> > ranks;

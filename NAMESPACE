@@ -247,6 +247,7 @@ export(RecoverCounts)
 export(RemoveEnv)
 export(RenameClusters)
 export(RenameFeatures)
+export(RunATACCoaccessibility)
 export(RunATACFootprint)
 export(RunATACQC)
 export(RunATACRegionMatrix)
@@ -590,5 +591,3 @@ importFrom(utils,
   read.csv
 )
 useDynLib(scop, .registration = TRUE)
-
-export(RunATACCoaccessibility)

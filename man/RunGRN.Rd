@@ -4,7 +4,7 @@
 \alias{RunGRN}
 \alias{RunGRN.Seurat}
 \alias{RunGRN.default}
-\title{Infer gene regulatory networks with a selected backend method}
+\title{Infer gene regulatory networks with a selected method}
 \usage{
 RunGRN(object, ...)
 
@@ -53,7 +53,7 @@ RunGRN(object, ...)
 \arguments{
 \item{object}{A Seurat object or expression matrix.}
 
-\item{...}{Additional backend-specific arguments.}
+\item{...}{Arguments passed to other functions.}
 
 \item{assay}{Assay used when `object` is a Seurat object.}
 

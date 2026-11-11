@@ -121,21 +121,13 @@ FeatureHeatmap(
   cell_annotation = NULL,
   cell_annotation_palette = "Chinese",
   cell_annotation_palcolor = NULL,
-  cell_annotation_params = if (flip) {
-     list(width = grid::unit(5, "mm"))
- } else {
- 
-       list(height = grid::unit(5, "mm"))
- },
+  cell_annotation_params = if (flip) list(width = grid::unit(5, "mm")) else list(height =
+    grid::unit(5, "mm")),
   feature_annotation = NULL,
   feature_annotation_palette = "Dark2",
   feature_annotation_palcolor = NULL,
-  feature_annotation_params = if (flip) {
-     list(height = grid::unit(5, "mm"))
- } else
-    {
-     list(width = grid::unit(5, "mm"))
- },
+  feature_annotation_params = if (flip) list(height = grid::unit(5, "mm")) else
+    list(width = grid::unit(5, "mm")),
   use_raster = NULL,
   raster_device = "png",
   raster_by_magick = FALSE,
@@ -146,8 +138,8 @@ FeatureHeatmap(
   legend.position = "right",
   ht_params = list(),
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -266,10 +258,10 @@ Gap to the heatmap grows automatically when long row names are on the right.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{Additional arguments passed to helper functions.}
-
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \description{
 Feature Heatmap

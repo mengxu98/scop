@@ -97,7 +97,8 @@ Only work when \code{padjustCutoff} is \code{NULL}.}
 \item{padjustCutoff}{The p-adjusted cutoff.}
 
 \item{topTerm}{The number of top terms to display.
-Default is \code{6}, or \code{100} if \code{plot_type} is \code{"enrichmap"}.}
+Default is \code{6}, \code{100} for \code{"enrichmap"}, or \code{80} for \code{"rank"}.
+Rank plots select the highest \code{rank_by} values after significance filtering.}
 
 \item{direction}{The direction of enrichment to include in the plot.
 Must be one of "pos", "neg", or "both".}
@@ -174,6 +175,7 @@ Options are \code{"ellipse"} and \code{"hull"}.}
 \item{lineheight}{The line height for y-axis labels.}
 
 \item{palette}{Color palette name.
+Defaults to \code{"Chinese"} for rank plots and \code{"Spectral"} otherwise.
 Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.}
 
 \item{palcolor}{Custom colors used to create a color palette.}
@@ -186,10 +188,17 @@ Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_
 
 \item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
 
-\item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE}
-returns a list of ggplots.}
+\item{combine}{Combine plots with \code{\link[patchwork:wrap_plots]{patchwork::wrap_plots()}}. \code{combine = FALSE} returns a list of ggplots.}
 
-\item{seed}{Random seed.}
+\item{nrow}{Combine plots with \code{\link[patchwork:wrap_plots]{patchwork::wrap_plots()}}. \code{combine = FALSE} returns a list of ggplots.}
+
+\item{ncol}{Number of columns of the combined plot.}
+
+\item{byrow}{Whether to fill combined panels by row. \code{FALSE} fills panels
+by column. Only used when \code{combine = TRUE}.}
+
+\item{seed}{Random seed used for plot construction. The caller's RNG state
+is restored on return, including errors.}
 
 \item{verbose}{Whether to print messages.}
 
@@ -198,6 +207,11 @@ will be removed in scop 1.0.0.}
 }
 \description{
 Generates various types of plots for Gene Set Enrichment Analysis (GSEA) results.
+}
+\details{
+Zero P values use \code{.Machine$double.xmin} when computing display
+weights. Positive P values and signed NES values are retained. Non-missing
+P values must be finite and between zero and one.
 }
 \examples{
 term2gene <- data.frame(

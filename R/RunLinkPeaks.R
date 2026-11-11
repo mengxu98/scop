@@ -1,8 +1,8 @@
 #' Link ATAC peaks to paired measured expression
 #'
 #' @md
-#' @description Run native Signac peak-gene correlation and matched-background
-#' testing on paired RNA and ATAC assays, retaining native link statistics.
+#' @description Run Signac peak-gene correlation and matched-background
+#' testing on paired RNA and ATAC assays, retaining link statistics.
 #'
 #' @param object A Seurat object containing paired chromatin and measured RNA
 #'   assays. Identical cell names must identify the same biological cells. RNA
@@ -11,91 +11,87 @@
 #' @param assay Chromatin assay; defaults to the active assay.
 #' @param expression.assay Measured RNA assay, default `"RNA"`. Gene activity,
 #'   imputed expression and chromVAR scores are not measured RNA.
-#' @param peak.slot,expression.slot Single existing native layers, default
+#' @param peak.slot,expression.slot Single existing layers, default
 #'   `"counts"` and `"data"`. Split layers must be joined explicitly beforehand.
 #' @param method Correlation method, `"pearson"` or `"spearman"`.
-#' @param gene.coords Optional native gene-coordinate `GRanges` passed to
-#'   `Signac::LinkPeaks()`. With `NULL`, native Signac collapses assay transcript
+#' @param gene.coords Optional gene-coordinate `GRanges` passed to
+#'   `Signac::LinkPeaks()`. With `NULL`, Signac collapses assay transcript
 #'   annotation. Coordinates must declare the same genome label as the assay;
 #'   known chromosome lengths must agree. Explicit coordinates require one
 #'   interval per gene identity. No chromosome-style conversion is performed.
 #' @param distance Maximum genomic distance to TSS in bases, default 500000.
 #' @param min.distance Optional non-negative minimum distance to TSS.
-#' @param min.cells Native strict detection threshold: peaks and genes must
+#' @param min.cells Strict detection threshold: peaks and genes must
 #'   occur in more than this many cells, default 10.
 #' @param genes.use Optional unique RNA feature IDs to test.
 #' @param n.sample Number of matched background peaks, default 200.
-#' @param pvalue.cutoff,score.cutoff Native strict p-value and absolute
-#'   correlation thresholds, default 0.05. P-values are native unadjusted
+#' @param pvalue.cutoff,score.cutoff Strict p-value and absolute
+#'   correlation thresholds, default 0.05. P-values are unadjusted
 #'   normal-tail values `pnorm(-abs(zscore))`, without a two-tail multiplier or
 #'   multiple-testing correction; they are not adjusted significance estimates.
 #' @param gene.id Whether RNA feature IDs match annotation gene_id rather than
 #'   gene_name, default `FALSE`. Use `TRUE` for [ReadMultiomeData()] gene IDs.
-#' @param seed Random seed used locally for native background sampling.
+#' @param seed Random seed used locally for background sampling.
 #' @param verbose Whether to print progress messages.
 #'
 #' @details
 #' Run Signac RegionStats with an appropriate genome sequence before this function;
 #' finite GC.percent between 0 and 100 and sequence.length equal to peak width
 #' are required. These metadata checks do not verify the supplied DNA provenance.
-#' Native accessibility background counts are recomputed on the paired cells in
+#' Accessibility background counts are recomputed on the paired cells in
 #' a temporary assay, avoiding stale count metadata after cell subsetting.
 #' Background sampling, correlation, z scores and significance filtering are
 #' delegated unchanged to Signac. Its minimum support and chromosome-background
 #' requirements still apply. Source counts and the active assay are preserved.
-#' Existing native links or SCOP link results are never overwritten. No retained
+#' Existing links or SCOP link results are never overwritten. No retained
 #' links is a valid empty result, not evidence that regulation is absent.
-#' Native errors for constant expression or insufficient background support are
+#' Errors for constant expression or insufficient background support are
 #' preserved; no alternative correlation or significance model is substituted.
 #'
-#' @return The Seurat object with native `Signac::Links(object[[assay]])` and a
+#' @return The Seurat object with `Signac::Links(object[[assay]])` and a
 #'   receipt at `Misc(object[[assay]], "scop_link_peaks")`, recording source
-#'   assays, layers, cells, input features, parameters, backend version and the
-#'   number of retained links. Native link metadata contains gene, peak, score,
+#'   assays, layers, cells, input features, parameters, dependency version and the
+#'   number of retained links. Link metadata contains gene, peak, score,
 #'   zscore and pvalue for non-empty results. Links are associations, not causal
 #'   or experimentally verified regulatory connections.
 #' @seealso [ReadMultiomeData()], [Signac::LinkPeaks()], [Signac::RegionStats()]
-#' @examples
-#' if (requireNamespace("Signac", quietly = TRUE) &&
-#'   requireNamespace("Biostrings", quietly = TRUE) &&
-#'   requireNamespace("BSgenome", quietly = TRUE)) {
-#'   local({
-#'     withr::local_preserve_seed()
-#'     set.seed(83)
-#'     counts <- Matrix::Matrix(matrix(rpois(60 * 40, 4) + 1, 60,
-#'       dimnames = list(paste0("p", 1:60), paste0("cell", 1:40))
-#'     ), sparse = TRUE)
-#'     ranges <- GenomicRanges::makeGRangesFromDataFrame(data.frame(
-#'       seqnames = rep(c("chr1", "chr2"), each = 30),
-#'       start = rep(seq(1, by = 200, length.out = 30), 2),
-#'       end = rep(seq(100, by = 200, length.out = 30), 2)
-#'     ))
-#'     paired <- ReadATACData(counts, ranges = ranges, genome = "toy", verbose = FALSE)
-#'     rna <- counts[c(1, 31), , drop = FALSE]
-#'     rownames(rna) <- c("g1", "g2")
-#'     paired[["RNA"]] <- SeuratObject::CreateAssayObject(counts = rna)
-#'     genes <- GenomicRanges::makeGRangesFromDataFrame(data.frame(
-#'       seqnames = c("chr1", "chr2"), start = 201, end = 400, strand = "+",
-#'       gene_id = c("g1", "g2"), gene_name = c("g1", "g2")
-#'     ), keep.extra.columns = TRUE)
-#'     GenomeInfoDb::genome(genes) <- "toy"
-#'     # Small synthetic sequence solely for an executable method example.
-#'     dna <- Biostrings::DNAStringSet(setNames(vapply(
-#'       1:2, function(i) {
-#'         paste(sample(c("A", "C", "G", "T"), 6000, replace = TRUE), collapse = "")
-#'       },
-#'       character(1)
-#'     ), c("chr1", "chr2")))
-#'     paired <- Signac::RegionStats(paired, assay = "peaks", genome = dna, verbose = FALSE)
-#'     linked <- RunLinkPeaks(paired,
-#'       assay = "peaks", expression.slot = "counts",
-#'       gene.coords = genes, min.cells = 0, n.sample = 10, distance = 10000,
-#'       pvalue.cutoff = 1, verbose = FALSE
-#'     )
-#'     Signac::Links(linked[["peaks"]])
-#'   })
-#' }
 #' @export
+#' @examples
+#' local({
+#'   withr::local_preserve_seed()
+#'   set.seed(83)
+#'   counts <- Matrix::Matrix(matrix(rpois(60 * 40, 4) + 1, 60,
+#'     dimnames = list(paste0("p", 1:60), paste0("cell", 1:40))
+#'   ), sparse = TRUE)
+#'   ranges <- GenomicRanges::makeGRangesFromDataFrame(data.frame(
+#'     seqnames = rep(c("chr1", "chr2"), each = 30),
+#'     start = rep(seq(1, by = 200, length.out = 30), 2),
+#'     end = rep(seq(100, by = 200, length.out = 30), 2)
+#'   ))
+#'   paired <- ReadATACData(counts, ranges = ranges, genome = "toy", verbose = FALSE)
+#'   rna <- counts[c(1, 31), , drop = FALSE]
+#'   rownames(rna) <- c("g1", "g2")
+#'   paired[["RNA"]] <- SeuratObject::CreateAssayObject(counts = rna)
+#'   genes <- GenomicRanges::makeGRangesFromDataFrame(data.frame(
+#'     seqnames = c("chr1", "chr2"), start = 201, end = 400, strand = "+",
+#'     gene_id = c("g1", "g2"), gene_name = c("g1", "g2")
+#'   ), keep.extra.columns = TRUE)
+#'   GenomeInfoDb::genome(genes) <- "toy"
+#'   # Small synthetic sequence solely for an executable method example.
+#'   dna <- Biostrings::DNAStringSet(setNames(vapply(
+#'     1:2, function(i) {
+#'       paste(sample(c("A", "C", "G", "T"), 6000, replace = TRUE), collapse = "")
+#'     },
+#'     character(1)
+#'   ), c("chr1", "chr2")))
+#'   paired <- Signac::RegionStats(paired, assay = "peaks", genome = dna, verbose = FALSE)
+#'   linked <- RunLinkPeaks(paired,
+#'     assay = "peaks", expression.slot = "counts",
+#'     gene.coords = genes, min.cells = 0, n.sample = 10, distance = 10000,
+#'     pvalue.cutoff = 1, verbose = FALSE
+#'   )
+#'   Signac::Links(linked[["peaks"]])
+#' })
 RunLinkPeaks <- function(
   object, assay = NULL, expression.assay = "RNA",
   peak.slot = "counts", expression.slot = "data", method = "pearson",
@@ -106,7 +102,8 @@ RunLinkPeaks <- function(
   report <- CheckATACData(object, assay = assay)
   if (!report$valid) log_message("{paste(report$errors, collapse = ' ')}", message_type = "error")
   assay <- report$assay
-  atac_backend_fun("withr", "local_preserve_seed")()
+  check_r("withr", verbose = FALSE)
+  withr::local_preserve_seed()
   if (!atac_unique_ids(expression.assay) || length(expression.assay) != 1L ||
     !expression.assay %in% SeuratObject::Assays(object) || identical(expression.assay, assay) ||
     inherits(object[[expression.assay]], "ChromatinAssay")) {
@@ -167,9 +164,9 @@ RunLinkPeaks <- function(
   if (!inherits(coordinates, "GRanges") || !length(coordinates)) {
     log_message("Gene coordinates must be a non-empty GRanges object.", message_type = "error")
   }
-  source_lengths <- atac_backend_fun("GenomeInfoDb", "seqlengths")(chromatin)
-  coordinate_lengths <- atac_backend_fun("GenomeInfoDb", "seqlengths")(coordinates)
-  chromosomes <- as.character(atac_backend_fun("GenomeInfoDb", "seqnames")(coordinates))
+  source_lengths <- GenomeInfoDb::seqlengths(chromatin)
+  coordinate_lengths <- GenomeInfoDb::seqlengths(coordinates)
+  chromosomes <- as.character(GenomeInfoDb::seqnames(coordinates))
   shared <- intersect(names(source_lengths), names(coordinate_lengths))
   if (any(source_lengths[shared] != coordinate_lengths[shared], na.rm = TRUE) ||
     any(GenomicRanges::start(coordinates) < 1L | GenomicRanges::end(coordinates) < GenomicRanges::start(coordinates)) ||
@@ -177,7 +174,7 @@ RunLinkPeaks <- function(
     any(GenomicRanges::end(coordinates) > coordinate_lengths[chromosomes], na.rm = TRUE)) {
     log_message("Gene coordinates conflict with known chromosome lengths or valid 1-based closed intervals.", message_type = "error")
   }
-  labels <- unique(as.character(atac_backend_fun("GenomeInfoDb", "genome")(coordinates)))
+  labels <- unique(as.character(GenomeInfoDb::genome(coordinates)))
   labels <- labels[!is.na(labels) & nzchar(labels)]
   fields <- if (is.null(gene.coords)) c("gene_id", "gene_name", "gene_biotype") else if (gene.id) "gene_id" else "gene_name"
   if (!length(coordinates) || !all(fields %in% colnames(S4Vectors::mcols(coordinates))) ||
@@ -209,8 +206,12 @@ RunLinkPeaks <- function(
     any(feature_data$sequence.length != GenomicRanges::width(Signac::granges(chromatin)))) {
     log_message("Finite GC.percent and positive sequence.length are required; run native Signac RegionStats first.", message_type = "error")
   }
+  peak_ranges <- Signac::granges(chromatin)
   if (!identical(
-    as.vector(Signac::GRangesToString(Signac::granges(chromatin))),
+    paste0(
+      as.character(GenomicRanges::seqnames(peak_ranges)), "-",
+      GenomicRanges::start(peak_ranges), "-", GenomicRanges::end(peak_ranges)
+    ),
     as.vector(rownames(chromatin))
   )) {
     log_message("Native LinkPeaks requires unmodified coordinate feature IDs; this assay contains sanitized contig names.", message_type = "error")
@@ -225,8 +226,8 @@ RunLinkPeaks <- function(
     n_sample = n.sample, pvalue_cutoff = pvalue.cutoff,
     score_cutoff = score.cutoff, gene.id = gene.id
   )
-  link_peaks <- atac_backend_fun("Signac", "LinkPeaks")
-  with_seed <- atac_backend_fun("withr", "with_seed")
+  link_peaks <- Signac::LinkPeaks
+  with_seed <- withr::with_seed
   # Restrict both native assays to the same selected cells without changing the source object.
   paired <- subset(object, cells = cells)
   SeuratObject::DefaultAssay(paired) <- expression.assay

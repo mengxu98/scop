@@ -48,10 +48,10 @@ test_that("native cross kNN supports exact Pearson and Spearman rankings", {
   )
   query <- rbind(c(1, 0, 2), c(0, 2, 1))
 
-  expect_null(knn_cross_topk_native(
+  expect_null(knn_cross_topk(
     Matrix::Matrix(reference, sparse = TRUE), query, 2L, "cosine"
   ))
-  expect_null(knn_cross_topk_native(
+  expect_null(knn_cross_topk(
     reference, rbind(c(0, 0, 0), query), 2L, "cosine"
   ))
 
@@ -75,12 +75,12 @@ test_that("native cross kNN supports exact Pearson and Spearman rankings", {
       by = "col",
       decreasing = FALSE
     )
-    actual <- knn_cross_topk_native(reference, query, 2L, metric)
+    actual <- knn_cross_topk(reference, query, 2L, metric)
     expect_equal(actual[["idx"]], expected[["idx"]])
     expect_equal(actual[["distance"]], expected[["value"]], tolerance = 1e-5)
   }
 
-  expect_null(knn_cross_topk_native(
+  expect_null(knn_cross_topk(
     rbind(reference, c(1, 1, 1)), query, 2L, "pearson"
   ))
 })

@@ -24,16 +24,17 @@
 #'   fragments across bins. A fragment crossing a boundary can count in two bins.
 #' @seealso [RecountATAC()]
 #' @export
-RunGenomeTiles <- function(object, assay = NULL, seqlengths = NULL,
+RunGenomeTiles <- function(
+  object, assay = NULL, seqlengths = NULL,
   chromosomes = NULL, bin.size = 5000L, cells = NULL, new.assay = NULL,
   process_n = 2000L, max.tiles = 2000000L, verbose = TRUE
 ) {
   report <- CheckATACData(object, assay = assay)
   if (!report$valid) stop(paste(report$errors, collapse = " "), call. = FALSE)
   assay <- report$assay
-  atac_tiles_integer(bin.size, "bin.size", 1)
-  atac_tiles_integer(max.tiles, "max.tiles", 1)
-  source.lengths <- atac_backend_fun("GenomeInfoDb", "seqlengths")(object[[assay]])
+  atac_integer(bin.size, "bin.size", 1)
+  atac_integer(max.tiles, "max.tiles", 1)
+  source.lengths <- GenomeInfoDb::seqlengths(object[[assay]])
   if (is.null(seqlengths)) seqlengths <- source.lengths
   if (!is.numeric(seqlengths) || !atac_unique_ids(names(seqlengths))) stop("seqlengths must be a named numeric vector with unique contigs.", call. = FALSE)
   if (!is.null(chromosomes)) {
@@ -41,32 +42,30 @@ RunGenomeTiles <- function(object, assay = NULL, seqlengths = NULL,
     seqlengths <- seqlengths[chromosomes]
   }
   if (any(!is.finite(seqlengths) | seqlengths < 1 | seqlengths %% 1 != 0 |
-      seqlengths > .Machine$integer.max)) stop("Selected chromosome lengths must be known positive R-range integers.", call. = FALSE)
+    seqlengths > .Machine$integer.max)) {
+    stop("Selected chromosome lengths must be known positive R-range integers.", call. = FALSE)
+  }
   if (any(source.lengths[names(seqlengths)] != seqlengths, na.rm = TRUE)) stop("Supplied chromosome lengths conflict with assay reference.", call. = FALSE)
   ntiles <- sum(ceiling(seqlengths / bin.size))
   if (ntiles > max.tiles) stop("Tile count exceeds max.tiles; increase bin.size or explicitly select contigs.", call. = FALSE)
   ranges <- GenomicRanges::tileGenome(seqlengths, tilewidth = bin.size, cut.last.tile.in.chrom = TRUE)
   if (length(report$genome) != 1L) stop("Genome tiles require one verified assay genome label.", call. = FALSE)
   GenomeInfoDb::genome(ranges) <- report$genome
-  result <- RecountATAC(object, ranges, assay = assay, cells = cells,
-    new.assay = new.assay, process_n = process_n, verbose = verbose)
-  tile.receipt <- list(bin.size = bin.size, seqlengths = seqlengths,
+  result <- RecountATAC(object, ranges,
+    assay = assay, cells = cells,
+    new.assay = new.assay, process_n = process_n, verbose = verbose
+  )
+  tile.receipt <- list(
+    bin.size = bin.size, seqlengths = seqlengths,
     chromosomes = names(seqlengths), n_tiles = length(ranges),
-    last_tile = "truncated at chromosome end")
+    last_tile = "truncated at chromosome end"
+  )
   if (is.null(new.assay)) {
     result$receipt$tiles <- tile.receipt
   } else {
     receipt <- SeuratObject::Misc(result[[new.assay]], "scop_atac_recount")
     receipt$tiles <- tile.receipt
-    # Enrich only the receipt of the newly created assay. Avoid Misc's
-    # overwrite warning for this expected addition of tile provenance.
     result[[new.assay]]@misc$scop_atac_recount <- receipt
   }
   result
-}
-
-atac_tiles_integer <- function(x, label, minimum = 0) {
-  if (!is.numeric(x) || length(x) != 1L || !is.finite(x) || x < minimum ||
-      x %% 1 != 0 || x > .Machine$integer.max) stop(paste(label, "must be an integer >=", minimum), call. = FALSE)
-  invisible(x)
 }

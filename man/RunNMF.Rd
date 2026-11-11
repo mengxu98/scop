@@ -89,7 +89,7 @@ RunNMF(object, ...)
 \arguments{
 \item{object}{An object. This can be a Seurat object, an Assay object, or a matrix-like object.}
 
-\item{...}{Additional arguments passed to \link[RcppML:nmf]{RcppML::nmf} or \link[NMF:nmf]{NMF::nmf}.}
+\item{...}{Arguments passed to other functions.}
 
 \item{assay}{Assay to use. \code{NULL} uses the default assay.}
 

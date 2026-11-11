@@ -689,7 +689,7 @@ regdiffusion_python <- function(
   utils::read.delim(output_file, stringsAsFactors = FALSE, check.names = FALSE)
 }
 
-#' @title Infer gene regulatory networks with a selected backend method
+#' @title Infer gene regulatory networks with a selected method
 #'
 #' @description
 #' Unified GRN inference entry point for GRNBoost2, GENIE3, RegDiffusion, and
@@ -732,10 +732,10 @@ regdiffusion_python <- function(
 #' @param seed Random seed passed to supported backends.
 #' @param force Whether to rebuild existing `output_file`.
 #' @param verbose Whether to print progress messages.
-#' @param ... Additional backend-specific arguments.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A data frame with standardized GRN edges.
 #'
+#' @export
 #' @examples
 #' data(pancreas_sub)
 #' expr <- GetAssayData5(
@@ -759,7 +759,6 @@ regdiffusion_python <- function(
 #'   max_edges_per_target = 2,
 #'   verbose = FALSE
 #' )
-#' @export
 RunGRN <- function(object, ...) {
   UseMethod("RunGRN", object)
 }

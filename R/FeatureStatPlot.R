@@ -39,8 +39,7 @@
 #' @param ylab Y-axis label.
 #' @param grid_major,grid_major_colour,grid_major_linetype,grid_major_linewidth
 #' Major panel grid lines.
-#' @param ... Additional arguments passed to the plotting helpers.
-#'
+#' @param ... Arguments passed to other functions.
 #' @seealso
 #' [CellStatPlot]
 #'
@@ -410,10 +409,10 @@ FeatureStatPlot <- function(
   byrow = TRUE,
   force = FALSE,
   seed = 11,
-  ...,
   x_text_angle = 45,
   verbose = TRUE,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (is.null(group.by)) {

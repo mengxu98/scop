@@ -2,7 +2,7 @@
 #'
 #' @md
 #' @description
-#' Use native `Signac::FeatureMatrix()` to count local indexed fragments over
+#' Use `Signac::FeatureMatrix()` to count local indexed fragments over
 #' one supplied set of genomic ranges. Rows and cells are explicitly aligned;
 #' no existing peak matrices are merged, padded, normalized or binarized.
 #'
@@ -22,10 +22,10 @@
 #'   records both requested and stored orders.
 #' @param new.assay Optional unused syntactically valid assay name. `NULL` returns a list; a name
 #'   returns a Seurat object with a new assay, leaving the source assay and its
-#'   analysis results unchanged. The native constructor requires at least two
+#'   analysis results unchanged. The constructor requires at least two
 #'   peaks and two cells for this writeback route.
-#' @param process_n Number of regions per native FeatureMatrix chunk.
-#' @param verbose Whether native backends print progress messages.
+#' @param process_n Number of regions per FeatureMatrix chunk.
+#' @param verbose Whether to print progress messages.
 #'
 #' @details
 #' Counts are fragment-file record overlaps: a record contributes once to each
@@ -34,7 +34,7 @@
 #' reweighted, so matrix column sums are not necessarily unique fragments in peaks.
 #'
 #' Requested raw barcodes and stored file/index hashes are checked with Signac's
-#' native validators before counting. Different captures may reuse raw barcodes,
+#' validators before counting. Different captures may reuse raw barcodes,
 #' but each final cell must map to exactly one file. No barcode suffixes, genome
 #' labels or chromosome styles are guessed. Only files needed by selected cells
 #' are read. Features on chromosomes present in each index are counted with
@@ -49,45 +49,44 @@
 #'
 #' Writeback happens only after validation and counting succeed. The new assay
 #' contains the recounted matrix, supplied ranges, reference labels and selected
-#' fragment references. Native initialization puts raw counts in its data layer;
+#' fragment references. Assay initialization puts raw counts in its data layer;
 #' no normalized data, scaled data, variable features, gene annotation, motifs,
 #' links or old peak metadata are copied from the source. Existing reductions
 #' remain associated with their original assay; compute a new representation
-#' explicitly. The default assay is not changed. No resources are downloaded,
-#' dependencies installed or external paths repaired.
+#' explicitly. The default assay is not changed. R dependencies follow
+#' `thisutils::check_r()` defaults. Genomic resources are not downloaded and
+#' external paths are not repaired.
 #'
 #' @return With `new.assay = NULL`, a list containing sparse `counts`, aligned
 #'   `ranges` named by the output peak IDs, and a `receipt` with original range
 #'   names, cell/peak IDs, file and reference information,
-#'   native count semantics and backend version. With `new.assay` specified,
+#'   count semantics and dependency version. With `new.assay` specified,
 #'   a Seurat object; its receipt is stored at
 #'   `Misc(object[[new.assay]], "scop_atac_recount")`.
 #' @seealso [ReadATACData()], [CheckATACData()], [RunATACQC()]
-#' @examples
-#' if (requireNamespace("Rsamtools", quietly = TRUE)) {
-#'   (function() {
-#'     directory <- tempfile("atac-recount-")
-#'     dir.create(directory)
-#'     on.exit(unlink(directory, recursive = TRUE), add = TRUE)
-#'     path <- file.path(directory, "fragments.tsv")
-#'     writeLines(c("chr1\t10\t20\tA\t5", "chr1\t110\t120\tB\t3"), path)
-#'     compressed <- Rsamtools::bgzip(path, dest = paste0(path, ".gz"))
-#'     Rsamtools::indexTabix(compressed, format = "bed")
-#'     peaks <- GenomicRanges::GRanges(c("chr1:1-50", "chr1:101-150"))
-#'     counts <- Matrix::sparseMatrix(
-#'       i = 1:2, j = 1:2, x = 1, dims = c(2, 2),
-#'       dimnames = list(c("p1", "p2"), c("cellA", "cellB"))
-#'     )
-#'     atac <- ReadATACData(counts,
-#'       ranges = peaks, genome = "toy",
-#'       fragments = compressed, fragment.cells = c(cellA = "A", cellB = "B"),
-#'       verbose = FALSE
-#'     )
-#'     recounted <- RecountATAC(atac, ranges = peaks, verbose = FALSE)
-#'     recounted$counts
-#'   })()
-#' }
 #' @export
+#' @examples
+#' (function() {
+#'   directory <- tempfile("atac-recount-")
+#'   dir.create(directory)
+#'   on.exit(unlink(directory, recursive = TRUE), add = TRUE)
+#'   path <- file.path(directory, "fragments.tsv")
+#'   writeLines(c("chr1\t10\t20\tA\t5", "chr1\t110\t120\tB\t3"), path)
+#'   compressed <- Rsamtools::bgzip(path, dest = paste0(path, ".gz"))
+#'   Rsamtools::indexTabix(compressed, format = "bed")
+#'   peaks <- GenomicRanges::GRanges(c("chr1:1-50", "chr1:101-150"))
+#'   counts <- Matrix::sparseMatrix(
+#'     i = 1:2, j = 1:2, x = 1, dims = c(2, 2),
+#'     dimnames = list(c("p1", "p2"), c("cellA", "cellB"))
+#'   )
+#'   atac <- ReadATACData(counts,
+#'     ranges = peaks, genome = "toy",
+#'     fragments = compressed, fragment.cells = c(cellA = "A", cellB = "B"),
+#'     verbose = FALSE
+#'   )
+#'   recounted <- RecountATAC(atac, ranges = peaks, verbose = FALSE)
+#'   recounted$counts
+#' })()
 RecountATAC <- function(
   object, ranges, assay = NULL, cells = NULL,
   new.assay = NULL, process_n = 2000L, verbose = TRUE
@@ -105,13 +104,13 @@ RecountATAC <- function(
   if (!is.null(names(ranges)) && !atac_unique_ids(names(ranges))) {
     log_message("Range names must be unique non-empty IDs.", message_type = "error")
   }
-  labels <- unique(as.character(atac_backend_fun("GenomeInfoDb", "genome")(ranges)))
+  labels <- unique(as.character(GenomeInfoDb::genome(ranges)))
   labels <- labels[!is.na(labels) & nzchar(labels)]
   if (length(labels) && !identical(labels, report$genome)) {
     log_message("Recount ranges and assay genome labels must agree.", message_type = "error")
   }
-  source_lengths <- atac_backend_fun("GenomeInfoDb", "seqlengths")(chromatin)
-  range_lengths <- atac_backend_fun("GenomeInfoDb", "seqlengths")(ranges)
+  source_lengths <- GenomeInfoDb::seqlengths(chromatin)
+  range_lengths <- GenomeInfoDb::seqlengths(ranges)
   shared_lengths <- source_lengths[names(range_lengths)]
   if (any(range_lengths != shared_lengths, na.rm = TRUE)) {
     log_message("Recount ranges and source-assay chromosome lengths conflict.", message_type = "error")
@@ -122,13 +121,13 @@ RecountATAC <- function(
   }
   known_lengths <- !is.na(shared_lengths)
   range_lengths[known_lengths] <- shared_lengths[known_lengths]
-  ranges <- atac_backend_fun("GenomeInfoDb", "seqlengths<-")(ranges, value = range_lengths)
+  ranges <- GenomeInfoDb::`seqlengths<-`(ranges, value = range_lengths)
   if (length(report$genome) == 1L) {
-    ranges <- atac_backend_fun("GenomeInfoDb", "genome<-")(ranges, value = report$genome)
+    ranges <- GenomeInfoDb::`genome<-`(ranges, value = report$genome)
   }
   input_peak_ids <- names(ranges)
   feature_ids <- atac_range_ids(ranges)
-  native_ids <- Signac::GRangesToString(ranges, sep = c("-", "-"))
+  native_ids <- paste0(chromosomes, "-", GenomicRanges::start(ranges), "-", GenomicRanges::end(ranges))
   names(ranges) <- feature_ids
   if (!atac_unique_ids(feature_ids)) log_message("Range IDs collide after native feature naming.", message_type = "error")
   if (is.null(cells)) cells <- colnames(chromatin)
@@ -172,8 +171,8 @@ RecountATAC <- function(
     if (is.na(index)) log_message("Fragment index is missing for {path}.", message_type = "error")
     index
   }, character(1), USE.NAMES = FALSE)
-  tabix_file <- atac_backend_fun("Rsamtools", "TabixFile")
-  seqnames_tabix <- atac_backend_fun("Rsamtools", "seqnamesTabix")
+  tabix_file <- Rsamtools::TabixFile
+  seqnames_tabix <- Rsamtools::seqnamesTabix
   missing_chromosomes <- vector("list", length(fragments))
   available_features <- vector("list", length(fragments))
   indexed_chromosomes <- vector("list", length(fragments))
@@ -227,7 +226,7 @@ RecountATAC <- function(
   problems <- atac_counts_problems(counts)
   if (length(problems)) log_message("{paste(problems, collapse = ' ')}", message_type = "error")
   cells <- vapply(cells, identity, character(1), USE.NAMES = FALSE)
-  genome <- unique(as.character(atac_backend_fun("GenomeInfoDb", "genome")(ranges)))
+  genome <- unique(as.character(GenomeInfoDb::genome(ranges)))
   genome <- genome[!is.na(genome) & nzchar(genome)]
   hashes <- lapply(fragments, Signac::GetFragmentData, slot = "hash")
   receipt <- list(
@@ -263,7 +262,7 @@ RecountATAC <- function(
   receipt$cell_order <- "original Seurat object order on writeback"
   new_chromatin <- Signac::CreateChromatinAssay(
     counts = counts, ranges = ranges,
-    fragments = fragments, genome = atac_backend_fun("GenomeInfoDb", "seqinfo")(ranges),
+    fragments = fragments, genome = GenomeInfoDb::seqinfo(ranges),
     min.cells = 0, min.features = 0, verbose = verbose
   )
   if (!identical(as.character(rownames(new_chromatin)), as.character(feature_ids)) ||

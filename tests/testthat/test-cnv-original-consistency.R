@@ -25,6 +25,7 @@ cnv_real_infercnv_inputs <- function() {
 test_that("RunCNV copykat matches the original copykat pipeline", {
   skip_on_cran()
   skip_if_not_installed("copykat")
+  withr::local_package("copykat")
 
   srt <- cnv_real_breast_seurat()
   wrapped <- RunCNV(srt, method = "copykat", genome = "hg38", verbose = FALSE)
@@ -199,6 +200,7 @@ test_that("RunCNV fastCNV matches the original fastCNV pipeline", {
   skip_on_cran()
   skip_if_not_installed("fastCNV")
   skip_if_not_installed("copykat")
+  withr::local_package("fastCNV")
 
   srt <- cnv_real_breast_seurat()
   srt$celltype <- ifelse(seq_len(ncol(srt)) %% 5 == 0, "Normal", "Tumor")

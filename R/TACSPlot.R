@@ -39,8 +39,7 @@
 #' @param quadrants_line_width The width of the quadrants lines.
 #' @param quadrants_label_size The size of the quadrants labels.
 #' @param density_alpha The alpha of the density plot.
-#' @param ... Additional parameters passed to [ggplot2::stat_density2d].
-#'
+#' @param ... Arguments passed to other functions.
 #' @export
 #'
 #' @references
@@ -123,8 +122,8 @@ TACSPlot <- function(
   nrow = NULL,
   ncol = NULL,
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (is.null(ref_srt)) {
@@ -409,8 +408,7 @@ GetSimilarFeatures <- function(
 #' @md
 #' @inheritParams TACSPlot
 #' @param features Feature names.
-#' @param ... Other arguments to pass to [Seurat::FetchData].
-#'
+#' @param ... Arguments passed to other functions.
 #' @export
 FetchDataZero <- function(
   object,
@@ -418,8 +416,8 @@ FetchDataZero <- function(
   assay = "RNA",
   layer = "data",
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   features <- features[stats::complete.cases(features)]

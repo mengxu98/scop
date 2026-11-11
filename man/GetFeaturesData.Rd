@@ -18,7 +18,7 @@ GetFeaturesData(object, ...)
 \arguments{
 \item{object}{A \code{Assay}, \code{Assay5} or \code{Seurat} object.}
 
-\item{...}{Additional arguments passed to the method.}
+\item{...}{Arguments passed to other functions.}
 
 \item{assay}{Assay to use. \code{NULL} uses the default assay.}
 }

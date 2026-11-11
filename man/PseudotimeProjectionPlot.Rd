@@ -163,12 +163,15 @@ Defaults is \code{"white"}.}
 
 \item{label.bg.r}{Group labels. \code{label_insitu = FALSE} uses numbers instead of group names.}
 
-\item{seed}{Random seed.}
+\item{seed}{Random seed for plot construction. The caller's RNG state is restored.}
 
 \item{verbose}{Whether to print messages.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+}
+\value{
+A ggplot, or a named list of ggplot layers when \code{return_layer = TRUE}.
 }
 \description{
 Creates a projection plot similar to \link{VelocityPlot},

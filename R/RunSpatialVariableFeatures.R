@@ -3,7 +3,7 @@
 #' @description
 #' Score genes by spot-level spatial autocorrelation. The package `"moran"` and
 #' `"geary"` methods use a lightweight coordinate KNN graph. `"SPARKX"` and
-#' `"nnSVG"` use optional external backends when their packages are installed.
+#' `"nnSVG"` use optional external packages when installed.
 #'
 #' @md
 #' @inheritParams RunStandardWorkflow
@@ -35,12 +35,11 @@
 #' uses the process OpenMP default.
 #' @param max_dense_gb Maximum estimated GB for an expression matrix conversion
 #'   in the R-reference or nnSVG path. The C++ and SPARK-X paths retain sparse
-#'   input. This guard bounds one conversion, not total backend memory.
+#'   input. This guard bounds one conversion, not total memory.
 #' @param object A `Seurat` object.
 #' @param srt Deprecated alias for `object`; supply exactly one of the two. It
 #' will be removed in scop 1.0.0.
-#' @param ... Additional arguments passed to external backends.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A `Seurat` object with spatial variable feature results stored in
 #' `srt@tools[["SpatialVariableFeatures"]]`. Top feature names are available
 #' at `srt@tools[["SpatialVariableFeatures"]]$summary$top_features`.
@@ -91,8 +90,8 @@ RunSpatialVariableFeatures <- function(
   backend = c("cpp", "r"),
   cores = NULL,
   max_dense_gb = 2,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- spatial_resolve_object(
     object = object,

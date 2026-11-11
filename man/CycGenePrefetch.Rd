@@ -39,7 +39,8 @@ ccgenes <- CycGenePrefetch("Homo_sapiens")
 str(ccgenes)
 
 ccgenes <- CycGenePrefetch(
-  "Mus_musculus", Ensembl_version = 115, use_cached_gene = FALSE
+  "Mus_musculus",
+  Ensembl_version = 115, use_cached_gene = FALSE
 )
 str(ccgenes)
 }

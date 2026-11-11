@@ -68,8 +68,8 @@ Possible values are \code{"log"} and \code{"none"}.}
 If NULL, the trajectory is rooted at the first state after an initial
 ordering.}
 
-\item{backend}{Deprecated and ignored. Monocle now accelerates cell ordering
-natively with C++, so the separate \code{"cpp"} backend has been removed.}
+\item{backend}{Deprecated and ignored. Monocle accelerates cell ordering
+with compiled C++, so the separate \code{"cpp"} option has been removed.}
 
 \item{n_neighbors}{Deprecated and ignored.}
 

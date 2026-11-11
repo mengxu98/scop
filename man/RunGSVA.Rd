@@ -39,8 +39,8 @@ RunGSVA(
   ssgsea.norm = TRUE,
   cores = NULL,
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -118,7 +118,7 @@ current \code{method} values. \code{"r"} uses the original \code{\link[GSVA:gsva
 implementation. \code{"cpp"} supports \code{method = "ssgsea"},
 \code{method = "zscore"}, \code{method = "plage"}, and \code{method = "gsva"} with
 \code{kcdf = "Gaussian"}, \code{kcdf = "Poisson"}, or \code{kcdf = "none"}. Gaussian
-GSVA uses the native C++ KDE/ranking kernel, tracking the sparse scoring
+GSVA uses the compiled C++ KDE/ranking kernel, tracking the sparse scoring
 walk of the installed GSVA release; other GSVA kernels keep the validated
 GSVA implementation. PLAGE scores are oriented to have non-negative
 dot product with the gene set mean z-score so SVD signs are deterministic.}
@@ -152,10 +152,10 @@ process OpenMP default.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{Passed to helper functions.}
-
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 Returns the modified \code{Seurat} object. When \code{group.by} is provided, GSVA scores are stored in the \code{tools} slot.

@@ -34,8 +34,8 @@ RunEnrichment(
   simplify_method = "Wang",
   simplify_similarityCutoff = 0.7,
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -64,7 +64,7 @@ This argument is used to convert the gene IDs to a different type if \code{IDtyp
 \item{result_IDtype}{Desired type of gene ID to be used in the output.
 This argument is used to convert the gene IDs from \code{IDtype} to \code{result_IDtype}.}
 
-\item{backend}{Enrichment backend. \code{"cpp"} is the default and uses a fast native
+\item{backend}{Enrichment backend. \code{"cpp"} is the default and uses a fast
 hypergeometric ORA implementation and returns the enrichment table without
 \code{enrichResult} objects. \code{"r"} uses \code{\link[clusterProfiler:enricher]{clusterProfiler::enricher()}} and returns
 \code{enrichResult} objects in \code{results}. \code{GO_simplify = TRUE} currently uses the R backend.}
@@ -124,10 +124,10 @@ This argument is only used if \code{GO_simplify} is \code{TRUE}.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{Passed to helper functions.}
-
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 If input is a Seurat object, returns the modified Seurat object with the enrichment result stored in the tools slot.

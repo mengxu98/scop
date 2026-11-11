@@ -741,7 +741,7 @@ cellstate_plot <- function(data, tree, features, feature.labels, pathways,
   xs <- max(28.2732, max(measure(c("Subclasses", "Clusters"))) + 10) +
     (seq_len(n) - 1) * 7.07006
   left <- xs[1] - 5.7712
-  right <- tail(xs, 1) + 6.3442
+  right <- utils::tail(xs, 1) + 6.3442
   label.x <- right + 6.0072
   runs <- rle(data$clusters$class)
   ends <- cumsum(runs$lengths)
@@ -801,8 +801,8 @@ cellstate_plot <- function(data, tree, features, feature.labels, pathways,
   gene.bottom <- gene.top + gene.height
   path.lines <- lengths(strsplit(pathway.labels, "\n", fixed = TRUE))
   path.half <- pmax(3.259, path.lines * 2.625)
-  path.offsets <- c(0, cumsum(head(path.half, -1L) + tail(path.half, -1L) + 2.5))
-  path.content <- tail(path.offsets, 1) + path.half[1] + tail(path.half, 1)
+  path.offsets <- c(0, cumsum(head(path.half, -1L) + utils::tail(path.half, -1L) + 2.5))
+  path.content <- utils::tail(path.offsets, 1) + path.half[1] + utils::tail(path.half, 1)
   path.top <- gene.bottom + 3
   path.height <- max(path.content + 4, max(measure(c("Pathway", "enrichment"))) + 4)
   path.y <- path.top + (path.height - path.content) / 2 + path.half[1] + path.offsets
@@ -927,9 +927,10 @@ cellstate_plot <- function(data, tree, features, feature.labels, pathways,
     pathways = pathways, pathway.labels = pathway.labels, encoded = encoded,
     palette = palette, colors = colors, layout = layout, flip = flip
   )
+  render <- cellstate_render
   recorded <- grid::recordGrob(
     grid::grid.draw(render(state)),
-    list(state = state, render = cellstate_render),
+    list(state = state, render = render),
     name = "cell-state-plot"
   )
   check_r("patchwork", verbose = FALSE)

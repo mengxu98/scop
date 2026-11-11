@@ -59,8 +59,8 @@ CCCStatPlot(
   combine_methods = c("separate", "support", "rank", "legacy"),
   resource = NULL,
   sample = NULL,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -168,9 +168,9 @@ the right side unreadable.}
 
 \item{grid_major_linewidth}{Line width of major panel grid lines.}
 
-\item{combine}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE} returns a list of ggplots.}
+\item{combine}{Combine plots with \code{\link[patchwork:wrap_plots]{patchwork::wrap_plots()}}. \code{combine = FALSE} returns a list of ggplots.}
 
-\item{nrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE} returns a list of ggplots.}
+\item{nrow}{Combine plots with \code{\link[patchwork:wrap_plots]{patchwork::wrap_plots()}}. \code{combine = FALSE} returns a list of ggplots.}
 
 \item{ncol}{Number of columns of the combined plot.}
 
@@ -184,16 +184,20 @@ retains the deprecated raw-score aggregation.}
 \item{resource, sample}{Optional resource and sample/context filters for
 unified CCC results.}
 
-\item{...}{Additional plot-specific options.}
-
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A ggplot or recorded base plot object.
 }
 \description{
 CCC statistical distribution and summary plots
+}
+\details{
+Canonical selection parameters and legacy aliases may be supplied
+together only when their values agree. Conflicting values raise an error.
 }
 \examples{
 data(pancreas_sub)

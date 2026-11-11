@@ -3,15 +3,17 @@ annotated_enrichment_fixture <- function() {
   tab$ID <- paste0("term", tab$term)
   tab$Description <- "Repeated description"
   tab$p.adjust <- c(0.001, 0.02, 0.04)[tab$term]
-  tab$pvalue <- tab$p.adjust/2
+  tab$pvalue <- tab$p.adjust / 2
   tab$Count <- tab$term + 1
   tab$geneID <- c("A/B", "C/D/E", NA_character_)[tab$term]
   list(enrichment = tab)
 }
 
 test_that("annotated bars select terms per database and preserve duplicate labels", {
-  plots <- EnrichmentPlot(res = annotated_enrichment_fixture(), db = c("GO_CC", "GO_BP"), plot_type = "annotated_bar",
-    topTerm = 2, combine = FALSE, color_by = "Database", palcolor = c(GO_BP = "blue", GO_CC = "red"))
+  plots <- EnrichmentPlot(
+    res = annotated_enrichment_fixture(), db = c("GO_CC", "GO_BP"), plot_type = "annotated_bar",
+    topTerm = 2, combine = FALSE, color_by = "Database", palcolor = c(GO_BP = "blue", GO_CC = "red")
+  )
   expect_length(plots, 2)
   for (p in plots) {
     expect_s3_class(p, "ggplot")
@@ -21,16 +23,20 @@ test_that("annotated bars select terms per database and preserve duplicate label
     expect_equal(p$data$.genes, rep(c("A, B", "C, D, E"), 2))
     expect_equal(p$data$.score, -log10(p$data$p.adjust))
     built <- ggplot2::ggplot_build(p)
-    expect_equal(unname(built$plot$scales$get_scales("fill")$map(c("GO_CC", "GO_BP"))), c("red",
-      "blue"))
+    expect_equal(unname(built$plot$scales$get_scales("fill")$map(c("GO_CC", "GO_BP"))), c(
+      "red",
+      "blue"
+    ))
     expect_no_warning(ggplot2::ggplotGrob(p))
   }
   expect_equal(plots[[1]]$scales$get_scales("x")$limits, plots[[2]]$scales$get_scales("x")$limits)
 })
 
 test_that("annotated bars use GSEA-style opacity on database colors", {
-  plots <- EnrichmentPlot(res = annotated_enrichment_fixture(), db = "GO", plot_type = "annotated_bar",
-    combine = FALSE)
+  plots <- EnrichmentPlot(
+    res = annotated_enrichment_fixture(), db = "GO", plot_type = "annotated_bar",
+    combine = FALSE
+  )
   expect_s3_class(plots[[1]]$scales$get_scales("fill"), "ScaleDiscrete")
   scale <- plots[[1]]$scales$get_scales("alpha")
   expect_s3_class(scale, "ScaleContinuous")
@@ -46,19 +52,27 @@ test_that("annotated bars use GSEA-style opacity on database colors", {
 })
 
 test_that("annotated bar spacing is explicit and validated", {
-  p <- EnrichmentPlot(res = annotated_enrichment_fixture(), db = "GO",
-    group_use = "A", plot_type = "annotated_bar", row_step = 0.9, db_gap = 0.3)
+  p <- EnrichmentPlot(
+    res = annotated_enrichment_fixture(), db = "GO",
+    group_use = "A", plot_type = "annotated_bar", row_step = 0.9, db_gap = 0.3
+  )
   expect_equal(diff(p$data$.y), c(-0.9, -0.9, -1.2, -0.9, -0.9))
-  expect_error(EnrichmentPlot(res = annotated_enrichment_fixture(),
-    plot_type = "annotated_bar", row_step = 0.4), "row_step")
-  expect_error(EnrichmentPlot(res = annotated_enrichment_fixture(),
-    plot_type = "annotated_bar", db_gap = -1), "db_gap")
+  expect_error(EnrichmentPlot(
+    res = annotated_enrichment_fixture(),
+    plot_type = "annotated_bar", row_step = 0.4
+  ), "row_step")
+  expect_error(EnrichmentPlot(
+    res = annotated_enrichment_fixture(),
+    plot_type = "annotated_bar", db_gap = -1
+  ), "db_gap")
 })
 
 test_that("annotated bars honor explicit IDs, metrics and panel splitting", {
   res <- annotated_enrichment_fixture()
-  plots <- EnrichmentPlot(res = res, db = "GO", plot_type = "annotated_bar", id_use = list(B = "term3"),
-    padjustCutoff = NULL, pvalueCutoff = 0.001, split_by = c("Database", "Groups"), combine = FALSE)
+  plots <- EnrichmentPlot(
+    res = res, db = "GO", plot_type = "annotated_bar", id_use = list(B = "term3"),
+    padjustCutoff = NULL, pvalueCutoff = 0.001, split_by = c("Database", "Groups"), combine = FALSE
+  )
   expect_length(plots, 2)
   expect_true(all(vapply(plots, function(p) nrow(p$data) == 1L, logical(1))))
   expect_equal(plots[[1]]$data$ID, "term3")
@@ -70,36 +84,44 @@ test_that("annotated bars honor explicit IDs, metrics and panel splitting", {
 test_that("annotated bars handle zero, missing and invalid values explicitly", {
   res <- annotated_enrichment_fixture()
   res$enrichment$p.adjust[1:2] <- c(0, NA_real_)
-  expect_warning(p <- EnrichmentPlot(res = res, db = "GO_BP", group_use = "A", plot_type = "annotated_bar"),
-    "missing p-values")
+  expect_warning(
+    p <- EnrichmentPlot(res = res, db = "GO_BP", group_use = "A", plot_type = "annotated_bar"),
+    "missing p-values"
+  )
   expect_true(all(is.finite(p$data$.score)))
   expect_equal(p$data$.score[1], -log10(.Machine$double.xmin))
   res$enrichment$p.adjust[1] <- -1
   expect_error(EnrichmentPlot(res = res, plot_type = "annotated_bar"), "between 0 and 1")
   res$enrichment$p.adjust[] <- 1
   expect_error(EnrichmentPlot(res = res, plot_type = "annotated_bar"), "No term enriched")
-  expect_error(EnrichmentPlot(res = annotated_enrichment_fixture(), plot_type = "annotated_bar",
-    topTerm = 0), "positive integer")
+  expect_error(EnrichmentPlot(
+    res = annotated_enrichment_fixture(), plot_type = "annotated_bar",
+    topTerm = 0
+  ), "positive integer")
 })
 
 test_that("optional annotations do not require unused columns", {
   res <- annotated_enrichment_fixture()
   res$enrichment$geneID <- res$enrichment$Count <- NULL
   expect_error(EnrichmentPlot(res = res, plot_type = "annotated_bar"), "Missing annotated-bar columns")
-  p <- EnrichmentPlot(res = res, plot_type = "annotated_bar", group_use = "A", show_genes = FALSE,
-    show_count = FALSE, character_width = 8)
+  p <- EnrichmentPlot(
+    res = res, plot_type = "annotated_bar", group_use = "A", show_genes = FALSE,
+    show_count = FALSE, character_width = 8
+  )
   expect_true(all(nchar(p$data$.term) <= 8))
   expect_no_warning(ggplot2::ggplotGrob(p))
 })
 
 test_that("term labels sit inside bars and database bands render with rounded corners", {
-  p <- EnrichmentPlot(res = annotated_enrichment_fixture(), db = "GO",
-    group_use = "A", plot_type = "annotated_bar")
+  p <- EnrichmentPlot(
+    res = annotated_enrichment_fixture(), db = "GO",
+    group_use = "A", plot_type = "annotated_bar"
+  )
   built <- ggplot2::ggplot_build(p)
   expect_true(all(built$data[[4]]$y > built$data[[2]]$ymin))
   expect_true(all(built$data[[4]]$y < built$data[[2]]$ymax))
   expect_true(all(built$data[[5]]$y < built$data[[2]]$ymin))
-  grob <- enrichment_round_band$draw_panel(
+  grob <- p$layers[[1]]$geom$draw_panel(
     built$data[[1]], built$layout$panel_params[[1]], built$plot$coordinates
   )
   expect_true(all(vapply(grob$children, inherits, logical(1), "roundrect")))
@@ -107,8 +129,10 @@ test_that("term labels sit inside bars and database bands render with rounded co
 })
 
 test_that("annotated bars read the established Seurat enrichment result key", {
-  object <- SeuratObject::CreateSeuratObject(Matrix::Matrix(matrix(1:12, 3, dimnames = list(c("a",
-    "b", "c"), paste0("cell", 1:4))), sparse = TRUE))
+  object <- SeuratObject::CreateSeuratObject(Matrix::Matrix(matrix(1:12, 3, dimnames = list(c(
+    "a",
+    "b", "c"
+  ), paste0("cell", 1:4))), sparse = TRUE))
   object@tools$Enrichment_celltype_wilcox <- annotated_enrichment_fixture()
   p <- EnrichmentPlot(object, group.by = "celltype", group_use = "B", db = "GO", plot_type = "annotated_bar")
   expect_equal(unique(as.character(p$data$Groups)), "B")
@@ -128,4 +152,18 @@ test_that("database colors align across bands, dots and gene labels", {
     expect_equal(layers[[2]]$fill, layers[[5]]$colour)
     expect_no_warning(ggplot2::ggplotGrob(p))
   }
+})
+
+test_that("annotated bar text follows the displayed fill and opacity", {
+  res <- annotated_enrichment_fixture()
+  original <- res
+  p <- EnrichmentPlot(
+    res = res, db = "GO", group_use = "A", plot_type = "annotated_bar",
+    palcolor = c(GO_BP = "black", GO_CC = "white")
+  )
+  layers <- ggplot2::ggplot_build(p)$data
+  expect_equal(layers[[4]]$colour, c("white", "black", "black", rep("black", 3)))
+  expect_equal(layers[[4]]$alpha, rep(1, 6))
+  expect_identical(res, original)
+  expect_no_warning(ggplot2::ggplotGrob(p))
 })

@@ -19,8 +19,7 @@
 #' @param conda Conda executable path (SEACells only).
 #' @param prefix Prefix for metadata columns written to `object`.
 #' @param tool_name Name of the `srt@tools` entry.
-#' @param ... Additional arguments passed to the underlying metacell method.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A metacell-level `Seurat` object. The original single-cell Seurat
 #' is stored in `@misc[["original_srt"]]` and the cell-to-metacell membership
 #' vector in `@misc[["cell_membership"]]`. The returned object can be passed
@@ -78,8 +77,8 @@ RunMetaCell <- function(
   prefix = "Metacell",
   tool_name = "Metacell",
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {

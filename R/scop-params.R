@@ -8,9 +8,9 @@
 #' @param layer Assay layer to use.
 #' @param verbose Print progress messages.
 #' @param seed Random seed.
-#' @param cores Number of CPU cores. `NULL` lets each backend pick its own
+#' @param cores Number of CPU cores. `NULL` lets each method pick its own
 #' default: the process OpenMP team (`OMP_NUM_THREADS`) for C++ kernels and one
-#' worker for R/Python parallel backends.
+#' worker for R/Python parallel execution.
 #' @param group.by Metadata column(s) to group cells by.
 #' @param split.by Metadata column to split the analysis or plot by.
 #' @param reduction Dimensionality reduction to use. `NULL` uses [DefaultReduction].
@@ -25,11 +25,10 @@
 #' @param coord.cols Metadata coordinate columns used when no image is available.
 #' @param coordinate_space Coordinate space for spatial distances. `"raw"` is
 #' the default; `"legacy_display"` remains available for compatibility.
-#' @param backend Implementation backend.
+#' @param backend Execution engine or implementation method.
 #' @param tool_name Name of the `srt@tools` slot used to store results.
 #' @param overwrite Overwrite existing results.
-#' @param ... Additional arguments passed to the underlying method.
-#'
+#' @param ... Arguments passed to other functions.
 #' @keywords internal
 #' @param byrow Whether to fill matrices/plots by row.
 #' @param cell_annotation Cell annotations. Palette length should match `cell_annotation`.
@@ -41,7 +40,7 @@
 #' @param cluster_rows Whether to cluster heatmap rows/columns. Defaults are both `FALSE`.
 #' @param cols.highlight Cells to highlight and their appearance. `TRUE` highlights all cells.
 #' @param column_title The title for the column names in the heatmap. Default is to use the reference grouping variable.
-#' @param combine Combine plots with [patchwork]. `combine = FALSE` returns a list of ggplots.
+#' @param combine Combine plots with [patchwork::wrap_plots()]. `combine = FALSE` returns a list of ggplots.
 #' @param complex.mean Method-specific complex ligand-receptor mean. Methods
 #' that do not expose it should document their own alternative.
 #' @param coordinate.unit Unit of the raw input coordinates. Automatic unit selection uses technology-specific rules.
@@ -85,7 +84,7 @@
 #' @param nlabel The maximum number of labels to show on each side of the heatmap. If set to 0, no labels will be shown. This can be useful for reducing clutter in large heatmaps.
 #' @param nonlinear_reduction Nonlinear reduction (`"umap"`, `"umap-naive"`, `"tsne"`, `"dm"`, `"phate"`, `"pacmap"`, `"trimap"`, `"largevis"`, `"fr"`).
 #' @param nproc Number of parallel processes.
-#' @param nrow Combine plots with [patchwork]. `combine = FALSE` returns a list of ggplots.
+#' @param nrow Combine plots with [patchwork::wrap_plots()]. `combine = FALSE` returns a list of ggplots.
 #' @param overlay_image Draw the spatial image beneath spots.
 #' @param overwrite Whether to overwrite existing metadata.
 #' @param palcolor Custom colors used to create a color palette.

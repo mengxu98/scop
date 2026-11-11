@@ -43,7 +43,7 @@ RunSpatialGradientFeatures(
 \code{"annotation"} for SAS.}
 
 \item{backend}{Computation backend. The supported backend is \code{"cpp"}, which
-uses the compiled native spatial implementation.}
+uses the compiled spatial implementation.}
 
 \item{result_name}{Name used to store this result. If \code{NULL}, a name is
 generated from \code{reference}.}
@@ -52,7 +52,7 @@ generated from \code{reference}.}
 
 \item{layer}{Assay layer used for expression values.}
 
-\item{variables}{Numeric variables or genes tested by the native backend. If \code{NULL},
+\item{variables}{Numeric variables or genes to test. If \code{NULL},
 \code{srt@tools[["SpatialVariableFeatures"]]} is used first, then variable
 features, then all assay features.}
 
@@ -62,24 +62,24 @@ a single image is selected automatically when \code{NULL}.}
 \item{coord.cols}{Metadata coordinate columns used by the \code{"cpp"}
 backend when no image coordinates are available.}
 
-\item{start, end, traj_df}{Trajectory geometry used by the native backend when
+\item{start, end, traj_df}{Trajectory geometry used when
 \code{reference = "trajectory"}.}
 
 \item{annotation.by, annotation.groups}{Metadata grouping used to create the
-native annotation mask.}
+annotation mask.}
 
 \item{annotation.variable, annotation.threshold}{Numeric variable and
-threshold used to create a native numeric annotation mask. Numeric
+threshold used to create a numeric annotation mask. Numeric
 thresholds are interpreted as \code{">{threshold}"}.}
 
 \item{unit}{Optional coordinate-unit label stored in the result source. It
 does not transform coordinates.}
 
 \item{sign_var, sign_threshold}{Column and cutoff used to select top gradient
-variables from the native significance table.}
+variables from the significance table.}
 
-\item{n_random, seed}{Permutation count and random seed used by the native
-screening backend.}
+\item{n_random, seed}{Permutation count and random seed used for
+screening.}
 
 \item{n_bins}{Number of distance bins used for the \code{"cpp"} backend
 screening curve.}
@@ -103,8 +103,7 @@ Default is \code{TRUE}.}
 calculations. The default is raw acquisition coordinates, so \code{start},
 \code{end}, trajectory positions, and C++ distances share raw
 coordinate units. Use \code{"legacy_display"} explicitly for pre-0.9.0 display
-coordinates. Results retain the raw coordinate units used by the native
-backend.}
+coordinates. Results retain the raw coordinate units.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
@@ -120,7 +119,7 @@ Screen features for expression trends along a spatial trajectory or
 with distance from annotated regions.
 }
 \details{
-The current native interface is intentionally small. Older calls that pass
+The current interface is intentionally small. Older calls that pass
 \code{sample_name}, \code{platform}, \code{img_scale_fct}, \code{assay_modality},
 \code{trajectory_id}, \code{width}, \code{annotation_id}, \code{core}, \code{distance},
 \code{angle_span}, \code{resolution}, \code{model_add}, \code{model_subset}, \code{model_remove},
@@ -129,7 +128,7 @@ The current native interface is intentionally small. Older calls that pass
 \code{annotation.by}/\code{annotation.groups} or
 \code{annotation.variable}/\code{annotation.threshold} for annotation references;
 and use \code{n_random}, \code{n_bins}, \code{min_spots}, \code{sign_threshold}, and
-\code{nfeatures} for native screening controls.
+\code{nfeatures} for screening controls.
 }
 \examples{
 data(visium_human_pancreas_sub)

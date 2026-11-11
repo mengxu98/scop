@@ -1,4 +1,4 @@
-#' @title A subsetted version of mouse 'pancreas' datasets
+#' @title A subsetted mouse 'pancreas' datasets
 #'
 #' @description
 #' Mouse pancreatic endocrinogenesis dataset from
@@ -8,11 +8,10 @@
 #' @md
 #' @format A `Seurat` object.
 #' @source
+#' \href{https://scvelo.readthedocs.io/en/stable/scvelo.datasets.pancreas.html}{scvelo.datasets.pancreas},
+#' \href{https://github.com/theislab/scvelo_notebooks/raw/master/data/Pancreas/endocrinogenesis_day15.h5ad}{endocrinogenesis_day15.h5ad}
 #'
-#'   \href{https://scvelo.readthedocs.io/en/stable/scvelo.datasets.pancreas.html}{scvelo.datasets.pancreas},
-#'
-#'   \href{https://github.com/theislab/scvelo_notebooks/raw/master/data/Pancreas/endocrinogenesis_day15.h5ad}{endocrinogenesis_day15.h5ad}
-#'
+#' @name pancreas_sub
 #' @examples
 #' if (interactive()) {
 #'   PrepareEnv()
@@ -58,7 +57,6 @@
 #'     overwrite = TRUE
 #'   )
 #' }
-#' @name pancreas_sub
 NULL
 
 #' @title A subsetted version of human 'panc8' datasets
@@ -77,6 +75,7 @@ NULL
 #' \href{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE85241}{GSE85241},
 #' \href{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE86469}{GSE86469}
 #'
+#' @name panc8_sub
 #' @examples
 #' if (interactive()) {
 #'   data(pancreas_sub)
@@ -114,7 +113,6 @@ NULL
 #'     overwrite = TRUE
 #'   )
 #' }
-#' @name panc8_sub
 NULL
 
 #' @title A small human PBMC multiome example dataset
@@ -133,9 +131,9 @@ NULL
 #' @format A `Seurat` object with 12405 RNA genes, 12000 peaks, and 500 cells.
 #' @source
 #' Derived from the PBMC multiome reference data distributed through
-#' \href{https://github.com/satijalab/seurat-data}{SeuratData} /
-#' `pbmcMultiome.SeuratData`.
+#' \href{https://github.com/satijalab/seurat-data}{SeuratData}.
 #'
+#' @name pbmcmultiome_sub
 #' @examples
 #' if (interactive()) {
 #'   SeuratData::InstallData("pbmcMultiome")
@@ -165,7 +163,6 @@ NULL
 #'     overwrite = TRUE
 #'   )
 #' }
-#' @name pbmcmultiome_sub
 NULL
 
 #' @title A human pancreas Visium spatial example dataset
@@ -184,10 +181,6 @@ NULL
 #' ranked by total spatial counts.
 #'
 #' @md
-#' @details
-#' `coda_label` describes tissue components at Visium spots. Feature-dependent
-#' QC requires the full expression assay.
-#'
 #' @format A `Seurat` object with 5000 genes, 1986 spots, and one Visium image
 #' named `slice1`.
 #' @source
@@ -198,6 +191,7 @@ NULL
 #' `GSM8058244_PanIN-LG2.tar.gz` and
 #' `GSE254829_codatable_may202024.csv.gz`.
 #'
+#' @name visium_human_pancreas_sub
 #' @examples
 #' if (interactive()) {
 #'   download.file(
@@ -229,7 +223,10 @@ NULL
 #'   )
 #'   spatial <- subset(
 #'     spatial,
-#'     cells = intersect(colnames(spatial), rownames(tissue_pos)[tissue_pos$V2 == 1])
+#'     cells = intersect(
+#'       colnames(spatial),
+#'       rownames(tissue_pos)[tissue_pos$V2 == 1]
+#'     )
 #'   )
 #'   coords <- SeuratObject::GetTissueCoordinates(spatial)
 #'   spatial$x <- coords[colnames(spatial), "x"]
@@ -238,14 +235,18 @@ NULL
 #'   spatial$geo_accession <- "GSE254829"
 #'   spatial$patient_sample <- "PanIN-LG2"
 #'
-#'   coda <- utils::read.csv("GSE254829_codatable_may202024.csv.gz", check.names = FALSE)
+#'   coda <- utils::read.csv(
+#'     "GSE254829_codatable_may202024.csv.gz",
+#'     check.names = FALSE
+#'   )
 #'   coda$barcode <- sub("_[0-9]+$", "", coda[[1]])
 #'   coda <- coda[coda$sample == "PanIN-LG2" & coda$barcode %in% colnames(spatial), ]
 #'   rownames(coda) <- coda$barcode
 #'   coda <- coda[colnames(spatial), ]
 #'   comp_cols <- c(
-#'     "islets", "normal epithelium", "smooth muscle", "fat", "acini", "collagen",
-#'     "panin"
+#'     "islets", "normal epithelium",
+#'     "smooth muscle", "fat", "acini",
+#'     "collagen", "panin"
 #'   )
 #'   coda$coda_label <- names(coda[comp_cols])[
 #'     max.col(as.matrix(coda[comp_cols]), ties.method = "first")
@@ -277,8 +278,6 @@ NULL
 #'     overwrite = TRUE
 #'   )
 #' }
-#'
-#' @name visium_human_pancreas_sub
 NULL
 
 #' @title Human pancreatic islet bulk RNA-seq example dataset
@@ -300,6 +299,7 @@ NULL
 #' `GSE152615_Rawcounts_filtered.txt.gz`. The published non-integer count values
 #' are rounded to the nearest integer for count-based example workflows.
 #'
+#' @name islet_bulk
 #' @examples
 #' if (interactive()) {
 #'   data(islet_bulk)
@@ -307,8 +307,6 @@ NULL
 #'   head(rownames(islet_bulk))
 #'   table(SummarizedExperiment::colData(islet_bulk)$condition)
 #' }
-#'
-#' @name islet_bulk
 NULL
 
 #' @title ESTIMATE gene signatures
@@ -333,14 +331,13 @@ NULL
 #' \href{https://doi.org/10.1038/ncomms3612}{Yoshihara et al. (2013)} and
 #' \href{https://doi.org/10.1038/nature08460}{Barbie et al. (2009)}.
 #'
+#' @name estimate_signatures
 #' @examples
 #' if (interactive()) {
 #'   data(estimate_signatures)
 #'   names(estimate_signatures)
 #'   lengths(estimate_signatures[c("stromal_signature", "immune_signature", "common_genes")])
 #' }
-#'
-#' @name estimate_signatures
 NULL
 
 #' @title Excluded words in keyword enrichment analysis and extraction
@@ -351,6 +348,7 @@ NULL
 #'   analysis or keyword extraction process.
 #' These mainly include words that are excessively redundant or of little value.
 #'
+#' @name words_excluded
 #' @examples
 #' if (interactive()) {
 #'   words_excluded <- c(
@@ -366,13 +364,13 @@ NULL
 #'   )
 #'   usethis::use_data(words_excluded, compress = "xz")
 #' }
-#' @name words_excluded
 NULL
 
 #' @title Reference datasets for cell type annotation in single-cell RNA data
 #'
 #' @source
 #' \href{https://github.com/ggjlab/scMCA}{scMCA}
+#' @name ref_scMCA
 #' @examples
 #' if (interactive()) {
 #'   ref_scMCA <- NormalizeData(get("ref.expr", envir = asNamespace("scMCA")))
@@ -380,5 +378,4 @@ NULL
 #'   colnames(ref_scMCA) <- iconv(colnames(ref_scMCA), "latin1", "UTF-8")
 #'   # usethis::use_data(ref_scMCA, compress = "xz")
 #' }
-#' @name ref_scMCA
 NULL

@@ -1,6 +1,8 @@
 #' @title CCC network and flow plots
 #'
 #' @md
+#' @details Canonical selection parameters and legacy aliases may be supplied
+#'   together only when their values agree. Conflicting values raise an error.
 #' @inheritParams CCCStatPlot
 #' @inheritParams scop-params
 #' @param plot_type Plot type. One of `"circle"`, `"chord"`, `"pathway"`,
@@ -51,10 +53,7 @@
 #' @param composition_radius Radius of composition pies in display-coordinate
 #'   units. `NULL` derives a density-aware default.
 #' @param legend.title Legend title.
-#' @param ... Additional plot-specific options. For chord plots, `reduce`,
-#'   `max.groups`, `small.gap`, `big.gap`, and `lab.cex` can be used to adjust
-#'   the CellChat-like chord layout.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A ggplot, patchwork, or recorded plot object.
 #' @export
 #'
@@ -250,8 +249,8 @@ CCCNetworkPlot <- function(
   spot_alpha = 0.35,
   composition_display = c("pie", "dominant", "none"),
   composition_radius = NULL,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
@@ -273,12 +272,6 @@ CCCNetworkPlot <- function(
     plot_type <- "chord"
   }
   dots <- list(...)
-  finish_plot <- function(plot) {
-    plot
-  }
-  finish_base_plot <- function(expr) {
-    force(expr)
-  }
   label.enable <- isTRUE(dots[["label"]])
   label.spatial <- if (is.null(dots[["label"]])) TRUE else isTRUE(dots[["label"]])
   label.size <- dots[["label.size"]] %||% 4
@@ -293,13 +286,13 @@ CCCNetworkPlot <- function(
   } else {
     TRUE
   }
-  sender.use <- ccc_alias_arg(dots, "sender_use", sender.use)
-  receiver.use <- ccc_alias_arg(dots, "receiver_use", receiver.use)
-  ligand.use <- ccc_alias_arg(dots, "ligand_use", ligand.use)
-  receptor.use <- ccc_alias_arg(dots, "receptor_use", receptor.use)
-  interaction.use <- ccc_alias_arg(dots, "interaction_use", interaction.use)
-  pairLR.use <- ccc_alias_arg(dots, "pair_lr_use", pairLR.use)
-  thresh <- ccc_alias_arg(dots, "pvalue_threshold", thresh)
+  sender.use <- ccc_alias_arg(dots, "sender_use", sender.use, supplied = !missing(sender.use))
+  receiver.use <- ccc_alias_arg(dots, "receiver_use", receiver.use, supplied = !missing(receiver.use))
+  ligand.use <- ccc_alias_arg(dots, "ligand_use", ligand.use, supplied = !missing(ligand.use))
+  receptor.use <- ccc_alias_arg(dots, "receptor_use", receptor.use, supplied = !missing(receptor.use))
+  interaction.use <- ccc_alias_arg(dots, "interaction_use", interaction.use, supplied = !missing(interaction.use))
+  pairLR.use <- ccc_alias_arg(dots, "pair_lr_use", pairLR.use, supplied = !missing(pairLR.use))
+  thresh <- ccc_alias_arg(dots, "pvalue_threshold", thresh, supplied = !missing(thresh))
   min_interaction_threshold <- ccc_alias_arg(
     dots,
     "min_interaction_threshold",
@@ -462,7 +455,7 @@ CCCNetworkPlot <- function(
     )
     label_spatial <- label.spatial
     directed_spatial <- if (isTRUE(missing(directed))) TRUE else isTRUE(directed)
-    return(finish_plot(ccc_spatial_network_plot(
+    return(ccc_spatial_network_plot(
       stored = stored,
       pair_df = pair_df_spatial,
       cell_palette = palette_cfg$cell_palette,
@@ -499,7 +492,7 @@ CCCNetworkPlot <- function(
       font.size = font.size,
       theme_use = theme_use,
       theme_args = theme_args
-    )))
+    ))
   }
   combine_methods <- match.arg(combine_methods)
   srt <- ccc_prepare_filtered_object(
@@ -600,7 +593,7 @@ CCCNetworkPlot <- function(
             plot_subtitle = if (length(pathways_to_show) == 1L) subtitle else NULL
           )
         })
-        return(finish_plot(simplify_cc_plot_list(plots)))
+        return(simplify_cc_plot_list(plots))
       }
 
       if (is.null(signaling)) {
@@ -631,7 +624,7 @@ CCCNetworkPlot <- function(
           plot_subtitle = subtitle
         )
       })
-      return(finish_plot(simplify_cc_plot_list(plots)))
+      return(simplify_cc_plot_list(plots))
     }
 
     if (!identical(layout, "circle")) {
@@ -764,7 +757,7 @@ CCCNetworkPlot <- function(
         message_type = "error"
       )
     }
-    return(finish_plot(simplify_cc_plot_list(plots)))
+    return(simplify_cc_plot_list(plots))
   }
 
   if (identical(plot_type, "diff_network")) {
@@ -775,7 +768,7 @@ CCCNetworkPlot <- function(
       )
     }
     layout_use <- if (layout %in% c("hierarchy", "chord")) "circle" else layout
-    return(finish_plot(ccc_diff_network_plot(
+    return(ccc_diff_network_plot(
       srt = srt,
       condition = condition,
       comparison = comparison,
@@ -804,39 +797,19 @@ CCCNetworkPlot <- function(
       font.size = font.size,
       theme_use = theme_use,
       theme_args = theme_args
-    )))
+    ))
   }
 
-  df <- ccc_long_table_for_method(
-    srt = srt,
-    method = method,
-    condition = condition,
-    dataset = dataset,
-    slot.name = slot.name,
-    signaling = signaling,
-    pairLR.use = pairLR.use,
-    sources.use = sender.use,
-    targets.use = receiver.use,
-    thresh = thresh
+  plot_data <- ccc_plot_data(
+    srt = srt, method = method, condition = condition, dataset = dataset,
+    slot.name = slot.name, signaling = signaling, pairLR.use = pairLR.use,
+    sender.use = sender.use, receiver.use = receiver.use,
+    ligand.use = ligand.use, receptor.use = receptor.use,
+    interaction.use = interaction.use, value = value, thresh = thresh
   )
-
-  df <- standardize_long_df(df)
-  df <- filter_long_df(
-    df = df,
-    sender.use = sender.use,
-    receiver.use = receiver.use,
-    ligand.use = ligand.use,
-    receptor.use = receptor.use,
-    interaction.use = interaction.use,
-    signaling = signaling,
-    pairLR.use = pairLR.use
-  )
-
-  df <- ccc_assign_plot_score(df = df, value = value)
-  df <- ccc_mark_significance(df, thresh = thresh)
-  df <- prepare_plot_df(df)
-  pair_df <- pair_plot_df(df)
-  interaction_df <- interaction_plot_df(df)
+  df <- plot_data$long_df
+  pair_df <- plot_data$pair_df
+  interaction_df <- plot_data$interaction_df
   network_plot_args <- list(
     title = title,
     subtitle = subtitle,
@@ -868,7 +841,7 @@ CCCNetworkPlot <- function(
     }
     dots_chord <- dots
     dots_chord[c("reduce", "max.groups", "small.gap", "big.gap", "lab.cex")] <- NULL
-    return(finish_base_plot(do.call(
+    return(do.call(
       ccc_chord_plot,
       c(
         list(
@@ -888,11 +861,11 @@ CCCNetworkPlot <- function(
         network_plot_args,
         dots_chord
       )
-    )))
+    ))
   }
 
   if (identical(plot_type, "gene_chord")) {
-    return(finish_base_plot(do.call(
+    return(do.call(
       ccc_gene_chord_plot,
       c(
         list(
@@ -906,7 +879,7 @@ CCCNetworkPlot <- function(
         ),
         network_plot_args
       )
-    )))
+    ))
   }
 
   if (plot_type %in% c("individual_outgoing", "individual_incoming")) {
@@ -955,16 +928,16 @@ CCCNetworkPlot <- function(
         )
       )
     })
-    return(finish_plot(plot_cc_list(
+    return(plot_cc_list(
       plots,
       combine = combine_panels,
       ncol = grid$ncols,
       nrow = grid$nrows
-    )))
+    ))
   }
 
   if (identical(plot_type, "circle")) {
-    return(finish_base_plot(do.call(
+    return(do.call(
       ccc_circle_plot,
       c(
         list(
@@ -982,13 +955,13 @@ CCCNetworkPlot <- function(
         network_plot_args,
         label_plot_args
       )
-    )))
+    ))
   }
 
   if (identical(plot_type, "chord")) {
     dots_chord <- dots
     dots_chord[c("reduce", "max.groups", "small.gap", "big.gap", "lab.cex")] <- NULL
-    return(finish_base_plot(do.call(
+    return(do.call(
       ccc_chord_plot,
       c(
         list(
@@ -1008,11 +981,11 @@ CCCNetworkPlot <- function(
         network_plot_args,
         dots_chord
       )
-    )))
+    ))
   }
 
   if (plot_type %in% c("arrow", "sigmoid")) {
-    return(finish_plot(do.call(
+    return(do.call(
       ccc_flow_network_plot,
       c(
         list(
@@ -1037,19 +1010,11 @@ CCCNetworkPlot <- function(
         network_plot_args,
         label_plot_args
       )
-    )))
+    ))
   }
 
   if (identical(plot_type, "bipartite")) {
-    reg_vec <- NULL
-    if (!is.null(reg.by)) {
-      if (reg.by %in% colnames(srt@meta.data)) {
-        reg_vec <- srt@meta.data[[reg.by]]
-      } else if (reg.by %in% colnames(df)) {
-        reg_vec <- NULL
-      }
-    }
-    return(finish_plot(bipartite_plot(
+    return(bipartite_plot(
       df = df,
       ligand = ligand,
       receptor = receptor,
@@ -1079,11 +1044,11 @@ CCCNetworkPlot <- function(
       font.size = font.size,
       theme_use = theme_use,
       theme_args = theme_args
-    )))
+    ))
   }
 
   if (identical(plot_type, "embedding_network")) {
-    return(finish_plot(do.call(
+    return(do.call(
       ccc_dim_network_plot,
       c(
         list(
@@ -1111,7 +1076,7 @@ CCCNetworkPlot <- function(
         label_plot_args,
         dots
       )
-    )))
+    ))
   }
 
   log_message(

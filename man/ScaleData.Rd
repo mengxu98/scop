@@ -9,7 +9,7 @@ ScaleData(object, ...)
 \arguments{
 \item{object}{Object containing expression data.}
 
-\item{...}{Passed to methods.}
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 The input object with scaled data.

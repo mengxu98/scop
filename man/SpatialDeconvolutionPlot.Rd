@@ -13,9 +13,10 @@ SpatialDeconvolutionPlot(
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE,
-  ...,
   image.scale = c("lowres", "hires"),
-  srt = NULL
+  srt = NULL,
+  image = NULL,
+  ...
 )
 }
 \arguments{
@@ -36,12 +37,14 @@ return a named list.}
 \item{nrow, ncol, byrow}{Point-map layout controls. When both dimensions are
 \code{NULL}, a near-square layout with at most three columns is used.}
 
-\item{...}{Additional arguments passed to \code{\link[=SpatialSpotPlot]{SpatialSpotPlot()}}.}
-
 \item{image.scale}{Image scale factor matching the selected raster.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{image}{Image name or named sample-to-image mapping.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A \code{ggplot}, \code{patchwork}, or named list of \code{ggplot} objects.
@@ -50,7 +53,7 @@ A \code{ggplot}, \code{patchwork}, or named list of \code{ggplot} objects.
 Plot spot-by-cell-type proportions stored by \code{\link[=RunRCTD]{RunRCTD()}}, \code{\link[=RunCARD]{RunCARD()}},
 \code{\link[=RunSPOTlight]{RunSPOTlight()}}. The plot reads the stored result
 directly from \code{srt@tools[[tool_name]]} and never reruns a deconvolution
-backend. \code{\link[=RunCSIDE]{RunCSIDE()}} is intentionally excluded because its output
+method. \code{\link[=RunCSIDE]{RunCSIDE()}} is intentionally excluded because its output
 represents differential or context effects rather than cell-type
 proportions.
 }

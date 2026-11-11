@@ -8,8 +8,7 @@ A \code{Seurat} object with 12405 RNA genes, 12000 peaks, and 500 cells.
 }
 \source{
 Derived from the PBMC multiome reference data distributed through
-\href{https://github.com/satijalab/seurat-data}{SeuratData} /
-\code{pbmcMultiome.SeuratData}.
+\href{https://github.com/satijalab/seurat-data}{SeuratData}.
 }
 \description{
 A near-balanced 500-cell subset of the PBMC multiome dataset from SeuratData,

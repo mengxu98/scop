@@ -7,25 +7,17 @@
 giotto_to_srt(giotto, ...)
 }
 \arguments{
-\item{giotto}{A native Giotto object.}
+\item{giotto}{A Giotto object. For a round trip, normalize the Seurat object
+with \code{\link[Seurat:NormalizeData]{Seurat::NormalizeData()}} before converting it to Giotto.}
 
-\item{...}{Additional arguments passed to the Giotto converter.}
+\item{...}{Arguments passed to other functions.}
 }
 \value{
-A new `Seurat` object.
+A new \code{Seurat} object.
 }
 \description{
-Convert a native Giotto object into a new Seurat object.
-}
-\details{
-The bridge selects the GiottoClass v4 or v5 converter according to the
-installed Seurat major version. If GiottoClass is already installed, it is
-reused instead of reinstalling `drieslab/Giotto`. For round trips produced by
-[srt_to_giotto()], normalize the Seurat input first (for example with
-[Seurat::NormalizeData()]); the official GiottoClass converter records an
-empty normalized layer otherwise, which its reverse converter cannot read
-back. Conversion does not initialize Giotto's optional Python/conda
-environment.
+Convert a Giotto object into a new Seurat object.
+Requires GiottoClass.
 }
 \examples{
 \dontrun{
@@ -36,8 +28,6 @@ spatial <- Seurat::NormalizeData(
   verbose = FALSE
 )
 giotto <- srt_to_giotto(spatial, image = "slice1")
-roundtrip <- giotto_to_srt(giotto)
-print(roundtrip)
+giotto_to_srt(giotto)
 }
-
 }

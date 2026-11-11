@@ -62,6 +62,16 @@ test_that("per-cell benchmark panels retain the requested multi-feature layout",
     expect_equal(plot$patches$layout$ncol, 2)
     expect_identical(plot$patches$layout$byrow, byrow)
   }
+  single <- SpatialBenchmarkPlot(object,
+    features = "A_LISI", reduction = "pca", plot_type = "feature", verbose = FALSE
+  )
+  expect_s3_class(single, "ggplot")
+  panels <- SpatialBenchmarkPlot(object,
+    features = c("A_LISI", "B_LISI"), reduction = "pca", plot_type = "feature",
+    combine = FALSE, verbose = FALSE
+  )
+  expect_named(panels, c("A_LISI", "B_LISI"))
+  expect_true(all(vapply(panels, inherits, logical(1), "ggplot")))
 })
 
 test_that("SpatialBenchmarkPlot selects publication benchmark views", {

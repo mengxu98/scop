@@ -1,6 +1,8 @@
 celloracle_test_object <- function() {
-  counts <- matrix(rep(c(1, 3, 2, 5, 4, 6), 20), nrow = 3,
-    dimnames = list(c("Tf1", "Gene2", "Gene3"), paste0("c", seq_len(40))))
+  counts <- matrix(rep(c(1, 3, 2, 5, 4, 6), 20),
+    nrow = 3,
+    dimnames = list(c("Tf1", "Gene2", "Gene3"), paste0("c", seq_len(40)))
+  )
   object <- SeuratObject::CreateSeuratObject(Matrix::Matrix(counts, sparse = TRUE))
   object$cluster <- rep(c("a", "b"), each = 20)
   embedding <- cbind(UMAP_1 = seq_len(40), UMAP_2 = sin(seq_len(40)))
@@ -33,26 +35,34 @@ test_that("CellOracle does not silently normalize expression or overwrite models
   object <- SeuratObject::SetAssayData(object, assay = "RNA", layer = "data", new.data = negative)
   expect_error(RunCellOracle(object, c(Tf1 = 0), "cluster", layer = "data"), "non-negative")
   prior <- list(Gene2 = "Tf1")
-  expect_error(RunCellOracle(object, c(Tf1 = 0), "cluster", base_grn = prior,
-    output_dir = tempdir()), "new directory")
+  expect_error(RunCellOracle(object, c(Tf1 = 0), "cluster",
+    base_grn = prior,
+    output_dir = tempdir()
+  ), "new directory")
   expect_error(RunCellOracle(object, c(Tf1 = 0), "cluster", model_dir = tempdir()), "saved Oracle/Links")
-  local_mocked_bindings(is_windows = function() TRUE,
-    PrepareEnv = function(...) stop("Unexpected preparation"))
+  local_mocked_bindings(
+    is_windows = function() TRUE,
+    PrepareEnv = function(...) stop("Unexpected preparation")
+  )
   expect_error(RunCellOracle(object, c(Tf1 = 0), "cluster", base_grn = prior), "native Windows")
   object <- SeuratObject::SetAssayData(object, assay = "RNA", layer = "data", new.data = -negative / 2)
   expect_error(RunCellOracle(object, c(Tf1 = 0), "cluster", layer = "data", base_grn = prior), "native Windows")
 })
 
 test_that("CellOracle analysis requires explicit environment preparation", {
-  local_mocked_bindings(is_windows = function() FALSE,
+  local_mocked_bindings(
+    is_windows = function() FALSE,
     resolve_conda = function(...) "conda",
     env_exist = function(...) FALSE,
-    PrepareEnv = function(...) stop("Unexpected installation"))
+    PrepareEnv = function(...) stop("Unexpected installation")
+  )
   object <- celloracle_test_object()
   expect_error(RunCellOracle(object, c(Tf1 = 0), "cluster",
-    base_grn = list(Gene2 = "Tf1")), "explicitly")
+    base_grn = list(Gene2 = "Tf1")
+  ), "explicitly")
   expect_error(RunCellOracle(object, c(Tf1 = 0), "cluster",
-    base_grn = list(Gene2 = "Tf1"), docker_container = "bad container name"), "container name or ID")
+    base_grn = list(Gene2 = "Tf1"), docker_container = "bad container name"
+  ), "container name or ID")
 })
 
 test_that("CellOracle environment is explicit and isolated", {
@@ -68,15 +78,21 @@ test_that("CellOracle environment is explicit and isolated", {
 celloracle_test_result <- function(object) {
   cells <- colnames(object)
   genes <- rownames(object)
-  list(cells = cells, genes = genes,
-    cell_shift = data.frame(cell = cells, group = object$cluster,
+  list(
+    cells = cells, genes = genes,
+    cell_shift = data.frame(
+      cell = cells, group = object$cluster,
       x = cos(seq_along(cells)), y = sin(seq_along(cells)), dx = 0.1, dy = 0.2,
-      dx_random = -0.1, dy_random = -0.2),
-    grid_flow = data.frame(x = c(1, 2), y = 0, dx = c(3, 9), dy = 1,
-      dx_random = c(-3, -9), dy_random = -1, mass = c(1, 0), filtered = c(FALSE, TRUE)),
+      dx_random = -0.1, dy_random = -0.2
+    ),
+    grid_flow = data.frame(
+      x = c(1, 2), y = 0, dx = c(3, 9), dy = 1,
+      dx_random = c(-3, -9), dy_random = -1, mass = c(1, 0), filtered = c(FALSE, TRUE)
+    ),
     gene_effect = data.frame(gene = genes, mean_delta = c(-1, 2, 0), mean_abs_delta = c(1, 2, 0)),
     filtered_links = list(a = data.frame(source = "Tf1", target = "Gene2", coef_abs = 0.2)),
-    expression = list(delta_X = matrix(0, nrow = length(cells), ncol = length(genes))))
+    expression = list(delta_X = matrix(0, nrow = length(cells), ncol = length(genes)))
+  )
 }
 
 test_that("CellOracle read-back preserves matrix orientation and rejects reordered cells", {
@@ -106,7 +122,8 @@ test_that("CellOracle plots use upstream vectors and exclusion mask without reco
   expect_equal(effect$data$mean_abs_delta, c(2, 1))
   expect_s3_class(CellOraclePlot(object, plot_type = "network"), "ggplot")
   object@tools$CellOracle$filtered_links$a <- data.frame(
-    source = c("Tf1", "Gene2"), target = c("Gene2", "Tf1"), coef_abs = c(0.2, 0.2))
+    source = c("Tf1", "Gene2"), target = c("Gene2", "Tf1"), coef_abs = c(0.2, 0.2)
+  )
   network <- ggplot2::ggplot_build(CellOraclePlot(object, plot_type = "network"))
   expect_equal(nrow(network$data[[1]]), 2L)
   expect_equal(network$data[[1]]$x, rev(network$data[[1]]$xend))

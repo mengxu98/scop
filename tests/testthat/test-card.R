@@ -34,6 +34,20 @@ make_card_seurat_pair <- function() {
   list(spatial = spatial, reference = reference)
 }
 
+make_card_create_mock <- function(ref_counts) {
+  function(spatial_count, ...) {
+    list(
+      info_parameters = list(
+        ct.select = c("A", "B"),
+        ct.varname = ".scop_cell_type",
+        sample.varname = ".scop_sample"
+      ),
+      sc_eset = ref_counts,
+      spatial_countMat = spatial_count
+    )
+  }
+}
+
 with_mock_card <- function(code) {
   create_fun <- function(
     sc_count,
@@ -70,7 +84,7 @@ with_mock_card <- function(code) {
     CARD_object
   }
   testthat::local_mocked_bindings(
-    card_resolve_backend_package = function() "CARD",
+    card_resolve_package = function() "CARD",
     get_namespace_fun = function(package, name) {
       expect_identical(package, "CARD")
       switch(name,
@@ -138,7 +152,7 @@ test_that("CARD uses an installed CARDspa backend without installing CARD", {
     .package = "scop"
   )
 
-  expect_identical(card_resolve_backend_package(), "CARDspa")
+  expect_identical(card_resolve_package(), "CARDspa")
 })
 
 test_that("CARD checks its repository only when no installed backend is usable", {
@@ -159,7 +173,7 @@ test_that("CARD checks its repository only when no installed backend is usable",
     .package = "scop"
   )
 
-  expect_identical(card_resolve_backend_package(), "CARD")
+  expect_identical(card_resolve_package(), "CARD")
   expect_true(installed)
 })
 
@@ -204,17 +218,7 @@ test_that("CARDspa one-step API removes backend-unsupported informative-zero spo
       dimnames = list(c("A", "B"), c("S1", "S2"))
     ))
   }
-  create_one_step <- function(spatial_count, ...) {
-    list(
-      info_parameters = list(
-        ct.select = c("A", "B"),
-        ct.varname = ".scop_cell_type",
-        sample.varname = ".scop_sample"
-      ),
-      sc_eset = ref_counts,
-      spatial_countMat = spatial_count
-    )
-  }
+  create_one_step <- make_card_create_mock(ref_counts)
   create_ref <- function(...) {
     list(basis = matrix(
       c(1, 0, 0, 1),
@@ -223,7 +227,7 @@ test_that("CARDspa one-step API removes backend-unsupported informative-zero spo
     ))
   }
   testthat::local_mocked_bindings(
-    card_resolve_backend_package = function() "CARDspa",
+    card_resolve_package = function() "CARDspa",
     get_namespace_fun = function(package, name) {
       switch(name,
         createCARDObject = create_one_step,
@@ -235,16 +239,19 @@ test_that("CARDspa one-step API removes backend-unsupported informative-zero spo
     }
   )
 
-  result <- card_run_backend(
-    st_counts = st_counts,
-    ref_counts = ref_counts,
-    ref_meta = ref_meta,
-    coords = coords,
-    ct_select = c("A", "B"),
-    minCountGene = 100,
-    minCountSpot = 5,
-    create_card_params = list(),
-    card_deconvolution_params = list()
+  expect_warning(
+    result <- card_run_model(
+      st_counts = st_counts,
+      ref_counts = ref_counts,
+      ref_meta = ref_meta,
+      coords = coords,
+      ct_select = c("A", "B"),
+      minCountGene = 100,
+      minCountSpot = 5,
+      create_card_params = list(),
+      card_deconvolution_params = list()
+    ),
+    "CARDspa excludes 1 spot with zero counts across backend-selected informative genes"
   )
   expect_identical(result$package, "CARDspa")
   expect_equal(dim(result$weights), c(2L, 2L))
@@ -278,19 +285,9 @@ test_that("CARDspa informative-gene failures have an actionable diagnostic", {
     y = seq_len(3),
     row.names = colnames(st_counts)
   )
-  create_one_step <- function(spatial_count, ...) {
-    list(
-      info_parameters = list(
-        ct.select = c("A", "B"),
-        ct.varname = ".scop_cell_type",
-        sample.varname = ".scop_sample"
-      ),
-      sc_eset = ref_counts,
-      spatial_countMat = spatial_count
-    )
-  }
+  create_one_step <- make_card_create_mock(ref_counts)
   testthat::local_mocked_bindings(
-    card_resolve_backend_package = function() "CARDspa",
+    card_resolve_package = function() "CARDspa",
     get_namespace_fun = function(package, name) {
       switch(name,
         createCARDObject = create_one_step,
@@ -309,7 +306,7 @@ test_that("CARDspa informative-gene failures have an actionable diagnostic", {
   )
 
   expect_error(
-    card_run_backend(
+    card_run_model(
       st_counts = st_counts,
       ref_counts = ref_counts,
       ref_meta = ref_meta,

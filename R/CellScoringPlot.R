@@ -76,7 +76,7 @@
 #'   `"left"` or `"right"`.
 #' @param group.title Optional group legend title.
 #' @param threshold.colors Colors for cells above and below each threshold.
-#' @param ... Additional arguments forwarded to [CellDimPlot()].
+#' @param ... Arguments passed to other functions.
 #' @param combine Return a patchwork when `TRUE`; otherwise return named plot
 #'   components before layout spacers are inserted.
 #' @param seed Seed used for automatic threshold inference and jitter-point
@@ -152,12 +152,16 @@ CellScoringPlot <- function(
   legend.position = "bottom",
   group.title = NULL,
   threshold.colors = c(`Above AUC threshold` = "black", `Below AUC threshold` = "grey50"),
-  ...,
   combine = TRUE,
   seed = 42,
   verbose = TRUE,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
+  check_r("withr", verbose = FALSE)
+  withr::local_preserve_seed()
+  check_r("patchwork", verbose = FALSE)
+  wrap_plots <- patchwork::wrap_plots
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!is.null(point.alpha)) {
     .Deprecated(msg = paste0(
@@ -571,7 +575,7 @@ CellScoringPlot <- function(
     }
     physical <- c(physical, top_row, bottom_row)
   }
-  patchwork::wrap_plots(physical, ncol = ncol, nrow = nrow, byrow = TRUE) +
+  wrap_plots(physical, ncol = ncol, nrow = nrow, byrow = TRUE) +
     patchwork::plot_layout(
       guides = "collect",
       heights = rep(row.heights, pair_rows)
@@ -1007,8 +1011,7 @@ scoreplot_stat <- function(
       box <- box +
         ggplot2::geom_jitter(
           data = point_data,
-          width = 0.3,
-          height = 0,
+          position = ggplot2::position_jitter(width = 0.3, height = 0, seed = seed),
           size = 0.2,
           alpha = point.alpha
         )

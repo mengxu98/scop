@@ -54,7 +54,7 @@ A data.frame with cell_id, sample, group, lower, radius, count, total
 }
 \description{
 Count labelled neighbors of selected cells without removing the surrounding
-tissue. A native spatial index directly accumulates counts at all distances;
+tissue. A spatial index directly accumulates counts at all distances;
 no cell-cell edge table is stored. This is an observed composition summary,
 not a colocalization test, an optimal-radius selector, or a communication model.
 }

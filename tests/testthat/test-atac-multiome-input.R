@@ -83,7 +83,7 @@ test_that("multiome input rejects absent or unpaired modalities rather than inve
   path <- tempfile()
   writeLines("contract-test placeholder", path)
   on.exit(unlink(path), add = TRUE)
-  testthat::local_mocked_bindings(atac_backend_fun = function(package, fun) identity, .package = "scop")
+  testthat::local_mocked_bindings(check_r = function(...) invisible(TRUE), .package = "scop")
   testthat::local_mocked_bindings(Read10X_h5 = function(filename, use.names, unique.features) {
     list(Peaks = x$counts[1:3, ])
   }, .package = "Seurat")

@@ -423,7 +423,6 @@ arma::vec compute_dispersion(const arma::mat& X) {
 }
 
 arma::mat build_markov_matrix(const arma::mat& sub_mat) {
-  int n_cells = sub_mat.n_rows;
 
   arma::mat D = arma::cor(sub_mat.t());
 

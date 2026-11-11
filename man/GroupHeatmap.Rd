@@ -133,21 +133,13 @@ GroupHeatmap(
   cell_annotation = NULL,
   cell_annotation_palette = "Chinese",
   cell_annotation_palcolor = NULL,
-  cell_annotation_params = if (flip) {
-     list(width = grid::unit(10, "mm"))
- } else {
-
-        list(height = grid::unit(10, "mm"))
- },
+  cell_annotation_params = if (flip) list(width = grid::unit(10, "mm")) else list(height
+    = grid::unit(10, "mm")),
   feature_annotation = NULL,
   feature_annotation_palette = "Dark2",
   feature_annotation_palcolor = NULL,
-  feature_annotation_params = if (flip) {
-     list(height = grid::unit(5, "mm"))
- } else
-    {
-     list(width = grid::unit(5, "mm"))
- },
+  feature_annotation_params = if (flip) list(height = grid::unit(5, "mm")) else
+    list(width = grid::unit(5, "mm")),
   use_raster = NULL,
   raster_device = "png",
   raster_by_magick = FALSE,
@@ -158,9 +150,9 @@ GroupHeatmap(
   legend.position = "right",
   ht_params = list(),
   verbose = TRUE,
-  ...,
   srt = NULL,
-  legend_params = list()
+  legend_params = list(),
+  ...
 )
 }
 \arguments{
@@ -291,8 +283,6 @@ Gap to the heatmap grows automatically when long row names are on the right.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{Additional arguments passed to helper functions.}
-
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
 
@@ -301,6 +291,8 @@ entries, each a named list of arguments passed to \link[ComplexHeatmap:Legend]{C
 overriding that legend's defaults. Use \code{expression = list(direction = "horizontal", legend_width = grid::unit(35, "mm"), title_position = "topcenter")} and \code{percent = list(direction = "horizontal", nrow = 1, title_position = "topcenter")} for horizontal legends. \code{legend.position}
 controls their placement independently. The percent entry is used only when
 \code{add_dot = TRUE}; other annotation legends are unchanged. Default: \code{list()}.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A list with \code{plot}, \code{matrix_list}, \code{feature_split}, \code{cell_metadata},

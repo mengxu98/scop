@@ -22,7 +22,7 @@
 #' remain external; no automatic copying, downloading or path repair occurs.
 #' The BED has three columns and, with counts.mtx and barcodes.tsv when
 #' `counts = TRUE`, can be read by [ReadATACData()] when the selected assay
-#' satisfies its native minimum of two peaks and two cells. Smaller subsets can
+#' satisfies its minimum of two peaks and two cells. Smaller subsets can
 #' still be restored from object.rds. cells.csv and barcodes.tsv
 #' contain the selected assay cells in matrix column order. object.rds preserves
 #' all assays and cells. CSV files preserve values, not R column classes.
@@ -31,7 +31,7 @@
 #' `n_cells` is the attached mapping size, not the exported cell count.
 #' Missing fragment files do not prevent a valid matrix-only export. Stored
 #' Signac resource hashes are labeled as such, and resource availability is only
-#' a snapshot. After moving resources, explicitly update paths with native Signac
+#' a snapshot. After moving resources, explicitly update paths with Signac
 #' UpdatePath and rerun CheckATACData before fragment-dependent computations.
 #' Files are staged in the destination parent and moved to the requested new
 #' directory only after all writes succeed. This does not modify the object.

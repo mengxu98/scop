@@ -27,7 +27,7 @@
 #' and `mor`, `importance`, or `weight` for edge weights. `mor` is treated as
 #' signed regulation; `importance` and `weight` are treated as non-negative
 #' unsigned weights.
-#' @param method Activity inference backend from `decoupleR`.
+#' @param method Activity inference method from `decoupleR`.
 #' @param minsize Minimum regulon size passed to `decoupleR`.
 #' @param options Additional named options passed to the selected `decoupleR`
 #' function.
@@ -115,13 +115,15 @@
 #'   plot_type = "bar",
 #'   top_n = 20
 #' )
-#' ht <- DorotheaPlot(
+#' GroupHeatmap(
 #'   pancreas_sub,
 #'   group.by = "CellType",
-#'   plot_type = "heatmap",
-#'   top_n = 20
-#' )
-#' ht$plot
+#'   features = tf_use,
+#'   assay = "dorothea",
+#'   layer = "data",
+#'   exp_method = "raw",
+#'   lib_normalize = FALSE
+#' )$plot
 #' DorotheaPlot(
 #'   pancreas_sub,
 #'   group.by = "CellType",

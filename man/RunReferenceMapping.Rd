@@ -62,7 +62,7 @@ RunReferenceMapping(
 
 \item{reference_label}{Metadata column in the reference used as transfer labels.}
 
-\item{label_method}{Label-transfer backend used after anchor mapping. One of
+\item{label_method}{Label-transfer method used after anchor mapping. One of
 \code{"Seurat"} or \code{"scOMM"}.}
 
 \item{add_gene_activity}{Whether to calculate a gene activity assay for the query.}

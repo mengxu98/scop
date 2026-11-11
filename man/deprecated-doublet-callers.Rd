@@ -17,7 +17,7 @@ db_Scrublet(...)
 db_DoubletDetection(...)
 }
 \arguments{
-\item{...}{Arguments forwarded unchanged to the replacement function.}
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 The value returned by the replacement function.

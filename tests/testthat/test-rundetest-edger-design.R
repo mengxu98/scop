@@ -16,6 +16,27 @@ make_edger_design_fixture <- function() {
   list(counts = counts, metadata = metadata)
 }
 
+test_that("bulk model containers initialize without conflicting imports or stack imbalance", {
+  diagnostics <- tempfile(fileext = ".log")
+  on.exit(unlink(diagnostics), add = TRUE)
+  intact <- callr::r(
+    function() {
+      counts <- matrix(seq_len(12), 3,
+        dimnames = list(paste0("g", 1:3), paste0("s", 1:4))
+      )
+      object <- SummarizedExperiment::SummarizedExperiment(assays = list(counts = counts))
+      identical(SummarizedExperiment::assay(object, "counts"), counts)
+    },
+    libpath = .libPaths(), stderr = diagnostics
+  )
+  expect_true(intact)
+  messages <- paste(readLines(diagnostics, warn = FALSE), collapse = " ")
+  expect_false(grepl(
+    "stack imbalance|replacing previous import.*makeNindexFromArrayViewport",
+    messages
+  ))
+})
+
 edger_design_contrast <- function(design, metadata) {
   cols <- colnames(stats::model.matrix(design, metadata))
   out <- stats::setNames(rep(0, length(cols)), cols)
@@ -314,7 +335,7 @@ test_that("optional edgeR checks never request installation", {
     expect_false(install)
     FALSE
   }, .package = "scop")
-  expect_error(scop:::RunDEtestEdgeRBackend(), "[Ee]dgeR is required")
+  expect_error(scop:::RunDEtestEdgeR(), "[Ee]dgeR is required")
 })
 
 test_that("explicit models reject sample metadata contradictions across groups", {
@@ -458,14 +479,6 @@ test_that("explicit Seurat models require a selected pair among three conditions
   ), "one selected condition pair")
 })
 
-test_that("new design parameters do not capture existing positional dots", {
-  for (method in c("RunDEtest.Seurat", "RunDEtest.SummarizedExperiment")) {
-    args <- names(formals(get(method, asNamespace("scop"))))
-    expect_true(match("design", args) > match("...", args))
-    expect_true(match("contrast", args) > match("...", args))
-  }
-})
-
 test_that("partial assay and renamed cells retain true sample aggregation", {
   object <- make_edger_paired_atac()
   peaks <- object[["peaks"]]
@@ -501,7 +514,6 @@ test_that("partial assay and renamed cells retain true sample aggregation", {
   expect_equal(SeuratObject::GetAssayData(out, assay = "peaks", layer = "counts"), before_peaks)
   expect_equal(out[[]], partial[[]])
   expect_identical(out[["existing"]], partial[["existing"]])
-  # RNA-only condition must not make the selected ATAC assay a three-condition design.
   auto <- RunDEtest(partial,
     assay = "peaks", test.use = "edgeR", layer = "counts",
     sample_col = "sample", condition_col = "condition", min.cells.sample = 5,

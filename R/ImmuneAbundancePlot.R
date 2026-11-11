@@ -45,7 +45,28 @@
 #'
 #' @return A `ggplot` object.
 #'
+#' @details
+#' Matrix values are displayed as supplied. Stacked bars retain the original
+#' abundance values; `bar_position = "fill"` explicitly normalizes each sample.
+#' The constructed matrix in the examples demonstrates the plotting interface.
+#'
+#' @seealso [DeconvolutionPlot], [FeatureStatPlot]
+#'
 #' @export
+#' @examples
+#' abundance <- matrix(
+#'   c(0.7, 0.3, 0.6, 0.4, 0.4, 0.6, 0.3, 0.7),
+#'   ncol = 2, byrow = TRUE,
+#'   dimnames = list(paste0("Sample", 1:4), c("T cells", "B cells"))
+#' )
+#' groups <- stats::setNames(c("Control", "Control", "Treated", "Treated"), rownames(abundance))
+#' ImmuneAbundancePlot(immune.data = abundance, plot_type = "bar")
+#' ImmuneAbundancePlot(
+#'   immune.data = abundance, group.data = groups,
+#'   group.by = "condition", plot_type = "box"
+#' )
+#' ImmuneAbundancePlot(immune.data = abundance, plot_type = "heatmap")
+#' ImmuneAbundancePlot(immune.data = abundance, plot_type = "cor")
 ImmuneAbundancePlot <- function(
   object = NULL,
   immune.data = NULL,
@@ -206,13 +227,10 @@ ImmuneAbundancePlot <- function(
   }
   df$group <- factor(df$group, levels = unique(df$group))
 
-  fill_cols <- palette_colors(
-    if (identical(plot_type, "bar")) unique(df$cell_type) else levels(df$group),
-    palette = palette,
-    palcolor = palcolor
-  )
-
   if (identical(plot_type, "bar")) {
+    fill_cols <- palette_colors(
+      unique(df$cell_type), palette = palette, palcolor = palcolor
+    )
     ylab_use <- if (identical(bar_position, "fill")) {
       "Estimated proportion"
     } else {
@@ -270,52 +288,23 @@ ImmuneAbundancePlot <- function(
     )
   }
 
-  plot <- ggplot2::ggplot(df, ggplot2::aes(
-    x = cell_type,
-    y = abundance,
-    fill = group
-  )) +
-    ggplot2::geom_boxplot(
-      outlier.shape = NA,
-      width = box_width,
-      linewidth = 0.38,
-      alpha = box_alpha,
-      color = "grey20",
-      position = ggplot2::position_dodge2(width = 0.78, preserve = "single")
-    ) +
-    ggplot2::geom_point(
-      ggplot2::aes(color = group),
-      position = ggplot2::position_jitterdodge(
-        jitter.width = jitter.width,
-        jitter.height = 0,
-        dodge.width = 0.78
-      ),
-      size = pt.size,
-      alpha = pt.alpha,
-      show.legend = FALSE
-    ) +
-    ggplot2::scale_fill_manual(values = fill_cols, drop = FALSE) +
-    ggplot2::scale_color_manual(values = fill_cols, drop = FALSE) +
-    ggplot2::labs(
-      title = title,
-      subtitle = subtitle,
-      x = NULL,
-      y = "Abundance",
-      fill = group.by %||% "Group"
-    ) +
-    theme_obj +
-    ggplot2::theme(
-      axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
-      legend.position = legend.position,
-      legend.direction = legend.direction,
-      panel.grid.major.x = ggplot2::element_blank(),
-      panel.grid.major.y = if (isTRUE(grid_major)) {
-        ggplot2::element_line(colour = "grey86", linewidth = 0.25)
-      } else {
-        ggplot2::element_blank()
-      },
-      panel.grid.minor = ggplot2::element_blank()
-    )
+  df$cells <- rownames(df)
+  rownames(df) <- make.unique(paste(df$sample, df$cell_type, sep = "::"))
+  plot <- ExpressionStatPlot(
+    meta.data = df, stat.by = "abundance", group.by = "cell_type",
+    split.by = "group", plot_type = "box", palette = palette, palcolor = palcolor,
+    add_point = TRUE, pt.size = pt.size, pt.alpha = pt.alpha,
+    jitter.width = jitter.width, jitter.height = 0, box_width = box_width,
+    xlab = "", ylab = "Abundance", title = title, subtitle = subtitle,
+    legend.title = group.by %||% "Group",
+    legend.position = legend.position, legend.direction = legend.direction,
+    theme_use = theme_use, theme_args = theme_args, grid_major = grid_major
+  )[[1L]] + ggplot2::facet_null()
+  for (index in seq_along(plot$layers)) {
+    if (inherits(plot$layers[[index]]$geom, "GeomBoxplot")) {
+      plot$layers[[index]]$aes_params$alpha <- box_alpha
+    }
+  }
   if (isTRUE(add_stat)) {
     check_r("ggpubr", verbose = FALSE)
     stat_args <- list(

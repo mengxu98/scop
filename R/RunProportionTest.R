@@ -43,8 +43,7 @@
 #' @param include_all_cells Whether to include all cell types in the complete grid
 #' for permutation mode.
 #' @param seed Random seed, including for permutation testing.
-#' @param ... Additional arguments passed to the selected method function.
-#'
+#' @param ... Arguments passed to other functions.
 #' @export
 #'
 #' @seealso
@@ -90,8 +89,8 @@ RunProportionTest <- function(
   include_all_cells = FALSE,
   seed = 11,
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   proportion_method <- normalize_proportion_method(proportion_method)

@@ -69,8 +69,7 @@ scop_logo <- function(
 #' @title print scop logo
 #'
 #' @param x Input logo object.
-#' @param ... Additional arguments passed to [cat()].
-#'
+#' @param ... Arguments passed to other functions.
 #' @rdname scop_logo
 #' @method print scop_logo
 #'

@@ -154,8 +154,7 @@ RunCCA.Seurat <- function(
 #'
 #' @param object1 First object or matrix.
 #' @param object2 Second object or matrix.
-#' @param ... Passed to methods.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return CCA results or an object containing CCA results.
 #' @export
 RunCCA <- function(object1, object2, ...) {

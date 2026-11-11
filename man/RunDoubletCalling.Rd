@@ -10,9 +10,9 @@ RunDoubletCalling(
   db_rate = ncol(object)/1000 * 0.01,
   db_method = "scDblFinder",
   data_type = NULL,
-  ...,
   verbose = TRUE,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -28,14 +28,12 @@ RunDoubletCalling(
 \item{data_type}{Optional \link{CheckDataType} result, used internally to avoid
 rescanning the count matrix.}
 
-\item{...}{Passed to the selected doublet method. For a ChromatinAssay,
-use \code{db_method = "scDblFinder"} and explicitly supply \code{sample.by} naming
-the capture/library column; see \code{\link[=RunscDblFinder]{RunscDblFinder()}}.}
-
 \item{verbose}{Whether to print messages.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A \code{Seurat} object with doublet class and score columns in \code{meta.data}.

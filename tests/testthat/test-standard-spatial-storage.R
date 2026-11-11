@@ -1,15 +1,3 @@
-make_standard_spatial_storage_object <- function() {
-  counts <- matrix(
-    c(3, 1, 0, 2, 0, 4, 1, 0, 2, 1, 3, 0),
-    nrow = 3,
-    dimnames = list(paste0("gene", 1:3), paste0("spot", 1:4))
-  )
-  srt <- suppressWarnings(SeuratObject::CreateSeuratObject(counts))
-  srt$col <- c(0, 1, 0, 1)
-  srt$row <- c(0, 0, 1, 1)
-  srt
-}
-
 make_standard_spatial_rerun_object <- function() {
   counts <- matrix(
     c(
@@ -140,7 +128,7 @@ test_that("stored spatial variable feature results are reported", {
   )
 
   out <- run_storage_workflow(
-    make_standard_spatial_storage_object(),
+    make_spatial_test_grid(),
     do_spatial_variable_features = TRUE,
     spatial_variable_features_params = list(store_results = TRUE)
   )
@@ -167,7 +155,7 @@ test_that("storage-off SVF ignores and preserves an older tool result", {
     },
     .package = "scop"
   )
-  srt <- make_standard_spatial_storage_object()
+  srt <- make_spatial_test_grid()
   stale_tool <- list(result = data.frame(feature = "stale"))
   srt@tools[["SpatialVariableFeatures"]] <- stale_tool
 
@@ -207,7 +195,7 @@ test_that("variable-feature-only output is certified without a tool", {
     },
     .package = "scop"
   )
-  srt <- make_standard_spatial_storage_object()
+  srt <- make_spatial_test_grid()
   stale_tool <- list(result = data.frame(feature = "stale"))
   srt@tools[["SpatialVariableFeatures"]] <- stale_tool
 
@@ -234,7 +222,7 @@ test_that("variable-feature-only output is certified without a tool", {
 })
 
 test_that("SVF bookkeeping follows the effective assay override", {
-  srt <- make_standard_spatial_storage_object()
+  srt <- make_spatial_test_grid()
   alt_counts <- SeuratObject::LayerData(srt, assay = "RNA", layer = "counts")
   srt[["ALT"]] <- SeuratObject::CreateAssay5Object(counts = alt_counts)
   SeuratObject::VariableFeatures(srt, assay = "RNA") <- "gene1"
@@ -294,7 +282,7 @@ test_that("SVF bookkeeping follows the effective assay override", {
 })
 
 test_that("NULL SVF assay resolves to the producer default assay", {
-  srt <- make_standard_spatial_storage_object()
+  srt <- make_spatial_test_grid()
   alt_counts <- SeuratObject::LayerData(srt, assay = "RNA", layer = "counts")
   srt[["ALT"]] <- SeuratObject::CreateAssay5Object(counts = alt_counts)
   SeuratObject::DefaultAssay(srt) <- "ALT"
@@ -339,7 +327,7 @@ test_that("invalid effective SVF assays fail through the stage wrapper", {
     },
     .package = "scop"
   )
-  srt <- make_standard_spatial_storage_object()
+  srt <- make_spatial_test_grid()
   SeuratObject::VariableFeatures(srt, assay = "RNA") <- c("gene1", "gene2")
   srt@tools[["SpatialVariableFeatures"]] <- list(result = "stale")
   caller_before <- srt
@@ -385,7 +373,7 @@ test_that("invalid effective SVF assays fail through the stage wrapper", {
 })
 
 test_that("SVF output replaces stale selection and preserves HVF metadata", {
-  srt <- make_standard_spatial_storage_object()
+  srt <- make_spatial_test_grid()
   assay_object <- srt[["RNA"]]
   skip_if_not(inherits(assay_object, "StdAssay"))
   variable <- c(TRUE, FALSE, TRUE)
@@ -466,7 +454,7 @@ test_that("stale variable features do not satisfy a quiet producer", {
     },
     .package = "scop"
   )
-  srt <- make_standard_spatial_storage_object()
+  srt <- make_spatial_test_grid()
   SeuratObject::VariableFeatures(srt, assay = "RNA") <- "gene1"
 
   condition <- tryCatch(
@@ -495,7 +483,7 @@ test_that("stale variable features do not satisfy a quiet producer", {
 
 test_that("malformed explicit-empty sentinels do not satisfy the workflow", {
   malformed_cases <- c("missing_rank", "numeric_rank")
-  srt <- make_standard_spatial_storage_object()
+  srt <- make_spatial_test_grid()
   SeuratObject::VariableFeatures(srt, assay = "RNA") <- c("gene1", "gene2")
   caller_before <- srt
 
@@ -801,7 +789,7 @@ test_that("NULL SVF controls resolve to producer defaults", {
   )
 
   out <- run_storage_workflow(
-    make_standard_spatial_storage_object(),
+    make_spatial_test_grid(),
     do_spatial_variable_features = TRUE,
     spatial_variable_features_params = list(
       store_results = NULL,
@@ -846,7 +834,7 @@ test_that("fresh non-finite SVF scores certify a valid empty selection", {
   )
 
   out <- run_storage_workflow(
-    make_standard_spatial_storage_object(),
+    make_spatial_test_grid(),
     do_spatial_variable_features = TRUE,
     spatial_variable_features_params = list(
       store_results = TRUE,
@@ -865,7 +853,7 @@ test_that("fresh non-finite SVF scores certify a valid empty selection", {
 })
 
 test_that("restored HVF statistics do not revive a valid empty SVF selection", {
-  srt <- make_standard_spatial_storage_object()
+  srt <- make_spatial_test_grid()
   assay_object <- srt[["RNA"]]
   skip_if_not(inherits(assay_object, "StdAssay"))
   variable <- c(TRUE, FALSE, TRUE)
@@ -979,7 +967,7 @@ test_that("malformed SVF tools cannot certify an empty selection", {
 
     expect_error(
       run_storage_workflow(
-        make_standard_spatial_storage_object(),
+        make_spatial_test_grid(),
         do_spatial_variable_features = TRUE,
         spatial_variable_features_params = list(
           store_results = TRUE,
@@ -1006,7 +994,7 @@ test_that("a stale empty SVF tool cannot certify an empty selection", {
     },
     .package = "scop"
   )
-  srt <- make_standard_spatial_storage_object()
+  srt <- make_spatial_test_grid()
   stale_tool <- list(
     result = data.frame(feature = "gene1", score = NA_real_),
     summary = list(top_features = character())
@@ -1044,7 +1032,7 @@ test_that("a stale SVF tool does not satisfy a quiet stored producer", {
     },
     .package = "scop"
   )
-  srt <- make_standard_spatial_storage_object()
+  srt <- make_spatial_test_grid()
   srt@tools[["SpatialVariableFeatures"]] <- list(result = "stale")
 
   condition <- tryCatch(
@@ -1077,7 +1065,7 @@ test_that("metadata-only deconvolution records actual output columns", {
     },
     .package = "scop"
   )
-  srt <- make_standard_spatial_storage_object()
+  srt <- make_spatial_test_grid()
   srt$label <- factor(rep("typeA", ncol(srt)))
 
   out <- run_storage_workflow(
@@ -1126,7 +1114,7 @@ test_that("non-cell2location methods preserve same-prefix abundance annotations"
   )
 
   for (method in c("RCTD", "SPOTlight")) {
-    srt <- make_standard_spatial_storage_object()
+    srt <- make_spatial_test_grid()
     srt$label <- factor(rep("typeA", ncol(srt)))
     srt$Custom_abundance_annotation <- seq_len(ncol(srt))
     srt <- add_mock_deconv_outputs(srt, prefix = "Custom")
@@ -1173,7 +1161,7 @@ test_that("Cell2location clears and replaces stale abundance metadata", {
     },
     .package = "scop"
   )
-  srt <- make_standard_spatial_storage_object()
+  srt <- make_spatial_test_grid()
   srt$label <- factor(rep("typeA", ncol(srt)))
   srt$Custom_abundance_stale <- 99
   srt <- add_mock_deconv_outputs(srt, prefix = "Custom")
@@ -1211,7 +1199,7 @@ test_that("Cell2location cannot complete without fresh abundance metadata", {
     },
     .package = "scop"
   )
-  srt <- make_standard_spatial_storage_object()
+  srt <- make_spatial_test_grid()
   srt$label <- factor(rep("typeA", ncol(srt)))
   srt$Custom_abundance_stale <- 99
   caller_before <- srt
@@ -1254,7 +1242,7 @@ test_that("stored deconvolution records a custom tool and metadata", {
     },
     .package = "scop"
   )
-  srt <- make_standard_spatial_storage_object()
+  srt <- make_spatial_test_grid()
   srt$label <- factor(rep("typeA", ncol(srt)))
 
   out <- run_storage_workflow(
@@ -1293,7 +1281,7 @@ test_that("deconvolution rejects workflow-owned result keys before execution", {
     },
     .package = "scop"
   )
-  srt <- make_standard_spatial_storage_object()
+  srt <- make_spatial_test_grid()
   srt$label <- factor(rep("typeA", ncol(srt)))
   caller_before <- srt
   workflow_owned_keys <- c(
@@ -1346,7 +1334,7 @@ test_that("deconvolution setup validation fails with stage diagnostics before pr
     },
     .package = "scop"
   )
-  srt <- make_standard_spatial_storage_object()
+  srt <- make_spatial_test_grid()
   srt$label <- factor(rep("typeA", ncol(srt)))
   caller_before <- srt
   cases <- list(
@@ -1418,7 +1406,7 @@ test_that("metadata-only deconvolution allows workflow-owned tool names", {
     },
     .package = "scop"
   )
-  srt <- make_standard_spatial_storage_object()
+  srt <- make_spatial_test_grid()
   srt$label <- factor(rep("typeA", ncol(srt)))
   bayesspace_tool <- list(result = "keep")
   srt@tools[["BayesSpace"]] <- bayesspace_tool
@@ -1476,7 +1464,7 @@ test_that("planned spatial metadata collisions fail before any producer", {
     .package = "scop"
   )
   original <- getFromNamespace("run_standard_spatial_workflow", "scop")
-  srt <- make_standard_spatial_storage_object()
+  srt <- make_spatial_test_grid()
   srt$label <- factor(rep("typeA", ncol(srt)))
   caller_before <- srt
 
@@ -1681,7 +1669,7 @@ test_that("all preprocessing cluster outputs are protected before producers run"
     .package = "scop"
   )
   original <- getFromNamespace("run_standard_spatial_workflow", "scop")
-  srt <- make_standard_spatial_storage_object()
+  srt <- make_spatial_test_grid()
   caller_before <- srt
   cases <- list(
     multi_reduction_cluster = list(
@@ -1802,7 +1790,7 @@ test_that("resolution cluster outputs are protected from deconvolution", {
     .package = "scop"
   )
   original <- getFromNamespace("run_standard_spatial_workflow", "scop")
-  srt <- make_standard_spatial_storage_object()
+  srt <- make_spatial_test_grid()
   srt$label <- factor(rep("typeA", ncol(srt)))
   caller_before <- srt
   condition <- tryCatch(
@@ -1859,7 +1847,7 @@ test_that("all default SpotQC outputs are protected before producers run", {
     .package = "scop"
   )
   original <- getFromNamespace("run_standard_spatial_workflow", "scop")
-  srt <- make_standard_spatial_storage_object()
+  srt <- make_spatial_test_grid()
   caller_before <- srt
   spot_qc_targets <- c(
     "nCount_RNA",
@@ -1928,7 +1916,7 @@ test_that("effective SpotQC parameters define planned metadata targets", {
     .package = "scop"
   )
   original <- getFromNamespace("run_standard_spatial_workflow", "scop")
-  base <- make_standard_spatial_storage_object()
+  base <- make_spatial_test_grid()
   alt_counts <- SeuratObject::LayerData(base, assay = "RNA", layer = "counts")
   base[["ALT"]] <- SeuratObject::CreateAssay5Object(counts = alt_counts)
   custom_rule <- "custom score:upper:2"
@@ -2007,7 +1995,7 @@ test_that("SpotQC dispatch reuses the effective parameters used for planning", {
     .package = "scop"
   )
   original <- getFromNamespace("run_standard_spatial_workflow", "scop")
-  srt <- make_standard_spatial_storage_object()
+  srt <- make_spatial_test_grid()
   alt_counts <- SeuratObject::LayerData(srt, assay = "RNA", layer = "counts")
   srt[["ALT"]] <- SeuratObject::CreateAssay5Object(counts = alt_counts)
   SeuratObject::DefaultAssay(srt) <- "ALT"
@@ -2058,7 +2046,7 @@ test_that("deconvolution cannot clear a planned SpotQC outlier flag", {
     .package = "scop"
   )
   original <- getFromNamespace("run_standard_spatial_workflow", "scop")
-  srt <- make_standard_spatial_storage_object()
+  srt <- make_spatial_test_grid()
   srt$label <- factor(rep("typeA", ncol(srt)))
   caller_before <- srt
 
@@ -2113,7 +2101,7 @@ test_that("malformed SpotQC planning parameters fail without producer work", {
     .package = "scop"
   )
   original <- getFromNamespace("run_standard_spatial_workflow", "scop")
-  srt <- make_standard_spatial_storage_object()
+  srt <- make_spatial_test_grid()
   caller_before <- srt
   malformed <- list(
     assay = list(assay = c("RNA", "RNA")),
@@ -2172,7 +2160,7 @@ test_that("RCTD preserves an abundance-named BayesSpace init output", {
     .package = "scop"
   )
   original <- getFromNamespace("run_standard_spatial_workflow", "scop")
-  srt <- make_standard_spatial_storage_object()
+  srt <- make_spatial_test_grid()
   srt$label <- factor(rep("typeA", ncol(srt)))
 
   out <- original(
@@ -2233,7 +2221,7 @@ test_that("explicit NULL BayesSpace init is preserved through dispatch", {
   original <- getFromNamespace("run_standard_spatial_workflow", "scop")
 
   run_case <- function(cluster_colname) {
-    srt <- make_standard_spatial_storage_object()
+    srt <- make_spatial_test_grid()
     srt$BayesSpace_init <- "existing annotation"
     srt$CustomCluster <- "stale cluster"
     original(
@@ -2306,7 +2294,7 @@ test_that("unrequested stage names do not create metadata collisions", {
   original <- getFromNamespace("run_standard_spatial_workflow", "scop")
 
   out <- original(
-    make_standard_spatial_storage_object(),
+    make_spatial_test_grid(),
     assay = "RNA",
     do_spot_qc = FALSE,
     do_spatial_variable_features = FALSE,
@@ -2331,7 +2319,7 @@ test_that("unrequested stage names do not create metadata collisions", {
   expect_equal(unique(out$SpotQC), "domain1")
 
   qc_only <- original(
-    make_standard_spatial_storage_object(),
+    make_spatial_test_grid(),
     assay = "RNA",
     do_spot_qc = TRUE,
     do_spatial_variable_features = FALSE,
@@ -2350,7 +2338,7 @@ test_that("unrequested stage names do not create metadata collisions", {
   expect_equal(unique(qc_only$SpotQC), "Pass")
 
   optional_stages_off <- original(
-    make_standard_spatial_storage_object(),
+    make_spatial_test_grid(),
     prefix = "Custom_prop_typeA_",
     assay = "RNA",
     do_spot_qc = FALSE,
@@ -2405,7 +2393,7 @@ test_that("SPOTlight dispatch satisfies the normalized storage contract", {
     },
     .package = "scop"
   )
-  srt <- make_standard_spatial_storage_object()
+  srt <- make_spatial_test_grid()
   srt$label <- factor(rep("typeA", ncol(srt)))
 
   out <- run_storage_workflow(
@@ -2441,7 +2429,7 @@ test_that("stale deconvolution metadata does not satisfy a quiet producer", {
     },
     .package = "scop"
   )
-  srt <- make_standard_spatial_storage_object()
+  srt <- make_spatial_test_grid()
   srt$label <- factor(rep("typeA", ncol(srt)))
   srt <- add_mock_deconv_outputs(srt, prefix = "Custom")
 
@@ -2492,7 +2480,7 @@ test_that("NULL deconvolution controls resolve to producer defaults", {
     },
     .package = "scop"
   )
-  srt <- make_standard_spatial_storage_object()
+  srt <- make_spatial_test_grid()
   srt$label <- factor(rep("typeA", ncol(srt)))
 
   out <- run_storage_workflow(
@@ -2525,7 +2513,7 @@ test_that("partial postconditions retain stored metadata diagnostics", {
     },
     .package = "scop"
   )
-  srt <- make_standard_spatial_storage_object()
+  srt <- make_spatial_test_grid()
   srt$label <- factor(rep("typeA", ncol(srt)))
 
   condition <- tryCatch(
@@ -2560,7 +2548,7 @@ test_that("incomplete metadata remains visible when a tool was stored", {
     },
     .package = "scop"
   )
-  srt <- make_standard_spatial_storage_object()
+  srt <- make_spatial_test_grid()
   srt$label <- factor(rep("typeA", ncol(srt)))
 
   condition <- tryCatch(
@@ -2597,7 +2585,7 @@ test_that("a stale BayesSpace init is removed when fresh init is absent", {
     },
     .package = "scop"
   )
-  srt <- make_standard_spatial_storage_object()
+  srt <- make_spatial_test_grid()
   srt$CustomCluster <- "stale cluster"
   srt$CustomInit <- "stale init"
   srt@tools[["BayesSpace"]] <- list(result = "stale")
@@ -2662,7 +2650,7 @@ test_that("quality control and BayesSpace probes replace stale outputs", {
     },
     .package = "scop"
   )
-  srt <- make_standard_spatial_storage_object()
+  srt <- make_spatial_test_grid()
   srt$SpotQC <- "stale"
   srt$CustomCluster <- "stale"
   srt$CustomInit <- "stale"

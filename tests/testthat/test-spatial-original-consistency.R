@@ -1,35 +1,3 @@
-real_visium_subset <- function(n = 200, seed = 42) {
-  data(visium_human_pancreas_sub)
-  srt <- visium_human_pancreas_sub
-  srt <- Seurat::NormalizeData(srt, verbose = FALSE)
-  srt@images <- list()
-  set.seed(seed)
-  cells <- sample(colnames(srt), n)
-  srt <- srt[, cells]
-  srt
-}
-
-visium_assay <- function(srt) {
-  SeuratObject::DefaultAssay(srt)
-}
-
-real_human_pancreas_visium_subset <- function(n = 150, seed = 7) {
-  data(visium_human_pancreas_sub)
-  srt <- visium_human_pancreas_sub
-  srt <- Seurat::NormalizeData(srt, verbose = FALSE)
-  srt@images <- list()
-  set.seed(seed)
-  cells <- sample(colnames(srt), n)
-  srt <- srt[, cells]
-  srt
-}
-
-real_panc8_reference <- function(n = 200, seed = 7) {
-  data(panc8_sub)
-  set.seed(seed)
-  panc8_sub[, sample(colnames(panc8_sub), n)]
-}
-
 fast_row_vars <- function(mat) {
   apply(mat, 1, stats::var)
 }
@@ -39,22 +7,28 @@ test_that("RunBayesSpace clusters match the original BayesSpace pipeline", {
   skip_if_not_installed("BayesSpace")
   skip_if_not_installed("SingleCellExperiment")
 
-  srt <- real_visium_subset()
+  srt <- make_visium_test_subset(n = 200)
   set.seed(2024)
-  wrapped <- RunBayesSpace(
-    srt,
-    q = 3,
-    platform = "Visium",
-    image = NULL,
-    coord.cols = c("x", "y"),
-    preprocess = TRUE,
-    n.PCs = 10,
-    n.HVGs = 500,
-    store_sce = FALSE,
-    verbose = FALSE
+  expect_warning(
+    wrapped <- RunBayesSpace(
+      srt,
+      q = 3,
+      platform = "Visium",
+      image = NULL,
+      coord.cols = c("x", "y"),
+      preprocess = TRUE,
+      n.PCs = 10,
+      n.HVGs = 500,
+      store_sce = FALSE,
+      verbose = FALSE
+    ),
+    "Layer.*scale.data.*empty"
   )
 
-  sce <- Seurat::as.SingleCellExperiment(srt, assay = visium_assay(srt))
+  expect_warning(
+    sce <- Seurat::as.SingleCellExperiment(srt, assay = SeuratObject::DefaultAssay(srt)),
+    "Layer.*scale.data.*empty"
+  )
   coordinate_input <- getFromNamespace("bayesspace_add_spatial_coords", "scop")(
     srt = srt,
     sce = sce,
@@ -94,8 +68,8 @@ test_that("RunMERINGUE autocorrelation matches original moranTest per feature", 
   skip_on_cran()
   skip_if_not_installed("MERINGUE")
 
-  srt <- real_visium_subset()
-  expr <- Seurat::GetAssayData(srt, assay = visium_assay(srt), layer = "data")
+  srt <- make_visium_test_subset(n = 200)
+  expr <- Seurat::GetAssayData(srt, assay = SeuratObject::DefaultAssay(srt), layer = "data")
   set.seed(42)
   features <- head(
     rownames(expr)[order(fast_row_vars(expr), decreasing = TRUE)],
@@ -159,8 +133,8 @@ test_that("RunMERINGUE permutation test matches original moranPermutationTest", 
   skip_on_cran()
   skip_if_not_installed("MERINGUE")
 
-  srt <- real_visium_subset(n = 120)
-  expr <- Seurat::GetAssayData(srt, assay = visium_assay(srt), layer = "data")
+  srt <- make_visium_test_subset(n = 120)
+  expr <- Seurat::GetAssayData(srt, assay = SeuratObject::DefaultAssay(srt), layer = "data")
   set.seed(42)
   features <- head(
     rownames(expr)[order(fast_row_vars(expr), decreasing = TRUE)],
@@ -225,8 +199,8 @@ test_that("RunSPOTlight deconvolution matches original SPOTlight with same marke
   skip_on_cran()
   skip_if_not_installed("SPOTlight")
 
-  srt <- real_human_pancreas_visium_subset()
-  reference <- real_panc8_reference()
+  srt <- make_visium_test_subset(n = 150, seed = 7)
+  reference <- make_panc8_test_subset(n = 200)
   genes_use <- intersect(rownames(srt), rownames(reference))
   srt <- srt[genes_use, ]
 
@@ -242,8 +216,8 @@ test_that("RunSPOTlight deconvolution matches original SPOTlight with same marke
   wrapped_weights <- wrapped@tools$SPOTlight$weights
   mgs <- wrapped@tools$SPOTlight$marker_genes
 
-  ref_counts <- Seurat::GetAssayData(reference, assay = visium_assay(reference), layer = "counts")
-  st_counts <- Seurat::GetAssayData(srt, assay = visium_assay(srt), layer = "counts")
+  ref_counts <- Seurat::GetAssayData(reference, assay = SeuratObject::DefaultAssay(reference), layer = "counts")
+  st_counts <- Seurat::GetAssayData(srt, assay = SeuratObject::DefaultAssay(srt), layer = "counts")
   labels <- reference$celltype
   original <- SPOTlight::SPOTlight(
     x = ref_counts,
@@ -274,8 +248,8 @@ test_that("RunSpaNorm normalized counts match the original SpaNorm pipeline", {
   skip_if_not_installed("SpaNorm")
   skip_if_not_installed("SpatialExperiment")
 
-  srt <- real_visium_subset(n = 500)
-  expr <- Seurat::GetAssayData(srt, assay = visium_assay(srt), layer = "data")
+  srt <- make_visium_test_subset(n = 500)
+  expr <- Seurat::GetAssayData(srt, assay = SeuratObject::DefaultAssay(srt), layer = "data")
   set.seed(3)
   genes <- head(rownames(expr)[order(apply(expr, 1, stats::var), decreasing = TRUE)], 2000)
   srt <- srt[genes, ]
@@ -289,7 +263,7 @@ test_that("RunSpaNorm normalized counts match the original SpaNorm pipeline", {
     verbose = FALSE
   )
 
-  counts <- Seurat::GetAssayData(srt, assay = visium_assay(srt), layer = "counts")
+  counts <- Seurat::GetAssayData(srt, assay = SeuratObject::DefaultAssay(srt), layer = "counts")
   coords <- getFromNamespace("spatial_analysis_coords", "scop")(
     srt = srt,
     image = NULL,

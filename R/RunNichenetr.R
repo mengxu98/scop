@@ -41,6 +41,9 @@
 #'   each candidate receptor from the LR table. This is a ligand-level display
 #'   of the existing results; it does not establish receptor-mediated targets or
 #'   sender-specific target effects.
+#' @return A Seurat object with standardized NicheNet results stored in
+#' `srt@tools[["Nichenetr"]]`.
+#' @export
 #' @examples
 #' \dontrun{
 #' srt <- RunNichenetr(
@@ -53,9 +56,6 @@
 #'   merged_table_file = "NicheNet_merged.csv"
 #' )
 #' }
-#' @return A Seurat object with standardized NicheNet results stored in
-#' `srt@tools[["Nichenetr"]]`.
-#' @export
 RunNichenetr <- function(
   object,
   group.by,

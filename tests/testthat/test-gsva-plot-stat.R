@@ -266,3 +266,43 @@ test_that("GSVAPlot diff mode rejects group-level RunGSVA results", {
     "cannot produce real p-values"
   )
 })
+
+test_that("GSVAPlot restores caller RNG on plots, data and errors", {
+  skip_if_not_installed("ggwordcloud")
+  scores <- matrix(
+    c(1, -2, 3, 4),
+    nrow = 2,
+    dimnames = list(c("Alpha response", "Beta process"), c("A", "B"))
+  )
+  for (kind in c("Mersenne-Twister", "L'Ecuyer-CMRG")) {
+    for (has_seed in c(TRUE, FALSE)) {
+      for (path in c("plot", "data", "error")) {
+        expect_rng_restored({
+          if (path == "error") {
+            expect_error(GSVAPlot(res = scores, mode = "invalid"), "arg")
+          } else {
+            GSVAPlot(
+              res = scores, plot_type = "wordcloud", seed = 37,
+              return_data = path == "data", verbose = FALSE
+            )
+          }
+        }, has_seed, kind)
+      }
+    }
+  }
+})
+
+test_that("GSVA wordclouds rely on their actual drawing dependencies", {
+  skip_if_not_installed("ggwordcloud")
+  original_check <- check_r
+  local_mocked_bindings(check_r = function(pkg, ...) {
+    if ("simplifyEnrichment" %in% pkg) stop("GO dependency sentinel")
+    original_check(pkg, ...)
+  }, .package = "scop")
+  scores <- matrix(
+    c(1, -2, 3, 4),
+    nrow = 2,
+    dimnames = list(c("Alpha response", "Beta process"), c("A", "B"))
+  )
+  expect_s3_class(GSVAPlot(res = scores, plot_type = "wordcloud"), "ggplot")
+})

@@ -9,7 +9,7 @@ FindClusters(object, ...)
 \arguments{
 \item{object}{A Seurat object or graph accepted by Seurat.}
 
-\item{...}{Arguments passed unchanged to [Seurat::FindClusters()].}
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 The value returned by [Seurat::FindClusters()].

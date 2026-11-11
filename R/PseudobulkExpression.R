@@ -4,6 +4,7 @@
 #' scop preserves its complete parameter and object contract.
 #'
 #' @inheritParams Seurat::AggregateExpression
+#' @param ... Arguments passed to other functions.
 #' @return A named list of aggregated matrices or a Seurat object.
 #' @export
 AggregateExpression <- function(
@@ -40,6 +41,7 @@ AggregateExpression <- function(
 #' scop preserves its complete parameter and object contract.
 #'
 #' @inheritParams Seurat::AverageExpression
+#' @param ... Arguments passed to other functions.
 #' @return A named list of averaged matrices or a Seurat object.
 #' @export
 AverageExpression <- function(

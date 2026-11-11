@@ -68,7 +68,7 @@ nested `filter_args`.}
 
 \item{overwrite}{Whether to replace an existing named result or H5AD artifact.}
 
-\item{backend}{Backend used only for SCOP CCC result aggregation.}
+\item{backend}{Post-processing engine used for SCOP CCC result aggregation.}
 
 \item{verbose}{Whether to print progress messages.}
 

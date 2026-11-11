@@ -30,8 +30,8 @@ RunCHOIR(
   store_tool = TRUE,
   verbose = TRUE,
   overwrite = FALSE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -65,12 +65,12 @@ RunCHOIR(
 separate.}
 
 \item{max_clusters}{Must be \code{"auto"}. Numeric limits are rejected because
-the upstream backend can fail to terminate when the number of
+the upstream method can fail to terminate when the number of
 clusters plateaus.}
 
 \item{normalization_method}{Normalization performed inside CHOIR. Use
 \code{"none"} for previously normalized data or \code{"SCTransform"} with a counts
-layer. The upstream backend does not support \code{"SCTransform"} for Seurat v5
+layer. The upstream method does not support \code{"SCTransform"} for Seurat v5
 \code{Assay5} objects.}
 
 \item{batch.by}{Optional metadata column containing batch labels.}
@@ -87,7 +87,7 @@ reduction is supplied, variable features from \code{assay} are used.}
 
 \item{atac}{Whether the selected assay contains ATAC-seq data.}
 
-\item{cores}{Number of cores used by CHOIR. The upstream backend supports
+\item{cores}{Number of cores used by CHOIR. The upstream package supports
 macOS and Linux; Windows execution is rejected before installation.}
 
 \item{seed}{Random seed passed to CHOIR.}
@@ -100,12 +100,10 @@ macOS and Linux; Windows execution is rejected before installation.}
 \item{overwrite}{Whether to replace existing CHOIR metadata, reduction, and
 \code{misc} entries, plus the \code{tools} entry when \code{store_tool = TRUE}.}
 
-\item{...}{Additional named arguments passed to the installed CHOIR entry
-point. Unsupported arguments produce an error rather than being silently
-ignored.}
-
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A \code{Seurat} object containing CHOIR clusters in \code{cluster_colname},
@@ -113,7 +111,7 @@ complete upstream records in \code{srt@misc[[key]]}, and, when
 \code{store_tool = TRUE}, a lightweight summary in \code{srt@tools[[tool_name]]}.
 }
 \description{
-Runs the optional CHOIR backend on a single-modality \code{Seurat} object.
+Runs CHOIR on a single-modality \code{Seurat} object.
 CHOIR builds and prunes a hierarchical clustering tree using random-forest
 classifiers and permutation tests to identify statistically distinct cell
 populations.
@@ -125,7 +123,7 @@ summary to \code{srt@tools[[tool_name]]}.
 \details{
 Stored results retain a private per-cell identity metadata column for
 \code{\link[=GetSpatialResult]{GetSpatialResult()}}. Preserve this column when subsetting or renaming cells.
-The accessor returns current-cell assignments; stored native results and
+The accessor returns current-cell assignments; stored original results and
 fit parameters remain unchanged.
 }
 \examples{

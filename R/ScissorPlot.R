@@ -34,9 +34,7 @@
 #' @param nrow,ncol,byrow Layout parameters passed to `patchwork::wrap_plots()`
 #' or [thisplot::StatPlot].
 #' @param theme_use,theme_args Theme used by [thisplot::StatPlot].
-#' @param ... Additional arguments passed to [CellDimPlot], [FeatureDimPlot],
-#' [FeatureHeatmap], or [thisplot::StatPlot], depending on `plot_type`.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A ggplot/patchwork object for embedding and statistical plots, or a
 #' list returned by [FeatureHeatmap] for `plot_type = "heatmap"`.
 #' @export
@@ -157,8 +155,8 @@ ScissorPlot <- function(
   theme_use = "theme_scop",
   theme_args = list(),
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   context <- scissor_plot_context(srt = srt, prefix = prefix)

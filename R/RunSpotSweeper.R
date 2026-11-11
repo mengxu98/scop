@@ -22,15 +22,15 @@
 #' @param coordinate_space Coordinate system used for spatial neighborhoods.
 #' The default is raw acquisition coordinates; `"legacy_display"` remains an
 #' explicit compatibility option. Neighbor counts are unitless, while any
-#' backend distance calculation uses the selected coordinate units.
+#' distance calculation uses the selected coordinate units.
 #' @param sample.by Optional metadata column identifying samples or images.
 #' If `NULL`, all spots are treated as one sample. The selected column must not
-#' contain missing values. The reserved backend output name `"artifact"` cannot
+#' contain missing values. The reserved output name `"artifact"` cannot
 #' be used when `run_artifact = TRUE`.
 #' @param metrics QC metrics used by `SpotSweeper::localOutliers()`. If `NULL`,
 #' `nCount_<assay>`, `nFeature_<assay>`, and `percent.mito` are used.
 #' The corresponding `<metric>_outliers` and `<metric>_z` names are reserved for
-#' backend output and cannot also be requested as input columns.
+#' output and cannot also be requested as input columns.
 #' @param directions Outlier direction for each metric. If `NULL`, count and
 #' feature metrics use `"lower"` and mitochondrial metrics use `"higher"`.
 #' @param n_neighbors Unitless number of nearest spatial neighbors for local
@@ -44,11 +44,11 @@
 #' @param mito_gene Optional explicit mitochondrial gene vector. When provided,
 #' `mito_pattern` is ignored.
 #' @param mito_percent Metadata column used as mitochondrial percent for
-#' artifact detection. If `NULL`, `percent.mito` is used. The reserved backend
+#' artifact detection. If `NULL`, `percent.mito` is used. The reserved
 #' output name `"artifact"` cannot be used when `run_artifact = TRUE`.
 #' @param mito_sum Metadata column used as mitochondrial counts for artifact
 #' detection. If `NULL`, mitochondrial counts are computed. The reserved
-#' backend output name `"artifact"` cannot be used when `run_artifact = TRUE`.
+#' output name `"artifact"` cannot be used when `run_artifact = TRUE`.
 #' @param n_order,shape Parameters passed to `SpotSweeper::findArtifacts()`.
 #' @param prefix Prefix used for metadata columns.
 #' @param tool_name Name used to store detailed results in `srt@tools`.
@@ -59,9 +59,7 @@
 #' @param cores Number of workers passed to SpotSweeper local outlier detection.
 #' @param workers Deprecated alias for `cores`.
 #' @param verbose Whether to print progress and completion status messages.
-#' @param ... Additional named arguments passed to matching SpotSweeper backend
-#' functions when those arguments are supported by the installed version.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A `Seurat` object with SpotSweeper QC metadata. When
 #' `store_results = TRUE`, detailed results and an `artifact_status` table are
 #' stored in `srt@tools[[tool_name]]`. The artifact metadata uses `NA` and
@@ -112,8 +110,8 @@ RunSpotSweeper <- function(
   workers = NULL,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   coordinate_space <- match.arg(coordinate_space)

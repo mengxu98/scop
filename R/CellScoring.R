@@ -36,7 +36,7 @@
 #' @param store_metadata Whether to also store score columns in `meta.data`.
 #' When `NULL`, manual `features = list(...)` input is stored in `meta.data` by default,
 #' while database-derived results stay assay-only when `new_assay = TRUE`.
-#' @param ... Passed to the scoring methods.
+#' @param ... Arguments passed to other functions.
 #' @param cores Number of CPU cores. `NULL` (the default) uses the process
 #' OpenMP team for the C++ kernels and one R worker otherwise.
 #'
@@ -114,8 +114,8 @@ CellScoring <- function(
   seed = 11,
   cores = NULL,
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   species <- normalize_species_name(species)

@@ -46,8 +46,8 @@ ScissorPlot(
   theme_use = "theme_scop",
   theme_args = list(),
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -141,11 +141,10 @@ radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
 
 \item{verbose}{Whether to print messages.}
 
-\item{...}{Additional arguments passed to \link{CellDimPlot}, \link{FeatureDimPlot},
-\link{FeatureHeatmap}, or \link[thisplot:StatPlot]{thisplot::StatPlot}, depending on \code{plot_type}.}
-
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A ggplot/patchwork object for embedding and statistical plots, or a

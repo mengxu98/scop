@@ -34,13 +34,13 @@ lengths must be compatible; the reduced union is checked again after it
 inherits known lengths from other inputs, before width filtering.}
 }
 \value{
-A list with \code{ranges} in native sorted order, named by canonical peak
+A list with \code{ranges} in sorted order, named by canonical peak
 IDs, and a \code{receipt} recording input sets, support groups, filtering and
-backend versions. Recount fragments over these ranges before comparing
+dependency versions. Recount fragments over these ranges before comparing
 counts from previously different peak universes.
 }
 \description{
-Apply native \code{GenomicRanges::reduce()} within declared groups, optionally
+Apply \code{GenomicRanges::reduce()} within declared groups, optionally
 require support from several input peak sets within each group, then take
 the union of retained group intervals. No count matrices are combined.
 }

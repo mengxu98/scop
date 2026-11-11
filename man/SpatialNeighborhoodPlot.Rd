@@ -36,10 +36,10 @@ SpatialNeighborhoodPlot(
   byrow = TRUE,
   seed = 11,
   verbose = TRUE,
-  ...,
   image.scale = c("lowres", "hires"),
   srt = NULL,
-  sample = NULL
+  sample = NULL,
+  ...
 )
 }
 \arguments{
@@ -106,8 +106,6 @@ returns a list of ggplots.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{Additional arguments passed to the selected backend.}
-
 \item{image.scale}{Image scale factor matching the raster stored in the
 selected image. Use \code{"hires"} for a hires raster; do not modify Seurat
 scale-factor slots.}
@@ -118,6 +116,8 @@ will be removed in scop 1.0.0.}
 \item{sample}{Optional single sample ID for non-spatial plots. Results from
 multiple samples require explicit selection; no samples are aggregated.
 Use \code{comparison} and \code{condition} to resolve other repeated label pairs.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A \code{ggplot}, \code{patchwork}, or list of \code{ggplot} objects.

@@ -3,8 +3,7 @@
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams CellDimPlot
-#' @param ... Passed to [CellDimPlot] and [FeatureDimPlot].
-#'
+#' @param ... Arguments passed to other functions.
 #' @return
 #' If `combine = TRUE`, returns a `patchwork` object combining all plots.
 #' If `combine = FALSE`, returns a named list of ggplot objects:
@@ -57,8 +56,8 @@ CytoTRACEPlot <- function(
   theme_use = "theme_scop",
   theme_args = list(),
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {

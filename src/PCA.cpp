@@ -15,6 +15,30 @@ class BlasThreadGuard {
  public:
   BlasThreadGuard(int requested, int previous) : previous_(previous) {
     if (requested > 0) {
+      void* handle = scop_dlopen(NULL);
+      if (handle != nullptr) {
+        auto parallel = reinterpret_cast<int (*)()>(scop_dlsym(handle, "openblas_get_parallel"));
+        if (parallel != nullptr && parallel() == 2) {
+#ifndef _WIN32
+          Dl_info provider;
+          if (dladdr(reinterpret_cast<void*>(parallel), &provider) != 0) {
+            dlclose(handle);
+            handle = scop_dlopen(provider.dli_fname);
+          }
+#endif
+          auto get_omp = reinterpret_cast<int (*)()>(scop_dlsym(handle, "omp_get_max_threads"));
+          set_omp_ = reinterpret_cast<void (*)(int)>(scop_dlsym(handle, "omp_set_num_threads"));
+          if (get_omp != nullptr && set_omp_ != nullptr) {
+            previous_omp_ = get_omp();
+            set_omp_(requested);
+          }
+        }
+#ifndef _WIN32
+        if (handle != nullptr) {
+          dlclose(handle);
+        }
+#endif
+      }
       blas_set_num_threads(requested);
     }
   }
@@ -23,10 +47,15 @@ class BlasThreadGuard {
     if (previous_ > 0) {
       blas_set_num_threads(previous_);
     }
+    if (previous_omp_ > 0) {
+      set_omp_(previous_omp_);
+    }
   }
 
  private:
   int previous_;
+  int previous_omp_ = 0;
+  void (*set_omp_)(int) = nullptr;
 };
 
 enum {

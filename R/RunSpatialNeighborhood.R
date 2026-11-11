@@ -28,22 +28,21 @@
 #' all spots are treated as one sample.
 #' @param split.by Optional metadata column identifying conditions for
 #' differential neighborhood statistics.
-#' @param subject.by Optional metadata column identifying subjects for backends
+#' @param subject.by Optional metadata column identifying subjects for methods
 #' that support paired or repeated designs.
 #' @param radius Optional spatial radius used for package neighborhood
 #' summaries, expressed in the selected coordinate units.
 #' @param k Optional number of nearest neighbors used for package
 #' neighborhood summaries. This is a unitless count. When both `radius` and
 #' `k` are `NULL`, `k = 6` is used.
-#' @param features Optional features to extract into the backend input table.
+#' @param features Optional features to extract into the input table.
 #' @param from,to Optional cell or spot label filters.
 #' @param tool_name Name used to store results in `srt@tools`.
 #' @param store_results Whether to store results in `srt@tools`.
 #' @param backend Backend for observed label-pair aggregation.
 #' `"cpp"` avoids repeated data-frame aggregation; `"r"` retains the reference
 #' implementation. This does not alter the external `"spicyR"` method.
-#' @param ... Additional arguments passed to the selected backend.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A `Seurat` object with results stored in `srt@tools[[tool_name]]`.
 #' @export
 #'
@@ -85,8 +84,8 @@ RunSpatialNeighborhood <- function(
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
   backend = c("cpp", "r"),
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   backend <- match.arg(backend)
@@ -306,10 +305,10 @@ SpatialNeighborhoodPlot <- function(
   byrow = TRUE,
   seed = 11,
   verbose = TRUE,
-  ...,
   image.scale = c("lowres", "hires"),
   srt = NULL,
-  sample = NULL
+  sample = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {

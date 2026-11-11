@@ -1,22 +1,3 @@
-make_spatial_variable_seurat <- function() {
-  counts <- matrix(
-    c(
-      5, 4, 0, 0, 0,
-      0, 0, 4, 5, 4,
-      1, 1, 1, 1, 1,
-      3, 0, 3, 0, 3
-    ),
-    nrow = 4,
-    byrow = TRUE,
-    dimnames = list(paste0("Gene", 1:4), paste0("Spot", 1:5))
-  )
-  counts <- methods::as(Matrix::Matrix(counts, sparse = TRUE), "dgCMatrix")
-  srt <- Seurat::CreateSeuratObject(counts = counts)
-  srt$x <- c(1, 2, 3, 4, 5)
-  srt$y <- c(1, 1, 2, 2, 3)
-  srt
-}
-
 make_empty_spatial_variable_seurat <- function() {
   counts <- matrix(
     1,
@@ -34,7 +15,7 @@ make_spatial_variable_image_seurat <- function(
   lowres = NA_real_,
   hires = 0.5
 ) {
-  srt <- make_spatial_variable_seurat()
+  srt <- make_spatial_test_object()
   scale_factors <- structure(
     list(spot = 1, fiducial = 1, hires = hires, lowres = lowres),
     class = "scalefactors"
@@ -74,7 +55,7 @@ test_that("RunSpatialVariableFeatures validates storage flags before backend wor
     store_results = list(1L, NA, c(TRUE, FALSE))
   )
   base_args <- list(
-    object = make_spatial_variable_seurat(),
+    object = make_spatial_test_object(),
     method = "SPARKX",
     layer = "counts",
     coord.cols = c("x", "y"),
@@ -97,7 +78,7 @@ test_that("RunSpatialVariableFeatures validates storage flags before backend wor
 test_that("native spatial variable feature results keep normalized columns", {
   skip_if_not_installed("BiocNeighbors")
   srt <- RunSpatialVariableFeatures(
-    make_spatial_variable_seurat(),
+    make_spatial_test_object(),
     method = "moran",
     layer = "counts",
     coord.cols = c("x", "y"),
@@ -209,7 +190,7 @@ test_that("C++ spatial scores agree with the R reference", {
 test_that("native backend selection is explicit and reproducible", {
   skip_if_not_installed("BiocNeighbors")
   args <- list(
-    object = make_spatial_variable_seurat(),
+    object = make_spatial_test_object(),
     method = "geary",
     layer = "counts",
     coord.cols = c("x", "y"),
@@ -276,7 +257,7 @@ test_that("large sparse permutation boundaries agree exactly", {
 })
 
 test_that("SPARKX backend output is normalized without storing backend objects", {
-  srt <- make_spatial_variable_seurat()
+  srt <- make_spatial_test_object()
   testthat::local_mocked_bindings(
     check_r = function(...) invisible(TRUE),
     get_namespace_fun = function(pkg, fun) {
@@ -329,7 +310,7 @@ test_that("SPARKX backend output is normalized without storing backend objects",
 })
 
 test_that("nnSVG backend output is normalized through lightweight helpers", {
-  srt <- make_spatial_variable_seurat()
+  srt <- make_spatial_test_object()
   testthat::local_mocked_bindings(
     check_r = function(...) invisible(TRUE),
     spatial_variable_make_spe = function(expr, coords, assay = NULL) {
@@ -387,7 +368,7 @@ test_that("nnSVG backend output is normalized through lightweight helpers", {
 test_that("SpatialVariableFeaturePlot uses stored result and SCOP spatial plotting", {
   skip_if_not_installed("BiocNeighbors")
   srt <- RunSpatialVariableFeatures(
-    make_spatial_variable_seurat(),
+    make_spatial_test_object(),
     method = "moran",
     layer = "counts",
     coord.cols = c("x", "y"),
@@ -423,7 +404,7 @@ test_that("SpatialVariableFeaturePlot combined returns patchwork when available"
   skip_if_not_installed("BiocNeighbors")
   testthat::skip_if_not_installed("patchwork")
   srt <- RunSpatialVariableFeatures(
-    make_spatial_variable_seurat(),
+    make_spatial_test_object(),
     method = "moran",
     layer = "counts",
     coord.cols = c("x", "y"),

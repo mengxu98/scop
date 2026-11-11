@@ -15,9 +15,9 @@ will be removed in scop 1.0.0.}
 
 \item{seed}{Random seed.}
 
-\item{cores}{Number of CPU cores. \code{NULL} lets each backend pick its own
+\item{cores}{Number of CPU cores. \code{NULL} lets each method pick its own
 default: the process OpenMP team (\code{OMP_NUM_THREADS}) for C++ kernels and one
-worker for R/Python parallel backends.}
+worker for R/Python parallel execution.}
 
 \item{group.by}{Metadata column(s) to group cells by.}
 
@@ -41,11 +41,11 @@ a single image is selected automatically when \code{NULL}.}
 \item{coordinate_space}{Coordinate space for spatial distances. \code{"raw"} is
 the default; \code{"legacy_display"} remains available for compatibility.}
 
-\item{backend}{Implementation backend.}
+\item{backend}{Execution engine or implementation method.}
 
 \item{tool_name}{Name of the \code{srt@tools} slot used to store results.}
 
-\item{...}{Additional arguments passed to the underlying method.}
+\item{...}{Arguments passed to other functions.}
 
 \item{byrow}{Whether to fill matrices/plots by row.}
 
@@ -67,7 +67,7 @@ the default; \code{"legacy_display"} remains available for compatibility.}
 
 \item{column_title}{The title for the column names in the heatmap. Default is to use the reference grouping variable.}
 
-\item{combine}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE} returns a list of ggplots.}
+\item{combine}{Combine plots with \code{\link[patchwork:wrap_plots]{patchwork::wrap_plots()}}. \code{combine = FALSE} returns a list of ggplots.}
 
 \item{complex.mean}{Method-specific complex ligand-receptor mean. Methods
 that do not expose it should document their own alternative.}
@@ -154,7 +154,7 @@ that do not expose it should document their own alternative.}
 
 \item{nproc}{Number of parallel processes.}
 
-\item{nrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE} returns a list of ggplots.}
+\item{nrow}{Combine plots with \code{\link[patchwork:wrap_plots]{patchwork::wrap_plots()}}. \code{combine = FALSE} returns a list of ggplots.}
 
 \item{overlay_image}{Draw the spatial image beneath spots.}
 

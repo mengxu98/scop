@@ -17,8 +17,8 @@ RunscPagwas(
   cleanup_soar = TRUE,
   return_seurat = !is.null(srt) || inherits(single_data, "Seurat") || !is.null(object),
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -46,18 +46,17 @@ Seurat object and to \code{"RNA"} for other inputs.}
 \item{output.dirs}{Output directory passed to \code{scPagwas}.}
 
 \item{cleanup_soar}{Deprecated compatibility argument. SOAR cleanup is
-managed by the upstream \code{scPagwas} backend and is ignored by \code{scop}.}
+managed by upstream \code{scPagwas} and is ignored by \code{scop}.}
 
 \item{return_seurat}{Whether to return a Seurat object when one is available.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{Additional arguments passed to the upstream \code{scPagwas} function
-after filtering by its formal arguments.}
-
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A Seurat object or upstream result list.
@@ -68,7 +67,7 @@ pathway, or block-annotation resources. The wrapper validates required GWAS
 columns, normalizes output paths, and records provenance in Seurat tools or
 a result attribute. It prefers the upstream \code{scPagwas_main2} runner and
 applies Seurat 5 compatibility to local function copies without modifying
-the installed backend namespace.
+the installed package namespace.
 }
 \seealso{
 \code{\link[=PlotscPagwas]{PlotscPagwas()}}

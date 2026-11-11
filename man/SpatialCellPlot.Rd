@@ -22,14 +22,14 @@ SpatialCellPlot(
   theme_args = list(),
   assay = NULL,
   layer = "data",
-  ...,
   combine = TRUE,
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE,
   legend.position = "right",
   legend.direction = "vertical",
-  legend.title = NULL
+  legend.title = NULL,
+  ...
 )
 }
 \arguments{
@@ -64,13 +64,13 @@ Named colors are matched to category names.}
 
 \item{layer}{Layer used when `features` are fetched from `object`.}
 
-\item{...}{Additional arguments passed to `ggplot2::geom_polygon()`.}
-
 \item{combine}{Return combined panels, or a named list when `FALSE`.}
 
 \item{nrow, ncol, byrow}{Layout controls for multiple feature panels.}
 
 \item{legend.position, legend.direction, legend.title}{Legend controls.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A `ggplot`, patchwork, or named list of plots.

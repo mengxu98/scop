@@ -8,10 +8,7 @@
 #' @param db_rate Expected doublet rate.
 #' @param data_type Optional [CheckDataType] result, used internally to avoid
 #' rescanning the count matrix.
-#' @param ... Passed to the selected doublet method. For a ChromatinAssay,
-#'   use `db_method = "scDblFinder"` and explicitly supply `sample.by` naming
-#'   the capture/library column; see [RunscDblFinder()].
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A `Seurat` object with doublet class and score columns in `meta.data`.
 #'
 #' @export
@@ -35,9 +32,9 @@ RunDoubletCalling <- function(
   db_rate = ncol(object) / 1000 * 0.01,
   db_method = "scDblFinder",
   data_type = NULL,
-  ...,
   verbose = TRUE,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   object <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(object, "Seurat")) {
@@ -115,17 +112,17 @@ RunDoubletCalling <- function(
 #'
 #' @md
 #' @inheritParams RunDoubletCalling
-#' @param ... Additional arguments to be passed to [scDblFinder::scDblFinder()].
+#' @param ... Arguments passed to other functions.
 #' @param sample.by For ATAC, required metadata column identifying captures or
 #'   libraries in which doublets can form. Biological conditions are not capture
-#'   IDs. Native scDblFinder runs independently per capture (`multiSampleMode =
+#'   IDs. `scDblFinder` runs independently per capture (`multiSampleMode =
 #'   "split"`). RNA behavior is unchanged.
 #' @param seed Random seed for the ATAC path, restoring the caller's RNG.
 #' @details
-#' For ChromatinAssay input, use all raw peaks with native feature aggregation
+#' For ChromatinAssay input, use all raw peaks with feature aggregation
 #' (`aggregateFeatures = TRUE`, `nfeatures = 25`, `processing = "normFeatures"`).
-#' `nfeatures` and other native model parameters can be supplied in `...`.
-#' With omitted `db_rate`, the ATAC path uses the backend's per-capture expected
+#' `nfeatures` and other model parameters can be supplied in `...`.
+#' With omitted `db_rate`, the ATAC path uses the per-capture expected
 #' rate; explicitly supply the appropriate rate for the capture chemistry.
 #' Scores/classes are predictions, not ground-truth doublet labels. No cells
 #' are removed. Existing upstream doublet labels can instead be used directly
@@ -133,7 +130,7 @@ RunDoubletCalling <- function(
 #' @return A Seurat object with `db.scDblFinder_score` and
 #'   `db.scDblFinder_class` updated only for selected-assay cells. For ATAC,
 #'   `Misc(assay, "scop_atac_doublets")` records input cells, capture assignments,
-#'   parameters, native output and backend version; RNA-only cells are preserved.
+#'   parameters, model output and dependency version; RNA-only cells are preserved.
 #'
 #' @export
 RunscDblFinder <- function(
@@ -141,11 +138,11 @@ RunscDblFinder <- function(
   assay = "RNA",
   db_rate = ncol(srt) / 1000 * 0.01,
   data_type = NULL,
-  ...,
   verbose = TRUE,
   srt = NULL,
   sample.by = NULL,
-  seed = 1L
+  seed = 1L,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   log_message("Running {.pkg scDblFinder}", verbose = verbose)
@@ -187,8 +184,7 @@ RunscDblFinder <- function(
 #' @inheritParams RunDoubletCalling
 #' @param method The method to be used for doublet-calling.
 #' Options are `"hybrid"`, `"cxds"`, or `"bcds"`.
-#' @param ... Additional arguments passed to the selected `scds` method.
-#'
+#' @param ... Arguments passed to other functions.
 #' @export
 #' @examples
 #' data(pancreas_sub)
@@ -211,9 +207,9 @@ Runscds <- function(
   db_rate = ncol(srt) / 1000 * 0.01,
   method = c("hybrid", "cxds", "bcds"),
   data_type = NULL,
-  ...,
   verbose = TRUE,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   log_message("Running {.pkg scds} with method {.val {method}}", verbose = verbose)
@@ -435,8 +431,7 @@ scds_hybrid_xgboost_compat <- function(
 #'
 #' @md
 #' @inheritParams RunDoubletCalling
-#' @param ... Additional arguments to be passed to [scrublet.Scrublet](https://github.com/swolock/scrublet).
-#'
+#' @param ... Arguments passed to other functions.
 #' @export
 #'
 #' @examples
@@ -460,9 +455,9 @@ RunScrublet <- function(
   assay = "RNA",
   db_rate = ncol(srt) / 1000 * 0.01,
   data_type = NULL,
-  ...,
   verbose = TRUE,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   user_args <- list(...)
@@ -563,8 +558,7 @@ RunScrublet <- function(
 #' @md
 #' @inheritParams RunDoubletCalling
 #' @param cores The number of CPU cores to use for `doubletdetection`.
-#' @param ... Additional arguments to be passed to [doubletdetection.BoostClassifier](https://github.com/JonathanShor/DoubletDetection).
-#'
+#' @param ... Arguments passed to other functions.
 #' @export
 #'
 #' @examples
@@ -589,9 +583,9 @@ RunDoubletDetection <- function(
   db_rate = ncol(srt) / 1000 * 0.01,
   cores = 1,
   data_type = NULL,
-  ...,
   verbose = TRUE,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   log_message("Running {.pkg DoubletDetection}", verbose = verbose)
@@ -710,8 +704,7 @@ RunDoubletDetection <- function(
 #' as a new assay.
 #' @param data_type Optional [CheckDataType()] result, used internally to avoid
 #' rescanning the count matrix.
-#' @param ... Passed to [decontX::decontX()].
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A `Seurat` object with decontX contamination in `meta.data` and
 #' optional decontaminated counts in a new assay.
 #'
@@ -747,9 +740,9 @@ RunDecontX <- function(
   round_counts = FALSE,
   data_type = NULL,
   seed = 11,
-  ...,
   verbose = TRUE,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   log_message("Running {.pkg decontX}", verbose = verbose)

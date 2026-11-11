@@ -422,13 +422,14 @@ local({
     expect_equal(nrow(labeled$layers[[match("GeomTextRepel", geoms)]]$data), 1L)
   })
 
-  test_that("DorotheaPlot heatmap uses GroupHeatmap on the dorothea assay", {
+  test_that("Dorothea activity assays support GroupHeatmap directly", {
     srt <- make_dorothea_srt()
-    ht <- DorotheaPlot(
+    ht <- GroupHeatmap(
       srt,
       group.by = "CellType",
-      plot_type = "heatmap",
       features = c("TF1", "TF2"),
+      assay = "dorothea", layer = "data",
+      exp_method = "raw", lib_normalize = FALSE,
       verbose = FALSE
     )
     expect_true(is.list(ht))
@@ -437,7 +438,7 @@ local({
     expect_equal(sort(rownames(ht$matrix_list[[1]])), c("TF1", "TF2"))
   })
 
-  test_that("DorotheaPlot dim, stat, and targets return ggplot objects", {
+  test_that("Dorothea paired plots, direct distributions, and target plots render", {
     srt <- make_dorothea_srt()
     p_dim <- DorotheaPlot(
       srt,
@@ -447,12 +448,12 @@ local({
       reduction = "umap",
       verbose = FALSE
     )
-    p_stat <- DorotheaPlot(
+    p_stat <- FeatureStatPlot(
       srt,
       group.by = "CellType",
-      features = c("TF1", "TF2"),
-      plot_type = "stat",
-      verbose = FALSE
+      stat.by = c("TF1", "TF2"),
+      assay = "dorothea", layer = "data",
+      plot_type = "violin"
     )
     p_targets <- DorotheaPlot(
       srt,

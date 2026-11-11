@@ -61,7 +61,7 @@ and \code{mor}, \code{importance}, or \code{weight} for edge weights. \code{mor}
 signed regulation; \code{importance} and \code{weight} are treated as non-negative
 unsigned weights.}
 
-\item{method}{Activity inference backend from \code{decoupleR}.}
+\item{method}{Activity inference method from \code{decoupleR}.}
 
 \item{minsize}{Minimum regulon size passed to \code{decoupleR}.}
 
@@ -151,13 +151,15 @@ DorotheaPlot(
   plot_type = "bar",
   top_n = 20
 )
-ht <- DorotheaPlot(
+GroupHeatmap(
   pancreas_sub,
   group.by = "CellType",
-  plot_type = "heatmap",
-  top_n = 20
-)
-ht$plot
+  features = tf_use,
+  assay = "dorothea",
+  layer = "data",
+  exp_method = "raw",
+  lib_normalize = FALSE
+)$plot
 DorotheaPlot(
   pancreas_sub,
   group.by = "CellType",

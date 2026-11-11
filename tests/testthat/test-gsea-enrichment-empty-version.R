@@ -27,16 +27,19 @@ test_that("RunGSEA and RunEnrichment tolerate a database with an empty version",
   genes <- paste0("G", 1:6)
   groups <- rep("Cluster1", length(genes))
 
-  gsea <- RunGSEA(
-    geneID = genes,
-    geneScore = 6:1,
-    geneID_groups = groups,
-    species = "Homo_sapiens",
-    db = "KEGG",
-    IDtype = "symbol",
-    result_IDtype = "symbol",
-    minGSSize = 2,
-    verbose = FALSE
+  expect_warning(
+    gsea <- RunGSEA(
+      geneID = genes,
+      geneScore = 6:1,
+      geneID_groups = groups,
+      species = "Homo_sapiens",
+      db = "KEGG",
+      IDtype = "symbol",
+      result_IDtype = "symbol",
+      minGSSize = 2,
+      verbose = FALSE
+    ),
+    "All values.*geneScore.*greater than zero"
   )
   expect_true(nrow(gsea$enrichment) > 0)
   expect_identical(unique(gsea$enrichment$Version), "")

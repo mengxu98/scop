@@ -143,8 +143,7 @@ knn_rank_rows <- function(x) {
 #' Find nearest neighbors
 #'
 #' @param object Object containing reduced-dimensional data.
-#' @param ... Passed to methods.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return The input object with neighbor information added.
 #' @export
 FindNeighbors <- function(object, ...) {
@@ -161,7 +160,7 @@ find_neighbors_default_seurat <- function(object, ...) {
   method(object = object, ...)
 }
 
-find_neighbors_native_distance <- function(object, k) {
+find_neighbors_by_distance <- function(object, k) {
   if (
     !is.matrix(object) || !is.numeric(object) ||
       nrow(object) != ncol(object) || any(!is.finite(object))
@@ -194,7 +193,7 @@ find_neighbors_l2_rows <- function(mat) {
   mat / norms
 }
 
-find_neighbors_native_embedding <- function(
+find_neighbors_by_embedding <- function(
   object,
   query = NULL,
   k,
@@ -407,7 +406,7 @@ FindNeighbors.default <- function(
     if (!is.null(query) || isTRUE(l2.norm) || isTRUE(return.neighbor)) {
       return(fallback())
     }
-    result <- find_neighbors_native_distance(object = object, k = k)
+    result <- find_neighbors_by_distance(object = object, k = k)
     if (is.null(result)) {
       return(fallback())
     }
@@ -443,7 +442,7 @@ FindNeighbors.default <- function(
   }
 
   need_distance <- isTRUE(return.neighbor) || !is.null(query)
-  result <- find_neighbors_native_embedding(
+  result <- find_neighbors_by_embedding(
     object = data_use,
     query = query_use,
     k = k,
@@ -564,7 +563,7 @@ FindNeighbors.Assay <- function(
 #' @export
 FindNeighbors.Assay5 <- FindNeighbors.Assay
 
-knn_cross_topk_native <- function(
+knn_cross_topk <- function(
   reference,
   query,
   k,

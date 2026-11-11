@@ -40,7 +40,7 @@
 #' counting (`frequency_count`, `reads_count`, `mononucleosomal`,
 #' `nucleosome_free`, `total.fragments`); retain upstream values under distinct
 #' names when attaching fragments. TSS enrichment uses Signac's R implementation
-#' and does not select an external backend merely because a newer Signac release
+#' and does not select an external method merely because a newer Signac release
 #' exports it.
 #' Missing optional inputs leave metrics unavailable. This function does not
 #' perform doublet detection or establish that all fragment QC is complete.
@@ -108,7 +108,7 @@ RunATACQC <- function(
     )
   }
 
-  get_fragments <- atac_backend_fun("Signac", "Fragments")
+  get_fragments <- Signac::Fragments
   original <- NULL
   assay_cells <- colnames(srt[[assay]])
   if (!setequal(assay_cells, colnames(srt))) {
@@ -218,7 +218,7 @@ RunATACQC <- function(
     if (length(problems)) log_message("{paste(problems, collapse = \" \")}", message_type = "error")
     atac_qc_ranges(blacklist, srt[[assay]], "Blacklist")
     counts <- SeuratObject::GetAssayData(srt, assay = assay, layer = "counts")
-    overlaps <- !is.na(GenomicRanges::findOverlaps(atac_backend_fun("Signac", "granges")(srt[[assay]]),
+    overlaps <- !is.na(GenomicRanges::findOverlaps(Signac::granges(srt[[assay]]),
       blacklist,
       ignore.strand = TRUE, select = "first"
     ))

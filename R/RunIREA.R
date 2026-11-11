@@ -18,7 +18,7 @@ irea_input <- function(object, contrast = NULL) {
       source_file <- normalizePath(object, winslash = "/", mustWork = TRUE)
       ext <- tolower(tools::file_ext(object))
       if (ext %in% c("xlsx", "xls")) {
-        thisutils::check_r("readxl", install = FALSE, verbose = FALSE)
+        check_r("readxl", verbose = FALSE)
         object <- as.data.frame(readxl::read_excel(object))
       } else if (ext == "csv") {
         object <- utils::read.csv(object, check.names = FALSE)
@@ -249,7 +249,7 @@ irea_map_human <- function(reference, input) {
 #'   and all supplied table columns before returning the selected contrast.
 #'   `"selected_contrast"` adjusts its terms only. Vectors and Seurat inputs have
 #'   one contrast. This option does not change gene-list calculations.
-#' @param ... Arguments passed to the dispatched method.
+#' @param ... Arguments passed to other functions.
 #' @return An `irea_result` list, or the Seurat object with that result stored in
 #'   `object@tools$IREA`. Other tools are preserved. The result contains:
 #'   * `table`: one row per reference term, sorted by term. `effect` is the mean

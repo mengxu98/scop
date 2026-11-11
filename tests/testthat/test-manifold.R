@@ -69,7 +69,7 @@ test_that("native BBKNN graph contains neighbors from every batch", {
   )
   rownames(embedding) <- paste0("Cell", seq_len(nrow(embedding)))
   batches <- rep(c("A", "B"), each = 20)
-  native <- getFromNamespace("bbknn_native_matrix", "scop")(
+  native <- getFromNamespace("bbknn_graph_matrix", "scop")(
     embedding,
     batches,
     params = list(
@@ -102,10 +102,10 @@ test_that("BBKNN Annoy path uses Seurat and reports parameters", {
     trim = 0,
     cores = 2
   )
-  first <- getFromNamespace("bbknn_native_matrix", "scop")(
+  first <- getFromNamespace("bbknn_graph_matrix", "scop")(
     embedding, batches, params
   )
-  second <- getFromNamespace("bbknn_native_matrix", "scop")(
+  second <- getFromNamespace("bbknn_graph_matrix", "scop")(
     embedding, batches, params
   )
 

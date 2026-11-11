@@ -1,26 +1,26 @@
 #' Bias-corrected ATAC footprinting
 #'
-#' @description Compute native Signac insertion bias and footprints with an
+#' @description Compute Signac insertion bias and footprints with an
 #' explicit sequence reference. No reference is downloaded. Existing cached
 #' footprints are never overwritten.
 #' @param object A Seurat object containing a ChromatinAssay.
 #' @param genome A loaded BSgenome or indexed Rsamtools FaFile.
 #' @param genome.id Verified reference label matching the assay.
 #' @param bias.region One explicit chromosome interval string, for example
-#' `chr1-4-1000000`. It must fit the reference. Native bias estimation requires
+#' `chr1-4-1000000`. It must fit the reference. Bias estimation requires
 #' adequate coverage of all hexamers and can fail on small datasets.
 #' @param motifs Unique motif IDs present in the selected assay's positions.
 #' @param assay Source assay; defaults to the active assay.
 #' @param upstream,downstream Nonnegative flanking widths (at least 50 each).
 #' @param in.peaks Restrict motif instances to peaks.
 #' @param verbose Print progress.
-#' @return A Seurat object with native positionEnrichment and a
+#' @return A Seurat object with positionEnrichment and a
 #' `scop_footprints` receipt in assay Misc. Input counts, cells and default assay
 #' are preserved. At least two assay cells are required. A receipt is a snapshot; recalculate after changing cells,
 #' peaks, fragments or reference.
 #' @details Requires indexed local fragment files with complete cell/barcode
 #' mappings. Bias is recalculated using the explicit region, never silently
-#' reused from another reference. Native estimation errors are preserved.
+#' reused from another reference. Estimation errors are preserved.
 #' Footprints summarize Tn5 insertion patterns, not proven TF binding or
 #' causality. Factors sharing a motif cannot be distinguished by this analysis.
 #' @seealso [ATACFootprintPlot()]
@@ -35,24 +35,27 @@ RunATACFootprint <- function(object, genome, genome.id, bias.region, motifs,
   # Native fragment lookups cache fastmatch attributes by reference. Isolate
   # the selected assay so even those caches cannot mutate the caller.
   chromatin <- unserialize(serialize(object[[assay]], NULL))
-  if (ncol(chromatin) < 2L) stop("Native footprinting requires at least two assay cells.", call. = FALSE)
+  if (ncol(chromatin) < 2L) stop("Footprinting requires at least two assay cells.", call. = FALSE)
   atac_fp_reference(genome, genome.id, chromatin)
   for (value in list(upstream, downstream)) {
     if (!is.numeric(value) || length(value) != 1L || !is.finite(value) || value < 50 || value %% 1 != 0) {
-      stop("upstream and downstream must be integer widths >= 50 for native flank normalization.", call. = FALSE)
+      stop("upstream and downstream must be integer widths >= 50 for flank normalization.", call. = FALSE)
     }
   }
   if (!is.logical(in.peaks) || length(in.peaks) != 1L || is.na(in.peaks)) stop("in.peaks must be TRUE or FALSE.", call. = FALSE)
   if (!is.character(bias.region) || length(bias.region) != 1L || is.na(bias.region) ||
-      !grepl("^[^-]+-[0-9]+-[0-9]+$", bias.region)) {
+    !grepl("^[^-]+-[0-9]+-[0-9]+$", bias.region)) {
     stop("bias.region must be one explicit chromosome-start-end interval string.", call. = FALSE)
   }
-  interval <- Signac::StringToGRanges(bias.region)
+  interval_fields <- strsplit(bias.region, "-", fixed = TRUE)[[1L]]
+  interval <- GenomicRanges::makeGRangesFromDataFrame(data.frame(
+    chr = interval_fields[[1L]], start = interval_fields[[2L]], end = interval_fields[[3L]]
+  ))
   chr <- as.character(GenomicRanges::seqnames(interval))
   lengths <- GenomeInfoDb::seqlengths(genome)
   if (!chr %in% names(lengths) || is.na(lengths[[chr]]) ||
-      GenomicRanges::start(interval) < 4L || GenomicRanges::end(interval) > lengths[[chr]] - 3L ||
-      GenomicRanges::width(interval) < 6L) {
+    GenomicRanges::start(interval) < 4L || GenomicRanges::end(interval) > lengths[[chr]] - 3L ||
+    GenomicRanges::width(interval) < 6L) {
     stop("bias.region must fit the reference with three-base edge margins.", call. = FALSE)
   }
   positions <- Signac::GetMotifData(chromatin, slot = "positions")
@@ -67,7 +70,7 @@ RunATACFootprint <- function(object, genome, genome.id, bias.region, motifs,
     known <- GenomeInfoDb::seqlengths(regions)
     shared <- intersect(names(known), names(lengths))
     if ((length(labels) && any(labels != genome.id)) ||
-        any(known[shared] != lengths[shared], na.rm = TRUE)) {
+      any(known[shared] != lengths[shared], na.rm = TRUE)) {
       stop("Motif position reference labels or chromosome lengths conflict with genome.id/reference.", call. = FALSE)
     }
     if (in.peaks) regions <- IRanges::subsetByOverlaps(regions, Signac::granges(chromatin))
@@ -77,29 +80,31 @@ RunATACFootprint <- function(object, genome, genome.id, bias.region, motifs,
     left <- ifelse(minus, downstream, upstream)
     right <- ifelse(minus, upstream, downstream)
     if (any(!rchr %in% names(lengths)) || anyNA(lengths[rchr]) ||
-        any(GenomicRanges::start(regions) - left < 4L) ||
-        any(GenomicRanges::end(regions) + right > lengths[rchr] - 3L)) {
+      any(GenomicRanges::start(regions) - left < 4L) ||
+      any(GenomicRanges::end(regions) + right > lengths[rchr] - 3L)) {
       stop("Motif windows must fit the declared reference, including bias margins; filter positions explicitly.", call. = FALSE)
     }
   }
-  verified.fragments <- atac_footprint_fragments(chromatin, colnames(chromatin), verbose)
+  verified.fragments <- atac_indexed_fragments(chromatin, colnames(chromatin), verbose)
   # Native fragment readers can retain non-assay mappings; work on a local assay.
   fragments <- Signac::Fragments(chromatin)
   chromatin@fragments <- Filter(function(f) any(names(Signac::GetFragmentData(f, "cells")) %in% colnames(chromatin)), fragments)
-  chromatin <- atac_backend_fun("Signac", "InsertionBias")(chromatin, genome = genome, region = bias.region, verbose = verbose)
+  chromatin <- Signac::InsertionBias(chromatin, genome = genome, region = bias.region, verbose = verbose)
   bias <- SeuratObject::GetAssayData(chromatin, layer = "bias")
-  if (!length(bias) || any(!is.finite(bias))) stop("Native insertion bias is non-finite; choose a sufficiently covered reference region.", call. = FALSE)
-  chromatin <- atac_backend_fun("Signac", "Footprint")(chromatin, genome = genome,
+  if (!length(bias) || any(!is.finite(bias))) stop("Insertion bias is non-finite; choose a sufficiently covered reference region.", call. = FALSE)
+  chromatin <- Signac::Footprint(chromatin, genome = genome,
     motif.name = motifs, key = motifs, upstream = upstream, downstream = downstream,
     compute.expected = TRUE, in.peaks = in.peaks, verbose = verbose)
   chromatin@fragments <- fragments
   receipt <- SeuratObject::Misc(chromatin, "scop_footprints")
   if (is.null(receipt)) receipt <- list()
-  snapshot <- list(cells = as.vector(colnames(chromatin)), peaks = as.vector(rownames(chromatin)),
+  snapshot <- list(
+    cells = as.vector(colnames(chromatin)), peaks = as.vector(rownames(chromatin)),
     genome = genome.id, bias.region = bias.region, upstream = upstream, downstream = downstream,
     compute.expected = TRUE, in.peaks = in.peaks,
     fragments = lapply(verified.fragments, function(x) x[c("path", "index", "hash", "map")]),
-    backend = as.character(utils::packageVersion("Signac")))
+    backend = as.character(utils::packageVersion("Signac"))
+  )
   for (id in motifs) receipt[[id]] <- snapshot
   SeuratObject::Misc(chromatin, "scop_footprints") <- receipt
   object[[assay]] <- chromatin
@@ -126,9 +131,9 @@ atac_fp_reference <- function(genome, genome.id, chromatin) {
 #' @param motifs Unique footprint keys.
 #' @param assay Chromatin assay.
 #' @param group.by Metadata column, or NULL for identities.
-#' @param normalization Native Signac normalization: `subtract`, `divide`, or NULL.
+#' @param normalization Signac normalization: `subtract`, `divide`, or NULL.
 #' @param show.expected Show expected insertion profile.
-#' @param ... Other arguments to Signac::PlotFootprint.
+#' @param ... Arguments passed to other functions.
 #' @return A ggplot/patchwork object from Signac.
 #' @export
 ATACFootprintPlot <- function(object, motifs, assay = NULL, group.by = NULL,
@@ -141,14 +146,20 @@ ATACFootprintPlot <- function(object, motifs, assay = NULL, group.by = NULL,
   for (id in motifs) {
     r <- receipt[[id]]
     if (is.null(r) || !identical(r$cells, as.vector(colnames(object[[assay]]))) ||
-        !identical(r$peaks, as.vector(rownames(object[[assay]]))) ||
-        !identical(r$genome, report$genome)) stop("Footprint receipt is missing or stale; recompute after subsetting or renaming.", call. = FALSE)
+      !identical(r$peaks, as.vector(rownames(object[[assay]]))) ||
+      !identical(r$genome, report$genome)) {
+      stop("Footprint receipt is missing or stale; recompute after subsetting or renaming.", call. = FALSE)
+    }
   }
   if (!is.null(normalization) && (!is.character(normalization) || length(normalization) != 1L ||
-      !normalization %in% c("subtract", "divide"))) stop("normalization must be subtract, divide or NULL.", call. = FALSE)
+    !normalization %in% c("subtract", "divide"))) {
+    stop("normalization must be subtract, divide or NULL.", call. = FALSE)
+  }
   cells <- colnames(object[[assay]])
   if (!is.null(group.by) && (!is.character(group.by) || length(group.by) != 1L ||
-      !group.by %in% colnames(object[[]]) || anyNA(object[[]][cells, group.by]))) stop("group.by must name complete metadata for assay cells.", call. = FALSE)
+    !group.by %in% colnames(object[[]]) || anyNA(object[[]][cells, group.by]))) {
+    stop("group.by must name complete metadata for assay cells.", call. = FALSE)
+  }
   local <- object
   if (!identical(as.vector(colnames(object)), as.vector(cells))) {
     saved <- object[[assay]]@positionEnrichment
@@ -156,37 +167,6 @@ ATACFootprintPlot <- function(object, motifs, assay = NULL, group.by = NULL,
     local <- subset(local, cells = cells)
     local[[assay]]@positionEnrichment <- saved
   }
-  atac_backend_fun("Signac", "PlotFootprint")(local, features = motifs, assay = assay,
+  Signac::PlotFootprint(local, features = motifs, assay = assay,
     group.by = group.by, normalization = normalization, show.expected = show.expected, ...)
-}
-
-
-atac_footprint_fragments <- function(chromatin, cells, verbose) {
-  atac_backend_fun("Rsamtools", "TabixFile")
-  fragments <- Signac::Fragments(chromatin)
-  maps <- lapply(fragments, Signac::GetFragmentData, slot = "cells")
-  maps <- lapply(maps, function(x) x[names(x) %in% cells])
-  active <- lengths(maps) > 0L
-  maps <- maps[active]
-  fragments <- fragments[active]
-  if (!length(fragments)) stop("Region counting requires attached local indexed fragments.", call. = FALSE)
-  if (!all(vapply(maps, function(x) atac_unique_ids(x) && atac_unique_ids(names(x)), logical(1))) ||
-      anyDuplicated(unlist(lapply(maps, names))) || !setequal(unlist(lapply(maps, names)), cells)) {
-    stop("Fragment maps must cover each selected cell exactly once with unique barcodes.", call. = FALSE)
-  }
-  paths <- vapply(fragments, Signac::GetFragmentData, character(1), slot = "path")
-  if (!all(file.exists(paths))) stop("Fragment files must exist locally.", call. = FALSE)
-  paths <- normalizePath(paths, mustWork = TRUE)
-  if (anyDuplicated(paths)) stop("Fragment paths must be distinct.", call. = FALSE)
-  lapply(seq_along(fragments), function(i) {
-    index <- paste0(paths[i], c(".tbi", ".csi"))
-    index <- index[file.exists(index)][1L]
-    if (is.na(index)) stop("Fragment index is missing.", call. = FALSE)
-    if (!Signac::ValidateHash(fragments[[i]], verbose = verbose)) stop("Fragment hash changed.", call. = FALSE)
-    if (!Signac::ValidateCells(fragments[[i]], cells = unname(maps[[i]]),
-      tolerance = 0, max.lines = NULL, verbose = verbose)) stop("Requested barcodes are absent from fragment file.", call. = FALSE)
-    list(path = paths[i], index = index, map = maps[[i]],
-      contigs = Rsamtools::seqnamesTabix(Rsamtools::TabixFile(paths[i], index = index)),
-      hash = Signac::GetFragmentData(fragments[[i]], slot = "hash"))
-  })
 }

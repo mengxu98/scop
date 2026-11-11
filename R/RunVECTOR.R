@@ -140,9 +140,7 @@ RunVECTOR <- function(
 #' @param aspect.ratio Fixed aspect ratio.
 #' @param legend.position,legend.direction Legend position and direction.
 #' @param theme_use,theme_args Theme function and arguments.
-#' @param ... Additional arguments passed to [FeatureDimPlot()] or
-#' [CellDimPlot()] when a cell background is requested.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A `ggplot` object.
 #' @export
 #'

@@ -48,11 +48,11 @@ CellScoringPlot(
   legend.position = "bottom",
   group.title = NULL,
   threshold.colors = c(`Above AUC threshold` = "black", `Below AUC threshold` = "grey50"),
-  ...,
   combine = TRUE,
   seed = 42,
   verbose = TRUE,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -172,8 +172,6 @@ Legends are horizontal at `"top"` or `"bottom"`, and vertical at
 
 \item{threshold.colors}{Colors for cells above and below each threshold.}
 
-\item{...}{Additional arguments forwarded to [CellDimPlot()].}
-
 \item{combine}{Return a patchwork when `TRUE`; otherwise return named plot
 components before layout spacers are inserted.}
 
@@ -184,6 +182,8 @@ sampling.}
 
 \item{srt}{Deprecated alias for `object`; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A `patchwork` object, or a named list of `ggplot`/`patchwork`

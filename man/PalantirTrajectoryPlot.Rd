@@ -79,10 +79,10 @@ branch trajectory.}
 \item{smooth}{Whether to smooth the trajectory with \link[stats:loess]{stats::loess}.}
 
 \item{trajectory_method}{Method used to fit trajectory coordinates along
-pseudotime. \code{"loess"} uses a fully R-native smoother over a Palantir-style
+pseudotime. \code{"loess"} uses a loess smoother over a Palantir-style
 pseudotime grid; \code{"bin"} uses binned median coordinates.}
 
-\item{smoothness}{Smoothing multiplier for the R-native loess span. Higher
+\item{smoothness}{Smoothing multiplier for the loess span. Higher
 values yield smoother curves.}
 
 \item{span}{Base span used for loess smoothing.}
@@ -125,12 +125,15 @@ pseudotime, \code{"branch_selection"} for the branch with highest probability,
 \item{return_layer}{Logical. If \code{TRUE}, returns ggplot2 layers instead of a
 complete plot.}
 
-\item{seed}{Random seed.}
+\item{seed}{Random seed for plot construction. The caller's RNG state is restored.}
 
 \item{verbose}{Whether to print messages.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+}
+\value{
+A ggplot, or a named list of ggplot layers when \code{return_layer = TRUE}.
 }
 \description{
 Plot branch-aware Palantir trajectories on a two-dimensional embedding.

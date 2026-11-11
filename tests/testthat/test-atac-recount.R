@@ -397,6 +397,6 @@ test_that("recount uses native CSI-only fragments without substituting an index"
   object <- ReadATACData(counts, ranges = peaks, fragments = path, genome = "hg38", verbose = FALSE)
   result <- RecountATAC(object, peaks, verbose = FALSE)
   expect_equal(unname(as.matrix(result$counts)), diag(2))
-  expect_identical(result$receipt$fragments$index, paste0(path, ".csi"))
+  expect_identical(result$receipt$fragments$index, normalizePath(paste0(path, ".csi"), mustWork = TRUE))
   expect_false(file.exists(paste0(path, ".tbi")))
 })

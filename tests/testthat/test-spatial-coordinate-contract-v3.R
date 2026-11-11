@@ -66,7 +66,7 @@ test_that("explicit image axes migrate legacy objects before subsetting and merg
   a <- suppressWarnings(original[, 1:4])
   b <- suppressWarnings(original[, 5:8])
   parts <- spatial_integration_as_list(list(S1 = a, S2 = b), "sample")
-  merged <- spatial_integration_merge_list(parts, "sample")
+  expect_warning(merged <- spatial_integration_merge_list(parts, "sample"), class = "existingKeyWarning")
   coords <- spatial_sample_coords(merged, "sample")$data
   expect_equal(coords$x, raw[1:8, "x"])
   expect_equal(coords$y, raw[1:8, "y"])
@@ -118,7 +118,7 @@ test_that("SpatialExperiment preserves raw units through display exports and sub
 
 test_that("integration covers all image-backed samples and records their sources", {
   srt <- coordinate_v3_fixture()
-  testthat::local_mocked_bindings(spatial_integration_run_backend = function(method, input, ...) {
+  testthat::local_mocked_bindings(spatial_integration_run_model = function(method, input, ...) {
     expect_setequal(input$samples, c("S1", "S2"))
     expect_length(input$cells, 8)
     expect_equal(input$coords$x, rep(c(10, 20, 30, 40), 2))
@@ -133,7 +133,9 @@ test_that("integration covers all image-backed samples and records their sources
     expect_false(anyNA(out$SpatialIntegration_PRECAST_domain))
   }
   expect_error(RunSpatialIntegration(srt, sample.by = "sample", image = "slice1", verbose = FALSE), "cover every cell")
-  srt[["duplicate"]] <- srt[["slice1"]]
+  duplicate <- srt[["slice1"]]
+  SeuratObject::Key(duplicate) <- "duplicate_"
+  srt[["duplicate"]] <- duplicate
   expect_error(RunSpatialIntegration(srt, sample.by = "sample", verbose = FALSE), "one image covering")
   expect_no_error(RunSpatialIntegration(srt,
     sample.by = "sample",
@@ -212,7 +214,7 @@ test_that("list image maps refer to each input object's local image names", {
   srt <- coordinate_v3_fixture()
   objects <- Seurat::SplitObject(srt, split.by = "sample")
   objects$S2@images <- list(slice1 = objects$S2@images$slice2)
-  testthat::local_mocked_bindings(spatial_integration_run_backend = function(method, input, ...) {
+  testthat::local_mocked_bindings(spatial_integration_run_model = function(method, input, ...) {
     expect_length(input$cells, 8)
     expect_equal(input$coords$x, rep(c(10, 20, 30, 40), 2))
     list(domains = stats::setNames(rep("D1", 8), input$cells), raw_result = list())

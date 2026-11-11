@@ -20,8 +20,8 @@ FitDevoPlot(
   palcolor = NULL,
   theme_use = "theme_scop",
   theme_args = list(),
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -46,11 +46,10 @@ distribution plots.}
 
 \item{theme_use, theme_args}{Theme arguments passed to \code{scop} plot helpers.}
 
-\item{...}{Additional arguments passed to \code{\link[=FeatureDimPlot]{FeatureDimPlot()}} and
-\code{\link[=CellDimPlot]{CellDimPlot()}}.}
-
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A patchwork object or a named list of \code{ggplot} objects.

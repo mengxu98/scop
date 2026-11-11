@@ -883,8 +883,7 @@ __main__.adata = adata
 #' @md
 #' @inheritParams thisutils::log_message
 #' @param path Path to a `.loom` file (passed to `scanpy.read_loom()`).
-#' @param ... Additional arguments passed to `scanpy.read_loom()`.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A Python `anndata.AnnData` object.
 #'
 #' @details

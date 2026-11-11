@@ -73,7 +73,7 @@ RunMDS(object, ...)
 \arguments{
 \item{object}{An object. This can be a Seurat object, an assay object, or a matrix-like object.}
 
-\item{...}{Passed to \link[stats:cmdscale]{stats::cmdscale}, \link[MASS:isoMDS]{MASS::isoMDS} or \link[MASS:sammon]{MASS::sammon}.}
+\item{...}{Arguments passed to other functions.}
 
 \item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
