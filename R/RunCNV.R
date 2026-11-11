@@ -364,13 +364,16 @@ cnv_run_fastcnv <- function(
   verbose = TRUE,
   ...
 ) {
-  check_r("must-bioinfo/fastCNV", verbose = FALSE)
   if (identical(genome, "mm10")) {
     log_message(
       "{.pkg fastCNV} currently supports human data only; use {.arg genome = 'hg38'} or {.arg genome = 'hg19'}",
       message_type = "error"
     )
   }
+  check_r(c(
+    "satijalab/seurat-wrappers@8df83435cf10ca76f28ddfc658ad3f6bec61824c",
+    "must-bioinfo/fastCNV"
+  ), verbose = FALSE)
   fastcnv_fun <- get_namespace_fun("fastCNV", "fastCNV")
   attached_fastcnv <- cnv_attach_package_data("fastCNV")
   on.exit(if (isTRUE(attached_fastcnv)) detach("package:fastCNV", character.only = TRUE), add = TRUE)
