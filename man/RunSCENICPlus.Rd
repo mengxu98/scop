@@ -11,7 +11,6 @@ RunSCENICPlus(
   rna_layer = "counts",
   atac_layer = "counts",
   backend = c("python", "cpp"),
-  allow_approximate = FALSE,
   grn_method = c("grnboost2", "regdiffusion", "genie3", "gniplr"),
   regulators = NULL,
   rna_expr = NULL,
@@ -74,11 +73,8 @@ RunSCENICPlus(
 
 \item{backend}{Runtime backend. \code{"python"} reads or extracts official
 SCENIC+ result tables and remains the default; it does not run the SCENIC+
-pipeline itself. \code{"cpp"} runs the approximate package workflow and requires
-\code{allow_approximate = TRUE}.}
-
-\item{allow_approximate}{Whether to allow the approximate C++ workflow. This
-must be \code{TRUE} when \code{backend = "cpp"}.}
+pipeline itself. \code{"cpp"} runs the approximate package workflow and issues a
+warning that results may not be completely identical to the reference workflow.}
 
 \item{grn_method}{GRN method used for TF-gene inference. The C++ workflow
 can call \code{RunGRNBoost2()}, \code{RunGENIE3()}, or \code{RunGNIPLR()};
@@ -100,13 +96,13 @@ unambiguous.}
 \item{tf_gene_prior}{Optional precomputed TF-gene table with columns \code{TF},
 \code{target}, and \code{importance}. When supplied with \code{backend = "cpp"}, C++
 GRN inference is skipped and the table is used as the TF-gene evidence layer.
-If a \code{rho} column is absent, correlations are computed from RNA when native
+If a \code{rho} column is absent, correlations are computed from RNA when
 GSEA is requested.}
 
 \item{region_gene_prior}{Optional precomputed region-gene table with columns
 \code{region}, \code{gene}, and \code{score}. When supplied with \code{backend = "cpp"}, C++
 importance fitting is skipped. If a \code{rho} column is absent, correlations are
-computed from RNA and ATAC when native GSEA is requested.}
+computed from RNA and ATAC when GSEA is requested.}
 
 \item{tf_region_prior}{Optional precomputed TF-region table with columns
 \code{TF}, \code{region}, and \code{score}. When supplied with \code{backend = "cpp"}, existing
@@ -207,9 +203,9 @@ default matches official SCENIC+ command-line wrappers.}
 
 \item{python_result_dir}{Input directory containing official SCENIC+ outputs
 already exported as \code{tf_gene}, \code{region_gene}, \code{tf_region}, \code{triplets},
-\code{eregulons}, and \code{auc} tables. Tab-separated, comma-separated and plain-text files are
-accepted, optionally compressed with gzip, bzip2 or xz; a table in a single
-subdirectory is also found. Used only for \code{backend = "python"}.}
+\code{eregulons}, and \code{auc} tables. Tab-separated, comma-separated and plain-text
+files are accepted, optionally compressed with gzip, bzip2 or xz; a table in
+a single subdirectory is also found. Used only for \code{backend = "python"}.}
 
 \item{scplus_object}{Optional official SCENIC+ Python object path
 (\code{.pkl}, \code{.pickle} or \code{.h5mu}) to extract into \code{work_dir} before
@@ -219,8 +215,8 @@ standardization. Used only for \code{backend = "python"}.}
 neither \code{python_result_dir} nor \code{scplus_object} is supplied, and to extract
 standardized tables from a matching \code{.pkl}, \code{.pickle} or \code{.h5mu} found in
 \code{python_result_dir} or a conventional location. The search checks
-\code{scenicplus}, \code{scplus}, \code{scenic}, \code{outs} and the current directory.
-Default is \code{TRUE}; set to \code{FALSE} to require explicit inputs. Used only for
+\code{scenicplus}, \code{scplus}, \code{scenic}, \code{outs} and the current directory. Default
+is \code{TRUE}; set to \code{FALSE} to require explicit inputs. Used only for
 \code{backend = "python"}; the Python environment is prepared automatically when
 extraction is needed.}
 
@@ -241,7 +237,7 @@ Default is \code{TRUE}.}
 will be removed in scop 1.0.0.}
 
 \item{egrn_method}{Local eModule filtering. \code{"gsea"} computes weighted
-permutation GSEA, NES and BH-adjusted p-values in native code. \code{"leading_edge"}
+permutation GSEA, NES and BH-adjusted p-values in compiled code. \code{"leading_edge"}
 retains the older approximation and its unfiltered fallback.}
 
 \item{egrn_n_perm}{Number of gene-set permutations per GSEA module.}
@@ -260,7 +256,7 @@ workflow is not an exact re-run of the official SCENIC+ Python workflow and
 requires explicit opt-in.
 }
 \details{
-The C++ route runs locally without importing or invoking Python. Native GSEA
+The C++ route runs locally without importing or invoking Python. GSEA
 filters modules before merging; it does not substitute unfiltered triplets
 when no module passes. The tool result includes module \code{gsea_statistics},
 \code{region_regulon_list} and \code{region_auc} alongside gene AUC. Locally computed
@@ -271,8 +267,8 @@ inference and GSEA seed is controlled separately by \code{seed}.
 \code{python_result_dir} instead of running SCENIC+ itself. When only a SCENIC+
 object is available, pass it with \code{scplus_object}; the standardized tables
 are extracted into \code{work_dir} before reading. \code{.h5mu} objects are read with
-the Python \code{mudata} package. Missing tables are reported together with the
-files found in \code{python_result_dir} and the required columns.
+the Python \code{mudata} package. Missing tables are reported together with the files found
+in \code{python_result_dir} and the required columns.
 
 Neither backend downloads SCENIC+ reference databases or result tables.
 \code{backend = "python"} only reads local files (and may prepare the Python
@@ -292,12 +288,30 @@ scenicplus_dot <- SCENICPlusPlot(
   pancreas_sub,
   group.by = "CellType"
 )
-example_regulons <- unique(scenicplus_dot$top_table$regulon)[1:2]
+example_regulons <- head(rownames(pancreas_sub[["scenicplus"]]), 6)
+GroupHeatmap(
+  pancreas_sub,
+  group.by = "CellType",
+  features = example_regulons,
+  assay = "scenicplus",
+  layer = "data",
+  exp_method = "raw",
+  lib_normalize = FALSE
+)$plot
+FeatureStatPlot(
+  pancreas_sub,
+  stat.by = example_regulons,
+  group.by = "CellType",
+  assay = "scenicplus",
+  layer = "data",
+  plot_type = "violin"
+)
 FeatureDimPlot(
   pancreas_sub,
   features = example_regulons,
   assay = "scenicplus",
-  reduction = "StandardpcaUMAP2D"
+  layer = "data",
+  reduction = "UMAP"
 )
 SCENICPlusPlot(
   pancreas_sub,

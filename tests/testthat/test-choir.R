@@ -62,7 +62,7 @@ with_mock_choir <- function(code,
   installation_allowed <- NULL
   testthat::local_mocked_bindings(
     .package = "scop",
-    check_r = function(packages, dependencies, verbose, ..., install = TRUE) {
+    check_r = function(packages, dependencies, verbose, install = TRUE, ...) {
       checked <<- c(checked, packages)
       expect_identical(dependencies, NA)
       installation_allowed <<- isTRUE(install)

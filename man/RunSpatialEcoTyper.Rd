@@ -53,9 +53,9 @@ RunSpatialEcoTyper(
   store_results = TRUE,
   allow_partial = FALSE,
   verbose = TRUE,
-  ...,
   image = NULL,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -169,14 +169,13 @@ partial annotations.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{Additional arguments passed to the selected SpatialEcoTyper
-function.}
-
 \item{image}{Optional image name for single discovery, or named sample-to-image
 map for multi discovery. Multi discovery resolves each sample independently.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A \code{Seurat} object with SpatialEcoTyper results in metadata and raw

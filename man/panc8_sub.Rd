@@ -22,9 +22,16 @@ For each data set in \code{panc8}, 200 cells were downsampled to form the \code{
 if (interactive()) {
   data(pancreas_sub)
 
-  SeuratData::InstallData("panc8")
-  data(panc8)
-  panc8 <- UpdateSeuratObject(panc8)
+  archive <- tempfile(fileext = ".tar.gz")
+  utils::download.file(
+    "https://seurat.nygenome.org/src/contrib/panc8.SeuratData_3.0.2.tar.gz",
+    archive,
+    mode = "wb"
+  )
+  exdir <- tempfile()
+  utils::untar(archive, files = "panc8.SeuratData/data/panc8.rda", exdir = exdir)
+  load(file.path(exdir, "panc8.SeuratData", "data", "panc8.rda"))
+  panc8 <- SeuratObject::UpdateSeuratObject(panc8)
   set.seed(98)
   cells_sub <- unlist(
     lapply(
@@ -37,7 +44,7 @@ if (interactive()) {
     panc8_sub,
     layer = "counts"
   )
-  panc8_sub <- CreateSeuratObject(
+  panc8_sub <- SeuratObject::CreateSeuratObject(
     counts = counts,
     meta.data = panc8_sub@meta.data
   )

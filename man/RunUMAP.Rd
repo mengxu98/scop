@@ -9,7 +9,7 @@ RunUMAP(object, ...)
 \arguments{
 \item{object}{Object containing reduced-dimensional data.}
 
-\item{...}{Passed to methods.}
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 The input object with a UMAP reduction added.

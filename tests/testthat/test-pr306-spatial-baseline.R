@@ -1,17 +1,5 @@
-make_pr306_spatial_object <- function() {
-  counts <- matrix(
-    c(3, 1, 0, 2, 0, 4, 1, 0, 2, 1, 3, 0),
-    nrow = 3,
-    dimnames = list(paste0("gene", 1:3), paste0("spot", 1:4))
-  )
-  srt <- suppressWarnings(SeuratObject::CreateSeuratObject(counts))
-  srt$col <- c(0, 1, 0, 1)
-  srt$row <- c(0, 0, 1, 1)
-  srt
-}
-
 make_pr306_multi_image_object <- function() {
-  srt <- make_pr306_spatial_object()
+  srt <- make_spatial_test_grid()
   slice1 <- data.frame(x = c(0, 1), y = c(0, 1), row.names = c("spot1", "spot2"))
   slice2 <- data.frame(x = c(2, 3), y = c(2, 3), row.names = c("spot3", "spot4"))
   assay <- SeuratObject::DefaultAssay(srt)
@@ -22,7 +10,7 @@ make_pr306_multi_image_object <- function() {
 
 test_that("PR 306 spatial graph naming and overwrite contract is stable", {
   skip_if_not_installed("BiocNeighbors")
-  srt <- make_pr306_spatial_object()
+  srt <- make_spatial_test_grid()
 
   srt <- RunSpatialNetwork(srt, k = 1, verbose = FALSE)
   expect_equal(srt@tools$SpatialNetwork$active_graph, "knn_k1")
@@ -48,7 +36,7 @@ test_that("PR 306 spatial graph naming and overwrite contract is stable", {
 
 test_that("PR 306 spatial graph plotting supports all result input modes", {
   skip_if_not_installed("BiocNeighbors")
-  srt <- RunSpatialNetwork(make_pr306_spatial_object(), k = 1, verbose = FALSE)
+  srt <- RunSpatialNetwork(make_spatial_test_grid(), k = 1, verbose = FALSE)
   res <- srt@tools$SpatialNetwork
 
   p <- SpatialNetworkPlot(object = srt)
@@ -96,16 +84,17 @@ test_that("spatial boundary plots use the shared axis-free spatial theme", {
 })
 
 test_that("spatial boundary feature values use the requested assay layer", {
-  counts <- matrix(
+  counts <- Matrix::Matrix(matrix(
     c(1, 2, 3, 4, 4, 3, 2, 1),
     nrow = 2,
     dimnames = list(c("Gene1", "Gene2"), paste0("cell", 1:4))
-  )
+  ), sparse = TRUE)
   srt <- SeuratObject::CreateSeuratObject(counts)
   srt[["RNA"]] <- SeuratObject::CreateAssay5Object(
     counts = counts,
     data = counts * 10
   )
+  srt$nFeature_RNA <- as.numeric(srt$nFeature_RNA)
   boundaries <- data.frame(
     cell_id = rep(paste0("cell", 1:4), each = 4),
     polygon_id = rep(paste0("p", 1:4), each = 4),
@@ -127,12 +116,19 @@ test_that("spatial boundary feature values use the requested assay layer", {
     sort(as.numeric(c(10, 20, 30, 40)))
   )
   expect_error(
-    SpatialCellPlot(
-      object = srt,
-      boundaries = boundaries,
-      features = "Gene1",
-      assay = "RNA",
-      layer = "scale.data"
+    withCallingHandlers(
+      SpatialCellPlot(
+        object = srt,
+        boundaries = boundaries,
+        features = "Gene1",
+        assay = "RNA",
+        layer = "scale.data"
+      ),
+      warning = function(w) {
+        pattern <- "No layers found matching search pattern provided|Layer.*scale[.]data.*is empty"
+        expect_match(conditionMessage(w), pattern)
+        if (grepl(pattern, conditionMessage(w))) invokeRestart("muffleWarning")
+      }
     ),
     "not available"
   )

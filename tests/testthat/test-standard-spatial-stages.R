@@ -1,15 +1,3 @@
-make_standard_spatial_stage_object <- function() {
-  counts <- matrix(
-    c(3, 1, 0, 2, 0, 4, 1, 0, 2, 1, 3, 0),
-    nrow = 3,
-    dimnames = list(paste0("gene", 1:3), paste0("spot", 1:4))
-  )
-  srt <- suppressWarnings(SeuratObject::CreateSeuratObject(counts))
-  srt$col <- c(0, 1, 0, 1)
-  srt$row <- c(0, 0, 1, 1)
-  srt
-}
-
 test_that("standard spatial workflow records completed and skipped stages truthfully", {
   original <- getFromNamespace("run_standard_spatial_workflow", "scop")
   testthat::local_mocked_bindings(
@@ -28,7 +16,7 @@ test_that("standard spatial workflow records completed and skipped stages truthf
     }
   )
 
-  input <- make_standard_spatial_stage_object()
+  input <- make_spatial_test_grid()
   SeuratObject::VariableFeatures(input) <- rownames(input)[1:2]
   out <- suppressWarnings(original(
     input,
@@ -81,7 +69,7 @@ test_that("top-level spatial stage controls require logical scalars", {
     RunBayesSpace = function(...) producer_calls <<- c(producer_calls, "RunBayesSpace"),
     RunRCTD = function(...) producer_calls <<- c(producer_calls, "RunRCTD")
   )
-  srt <- make_standard_spatial_stage_object()
+  srt <- make_spatial_test_grid()
   caller_before <- srt
   cases <- list(
     do_spot_qc = "yes",
@@ -124,7 +112,7 @@ test_that("requested stage parameter lists fail through their stage wrapper", {
     },
     RunBayesSpace = function(...) producer_calls <<- c(producer_calls, "RunBayesSpace")
   )
-  srt <- make_standard_spatial_stage_object()
+  srt <- make_spatial_test_grid()
   caller_before <- srt
   cases <- list(
     quality_control = list(
@@ -184,7 +172,7 @@ test_that("managed spatial cluster arguments fail before preprocessing", {
   )
   condition <- tryCatch(
     original(
-      make_standard_spatial_stage_object(),
+      make_spatial_test_grid(),
       assay = "RNA",
       do_spot_qc = FALSE,
       do_spatial_variable_features = FALSE,
@@ -221,7 +209,7 @@ test_that("requested stage methods fail through their stage wrapper", {
     RunSPOTlight = function(...) producer_calls <<- c(producer_calls, "RunSPOTlight"),
     RunCell2location = function(...) producer_calls <<- c(producer_calls, "RunCell2location")
   )
-  srt <- make_standard_spatial_stage_object()
+  srt <- make_spatial_test_grid()
   caller_before <- srt
   cases <- list(
     spatial_clustering = list(
@@ -287,7 +275,7 @@ test_that("parameters for unrequested spatial stages are ignored", {
     }
   )
   out <- original(
-    make_standard_spatial_stage_object(),
+    make_spatial_test_grid(),
     assay = "RNA",
     do_spot_qc = FALSE,
     spot_qc_params = "ignored",
@@ -354,7 +342,7 @@ test_that("empty and NULL spatial prefixes normalize to the empty string", {
   )
   for (prefix_value in list("", NULL)) {
     out <- original(
-      make_standard_spatial_stage_object(),
+      make_spatial_test_grid(),
       prefix = prefix_value,
       assay = "RNA",
       do_spot_qc = FALSE,
@@ -393,7 +381,7 @@ test_that("duplicate SpotQC rules do not create a planning collision", {
   )
 
   out <- original(
-    make_standard_spatial_stage_object(),
+    make_spatial_test_grid(),
     assay = "RNA",
     do_spot_qc = TRUE,
     spot_qc_params = list(
@@ -430,7 +418,7 @@ test_that("distinct SpotQC rules cannot normalize to the same output", {
       producer_calls <<- c(producer_calls, "RunStandardWorkflow")
     }
   )
-  srt <- make_standard_spatial_stage_object()
+  srt <- make_spatial_test_grid()
   srt[["foo-bar"]] <- seq_len(ncol(srt))
   srt[["foo.bar"]] <- rev(seq_len(ncol(srt)))
   caller_before <- srt
@@ -475,7 +463,7 @@ test_that("effective SVF storage controls require logical scalars", {
       stop("SVF producer was reached")
     }
   )
-  srt <- make_standard_spatial_stage_object()
+  srt <- make_spatial_test_grid()
   caller_before <- srt
   cases <- list(
     set_variable_features = "yes",
@@ -525,7 +513,7 @@ test_that("standard spatial workflow exposes failed stage diagnostics on errors"
   )
   condition <- tryCatch(
     original(
-      make_standard_spatial_stage_object(),
+      make_spatial_test_grid(),
       assay = "RNA",
       do_spot_qc = FALSE,
       do_spatial_variable_features = TRUE,
@@ -560,7 +548,7 @@ test_that("SpotQC planning collisions carry quality-control diagnostics", {
       srt
     }
   )
-  srt <- make_standard_spatial_stage_object()
+  srt <- make_spatial_test_grid()
   counts <- SeuratObject::LayerData(srt, assay = "RNA", layer = "counts")
   srt[["pcaclusters"]] <- SeuratObject::CreateAssay5Object(counts = counts)
   caller_before <- srt
@@ -608,7 +596,7 @@ test_that("BayesSpace planning failures carry clustering stage diagnostics", {
       stop("BayesSpace producer was reached")
     }
   )
-  srt <- make_standard_spatial_stage_object()
+  srt <- make_spatial_test_grid()
   caller_before <- srt
   cases <- list(
     malformed_cluster = list(
@@ -691,7 +679,7 @@ test_that("BayesSpace q inference failures retain clustering stage diagnostics",
       stop("BayesSpace producer was reached")
     }
   )
-  srt <- make_standard_spatial_stage_object()
+  srt <- make_spatial_test_grid()
   caller_before <- srt
   condition <- tryCatch(
     original(
@@ -743,7 +731,7 @@ test_that("standard spatial workflow marks deconvolution preflight failures", {
       stop("deconvolution backend was reached")
     }
   )
-  srt <- make_standard_spatial_stage_object()
+  srt <- make_spatial_test_grid()
   caller_before <- srt
   condition <- tryCatch(
     original(
@@ -783,7 +771,7 @@ test_that("deconvolution runtime setup failures retain stage diagnostics", {
       stop("synthetic deconvolution cleanup failure")
     }
   )
-  srt <- make_standard_spatial_stage_object()
+  srt <- make_spatial_test_grid()
   srt$label <- factor(rep("typeA", ncol(srt)))
   caller_before <- srt
   condition <- tryCatch(

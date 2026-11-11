@@ -56,7 +56,6 @@ RunCellRank(
   compute_lineage_drivers = TRUE,
   backward = FALSE,
   backend = c("python", "cpp"),
-  allow_approximate = FALSE,
   max_dense_gib = 8,
   show_plot = TRUE,
   save_plot = FALSE,
@@ -208,13 +207,10 @@ Names are validated against the computed macrostates before fate estimation.}
 \item{backward}{Whether to compute backward transitions.}
 
 \item{backend}{Backend for computation: \code{"python"} (default) or \code{"cpp"}.
-The C++ path is an explicitly opted-in approximation and does not reproduce
-the complete CellRank estimator.
-The selected backend is stable: the C++ path never switches to Python
+The C++ path is an approximate implementation and issues a warning that results
+may not be completely identical to the reference workflow.
+The selected computation path is stable: the C++ path never switches to Python
 because of an argument value.}
-
-\item{allow_approximate}{Whether to allow the approximate C++ path. This must
-be \code{TRUE} when \code{backend = "cpp"}.}
 
 \item{max_dense_gib}{Maximum estimated GiB allowed for the dense
 cell-by-cell working matrices used by the C++ path.}
@@ -260,52 +256,95 @@ The estimator and kernel objects are stored in \code{srt@misc$cellrank}.
 \description{
 CellRank is a toolkit for studying cellular dynamics using Markov state modeling.
 }
+\details{
+Use \link{FeatureDimPlot} for stored fate probabilities and \link{CellDimPlot} for
+terminal states. \link{CellRankPlot} adds circular fate coordinates, projected
+transition vectors, random walks, and experimental-time probability flow.
+A flow plot requires an experimental-time result from the moscot workflow.
+
+A stored pseudotime column can also be used with \link{RunDynamicFeatures},
+\link{DynamicHeatmap}, and \link{DynamicPlot}, as for other trajectory methods.
+These functions fit expression along pseudotime using the common dynamic
+analysis workflow. \link{RunCellRankTrends} instead fits CellRank's GAM with
+lineage-probability weights; its stored curves are a separate analysis.
+\link{RunCellRankEnrichment} tests over-representation in those gene modules,
+whereas \link{RunDynamicEnrichment} fits changing gene-set scores along pseudotime.
+}
 \examples{
-\dontrun{
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
+reduction <- DefaultReduction(pancreas_sub, pattern = "UMAP")
+pancreas_sub <- RunSCVELO(
+  object = pancreas_sub,
+  group.by = "SubCellType",
+  linear_reduction = "PCA",
+  nonlinear_reduction = reduction,
+  compute_terminal_states = TRUE,
+  compute_pseudotime = TRUE,
+  backend = "cpp",
+  show_plot = FALSE
+)
 pancreas_sub <- RunCellRank(
   object = pancreas_sub,
+  group.by = "SubCellType",
+  linear_reduction = "PCA",
+  nonlinear_reduction = reduction,
+  kernel_type = "pseudotime",
+  time_key = "stochastic_pseudotime",
+  backend = "cpp",
+  show_plot = FALSE
+)
+
+CellDimPlot(
+  pancreas_sub,
+  group.by = "cellrank_terminal_states",
+  reduction = reduction
+)
+
+FeatureDimPlot(
+  pancreas_sub,
+  features = "cellrank_fate_Lineage1",
+  reduction = reduction
+)
+
+CellRankPlot(
+  pancreas_sub,
+  plot_type = "circular"
+)
+
+CellRankPlot(
+  pancreas_sub,
+  plot_type = "projection",
+  reduction = reduction,
   group.by = "SubCellType"
 )
 
-CellDimPlot(
+pancreas_sub <- RunDynamicFeatures(
   pancreas_sub,
-  group.by = "term_states_fwd",
-  reduction = "umap",
-  label = TRUE
+  lineages = "stochastic_pseudotime",
+  features = c("Rbp4", "Sst", "Pyy"),
+  assay = "RNA"
 )
 
-FeatureDimPlot(
+DynamicHeatmap(
   pancreas_sub,
-  features = "latent_time",
-  reduction = "umap"
-)
-
-FeatureDimPlot(
-  pancreas_sub,
-  features = c("stochastic_confidence", "stochastic_length"),
-  reduction = "umap"
-)
-
-CellDimPlot(
-  pancreas_sub,
-  group.by = "SubCellType",
-  reduction = "UMAP",
-  lineages = "cellrank_pseudotime",
-  lineages_span = 0.1,
-  lineages_trim = c(0.05, 0.95)
+  lineages = "stochastic_pseudotime",
+  features = c("Rbp4", "Sst", "Pyy"),
+  use_fitted = TRUE,
+  assay = "RNA",
+  cell_annotation = "SubCellType"
 )
 
 DynamicPlot(
   pancreas_sub,
-  lineages = "cellrank_pseudotime",
-  features = c("Arxes1", "Ncoa2"),
+  lineages = "stochastic_pseudotime",
+  features = c("Rbp4", "Sst", "Pyy"),
+  assay = "RNA",
   group.by = "SubCellType"
 )
 }
-}
 \seealso{
 \link{RunSCVELO}, \link{RunPAGA}, \link{VelocityPlot}, \link{CellDimPlot}, \link{DynamicPlot},
-\link{RunCellRankTrends}, \link{RunCellRankEnrichment}, \link{CellRankPlot}
+\link{RunDynamicFeatures}, \link{DynamicHeatmap}, \link{RunDynamicEnrichment},
+\link{EnrichmentPlot}, \link{RunCellRankTrends}, \link{RunCellRankEnrichment}, \link{CellRankPlot}
 }

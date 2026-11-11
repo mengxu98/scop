@@ -69,7 +69,7 @@ test_that("PRECAST rejects coordinate-incompatible and managed backend arguments
 test_that("PRECAST rejects non-finite counts before backend execution", {
   object <- input_contract_object()
   testthat::local_mocked_bindings(
-    spatial_integration_run_backend = function(...) stop("backend must not execute")
+    spatial_integration_run_model = function(...) stop("backend must not execute")
   )
   for (invalid in c(NA_real_, NaN, Inf, -Inf)) {
     bad <- object
@@ -97,7 +97,7 @@ test_that("invalid integration payloads fail before object mutation", {
     list(aligned_coords = data.frame(x = rep(NA_real_, length(cells)), y = 1, row.names = cells))
   )
   for (payload in bad) {
-    testthat::local_mocked_bindings(spatial_integration_run_backend = function(...) payload)
+    testthat::local_mocked_bindings(spatial_integration_run_model = function(...) payload)
     expect_error(
       RunSpatialIntegration(object, sample.by = "sample", verbose = FALSE),
       "non-missing|finite"
@@ -172,7 +172,9 @@ test_that("SVG surfaces resolve the saved selection in a multiple-image object",
   skip_if_not_installed("BiocNeighbors")
   data(visium_human_pancreas_sub, package = "scop")
   object <- suppressWarnings(visium_human_pancreas_sub[1:8, 1:12])
-  object[["slice2"]] <- object[["slice1"]]
+  second <- object[["slice1"]]
+  SeuratObject::Key(second) <- "slice2_"
+  object[["slice2"]] <- second
   expect_error(RunSpatialVariableFeatures(object,
     assay = "Spatial", layer = "counts",
     min_spots = 1, backend = "r", verbose = FALSE
@@ -214,7 +216,9 @@ test_that("Visium HD never inherits ordinary Visium physical calibration", {
   expect_equal(ordinary$source$scale_to_micron, 65 / 4)
   expect_equal(ordinary$source$tol_um, 32.5)
   object@misc$scop_spatial_input <- NULL
-  object[["Spatial.008um"]] <- object[["Spatial"]]
+  hd_assay <- object[["Spatial"]]
+  SeuratObject::Key(hd_assay) <- "spatial008um_"
+  object[["Spatial.008um"]] <- hd_assay
   SeuratObject::DefaultAssay(object[["slice1"]]) <- "Spatial.008um"
   expect_identical(spatialcellchat_detect_technology(object, "auto", "slice1"), "visium_hd")
 })

@@ -24,7 +24,7 @@ A list with \code{valid}, \code{errors}, \code{warnings}, \code{assay}, \code{n_
 checks local file/index existence and cell mapping for resources with cells
 in the selected assay. The resource table retains all attached files; its
 \code{active} column identifies those required for this assay. Empty mappings
-left by native subsetting do not block readiness. It does not hash files,
+left by subsetting do not block readiness. It does not hash files,
 scan their contents, or guarantee fragment-dependent computation will pass.
 Use Signac's \code{ValidateFragments()} for content validation when required.
 }
@@ -32,7 +32,8 @@ Use Signac's \code{ValidateFragments()} for content validation when required.
 Report raw-count, peak-coordinate, cell/metadata and reference alignment for
 an existing Seurat \code{ChromatinAssay}. Fragment path/index availability is
 reported separately, so an otherwise valid matrix can be analysed without
-fragments. This check does not install packages, retrieve resources, modify
+fragments. Required R packages follow \code{thisutils::check_r()} defaults. The
+check does not retrieve genomic resources, modify
 the object, or inspect dependencies of downstream optional analyses.
 }
 \examples{

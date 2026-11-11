@@ -12,7 +12,7 @@ loom_to_adata(path, verbose = TRUE, ...)
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{Additional arguments passed to \code{scanpy.read_loom()}.}
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A Python \code{anndata.AnnData} object.

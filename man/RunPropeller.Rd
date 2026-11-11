@@ -67,7 +67,7 @@ A method result bundle used internally by \link{RunProportionTest}.
 \description{
 Method-specific implementation used by \link{RunProportionTest} when
 \code{proportion_method = "propeller"}.
-Uses the optional speckle backend: \code{getTransformedProps()} computes the
+Uses speckle: \code{getTransformedProps()} computes the
 transformed proportions and \code{propeller.ttest()} performs limma empirical
 Bayes moderated tests. Each requested comparison is a two-group test;
 multiple conditions produce pairwise results, not an omnibus ANOVA.

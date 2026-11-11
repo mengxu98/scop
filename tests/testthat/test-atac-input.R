@@ -12,6 +12,29 @@ make_atac_input <- function() {
   list(counts = counts, ranges = ranges)
 }
 
+test_that("ATAC coordinate IDs preserve closed intervals and feature sanitization", {
+  skip_if_not_installed("GenomicRanges")
+  withr::local_options(lifecycle_verbosity = "warning")
+  ranges <- GenomicRanges::GRanges(
+    seqnames = c("chr1", "chr1_alt", "chr1|alternate", "chr2-other"),
+    ranges = IRanges::IRanges(
+      start = c(1L, 11L, 101L, 2147483640L),
+      end = c(1L, 20L, 110L, 2147483646L)
+    ),
+    strand = c("*", "+", "-", "*")
+  )
+  warnings <- character()
+  ids <- withCallingHandlers(
+    atac_range_ids(ranges),
+    warning = function(w) warnings <<- c(warnings, conditionMessage(w))
+  )
+  expect_length(warnings, 0L)
+  expect_identical(ids, c(
+    "chr1-1-1", "chr1-alt-11-20", "chr1-alternate-101-110",
+    "chr2-other-2147483640-2147483646"
+  ))
+})
+
 test_that("ATAC imports preserve raw counts and explicitly align peaks, cells and samples", {
   x <- make_atac_input()
   meta <- data.frame(condition = c("stim", "ctrl", "ctrl"), row.names = c("CC-1", "AA-1", "BB-1"))
@@ -251,13 +274,14 @@ test_that("existing native assay seqinfo contributes reference and bounds checks
   expect_match(paste(CheckATACData(object)$errors, collapse = " "), "assay seqinfo")
 })
 
-test_that("optional ATAC backends are checked without installation", {
-  testthat::local_mocked_bindings(check_r = function(pkg, install, verbose) {
-    expect_false(install)
+test_that("ATAC analysis uses default package checks and propagates failures", {
+  testthat::local_mocked_bindings(check_r = function(pkg, install = TRUE, verbose) {
+    expect_identical(pkg, "Signac")
+    expect_true(missing(install))
     expect_false(verbose)
-    FALSE
+    stop("dependency check failed")
   }, .package = "scop")
-  expect_error(scop:::atac_backend_fun("missing_atac_backend", "fun"), "install it separately")
+  expect_error(ReadATACData(NULL), "dependency check failed")
 })
 
 test_that("native ID cache attributes do not masquerade as an alignment change", {
@@ -348,27 +372,6 @@ test_that("native barcode caches are not imported as metadata identity", {
   expect_identical(as.vector(object$input_barcode), as.vector(colnames(x$counts)))
 })
 
-test_that("ATAC backends resolve public re-exported genomic accessors", {
-  for (fun in c("seqnames", "seqinfo", "start")) {
-    expect_identical(
-      scop:::atac_backend_fun("GenomicRanges", fun),
-      getExportedValue("GenomicRanges", fun)
-    )
-  }
-  for (fun in c("seqnames", "seqinfo", "genome", "genome<-", "seqlengths")) {
-    expect_identical(
-      scop:::atac_backend_fun("GenomeInfoDb", fun),
-      getExportedValue("GenomeInfoDb", fun)
-    )
-  }
-})
-
-test_that("ATAC backends report a missing public function", {
-  expect_error(
-    scop:::atac_backend_fun("GenomicRanges", "missing_atac_function"),
-    "not an exported object"
-  )
-})
 test_that("fragment lookup caches do not invalidate original-barcode metadata", {
   skip_if_not_installed("fastmatch")
   counts <- Matrix::sparseMatrix(

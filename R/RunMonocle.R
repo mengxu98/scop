@@ -23,8 +23,8 @@
 #' @param root_state The state to use as the root of the trajectory.
 #' If NULL, the trajectory is rooted at the first state after an initial
 #' ordering.
-#' @param backend Deprecated and ignored. Monocle now accelerates cell ordering
-#' natively with C++, so the separate `"cpp"` backend has been removed.
+#' @param backend Deprecated and ignored. Monocle accelerates cell ordering
+#' with compiled C++, so the separate `"cpp"` option has been removed.
 #' @param n_neighbors Deprecated and ignored.
 #' @param ddrtree_maxIter Optional maximum iteration count passed to
 #' `DDRTree::DDRTree()` when `reduction_method = "DDRTree"`. Lower values can
@@ -442,17 +442,17 @@ monocle2_reduce_dimension_args <- function(
 #'   ) +
 #'     trajectory
 #'
-#'   # Select the lineage using monocle3::choose_graph_segments
 #'   cds <- pancreas_sub@tools$Monocle3$cds
-#'   cds_sub <- monocle3::choose_graph_segments(
-#'     cds,
-#'     starting_pr_node = NULL,
-#'     ending_pr_nodes = NULL
-#'   )
+#'   graph <- cds@principal_graph[["UMAP"]]
+#'   graph_aux <- cds@principal_graph_aux[["UMAP"]]
+#'   root <- graph_aux$root_pr_nodes[1]
+#'   leaves <- names(which(igraph::degree(graph) == 1))
+#'   end <- leaves[which.max(igraph::distances(graph, root, leaves))]
+#'   nodes <- names(igraph::shortest_paths(graph, root, end)$vpath[[1]])
+#'   closest <- graph_aux$pr_graph_cell_proj_closest_vertex
+#'   cells <- rownames(closest)[paste0("Y_", closest[, 1]) %in% nodes]
 #'   pancreas_sub$Lineages_1 <- NA
-#'   pancreas_sub$Lineages_1[colnames(
-#'     cds_sub
-#'   )] <- pancreas_sub$Monocle3_Pseudotime[colnames(cds_sub)]
+#'   pancreas_sub$Lineages_1[cells] <- pancreas_sub$Monocle3_Pseudotime[cells]
 #'   CellDimPlot(
 #'     pancreas_sub,
 #'     group.by = "SubCellType",

@@ -11,8 +11,7 @@
 #' @param align_start Whether to align the starting pseudotime values at the maximum pseudotime.
 #' @param show_plot Whether to show the dimensionality plot.
 #' @param lineage_palette The color palette to use for the lineages in the plot.
-#' @param ... Passed to the [slingshot::slingshot] function.
-#'
+#' @param ... Arguments passed to other functions.
 #' @seealso [CellDimPlot], [RunDynamicFeatures], [RunDynamicEnrichment]
 #'
 #' @export
@@ -65,9 +64,9 @@ RunSlingshot <- function(
   show_plot = TRUE,
   lineage_palette = "Dark2",
   seed = 11,
-  ...,
   verbose = TRUE,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   check_r("slingshot", verbose = FALSE)

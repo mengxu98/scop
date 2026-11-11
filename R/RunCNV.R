@@ -1,19 +1,15 @@
 #' @title Run copy-number alteration inference
 #'
-#' @description
-#' Run expression-based single-cell or spatial copy-number alteration backends
-#' and store the results in a consistent SCOP result bundle.
-#'
 #' @md
 #' @inheritParams RunStandardWorkflow
 #' @inheritParams thisutils::log_message
 #' @param srt Deprecated alias for `object`; supply exactly one of the two. It
 #' will be removed in scop 1.0.0.
 #' @param object A `Seurat` object.
-#' @param method CNA/CNV backend. Supported backends are `"copykat"`,
+#' @param method CNA/CNV method. Supported methods are `"copykat"`,
 #' `"fastCNV"`, `"scevan"`, `"infercnv"`, and `"numbat"`.
 #' @param layer Assay layer used as the expression matrix.
-#' @param group.by Optional metadata column forwarded to supported backends and
+#' @param group.by Optional metadata column forwarded to supported methods and
 #' stored as cell annotation.
 #' @param reference.by Metadata column identifying reference/normal cells.
 #' Required for `"infercnv"` and `"fastCNV"`.
@@ -27,57 +23,45 @@
 #' to `numbat::run_numbat()` as `df_allele`.
 #' @param reference_counts Reference expression profile for `"numbat"`. This
 #' is forwarded to `numbat::run_numbat()` as `lambdas_ref`.
-#' @param output_dir Optional backend output directory.
+#' @param output_dir Optional output directory.
 #' @param prefix Prefix for metadata columns.
 #' @param tool_name Name used for `srt@tools`.
 #' @param store_matrix Whether to store the normalized CNV matrix in
 #' `srt@tools[[tool_name]]`.
-#' @param ... Additional parameters forwarded to the selected backend.
+#' @param ... Arguments passed to other functions.
 #'
 #' @return A `Seurat` object with CNV metadata columns and a result bundle in
 #' `srt@tools[[tool_name]]`.
-#' @export
+#'
+#' @source The example uses expression and cell annotations from
+#' [GSE70630](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE70630).
 #'
 #' @seealso [CNVPlot]
+#' @export
 #'
 #' @examples
-#' \dontrun{
-#' # copykat uses raw counts and can infer diploid/aneuploid cells directly.
-#' srt <- RunCNV(
-#'   srt,
-#'   method = "copykat",
-#'   genome = "hg38"
+#' base_url <- paste0(
+#'   "https://raw.githubusercontent.com/broadinstitute/infercnv/",
+#'   "1def6c930335d00ddf251474abb0a31a1c74b0da/inst/extdata/"
 #' )
-#'
-#' # fastCNV and inferCNV require a normal/reference cell annotation.
-#' srt <- RunCNV(
-#'   srt,
-#'   method = "fastCNV",
-#'   reference.by = "celltype",
-#'   reference = "Normal",
-#'   genome = "hg38"
+#' files <- c("oligodendroglioma_expression_downsampled.counts.matrix.gz",
+#'            "oligodendroglioma_annotations_downsampled.txt")
+#' counts_file <- tempfile(fileext = ".gz")
+#' labels_file <- tempfile()
+#' utils::download.file(paste0(base_url, files[1]), counts_file, mode = "wb")
+#' utils::download.file(paste0(base_url, files[2]), labels_file, mode = "wb")
+#' counts <- as.matrix(utils::read.delim(counts_file, row.names = 1, check.names = FALSE))
+#' labels <- utils::read.delim(labels_file, header = FALSE, row.names = 1)
+#' cohort <- labels[colnames(counts), 1]
+#' colnames(counts) <- paste0("cell_", colnames(counts))
+#' srt <- SeuratObject::CreateSeuratObject(Matrix::Matrix(counts, sparse = TRUE))
+#' srt$group <- factor(
+#'   ifelse(startsWith(cohort, "malignant_"), sub("^malignant_", "Tumor ", cohort), "Reference"),
+#'   levels = c("Reference", "Tumor 93", "Tumor 97", "Tumor MGH36", "Tumor MGH53")
 #' )
-#'
-#' gene_order <- data.frame(
-#'   gene = rownames(srt),
-#'   chr = "chr1",
-#'   start = seq_len(nrow(srt)) * 1000,
-#'   end = seq_len(nrow(srt)) * 1000 + 999
-#' )
-#' srt <- RunCNV(
-#'   srt,
-#'   method = "infercnv",
-#'   reference.by = "celltype",
-#'   reference = "Normal",
-#'   gene_order = gene_order
-#' )
-#'
-#' # Numbat can also be run when allele-aware preprocessing
-#' # outputs are available.
-#'
-#' CNVPlot(srt, plot_type = "heatmap", group.by = "CNV_prediction")
-#' CNVPlot(srt, plot_type = "dim", value = "CNV_prediction")
-#' }
+#' set.seed(42)
+#' srt <- RunCNV(srt, method = "copykat", reference.by = "group", reference = "Reference")
+#' CNVPlot(srt, group.by = "group", heatmap_limits = "auto")
 RunCNV <- function(
   object,
   method = c("copykat", "fastCNV", "scevan", "infercnv", "numbat"),
@@ -96,8 +80,8 @@ RunCNV <- function(
   tool_name = "CNV",
   store_matrix = TRUE,
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
@@ -134,7 +118,7 @@ RunCNV <- function(
     method = method,
     required = method %in% c("infercnv")
   )
-  cnv_validate_backend_inputs(
+  cnv_validate_inputs(
     method = method,
     allele_counts = allele_counts,
     reference_counts = reference_counts,
@@ -161,7 +145,7 @@ RunCNV <- function(
     "Run {.pkg {method}} CNV backend with {.val {nrow(counts)}} features and {.val {ncol(counts)}} cells",
     verbose = verbose
   )
-  backend_result <- cnv_run_backend(
+  backend_result <- cnv_run_model(
     method = method,
     srt = srt,
     counts = counts,
@@ -229,7 +213,7 @@ RunCNV <- function(
   srt
 }
 
-cnv_run_backend <- function(
+cnv_run_model <- function(
   method,
   srt,
   counts,
@@ -301,6 +285,7 @@ cnv_run_backend <- function(
   )
 }
 
+
 cnv_run_copykat <- function(
   counts,
   group.by = NULL,
@@ -341,7 +326,7 @@ cnv_run_copykat <- function(
   oldwd <- getwd()
   setwd(run_dir)
   on.exit(setwd(oldwd), add = TRUE)
-  result <- cnv_call_backend_fun(copykat_fun, args)
+  result <- cnv_call_fun(copykat_fun, args)
   cnv_extract_copykat(result)
 }
 
@@ -379,13 +364,16 @@ cnv_run_fastcnv <- function(
   verbose = TRUE,
   ...
 ) {
-  check_r("must-bioinfo/fastCNV", verbose = FALSE)
   if (identical(genome, "mm10")) {
     log_message(
       "{.pkg fastCNV} currently supports human data only; use {.arg genome = 'hg38'} or {.arg genome = 'hg19'}",
       message_type = "error"
     )
   }
+  check_r(c(
+    "satijalab/seurat-wrappers",
+    "must-bioinfo/fastCNV"
+  ), verbose = FALSE)
   fastcnv_fun <- get_namespace_fun("fastCNV", "fastCNV")
   attached_fastcnv <- cnv_attach_package_data("fastCNV")
   on.exit(if (isTRUE(attached_fastcnv)) detach("package:fastCNV", character.only = TRUE), add = TRUE)
@@ -403,7 +391,7 @@ cnv_run_fastcnv <- function(
     ),
     list(...)
   )
-  result <- cnv_call_backend_fun(fastcnv_fun, args)
+  result <- cnv_call_fun(fastcnv_fun, args)
   cnv_extract_fastcnv(
     result,
     cells = colnames(srt),
@@ -419,7 +407,7 @@ cnv_run_scevan <- function(
   verbose = TRUE,
   ...
 ) {
-  check_r(c("miccec/yaGST", "AntonioDeFalco/SCEVAN"), verbose = FALSE)
+  check_r(c("Yunuuuu/yaGST", "AntonioDeFalco/SCEVAN"), verbose = FALSE)
   sample_name <- "scop_cnv"
   scevan_fun <- get_namespace_fun("SCEVAN", "pipelineCNA")
   if (!is.function(scevan_fun)) {
@@ -449,7 +437,7 @@ cnv_run_scevan <- function(
   oldwd <- getwd()
   setwd(run_dir)
   on.exit(setwd(oldwd), add = TRUE)
-  result <- cnv_call_backend_fun(scevan_fun, args)
+  result <- cnv_call_fun(scevan_fun, args)
   cnv_extract_scevan(
     result = result,
     cells = colnames(counts),
@@ -541,8 +529,12 @@ cnv_run_infercnv <- function(
     ),
     list(...)
   )
-  result <- cnv_call_backend_fun(run_fun, args)
-  cnv_extract_generic_result(result, method = "infercnv", cells = colnames(counts))
+  result <- cnv_call_fun(run_fun, args)
+  extracted <- cnv_extract_generic_result(result, method = "infercnv", cells = colnames(counts))
+  gene_index <- match(rownames(extracted$cnv_matrix), gene_order$gene)
+  coord_cols <- c("chr", "start", "end")
+  extracted$bin_info[coord_cols] <- gene_order[gene_index, coord_cols, drop = FALSE]
+  extracted
 }
 
 cnv_run_numbat <- function(
@@ -575,7 +567,7 @@ cnv_run_numbat <- function(
     ),
     list(...)
   )
-  result <- cnv_call_backend_fun(run_fun, args)
+  result <- cnv_call_fun(run_fun, args)
   cnv_extract_numbat(result = result, cells = colnames(counts), output_dir = out_dir)
 }
 
@@ -823,9 +815,19 @@ cnv_extract_from_seurat_result <- function(
     cell_info$cluster <- as.character(meta[[cluster_col]])
   }
   rownames(cell_info) <- cell_info$cell
-  candidates <- cnv_find_matrix_candidates(result@tools, cells = cells)
-  if (is.null(candidates$matrix)) {
-    candidates <- cnv_find_seurat_assay_matrix(result, cells = cells)
+  if (identical(method, "fastCNV")) {
+    candidates <- cnv_find_seurat_assay_matrix(result, cells = cells, assay_names = "genomicScores")
+    if (is.null(candidates$matrix)) {
+      log_message(
+        "{.pkg fastCNV} did not return a detectable CNV matrix in the {.val genomicScores} assay",
+        message_type = "error"
+      )
+    }
+  } else {
+    candidates <- cnv_find_matrix_candidates(result@tools, cells = cells)
+    if (is.null(candidates$matrix)) {
+      candidates <- cnv_find_seurat_assay_matrix(result, cells = cells)
+    }
   }
   list(
     cnv_matrix = candidates$matrix,
@@ -1188,7 +1190,7 @@ cnv_reference_cells <- function(srt, method, reference.by, reference) {
   cells
 }
 
-cnv_validate_backend_inputs <- function(
+cnv_validate_inputs <- function(
   method,
   allele_counts = NULL,
   reference_counts = NULL,
@@ -1240,6 +1242,7 @@ cnv_fastcnv_prediction_from_score <- function(score, meta, reference.by = NULL, 
     reference_cells = reference_cells
   )
 }
+
 
 cnv_resolve_gene_order <- function(
   gene_order,
@@ -1649,7 +1652,7 @@ cnv_first_name <- function(names, candidates) {
   hit[[1L]]
 }
 
-cnv_call_backend_fun <- function(fun, args) {
+cnv_call_fun <- function(fun, args) {
   formal_names <- names(formals(fun))
   if (is.null(formal_names)) {
     return(do.call(fun, args))
@@ -1658,12 +1661,12 @@ cnv_call_backend_fun <- function(fun, args) {
   do.call(fun, args[names(args) %in% allowed])
 }
 
-cnv_find_seurat_assay_matrix <- function(result, cells) {
-  assay_names <- intersect(
-    c("genomicScores", "rawGenomicScores", "CNV", "CNA", "cnv", "cna"),
-    names(result@assays)
-  )
-  for (assay in assay_names) {
+cnv_find_seurat_assay_matrix <- function(
+  result,
+  cells,
+  assay_names = c("genomicScores", "rawGenomicScores", "CNV", "CNA", "cnv", "cna")
+) {
+  for (assay in intersect(assay_names, names(result@assays))) {
     for (layer in c("data", "counts", "scale.data")) {
       mat <- tryCatch(
         GetAssayData5(result, assay = assay, layer = layer),

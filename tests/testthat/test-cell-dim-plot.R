@@ -22,6 +22,55 @@ make_cell_dim_plot_srt <- function(n_cells = 10L) {
   srt
 }
 
+test_that("dimension plots preserve caller randomness on success and errors", {
+  srt <- make_cell_dim_plot_srt()
+  for (has_seed in c(TRUE, FALSE)) {
+    for (kind in c("Mersenne-Twister", "L'Ecuyer-CMRG")) {
+      expect_rng_restored(
+        CellDimPlot(srt, group.by = "celltype", reduction = "umap", raster = FALSE, verbose = FALSE),
+        has_seed, kind
+      )
+      expect_rng_restored(
+        FeatureDimPlot(srt, features = "gene1", layer = "counts", reduction = "umap", raster = FALSE, verbose = FALSE),
+        has_seed, kind
+      )
+      expect_rng_restored(
+        expect_error(CellDimPlot(srt, group.by = "missing", reduction = "umap", verbose = FALSE), "missing"),
+        has_seed, kind
+      )
+      expect_rng_restored(
+        expect_error(FeatureDimPlot(srt, features = "gene1", show_points = NA, verbose = FALSE), "show_points"),
+        has_seed, kind
+      )
+    }
+  }
+})
+
+test_that("repelled dimension labels render independently of caller randomness", {
+  srt <- make_cell_dim_plot_srt()
+  plots <- list(
+    CellDimPlot(
+      srt,
+      group.by = "celltype", reduction = "umap", raster = FALSE,
+      label = TRUE, label_repel = TRUE, seed = 29, verbose = FALSE
+    ),
+    FeatureDimPlot(
+      srt,
+      features = "gene1", layer = "counts", reduction = "umap", raster = FALSE,
+      label = TRUE, label_repel = TRUE, seed = 29, verbose = FALSE
+    )
+  )
+  files <- c(tempfile(fileext = ".png"), tempfile(fileext = ".png"))
+  withr::defer(unlink(files))
+  for (p in plots) {
+    for (i in seq_along(files)) {
+      set.seed(i)
+      ggplot2::ggsave(files[[i]], p, width = 6, height = 5, dpi = 100, bg = "white")
+    }
+    expect_identical(unname(tools::md5sum(files[[1L]])), unname(tools::md5sum(files[[2L]])))
+  }
+})
+
 test_that("CellDimPlot density contours close within shared panel limits", {
   srt <- make_cell_dim_plot_srt(40L)
   for (show_na in c(FALSE, TRUE)) {
@@ -748,4 +797,104 @@ test_that("cell density bands render without losing point colours", {
   expect_setequal(built$data[[points]]$colour, ggplot2::ggplot_build(plain)$data[[base_points]]$colour)
   line <- which(vapply(filled$layers, function(l) inherits(l$geom, "GeomDensity2d"), logical(1)))
   expect_true(all(built$data[[line]]$colour == "tomato"))
+})
+
+
+test_that("dimension plot highlights preserve vector and raster point sizes", {
+  skip_if_not_installed("scattermore")
+  object <- make_cell_dim_plot_srt()
+  original <- object
+  selected <- c("cell1", "cell3", "cell10")
+  for (plotter in list(CellDimPlot, FeatureDimPlot)) {
+    for (raster in c(FALSE, TRUE)) {
+      args <- list(
+        object = object, reduction = "umap", raster = raster,
+        cells.highlight = selected, sizes.highlight = 3.2,
+        stroke.highlight = 0.7, alpha.highlight = 0.6,
+        show_stat = FALSE, force = TRUE, verbose = FALSE
+      )
+      if (identical(plotter, CellDimPlot)) {
+        args$group.by <- "celltype"
+      } else {
+        args$features <- "gene1"
+        args$layer <- "counts"
+      }
+      plot <- do.call(plotter, args)
+      point_layers <- Filter(function(layer) {
+        inherits(layer$geom, if (raster) "GeomScattermore" else "GeomPoint")
+      }, plot$layers)
+      outlined <- tail(point_layers, 2L)
+      expect_equal(unname(vapply(outlined, function(layer) nrow(layer$data), integer(1))), c(3L, 3L))
+      sizes <- vapply(outlined, function(layer) {
+        if (raster) layer$geom_params$pointsize else layer$aes_params$size
+      }, numeric(1))
+      expect_equal(unname(sizes), if (raster) c(3.7, 3) else c(3.9, 3.2))
+      expect_s3_class(ggplot2::ggplotGrob(plot), "gtable")
+    }
+  }
+  expect_identical(object, original)
+})
+
+test_that("3D dimension plots retain highlighted traces and feature menus", {
+  skip_if_not_installed("plotly")
+  object <- make_cell_dim_plot_srt()
+  embedding <- cbind(SeuratObject::Embeddings(object, "umap"), UMAP_3 = seq_len(ncol(object)))
+  object[["umap3d"]] <- SeuratObject::CreateDimReducObject(
+    embedding,
+    key = "UMAP3D_", assay = "RNA"
+  )
+  original <- object
+  selected <- c("cell1", "cell3")
+  categorical <- plotly::plotly_build(CellDimPlot3D(
+    object,
+    group.by = "celltype", reduction = "umap3d",
+    cells.highlight = selected, verbose = FALSE
+  ))
+  feature <- plotly::plotly_build(FeatureDimPlot3D(
+    object,
+    features = c("gene1", "gene2"), reduction = "umap3d",
+    split.by = "major_type", layer = "counts",
+    cells.highlight = selected, verbose = FALSE
+  ))
+  expect_equal(sum(vapply(categorical$x$data, function(trace) {
+    if (identical(trace$name, "highlight")) 0L else length(trace$x)
+  }, integer(1))), ncol(object))
+  expect_equal(length(tail(categorical$x$data, 1L)[[1L]]$x), length(selected))
+  expect_equal(length(feature$x$data), 2L)
+  expect_equal(
+    as.numeric(feature$x$data[[1L]]$marker$color),
+    as.numeric(SeuratObject::LayerData(object, layer = "counts")["gene1", ])
+  )
+  expect_equal(feature$x$layout$scene$xaxis$range, range(embedding[, 1]))
+  expect_identical(vapply(
+    feature$x$layout$updatemenus[[2L]]$buttons,
+    function(button) button$label, character(1)
+  ), c("gene1", "gene2"))
+  for (highlight in list(NULL, selected)) {
+    view <- if (is.null(highlight)) {
+      plotly::plotly_build(FeatureDimPlot3D(
+        object,
+        features = c("gene1", "gene2"), reduction = "umap3d",
+        split.by = "major_type", layer = "counts", verbose = FALSE
+      ))
+    } else {
+      feature
+    }
+    buttons <- view$x$layout$updatemenus[[1L]]$buttons
+    restore <- buttons[[1L]]$args[[1L]]
+    expect_identical(buttons[[1L]]$label, "All.cells")
+    for (axis in seq_len(3L)) {
+      name <- c("x", "y", "z")[[axis]]
+      expect_equal(as.numeric(restore[[name]][[1L]]), as.numeric(embedding[, axis]))
+      if (!is.null(highlight)) {
+        expect_equal(as.numeric(restore[[name]][[2L]]), as.numeric(embedding[highlight, axis]))
+      }
+      for (button in buttons[-1L]) {
+        expected <- as.numeric(embedding[, axis])
+        expected[object$major_type != button$label] <- NA_real_
+        expect_equal(as.numeric(button$args[[1L]][[name]][[1L]]), expected)
+      }
+    }
+  }
+  expect_identical(object, original)
 })

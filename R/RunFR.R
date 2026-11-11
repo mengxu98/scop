@@ -11,8 +11,7 @@
 #' @param niter The number of iterations for the force-directed layout.
 #' @param reduction.name Reduction to be stored in the Seurat object.
 #' @param reduction.key The prefix for the column names of the force-directed layout embeddings.
-#' @param ... Passed to [igraph::layout_with_fr].
-#'
+#' @param ... Arguments passed to other functions.
 #' @export
 #'
 #' @rdname RunFR

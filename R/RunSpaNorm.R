@@ -12,17 +12,15 @@
 #' @inheritParams thisutils::log_message
 #' @param new_assay Name of the assay used to store SpaNorm-normalized data.
 #' @param tool_name Name used to store detailed SpaNorm results in `srt@tools`.
-#' @param store_spe Whether to store the backend `SpatialExperiment` returned
+#' @param store_spe Whether to store the `SpatialExperiment` returned
 #' by `SpaNorm`.
 #' @param coordinate_space Coordinate system supplied to SpaNorm. The default
 #' is raw acquisition coordinates; use `"legacy_display"` explicitly to
 #' reproduce the display-scaled coordinates used before scop 0.9.0.
-#' @param ... Additional arguments passed to `SpaNorm::SpaNorm()`, such as
-#' `sample.p`.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A `Seurat` object with SpaNorm-normalized expression stored in
 #' `new_assay`. When `store_results = TRUE`, parameters, coordinates, features,
-#' cells, and optional backend output are stored in `srt@tools[[tool_name]]`.
+#' cells, and optional method output are stored in `srt@tools[[tool_name]]`.
 #' @export
 #'
 #' @examples
@@ -63,8 +61,8 @@ RunSpaNorm <- function(
   store_spe = FALSE,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   coordinate_space <- match.arg(coordinate_space)
@@ -111,7 +109,7 @@ RunSpaNorm <- function(
     "Run {.pkg SpaNorm} with {.val {nrow(input$counts)}} features and {.val {ncol(input$counts)}} spots",
     verbose = verbose
   )
-  result <- spanorm_run_backend(spe, backend_args)
+  result <- spanorm_run_model(spe, backend_args)
   normalized <- spanorm_extract_logcounts(
     result = result,
     features = rownames(input$counts),
@@ -226,7 +224,7 @@ spanorm_make_spe <- function(counts, coords) {
   )
 }
 
-spanorm_run_backend <- function(spe, backend_args = list()) {
+spanorm_run_model <- function(spe, backend_args = list()) {
   check_r("SpaNorm", verbose = FALSE)
   spanorm_fun <- get_namespace_fun("SpaNorm", "SpaNorm")
   do.call(spanorm_fun, c(list(spe), backend_args))

@@ -40,7 +40,6 @@ test_that("real PRECAST receives selected counts and a nonempty distance graph",
     )
     graph <- raw@AdjList[[sample]]
     expect_equal(as.numeric(Matrix::colSums(graph)), rep(6, ncol(native)))
-    # Independently verify every column against Euclidean nearest distances.
     xy <- cbind(native$col, native$row)
     correct <- vapply(seq_len(nrow(xy)), function(i) {
       d2 <- rowSums(sweep(xy, 2, xy[i, ], "-")^2)

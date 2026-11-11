@@ -358,7 +358,6 @@ List palantir_pseudotime_cpp(
     }
   }
 
-  int n_sources = n_wp;
   std::vector<int> wp_offsets(n_wp);
   for (int w = 0; w < n_wp; ++w) wp_offsets[w] = waypoints[w] - 1;
   std::vector<std::vector<std::pair<int,double>>> graph(n);
@@ -635,82 +634,6 @@ List palantir_markov_chain_cpp(
     _["T_x"] = T_x,
     _["n"] = n
   );
-}
-
-
-
-
-// [[Rcpp::export]]
-NumericMatrix palantir_absorption_cpp(
-    IntegerVector T_i,
-    IntegerVector T_j,
-    NumericVector T_x,
-    int n,
-    IntegerVector terminal_state_indices)
-{
-  int n_abs = terminal_state_indices.size();
-  std::set<int> abs_set;
-  for (int t = 0; t < n_abs; ++t) abs_set.insert(terminal_state_indices[t] - 1);
-
-  std::vector<int> trans;
-  for (int i = 0; i < n; ++i)
-    if (abs_set.find(i) == abs_set.end()) trans.push_back(i);
-
-  int n_trans = trans.size();
-  if (n_trans == 0 || n_abs == 0) {
-    NumericMatrix bp(n, n_abs);
-    for (int i = 0; i < n_abs; ++i)
-      bp(terminal_state_indices[i] - 1, i) = 1.0;
-    return bp;
-  }
-
-  std::vector<int> new_idx(n, -1);
-  for (int i = 0; i < n_trans; ++i) new_idx[trans[i]] = i;
-
-  arma::mat I_Q(n_trans, n_trans, arma::fill::zeros);
-  arma::mat R(n_trans, n_abs, arma::fill::zeros);
-
-  for (int t = 0; t < (int)T_i.size(); ++t) {
-    int i = T_i[t] - 1, j = T_j[t] - 1;
-    double val = T_x[t];
-    if (new_idx[i] >= 0 && new_idx[j] >= 0) {
-      I_Q(new_idx[i], new_idx[j]) -= val;
-    } else if (new_idx[i] >= 0 && abs_set.find(j) != abs_set.end()) {
-      int abs_col = 0;
-      for (int a = 0; a < n_abs; ++a)
-        if (terminal_state_indices[a] - 1 == j) { abs_col = a; break; }
-      R(new_idx[i], abs_col) += val;
-    }
-  }
-
-  for (int i = 0; i < n_trans; ++i) I_Q(i, i) += 1.0;
-
-  arma::mat B;
-  bool solve_ok = arma::solve(B, I_Q, R);
-  if (!solve_ok) {
-    B = arma::pinv(I_Q) * R;
-  }
-
-  NumericMatrix bp(n, n_abs);
-  for (int i = 0; i < n_abs; ++i)
-    bp(terminal_state_indices[i] - 1, i) = 1.0;
-
-  for (int i = 0; i < n_trans; ++i) {
-    for (int a = 0; a < n_abs; ++a) {
-      double p = B(i, a);
-      if (p < 0) p = 0.0;
-      bp(trans[i], a) = p;
-    }
-  }
-
-  for (int i = 0; i < n; ++i) {
-    double rs = 0.0;
-    for (int a = 0; a < n_abs; ++a) rs += bp(i, a);
-    if (rs > 0)
-      for (int a = 0; a < n_abs; ++a) bp(i, a) /= rs;
-  }
-
-  return bp;
 }
 
 // [[Rcpp::export]]

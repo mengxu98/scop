@@ -110,6 +110,8 @@
 #' Zero p-values are capped at `.Machine$double.xmin` before transformation;
 #' missing p-values are omitted with a warning in this mode.
 #' @param lineheight The line height for y-axis labels.
+#' @param seed Random seed used for plot construction. The caller's RNG state
+#' is restored on return, including errors.
 #' @param palette Color palette name.
 #' Defaults to `"Chinese"` for rank plots and `"Spectral"` otherwise.
 #' Available palettes can be found in [thisplot::show_palettes].
@@ -127,7 +129,9 @@
 #'
 #' @details
 #' Annotated bars place term labels inside bars and hit genes underneath, with
-#' rounded database bands. Colors map one-to-one to `db` in the requested order;
+#' rounded database bands. Term text switches between black and white for the displayed
+#' fill. A thin contrasting outline keeps overflow text readable.
+#' Colors map one-to-one to `db` in the requested order;
 #' named `palcolor` values must cover all selected databases. Descriptions are
 #' truncated to at most `character_width` characters, with shorter limits for
 #' shorter bars. Actual text fit also depends on export dimensions and font size.
@@ -479,6 +483,8 @@ EnrichmentPlot <- function(
   db_gap = 0.2
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
+  check_r("withr", verbose = FALSE)
+  withr::local_preserve_seed()
   set.seed(seed)
   if (!is.null(enrlichmap_nlabel)) {
     enrichmap_nlabel <- enrlichmap_nlabel
@@ -612,34 +618,8 @@ EnrichmentPlot <- function(
         id_use_names[remap] <- unname(root_map[id_use_names[remap]])
         names(id_use) <- id_use_names
       }
-      if (!all(names(id_use) %in% enrichment[["Groups"]])) {
-        log_message(
-          paste0(
-            "Names in 'id_use' is invalid: ",
-            paste0(
-              names(id_use)[!names(id_use) %in% enrichment[["Groups"]]],
-              collapse = ","
-            )
-          ),
-          message_type = "error"
-        )
-      }
-      enrichment_list <- list()
-      for (i in seq_along(id_use)) {
-        enrichment_list[[i]] <- enrichment[
-          enrichment[["ID"]] %in%
-            id_use[[i]] &
-            enrichment[["Groups"]] %in% names(id_use)[i], ,
-          drop = FALSE
-        ]
-      }
-      enrichment <- do.call(rbind, enrichment_list)
-    } else {
-      enrichment <- enrichment[
-        enrichment[["ID"]] %in% unlist(id_use), ,
-        drop = FALSE
-      ]
     }
+    enrichment <- filter_enrichment_plot_ids(enrichment, id_use)
   }
 
   if (score_mode) {
@@ -661,8 +641,10 @@ EnrichmentPlot <- function(
     if (length(color_by) != 1L || is.na(color_by) || color_by != "Database") {
       log_message("For annotated bars, {.arg color_by} must be Database", message_type = "error")
     }
-    required <- c("ID", "Description", "Database", "Groups", metric,
-      if (show_genes) "geneID", if (show_count) "Count")
+    required <- c(
+      "ID", "Description", "Database", "Groups", metric,
+      if (show_genes) "geneID", if (show_count) "Count"
+    )
     if (!all(required %in% names(enrichment))) {
       log_message("Missing annotated-bar columns: ", paste(setdiff(required, names(enrichment)), collapse = ", "), message_type = "error")
     }
@@ -682,6 +664,7 @@ EnrichmentPlot <- function(
   pvalueCutoff <- ifelse(is.null(pvalueCutoff), Inf, pvalueCutoff)
   padjustCutoff <- ifelse(is.null(padjustCutoff), Inf, padjustCutoff)
 
+  enrichment_sim <- NULL
   if (any(db %in% c("GO_sim", "GO_BP_sim", "GO_CC_sim", "GO_MF_sim"))) {
     enrichment_sim <- enrichment[
       enrichment[["Database"]] %in% gsub("_sim", "", db), ,
@@ -769,22 +752,12 @@ EnrichmentPlot <- function(
       df <- do.call(rbind, df_groups)
       ids <- unique(c(ids, df[, "ID"]))
     }
-    if (any(db %in% c("GO_sim", "GO_BP_sim", "GO_CC_sim", "GO_MF_sim"))) {
-      enrichment_sub <- subset(enrichment_sim, ID %in% ids)
-      enrichment_sub[["Database"]][
-        enrichment_sub[["Database"]] %in% c("GO", "GO_BP", "GO_CC", "GO_MF")
-      ] <- paste0(
-        enrichment_sub[["Database"]][
-          enrichment_sub[["Database"]] %in% c("GO", "GO_BP", "GO_CC", "GO_MF")
-        ],
-        "_sim"
-      )
-    } else {
-      enrichment_sub <- subset(enrichment, ID %in% ids)
-    }
-    enrichment_sub[["Database"]] <- factor(
-      enrichment_sub[["Database"]],
-      levels = db
+    enrichment_sub <- enrichment_comparison_data(
+      enrichment = enrichment,
+      ids = ids,
+      db = db,
+      character_width = character_width,
+      enrichment_sim = enrichment_sim
     )
     enrichment_sub[["GeneRatio"]] <- sapply(
       enrichment_sub[["GeneRatio"]],
@@ -802,20 +775,6 @@ EnrichmentPlot <- function(
     )
     enrichment_sub[["EnrichmentScore"]] <- enrichment_sub[["GeneRatio"]] /
       enrichment_sub[["BgRatio"]]
-    enrichment_sub[["Description"]] <- capitalize(enrichment_sub[[
-      "Description"
-    ]])
-    enrichment_sub[["Description"]] <- stringr::str_wrap(
-      enrichment_sub[["Description"]],
-      width = character_width
-    )
-    terms <- stats::setNames(
-      enrichment_sub[["Description"]], enrichment_sub[["ID"]]
-    )
-    enrichment_sub[["Description"]] <- factor(
-      enrichment_sub[["Description"]],
-      levels = unique(rev(terms[ids]))
-    )
     if (isTRUE(compare_only_sig)) {
       enrichment_sub <- enrichment_sub[
         enrichment_sub[[metric]] < metric_value, ,
@@ -1197,180 +1156,10 @@ EnrichmentPlot <- function(
       df$geneID <- strsplit(df$geneID, "/")
       df_unnest <- unnest_fun(df, cols = "geneID")
 
-      nodes <- rbind(
-        data.frame(
-          "ID" = df[["Description"]],
-          class = "term",
-          metric = df[["metric"]]
-        ),
-        data.frame("ID" = unique(df_unnest$geneID), class = "gene", metric = 0)
-      )
-      nodes$Database <- df$Database[1]
-      nodes$Groups <- df$Groups[1]
-      edges <- as.data.frame(
-        df_unnest[, c("Description", "geneID")]
-      )
-      colnames(edges) <- c("from", "to")
-      edges[["weight"]] <- 1
-      graph <- igraph::graph_from_data_frame(
-        d = edges,
-        vertices = nodes,
-        directed = FALSE
-      )
-      if (network_layout %in% c("circle", "tree", "grid")) {
-        layout <- switch(network_layout,
-          "circle" = igraph::layout_in_circle(graph),
-          "tree" = igraph::layout_as_tree(graph),
-          "grid" = igraph::layout_on_grid(graph)
-        )
-      } else {
-        layout_fun <- get_namespace_fun(
-          "igraph", paste0("layout_with_", network_layout)
-        )
-        layout <- layout_fun(graph)
-      }
-      df_graph <- igraph::as_data_frame(graph, what = "both")
-
-      df_nodes <- df_graph$vertices
-      if (isTRUE(network_layoutadjust)) {
-        width <- nchar(df_nodes$name)
-        width[df_nodes$class == "term"] <- 8
-        layout <- adjustlayout(
-          graph = graph,
-          layout = layout,
-          width = width,
-          height = 2,
-          scale = network_adjscale,
-          iter = network_adjiter
-        )
-      }
-      df_nodes[["dim1"]] <- layout[, 1]
-      df_nodes[["dim2"]] <- layout[, 2]
-
-      df_edges <- df_graph$edges
-      df_edges[["from_dim1"]] <- df_nodes[df_edges[["from"]], "dim1"]
-      df_edges[["from_dim2"]] <- df_nodes[df_edges[["from"]], "dim2"]
-      df_edges[["to_dim1"]] <- df_nodes[df_edges[["to"]], "dim1"]
-      df_edges[["to_dim2"]] <- df_nodes[df_edges[["to"]], "dim2"]
-
-      colors <- palette_colors(
-        levels(df[["Description"]]),
-        palette = palette,
-        palcolor = palcolor
-      )
-      df_edges[["color"]] <- colors[df_edges$from]
-      node_colors <- stats::aggregate(
-        df_unnest$Description,
-        by = list(df_unnest$geneID),
-        FUN = function(x) {
-          blendcolors(colors = colors[x], mode = network_blendmode)
-        }
-      )
-      colors <- c(colors, stats::setNames(node_colors[, 2], node_colors[, 1]))
-      label_colors <- ifelse(
-        Matrix::colSums(grDevices::col2rgb(colors)) > 255 * 2,
-        "black",
-        "white"
-      )
-      df_nodes[["color"]] <- colors[df_nodes$name]
-      df_nodes[["label_color"]] <- label_colors[df_nodes$name]
-      df_nodes[["label"]] <- NA
-      df_nodes[levels(df[["Description"]]), "label"] <- seq_len(
-        nlevels(
-          df[[
-            "Description"
-          ]]
-        )
-      )
-
-      check_r("shadowtext")
-      shadowtextGrob <- get_namespace_fun("shadowtext", "shadowtextGrob")
-      draw_key_cust <- function(data, params, size) {
-        data_text <- data
-        data_text$label <- which(
-          levels(df[["Description"]]) %in%
-            names(colors)[colors == data_text$fill]
-        )
-        data_text$colour <- "black"
-        data_text$alpha <- 1
-        data_text$size <- 11 / ggplot2::.pt
-        grid::grobTree(
-          draw_key_point(data, list(color = "white", shape = 21)),
-          shadowtextGrob(
-            label = data_text$label,
-            bg.colour = "black",
-            bg.r = 0.1,
-            gp = grid::gpar(col = "white", fontface = "bold")
-          )
-        )
-      }
-
-      p <- ggplot() +
-        geom_segment(
-          data = df_edges,
-          aes(
-            x = from_dim1,
-            y = from_dim2,
-            xend = to_dim1,
-            yend = to_dim2,
-            color = color
-          ),
-          alpha = 1,
-          lineend = "round",
-          show.legend = FALSE
-        ) +
-        geom_label(
-          data = df_nodes[df_nodes$class == "gene", ],
-          aes(
-            x = dim1,
-            y = dim2,
-            label = name,
-            fill = color,
-            color = label_color
-          ),
-          size = 3,
-          show.legend = FALSE
-        ) +
-        geom_point(
-          data = df_nodes[df_nodes$class == "term", ],
-          aes(x = dim1, y = dim2),
-          size = 8,
-          color = "black",
-          fill = "black",
-          stroke = 1,
-          shape = 21,
-          show.legend = FALSE
-        ) +
-        geom_point(
-          data = df_nodes[df_nodes$class == "term", ],
-          aes(x = dim1, y = dim2, fill = color),
-          size = 7,
-          color = "white",
-          stroke = 1,
-          shape = 21,
-          key_glyph = draw_key_cust
-        ) +
-        ggrepel::geom_text_repel(
-          data = df_nodes[df_nodes$class == "term", ],
-          aes(x = dim1, y = dim2, label = label),
-          fontface = "bold",
-          min.segment.length = 0,
-          segment.color = "black",
-          point.size = NA,
-          max.overlaps = 100,
-          force = 0,
-          color = "white",
-          bg.color = "black",
-          bg.r = 0.1,
-          size = network_labelsize
-        ) +
-        scale_color_identity(guide = "none") +
-        scale_fill_identity(
-          name = "Term:",
-          guide = "legend",
-          labels = levels(df[["Description"]]),
-          breaks = colors[levels(df[["Description"]])]
-        ) +
+      p <- enrichment_gene_network(
+        df, df_unnest, network_layout, network_layoutadjust, network_adjscale,
+        network_adjiter, palette, palcolor, network_blendmode, network_labelsize
+      ) +
         guides(
           color = guide_legend(override.aes = list(color = "transparent"))
         ) +
@@ -1406,251 +1195,11 @@ EnrichmentPlot <- function(
       df$geneID <- strsplit(df$geneID, "/")
       rownames(df) <- df[["ID"]]
 
-      nodes <- df
-      edges <- enrichment_overlap_edges(nodes$ID, df[["geneID"]])
-      graph <- igraph::graph_from_data_frame(
-        d = edges,
-        vertices = nodes,
-        directed = FALSE
-      )
-      if (enrichmap_layout %in% c("circle", "tree", "grid")) {
-        layout <- switch(enrichmap_layout,
-          "circle" = igraph::layout_in_circle(graph),
-          "tree" = igraph::layout_as_tree(graph),
-          "grid" = igraph::layout_on_grid(graph)
-        )
-      } else {
-        layout_fun <- get_namespace_fun(
-          "igraph", paste0("layout_with_", enrichmap_layout)
-        )
-        layout <- layout_fun(graph)
-      }
-      cluster_fun <- get_namespace_fun(
-        "igraph", paste0("cluster_", enrichmap_cluster)
-      )
-      clusters <- cluster_fun(graph)
-      df_graph <- igraph::as_data_frame(graph, what = "both")
-
-      df_nodes <- df_graph$vertices
-      df_nodes[["dim1"]] <- layout[, 1]
-      df_nodes[["dim2"]] <- layout[, 2]
-      df_nodes[["clusters"]] <- factor(
-        paste0("C", clusters$membership),
-        paste0("C", unique(sort(clusters$membership)))
-      )
-
-      if (isTRUE(enrichmap_show_keyword)) {
-        df_keyword1 <- df_nodes |>
-          dplyr::mutate(
-            keyword = strsplit(
-              tolower(as.character(.data[["Description"]])),
-              "\\s|\\n",
-              perl = TRUE
-            )
-          ) |>
-          unnest_fun(cols = "keyword") |>
-          dplyr::group_by(.data[["keyword"]], Database, Groups, clusters) |>
-          dplyr::reframe(
-            keyword = capitalize(.data[["keyword"]]),
-            score = sum(.data[["metric"]]),
-            count = dplyr::n(),
-            Database = .data[["Database"]],
-            Groups = .data[["Groups"]],
-            .groups = "keep"
-          ) |>
-          dplyr::filter(!grepl(pattern = "\\[.*\\]", x = .data[["keyword"]])) |>
-          dplyr::filter(nchar(.data[["keyword"]]) >= 1) |>
-          dplyr::filter(!tolower(.data[["keyword"]]) %in% tolower(words_excluded)) |>
-          dplyr::distinct() |>
-          dplyr::group_by(Database, Groups, clusters) |>
-          dplyr::arrange(dplyr::desc(score)) |>
-          dplyr::slice_head(n = enrichmap_nlabel) |>
-          dplyr::reframe(keyword = paste0(.data[["keyword"]], collapse = " ")) |>
-          as.data.frame()
-        rownames(df_keyword1) <- as.character(df_keyword1[["clusters"]])
-        df_keyword1[["keyword"]] <- stringr::str_wrap(
-          df_keyword1[["keyword"]],
-          width = character_width
-        )
-        df_keyword1[["label"]] <- paste0(
-          df_keyword1[["clusters"]],
-          ":\n",
-          df_keyword1[["keyword"]]
-        )
-      } else {
-        if (enrichmap_label == "term") {
-          df_nodes[["Description"]] <- stringr::str_wrap(
-            df_nodes[["Description"]],
-            width = character_width
-          )
-        }
-        df_keyword1 <- df_nodes |>
-          dplyr::group_by(Database, Groups, clusters) |>
-          dplyr::arrange(dplyr::desc(metric)) |>
-          dplyr::reframe(keyword = Description) |>
-          dplyr::distinct() |>
-          dplyr::group_by(Database, Groups, clusters) |>
-          dplyr::slice_head(n = enrichmap_nlabel) |>
-          dplyr::reframe(keyword = paste0(.data[["keyword"]], collapse = "\n")) |>
-          as.data.frame()
-        rownames(df_keyword1) <- as.character(df_keyword1[["clusters"]])
-        df_keyword1[["label"]] <- paste0(
-          df_keyword1[["clusters"]],
-          ":\n",
-          df_keyword1[["keyword"]]
-        )
-      }
-
-      df_keyword2 <- df_nodes |>
-        dplyr::mutate(keyword = .data[["geneID"]]) |>
-        unnest_fun(cols = "keyword") |>
-        dplyr::group_by(.data[["keyword"]], Database, Groups, clusters) |>
-        dplyr::reframe(
-          keyword = .data[["keyword"]],
-          score = sum(.data[["metric"]]),
-          count = dplyr::n(),
-          Database = .data[["Database"]],
-          Groups = .data[["Groups"]],
-          .groups = "keep"
-        ) |>
-        dplyr::distinct() |>
-        dplyr::group_by(Database, Groups, clusters) |>
-        dplyr::arrange(dplyr::desc(score)) |>
-        dplyr::slice_head(n = enrichmap_nlabel) |>
-        dplyr::reframe(keyword = paste0(.data[["keyword"]], collapse = " ")) |>
-        as.data.frame()
-      rownames(df_keyword2) <- as.character(df_keyword2[["clusters"]])
-      df_keyword2[["keyword"]] <- stringr::str_wrap(
-        df_keyword2[["keyword"]],
-        width = character_width
-      )
-      df_keyword2[["label"]] <- paste0(
-        df_keyword2[["clusters"]],
-        ":\n",
-        df_keyword2[["keyword"]]
-      )
-
-      df_nodes[["keyword1"]] <- df_keyword1[
-        as.character(df_nodes$clusters),
-        "keyword"
-      ]
-      df_nodes[["keyword2"]] <- df_keyword2[
-        as.character(df_nodes$clusters),
-        "keyword"
-      ]
-
-      df_edges <- df_graph$edges
-      df_edges[["from_dim1"]] <- df_nodes[df_edges[["from"]], "dim1"]
-      df_edges[["from_dim2"]] <- df_nodes[df_edges[["from"]], "dim2"]
-      df_edges[["to_dim1"]] <- df_nodes[df_edges[["to"]], "dim1"]
-      df_edges[["to_dim2"]] <- df_nodes[df_edges[["to"]], "dim2"]
-
-      check_r("ggforce", verbose = FALSE)
-      if (enrichmap_mark == "hull") {
-        check_r("concaveman", verbose = FALSE)
-      }
-      mark_layer <- do.call(
-        get_namespace_fun("ggforce", switch(enrichmap_mark,
-          "ellipse" = "geom_mark_ellipse",
-          "hull" = "geom_mark_hull"
-        )),
-        list(
-          data = df_nodes,
-          aes(
-            x = dim1,
-            y = dim2,
-            color = clusters,
-            fill = clusters,
-            label = clusters,
-            description = if (enrichmap_label == "term") keyword1 else keyword2
-          ),
-          expand = grid::unit(3, "mm"),
-          alpha = 0.1,
-          label.margin = margin(1, 1, 1, 1, "mm"),
-          label.fontsize = enrichmap_labelsize * 2,
-          label.fill = "grey95",
-          label.minwidth = grid::unit(character_width, "in"),
-          label.buffer = grid::unit(0, "mm"),
-          con.size = 1,
-          con.cap = 0
-        )
-      )
-
-      p <- ggplot() +
-        mark_layer +
-        geom_segment(
-          data = df_edges,
-          aes(
-            x = from_dim1,
-            y = from_dim2,
-            xend = to_dim1,
-            yend = to_dim2,
-            linewidth = weight
-          ),
-          alpha = 0.1,
-          lineend = "round"
-        ) +
-        geom_point(
-          data = df_nodes,
-          aes(x = dim1, y = dim2, size = Count, fill = clusters),
-          color = "black",
-          shape = 21
-        ) +
-        labs(x = "", y = "") +
-        scale_size(
-          name = "Count",
-          range = c(2, 6),
-          scales::breaks_extended(n = 4)
-        ) +
-        guides(
-          size = guide_legend(
-            override.aes = list(fill = "grey30", shape = 21),
-            order = 1
-          )
-        ) +
-        scale_linewidth(
-          name = "Intersection",
-          range = c(0.3, 3),
-          scales::breaks_extended(n = 4)
-        ) +
-        guides(
-          linewidth = guide_legend(
-            override.aes = list(alpha = 1, color = "grey"),
-            order = 2
-          )
-        ) +
-        scale_fill_manual(
-          name = switch(enrichmap_label,
-            "term" = "Feature:",
-            "feature" = "Term:"
-          ),
-          values = palette_colors(
-            levels(df_nodes[["clusters"]]),
-            palette = palette,
-            palcolor = palcolor
-          ),
-          labels = if (enrichmap_label == "term") {
-            df_keyword2[levels(df_nodes[["clusters"]]), "label"]
-          } else {
-            df_keyword1[levels(df_nodes[["clusters"]]), "label"]
-          },
-          na.value = "grey80",
-          aesthetics = c("colour", "fill")
-        ) +
-        guides(
-          fill = guide_legend(
-            override.aes = list(alpha = 1, color = "black", shape = NA),
-            byrow = TRUE,
-            order = 3
-          )
-        ) +
-        guides(color = guide_none()) +
-        scale_x_continuous(
-          expand = expansion(c(enrichmap_expand[1], enrichmap_expand[1]), 0)
-        ) +
-        scale_y_continuous(
-          expand = expansion(c(enrichmap_expand[2], enrichmap_expand[2]), 0)
-        ) +
+      p <- enrichment_map_plot(
+        df, enrichmap_layout, enrichmap_cluster, enrichmap_show_keyword,
+        enrichmap_label, enrichmap_nlabel, character_width, words_excluded,
+        enrichmap_mark, enrichmap_labelsize, enrichmap_expand, palette, palcolor
+      ) +
         facet_grid(facet, scales = "free") +
         apply_plot_theme(theme_use, theme_args) +
         theme(
@@ -1662,159 +1211,11 @@ EnrichmentPlot <- function(
     }))
   } else if (plot_type == "wordcloud") {
     check_r("ggwordcloud", verbose = FALSE)
-    check_r("simplifyEnrichment", verbose = FALSE)
     plist <- lapply(df_list, function(df) {
-      if (word_type == "term") {
-        df_groups <- split(df, list(df$Database, df$Groups))
-        df_groups <- df_groups[sapply(df_groups, nrow) > 0]
-        for (i in seq_along(df_groups)) {
-          df_sub <- df_groups[[i]]
-          if (!score_mode && all(df_sub$Database %in% c("GO", "GO_BP", "GO_CC", "GO_MF"))) {
-            df0 <- enrichment_go_keywords(
-              df_sub[["ID"]]
-            )
-            if (nrow(df0 > 0)) {
-              df_sub <- df0 |>
-                dplyr::reframe(
-                  keyword = .data[["keyword"]],
-                  score = -(log10(.data[["padj"]])),
-                  count = .data[["n_term"]],
-                  Database = df_sub[["Database"]][1],
-                  Groups = df_sub[["Groups"]][1]
-                ) |>
-                dplyr::filter(!grepl(pattern = "\\[.*\\]", x = .data[["keyword"]])) |>
-                dplyr::filter(nchar(.data[["keyword"]]) >= 1) |>
-                dplyr::filter(
-                  !tolower(.data[["keyword"]]) %in% tolower(words_excluded)
-                ) |>
-                dplyr::distinct() |>
-                dplyr::mutate(
-                  angle = 90 *
-                    sample(c(0, 1), dplyr::n(), replace = TRUE, prob = c(60, 40))
-                ) |>
-                as.data.frame()
-              df_sub <- df_sub[
-                utils::head(order(df_sub[["score"]], decreasing = TRUE), topWord), ,
-                drop = FALSE
-              ]
-            } else {
-              df_sub <- NULL
-            }
-          } else {
-            df_sub <- df_sub |>
-              dplyr::mutate(
-                keyword = strsplit(
-                  tolower(as.character(.data[["Description"]])),
-                  " "
-                )
-              ) |>
-              unnest_fun(cols = "keyword") |>
-              dplyr::group_by(.data[["keyword"]], Database, Groups) |>
-              dplyr::reframe(
-                keyword = .data[["keyword"]],
-                score = sum(enrichment_metric_weight(.data[[metric]], score_mode)),
-                count = dplyr::n(),
-                Database = .data[["Database"]],
-                Groups = .data[["Groups"]],
-                .groups = "keep"
-              ) |>
-              dplyr::filter(!grepl(pattern = "\\[.*\\]", x = .data[["keyword"]])) |>
-              dplyr::filter(nchar(.data[["keyword"]]) >= 1) |>
-              dplyr::filter(
-                !tolower(.data[["keyword"]]) %in% tolower(words_excluded)
-              ) |>
-              dplyr::distinct() |>
-              dplyr::mutate(
-                angle = 90 *
-                  sample(c(0, 1), dplyr::n(), replace = TRUE, prob = c(60, 40))
-              ) |>
-              as.data.frame()
-            df_sub <- df_sub[
-              utils::head(
-                order(df_sub[["score"]], decreasing = TRUE), topWord
-              ), ,
-              drop = FALSE
-            ]
-          }
-          df_groups[[i]] <- df_sub
-        }
-        df <- do.call(rbind, df_groups)
-      } else {
-        df <- df |>
-          dplyr::mutate(keyword = strsplit(as.character(.data[["geneID"]]), "/")) |>
-          unnest_fun(cols = "keyword") |>
-          dplyr::group_by(.data[["keyword"]], Database, Groups) |>
-          dplyr::reframe(
-            keyword = .data[["keyword"]],
-            score = sum(enrichment_metric_weight(.data[[metric]], score_mode)),
-            count = dplyr::n(),
-            Database = .data[["Database"]],
-            Groups = .data[["Groups"]],
-            .groups = "keep"
-          ) |>
-          dplyr::distinct() |>
-          dplyr::mutate(
-            angle = 90 * sample(c(0, 1), dplyr::n(), replace = TRUE, prob = c(60, 40))
-          ) |>
-          as.data.frame()
-        df <- df[
-          utils::head(order(df[["score"]], decreasing = TRUE), topWord), ,
-          drop = FALSE
-        ]
-      }
-      colors <- palette_colors(
-        df[["score"]],
-        type = "continuous",
-        palette = palette,
-        palcolor = palcolor,
-        matched = FALSE
-      )
-      colors_value <- seq(
-        min(df[["score"]], na.rm = TRUE),
-        stats::quantile(df[["score"]], 0.99, na.rm = TRUE) + 0.001,
-        length.out = 100
-      )
-      p <- ggplot(
-        df,
-        aes(
-          label = .data[["keyword"]],
-          size = .data[["count"]],
-          color = .data[["score"]],
-          angle = .data[["angle"]]
-        )
+      p <- enrichment_wordcloud_plot(
+        df, metric, word_type, words_excluded, topWord, word_size, palette, palcolor,
+        score_mode = score_mode, score_label = score_label
       ) +
-        ggwordcloud::geom_text_wordcloud(
-          rm_outside = TRUE,
-          eccentricity = 1,
-          shape = "square",
-          show.legend = TRUE,
-          grid_margin = 3
-        ) +
-        scale_color_gradientn(
-          name = paste0(if (score_mode) score_label else "Score", ":"),
-          colours = colors,
-          values = scales::rescale(colors_value),
-          guide = guide_colorbar(
-            frame.colour = "black",
-            ticks.colour = "black",
-            title.hjust = 0
-          )
-        ) +
-        scale_size(
-          name = "Count",
-          range = word_size,
-          breaks = ceiling(seq(
-            min(df[["count"]], na.rm = TRUE),
-            max(df[["count"]], na.rm = TRUE),
-            length.out = 3
-          ))
-        ) +
-        guides(
-          size = guide_legend(
-            override.aes = list(colour = "black", label = "G"),
-            order = 1
-          )
-        ) +
         facet_grid(facet, scales = "free") +
         coord_flip() +
         apply_plot_theme(theme_use, theme_args) +
@@ -1831,6 +1232,45 @@ EnrichmentPlot <- function(
     plist,
     combine = combine, nrow = nrow, ncol = ncol, byrow = byrow
   )
+}
+
+enrichment_comparison_data <- function(
+  enrichment,
+  ids,
+  db,
+  character_width,
+  enrichment_sim = NULL
+) {
+  if (any(db %in% c("GO_sim", "GO_BP_sim", "GO_CC_sim", "GO_MF_sim"))) {
+    enrichment_sub <- subset(enrichment_sim, ID %in% ids)
+    enrichment_sub[["Database"]][
+      enrichment_sub[["Database"]] %in% c("GO", "GO_BP", "GO_CC", "GO_MF")
+    ] <- paste0(
+      enrichment_sub[["Database"]][
+        enrichment_sub[["Database"]] %in% c("GO", "GO_BP", "GO_CC", "GO_MF")
+      ],
+      "_sim"
+    )
+  } else {
+    enrichment_sub <- subset(enrichment, ID %in% ids)
+  }
+  enrichment_sub[["Database"]] <- factor(
+    enrichment_sub[["Database"]],
+    levels = db
+  )
+  enrichment_sub[["Description"]] <- capitalize(
+    enrichment_sub[["Description"]]
+  )
+  enrichment_sub[["Description"]] <- stringr::str_wrap(
+    enrichment_sub[["Description"]],
+    width = character_width
+  )
+  terms <- stats::setNames(enrichment_sub[["Description"]], enrichment_sub[["ID"]])
+  enrichment_sub[["Description"]] <- factor(
+    enrichment_sub[["Description"]],
+    levels = unique(rev(terms[ids]))
+  )
+  enrichment_sub
 }
 
 enrichment_overlap_edges <- function(ids, gene_sets) {
@@ -1867,7 +1307,11 @@ enrichment_metric_weight <- function(x, score_mode = FALSE) {
   if (isTRUE(score_mode)) {
     return(abs(x))
   }
-  -log10(pmax(x, .Machine$double.xmin))
+  if (any(!is.na(x) & (!is.finite(x) | x < 0 | x > 1))) {
+    log_message("P values must be finite numbers between 0 and 1.", message_type = "error")
+  }
+  x[!is.na(x) & x == 0] <- .Machine$double.xmin
+  -log10(x)
 }
 
 resolve_enrichment_plot_db <- function(
@@ -1904,9 +1348,11 @@ resolve_enrichment_plot_db <- function(
   unique(db)
 }
 
-enrichment_annotated_bar <- function(df, db, metric, topTerm, colors, x_max, alpha_limits, count_limits,
+enrichment_annotated_bar <- function(
+  df, db, metric, topTerm, colors, x_max, alpha_limits, count_limits,
   show_genes, show_count, character_width, gene_width, aspect.ratio, legend.position, legend.direction,
-  theme_use, theme_args, row_step, db_gap) {
+  theme_use, theme_args, row_step, db_gap
+) {
   present <- db[db %in% as.character(df$Database)]
   df <- do.call(rbind, lapply(present, function(database) {
     rows <- df[df$Database == database, , drop = FALSE]
@@ -1934,80 +1380,97 @@ enrichment_annotated_bar <- function(df, db, metric, topTerm, colors, x_max, alp
     y <- df$.y[df$Database == database]
     data.frame(Database = database, ymin = min(y) - 0.40, ymax = max(y) + 0.40)
   }))
-  bands$ymid <- (bands$ymin + bands$ymax)/2
+  bands$ymid <- (bands$ymin + bands$ymax) / 2
   bands$label <- sub("^GO_", "", bands$Database)
   dark_colors <- grDevices::col2rgb(colors) / 255 * 0.65
   dark_colors <- stats::setNames(
     grDevices::rgb(dark_colors[1, ], dark_colors[2, ], dark_colors[3, ]),
     names(colors)
   )
-  p <- ggplot2::ggplot(df) + ggplot2::layer(
-    data = bands, mapping = ggplot2::aes(ymin = .data$ymin, ymax = .data$ymax),
-    geom = enrichment_round_band, stat = "identity", position = "identity",
-    inherit.aes = FALSE, params = list(
-      xmin = -0.13 * x_max, xmax = -0.075 * x_max,
+  theme <- apply_plot_theme(theme_use, theme_args)
+  resolved_theme <- ggplot2::theme_get() + theme
+  background <- ggplot2::calc_element("panel.background", resolved_theme)$fill %||% "transparent"
+  if (grDevices::col2rgb(background, alpha = TRUE)[4L] < 255) {
+    background <- ggplot2::calc_element("plot.background", resolved_theme)$fill %||% "white"
+  }
+  if (grDevices::col2rgb(background, alpha = TRUE)[4L] < 255) background <- "white"
+  text_colors <- thisplot::contrast_text(
+    unname(colors[as.character(df$Database)]),
+    alpha = scales::rescale(df$.score, to = c(0.4, 1), from = alpha_limits),
+    background = background
+  )
+  check_r("shadowtext", verbose = FALSE)
+  p <- ggplot2::ggplot(df) +
+    thisplot::geom_round_rect(
+      data = bands, mapping = ggplot2::aes(ymin = .data$ymin, ymax = .data$ymax),
+      inherit.aes = FALSE, xmin = -0.13 * x_max, xmax = -0.075 * x_max,
       fill = unname(colors[bands$Database]), alpha = 0.3, colour = NA
-    )
-  ) +
+    ) +
     ggplot2::geom_rect(ggplot2::aes(xmax = .data$.score, ymin = .data$.y - 0.13, ymax = .data$.y +
       0.33, fill = .data$Database, alpha = .data$.score), xmin = 0, colour = NA)
   if (show_count) {
-    p <- p + ggplot2::geom_point(ggplot2::aes(y = .data$.y, size = .data$Count,
-      fill = .data$Database, colour = .data$Database, alpha = .data$.score), x = -0.035 *
-      x_max, shape = 21, stroke = 0.35, na.rm = TRUE,
-      show.legend = c(size = TRUE, alpha = FALSE, fill = FALSE, colour = FALSE)) +
-      ggplot2::scale_size_continuous(name = "Count", range = c(1.8, 3.6), limits = count_limits,
+    p <- p + ggplot2::geom_point(
+      ggplot2::aes(
+        y = .data$.y, size = .data$Count,
+        fill = .data$Database, colour = .data$Database, alpha = .data$.score
+      ),
+      x = -0.035 *
+        x_max, shape = 21, stroke = 0.35, na.rm = TRUE,
+      show.legend = c(size = TRUE, alpha = FALSE, fill = FALSE, colour = FALSE)
+    ) +
+      ggplot2::scale_size_continuous(
+        name = "Count", range = c(1.8, 3.6), limits = count_limits,
         guide = ggplot2::guide_legend(override.aes = list(fill = "grey65", colour = "grey30", alpha = 1)),
         breaks = function(limits) {
           ticks <- unique(round(pretty(limits, n = 3)))
           ticks[ticks >= limits[1] & ticks <= limits[2]]
-        })
+        }
+      )
   }
-  p <- p + ggplot2::geom_text(ggplot2::aes(y = .data$.y + 0.10, label = .data$.term), x = 0.015 * x_max, hjust = 0,
-    size = 3.2, colour = "black")
+  p <- p + shadowtext::geom_shadowtext(ggplot2::aes(y = .data$.y + 0.10, label = .data$.term),
+    x = 0.015 * x_max, hjust = 0,
+    size = 3.2, colour = text_colors, alpha = 1,
+    bg.colour = ifelse(text_colors == "white", "black", "white"), bg.r = 0.04,
+    show.legend = FALSE
+  )
   if (show_genes) {
-    p <- p + ggplot2::geom_text(ggplot2::aes(y = .data$.y - 0.27, label = .data$.genes,
-      colour = .data$Database, alpha = .data$.score), x = 0,
-      hjust = 0, size = 2.4, fontface = "italic", show.legend = FALSE)
+    p <- p + ggplot2::geom_text(
+      ggplot2::aes(
+        y = .data$.y - 0.27, label = .data$.genes,
+        colour = .data$Database, alpha = .data$.score
+      ),
+      x = 0,
+      hjust = 0, size = 2.4, fontface = "italic", show.legend = FALSE
+    )
   }
   p <- p +
     ggplot2::scale_fill_manual(values = colors, drop = FALSE, guide = "none") +
     ggplot2::scale_colour_manual(values = colors, drop = FALSE, guide = "none") +
-    ggplot2::scale_alpha_continuous(name = paste0("-log10(", metric, ")"),
+    ggplot2::scale_alpha_continuous(
+      name = paste0("-log10(", metric, ")"),
       range = c(0.4, 1), limits = alpha_limits, n.breaks = 3,
-      guide = ggplot2::guide_legend(override.aes = list(fill = "grey20", colour = "grey20")))
-  p + ggplot2::geom_text(data = bands, ggplot2::aes(y = .data$ymid, label = .data$label), x = -0.1025 *
-    x_max, angle = 90, size = 3.2, fontface = "bold",
-    colour = unname(dark_colors[bands$Database])) + ggplot2::scale_x_continuous(limits = c(-0.14 *
+      guide = ggplot2::guide_legend(override.aes = list(fill = "grey20", colour = "grey20"))
+    )
+  p + ggplot2::geom_text(
+    data = bands, ggplot2::aes(y = .data$ymid, label = .data$label), x = -0.1025 *
+      x_max, angle = 90, size = 3.2, fontface = "bold",
+    colour = unname(dark_colors[bands$Database])
+  ) + ggplot2::scale_x_continuous(limits = c(-0.14 *
     x_max, 1.15 * x_max), breaks = function(limits) {
     ticks <- pretty(c(0, x_max), n = 5)
     ticks[ticks >= 0 & ticks <= x_max]
   }, expand = ggplot2::expansion(mult = 0)) + ggplot2::scale_y_continuous(breaks = NULL, expand = ggplot2::expansion(add = 0.5)) +
-    ggplot2::labs(title = as.character(df$Groups[[1]]), x = paste0("-log10(", metric, ")"),
-      y = NULL) + apply_plot_theme(theme_use, theme_args) + ggplot2::theme(aspect.ratio = aspect.ratio,
-    legend.position = legend.position, legend.direction = legend.direction, panel.grid = ggplot2::element_blank(),
-    panel.border = ggplot2::element_blank(), axis.line.y = ggplot2::element_blank(), axis.ticks.y = ggplot2::element_blank(),
-    axis.text.y = ggplot2::element_blank(), axis.line.x = ggplot2::element_line(linewidth = 0.4),
-    plot.title = ggplot2::element_text(hjust = 0))
+    ggplot2::labs(
+      title = as.character(df$Groups[[1]]), x = paste0("-log10(", metric, ")"),
+      y = NULL
+    ) + theme + ggplot2::theme(
+      aspect.ratio = aspect.ratio,
+      legend.position = legend.position, legend.direction = legend.direction, panel.grid = ggplot2::element_blank(),
+      panel.border = ggplot2::element_blank(), axis.line.y = ggplot2::element_blank(), axis.ticks.y = ggplot2::element_blank(),
+      axis.text.y = ggplot2::element_blank(), axis.line.x = ggplot2::element_line(linewidth = 0.4),
+      plot.title = ggplot2::element_text(hjust = 0)
+    )
 }
-
-enrichment_round_band <- ggplot2::ggproto(
-  "EnrichmentRoundBand", ggplot2::GeomRect,
-  draw_panel = function(data, panel_params, coord) {
-    coords <- coord$transform(data, panel_params)
-    grobs <- lapply(seq_len(nrow(coords)), function(i) {
-      grid::roundrectGrob(
-        x = (coords$xmin[i] + coords$xmax[i]) / 2,
-        y = (coords$ymin[i] + coords$ymax[i]) / 2,
-        width = abs(coords$xmax[i] - coords$xmin[i]),
-        height = abs(coords$ymax[i] - coords$ymin[i]),
-        default.units = "native", r = grid::unit(2, "mm"),
-        gp = grid::gpar(fill = scales::alpha(coords$fill[i], coords$alpha[i]), col = NA)
-      )
-    })
-    do.call(grid::grobTree, grobs)
-  }
-)
 
 
 enrichment_plot_db_aliases <- function() {
@@ -2046,6 +1509,29 @@ filter_enrichment_plot_groups <- function(
     )
   }
   enrichment_sub
+}
+
+filter_enrichment_plot_ids <- function(enrichment, id_use) {
+  if (!is.list(id_use)) {
+    return(enrichment[enrichment[["ID"]] %in% unlist(id_use), , drop = FALSE])
+  }
+  if (!all(names(id_use) %in% enrichment[["Groups"]])) {
+    log_message(
+      paste0(
+        "Names in 'id_use' is invalid: ",
+        paste0(names(id_use)[!names(id_use) %in% enrichment[["Groups"]]], collapse = ",")
+      ),
+      message_type = "error"
+    )
+  }
+  enrichment_list <- lapply(seq_along(id_use), function(i) {
+    enrichment[
+      enrichment[["ID"]] %in% id_use[[i]] &
+        enrichment[["Groups"]] %in% names(id_use)[i], ,
+      drop = FALSE
+    ]
+  })
+  do.call(rbind, enrichment_list)
 }
 
 EnrichmentHeatmap <- function(
@@ -2148,4 +1634,242 @@ EnrichmentHeatmap <- function(
     user_args[["palcolor"]] <- NULL
   }
   do.call(GroupHeatmap, c(base_args, user_args))
+}
+
+enrichment_rank_plot <- function(
+  res, db, group_use, score_col, topTerm, label_n, label_terms,
+  palcolor, palette, point_size, point_alpha, label_size, label_width,
+  shared_y, grid_major = TRUE, theme_use, theme_args, combine, nrow, ncol, byrow, seed,
+  legend.position, legend.direction
+) {
+  d <- res$enrichment
+  required <- c("Groups", "Database", "ID", "Description", "p.adjust", score_col)
+  if (!all(required %in% names(d)) || length(score_col) != 1L ||
+    !is.numeric(d[[score_col]]) || !is.numeric(d$p.adjust)) {
+    log_message("Rank plots require Groups, Database, ID, Description, numeric p.adjust and rank_by columns", message_type = "error")
+  }
+  if (length(db) != 1L) {
+    log_message("Rank plots require exactly one database; select one with db", message_type = "error")
+  }
+  if (length(topTerm) != 1L || is.na(topTerm) || topTerm < 1 ||
+    (is.finite(topTerm) && topTerm != floor(topTerm))) {
+    log_message("topTerm must be a positive integer or Inf", message_type = "error")
+  }
+  if (length(label_n) != 1L || !is.finite(label_n) || label_n < 0 || label_n != floor(label_n)) {
+    log_message("rank_nlabel must be a nonnegative integer", message_type = "error")
+  }
+  if (!is.numeric(point_size) || length(point_size) != 2L ||
+    any(!is.finite(point_size)) || any(point_size <= 0) || point_size[1] > point_size[2]) {
+    log_message("rank_pt_size must contain two positive increasing sizes", message_type = "error")
+  }
+  if (length(point_alpha) != 1L || !is.finite(point_alpha) || point_alpha < 0 || point_alpha > 1 ||
+    length(label_size) != 1L || !is.finite(label_size) || label_size <= 0 ||
+    length(label_width) != 1L || !is.finite(label_width) || label_width < 1 ||
+    length(shared_y) != 1L || is.na(shared_y) || !is.logical(shared_y) ||
+    length(grid_major) != 1L || is.na(grid_major) || !is.logical(grid_major)) {
+    log_message("Invalid rank opacity, label size, character width, shared-y, or grid_major setting", message_type = "error")
+  }
+  if (is.null(group_use)) group_use <- unique(as.character(d$Groups))
+  group_use <- unique(as.character(group_use))
+  if (is.list(label_terms) && (is.null(names(label_terms)) ||
+    any(!names(label_terms) %in% group_use))) {
+    log_message("rank_label_terms lists must be named by selected groups", message_type = "error")
+  }
+  valid <- is.finite(d[[score_col]]) & is.finite(d$p.adjust) &
+    d$p.adjust >= 0 & d$p.adjust <= 1 & !is.na(d$ID) & !is.na(d$Groups)
+  if (any(!valid)) log_message("Omitting rank rows with missing identifiers or invalid scores/p.adjust", message_type = "warning")
+  d <- d[valid, , drop = FALSE]
+  if (!nrow(d)) log_message("No valid terms remain for the rank plot", message_type = "error")
+  d$.score <- d[[score_col]]
+  # Preserve the original adjusted P; cap only its plotted log transform at zero.
+  d$.significance <- -log10(pmax(d$p.adjust, .Machine$double.xmin))
+  if (is.null(palcolor) || is.null(names(palcolor))) {
+    palcolor <- thisplot::palette_colors(factor(group_use, levels = group_use),
+      palette = palette, palcolor = palcolor, type = "discrete"
+    )
+  }
+  if (!all(group_use %in% names(palcolor))) {
+    log_message("Named palcolor must contain every selected group", message_type = "error")
+  }
+  title <- "Enrichment rank"
+  label.fg <- "black"
+  label.bg <- "white"
+  label.bg.r <- 0.12
+  parts <- lapply(group_use, function(g) {
+    z <- d[d$Groups == g, , drop = FALSE]
+    z <- z[order(-z$.score, z$p.adjust, z$ID), , drop = FALSE]
+    z <- z[!duplicated(z$ID), , drop = FALSE]
+    z <- utils::head(z, topTerm)
+    z$.rank <- seq_len(nrow(z))
+    terms <- if (is.list(label_terms)) label_terms[[g]] else label_terms
+    z$.highlight <- if (is.null(label_terms)) {
+      z$.rank <= label_n
+    } else {
+      z$ID %in% terms | z$Description %in% terms
+    }
+    z$.label <- vapply(thisutils::capitalize(as.character(z$Description)), function(s) {
+      paste(strwrap(s, width = label_width), collapse = "\n")
+    }, character(1))
+    z
+  })
+  plotted <- do.call(rbind, parts)
+  ylim <- range(plotted$.score)
+  span <- diff(ylim)
+  if (span == 0) span <- max(abs(ylim), 1) * 0.1
+  ylim <- ylim + c(-0.04, 0.20) * span
+  size_limits <- range(plotted$.significance)
+  if (diff(size_limits) == 0) size_limits <- size_limits + c(-0.01, 0.01)
+  panels <- lapply(seq_along(group_use), function(i) {
+    z <- parts[[i]]
+    g <- group_use[i]
+    color <- palcolor[[g]]
+    if (!nrow(z)) {
+      return(ggplot2::ggplot() +
+        ggplot2::annotate("text",
+          x = 0, y = 0,
+          label = "No terms passing cutoff"
+        ) +
+        ggplot2::theme_void() +
+        ggplot2::labs(title = g))
+    }
+    z$.panel <- g
+    hi <- z[z$.highlight, , drop = FALSE]
+    panel_ylim <- ylim
+    if (!shared_y) {
+      yr <- range(z$.score)
+      ys <- max(diff(yr), max(abs(yr), 1) * 0.1)
+      panel_ylim <- yr + c(-0.04, 0.20) * ys
+    }
+    xmax <- max(z$.rank)
+    if (nrow(hi)) {
+      line_count <- lengths(strsplit(hi$.label, "\n", fixed = TRUE))
+      weights <- line_count + 1.0
+      centers <- cumsum(weights) - weights / 2
+      hi$.label_y <- panel_ylim[2] - diff(panel_ylim) *
+        (0.04 + 0.72 * centers / sum(weights))
+      hi$.label_x <- max(xmax * 0.35, max(hi$.rank) + xmax * 0.06)
+    }
+    rgb_vals <- grDevices::col2rgb(color) / 255
+    luminance <- 0.299 * rgb_vals[1] + 0.587 * rgb_vals[2] + 0.114 * rgb_vals[3]
+    strip_text_color <- if (luminance < 0.65) "white" else "#0F172A"
+    outline_color <- grDevices::rgb(
+      0.55 * rgb_vals[1] + 0.45,
+      0.55 * rgb_vals[2] + 0.45,
+      0.55 * rgb_vals[3] + 0.45
+    )
+
+    p <- ggplot2::ggplot(z, ggplot2::aes(.data[[".rank"]], .data[[".score"]]))
+    if (nrow(z) >= 4L) {
+      sizes <- point_size[1] + diff(point_size) * sqrt(
+        (z$.significance - size_limits[1]) / diff(size_limits)
+      )
+      radius <- sizes * diff(panel_ylim) / 260
+      distance <- sqrt((diff(z$.rank) / (xmax + 0.1))^2 +
+        (diff(z$.score) / diff(panel_ylim))^2)
+      reach <- pmax(0.04, 1.5 * (head(sizes, -1) + utils::tail(sizes, -1)) / 260)
+      segments <- split(seq_len(nrow(z)), cumsum(c(TRUE, distance > reach)))
+      for (idx in segments) {
+        if (length(idx) < 4L) next
+        xx <- seq(min(z$.rank[idx]), max(z$.rank[idx]), length.out = 400L)
+        upper <- stats::predict(stats::smooth.spline(z$.rank[idx], z$.score[idx] + radius[idx], spar = 0.35), xx)$y
+        lower <- stats::predict(stats::smooth.spline(z$.rank[idx], z$.score[idx] - radius[idx], spar = 0.35), xx)$y
+        mid <- (upper + lower) / 2
+        half <- pmax((upper - lower) / 2, min(radius[idx]))
+        for (band in c(1.6, 1.3, 1)) {
+          contour <- data.frame(.x = xx, .lower = mid - half * band, .upper = mid + half * band)
+          p <- p + ggplot2::geom_ribbon(
+            data = contour,
+            ggplot2::aes(x = .data[[".x"]], ymin = .data[[".lower"]], ymax = .data[[".upper"]]),
+            inherit.aes = FALSE, fill = color, colour = NA,
+            alpha = point_alpha / 3, show.legend = FALSE
+          )
+        }
+      }
+    }
+    p <- p +
+      ggplot2::geom_point(ggplot2::aes(size = .data[[".significance"]]),
+        shape = 16, colour = color, alpha = point_alpha
+      )
+    if (nrow(hi)) {
+      p <- p +
+        ggrepel::geom_text_repel(
+          data = hi,
+          ggplot2::aes(x = .data[[".rank"]], y = .data[[".score"]], label = .data[[".label"]]),
+          inherit.aes = FALSE, hjust = 0, size = label_size,
+          lineheight = 0.85, colour = label.fg,
+          bg.color = label.bg, bg.r = label.bg.r,
+          family = "sans", fontface = "bold",
+          nudge_x = hi$.label_x - hi$.rank,
+          nudge_y = hi$.label_y - hi$.score,
+          direction = "y", force = 0.8, force_pull = 0,
+          box.padding = 0.25, point.padding = 0.05,
+          min.segment.length = 0, segment.size = 0.68,
+          segment.curvature = -0.10, segment.ncp = 3, segment.angle = 20,
+          max.overlaps = Inf, seed = seed, segment.colour = "#0F172A"
+        ) +
+        ggplot2::geom_point(
+          data = hi, ggplot2::aes(size = .data[[".significance"]]),
+          shape = 21, fill = color, colour = outline_color, stroke = 0.45
+        )
+    }
+    p <- p +
+      ggplot2::facet_wrap(~.panel) +
+      ggplot2::scale_size_continuous(
+        name = expression(-log[10](adjusted ~ P)),
+        range = point_size, limits = size_limits
+      ) +
+      ggplot2::guides(size = ggplot2::guide_legend(
+        override.aes = list(fill = "grey45", colour = "grey70", alpha = 1, shape = 21, stroke = 0.45)
+      )) +
+      ggplot2::scale_x_continuous(breaks = unique(round(seq(1, xmax, length.out = 4)))) +
+      ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0.04, 0.06))) +
+      ggplot2::labs(x = "Pathway rank", y = if (score_col == "FoldEnrichment") {
+        "Fold enrichment"
+      } else {
+        score_col
+      }) +
+      apply_plot_theme(theme_use, theme_args) +
+      ggplot2::theme(
+        panel.border = ggplot2::element_rect(fill = NA, colour = "#475569", linewidth = 0.45),
+        axis.text = ggplot2::element_text(colour = "black", size = 8.5),
+        axis.title = ggplot2::element_text(colour = "black", size = 9.5, face = "bold"),
+        axis.ticks = ggplot2::element_line(colour = "#475569", linewidth = 0.4),
+        strip.background = ggplot2::element_rect(fill = color, colour = "#475569", linewidth = 0.45),
+        strip.text = ggplot2::element_text(size = 11, face = "bold", colour = strip_text_color),
+        plot.margin = ggplot2::margin(4, 6, 4, 4)
+      )
+
+    if (isTRUE(grid_major)) {
+      p <- p + ggplot2::theme(
+        panel.grid.major = ggplot2::element_line(colour = "grey85", linetype = 2, linewidth = 0.35),
+        panel.grid.minor = ggplot2::element_blank()
+      )
+    } else {
+      p <- p + ggplot2::theme(panel.grid = ggplot2::element_blank())
+    }
+
+    p <- p + ggplot2::coord_cartesian(
+      xlim = c(0.5, xmax + 0.6), ylim = panel_ylim, expand = FALSE
+    )
+    p
+  })
+  names(panels) <- group_use
+  if (!combine) {
+    return(panels)
+  }
+  p <- patchwork::wrap_plots(panels, nrow = nrow, ncol = ncol, byrow = byrow, guides = "collect") +
+    patchwork::plot_annotation(
+      title = paste0(title, " | ", db),
+      theme = ggplot2::theme(
+        plot.title = ggplot2::element_text(size = 13, face = "bold", colour = "black", margin = ggplot2::margin(b = 6))
+      )
+    )
+  p <- p & ggplot2::theme(
+    legend.position = legend.position,
+    legend.direction = legend.direction,
+    legend.title = ggplot2::element_text(size = 9, face = "bold"),
+    legend.text = ggplot2::element_text(size = 8.5)
+  )
+  attr(p, "enrichment_data") <- plotted
+  p
 }

@@ -17,9 +17,9 @@ RunDecontX(
   round_counts = FALSE,
   data_type = NULL,
   seed = 11,
-  ...,
   verbose = TRUE,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -46,12 +46,12 @@ rescanning the count matrix.}
 
 \item{seed}{Random seed.}
 
-\item{...}{Passed to \code{\link[decontX:decontX]{decontX::decontX()}}.}
-
 \item{verbose}{Whether to print messages.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A \code{Seurat} object with decontX contamination in \code{meta.data} and

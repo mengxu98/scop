@@ -1,22 +1,3 @@
-make_meringue_seurat <- function() {
-  counts <- matrix(
-    c(
-      5, 4, 0, 0, 0,
-      0, 0, 4, 5, 4,
-      1, 1, 1, 1, 1,
-      3, 0, 3, 0, 3
-    ),
-    nrow = 4,
-    byrow = TRUE,
-    dimnames = list(paste0("Gene", 1:4), paste0("Spot", 1:5))
-  )
-  counts <- methods::as(Matrix::Matrix(counts, sparse = TRUE), "dgCMatrix")
-  srt <- Seurat::CreateSeuratObject(counts = counts)
-  srt$x <- c(1, 2, 3, 4, 5)
-  srt$y <- c(1, 1, 2, 2, 3)
-  srt
-}
-
 mock_meringue_get_fun <- function(fun) {
   switch(fun,
     getSpatialNeighbors = function(pos, filterDist = NA, binary = TRUE, verbose = FALSE) {
@@ -74,7 +55,7 @@ test_that("RunMERINGUE stores autocorrelation, cross-correlation, and module tab
   )
 
   out <- RunMERINGUE(
-    make_meringue_seurat(),
+    make_spatial_test_object(),
     layer = "counts",
     coord.cols = c("x", "y"),
     mode = c("autocorrelation", "cross_correlation", "modules"),
@@ -120,7 +101,7 @@ test_that("MERINGUE retains permutation p values when permutations are requested
   )
 
   out <- RunMERINGUE(
-    make_meringue_seurat(),
+    make_spatial_test_object(),
     layer = "counts",
     coord.cols = c("x", "y"),
     mode = "autocorrelation",
@@ -144,14 +125,14 @@ test_that("RunMERINGUE maps cores to the MERINGUE argument at both permutation b
       if (!fun %in% c("moranPermutationTest", "spatialCrossCorTest")) {
         return(original)
       }
-      function(..., ncores = 1) {
+      function(ncores = 1, ...) {
         seen[[length(seen) + 1L]] <<- list(fun = fun, ncores = ncores, extra = names(list(...)))
         original(..., ncores = ncores)
       }
     }
   )
   args <- list(
-    object = make_meringue_seurat(), layer = "counts",
+    object = make_spatial_test_object(), layer = "counts",
     coord.cols = c("x", "y"), min_spots = 1, nperm = 5,
     pairwise_features = c("Gene1", "Gene2"),
     cross_cor_params = list(test = TRUE, n = 5), backend = "r", verbose = FALSE
@@ -185,7 +166,7 @@ test_that("pairwise_features bounds cross-correlation scope without O(n^2) expan
   )
 
   out <- RunMERINGUE(
-    make_meringue_seurat(),
+    make_spatial_test_object(),
     layer = "counts",
     coord.cols = c("x", "y"),
     mode = "cross_correlation",
@@ -211,7 +192,7 @@ test_that("RunMERINGUE can compute optional cross-correlation p values", {
   )
 
   out <- RunMERINGUE(
-    make_meringue_seurat(),
+    make_spatial_test_object(),
     layer = "counts",
     coord.cols = c("x", "y"),
     mode = "cross_correlation",
@@ -233,7 +214,7 @@ test_that("RunMERINGUE top features are directly plottable with SpatialSpotPlot"
   )
 
   out <- RunMERINGUE(
-    make_meringue_seurat(),
+    make_spatial_test_object(),
     layer = "counts",
     coord.cols = c("x", "y"),
     mode = "autocorrelation",
@@ -263,7 +244,7 @@ test_that("RunMERINGUE has a clear optional dependency error", {
 
   expect_error(
     RunMERINGUE(
-      make_meringue_seurat(),
+      make_spatial_test_object(),
       layer = "counts",
       coord.cols = c("x", "y"),
       min_spots = 1,

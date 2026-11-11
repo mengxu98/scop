@@ -84,7 +84,7 @@ test_that("RunPCA cpp backend remains an explicit override", {
 })
 
 test_that("RunPCA native auto gate covers shape and argument branches", {
-  gate <- get("pca_native_auto_supported", asNamespace("scop"))
+  gate <- get("pca_auto_supported", asNamespace("scop"))
   x <- matrix(0, nrow = 100L, ncol = 800L)
   expect_true(gate(x, npcs = 20L, extra_args = list()))
   expect_false(gate(x[, seq_len(799L), drop = FALSE], 20L, list()))
@@ -96,7 +96,7 @@ test_that("RunPCA native auto gate covers shape and argument branches", {
 
 test_that("RunPCA native eigengap gate rejects unstable trailing PCs", {
   acceptable <- get(
-    "pca_native_candidate_acceptable",
+    "pca_candidate_acceptable",
     asNamespace("scop")
   )
   expect_true(acceptable(c(10, 8, 6, 5), npcs = 3L))

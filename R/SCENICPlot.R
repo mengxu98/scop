@@ -25,12 +25,11 @@
 #' @param assay Fallback assay for regulon activity scores (RAS).
 #' @param layer Assay layer for regulon activity scores (RAS).
 #' @param plot_type One of `"rss_rank"`, `"rss_heatmap"`, `"rss_dotplot"`,
-#' `"heatmap_dotplot"`, `"activity_heatmap"`, `"activity_violin"`,
-#' `"activity_dim"`, `"eregulon_dim"`, `"activity_cor_dumbbell"`,
+#' `"heatmap_dotplot"`, `"eregulon_dim"`, `"activity_cor_dumbbell"`,
 #' `"regulon_size"`, `"network"`, `"network_graph"`, `"egrn"`, `"overlap"`,
 #' `"target_bar"`, `"coverage"`.
 #' @param features TF or regulon names.
-#' @param reduction Reduction for `"activity_dim"` / `"eregulon_dim"`.
+#' @param reduction Reduction for `"eregulon_dim"`.
 #' @param dims Two reduction dimensions.
 #' @param cor.features Two metadata columns or genes for `"activity_cor_dumbbell"`.
 #' @param cor.feature.labels Optional legend labels for `cor.features`.
@@ -48,7 +47,6 @@
 #'   regulon names; `"tf"` always shows TF names.
 #' @param rss_rank_yscale Use a `"shared"` y-axis across RSS rank panels for
 #'   direct score comparison, or `"free"` for the legacy per-panel scale.
-#' @param activity_scale Z-score regulons in `"activity_heatmap"`.
 #' @param rss_scale Z-score regulons in `"rss_heatmap"`.
 #' @param heatmap_show_row_names,heatmap_show_column_names Heatmap names.
 #' @param heatmap_cluster_rows,heatmap_cluster_columns Heatmap clustering.
@@ -58,19 +56,16 @@
 #' @param heatmap_border Heatmap borders.
 #' @param heatmap_palette,heatmap_palcolor Heatmap palette.
 #' @param heatmap_group_palette,heatmap_group_palcolor Group annotation palette.
-#' @param heatmap_limits Color-scale limits for RSS/activity heatmaps.
-#' @param heatmap_args Extra arguments for [GroupHeatmap()] / [FeatureHeatmap()].
+#' @param heatmap_limits Color-scale limits for RSS heatmaps.
+#' @param heatmap_args Extra arguments for RSS and overlap heatmaps.
 #' @param palette,palcolor Palette for RSS, size, target, and network colors.
-#' @param compare_expression Add TF expression next to `"activity_dim"`.
 #' @param expression_assay,expression_layer Assay and layer for TF expression.
 #' @param expression_scale Z-score TF expression in `"heatmap_dotplot"`.
-#' @param violin_args Extra arguments for [FeatureStatPlot()] in
-#'   `"activity_violin"`.
 #' @param dim_args Extra arguments for [FeatureDimPlot()].
 #' @param atac_assay Chromatin assay for `"coverage"`.
 #' @param extend.upstream,extend.downstream Flanks for `"coverage"`.
 #' @param coverage_args Extra arguments for [CoverageTrackPlot()].
-#' @param ... Extra heatmap arguments such as `width` and `height`.
+#' @param ... Arguments passed to other functions.
 #' @param max_targets Max targets per TF in network plots.
 #' @param max_edges Max edges in `"network_graph"`.
 #' @param network_layout `"auto"`, `"star"`, `"kk"`, `"hub"`, `"tripartite"`, `"fr"`. `"network_graph"` uses the weighted force-directed `"fr"` layout by default; `"kk"` remains available explicitly. `"network"` uses `"star"` for one TF and `"hub"` for several.
@@ -106,7 +101,16 @@
 #'
 #' @return Plot, or a list with `rss_matrix`, `rank_table`, `top_table`, `plots`, and `plot` when `return_data = TRUE`.
 #'
-#' @seealso [RunSCENIC], [RunSCENICPlus], [SCENICPlusPlot]
+#' @details
+#' For ordinary activity heatmaps, distributions, and embeddings, use
+#' [GroupHeatmap], [FeatureStatPlot], and [FeatureDimPlot] with the activity
+#' assay created by the analysis function. Use its stored feature names from
+#' `rownames(object[["scenic"]])` because Seurat may normalize regulon names.
+#' `"eregulon_dim"` retains the paired TF-expression, gene-activity, and
+#' available region-activity comparison.
+#'
+#' @seealso [RunSCENIC], [RunSCENICPlus], [SCENICPlusPlot],
+#' [GroupHeatmap], [FeatureStatPlot], [FeatureDimPlot]
 #'
 #' @export
 #'
@@ -122,11 +126,24 @@
 #' )
 #' scenic_rss <- SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "rss_rank")
 #' example_tfs <- unique(scenic_rss$top_table$TF)[1:3]
+#' regulons <- head(rownames(pancreas_sub[["scenic"]]), 6)
+#' GroupHeatmap(
+#'   pancreas_sub, group.by = "CellType", features = regulons,
+#'   assay = "scenic", layer = "data", exp_method = "raw",
+#'   lib_normalize = FALSE
+#' )$plot
+#' FeatureStatPlot(
+#'   pancreas_sub, group.by = "CellType", stat.by = regulons,
+#'   assay = "scenic", layer = "data", plot_type = "violin"
+#' )
+#' FeatureDimPlot(
+#'   pancreas_sub, features = regulons, assay = "scenic",
+#'   layer = "data", reduction = "UMAP"
+#' )
+#'
 #' SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "heatmap_dotplot")
 #' SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "network", features = example_tfs)
 #' SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "network_graph", features = example_tfs)
-#' SCENICPlusPlot(pancreas_sub, group.by = "CellType", plot_type = "egrn", features = example_tfs)
-#' SCENICPlusPlot(pancreas_sub, group.by = "CellType", plot_type = "coverage", features = example_tfs)
 #' }
 SCENICPlot <- function(
   object,
@@ -134,7 +151,7 @@ SCENICPlot <- function(
   tool_name = "SCENIC",
   assay = "scenic",
   layer = "data",
-  plot_type = c("rss_rank", "rss_heatmap", "rss_dotplot", "heatmap_dotplot", "activity_heatmap", "activity_violin", "activity_dim", "eregulon_dim", "activity_cor_dumbbell", "regulon_size", "network_graph", "network", "egrn", "overlap", "target_bar", "coverage"),
+  plot_type = c("rss_rank", "rss_heatmap", "rss_dotplot", "heatmap_dotplot", "eregulon_dim", "activity_cor_dumbbell", "regulon_size", "network_graph", "network", "egrn", "overlap", "target_bar", "coverage"),
   features = NULL,
   reduction = NULL,
   dims = c(1, 2),
@@ -149,7 +166,6 @@ SCENICPlot <- function(
   top_n = 12,
   regulon_label = c("auto", "regulon", "tf"),
   rss_rank_yscale = c("shared", "free"),
-  activity_scale = FALSE,
   rss_scale = FALSE,
   heatmap_show_row_names = FALSE,
   heatmap_show_column_names = FALSE,
@@ -169,11 +185,9 @@ SCENICPlot <- function(
   heatmap_args = list(),
   palette = "RdYlBu",
   palcolor = NULL,
-  compare_expression = FALSE,
   expression_assay = NULL,
   expression_layer = "data",
   expression_scale = TRUE,
-  violin_args = list(),
   dim_args = list(),
   atac_assay = NULL,
   extend.upstream = 50000,
@@ -203,11 +217,11 @@ SCENICPlot <- function(
   label_size = 3,
   label_max_overlaps = Inf,
   verbose = TRUE,
-  ...,
   srt = NULL,
   theme_use = "theme_scop",
   theme_args = list(),
-  network_display_targets = Inf
+  network_display_targets = Inf,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!is.null(point_alpha)) {
@@ -242,9 +256,9 @@ SCENICPlot <- function(
         message_type = "error"
       )
     }
-    if (!plot_type %in% c("rss_heatmap", "activity_heatmap", "overlap")) {
+    if (!plot_type %in% c("rss_heatmap", "overlap")) {
       log_message(
-        "{.arg ...} is only passed to SCENIC heatmap plot types: {.val rss_heatmap}, {.val activity_heatmap}, and {.val overlap}.",
+        "{.arg ...} is only passed to SCENIC heatmap plot types: {.val rss_heatmap} and {.val overlap}.",
         message_type = "error"
       )
     }
@@ -495,50 +509,7 @@ SCENICPlot <- function(
       title = title,
       verbose = verbose
     ),
-    activity_heatmap = scenic_plot_activity_heatmap(
-      srt = srt,
-      auc_mat = auc_mat,
-      group_annotation = group_annotation,
-      group_names = group_names,
-      group.by = group.by,
-      top_table = top_table,
-      features = features,
-      assay = assay,
-      layer = layer,
-      scale = activity_scale,
-      title = title,
-      show_row_names = heatmap_show_row_names,
-      show_column_names = heatmap_show_column_names,
-      cluster_rows = heatmap_cluster_rows,
-      cluster_columns = heatmap_cluster_columns,
-      heatmap_order = heatmap_order,
-      row_names_side = heatmap_row_names_side,
-      column_names_side = heatmap_column_names_side,
-      row_names_rot = heatmap_row_names_rot,
-      column_names_rot = heatmap_column_names_rot,
-      border = heatmap_border,
-      heatmap_palette = heatmap_palette,
-      heatmap_palcolor = heatmap_palcolor,
-      group_palette = heatmap_group_palette,
-      group_palcolor = heatmap_group_palcolor,
-      heatmap_limits = heatmap_limits,
-      heatmap_args = heatmap_args
-    ),
-    activity_violin = scenic_plot_activity_violin(
-      srt = srt,
-      auc_mat = auc_mat,
-      group_annotation = group_annotation,
-      group.by = group.by,
-      top_table = top_table,
-      features = features,
-      assay = assay,
-      layer = layer,
-      combine = combine,
-      ncol = ncol,
-      title = title,
-      violin_args = violin_args
-    ),
-    activity_dim = scenic_plot_activity_dim(
+    eregulon_dim = scenic_plot_eregulon_dim(
       srt = srt,
       auc_mat = auc_mat,
       top_table = top_table,
@@ -547,31 +518,6 @@ SCENICPlot <- function(
       layer = layer,
       reduction = reduction,
       dims = dims,
-      compare_expression = compare_expression,
-      expression_assay = expression_assay,
-      expression_layer = expression_layer,
-      include_region_auc = FALSE,
-      tool_name = tool_name,
-      palette = palette,
-      palcolor = palcolor,
-      dim_args = dim_args,
-      combine = combine,
-      ncol = ncol,
-      title = title,
-      point_size = point_size,
-      point_alpha = point_alpha,
-      verbose = verbose
-    ),
-    eregulon_dim = scenic_plot_activity_dim(
-      srt = srt,
-      auc_mat = auc_mat,
-      top_table = top_table,
-      features = features,
-      assay = assay,
-      layer = layer,
-      reduction = reduction,
-      dims = dims,
-      compare_expression = TRUE,
       expression_assay = expression_assay,
       expression_layer = expression_layer,
       include_region_auc = TRUE,
@@ -1164,202 +1110,7 @@ scenic_plot_heatmap_dotplot <- function(
   list(plot = plot, plots = list(plot), data = plot_data)
 }
 
-scenic_plot_activity_heatmap <- function(
-  srt,
-  auc_mat,
-  group_annotation,
-  group_names,
-  group.by,
-  top_table,
-  features = NULL,
-  assay = "scenic",
-  layer = "data",
-  scale = FALSE,
-  title = NULL,
-  show_row_names = TRUE,
-  show_column_names = TRUE,
-  cluster_rows = TRUE,
-  cluster_columns = FALSE,
-  heatmap_order = c("cluster", "group", "input"),
-  row_names_side = "right",
-  column_names_side = "top",
-  row_names_rot = 0,
-  column_names_rot = 45,
-  border = TRUE,
-  heatmap_palette = NULL,
-  heatmap_palcolor = NULL,
-  group_palette = "Chinese",
-  group_palcolor = NULL,
-  heatmap_limits = NULL,
-  heatmap_args = list()
-) {
-  regulons <- scenic_resolve_regulon_features(
-    features = features,
-    available = rownames(auc_mat),
-    top_table = top_table
-  )
-  heatmap_order <- match.arg(heatmap_order)
-  rss_source <- scenic_top_regulon_source(top_table, regulons)
-  avg_mat <- scenic_group_average_matrix(auc_mat[regulons, , drop = FALSE], group_annotation, group_names)
-  feature_split <- scenic_align_heatmap_feature_split(
-    feature_split = heatmap_args[["feature_split"]],
-    features = features,
-    regulons = regulons,
-    available = rownames(auc_mat)
-  )
-  if (
-    is.null(feature_split) &&
-      is.null(features) &&
-      identical(heatmap_order, "group") &&
-      !is.null(rss_source)
-  ) {
-    feature_split <- rss_source[["group"]]
-  }
-  value_name <- "activity"
-  if (isTRUE(scale)) {
-    avg_mat <- scenic_scale_rows(avg_mat)
-    constant_rows <- attr(avg_mat, "constant_rows")
-    if (length(constant_rows) == nrow(avg_mat)) {
-      log_message(
-        "All selected regulons have identical group-average activity; z-score heatmap values are zero. Use {.code activity_scale = FALSE} to show mean activity.",
-        message_type = "warning"
-      )
-    }
-    value_name <- "activity_z"
-  }
-  if (identical(heatmap_order, "group") && is.null(features) && !is.null(rss_source)) {
-    regulons <- rss_source[["regulon"]]
-  } else {
-    regulons <- scenic_order_heatmap_features(avg_mat, regulons, heatmap_order)
-  }
-  feature_map <- scenic_make_assay_feature_map(rownames(auc_mat))
-  assay_regulons <- unname(feature_map[regulons])
-  if (!is.null(feature_split)) {
-    feature_split <- feature_split[regulons]
-    names(feature_split) <- assay_regulons
-    heatmap_args[["feature_split"]] <- feature_split
-  }
-  avg_mat <- avg_mat[regulons, , drop = FALSE]
-  if (!identical(heatmap_order, "cluster")) {
-    cluster_rows <- FALSE
-  }
-  plot_data <- scenic_matrix_to_long(
-    avg_mat,
-    row_name = "regulon",
-    col_name = "group",
-    value_name = value_name
-  )
-  plot_data[["regulon"]] <- factor(plot_data[["regulon"]], levels = rev(regulons))
-  plot_data[["group"]] <- factor(plot_data[["group"]], levels = colnames(avg_mat))
-  if (!is.null(rss_source)) {
-    source_idx <- match(as.character(plot_data[["regulon"]]), rss_source[["regulon"]])
-    plot_data[["rss_group"]] <- rss_source[["group"]][source_idx]
-    plot_data[["rss_rank"]] <- rss_source[["rank"]][source_idx]
-  }
-
-  srt_use <- scenic_attach_auc_assay(srt = srt, auc_mat = auc_mat, assay = assay)
-  heatmap_palette <- heatmap_palette %||% if (isTRUE(scale)) "RdBu" else "viridis"
-  heatmap_result <- scenic_call_with_args(
-    GroupHeatmap,
-    args = list(
-      srt = srt_use,
-      features = assay_regulons,
-      group.by = group.by,
-      aggregate_fun = base::mean,
-      border = border,
-      layer = layer,
-      assay = assay,
-      exp_method = if (isTRUE(scale)) "zscore" else "raw",
-      exp_legend_title = if (isTRUE(scale)) "Activity z" else "Mean activity",
-      limits = heatmap_limits,
-      lib_normalize = FALSE,
-      max_cells = Inf,
-      show_row_names = show_row_names,
-      show_column_names = show_column_names,
-      row_names_side = row_names_side,
-      column_names_side = column_names_side,
-      row_names_rot = row_names_rot,
-      column_names_rot = column_names_rot,
-      cluster_rows = cluster_rows,
-      cluster_columns = cluster_columns,
-      column_title = title %||% "SCENIC regulon activity",
-      heatmap_palette = heatmap_palette,
-      heatmap_palcolor = heatmap_palcolor,
-      group_palette = group_palette,
-      group_palcolor = group_palcolor,
-      ht_params = list(row_labels = regulons),
-      verbose = FALSE
-    ),
-    extra_args = heatmap_args
-  )
-  plot <- heatmap_result[["plot"]]
-
-  list(plot = plot, plots = list(plot), data = plot_data, heatmap = heatmap_result)
-}
-
-scenic_plot_activity_violin <- function(
-  srt,
-  auc_mat,
-  group_annotation,
-  group.by,
-  top_table,
-  features = NULL,
-  assay = "scenic",
-  layer = "data",
-  combine = TRUE,
-  ncol = 3,
-  title = NULL,
-  violin_args = list()
-) {
-  regulons <- scenic_resolve_regulon_features(
-    features = features,
-    available = rownames(auc_mat),
-    top_table = top_table,
-    max_features = if (is.null(features)) 6 else NULL
-  )
-  plot_data <- do.call(
-    rbind,
-    lapply(regulons, function(regulon) {
-      data.frame(
-        regulon = regulon,
-        cell = colnames(auc_mat),
-        group = group_annotation[colnames(auc_mat)],
-        activity = as.numeric(auc_mat[regulon, ]),
-        stringsAsFactors = FALSE
-      )
-    })
-  )
-  plot_data[["group"]] <- factor(plot_data[["group"]], levels = unique(group_annotation))
-
-  feature_map <- scenic_make_assay_feature_map(rownames(auc_mat))
-  srt_use <- scenic_attach_auc_assay(srt = srt, auc_mat = auc_mat, assay = assay)
-  plot <- scenic_call_with_args(
-    FeatureStatPlot,
-    args = list(
-      srt = srt_use,
-      stat.by = unname(feature_map[regulons]),
-      group.by = group.by,
-      assay = assay,
-      layer = layer,
-      plot_type = "violin",
-      add_box = TRUE,
-      ylab = "Regulon activity",
-      title = title,
-      combine = combine,
-      ncol = ncol,
-      force = TRUE
-    ),
-    extra_args = violin_args
-  )
-  plots <- if (is.list(plot) && !inherits(plot, c("ggplot", "patchwork"))) {
-    plot
-  } else {
-    list(plot)
-  }
-  list(plot = plot, plots = plots, data = plot_data)
-}
-
-scenic_plot_activity_dim <- function(
+scenic_plot_eregulon_dim <- function(
   srt,
   auc_mat,
   top_table,
@@ -1368,7 +1119,6 @@ scenic_plot_activity_dim <- function(
   layer = "data",
   reduction = NULL,
   dims = c(1, 2),
-  compare_expression = FALSE,
   expression_assay = NULL,
   expression_layer = "data",
   include_region_auc = FALSE,
@@ -1412,25 +1162,6 @@ scenic_plot_activity_dim <- function(
         region_auc <- NULL
       }
     }
-  }
-  if (!isTRUE(compare_expression) && is.null(region_auc)) {
-    plots <- FeatureDimPlot(
-      object = srt_use,
-      features = unname(feature_map[regulons]),
-      assay = assay,
-      layer = layer,
-      reduction = reduction,
-      dims = dims,
-      palette = palette,
-      palcolor = palcolor,
-      pt.size = point_size,
-      pt.alpha = point_alpha,
-      legend.title = "Activity",
-      combine = FALSE,
-      force = TRUE
-    )
-    plot <- scenic_combine_plots(plots, combine = combine, ncol = ncol, title = title)
-    return(list(plot = plot, plots = plots, data = data.frame(regulon = regulons)))
   }
 
   expression_assay <- scenic_expression_assay(
@@ -1484,7 +1215,7 @@ scenic_plot_activity_dim <- function(
 
     tf <- scenic_tf_from_regulon(regulon)
     expr_feature <- scenic_match_feature(tf, expr_names)
-    if (isTRUE(compare_expression) && !is.na(expr_feature)) {
+    if (!is.na(expr_feature)) {
       exp_args <- act_args
       exp_args$features <- expr_feature
       exp_args$assay <- expression_assay
@@ -1495,7 +1226,7 @@ scenic_plot_activity_dim <- function(
       exp_args$title <- paste(expr_feature, "expression")
       exp_args$legend.title <- "Expression"
       panels <- c(panels, list(do.call(FeatureDimPlot, exp_args)))
-    } else if (isTRUE(compare_expression) && is.na(expr_feature)) {
+    } else {
       log_message(
         "No matching expression feature for TF {.val {tf}} in assay {.val {expression_assay}}",
         message_type = "warning",
@@ -1967,12 +1698,16 @@ scenic_plot_target_bar <- function(
         title = unique(as.character(df[["regulon"]]))
       )
   })
-  plot <- scenic_combine_plots(
-    plots,
-    combine = TRUE,
-    ncol = min(3L, length(plots)),
-    title = title %||% "SCENIC regulon targets"
-  )
+  check_r("patchwork", verbose = FALSE)
+  plot <- if (length(plots) == 1) {
+    plots[[1]]
+  } else {
+    patchwork::wrap_plots(plotlist = plots, ncol = min(3L, length(plots)))
+  }
+  title <- title %||% "SCENIC regulon targets"
+  if (!is.null(title)) {
+    plot <- plot + patchwork::plot_annotation(title = title)
+  }
 
   list(plot = plot, plots = plots, data = plot_data)
 }
@@ -2116,22 +1851,6 @@ scenic_attach_auc_assay <- function(srt, auc_mat, assay = "scenic") {
   srt
 }
 
-scenic_combine_plots <- function(plots, combine = TRUE, ncol = 3, title = NULL) {
-  plot <- plots
-  if (isTRUE(combine)) {
-    check_r("patchwork", verbose = FALSE)
-    plot <- if (length(plots) == 1) {
-      plots[[1]]
-    } else {
-      patchwork::wrap_plots(plotlist = plots, ncol = ncol)
-    }
-    if (!is.null(title)) {
-      plot <- plot + patchwork::plot_annotation(title = title)
-    }
-  }
-  plot
-}
-
 scenic_matrix_to_long <- function(mat, row_name, col_name, value_name) {
   out <- as.data.frame(as.table(mat), stringsAsFactors = FALSE)
   colnames(out) <- c(row_name, col_name, value_name)
@@ -2232,89 +1951,7 @@ scenic_match_regulon_features <- function(features, available) {
   unique(unlist(matches, use.names = FALSE))
 }
 
-scenic_align_heatmap_feature_split <- function(
-  feature_split,
-  features,
-  regulons,
-  available
-) {
-  if (is.null(feature_split)) {
-    return(NULL)
-  }
-  if (!is.null(names(feature_split)) && all(regulons %in% names(feature_split))) {
-    return(feature_split[regulons])
-  }
-  if (length(feature_split) == length(regulons) && is.null(features)) {
-    names(feature_split) <- regulons
-    return(feature_split)
-  }
-  if (is.null(features) || length(feature_split) != length(features)) {
-    log_message(
-      "{.arg feature_split} must have the same length as the explicit {.arg features} used by {.val activity_heatmap}, or be named by regulon.",
-      message_type = "error"
-    )
-  }
 
-  split_levels <- if (is.factor(feature_split)) {
-    levels(feature_split)
-  } else {
-    unique(as.character(feature_split))
-  }
-  split_values <- as.character(feature_split)
-  matched_all <- lapply(
-    as.character(features),
-    function(feature) {
-      candidates <- scenic_regulon_feature_candidates(feature)
-      hit <- candidates[candidates %in% available]
-      if (length(hit) == 0) {
-        return(character(0))
-      }
-      hit
-    }
-  )
-
-  out <- stats::setNames(rep(NA_character_, length(regulons)), regulons)
-  for (idx in seq_along(matched_all)) {
-    for (regulon in matched_all[[idx]]) {
-      if (regulon %in% names(out) && is.na(out[[regulon]])) {
-        out[[regulon]] <- split_values[[idx]]
-      }
-    }
-  }
-  if (any(is.na(out[regulons]))) {
-    missing_regulons <- regulons[is.na(out[regulons])]
-    log_message(
-      "{.arg feature_split} could not be matched to all displayed regulons: {.val {missing_regulons}}",
-      message_type = "error"
-    )
-  }
-  stats::setNames(factor(out[regulons], levels = split_levels), regulons)
-}
-
-scenic_top_regulon_source <- function(top_table, regulons) {
-  if (is.null(top_table) || nrow(top_table) == 0L || length(regulons) == 0L) {
-    return(NULL)
-  }
-  top_table <- top_table[top_table[["regulon"]] %in% regulons, , drop = FALSE]
-  if (nrow(top_table) == 0L) {
-    return(NULL)
-  }
-  top_table <- top_table[!duplicated(top_table[["regulon"]]), , drop = FALSE]
-  top_table <- top_table[match(regulons, top_table[["regulon"]]), , drop = FALSE]
-  top_table <- top_table[!is.na(top_table[["regulon"]]), , drop = FALSE]
-  if (nrow(top_table) == 0L) {
-    return(NULL)
-  }
-  source_group <- factor(
-    top_table[["group"]],
-    levels = unique(as.character(top_table[["group"]]))
-  )
-  list(
-    regulon = top_table[["regulon"]],
-    group = stats::setNames(source_group, top_table[["regulon"]]),
-    rank = stats::setNames(top_table[["rank"]], top_table[["regulon"]])
-  )
-}
 
 scenic_order_heatmap_features <- function(
   mat,
@@ -2682,27 +2319,19 @@ scenic_get_region_auc_matrix <- function(srt, tool_name) {
 
 
 scenic_gradient_scale <- function(colors, name, fill = FALSE) {
-  if (isTRUE(fill)) {
-    ggplot2::scale_fill_gradientn(
-      colours = colors,
-      name = name,
-      na.value = "grey80",
-      guide = ggplot2::guide_colorbar(
-        frame.colour = "black",
-        ticks.colour = "black",
-        title.hjust = 0
-      )
-    )
+  scale_fun <- if (isTRUE(fill)) {
+    ggplot2::scale_fill_gradientn
   } else {
-    ggplot2::scale_color_gradientn(
-      colours = colors,
-      name = name,
-      na.value = "grey80",
-      guide = ggplot2::guide_colorbar(
-        frame.colour = "black",
-        ticks.colour = "black",
-        title.hjust = 0
-      )
-    )
+    ggplot2::scale_color_gradientn
   }
+  scale_fun(
+    colours = colors,
+    name = name,
+    na.value = "grey80",
+    guide = ggplot2::guide_colorbar(
+      frame.colour = "black",
+      ticks.colour = "black",
+      title.hjust = 0
+    )
+  )
 }

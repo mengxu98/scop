@@ -30,8 +30,8 @@ MetaCellPlot(
   theme_use = "theme_scop",
   theme_args = list(),
   return_layer = FALSE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -88,11 +88,10 @@ for the metacell centroid/query layer.}
 layers/scales (\code{cells}, \code{fill_scale}, \code{centroids}, \code{scale_fill},
 \code{scale_size}, \code{labels}) instead of a complete plot.}
 
-\item{...}{Additional arguments passed to \code{\link[ggplot2:geom_point]{geom_point()}} for metacell
-centroids.}
-
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A \code{ggplot} object, or a named list of ggplot2 layers when

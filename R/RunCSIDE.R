@@ -11,7 +11,7 @@
 #' `srt@tools[["RCTD"]]$object` from [RunRCTD()] is used.
 #' @param explanatory.variable Named numeric vector used by
 #' `spacexr::run.CSIDE.single()`. Names must match spatial spot names.
-#' Spots with missing or non-finite values are excluded before backend dispatch.
+#' Spots with missing or non-finite values are excluded before model fitting.
 #' @param group.by Metadata column used to build C-SIDE regions when
 #' `region_list` is not supplied.
 #' @param condition.by Binary metadata column converted to a 0/1 explanatory
@@ -27,18 +27,13 @@
 #' `"single"`, or `"intercept"` based on the supplied design inputs.
 #' @param celltypes Optional cell types passed to C-SIDE as `cell_types`.
 #' @param features Optional features retained in the normalized result table.
-#' C-SIDE itself still applies its own gene filtering through backend
+#' C-SIDE itself still applies its own gene filtering through
 #' parameters such as `gene_threshold`.
 #' @param tool_name Name used to store detailed C-SIDE results in `srt@tools`.
 #' @param store_results Whether to store detailed results in `srt@tools`.
 #' Compatibility summary metadata is updated regardless; existing detailed
 #' results are retained when `FALSE` and do not represent the current run.
-#' @param ... Additional named parameters passed to the selected C-SIDE
-#' backend, such as `cell_type_threshold`, `gene_threshold`,
-#' `doublet_mode`, `cell_type_specific`, or `params_to_test`. When using the
-#' stored result from [RunRCTD()] with `rctd_mode = "full"`, `doublet_mode`
-#' defaults to `FALSE` unless explicitly supplied.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return
 #' A `Seurat` object with run-level summaries in metadata. When
 #' `store_results = TRUE`, cell-type-specific effects and significance values
@@ -118,8 +113,8 @@ RunCSIDE <- function(
   tool_name = "CSIDE",
   store_results = TRUE,
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
@@ -165,9 +160,9 @@ RunCSIDE <- function(
     region_list = region_list,
     barcodes = barcodes
   )
-  backend_fun <- cside_get_backend_fun(mode)
+  backend_fun <- cside_get_fun(mode)
 
-  inputs <- cside_prepare_backend_inputs(
+  inputs <- cside_prepare_inputs(
     srt = srt,
     mode = mode,
     explanatory.variable = explanatory.variable,
@@ -182,7 +177,7 @@ RunCSIDE <- function(
     "Run {.pkg spacexr} C-SIDE in {.val {mode}} mode",
     verbose = verbose
   )
-  result <- cside_run_backend(
+  result <- cside_run_model(
     backend_fun = backend_fun,
     mode = mode,
     rctd_result = rctd_result,
@@ -327,7 +322,7 @@ cside_resolve_mode <- function(
   "intercept"
 }
 
-cside_prepare_backend_inputs <- function(
+cside_prepare_inputs <- function(
   srt,
   mode,
   explanatory.variable,
@@ -516,7 +511,7 @@ cside_prepare_intercept_input <- function(srt, barcodes = NULL) {
   )
 }
 
-cside_run_backend <- function(
+cside_run_model <- function(
   backend_fun,
   mode,
   rctd_result,
@@ -557,7 +552,7 @@ cside_run_backend <- function(
   do.call(backend_fun, c(base_args, extra_args))
 }
 
-cside_get_backend_fun <- function(mode) {
+cside_get_fun <- function(mode) {
   check_r("dmcable/spacexr", verbose = FALSE)
   fun <- switch(mode,
     single = "run.CSIDE.single",
@@ -571,7 +566,7 @@ cside_get_backend_fun <- function(mode) {
       log_message(
         paste(
           "{.pkg spacexr} does not expose {.fn {fun}}.",
-          "Install the original C-SIDE backend with",
+          "Install the original C-SIDE package with",
           "{.code thisutils::check_r('dmcable/spacexr')}."
         ),
         message_type = "error"

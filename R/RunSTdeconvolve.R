@@ -32,8 +32,7 @@
 #' @param store_results Whether to store detailed topic matrices in `srt@tools`.
 #' @param round_counts Whether to round non-integer counts before model fitting.
 #' This is a preprocessing choice and does not recover original counts.
-#' @param ... Additional arguments passed to the STdeconvolve fit steps.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A `Seurat` object with topic proportions in metadata and detailed
 #' results stored in `srt@tools[[tool_name]]` when `store_results = TRUE`.
 #' @export
@@ -80,8 +79,8 @@ RunSTdeconvolve <- function(
   store_results = TRUE,
   round_counts = TRUE,
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
@@ -135,7 +134,7 @@ RunSTdeconvolve <- function(
     "Run {.pkg STdeconvolve} with {.val {nrow(counts)}} features and {.val {ncol(counts)}} spatial spots",
     verbose = verbose
   )
-  backend <- stdeconvolve_run_backend(
+  backend <- stdeconvolve_run_model(
     counts = counts,
     k = topic_k,
     opt = opt,
@@ -200,7 +199,7 @@ RunSTdeconvolve <- function(
 #' @title Plot STdeconvolve topic proportions
 #'
 #' @description
-#' Plot stored topic proportions without rerunning the optional backend.
+#' Plot stored topic proportions without rerunning the deconvolution.
 #' Multi-topic point maps use one shared proportion scale and reserve title
 #' space above the automatic layout.
 #'
@@ -219,8 +218,7 @@ RunSTdeconvolve <- function(
 #' plots is returned.
 #' @param nrow,ncol,byrow Point-plot layout controls. When both `nrow` and
 #' `ncol` are `NULL`, a near-square layout with at most three columns is used.
-#' @param ... Additional arguments passed to `SpatialSpotPlot()`.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A `ggplot`, `patchwork`, or list of `ggplot` objects.
 #' @seealso [RunSTdeconvolve()]
 #' @export
@@ -235,9 +233,10 @@ STdeconvolvePlot <- function(
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE,
-  ...,
   image.scale = c("lowres", "hires"),
-  srt = NULL
+  srt = NULL,
+  image = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
@@ -272,6 +271,7 @@ STdeconvolvePlot <- function(
       srt,
       values = values,
       plot_type = "pie",
+      image = image,
       image.scale = image.scale,
       ...
     ))
@@ -289,7 +289,7 @@ STdeconvolvePlot <- function(
     ncol = ncol,
     byrow = byrow,
     plot_args = c(
-      list(image.scale = image.scale),
+      list(image = image, image.scale = image.scale),
       dots
     )
   )
@@ -367,7 +367,7 @@ stdeconvolve_resolve_plot_topics <- function(topics, topic_names, prefix) {
   unname(out)
 }
 
-stdeconvolve_run_backend <- function(
+stdeconvolve_run_model <- function(
   counts,
   k,
   opt,

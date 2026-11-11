@@ -40,7 +40,7 @@ To use multiple categories, specify a vector, such as c('ident', 'replicate', 'c
 
 \item{verbose}{Print messages and show progress bar}
 
-\item{...}{Arguments to be passed to methods such as \code{\link[Seurat]{CreateSeuratObject}}}
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A named list of aggregated matrices or a Seurat object.

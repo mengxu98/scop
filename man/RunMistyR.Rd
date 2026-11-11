@@ -32,8 +32,8 @@ RunMistyR(
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
   sample.by = NULL,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -92,10 +92,10 @@ The selected cells must belong to one sample. Split independent samples into
 separate runs; when NULL, the caller is responsible for supplying one spatial
 coordinate field.}
 
-\item{...}{Additional named arguments passed to \code{mistyR::run_misty()}.}
-
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A \code{Seurat} object with results stored in \code{srt@tools[[tool_name]]}

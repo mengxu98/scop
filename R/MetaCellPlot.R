@@ -25,9 +25,7 @@
 #' @param return_layer Logical. If `TRUE`, returns a named list of ggplot2
 #' layers/scales (`cells`, `fill_scale`, `centroids`, `scale_fill`,
 #' `scale_size`, `labels`) instead of a complete plot.
-#' @param ... Additional arguments passed to [geom_point()] for metacell
-#' centroids.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A `ggplot` object, or a named list of ggplot2 layers when
 #' `return_layer = TRUE`.
 #' @export
@@ -91,8 +89,8 @@ MetaCellPlot <- function(
   theme_use = "theme_scop",
   theme_args = list(),
   return_layer = FALSE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   original_srt <- srt@misc[["original_srt"]]

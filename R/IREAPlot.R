@@ -14,6 +14,7 @@
 #' @return An editable ggplot object; plotting does not change result statistics.
 #' @md
 #' @inherit RunIREA references
+#' @export
 #' @examples
 #' \dontrun{
 #' reference <- PrepareDB(
@@ -22,7 +23,6 @@
 #' result <- RunIREA(c("ISG15", "IFIT3", "BST2"), reference = reference)
 #' IREAPlot(result, palette = "Chinese")
 #' }
-#' @export
 IREAPlot <- function(object, plot_type = c("compass", "radar", "dotplot", "heatmap"),
                      padjustCutoff = 0.05, palette = "Chinese", palcolor = NULL,
                      theme_use = "theme_scop") {

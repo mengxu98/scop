@@ -24,7 +24,7 @@ SelectIntegrationFeatures(
 
 \item{fvf.nfeatures}{Features requested if Seurat must calculate them.}
 
-\item{...}{Passed to Seurat on delegated paths.}
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A character vector of integration features.

@@ -93,3 +93,29 @@ test_that("CellStatPlot resolves the exported theme_scop alias", {
   )
   expect_s3_class(plot, "ggplot")
 })
+
+test_that("sankey selections preserve unweighted rows and explicit weights", {
+  data <- data.frame(
+    Group = c("A", "A", "B"),
+    Type = c("X", "Y", "X"),
+    weight = c(1, 2, 3)
+  )
+  unweighted <- thisplot::make_long(data, Group, Type, value = NULL)
+  weighted <- thisplot::make_long(data, Group, Type, value = weight)
+  expect_identical(as.character(unweighted$node), c("A", "X", "A", "Y", "B", "X"))
+  expect_identical(as.character(unweighted$next_node), c("X", NA, "Y", NA, "X", NA))
+  expect_false("value" %in% names(unweighted))
+  expect_equal(weighted$value, rep(data$weight, each = 2))
+  expect_equal(weighted[names(unweighted)], unweighted)
+  expect_equal(thisplot::make_long(data, Group = Group, Type = Type), unweighted)
+
+  object <- make_cell_stat_srt()
+  before <- object
+  plot <- CellStatPlot(
+    object, stat.by = c("celltype", "group"),
+    plot_type = "sankey", stat_type = "count"
+  )
+  expect_s3_class(plot, "patchwork")
+  expect_no_warning(patchwork::patchworkGrob(plot))
+  expect_identical(object, before)
+})

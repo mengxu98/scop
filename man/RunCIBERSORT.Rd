@@ -36,22 +36,21 @@ in columns. Used when \code{object} is not provided as a matrix.}
 \item{QN}{Whether CIBERSORT should use quantile normalization.}
 
 \item{absolute}{Passed to CIBERSORT when supported by the installed package.
-The C++ backend currently returns relative fractions.}
+The C++ implementation currently returns relative fractions.}
 
 \item{backend}{CIBERSORT backend. \code{"cpp"} uses the package LIBSVM
 implementation. \code{"r"} is an optional reference backend from
 \code{Moonerss/CIBERSORT}.}
 
-\item{cores}{Number of CPU cores used by the C++ backend. \code{NULL} uses up to
+\item{cores}{Number of CPU cores used by CIBERSORT. \code{NULL} uses up to
 4 local cores.}
 
-\item{seed}{Random seed used by the C++ permutation backend.}
+\item{seed}{Random seed used by CIBERSORT permutation testing.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{Additional parameters forwarded to the internal deconvolution
-backend.}
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A deconvolution result bundle for matrix input, or the modified

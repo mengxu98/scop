@@ -1,8 +1,8 @@
 #' Annotate ATAC peaks with nearest genomic features
 #'
 #' @md
-#' @description Attach verified gene annotation and record native nearest-feature
-#' distances, retaining native nearest-feature hits and unmatched peaks.
+#' @description Attach verified gene annotation and record nearest-feature
+#' distances, retaining nearest-feature hits and unmatched peaks.
 #'
 #' @param object A Seurat object with a validated `ChromatinAssay`.
 #' @param annotation A non-empty Signac-compatible `GRanges` of 1-based closed
@@ -18,16 +18,16 @@
 #'   Distance counts the bases between intervals; overlaps and adjacent intervals
 #'   have distance zero. These are distances to annotation intervals, not to TSSs,
 #'   promoter classifications, regulatory links, or evidence of gene regulation.
-#'   Different transcripts can produce several native hits. `select = "all"`
-#'   does not guarantee every mathematical tie on both sides of a peak: native
+#'   Different transcripts can produce several hits. `select = "all"`
+#'   does not guarantee every mathematical tie on both sides of a peak:
 #'   GenomicRanges tie selection is preserved. No genome
 #'   download or chromosome-style conversion is performed. Existing annotation
-#'   must be identical after native Signac normalization (including transcript_id
+#'   must be identical after Signac normalization (including transcript_id
 #'   to tx_id); existing results are not replaced. Genome labels and known
 #'   lengths are checked, not reference sequence contents. Nonmatching chromosome
 #'   names remain unmatched rather than being translated.
 #'
-#' @return The Seurat object with native Signac gene annotation and
+#' @return The Seurat object with Signac gene annotation and
 #'   `Misc(object[[assay]], "scop_peak_annotation")`. The receipt contains
 #'   `nearest`, an `S4Vectors::DataFrame` with peak ID, annotation row index,
 #'   distance and prefixed annotation metadata; `unannotated_peaks` lists peaks

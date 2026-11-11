@@ -7,8 +7,7 @@
 #' @inheritParams SeuratObject::GetAssayData
 #' @param features Optional vector of feature names to extract.
 #' @param cells Optional vector of cell names to extract.
-#' @param ... Additional arguments passed to [SeuratObject::GetAssayData].
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A matrix or data frame containing the assay data.
 #' @export
 #' @seealso [SeuratObject::GetAssayData]

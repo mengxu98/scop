@@ -3,7 +3,7 @@
 #' @description
 #' Method-specific implementation used by [RunProportionTest] when
 #' `proportion_method = "propeller"`.
-#' Uses the optional speckle backend: `getTransformedProps()` computes the
+#' Uses speckle: `getTransformedProps()` computes the
 #' transformed proportions and `propeller.ttest()` performs limma empirical
 #' Bayes moderated tests. Each requested comparison is a two-group test;
 #' multiple conditions produce pairwise results, not an omnibus ANOVA.
@@ -180,7 +180,6 @@ run_propeller_speckle <- function(
   prop_mat <- props$Proportions[result$clusters, , drop = FALSE]
   group_1 <- which(pairs$condition == cluster_1)
   group_2 <- which(pairs$condition == cluster_2)
-  # Align donor IDs before both effect calculation and paired bootstrap.
   if (paired) {
     group_2 <- group_2[match(pairs$sample[group_1], pairs$sample[group_2])]
   }

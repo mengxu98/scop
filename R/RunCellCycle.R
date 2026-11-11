@@ -16,8 +16,7 @@
 #' for example `"Phase"`. Default is `NULL`, which avoids writing a compatibility
 #' phase column.
 #' @param overwrite Whether to overwrite existing output columns.
-#' @param ... Additional arguments passed to the selected method.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A `Seurat` object with cell cycle metadata and, for `tricycle`,
 #' a tricycle embedding reduction.
 #'
@@ -62,8 +61,8 @@ RunCellCycle <- function(
   phase_col = NULL,
   overwrite = FALSE,
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   log_message(

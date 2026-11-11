@@ -118,3 +118,26 @@ A \code{ggplot} object.
 Visualize immune abundance or score matrices from deconvolution results,
 spatial metadata, GSVA-like scores, or user-provided matrices.
 }
+\details{
+Matrix values are displayed as supplied. Stacked bars retain the original
+abundance values; \code{bar_position = "fill"} explicitly normalizes each sample.
+The constructed matrix in the examples demonstrates the plotting interface.
+}
+\examples{
+abundance <- matrix(
+  c(0.7, 0.3, 0.6, 0.4, 0.4, 0.6, 0.3, 0.7),
+  ncol = 2, byrow = TRUE,
+  dimnames = list(paste0("Sample", 1:4), c("T cells", "B cells"))
+)
+groups <- stats::setNames(c("Control", "Control", "Treated", "Treated"), rownames(abundance))
+ImmuneAbundancePlot(immune.data = abundance, plot_type = "bar")
+ImmuneAbundancePlot(
+  immune.data = abundance, group.data = groups,
+  group.by = "condition", plot_type = "box"
+)
+ImmuneAbundancePlot(immune.data = abundance, plot_type = "heatmap")
+ImmuneAbundancePlot(immune.data = abundance, plot_type = "cor")
+}
+\seealso{
+\link{DeconvolutionPlot}, \link{FeatureStatPlot}
+}

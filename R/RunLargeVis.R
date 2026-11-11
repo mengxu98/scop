@@ -11,8 +11,7 @@
 #' Uses `"irlba"`, unless more than 50 case `"svd"` is used.
 #' @param reduction.name Reduction to be stored in the Seurat object.
 #' @param reduction.key The prefix for the column names of the LargeVis embeddings.
-#' @param ... Passed to [uwot::lvish].
-#'
+#' @param ... Arguments passed to other functions.
 #' @rdname RunLargeVis
 #' @export
 #'

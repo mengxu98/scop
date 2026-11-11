@@ -17,9 +17,9 @@ RunSlingshot(
   show_plot = TRUE,
   lineage_palette = "Dark2",
   seed = 11,
-  ...,
   verbose = TRUE,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -48,12 +48,12 @@ Default is \code{NULL}, which uses first two dimensions.}
 
 \item{seed}{Random seed.}
 
-\item{...}{Passed to the \link[slingshot:slingshot]{slingshot::slingshot} function.}
-
 \item{verbose}{Whether to print messages.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \description{
 RunSlingshot

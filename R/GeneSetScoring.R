@@ -887,14 +887,14 @@ run_vision_scores <- function(
 }
 
 gsva_standardize <- function() {
-  if (!isTRUE(all(unlist(check_r("GSVA", install = FALSE, verbose = FALSE), use.names = FALSE)))) {
+  if (!isTRUE(check_r("GSVA", install = FALSE, verbose = FALSE)[["GSVA"]])) {
     return(TRUE)
   }
   utils::packageVersion("GSVA") >= "2.6.0"
 }
 
 gsva_uses_legacy_sparse_walk <- function() {
-  if (!isTRUE(all(unlist(check_r("GSVA", install = FALSE, verbose = FALSE), use.names = FALSE)))) {
+  if (!isTRUE(check_r("GSVA", install = FALSE, verbose = FALSE)[["GSVA"]])) {
     return(FALSE)
   }
   utils::packageVersion("GSVA") < "2.6.0"

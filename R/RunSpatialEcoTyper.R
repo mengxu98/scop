@@ -80,9 +80,7 @@
 #' @param allow_partial Whether to allow missing SE labels for cells absent from
 #' returned `SpatialEcoTyper` metadata. Default is `FALSE` to avoid silent
 #' partial annotations.
-#' @param ... Additional arguments passed to the selected SpatialEcoTyper
-#' function.
-#'
+#' @param ... Arguments passed to other functions.
 #' @details
 #' Discovery requires cell-resolved spatial expression, cell-type labels,
 #' and coordinates; multi-sample discovery also requires sample labels.
@@ -146,9 +144,9 @@ RunSpatialEcoTyper <- function(
   store_results = TRUE,
   allow_partial = FALSE,
   verbose = TRUE,
-  ...,
   image = NULL,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   mode <- match.arg(mode)

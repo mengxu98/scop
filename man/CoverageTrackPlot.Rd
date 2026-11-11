@@ -21,8 +21,8 @@ CoverageTrackPlot(
   ranges.group.by = NULL,
   region.highlight = NULL,
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -50,10 +50,10 @@ CoverageTrackPlot(
 
 \item{verbose}{Whether to print progress messages.}
 
-\item{...}{Additional parameters passed to \code{Signac::CoveragePlot}.}
-
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A coverage plot object.

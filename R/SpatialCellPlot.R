@@ -20,7 +20,7 @@
 #' @param boundary.color,boundary.linewidth Boundary appearance.
 #' @param theme_use,theme_args Theme used to style the plot. Default is
 #' `"theme_spatial"`.
-#' @param ... Additional arguments passed to `ggplot2::geom_polygon()`.
+#' @param ... Arguments passed to other functions.
 #' @param combine Return combined panels, or a named list when `FALSE`.
 #' @param nrow,ncol,byrow Layout controls for multiple feature panels.
 #' @param legend.position,legend.direction,legend.title Legend controls.
@@ -32,6 +32,7 @@
 #' @return A `ggplot`, patchwork, or named list of plots.
 #'
 #'
+#' @export
 #' @examples
 #' # Constructed polygons demonstrate plotting, not a segmentation algorithm.
 #' boundaries <- data.frame(
@@ -40,7 +41,6 @@
 #'   cell_type = rep(c("A", "B"), each = 4)
 #' )
 #' SpatialCellPlot(boundaries = boundaries, group.by = "cell_type")
-#' @export
 SpatialCellPlot <- function(
   object = NULL,
   res = NULL,
@@ -59,14 +59,14 @@ SpatialCellPlot <- function(
   theme_args = list(),
   assay = NULL,
   layer = "data",
-  ...,
   combine = TRUE,
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE,
   legend.position = "right",
   legend.direction = "vertical",
-  legend.title = NULL
+  legend.title = NULL,
+  ...
 ) {
   if (!is.null(object) && !inherits(object, "Seurat")) {
     log_message("{.arg object} must be a {.cls Seurat} object", message_type = "error")

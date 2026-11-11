@@ -17,7 +17,7 @@
 #' @param add_gene_activity Whether to calculate a gene activity assay for the query.
 #' @param gene_activity_assay Name of the gene activity assay used for mapping.
 #' @param ref_umap UMAP reduction in the RNA reference used for query projection.
-#' @param label_method Label-transfer backend used after anchor mapping. One of
+#' @param label_method Label-transfer method used after anchor mapping. One of
 #' `"Seurat"` or `"scOMM"`.
 #' @param reduction_project_method Anchor projection method. Default is
 #' `"pcaproject"` for RNA reference mapping.

@@ -439,6 +439,7 @@ spatial_analysis_coords <- function(
 #'
 #' @return A plain list with `data`, `source`, and `transform` entries.
 #'
+#' @export
 #' @examples
 #' data(visium_human_pancreas_sub)
 #' coords_raw <- SpatialCoordinates(
@@ -456,8 +457,6 @@ spatial_analysis_coords <- function(
 #' )
 #' head(coords_raw$data[, c("cell_id", "x", "y")])
 #' head(coords_display$data[, c("cell_id", "x", "y")])
-#'
-#' @export
 SpatialCoordinates <- function(
   object,
   image = NULL,
@@ -497,6 +496,7 @@ SpatialCoordinates <- function(
 #' image-column, or `"vertical"` for Seurat Read10X_Image's positional
 #' imagerow/imagecol convention.
 #' @return A Seurat object with an explicit image coordinate convention.
+#' @export
 #' @examples
 #' data(visium_human_pancreas_sub)
 #' spatial <- SetSpatialImageAxes(
@@ -504,7 +504,6 @@ SpatialCoordinates <- function(
 #'   image = "slice1", x_orientation = "horizontal"
 #' )
 #' SpatialCoordinates(spatial, image = "slice1")$source$coord.cols
-#' @export
 SetSpatialImageAxes <- function(object, image = NULL,
                                 x_orientation = c("horizontal", "vertical")) {
   image <- spatial_image_resolve(object, image = image)$image

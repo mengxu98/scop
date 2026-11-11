@@ -33,8 +33,7 @@ RunscFEA(
 
 \item{n_epoch}{Number of scFEA training epochs.}
 
-\item{sc_imputation}{Whether to run MAGIC imputation inside the scFEA
-backend.}
+\item{sc_imputation}{Whether to run MAGIC imputation inside scFEA.}
 
 \item{assay_flux}{Name of the assay storing module flux scores.}
 
@@ -47,7 +46,7 @@ backend.}
 `NULL`, files are downloaded from `mengxu98/datasets` and cached with
 `tools::R_user_dir("scop", "data")`.}
 
-\item{seed}{Random seed passed to R and the Python scFEA backend.}
+\item{seed}{Random seed passed to R and the Python scFEA implementation.}
 
 \item{max_cells}{Maximum number of cells used for GNN training. When the
 input has more cells, a random subset is sampled for training and the

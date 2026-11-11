@@ -9,11 +9,11 @@ RunscDblFinder(
   assay = "RNA",
   db_rate = ncol(srt)/1000 * 0.01,
   data_type = NULL,
-  ...,
   verbose = TRUE,
   srt = NULL,
   sample.by = NULL,
-  seed = 1L
+  seed = 1L,
+  ...
 )
 }
 \arguments{
@@ -26,8 +26,6 @@ RunscDblFinder(
 \item{data_type}{Optional \link{CheckDataType} result, used internally to avoid
 rescanning the count matrix.}
 
-\item{...}{Additional arguments to be passed to \code{\link[scDblFinder:scDblFinder]{scDblFinder::scDblFinder()}}.}
-
 \item{verbose}{Whether to print messages.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
@@ -35,24 +33,26 @@ will be removed in scop 1.0.0.}
 
 \item{sample.by}{For ATAC, required metadata column identifying captures or
 libraries in which doublets can form. Biological conditions are not capture
-IDs. Native scDblFinder runs independently per capture (\code{multiSampleMode = "split"}). RNA behavior is unchanged.}
+IDs. \code{scDblFinder} runs independently per capture (\code{multiSampleMode = "split"}). RNA behavior is unchanged.}
 
 \item{seed}{Random seed for the ATAC path, restoring the caller's RNG.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A Seurat object with \code{db.scDblFinder_score} and
 \code{db.scDblFinder_class} updated only for selected-assay cells. For ATAC,
 \code{Misc(assay, "scop_atac_doublets")} records input cells, capture assignments,
-parameters, native output and backend version; RNA-only cells are preserved.
+parameters, model output and dependency version; RNA-only cells are preserved.
 }
 \description{
 Run doublet-calling with scDblFinder
 }
 \details{
-For ChromatinAssay input, use all raw peaks with native feature aggregation
+For ChromatinAssay input, use all raw peaks with feature aggregation
 (\code{aggregateFeatures = TRUE}, \code{nfeatures = 25}, \code{processing = "normFeatures"}).
-\code{nfeatures} and other native model parameters can be supplied in \code{...}.
-With omitted \code{db_rate}, the ATAC path uses the backend's per-capture expected
+\code{nfeatures} and other model parameters can be supplied in \code{...}.
+With omitted \code{db_rate}, the ATAC path uses the per-capture expected
 rate; explicitly supply the appropriate rate for the capture chemistry.
 Scores/classes are predictions, not ground-truth doublet labels. No cells
 are removed. Existing upstream doublet labels can instead be used directly

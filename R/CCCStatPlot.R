@@ -1,6 +1,8 @@
 #' @title CCC statistical distribution and summary plots
 #'
 #' @md
+#' @details Canonical selection parameters and legacy aliases may be supplied
+#'   together only when their values agree. Conflicting values raise an error.
 #' @inheritParams CellDimPlot
 #' @inheritParams scop-params
 #' @param srt Deprecated alias for `object`; supply exactly one of the two. It
@@ -64,7 +66,7 @@
 #' @param grid_major_linetype Linetype of major panel grid lines.
 #' @param grid_major_linewidth Line width of major panel grid lines.
 #' @param verbose Whether to print messages.
-#' @param ... Additional plot-specific options.
+#' @param ... Arguments passed to other functions.
 #' @param stat_type For `"bar"`: what to summarize per interaction. One of
 #'   `"score"` (total aggregated score) or `"count"` (number of significant
 #'   interactions).
@@ -247,8 +249,8 @@ CCCStatPlot <- function(
   combine_methods = c("separate", "support", "rank", "legacy"),
   resource = NULL,
   sample = NULL,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
@@ -293,33 +295,31 @@ CCCStatPlot <- function(
     combine_methods = combine_methods
   )
   dots <- list(...)
-  finish_plot <- function(plot) {
-    plot
-  }
   return.data <- isTRUE(dots[["return.data"]])
   idents.use <- dots[["idents.use"]] %||% NULL
-  idents.use <- ccc_alias_arg(dots, "idents_use", idents.use)
-  sender.use <- ccc_alias_arg(dots, "sender_use", sender.use)
-  receiver.use <- ccc_alias_arg(dots, "receiver_use", receiver.use)
-  ligand.use <- ccc_alias_arg(dots, "ligand_use", ligand.use)
-  receptor.use <- ccc_alias_arg(dots, "receptor_use", receptor.use)
-  interaction.use <- ccc_alias_arg(dots, "interaction_use", interaction.use)
-  pairLR.use <- ccc_alias_arg(dots, "pair_lr_use", pairLR.use)
-  thresh <- ccc_alias_arg(dots, "pvalue_threshold", thresh)
+  idents.use <- ccc_alias_arg(dots, "idents_use", idents.use, supplied = "idents.use" %in% names(dots))
+  sender.use <- ccc_alias_arg(dots, "sender_use", sender.use, supplied = !missing(sender.use))
+  receiver.use <- ccc_alias_arg(dots, "receiver_use", receiver.use, supplied = !missing(receiver.use))
+  ligand.use <- ccc_alias_arg(dots, "ligand_use", ligand.use, supplied = !missing(ligand.use))
+  receptor.use <- ccc_alias_arg(dots, "receptor_use", receptor.use, supplied = !missing(receptor.use))
+  interaction.use <- ccc_alias_arg(dots, "interaction_use", interaction.use, supplied = !missing(interaction.use))
+  pairLR.use <- ccc_alias_arg(dots, "pair_lr_use", pairLR.use, supplied = !missing(pairLR.use))
+  thresh <- ccc_alias_arg(dots, "pvalue_threshold", thresh, supplied = !missing(thresh))
   signaling.exclude <- dots[["signaling.exclude"]] %||% NULL
   aspect.ratio <- dots[["aspect.ratio"]] %||% NULL
   sample_col <- dots[["sample_col"]] %||% NULL
   sample_col <- ccc_alias_arg(
     dots,
     c("context_col", "condition_col", "dataset_col"),
-    sample_col
+    sample_col,
+    supplied = "sample_col" %in% names(dots)
   )
 
   if (identical(plot_type, "role_scatter")) {
     plot_type <- "scatter"
   }
   if (plot_type %in% c("role_network", "role_network_marsilea")) {
-    return(finish_plot(CCCHeatmap(
+    return(CCCHeatmap(
       object = srt,
       method = method,
       condition = condition,
@@ -341,7 +341,7 @@ CCCStatPlot <- function(
       theme_use = theme_use,
       theme_args = theme_args,
       verbose = verbose
-    )))
+    ))
   }
 
   if (plot_type %in% c("ranknet", "role_change")) {
@@ -355,7 +355,7 @@ CCCStatPlot <- function(
       )
     }
     if (identical(plot_type, "ranknet")) {
-      return(finish_plot(ccc_cellchat_ranknet_plot(
+      return(ccc_cellchat_ranknet_plot(
         srt = srt,
         condition = condition,
         comparison = comparison,
@@ -373,7 +373,7 @@ CCCStatPlot <- function(
         theme_use = theme_use,
         theme_args = theme_args,
         font.size = font.size
-      )))
+      ))
     }
 
     if (is.null(idents.use)) {
@@ -382,7 +382,7 @@ CCCStatPlot <- function(
         message_type = "error"
       )
     }
-    return(finish_plot(ccc_cellchat_role_change_plot(
+    return(ccc_cellchat_role_change_plot(
       srt = srt,
       condition = condition,
       comparison = comparison,
@@ -400,7 +400,7 @@ CCCStatPlot <- function(
       theme_args = theme_args,
       aspect.ratio = aspect.ratio,
       font.size = font.size
-    )))
+    ))
   }
 
   if (identical(plot_type, "lr_contribution")) {
@@ -431,7 +431,7 @@ CCCStatPlot <- function(
       df <- ccc_assign_plot_score(df = df, value = value)
       df <- ccc_mark_significance(df, thresh = thresh)
       df <- prepare_plot_df(df)
-      return(finish_plot(ccc_stat_bar_plot(
+      return(ccc_stat_bar_plot(
         df = df,
         pair_df = pair_plot_df(df),
         stat_type = if (identical(value, "count")) "count" else "score",
@@ -447,10 +447,10 @@ CCCStatPlot <- function(
         font.size = font.size,
         theme_use = theme_use,
         theme_args = theme_args
-      )))
+      ))
     }
     if (!identical(method, "CellChat")) {
-      return(finish_plot(ccc_generic_lr_contribution_plot(
+      return(ccc_generic_lr_contribution_plot(
         srt = srt,
         method = method,
         signaling = signaling,
@@ -475,9 +475,9 @@ CCCStatPlot <- function(
         combine = combine,
         nrow = nrow,
         ncol = ncol
-      )))
+      ))
     }
-    return(finish_plot(ccc_lr_contribution_plot(
+    return(ccc_lr_contribution_plot(
       srt = srt,
       condition = condition,
       dataset = dataset,
@@ -499,11 +499,11 @@ CCCStatPlot <- function(
       combine = combine,
       nrow = nrow,
       ncol = ncol
-    )))
+    ))
   }
 
   if (identical(plot_type, "gene")) {
-    return(finish_plot(
+    return(
       ccc_feature_plot(
         srt = srt,
         method = method,
@@ -534,42 +534,22 @@ CCCStatPlot <- function(
         ncol = ncol,
         dots = dots
       )
-    ))
+    )
   }
 
-  df <- ccc_long_table_for_method(
-    srt = srt,
-    method = method,
-    condition = condition,
-    dataset = dataset,
-    slot.name = slot.name,
-    signaling = signaling,
-    pairLR.use = pairLR.use,
-    sources.use = sender.use,
-    targets.use = receiver.use,
-    thresh = thresh
+  plot_data <- ccc_plot_data(
+    srt = srt, method = method, condition = condition, dataset = dataset,
+    slot.name = slot.name, signaling = signaling, pairLR.use = pairLR.use,
+    sender.use = sender.use, receiver.use = receiver.use,
+    ligand.use = ligand.use, receptor.use = receptor.use,
+    interaction.use = interaction.use, value = value, thresh = thresh
   )
-
-  df <- standardize_long_df(df)
-  df <- filter_long_df(
-    df = df,
-    sender.use = sender.use,
-    receiver.use = receiver.use,
-    ligand.use = ligand.use,
-    receptor.use = receptor.use,
-    interaction.use = interaction.use,
-    signaling = signaling,
-    pairLR.use = pairLR.use
-  )
-
-  df <- ccc_assign_plot_score(df = df, value = value)
-  df <- ccc_mark_significance(df, thresh = thresh)
-  df <- prepare_plot_df(df)
-  pair_df <- pair_plot_df(df)
-  interaction_df <- interaction_plot_df(df)
+  df <- plot_data$long_df
+  pair_df <- plot_data$pair_df
+  interaction_df <- plot_data$interaction_df
 
   if (identical(plot_type, "pathway_summary")) {
-    return(finish_plot(ccc_pathway_summary_plot(
+    return(ccc_pathway_summary_plot(
       df = df,
       value = value,
       top_n = top_n,
@@ -586,11 +566,11 @@ CCCStatPlot <- function(
       grid_major_colour = grid_major_colour,
       grid_major_linetype = grid_major_linetype,
       grid_major_linewidth = grid_major_linewidth
-    )))
+    ))
   }
 
   if (identical(plot_type, "comparison")) {
-    return(finish_plot(ccc_stat_comparison_plot(
+    return(ccc_stat_comparison_plot(
       srt = srt,
       method = method,
       condition = condition,
@@ -616,11 +596,11 @@ CCCStatPlot <- function(
       font.size = font.size,
       theme_use = theme_use,
       theme_args = theme_args
-    )))
+    ))
   }
 
   if (identical(plot_type, "bar")) {
-    return(finish_plot(ccc_stat_bar_plot(
+    return(ccc_stat_bar_plot(
       df = df,
       pair_df = pair_df,
       stat_type = stat_type,
@@ -640,11 +620,11 @@ CCCStatPlot <- function(
       grid_major_colour = grid_major_colour,
       grid_major_linetype = grid_major_linetype,
       grid_major_linewidth = grid_major_linewidth
-    )))
+    ))
   }
 
   if (identical(plot_type, "sankey")) {
-    return(finish_plot(ccc_sankey_plot(
+    return(ccc_sankey_plot(
       pair_df = pair_df,
       interaction_df = interaction_df,
       display_by = display_by,
@@ -662,11 +642,11 @@ CCCStatPlot <- function(
       font.size = font.size,
       theme_use = theme_use,
       theme_args = theme_args
-    )))
+    ))
   }
 
   if (plot_type %in% c("box", "violin")) {
-    return(finish_plot(ccc_stat_distribution_plot(
+    return(ccc_distribution_plot(
       interaction_df = interaction_df,
       plot_type = plot_type,
       top_n = top_n,
@@ -683,11 +663,11 @@ CCCStatPlot <- function(
       font.size = font.size,
       theme_use = theme_use,
       theme_args = theme_args
-    )))
+    ))
   }
 
   if (identical(plot_type, "scatter")) {
-    return(finish_plot(ccc_scatter_plot(
+    return(ccc_scatter_plot(
       srt = srt,
       method = method,
       pair_df = pair_df,
@@ -706,7 +686,7 @@ CCCStatPlot <- function(
       theme_use = theme_use,
       theme_args = theme_args,
       ...
-    )))
+    ))
   }
 
   log_message(
@@ -1571,10 +1551,7 @@ ccc_generic_lr_contribution_plot <- function(
     }
   )
 
-  if (!isTRUE(combine) || length(plot_list) <= 1L) {
-    return(simplify_cc_plot_list(plot_list))
-  }
-  patchwork::wrap_plots(plot_list, nrow = nrow, ncol = ncol)
+  plot_cc_list(plot_list, combine = combine, nrow = nrow, ncol = ncol)
 }
 
 ccc_generic_feature_genes <- function(
@@ -1629,7 +1606,9 @@ ccc_generic_feature_genes <- function(
     }
   }
 
-  target_df <- ccc_standardize_generic_ligand_target(bundle$ligand_target_df %||% data.frame())
+  target_df <- ccc_standardize_generic_ligand_target(
+    srt@tools[[method]]$ligand_target_df %||% data.frame()
+  )
   if (nrow(target_df) > 0L) {
     if (!all(is.na(target_df$sender)) && !is.null(sender.use)) {
       target_df <- target_df[target_df$sender %in% sender.use, , drop = FALSE]
@@ -1974,44 +1953,6 @@ ccc_stat_bar_plot <- function(
     font.size = font.size
   ) +
     ggplot2::theme(panel.grid.major = grid_major_element))
-}
-
-ccc_stat_distribution_plot <- function(
-  interaction_df,
-  plot_type = c("box", "violin"),
-  top_n = 20,
-  interaction.use = NULL,
-  pairLR.use = NULL,
-  facet_by = NULL,
-  x_text_angle = 90,
-  cell_palette = "Chinese",
-  cell_palcolor = NULL,
-  title = NULL,
-  subtitle = NULL,
-  legend.position = "right",
-  legend.direction = "vertical",
-  font.size = 10,
-  theme_use = "theme_scop",
-  theme_args = list()
-) {
-  ccc_distribution_plot(
-    interaction_df = interaction_df,
-    plot_type = plot_type,
-    top_n = top_n,
-    interaction.use = interaction.use,
-    pairLR.use = pairLR.use,
-    facet_by = facet_by,
-    x_text_angle = x_text_angle,
-    cell_palette = cell_palette,
-    cell_palcolor = cell_palcolor,
-    title = title,
-    subtitle = subtitle,
-    legend.position = legend.position,
-    legend.direction = legend.direction,
-    font.size = font.size,
-    theme_use = theme_use,
-    theme_args = theme_args
-  )
 }
 
 ccc_pathway_summary_plot <- function(
@@ -2482,57 +2423,6 @@ get_group_by <- function(srt, method) {
   }
   bundle <- get_bundle(srt, method = method)
   bundle$parameters$group.by %||% NULL
-}
-
-ccc_plot_data <- function(
-  srt,
-  method = NULL,
-  condition = NULL,
-  dataset = 1,
-  slot.name = "net",
-  signaling = NULL,
-  pairLR.use = NULL,
-  sender.use = NULL,
-  receiver.use = NULL,
-  ligand.use = NULL,
-  receptor.use = NULL,
-  interaction.use = NULL,
-  value = "score",
-  thresh = 0.05
-) {
-  method <- detect_method(srt = srt, method = method)
-  long_df <- ccc_long_table_for_method(
-    srt = srt,
-    method = method,
-    condition = condition,
-    dataset = dataset,
-    slot.name = slot.name,
-    signaling = signaling,
-    pairLR.use = pairLR.use,
-    sources.use = sender.use,
-    targets.use = receiver.use,
-    thresh = thresh
-  )
-  long_df <- standardize_long_df(long_df)
-  long_df <- filter_long_df(
-    df = long_df,
-    sender.use = sender.use,
-    receiver.use = receiver.use,
-    ligand.use = ligand.use,
-    receptor.use = receptor.use,
-    interaction.use = interaction.use,
-    signaling = signaling,
-    pairLR.use = pairLR.use
-  )
-  long_df <- ccc_assign_plot_score(df = long_df, value = value)
-  long_df <- ccc_mark_significance(long_df, thresh = thresh)
-  long_df <- prepare_plot_df(long_df)
-  list(
-    method = method,
-    long_df = long_df,
-    pair_df = pair_plot_df(long_df),
-    interaction_df = interaction_plot_df(long_df)
-  )
 }
 
 ccc_context_column <- function(df, sample_col = NULL) {

@@ -2,7 +2,7 @@
 % Please edit documentation in R/RunSpatialNetwork.R
 \name{SpatialNetworkPlot}
 \alias{SpatialNetworkPlot}
-\title{Plot a native spatial network}
+\title{Plot a spatial network}
 \usage{
 SpatialNetworkPlot(
   object = NULL,
@@ -67,5 +67,4 @@ SpatialNetworkPlot(
   edge.linewidth = 0.15,
   pt.size = 0.8
 )
-
 }

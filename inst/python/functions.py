@@ -6675,10 +6675,16 @@ def CellRankTrends(
     trend_adata = adata.uns[key]
     trend_matrix = trend_adata.X.toarray() if hasattr(trend_adata.X, "toarray") else np.asarray(trend_adata.X)
     clusters = np.asarray(trend_adata.obs["clusters"].astype(str)).tolist()
+    time_coordinates = np.asarray(
+        trend_adata.var["x_test"] if "x_test" in trend_adata.var else trend_adata.var_names,
+        dtype=float,
+    ).reshape(-1)
+    if time_coordinates.size != trend_matrix.shape[1] or not np.all(np.isfinite(time_coordinates)):
+        raise ValueError("CellRank trend prediction times are missing or invalid")
     return {
         "trend_matrix": trend_matrix,
         "genes": [str(x) for x in trend_adata.obs_names],
-        "time": [float(x) for x in trend_adata.var_names],
+        "time": time_coordinates.tolist(),
         "clusters": clusters,
         "lineage": str(lineage),
         "parameters": {

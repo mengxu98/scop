@@ -15,7 +15,9 @@ CellOraclePlot(
   top_n = 20L,
   cluster = NULL,
   theme_use = "theme_scop",
-  theme_args = list()
+  theme_args = list(),
+  palette = "Chinese",
+  palcolor = NULL
 )
 }
 \arguments{
@@ -43,6 +45,9 @@ are stored. Networks are never silently pooled across clusters.}
 \item{theme_use}{Theme function or function name.}
 
 \item{theme_args}{Named list of arguments passed to the theme function.}
+
+\item{palette, palcolor}{Palette and optional colors passed to
+\code{\link[thisplot:StatPlot]{thisplot::StatPlot()}} for effect bars.}
 }
 \value{
 A ggplot object. Flow plots apply the stored upstream \code{mass_filter}
@@ -54,6 +59,25 @@ arrow widths reflect absolute upstream coefficients, not activation/repression.
 Display official CellOracle displacements, grid flow, predicted expression
 changes or a cluster-specific regulatory network without rerunning Python.
 }
+\details{
+The effect example uses constructed stored predictions to demonstrate
+plotting without running a perturbation model. Effect bars use
+\code{\link[thisplot:StatPlot]{thisplot::StatPlot()}} with the stored values.
+}
+\examples{
+demo <- Seurat::CreateSeuratObject(
+  counts = matrix(
+    c(3, 1, 0, 2, 1, 4), nrow = 3,
+    dimnames = list(c("GeneA", "GeneB", "GeneC"), c("Cell1", "Cell2"))
+  )
+)
+demo@tools$CellOracle <- list(gene_effect = data.frame(
+  gene = c("GeneA", "GeneB", "GeneC"),
+  mean_delta = c(-0.4, 0.8, 0.1),
+  mean_abs_delta = c(0.6, 0.8, 0.2)
+))
+CellOraclePlot(demo, plot_type = "effect")
+}
 \seealso{
-\code{\link[=RunCellOracle]{RunCellOracle()}}
+\code{\link[=RunCellOracle]{RunCellOracle()}}, \code{\link[thisplot:StatPlot]{thisplot::StatPlot()}}
 }

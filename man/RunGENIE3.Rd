@@ -38,7 +38,7 @@ RunGENIE3(object, ...)
 \arguments{
 \item{object}{A Seurat object or expression matrix.}
 
-\item{...}{Additional backend-specific arguments.}
+\item{...}{Arguments passed to other functions.}
 
 \item{assay}{Assay used when `object` is a Seurat object.}
 

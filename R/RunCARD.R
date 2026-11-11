@@ -79,9 +79,9 @@ RunCARD <- function(
   create_card_params = list(),
   card_deconvolution_params = list(),
   verbose = TRUE,
-  ...,
   coordinate_space = c("raw", "legacy_display"),
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
@@ -196,7 +196,7 @@ RunCARD <- function(
   )
   deconv_check_cell_order(st_counts, rownames(coords), "Spatial coordinates")
   deconv_check_cell_order(ref_counts, rownames(ref_meta), "Reference metadata")
-  backend <- card_run_backend(
+  backend <- card_run_model(
     st_counts = st_counts,
     ref_counts = ref_counts,
     ref_meta = ref_meta,
@@ -267,7 +267,7 @@ RunCARD <- function(
   srt
 }
 
-card_run_backend <- function(
+card_run_model <- function(
   st_counts,
   ref_counts,
   ref_meta,
@@ -278,7 +278,7 @@ card_run_backend <- function(
   create_card_params,
   card_deconvolution_params
 ) {
-  package <- card_resolve_backend_package()
+  package <- card_resolve_package()
   create_fun <- get_namespace_fun(package, "createCARDObject")
   deconv_fun <- get_namespace_fun(package, "CARD_deconvolution")
   create_args <- c(
@@ -405,7 +405,7 @@ card_run_backend <- function(
   )
 }
 
-card_resolve_backend_package <- function() {
+card_resolve_package <- function() {
   packages <- c("CARD", "CARDspa")
   probe_backends <- function() {
     vapply(

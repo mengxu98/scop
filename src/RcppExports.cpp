@@ -162,19 +162,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// cellrank_auto_n_states_cpp
-int cellrank_auto_n_states_cpp(NumericVector eigenvalues, int min_states, int max_states);
-RcppExport SEXP _scop_cellrank_auto_n_states_cpp(SEXP eigenvaluesSEXP, SEXP min_statesSEXP, SEXP max_statesSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type eigenvalues(eigenvaluesSEXP);
-    Rcpp::traits::input_parameter< int >::type min_states(min_statesSEXP);
-    Rcpp::traits::input_parameter< int >::type max_states(max_statesSEXP);
-    rcpp_result_gen = Rcpp::wrap(cellrank_auto_n_states_cpp(eigenvalues, min_states, max_states));
-    return rcpp_result_gen;
-END_RCPP
-}
 // cellrank_velocity_kernel_cpp
 NumericMatrix cellrank_velocity_kernel_cpp(NumericMatrix velocity_embedding, NumericMatrix embedding, IntegerMatrix knn_idx, bool backward, double softmax_scale, int n_neighbors_velo);
 RcppExport SEXP _scop_cellrank_velocity_kernel_cpp(SEXP velocity_embeddingSEXP, SEXP embeddingSEXP, SEXP knn_idxSEXP, SEXP backwardSEXP, SEXP softmax_scaleSEXP, SEXP n_neighbors_veloSEXP) {
@@ -542,6 +529,7 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// ora_hypergeom_batch
 List ora_hypergeom_batch(List genes, CharacterVector term_ids, CharacterVector term_genes, CharacterVector term_name_ids, CharacterVector term_names, int min_size, int max_size);
 RcppExport SEXP _scop_ora_hypergeom_batch(SEXP genesSEXP, SEXP term_idsSEXP, SEXP term_genesSEXP, SEXP term_name_idsSEXP, SEXP term_namesSEXP, SEXP min_sizeSEXP, SEXP max_sizeSEXP) {
 BEGIN_RCPP
@@ -651,45 +639,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// gsva_poisson_dense
-NumericMatrix gsva_poisson_dense(S4 expr, List gene_sets, bool max_diff, bool abs_ranking, double tau, int chunk_size, int n_threads);
-RcppExport SEXP _scop_gsva_poisson_dense(SEXP exprSEXP, SEXP gene_setsSEXP, SEXP max_diffSEXP, SEXP abs_rankingSEXP, SEXP tauSEXP, SEXP chunk_sizeSEXP, SEXP n_threadsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< S4 >::type expr(exprSEXP);
-    Rcpp::traits::input_parameter< List >::type gene_sets(gene_setsSEXP);
-    Rcpp::traits::input_parameter< bool >::type max_diff(max_diffSEXP);
-    Rcpp::traits::input_parameter< bool >::type abs_ranking(abs_rankingSEXP);
-    Rcpp::traits::input_parameter< double >::type tau(tauSEXP);
-    Rcpp::traits::input_parameter< int >::type chunk_size(chunk_sizeSEXP);
-    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(gsva_poisson_dense(expr, gene_sets, max_diff, abs_ranking, tau, chunk_size, n_threads));
-    return rcpp_result_gen;
-END_RCPP
-}
-// dense_row_has_variable_finite
-LogicalVector dense_row_has_variable_finite(NumericMatrix expr);
-RcppExport SEXP _scop_dense_row_has_variable_finite(SEXP exprSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type expr(exprSEXP);
-    rcpp_result_gen = Rcpp::wrap(dense_row_has_variable_finite(expr));
-    return rcpp_result_gen;
-END_RCPP
-}
-// sparse_row_has_variable_finite
-LogicalVector sparse_row_has_variable_finite(S4 expr);
-RcppExport SEXP _scop_sparse_row_has_variable_finite(SEXP exprSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< S4 >::type expr(exprSEXP);
-    rcpp_result_gen = Rcpp::wrap(sparse_row_has_variable_finite(expr));
-    return rcpp_result_gen;
-END_RCPP
-}
 // knn_vote_labels_cpp
 List knn_vote_labels_cpp(const IntegerMatrix& labels, int n_levels);
 RcppExport SEXP _scop_knn_vote_labels_cpp(SEXP labelsSEXP, SEXP n_levelsSEXP) {
@@ -728,21 +677,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type n_perm(n_permSEXP);
     Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
     rcpp_result_gen = Rcpp::wrap(meringue_moran_matrix_cpp(expr, weight, alternative, rounding_sample, n_perm, n_threads));
-    return rcpp_result_gen;
-END_RCPP
-}
-// meringue_moran_cpp
-NumericVector meringue_moran_cpp(NumericVector z, NumericMatrix weight, int n_perm, String alternative, bool rounding_sample);
-RcppExport SEXP _scop_meringue_moran_cpp(SEXP zSEXP, SEXP weightSEXP, SEXP n_permSEXP, SEXP alternativeSEXP, SEXP rounding_sampleSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type z(zSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type weight(weightSEXP);
-    Rcpp::traits::input_parameter< int >::type n_perm(n_permSEXP);
-    Rcpp::traits::input_parameter< String >::type alternative(alternativeSEXP);
-    Rcpp::traits::input_parameter< bool >::type rounding_sample(rounding_sampleSEXP);
-    rcpp_result_gen = Rcpp::wrap(meringue_moran_cpp(z, weight, n_perm, alternative, rounding_sample));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -961,20 +895,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type root_cell(root_cellSEXP);
     Rcpp::traits::input_parameter< int >::type n_dcs(n_dcsSEXP);
     rcpp_result_gen = Rcpp::wrap(dpt_from_connectivities_cpp(connectivities, root_cell, n_dcs));
-    return rcpp_result_gen;
-END_RCPP
-}
-// cell_dpt_pseudotime_cpp
-List cell_dpt_pseudotime_cpp(IntegerMatrix knn_idx, NumericMatrix knn_dist, int root_cell, int n_dcs);
-RcppExport SEXP _scop_cell_dpt_pseudotime_cpp(SEXP knn_idxSEXP, SEXP knn_distSEXP, SEXP root_cellSEXP, SEXP n_dcsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< IntegerMatrix >::type knn_idx(knn_idxSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type knn_dist(knn_distSEXP);
-    Rcpp::traits::input_parameter< int >::type root_cell(root_cellSEXP);
-    Rcpp::traits::input_parameter< int >::type n_dcs(n_dcsSEXP);
-    rcpp_result_gen = Rcpp::wrap(cell_dpt_pseudotime_cpp(knn_idx, knn_dist, root_cell, n_dcs));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1210,21 +1130,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// palantir_absorption_cpp
-NumericMatrix palantir_absorption_cpp(IntegerVector T_i, IntegerVector T_j, NumericVector T_x, int n, IntegerVector terminal_state_indices);
-RcppExport SEXP _scop_palantir_absorption_cpp(SEXP T_iSEXP, SEXP T_jSEXP, SEXP T_xSEXP, SEXP nSEXP, SEXP terminal_state_indicesSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< IntegerVector >::type T_i(T_iSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type T_j(T_jSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type T_x(T_xSEXP);
-    Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type terminal_state_indices(terminal_state_indicesSEXP);
-    rcpp_result_gen = Rcpp::wrap(palantir_absorption_cpp(T_i, T_j, T_x, n, terminal_state_indices));
-    return rcpp_result_gen;
-END_RCPP
-}
 // palantir_row_entropy_cpp
 NumericVector palantir_row_entropy_cpp(NumericMatrix probabilities);
 RcppExport SEXP _scop_palantir_row_entropy_cpp(SEXP probabilitiesSEXP) {
@@ -1233,21 +1138,6 @@ BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type probabilities(probabilitiesSEXP);
     rcpp_result_gen = Rcpp::wrap(palantir_row_entropy_cpp(probabilities));
-    return rcpp_result_gen;
-END_RCPP
-}
-// scanpy_filter_genes_cpp
-IntegerVector scanpy_filter_genes_cpp(NumericMatrix spliced, NumericMatrix unspliced, int min_counts, int min_counts_u, int n_threads);
-RcppExport SEXP _scop_scanpy_filter_genes_cpp(SEXP splicedSEXP, SEXP unsplicedSEXP, SEXP min_countsSEXP, SEXP min_counts_uSEXP, SEXP n_threadsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type spliced(splicedSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type unspliced(unsplicedSEXP);
-    Rcpp::traits::input_parameter< int >::type min_counts(min_countsSEXP);
-    Rcpp::traits::input_parameter< int >::type min_counts_u(min_counts_uSEXP);
-    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(scanpy_filter_genes_cpp(spliced, unspliced, min_counts, min_counts_u, n_threads));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1347,41 +1237,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< S4 >::type st_counts(st_countsSEXP);
     Rcpp::traits::input_parameter< S4 >::type ref_counts(ref_countsSEXP);
     rcpp_result_gen = Rcpp::wrap(rctd_sparse_quality_cpp(st_counts, ref_counts));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rctd_normalize_weights_cpp
-NumericMatrix rctd_normalize_weights_cpp(NumericMatrix weights);
-RcppExport SEXP _scop_rctd_normalize_weights_cpp(SEXP weightsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type weights(weightsSEXP);
-    rcpp_result_gen = Rcpp::wrap(rctd_normalize_weights_cpp(weights));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rctd_metadata_cpp
-List rctd_metadata_cpp(NumericMatrix weights, CharacterVector all_spots);
-RcppExport SEXP _scop_rctd_metadata_cpp(SEXP weightsSEXP, SEXP all_spotsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type weights(weightsSEXP);
-    Rcpp::traits::input_parameter< CharacterVector >::type all_spots(all_spotsSEXP);
-    rcpp_result_gen = Rcpp::wrap(rctd_metadata_cpp(weights, all_spots));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rctd_finalize_weights_cpp
-List rctd_finalize_weights_cpp(NumericMatrix weights, CharacterVector all_spots);
-RcppExport SEXP _scop_rctd_finalize_weights_cpp(SEXP weightsSEXP, SEXP all_spotsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type weights(weightsSEXP);
-    Rcpp::traits::input_parameter< CharacterVector >::type all_spots(all_spotsSEXP);
-    rcpp_result_gen = Rcpp::wrap(rctd_finalize_weights_cpp(weights, all_spots));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1559,41 +1414,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// grnboost_tree_profile
-List grnboost_tree_profile(NumericMatrix expr, IntegerVector regulator_idx, IntegerVector target_idx, int n_rounds, double learning_rate, int max_edges_per_target, int max_depth, double max_features, double subsample, int early_stop_window_length, int random_seed, bool exclude_self);
-RcppExport SEXP _scop_grnboost_tree_profile(SEXP exprSEXP, SEXP regulator_idxSEXP, SEXP target_idxSEXP, SEXP n_roundsSEXP, SEXP learning_rateSEXP, SEXP max_edges_per_targetSEXP, SEXP max_depthSEXP, SEXP max_featuresSEXP, SEXP subsampleSEXP, SEXP early_stop_window_lengthSEXP, SEXP random_seedSEXP, SEXP exclude_selfSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type expr(exprSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type regulator_idx(regulator_idxSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type target_idx(target_idxSEXP);
-    Rcpp::traits::input_parameter< int >::type n_rounds(n_roundsSEXP);
-    Rcpp::traits::input_parameter< double >::type learning_rate(learning_rateSEXP);
-    Rcpp::traits::input_parameter< int >::type max_edges_per_target(max_edges_per_targetSEXP);
-    Rcpp::traits::input_parameter< int >::type max_depth(max_depthSEXP);
-    Rcpp::traits::input_parameter< double >::type max_features(max_featuresSEXP);
-    Rcpp::traits::input_parameter< double >::type subsample(subsampleSEXP);
-    Rcpp::traits::input_parameter< int >::type early_stop_window_length(early_stop_window_lengthSEXP);
-    Rcpp::traits::input_parameter< int >::type random_seed(random_seedSEXP);
-    Rcpp::traits::input_parameter< bool >::type exclude_self(exclude_selfSEXP);
-    rcpp_result_gen = Rcpp::wrap(grnboost_tree_profile(expr, regulator_idx, target_idx, n_rounds, learning_rate, max_edges_per_target, max_depth, max_features, subsample, early_stop_window_length, random_seed, exclude_self));
-    return rcpp_result_gen;
-END_RCPP
-}
-// scenic_ctx_recovery
-NumericMatrix scenic_ctx_recovery(IntegerMatrix ranks, NumericVector weights, int rank_threshold);
-RcppExport SEXP _scop_scenic_ctx_recovery(SEXP ranksSEXP, SEXP weightsSEXP, SEXP rank_thresholdSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< IntegerMatrix >::type ranks(ranksSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type weights(weightsSEXP);
-    Rcpp::traits::input_parameter< int >::type rank_threshold(rank_thresholdSEXP);
-    rcpp_result_gen = Rcpp::wrap(scenic_ctx_recovery(ranks, weights, rank_threshold));
-    return rcpp_result_gen;
-END_RCPP
-}
 // scenic_ctx_auc_avg2sd
 List scenic_ctx_auc_avg2sd(IntegerMatrix ranks, int total_genes, int rank_threshold, int rank_cutoff);
 RcppExport SEXP _scop_scenic_ctx_auc_avg2sd(SEXP ranksSEXP, SEXP total_genesSEXP, SEXP rank_thresholdSEXP, SEXP rank_cutoffSEXP) {
@@ -1641,33 +1461,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// scanpy_normalize_log_cpp
-List scanpy_normalize_log_cpp(NumericMatrix spliced, NumericMatrix unspliced, int n_threads);
-RcppExport SEXP _scop_scanpy_normalize_log_cpp(SEXP splicedSEXP, SEXP unsplicedSEXP, SEXP n_threadsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type spliced(splicedSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type unspliced(unsplicedSEXP);
-    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(scanpy_normalize_log_cpp(spliced, unspliced, n_threads));
-    return rcpp_result_gen;
-END_RCPP
-}
-// scanpy_moments_cpp
-List scanpy_moments_cpp(NumericMatrix spliced, NumericMatrix unspliced, IntegerMatrix knn_idx, int n_threads);
-RcppExport SEXP _scop_scanpy_moments_cpp(SEXP splicedSEXP, SEXP unsplicedSEXP, SEXP knn_idxSEXP, SEXP n_threadsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type spliced(splicedSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type unspliced(unsplicedSEXP);
-    Rcpp::traits::input_parameter< IntegerMatrix >::type knn_idx(knn_idxSEXP);
-    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(scanpy_moments_cpp(spliced, unspliced, knn_idx, n_threads));
-    return rcpp_result_gen;
-END_RCPP
-}
 // scanpy_moments_connectivities_cpp
 List scanpy_moments_connectivities_cpp(NumericMatrix spliced, NumericMatrix unspliced, IntegerMatrix knn_idx, bool compute_second_order, int n_threads);
 RcppExport SEXP _scop_scanpy_moments_connectivities_cpp(SEXP splicedSEXP, SEXP unsplicedSEXP, SEXP knn_idxSEXP, SEXP compute_second_orderSEXP, SEXP n_threadsSEXP) {
@@ -1680,20 +1473,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type compute_second_order(compute_second_orderSEXP);
     Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
     rcpp_result_gen = Rcpp::wrap(scanpy_moments_connectivities_cpp(spliced, unspliced, knn_idx, compute_second_order, n_threads));
-    return rcpp_result_gen;
-END_RCPP
-}
-// scanpy_second_order_moments_cpp
-List scanpy_second_order_moments_cpp(NumericMatrix spliced, NumericMatrix unspliced, IntegerMatrix knn_idx, int n_threads);
-RcppExport SEXP _scop_scanpy_second_order_moments_cpp(SEXP splicedSEXP, SEXP unsplicedSEXP, SEXP knn_idxSEXP, SEXP n_threadsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type spliced(splicedSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type unspliced(unsplicedSEXP);
-    Rcpp::traits::input_parameter< IntegerMatrix >::type knn_idx(knn_idxSEXP);
-    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(scanpy_second_order_moments_cpp(spliced, unspliced, knn_idx, n_threads));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1850,20 +1629,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector >::type end_points(end_pointsSEXP);
     Rcpp::traits::input_parameter< int >::type n_dcs(n_dcsSEXP);
     rcpp_result_gen = Rcpp::wrap(scanpy_pseudotime_graph_cpp(graph_rows, graph_cols, graph_vals, graph_neg_rows, graph_neg_cols, graph_neg_vals, knn_idx, root_cells, end_points, n_dcs));
-    return rcpp_result_gen;
-END_RCPP
-}
-// scanpy_stochastic_embedding_cpp
-List scanpy_stochastic_embedding_cpp(NumericMatrix spliced, NumericMatrix unspliced, IntegerMatrix knn_idx, NumericMatrix embedding);
-RcppExport SEXP _scop_scanpy_stochastic_embedding_cpp(SEXP splicedSEXP, SEXP unsplicedSEXP, SEXP knn_idxSEXP, SEXP embeddingSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type spliced(splicedSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type unspliced(unsplicedSEXP);
-    Rcpp::traits::input_parameter< IntegerMatrix >::type knn_idx(knn_idxSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type embedding(embeddingSEXP);
-    rcpp_result_gen = Rcpp::wrap(scanpy_stochastic_embedding_cpp(spliced, unspliced, knn_idx, embedding));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -2271,18 +2036,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// sparse_row_mean_var_dgc_list
-List sparse_row_mean_var_dgc_list(List mats, int nrow);
-RcppExport SEXP _scop_sparse_row_mean_var_dgc_list(SEXP matsSEXP, SEXP nrowSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< List >::type mats(matsSEXP);
-    Rcpp::traits::input_parameter< int >::type nrow(nrowSEXP);
-    rcpp_result_gen = Rcpp::wrap(sparse_row_mean_var_dgc_list(mats, nrow));
-    return rcpp_result_gen;
-END_RCPP
-}
 // sparse_row_var_std
 NumericVector sparse_row_var_std(IntegerVector p, IntegerVector i, NumericVector x, int nrow, int ncol, NumericVector mu, NumericVector sd, double vmax, IntegerVector nnzPerRow);
 RcppExport SEXP _scop_sparse_row_var_std(SEXP pSEXP, SEXP iSEXP, SEXP xSEXP, SEXP nrowSEXP, SEXP ncolSEXP, SEXP muSEXP, SEXP sdSEXP, SEXP vmaxSEXP, SEXP nnzPerRowSEXP) {
@@ -2302,21 +2055,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// sparse_row_var_std_dgc_list
-NumericVector sparse_row_var_std_dgc_list(List mats, int nrow, NumericVector mu, NumericVector sd, double vmax);
-RcppExport SEXP _scop_sparse_row_var_std_dgc_list(SEXP matsSEXP, SEXP nrowSEXP, SEXP muSEXP, SEXP sdSEXP, SEXP vmaxSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< List >::type mats(matsSEXP);
-    Rcpp::traits::input_parameter< int >::type nrow(nrowSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type mu(muSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type sd(sdSEXP);
-    Rcpp::traits::input_parameter< double >::type vmax(vmaxSEXP);
-    rcpp_result_gen = Rcpp::wrap(sparse_row_var_std_dgc_list(mats, nrow, mu, sd, vmax));
-    return rcpp_result_gen;
-END_RCPP
-}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_scop_augur_subsample_cpp", (DL_FUNC) &_scop_augur_subsample_cpp, 2},
@@ -2329,7 +2067,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_cellrank_validate_transition_matrix_cpp", (DL_FUNC) &_scop_cellrank_validate_transition_matrix_cpp, 3},
     {"_scop_cellrank_stationary_distribution_cpp", (DL_FUNC) &_scop_cellrank_stationary_distribution_cpp, 3},
     {"_scop_cellrank_schur_cpp", (DL_FUNC) &_scop_cellrank_schur_cpp, 2},
-    {"_scop_cellrank_auto_n_states_cpp", (DL_FUNC) &_scop_cellrank_auto_n_states_cpp, 3},
     {"_scop_cellrank_velocity_kernel_cpp", (DL_FUNC) &_scop_cellrank_velocity_kernel_cpp, 6},
     {"_scop_cellrank_connectivity_kernel_cpp", (DL_FUNC) &_scop_cellrank_connectivity_kernel_cpp, 2},
     {"_scop_cellrank_pseudotime_kernel_cpp", (DL_FUNC) &_scop_cellrank_pseudotime_kernel_cpp, 5},
@@ -2362,13 +2099,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_zscore_dense", (DL_FUNC) &_scop_zscore_dense, 6},
     {"_scop_plage_dense", (DL_FUNC) &_scop_plage_dense, 5},
     {"_scop_gsva_gaussian_dense", (DL_FUNC) &_scop_gsva_gaussian_dense, 8},
-    {"_scop_gsva_poisson_dense", (DL_FUNC) &_scop_gsva_poisson_dense, 7},
-    {"_scop_dense_row_has_variable_finite", (DL_FUNC) &_scop_dense_row_has_variable_finite, 1},
-    {"_scop_sparse_row_has_variable_finite", (DL_FUNC) &_scop_sparse_row_has_variable_finite, 1},
     {"_scop_knn_vote_labels_cpp", (DL_FUNC) &_scop_knn_vote_labels_cpp, 2},
     {"_scop_mdic3_score_cpp", (DL_FUNC) &_scop_mdic3_score_cpp, 3},
     {"_scop_meringue_moran_matrix_cpp", (DL_FUNC) &_scop_meringue_moran_matrix_cpp, 6},
-    {"_scop_meringue_moran_cpp", (DL_FUNC) &_scop_meringue_moran_cpp, 5},
     {"_scop_manifold_exact_knn_cpp", (DL_FUNC) &_scop_manifold_exact_knn_cpp, 3},
     {"_scop_pacmap_optimize_cpp", (DL_FUNC) &_scop_pacmap_optimize_cpp, 9},
     {"_scop_trimap_optimize_cpp", (DL_FUNC) &_scop_trimap_optimize_cpp, 10},
@@ -2384,7 +2117,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_paga_diffusion_pseudotime_cpp", (DL_FUNC) &_scop_paga_diffusion_pseudotime_cpp, 6},
     {"_scop_gauss_connectivities_cpp", (DL_FUNC) &_scop_gauss_connectivities_cpp, 2},
     {"_scop_dpt_from_connectivities_cpp", (DL_FUNC) &_scop_dpt_from_connectivities_cpp, 3},
-    {"_scop_cell_dpt_pseudotime_cpp", (DL_FUNC) &_scop_cell_dpt_pseudotime_cpp, 4},
     {"_scop_paga_velocity_transitions_cpp", (DL_FUNC) &_scop_paga_velocity_transitions_cpp, 5},
     {"_scop_paga_root_cell_cpp", (DL_FUNC) &_scop_paga_root_cell_cpp, 3},
     {"_scop_pca_backend_run", (DL_FUNC) &_scop_pca_backend_run, 4},
@@ -2402,9 +2134,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_palantir_maxmin_waypoints_cpp", (DL_FUNC) &_scop_palantir_maxmin_waypoints_cpp, 3},
     {"_scop_palantir_pseudotime_cpp", (DL_FUNC) &_scop_palantir_pseudotime_cpp, 8},
     {"_scop_palantir_markov_chain_cpp", (DL_FUNC) &_scop_palantir_markov_chain_cpp, 3},
-    {"_scop_palantir_absorption_cpp", (DL_FUNC) &_scop_palantir_absorption_cpp, 5},
     {"_scop_palantir_row_entropy_cpp", (DL_FUNC) &_scop_palantir_row_entropy_cpp, 1},
-    {"_scop_scanpy_filter_genes_cpp", (DL_FUNC) &_scop_scanpy_filter_genes_cpp, 5},
     {"_scop_scanpy_normalize_cpp", (DL_FUNC) &_scop_scanpy_normalize_cpp, 4},
     {"_scop_scanpy_knn_cpp", (DL_FUNC) &_scop_scanpy_knn_cpp, 4},
     {"_scop_proportion_bootstrap_log2fd", (DL_FUNC) &_scop_proportion_bootstrap_log2fd, 5},
@@ -2412,9 +2142,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_pseudotime_velocity_knn", (DL_FUNC) &_scop_pseudotime_velocity_knn, 4},
     {"_scop_pseudotime_velocity_gradient", (DL_FUNC) &_scop_pseudotime_velocity_gradient, 5},
     {"_scop_rctd_sparse_quality_cpp", (DL_FUNC) &_scop_rctd_sparse_quality_cpp, 2},
-    {"_scop_rctd_normalize_weights_cpp", (DL_FUNC) &_scop_rctd_normalize_weights_cpp, 1},
-    {"_scop_rctd_metadata_cpp", (DL_FUNC) &_scop_rctd_metadata_cpp, 2},
-    {"_scop_rctd_finalize_weights_cpp", (DL_FUNC) &_scop_rctd_finalize_weights_cpp, 2},
     {"_scop_estimate_ssgsea_scores_cpp", (DL_FUNC) &_scop_estimate_ssgsea_scores_cpp, 3},
     {"_scop_scenic_edge_correlation_cpp", (DL_FUNC) &_scop_scenic_edge_correlation_cpp, 4},
     {"_scop_scenicplus_order_cpp", (DL_FUNC) &_scop_scenicplus_order_cpp, 2},
@@ -2425,15 +2152,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_grnboost_tree_parallel", (DL_FUNC) &_scop_grnboost_tree_parallel, 13},
     {"_scop_grnboost_tree_sparse", (DL_FUNC) &_scop_grnboost_tree_sparse, 12},
     {"_scop_grnboost_tree_sparse_parallel", (DL_FUNC) &_scop_grnboost_tree_sparse_parallel, 13},
-    {"_scop_grnboost_tree_profile", (DL_FUNC) &_scop_grnboost_tree_profile, 12},
-    {"_scop_scenic_ctx_recovery", (DL_FUNC) &_scop_scenic_ctx_recovery, 3},
     {"_scop_scenic_ctx_auc_avg2sd", (DL_FUNC) &_scop_scenic_ctx_auc_avg2sd, 4},
     {"_scop_scenicplus_region_gene_cor", (DL_FUNC) &_scop_scenicplus_region_gene_cor, 4},
     {"_scop_scenicplus_triplets_cpp", (DL_FUNC) &_scop_scenicplus_triplets_cpp, 9},
-    {"_scop_scanpy_normalize_log_cpp", (DL_FUNC) &_scop_scanpy_normalize_log_cpp, 3},
-    {"_scop_scanpy_moments_cpp", (DL_FUNC) &_scop_scanpy_moments_cpp, 4},
     {"_scop_scanpy_moments_connectivities_cpp", (DL_FUNC) &_scop_scanpy_moments_connectivities_cpp, 5},
-    {"_scop_scanpy_second_order_moments_cpp", (DL_FUNC) &_scop_scanpy_second_order_moments_cpp, 4},
     {"_scop_scanpy_deterministic_cpp", (DL_FUNC) &_scop_scanpy_deterministic_cpp, 7},
     {"_scop_scanpy_stochastic_cpp", (DL_FUNC) &_scop_scanpy_stochastic_cpp, 8},
     {"_scop_scanpy_velocity_graph_cpp", (DL_FUNC) &_scop_scanpy_velocity_graph_cpp, 9},
@@ -2443,7 +2165,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_scanpy_terminal_states_graph_cpp", (DL_FUNC) &_scop_scanpy_terminal_states_graph_cpp, 8},
     {"_scop_scanpy_pseudotime_cpp", (DL_FUNC) &_scop_scanpy_pseudotime_cpp, 6},
     {"_scop_scanpy_pseudotime_graph_cpp", (DL_FUNC) &_scop_scanpy_pseudotime_graph_cpp, 10},
-    {"_scop_scanpy_stochastic_embedding_cpp", (DL_FUNC) &_scop_scanpy_stochastic_embedding_cpp, 4},
     {"_scop_scibet_fit_predict", (DL_FUNC) &_scop_scibet_fit_predict, 7},
     {"_scop_scibet_fit_predict_sparse", (DL_FUNC) &_scop_scibet_fit_predict_sparse, 7},
     {"_scop_OmegaC", (DL_FUNC) &_scop_OmegaC, 2},
@@ -2465,9 +2186,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_spatial_neighborhood_profile_cpp", (DL_FUNC) &_scop_spatial_neighborhood_profile_cpp, 5},
     {"_scop_tage_elastic_net_predict_cpp", (DL_FUNC) &_scop_tage_elastic_net_predict_cpp, 7},
     {"_scop_sparse_row_mean_var", (DL_FUNC) &_scop_sparse_row_mean_var, 5},
-    {"_scop_sparse_row_mean_var_dgc_list", (DL_FUNC) &_scop_sparse_row_mean_var_dgc_list, 2},
     {"_scop_sparse_row_var_std", (DL_FUNC) &_scop_sparse_row_var_std, 9},
-    {"_scop_sparse_row_var_std_dgc_list", (DL_FUNC) &_scop_sparse_row_var_std_dgc_list, 5},
     {NULL, NULL, 0}
 };
 

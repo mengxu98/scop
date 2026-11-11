@@ -1,6 +1,8 @@
 #' @title CCC heatmap and dot matrix plot
 #'
 #' @md
+#' @details Canonical selection parameters and legacy aliases may be supplied
+#'   together only when their values agree. Conflicting values raise an error.
 #' @inheritParams CCCStatPlot
 #' @inheritParams scop-params
 #' @param plot_type Plot type. One of `"heatmap"` or `"dot"`.
@@ -235,8 +237,8 @@ CCCHeatmap <- function(
   combine_methods = c("separate", "support", "rank", "legacy"),
   resource = NULL,
   sample = NULL,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   value_supplied <- !missing(value)
@@ -250,36 +252,35 @@ CCCHeatmap <- function(
   } else {
     isTRUE(dots[["remove.isolate"]])
   }
-  finish_plot <- function(plot) {
-    plot
-  }
   bubble_color.by <- dots[["bubble_color.by"]] %||% "prob"
   bubble_size.range <- dots[["bubble_size.range"]] %||% c(1.5, 8)
   angle.x <- dots[["angle.x"]] %||% x_text_angle
   hjust.x <- dots[["hjust.x"]] %||% 1
   vjust.x <- dots[["vjust.x"]] %||% 1
   aspect.ratio <- dots[["aspect.ratio"]] %||% NULL
-  sender.use <- ccc_alias_arg(dots, "sender_use", sender.use)
-  receiver.use <- ccc_alias_arg(dots, "receiver_use", receiver.use)
-  ligand.use <- ccc_alias_arg(dots, "ligand_use", ligand.use)
-  receptor.use <- ccc_alias_arg(dots, "receptor_use", receptor.use)
-  interaction.use <- ccc_alias_arg(dots, "interaction_use", interaction.use)
-  pairLR.use <- ccc_alias_arg(dots, "pair_lr_use", pairLR.use)
-  thresh <- ccc_alias_arg(dots, "pvalue_threshold", thresh)
-  color.by <- ccc_alias_arg(dots, "color_by", color.by)
+  sender.use <- ccc_alias_arg(dots, "sender_use", sender.use, supplied = !missing(sender.use))
+  receiver.use <- ccc_alias_arg(dots, "receiver_use", receiver.use, supplied = !missing(receiver.use))
+  ligand.use <- ccc_alias_arg(dots, "ligand_use", ligand.use, supplied = !missing(ligand.use))
+  receptor.use <- ccc_alias_arg(dots, "receptor_use", receptor.use, supplied = !missing(receptor.use))
+  interaction.use <- ccc_alias_arg(dots, "interaction_use", interaction.use, supplied = !missing(interaction.use))
+  pairLR.use <- ccc_alias_arg(dots, "pair_lr_use", pairLR.use, supplied = !missing(pairLR.use))
+  thresh <- ccc_alias_arg(dots, "pvalue_threshold", thresh, supplied = !missing(thresh))
+  color.by <- ccc_alias_arg(dots, "color_by", color.by, supplied = !missing(color.by))
   show_column_names <- ccc_alias_arg(
     dots,
     c("show_col_names", "show_column_names"),
-    show_column_names
+    show_column_names,
+    supplied = !missing(show_column_names)
   )
   ncols <- ccc_alias_arg(dots, "ncols", NULL)
   nrows <- ccc_alias_arg(dots, "nrows", NULL)
   top_n_pairs <- ccc_alias_arg(dots, "top_n_pairs", NULL)
-  sample_key <- ccc_alias_arg(dots, "sample_key", "sample")
+  sample_key <- ccc_alias_arg(dots, "sample_key", "sample", supplied = FALSE)
   min_interaction_threshold <- ccc_alias_arg(
     dots,
     "min_interaction_threshold",
-    0
+    0,
+    supplied = FALSE
   )
 
   if ("add_dot" %in% dot_names) {
@@ -528,7 +529,7 @@ CCCHeatmap <- function(
       )
     }
     if (identical(plot_type, "role_heatmap")) {
-      return(finish_plot(ccc_cellchat_role_heatmap_plot(
+      return(ccc_cellchat_role_heatmap_plot(
         srt = srt,
         condition = condition,
         dataset = dataset,
@@ -561,9 +562,9 @@ CCCHeatmap <- function(
         font.size = font.size,
         theme_use = theme_use,
         theme_args = theme_args
-      )))
+      ))
     }
-    return(finish_plot(ccc_cellchat_diff_heatmap_plot(
+    return(ccc_cellchat_diff_heatmap_plot(
       srt = srt,
       condition = condition,
       comparison = comparison,
@@ -595,7 +596,7 @@ CCCHeatmap <- function(
       font.size = font.size,
       theme_use = theme_use,
       theme_args = theme_args
-    )))
+    ))
   }
 
   if (identical(plot_type, "bubble") && identical(method, "CellChat")) {
@@ -630,7 +631,7 @@ CCCHeatmap <- function(
       if (isTRUE(return.data)) {
         return(df_bubble)
       }
-      return(finish_plot(custom_cc_bubble_plot(
+      return(custom_cc_bubble_plot(
         df = df_bubble,
         title = title %||% cond1,
         subtitle = subtitle,
@@ -650,7 +651,7 @@ CCCHeatmap <- function(
         theme_args = theme_args,
         aspect.ratio = aspect.ratio,
         remove.isolate = remove.isolate
-      )))
+      ))
     }
 
     cmp <- cc_get_cmp(srt = srt, condition = condition)
@@ -689,7 +690,7 @@ CCCHeatmap <- function(
       )
     }
     df_bubble <- do.call(rbind, df_list)
-    return(finish_plot(custom_cc_bubble_plot(
+    return(custom_cc_bubble_plot(
       df = df_bubble,
       title = title %||% cmp_cc_label(cmp, comp_idx),
       subtitle = subtitle,
@@ -709,7 +710,7 @@ CCCHeatmap <- function(
       theme_args = theme_args,
       aspect.ratio = aspect.ratio,
       remove.isolate = remove.isolate
-    )))
+    ))
   }
 
   if (identical(plot_type, "ligand_target")) {
@@ -731,7 +732,7 @@ CCCHeatmap <- function(
     }
     bundle <- get_bundle(srt, method = ligand_method)
     ligand_target_df <- bundle$ligand_target_df %||% data.frame()
-    return(finish_plot(ccc_ligand_target_heatmap(
+    return(ccc_ligand_target_heatmap(
       df = ligand_target_df,
       top_n = top_n,
       sender.use = sender.use,
@@ -769,7 +770,7 @@ CCCHeatmap <- function(
       font.size = font.size,
       theme_use = theme_use,
       theme_args = theme_args
-    )))
+    ))
   }
 
   df <- ccc_long_table_for_method(
@@ -857,15 +858,15 @@ CCCHeatmap <- function(
       )
     }
   }
-  df <- ccc_mark_significance(df, thresh = thresh)
-  df <- prepare_plot_df(df)
-
-  pair_df <- pair_plot_df(df)
-  interaction_df <- interaction_plot_df(df)
+  plot_data <- ccc_plot_tables(df, thresh = thresh)
+  df <- plot_data$long_df
+  pair_df <- plot_data$pair_df
+  interaction_df <- plot_data$interaction_df
 
   if (identical(plot_type, "dot")) {
-    return(finish_plot(ccc_source_target_dot_plot(
-      interaction_df = interaction_df,
+    return(ccc_interaction_dot_plot(
+      df = interaction_df,
+      display = "source_target",
       top_n = top_n,
       color.by = color.by,
       interaction.use = interaction.use,
@@ -881,11 +882,11 @@ CCCHeatmap <- function(
       font.size = font.size,
       theme_use = theme_use,
       theme_args = theme_args
-    )))
+    ))
   }
 
   if (identical(plot_type, "tile")) {
-    return(finish_plot(ccc_source_target_tile_plot(
+    return(ccc_source_target_tile_plot(
       interaction_df = interaction_df,
       top_n = top_n,
       color.by = color.by,
@@ -900,12 +901,13 @@ CCCHeatmap <- function(
       font.size = font.size,
       theme_use = theme_use,
       theme_args = theme_args
-    )))
+    ))
   }
 
   if (identical(plot_type, "sample_dot")) {
-    return(finish_plot(ccc_sample_dot_plot(
+    return(ccc_interaction_dot_plot(
       df = df,
+      display = "sample",
       sample_key = sample_key,
       top_n = top_n,
       top_n_pairs = top_n_pairs,
@@ -923,7 +925,7 @@ CCCHeatmap <- function(
       font.size = font.size,
       theme_use = theme_use,
       theme_args = theme_args
-    )))
+    ))
   }
 
   add_dot_eff <- identical(plot_type, "bubble")
@@ -932,7 +934,7 @@ CCCHeatmap <- function(
     value_use <- edge_value
   }
 
-  finish_plot(ccc_heatmap_full_plot(
+  ccc_heatmap_full_plot(
     df = df,
     pair_df = pair_df,
     interaction_df = interaction_df,
@@ -970,7 +972,7 @@ CCCHeatmap <- function(
     font.size = font.size,
     theme_use = theme_use,
     theme_args = theme_args
-  ))
+  )
 }
 
 ccc_heatmap_full_plot <- function(
@@ -2748,9 +2750,12 @@ scale_var <- function(df, color.by = "score", agg_value = "sum") {
   list(var = var, label = label)
 }
 
-ccc_source_target_dot_plot <- function(
-  interaction_df,
+ccc_interaction_dot_plot <- function(
+  df,
+  display = c("source_target", "sample"),
+  sample_key = "sample",
   top_n = 20,
+  top_n_pairs = NULL,
   color.by = "score",
   interaction.use = NULL,
   pairLR.use = NULL,
@@ -2766,62 +2771,130 @@ ccc_source_target_dot_plot <- function(
   theme_use = "theme_scop",
   theme_args = list()
 ) {
-  if (is.null(interaction_df) || nrow(interaction_df) == 0L) {
-    log_message(
-      "No interaction-level CCC records are available for dot plotting",
-      message_type = "error"
+  display <- match.arg(display)
+  source_target <- identical(display, "source_target")
+  if (source_target) {
+    if (is.null(df) || nrow(df) == 0L) {
+      log_message(
+        "No interaction-level CCC records are available for dot plotting",
+        message_type = "error"
+      )
+    }
+    score_col <- if (identical(color.by, "pvalue")) {
+      c("neglog10_pvalue", "specificity")[
+        c("neglog10_pvalue", "specificity") %in% colnames(df)
+      ][1]
+    } else {
+      "score"
+    }
+    score_col <- score_col %||% "score"
+    top_n_use <- if (!is.null(interaction.use) || !is.null(pairLR.use)) {
+      NULL
+    } else {
+      top_n
+    }
+    plot_df <- top_interactions(
+      df,
+      top_n = top_n_use,
+      value_col = score_col
     )
-  }
-  score_col <- if (identical(color.by, "pvalue")) {
-    c("neglog10_pvalue", "specificity")[
-      c("neglog10_pvalue", "specificity") %in% colnames(interaction_df)
-    ][1]
-  } else {
-    "score"
-  }
-  score_col <- score_col %||% "score"
-  top_n_use <- if (!is.null(interaction.use) || !is.null(pairLR.use)) {
-    NULL
-  } else {
-    top_n
-  }
-  plot_df <- top_interactions(
-    interaction_df,
-    top_n = top_n_use,
-    value_col = score_col
-  )
-  plot_df <- plot_df[
-    is.finite(suppressWarnings(as.numeric(plot_df$score))) &
-      suppressWarnings(as.numeric(plot_df$score)) > 0, ,
-    drop = FALSE
-  ]
-  if (nrow(plot_df) == 0L) {
-    log_message(
-      "No dotplot records remain after filtering",
-      message_type = "error"
+    plot_df <- plot_df[
+      is.finite(suppressWarnings(as.numeric(plot_df$score))) &
+        suppressWarnings(as.numeric(plot_df$score)) > 0, ,
+      drop = FALSE
+    ]
+    if (nrow(plot_df) == 0L) {
+      log_message(
+        "No dotplot records remain after filtering",
+        message_type = "error"
+      )
+    }
+    plot_df$target <- as.character(plot_df$receiver)
+    plot_df$source <- as.character(plot_df$sender)
+    plot_df$interaction_plot <- as.character(plot_df$interaction_label)
+    metric <- suppressWarnings(as.numeric(plot_df[[score_col]]))
+    metric[!is.finite(metric)] <- 0
+    plot_df$plot_metric <- metric
+
+    source_order <- names(sort(tapply(plot_df$plot_metric, plot_df$source, sum), decreasing = TRUE))
+    target_order <- names(sort(tapply(plot_df$plot_metric, plot_df$target, sum), decreasing = TRUE))
+    interaction_order <- names(sort(tapply(plot_df$plot_metric, plot_df$interaction_plot, sum), decreasing = FALSE))
+    plot_df$source <- factor(plot_df$source, levels = source_order)
+    plot_df$target <- factor(plot_df$target, levels = target_order)
+    plot_df$interaction_plot <- factor(plot_df$interaction_plot, levels = interaction_order)
+
+    grid <- ccc_panel_grid(
+      n_panels = length(source_order),
+      ncols = ncols,
+      nrows = nrows,
+      context = "source-target dot plot"
     )
+  } else {
+    if (is.null(df) || nrow(df) == 0L) {
+      log_message("No communication records are available for sample dot plotting", message_type = "error")
+    }
+    sample_col <- if (sample_key %in% colnames(df)) {
+      sample_key
+    } else if ("dataset" %in% colnames(df)) {
+      "dataset"
+    } else {
+      NULL
+    }
+    if (is.null(sample_col)) {
+      log_message(
+        "{.arg sample_key} was not found in the CCC result table",
+        message_type = "error"
+      )
+    }
+    df <- prepare_plot_df(df)
+    score_col <- if (identical(color.by, "pvalue")) {
+      c("neglog10_pvalue", "specificity")[
+        c("neglog10_pvalue", "specificity") %in% colnames(df)
+      ][1]
+    } else {
+      "score"
+    }
+    score_col <- score_col %||% "score"
+    score_by_interaction <- sort(
+      tapply(df[[score_col]], df$interaction_label, sum, na.rm = TRUE),
+      decreasing = TRUE
+    )
+    if (!is.null(interaction.use) || !is.null(pairLR.use) || is.null(top_n) || !is.numeric(top_n) || top_n <= 0L) {
+      keep_interactions <- names(score_by_interaction)
+    } else {
+      keep_interactions <- names(score_by_interaction)[seq_len(min(top_n, length(score_by_interaction)))]
+    }
+    df <- df[df$interaction_label %in% keep_interactions, , drop = FALSE]
+    df$sample <- as.character(df[[sample_col]])
+    df$pair <- paste(df$sender, df$receiver, sep = " -> ")
+    if (!is.null(top_n_pairs) && is.numeric(top_n_pairs) && top_n_pairs > 0L) {
+      df$.ccc_metric <- suppressWarnings(as.numeric(df[[score_col]]))
+      df$.ccc_metric[!is.finite(df$.ccc_metric)] <- 0
+      df <- do.call(rbind, lapply(split(df, df$interaction_label), function(df_i) {
+        pair_scores <- sort(tapply(df_i$.ccc_metric, df_i$pair, sum, na.rm = TRUE), decreasing = TRUE)
+        keep_pairs <- names(pair_scores)[seq_len(min(top_n_pairs, length(pair_scores)))]
+        df_i[df_i$pair %in% keep_pairs, , drop = FALSE]
+      }))
+      rownames(df) <- NULL
+      df$.ccc_metric <- NULL
+    }
+    if (nrow(df) == 0L) {
+      log_message("No sample dotplot records remain after filtering", message_type = "error")
+    }
+    df$interaction_label <- factor(df$interaction_label, levels = keep_interactions)
+    grid <- ccc_panel_grid(
+      n_panels = length(keep_interactions),
+      ncols = ncols %||% min(3L, length(keep_interactions)),
+      nrows = nrows,
+      context = "sample dot plot"
+    )
+    plot_df <- df
   }
-  plot_df$target <- as.character(plot_df$receiver)
-  plot_df$source <- as.character(plot_df$sender)
-  plot_df$interaction_plot <- as.character(plot_df$interaction_label)
-  metric <- suppressWarnings(as.numeric(plot_df[[score_col]]))
-  metric[!is.finite(metric)] <- 0
-  plot_df$plot_metric <- metric
-
-  source_order <- names(sort(tapply(plot_df$plot_metric, plot_df$source, sum), decreasing = TRUE))
-  target_order <- names(sort(tapply(plot_df$plot_metric, plot_df$target, sum), decreasing = TRUE))
-  interaction_order <- names(sort(tapply(plot_df$plot_metric, plot_df$interaction_plot, sum), decreasing = FALSE))
-  plot_df$source <- factor(plot_df$source, levels = source_order)
-  plot_df$target <- factor(plot_df$target, levels = target_order)
-  plot_df$interaction_plot <- factor(plot_df$interaction_plot, levels = interaction_order)
-
-  grid <- ccc_panel_grid(
-    n_panels = length(source_order),
-    ncols = ncols,
-    nrows = nrows,
-    context = "source-target dot plot"
-  )
-
+  mapping <- if (source_target) {
+    ggplot2::aes(x = target, y = interaction_plot, size = score, fill = plot_metric)
+  } else {
+    ggplot2::aes(x = sample, y = pair, size = score, fill = .data[[score_col]])
+  }
   fill_cols <- palette_colors(
     palette = value_palette,
     palcolor = value_palcolor,
@@ -2832,25 +2905,20 @@ ccc_source_target_dot_plot <- function(
   } else {
     "Communication score"
   }
-  p <- ggplot2::ggplot(
-    plot_df,
-    ggplot2::aes(
-      x = target,
-      y = interaction_plot,
-      size = score,
-      fill = plot_metric
-    )
-  ) +
+  p <- ggplot2::ggplot(plot_df, mapping) +
     ggplot2::geom_point(shape = 21, color = "grey20", stroke = 0.25, alpha = 0.9) +
     ggplot2::facet_wrap(
-      ~source,
+      if (source_target) ~source else ~interaction_label,
       ncol = grid$ncols,
       nrow = grid$nrows,
-      scales = "free_x"
+      scales = if (source_target) "free_x" else "free_y"
     ) +
     ggplot2::scale_fill_gradientn(colours = fill_cols, name = fill_label) +
     ggplot2::scale_size_area(name = "Communication score", max_size = 8) +
-    ggplot2::labs(x = "Target", y = "Interactions (Ligand -> Receptor)")
+    ggplot2::labs(
+      x = if (source_target) "Target" else sample_col,
+      y = if (source_target) "Interactions (Ligand -> Receptor)" else "Sender -> receiver"
+    )
 
   finalize_cc_plot(
     p,
@@ -2973,125 +3041,5 @@ ccc_source_target_tile_plot <- function(
     ggplot2::theme(
       axis.text.x = ggplot2::element_text(angle = 90, hjust = 1, vjust = 0.5),
       panel.grid = ggplot2::element_blank()
-    )
-}
-
-ccc_sample_dot_plot <- function(
-  df,
-  sample_key = "sample",
-  top_n = 20,
-  top_n_pairs = NULL,
-  color.by = "score",
-  interaction.use = NULL,
-  pairLR.use = NULL,
-  ncols = NULL,
-  nrows = NULL,
-  title = NULL,
-  subtitle = NULL,
-  value_palette = "Reds",
-  value_palcolor = NULL,
-  legend.position = "right",
-  legend.direction = "vertical",
-  font.size = 10,
-  theme_use = "theme_scop",
-  theme_args = list()
-) {
-  if (is.null(df) || nrow(df) == 0L) {
-    log_message("No communication records are available for sample dot plotting", message_type = "error")
-  }
-  sample_col <- if (sample_key %in% colnames(df)) {
-    sample_key
-  } else if ("dataset" %in% colnames(df)) {
-    "dataset"
-  } else {
-    NULL
-  }
-  if (is.null(sample_col)) {
-    log_message(
-      "{.arg sample_key} was not found in the CCC result table",
-      message_type = "error"
-    )
-  }
-  df <- prepare_plot_df(df)
-  score_col <- if (identical(color.by, "pvalue")) {
-    c("neglog10_pvalue", "specificity")[
-      c("neglog10_pvalue", "specificity") %in% colnames(df)
-    ][1]
-  } else {
-    "score"
-  }
-  score_col <- score_col %||% "score"
-  score_by_interaction <- sort(
-    tapply(df[[score_col]], df$interaction_label, sum, na.rm = TRUE),
-    decreasing = TRUE
-  )
-  if (!is.null(interaction.use) || !is.null(pairLR.use) || is.null(top_n) || !is.numeric(top_n) || top_n <= 0L) {
-    keep_interactions <- names(score_by_interaction)
-  } else {
-    keep_interactions <- names(score_by_interaction)[seq_len(min(top_n, length(score_by_interaction)))]
-  }
-  df <- df[df$interaction_label %in% keep_interactions, , drop = FALSE]
-  df$sample <- as.character(df[[sample_col]])
-  df$pair <- paste(df$sender, df$receiver, sep = " -> ")
-  if (!is.null(top_n_pairs) && is.numeric(top_n_pairs) && top_n_pairs > 0L) {
-    df$.ccc_metric <- suppressWarnings(as.numeric(df[[score_col]]))
-    df$.ccc_metric[!is.finite(df$.ccc_metric)] <- 0
-    df <- do.call(rbind, lapply(split(df, df$interaction_label), function(df_i) {
-      pair_scores <- sort(tapply(df_i$.ccc_metric, df_i$pair, sum, na.rm = TRUE), decreasing = TRUE)
-      keep_pairs <- names(pair_scores)[seq_len(min(top_n_pairs, length(pair_scores)))]
-      df_i[df_i$pair %in% keep_pairs, , drop = FALSE]
-    }))
-    rownames(df) <- NULL
-    df$.ccc_metric <- NULL
-  }
-  if (nrow(df) == 0L) {
-    log_message("No sample dotplot records remain after filtering", message_type = "error")
-  }
-  df$interaction_label <- factor(df$interaction_label, levels = keep_interactions)
-  grid <- ccc_panel_grid(
-    n_panels = length(keep_interactions),
-    ncols = ncols %||% min(3L, length(keep_interactions)),
-    nrows = nrows,
-    context = "sample dot plot"
-  )
-  fill_cols <- palette_colors(
-    palette = value_palette,
-    palcolor = value_palcolor,
-    n = 9
-  )
-  fill_label <- if (identical(color.by, "pvalue")) {
-    "-log10(p-value)"
-  } else {
-    "Communication score"
-  }
-  p <- ggplot2::ggplot(
-    df,
-    ggplot2::aes(x = sample, y = pair, size = score, fill = .data[[score_col]])
-  ) +
-    ggplot2::geom_point(shape = 21, color = "grey20", stroke = 0.25, alpha = 0.9) +
-    ggplot2::facet_wrap(
-      ~interaction_label,
-      ncol = grid$ncols,
-      nrow = grid$nrows,
-      scales = "free_y"
-    ) +
-    ggplot2::scale_fill_gradientn(colours = fill_cols, name = fill_label) +
-    ggplot2::scale_size_area(name = "Communication score", max_size = 8) +
-    ggplot2::labs(x = sample_col, y = "Sender -> receiver")
-
-  finalize_cc_plot(
-    p,
-    title = title,
-    subtitle = subtitle,
-    legend.position = legend.position,
-    legend.direction = legend.direction,
-    theme_use = theme_use,
-    theme_args = theme_args,
-    font.size = font.size
-  ) +
-    ggplot2::theme(
-      axis.text.x = ggplot2::element_text(angle = 90, hjust = 1, vjust = 0.5),
-      panel.grid.major = ggplot2::element_line(colour = "grey90", linewidth = 0.3),
-      panel.grid.minor = ggplot2::element_blank()
     )
 }

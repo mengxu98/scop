@@ -68,21 +68,13 @@ CellCorHeatmap(
   query_annotation = NULL,
   query_annotation_palette = "Chinese",
   query_annotation_palcolor = NULL,
-  query_cell_annotation_params = if (flip) {
-     list(height = grid::unit(10, "mm"))
- }
-    else {
-     list(width = grid::unit(10, "mm"))
- },
+  query_cell_annotation_params = if (flip) list(height = grid::unit(10, "mm")) else
+    list(width = grid::unit(10, "mm")),
   ref_annotation = NULL,
   ref_annotation_palette = "Chinese",
   ref_annotation_palcolor = NULL,
-  ref_cell_annotation_params = if (flip) {
-     list(width = grid::unit(10, "mm"))
- }
-    else {
-     list(height = grid::unit(10, "mm"))
- },
+  ref_cell_annotation_params = if (flip) list(width = grid::unit(10, "mm")) else
+    list(height = grid::unit(10, "mm")),
   use_raster = NULL,
   raster_device = "png",
   raster_by_magick = FALSE,

@@ -387,7 +387,7 @@ RunCell2location <- function(
 #' @param prefix Metadata prefix used by [RunCell2location()].
 #' @param tool_name Name of the `srt@tools` result entry.
 #' @param overlay_image Whether to draw the selected spatial image.
-#' @param ... Additional arguments passed to [SpatialSpotPlot()].
+#' @param ... Arguments passed to other functions.
 #' @param combine Whether to combine matrix or dominant point maps. If `FALSE`, return a
 #' named list of plots.
 #' @param nrow,ncol,byrow Point-map layout controls.
@@ -419,9 +419,9 @@ Cell2locationPlot <- function(
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE,
-  ...,
   image.scale = c("lowres", "hires"),
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {

@@ -7,8 +7,7 @@
 #' @param object A Seurat object containing the results of RunMetabolism.
 #' @param group.by Grouping variable used in RunMetabolism.
 #' @param assay_name Assay or tools slot containing metabolism results.
-#' @param ... Additional arguments passed to [GSVAPlot].
-#'
+#' @param ... Arguments passed to other functions.
 #' @seealso
 #' [RunMetabolism], [EnrichmentPlot]
 #'
@@ -129,9 +128,9 @@ MetabolismPlot <- function(
   res = NULL,
   group.by = NULL,
   assay_name = "METABOLISM",
-  ...,
   verbose = TRUE,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!is.null(res)) {

@@ -88,10 +88,10 @@ FeatureStatPlot(
   byrow = TRUE,
   force = FALSE,
   seed = 11,
-  ...,
   x_text_angle = 45,
   verbose = TRUE,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -193,14 +193,14 @@ returns a list of ggplots.}
 
 \item{seed}{Random seed.}
 
-\item{...}{Additional arguments passed to the plotting helpers.}
-
 \item{x_text_angle}{Rotation of x-axis labels.}
 
 \item{verbose}{Whether to print messages.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \description{
 Feature statistical plots

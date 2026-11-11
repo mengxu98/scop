@@ -2,32 +2,26 @@
 % Please edit documentation in R/SpatialFrameworkConvert.R
 \name{srt_to_giotto}
 \alias{srt_to_giotto}
-\title{Convert Seurat to a native Giotto object}
+\title{Convert Seurat to a Giotto object}
 \usage{
-srt_to_giotto(object, image = NULL, ..., srt = NULL)
+srt_to_giotto(object, image = NULL, srt = NULL, ...)
 }
 \arguments{
 \item{object}{A `Seurat` object.}
 
 \item{image}{Seurat image name. Multi-image objects require an explicit name.}
 
-\item{...}{Additional arguments passed to the Giotto converter.}
-
 \item{srt}{Deprecated alias for `object`; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
-A native Giotto object.
+A Giotto object.
 }
 \description{
-Convert one Seurat spatial image into a native Giotto object without running
-a Giotto workflow or changing the input object.
-}
-\details{
-Converters live in GiottoClass. If that package is already installed from
-any source, the bridge reuses it and does not reinstall `drieslab/Giotto`.
-A GitHub reinstall is requested only when GiottoClass is missing. Conversion
-does not initialize Giotto's optional Python/conda environment.
+Convert one Seurat spatial image into a Giotto object without running
+a Giotto workflow or changing the input object. Requires GiottoClass.
 }
 \examples{
 \dontrun{
@@ -37,8 +31,6 @@ spatial <- Seurat::NormalizeData(
   assay = "Spatial",
   verbose = FALSE
 )
-giotto <- srt_to_giotto(spatial, image = "slice1")
-print(giotto)
+srt_to_giotto(spatial, image = "slice1")
 }
-
 }

@@ -15,19 +15,25 @@ make_wnn_paired_object <- function() {
 
 test_that("WNN selects RNA independently of derived default assays", {
   object <- make_wnn_paired_object()
-  object[["chromvar"]] <- SeuratObject::CreateAssayObject(data = matrix(1, 3, 80,
+  activity <- SeuratObject::CreateAssayObject(data = matrix(1, 3, 80,
     dimnames = list(paste0("motif", 1:3), colnames(object))
   ))
+  activity@misc$calcN <- FALSE
+  object[["chromvar"]] <- activity
   SeuratObject::DefaultAssay(object) <- "chromvar"
   expect_identical(wnn_assays(object), list(rna = "RNA", atac = "peaks"))
   expect_error(wnn_assays(object, c("chromvar", "peaks")), "derived")
-  object[["scores"]] <- object[["RNA"]]
+  scores <- object[["RNA"]]
+  SeuratObject::Key(scores) <- "scores_"
+  object[["scores"]] <- scores
   SeuratObject::Misc(object[["scores"]], "scop_gene_activity") <- list(source_assay = "peaks")
   expect_error(wnn_assays(object, c("scores", "peaks")), "derived")
   for (selection in list(character(), c("RNA", "missing"), c("RNA", "RNA"), c("RNA", NA_character_))) {
     expect_error(wnn_assays(object, selection), "[Aa]ssay for WNN")
   }
-  object[["measured"]] <- object[["RNA"]]
+  measured <- object[["RNA"]]
+  SeuratObject::Key(measured) <- "measured_"
+  object[["measured"]] <- measured
   expect_identical(wnn_assays(object, c("measured", "peaks")), list(rna = "measured", atac = "peaks"))
   expect_error(wnn_assays(object, c("RNA", "measured")), "requires one RNA")
   object[["RNA"]] <- NULL
@@ -41,9 +47,11 @@ test_that("WNN append and dispatch retain reusable modality results", {
     linear_reduction_dims = 10, linear_reduction_dims_use = 2:8,
     nHVF = 100, neighbor_k = 10, nonlinear_reduction_dims = 2, verbose = FALSE
   )
-  object[["chromvar"]] <- SeuratObject::CreateAssayObject(data = matrix(1, 2, ncol(object),
+  activity <- SeuratObject::CreateAssayObject(data = matrix(1, 2, ncol(object),
     dimnames = list(c("m1", "m2"), colnames(object))
   ))
+  activity@misc$calcN <- FALSE
+  object[["chromvar"]] <- activity
   SeuratObject::DefaultAssay(object) <- "chromvar"
   args$srt_merge <- object
   withr::local_seed(109)
@@ -75,7 +83,6 @@ test_that("WNN append and dispatch retain reusable modality results", {
       SeuratObject::LayerData(full[["peaks"]], layer = "data")
     )
   }
-  # A supplied batch must be acknowledged before any analysis or input error.
   expect_warning(
     expect_error(WNN_integrate(batch = "sample", verbose = FALSE), "must be provided"),
     "does not perform batch correction"
@@ -84,7 +91,10 @@ test_that("WNN append and dispatch retain reusable modality results", {
 
 test_that("WNN requires the same measured cells in both modalities", {
   object <- make_wnn_paired_object()
-  object[["peaks"]] <- subset(object[["peaks"]], cells = colnames(object)[-1])
+  expect_warning(
+    object[["peaks"]] <- subset(object[["peaks"]], cells = colnames(object)[-1]),
+    class = "dimWarning"
+  )
   expect_error(WNN_integrate(srt_merge = object, verbose = FALSE), "same.*cells|paired.*cells")
 })
 
@@ -118,10 +128,12 @@ test_that("WNN normalizes RNA and chromatin independently", {
     SeuratObject::LayerData(native, layer = "data")
   )
   expect_identical(SeuratObject::LayerData(result[["peaks"]], layer = "counts"), before)
-  dispatched <- RunIntegration(srt_merge = object, batch = NULL,
+  dispatched <- RunIntegration(
+    srt_merge = object, batch = NULL,
     integration_methods = "WNN", assay = c("RNA", "peaks"), normalization_method = "SCT",
     linear_reduction_dims = 6, linear_reduction_dims_use = 2:5,
-    nHVF = 80, neighbor_k = 10, nonlinear_reduction = character(), verbose = FALSE)
+    nHVF = 80, neighbor_k = 10, nonlinear_reduction = character(), verbose = FALSE
+  )
   expect_true(all(dispatched@misc$WNN_reduction_list %in% SeuratObject::Reductions(dispatched)))
   expect_equal(SeuratObject::Embeddings(dispatched[["RNApca"]]), SeuratObject::Embeddings(result[["RNApca"]]))
   expect_equal(dispatched$RNA.weight, result$RNA.weight)
@@ -140,7 +152,7 @@ test_that("WNN clustering failures cannot return stale cluster labels", {
   object <- make_wnn_paired_object()
   object$WNNclusters <- "previous"
   original <- FindClusters
-  testthat::local_mocked_bindings(FindClusters = function(object, ..., graph.name) {
+  testthat::local_mocked_bindings(FindClusters = function(object, graph.name, ...) {
     if (identical(graph.name, "WNNSNN")) stop("WNN clustering failed")
     original(object, ..., graph.name = graph.name)
   }, .package = "scop")

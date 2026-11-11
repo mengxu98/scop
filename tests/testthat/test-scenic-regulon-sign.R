@@ -171,23 +171,6 @@ test_that("C++ SCENIC threshold modules use global pySCENIC weight quantiles", {
   expect_length(negative_threshold_modules, 0)
 })
 
-test_that("C++ SCENIC regulon fallback uses pySCENIC-style positive names", {
-  adjacency <- data.frame(
-    TF = "TF1",
-    target = c("Gene1", "Gene2"),
-    importance = c(0.9, 0.8),
-    stringsAsFactors = FALSE
-  )
-
-  regulons <- getFromNamespace("build_regulons", "scop")(
-    adjacency = adjacency,
-    max_targets = 2,
-    min_regulon_size = 2
-  )
-
-  expect_equal(names(regulons), "TF1(+)")
-})
-
 test_that("C++ SCENIC regulon table stores one target set per regulon", {
   regulon_list <- list(
     "TF1(+)" = c("Gene1", "Gene2", "Gene3"),

@@ -25,8 +25,8 @@ RunSpatialNeighborhood(
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
   backend = c("cpp", "r"),
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -55,7 +55,7 @@ all spots are treated as one sample.}
 \item{split.by}{Optional metadata column identifying conditions for
 differential neighborhood statistics.}
 
-\item{subject.by}{Optional metadata column identifying subjects for backends
+\item{subject.by}{Optional metadata column identifying subjects for methods
 that support paired or repeated designs.}
 
 \item{radius}{Optional spatial radius used for package neighborhood
@@ -65,7 +65,7 @@ summaries, expressed in the selected coordinate units.}
 neighborhood summaries. This is a unitless count. When both \code{radius} and
 \code{k} are \code{NULL}, \code{k = 6} is used.}
 
-\item{features}{Optional features to extract into the backend input table.}
+\item{features}{Optional features to extract into the input table.}
 
 \item{from, to}{Optional cell or spot label filters.}
 
@@ -84,10 +84,10 @@ explicit compatibility option.}
 \code{"cpp"} avoids repeated data-frame aggregation; \code{"r"} retains the reference
 implementation. This does not alter the external \code{"spicyR"} method.}
 
-\item{...}{Additional arguments passed to the selected backend.}
-
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A \code{Seurat} object with results stored in \code{srt@tools[[tool_name]]}.

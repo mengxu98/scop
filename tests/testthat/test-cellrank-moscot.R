@@ -1,5 +1,5 @@
 make_moscot_test_srt <- function() {
-  counts <- Matrix::Diagonal(4, x = rep(1, 4))
+  counts <- methods::as(Matrix::Diagonal(4, x = rep(1, 4)), "generalMatrix")
   rownames(counts) <- paste0("g", 1:4)
   colnames(counts) <- paste0("c", 1:4)
   srt <- Seurat::CreateSeuratObject(counts = counts)
@@ -7,6 +7,36 @@ make_moscot_test_srt <- function() {
   srt$cluster <- factor(c("a", "a", "b", "b"))
   srt
 }
+
+test_that("CellRank random walks preserve the caller RNG on success and error", {
+  withr::local_preserve_seed()
+  srt <- make_moscot_test_srt()
+  srt[["umap"]] <- SeuratObject::CreateDimReducObject(
+    embeddings = matrix(seq_len(8), ncol = 2, dimnames = list(colnames(srt), c("UMAP_1", "UMAP_2"))),
+    key = "UMAP_", assay = "RNA"
+  )
+  srt@tools$CellRank <- list(transition_matrix = matrix(
+    c(0.5, 0.5, 0, 0, 0, 0.5, 0.5, 0, 0, 0, 0.5, 0.5, 0.5, 0, 0, 0.5),
+    nrow = 4, byrow = TRUE, dimnames = list(colnames(srt), colnames(srt))
+  ))
+  for (empty in c(FALSE, TRUE)) {
+    set.seed(731)
+    if (empty) rm(".Random.seed", envir = .GlobalEnv)
+    before <- if (empty) NULL else .Random.seed
+    draw <- function(...) CellRankPlot(
+      srt, plot_type = "random_walks", reduction = "umap", group.by = "cluster",
+      n_sims = 3L, max_iter = 4L, seed = 19L, ...
+    )
+    first <- draw()
+    expect_identical(exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE), !empty)
+    if (!empty) expect_true(identical(.Random.seed, before))
+    second <- draw()
+    expect_identical(tail(first$layers, 1)[[1]]$data, tail(second$layers, 1)[[1]]$data)
+    expect_error(draw(start_cells = "missing"), "does not match")
+    expect_identical(exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE), !empty)
+    if (!empty) expect_true(identical(.Random.seed, before))
+  }
+})
 
 test_that("moscot is an optional trajectory environment with a Python-version profile", {
   legacy <- env_requirements(version = "3.10-1", modules = "moscot")
@@ -99,7 +129,6 @@ test_that("moscot refuses the approximate C++ route and backward transitions", {
       group.by = "cluster",
       kernel_type = "moscot",
       backend = "cpp",
-      allow_approximate = TRUE,
       show_plot = FALSE,
       verbose = FALSE
     ),

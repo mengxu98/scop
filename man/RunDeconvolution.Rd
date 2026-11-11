@@ -25,8 +25,7 @@ RunDeconvolution(object, ...)
 \arguments{
 \item{object}{A \code{SummarizedExperiment} object containing bulk-like counts.}
 
-\item{...}{Additional parameters forwarded to the internal deconvolution
-backend.}
+\item{...}{Arguments passed to other functions.}
 
 \item{reference}{A \code{Seurat} reference object used to build cell-type
 profiles. Not required for \code{"CIBERSORT"}.}
@@ -38,11 +37,11 @@ profiles. Not required for \code{"CIBERSORT"}.}
 types.}
 
 \item{sample.by}{Metadata column in \code{reference} defining biological
-sample / donor IDs. Used by the \code{r} backends of \code{MuSiC} and \code{BisqueRNA}. If
+sample / donor IDs. Used by the \code{r} implementation of \code{MuSiC} and \code{BisqueRNA}. If
 \code{NULL}, SCOP will try to infer a suitable column automatically.}
 
 \item{cellstate.by}{Metadata column in \code{reference} defining cell states for
-the \code{r} backend of \code{BayesPrism}. If \code{NULL}, \code{group.by} is reused.}
+the \code{r} implementation of \code{BayesPrism}. If \code{NULL}, \code{group.by} is reused.}
 
 \item{bulk_assay}{Assay name in \code{object} used as the bulk counts matrix.}
 
@@ -85,10 +84,11 @@ DeconvolutionPlot(
 DeconvolutionPlot(islet_bulk, plot_type = "box")
 
 \dontrun{
-# MuSiC needs the optional MuSiC backend pre-installed.
+# MuSiC needs the optional MuSiC package pre-installed.
 data(panc8_sub)
 islet_bulk <- RunDeconvolution(
-  islet_bulk, reference = panc8_sub,
+  islet_bulk,
+  reference = panc8_sub,
   method = "MuSiC", group.by = "celltype", verbose = FALSE
 )
 DeconvolutionPlot(islet_bulk, plot_type = "bar")

@@ -25,21 +25,21 @@
 #' @param subsample Fraction of cells sampled for each boosting round.
 #' @param early_stop_window_length Out-of-bag improvement window used for
 #' GRNBoost2 early stopping.
-#' @param exclude_self Whether native GRNBoost2-like inference excludes a target
+#' @param exclude_self Whether GRNBoost2-like inference excludes a target
 #' gene from its own regulator feature set.
-#' @param importance_norm_power Power used to normalize native GRNBoost2-like
+#' @param importance_norm_power Power used to normalize GRNBoost2-like
 #' edge importance by the total importance for each target. Set to `0` to
 #' disable normalization.
-#' @param correlation_fill Whether native GRNBoost2-like inference should fill
+#' @param correlation_fill Whether GRNBoost2-like inference should fill
 #' missing TF-target candidates with expression-correlation support before
 #' applying `max_edges_per_target`.
 #' @param correlation_weight Weight of the correlation-fill score relative to
-#' native boosting importance.
-#' @param boost_weight Weight of the native boosting score used when
+#' boosting importance.
+#' @param boost_weight Weight of the boosting score used when
 #' correlation fill is enabled.
 #' @param covariance_weight Weight of the covariance score used when
 #' correlation fill is enabled.
-#' @param correlation_method Correlation method used for native GRNBoost2-like
+#' @param correlation_method Correlation method used for GRNBoost2-like
 #' candidate filling.
 #' @param output_file Optional path where the adjacency table is written.
 #' @param work_dir Working directory used by Python backends.
@@ -47,12 +47,11 @@
 #' @param envname Python environment used by Python backends. If `NULL`,
 #' `backend = "python"` uses the isolated `"scenic_env"` environment.
 #' @param conda Conda-compatible executable used by Python backends.
-#' @param cores Number of workers used by native/Python GRNBoost2.
+#' @param cores Number of workers used by GRNBoost2.
 #' @param seed Random seed passed to supported backends.
 #' @param force Whether to rebuild existing `output_file`.
 #' @param verbose Whether to print progress messages.
-#' @param ... Additional backend-specific arguments.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A data frame with columns `TF`, `target`, and `importance`.
 #' @export
 RunGRNBoost2 <- function(object, ...) {

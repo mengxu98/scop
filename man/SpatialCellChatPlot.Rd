@@ -50,7 +50,7 @@ will be removed in scop 1.0.0.}
 A `ggplot` object.
 }
 \description{
-Plot normalized SpatialCellChat results without rerunning the backend. The
+Plot normalized SpatialCellChat results without rerunning the model. The
 network view is a group-aggregated network over group centroids, not a
 materialized individual cell-by-cell edge table.
 }

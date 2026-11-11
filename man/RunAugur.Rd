@@ -28,8 +28,8 @@ RunAugur(
   tool_name = "Augur",
   add_meta = TRUE,
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -49,7 +49,7 @@ default assay is used.}
 \item{backend}{Backend used to run Augur. \code{"cpp"} uses a parity-preserving
 \code{scop} R/C++ backend that keeps Augur's feature selection, sampling, random
 forest, and metric semantics without requiring the Augur package. \code{"r"}
-calls the native \code{Augur::calculate_auc} implementation.}
+calls \code{Augur::calculate_auc}.}
 
 \item{features}{Features used by Augur. If \code{NULL}, all features in \code{assay}
 are used.}
@@ -68,13 +68,13 @@ columns back to each cell by matching \code{celltype.by}.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{Additional arguments passed to \code{Augur::calculate_auc}.}
-
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
-A \code{Seurat} object with native Augur results stored in
+A \code{Seurat} object with Augur results stored in
 \code{srt@tools[[tool_name]]}. When \code{add_meta = TRUE}, cell-level metadata columns
 \code{prefix_auc} and \code{prefix_rank} are added for use with existing \code{scop}
 plotting functions such as \code{\link[=FeatureDimPlot]{FeatureDimPlot()}}.

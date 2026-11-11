@@ -54,7 +54,7 @@ RunTriMap(object, ...)
 \arguments{
 \item{object}{A \code{Seurat} object, matrix-like object, \code{Neighbor}, or \code{Graph}.}
 
-\item{...}{Passed to the trimap.TRIMAP function.}
+\item{...}{Arguments passed to other functions.}
 
 \item{reduction}{Linear reduction used as input.}
 

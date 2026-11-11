@@ -3,11 +3,10 @@
 #' @description
 #' Visualize TF activity stored by [RunDorothea()]. Comparison plots
 #' (`"bar"`, `"lollipop"`, `"volcano"`) test two groups and show the mean
-#' activity difference `group1 - group2`. `"heatmap"` uses [GroupHeatmap()]
-#' to summarize activity across all groups in `group.by`. `"dim"` compares TF
-#' activity with TF expression on embeddings, `"stat"` draws per-group
-#' activity distributions with [FeatureStatPlot()], and `"targets"` shows a
-#' regulon-target volcano for one TF.
+#' activity difference `group1 - group2`. `"dim"` compares TF activity with
+#' TF expression on embeddings, and `"targets"` shows a regulon-target
+#' volcano for one TF. Use [GroupHeatmap], [FeatureStatPlot], and
+#' [FeatureDimPlot] directly for ordinary activity visualizations.
 #'
 #' @md
 #' @inheritParams thisutils::log_message
@@ -19,19 +18,16 @@
 #' @param group.by Metadata column used to define groups.
 #' @param group1,group2 Two group labels to compare. Required for `"bar"`,
 #' `"lollipop"`, `"volcano"`, and `"targets"`. Positive logFC means higher
-#' TF activity (or target expression) in `group1`. Ignored for `"heatmap"`,
-#' `"dim"`, and `"stat"`.
+#' TF activity (or target expression) in `group1`. Ignored for `"dim"`.
 #' @param plot_type Plot type. `"bar"` and `"lollipop"` show signed activity
 #' differences, `"volcano"` shows TF-level significance versus logFC,
-#' `"heatmap"` draws a [GroupHeatmap()] of TF activity, `"dim"` compares
-#' activity and expression on embeddings, `"stat"` draws activity
-#' distributions, and `"targets"` shows a regulon-target volcano.
+#' `"dim"` compares activity and expression on embeddings, and `"targets"`
+#' shows a regulon-target volcano.
 #' @param tool_name Name of the `srt@tools` entry created by [RunDorothea()].
-#' @param assay_name Assay used for `"heatmap"`, `"dim"`, and `"stat"`. If
+#' @param assay_name Activity assay used for `"dim"`. If
 #' `NULL`, the assay stored by [RunDorothea()] is used, or `"dorothea"`.
 #' @param features TFs to plot. If `NULL`, `"bar"`/`"lollipop"` use the top
-#' `top_n` TFs, `"volcano"` shows all tested TFs, heatmaps and `"stat"` use
-#' the `top_n` most variable TFs, `"dim"` uses TFs present in both activity
+#' `top_n` TFs, `"volcano"` shows all tested TFs, `"dim"` uses TFs present in both activity
 #' and expression assays, and `"targets"` uses the TF with the largest
 #' absolute activity difference.
 #' @param top_n Number of TFs to show when `features = NULL`. Ignored for
@@ -49,23 +45,12 @@
 #' in `"volcano"` plots and non-supporting targets in `"targets"` plots.
 #' @param palette,palcolor Palette passed to `palette_colors()` for comparison
 #' plots.
-#' @param heatmap_palette,heatmap_palcolor Palette passed to [GroupHeatmap()]
-#' when `plot_type = "heatmap"`.
-#' @param group_palette,group_palcolor Group annotation palette passed to
-#' [GroupHeatmap()] and [FeatureStatPlot()].
-#' @param exp_method Scaling method passed to [GroupHeatmap()] for
-#' `plot_type = "heatmap"`.
-#' @param heatmap_args Additional arguments passed to [GroupHeatmap()].
 #' @param dim_args Additional arguments passed to [FeatureDimPlot()] when
 #' `plot_type = "dim"`.
-#' @param stat_args Additional arguments passed to [FeatureStatPlot()] when
-#' `plot_type = "stat"`.
 #' @param compare_expression Whether `"dim"` also plots TF gene expression
 #' beside TF activity.
 #' @param expression_assay,expression_layer Assay and layer used for TF
 #' expression in `"dim"` and for target genes in `"targets"`.
-#' @param stat_plot_type Distribution plot type passed to [FeatureStatPlot()]
-#' when `plot_type = "stat"`.
 #' @param nlabel Number of significant TFs labeled in `"volcano"` plots, or
 #' significant target genes labeled in `"targets"` plots.
 #' @param reduction Reduction used by `"dim"` plots. If `NULL`, the default
@@ -81,10 +66,8 @@
 #' diverging comparison scales. Kept for backward compatibility.
 #' @param return_data Whether to return a list with the plot and statistics.
 #'
-#' @return For `"bar"`, `"lollipop"`, `"volcano"`, `"dim"`, `"stat"`, and
-#' `"targets"`, a `ggplot` or patchwork object, or a list with `plot` and
-#' `data` when `return_data = TRUE`. For `"heatmap"`, the list returned by
-#' [GroupHeatmap()].
+#' @return A `ggplot` or patchwork object, or a list with `plot` and
+#' `data` when `return_data = TRUE`.
 #'
 #' @seealso [RunDorothea], [GroupHeatmap], [FeatureDimPlot], [FeatureStatPlot]
 #'
@@ -127,13 +110,16 @@
 #'   plot_type = "volcano"
 #' )
 #'
-#' ht <- DorotheaPlot(
+#' tfs <- head(rownames(pancreas_sub[["dorothea"]]), 20)
+#' GroupHeatmap(
 #'   pancreas_sub,
 #'   group.by = "CellType",
-#'   plot_type = "heatmap",
-#'   top_n = 20
-#' )
-#' ht$plot
+#'   features = tfs,
+#'   assay = "dorothea",
+#'   layer = "data",
+#'   exp_method = "raw",
+#'   lib_normalize = FALSE
+#' )$plot
 #'
 #' DorotheaPlot(
 #'   pancreas_sub,
@@ -142,12 +128,19 @@
 #'   plot_type = "dim"
 #' )
 #'
-#' DorotheaPlot(
+#' FeatureStatPlot(
 #'   pancreas_sub,
 #'   group.by = "CellType",
+#'   stat.by = c("Sox9", "Neurod1", "Pdx1"),
+#'   assay = "dorothea",
+#'   layer = "data",
+#'   plot_type = "violin"
+#' )
+#' FeatureDimPlot(
+#'   pancreas_sub,
 #'   features = c("Sox9", "Neurod1", "Pdx1"),
-#'   plot_type = "stat",
-#'   stat_plot_type = "violin"
+#'   assay = "dorothea",
+#'   layer = "data"
 #' )
 #'
 #' DorotheaPlot(
@@ -163,7 +156,7 @@ DorotheaPlot <- function(
   group.by,
   group1 = NULL,
   group2 = NULL,
-  plot_type = c("bar", "lollipop", "heatmap", "volcano", "dim", "stat", "targets"),
+  plot_type = c("bar", "lollipop", "volcano", "dim", "targets"),
   tool_name = "Dorothea",
   assay_name = NULL,
   features = NULL,
@@ -177,18 +170,10 @@ DorotheaPlot <- function(
   padjustCutoff = 0.05,
   palette = "RdBu",
   palcolor = NULL,
-  heatmap_palette = "RdBu",
-  heatmap_palcolor = NULL,
-  group_palette = "Chinese",
-  group_palcolor = NULL,
-  exp_method = c("zscore", "raw"),
-  heatmap_args = list(),
   dim_args = list(),
-  stat_args = list(),
   compare_expression = TRUE,
   expression_assay = NULL,
   expression_layer = "data",
-  stat_plot_type = c("violin", "box", "dot", "bar", "col"),
   nlabel = 10,
   reduction = NULL,
   bar_width = 0.72,
@@ -243,8 +228,6 @@ DorotheaPlot <- function(
   color.by <- match.arg(color.by)
   rank.by <- match.arg(rank.by)
   sort.by <- match.arg(sort.by)
-  exp_method <- match.arg(exp_method)
-  stat_plot_type <- match.arg(stat_plot_type)
   if (!is.null(top_n)) {
     if (length(top_n) != 1L || is.na(top_n) || top_n < 1) {
       log_message(
@@ -260,21 +243,9 @@ DorotheaPlot <- function(
       message_type = "error"
     )
   }
-  if (!is.list(heatmap_args)) {
-    log_message(
-      "{.arg heatmap_args} must be a list",
-      message_type = "error"
-    )
-  }
   if (!is.list(dim_args)) {
     log_message(
       "{.arg dim_args} must be a list",
-      message_type = "error"
-    )
-  }
-  if (!is.list(stat_args)) {
-    log_message(
-      "{.arg stat_args} must be a list",
       message_type = "error"
     )
   }
@@ -301,32 +272,6 @@ DorotheaPlot <- function(
     "dorothea"
   expression_assay <- dorothea_expression_assay(srt, expression_assay)
 
-  if (identical(plot_type, "heatmap")) {
-    ht <- dorothea_plot_heatmap(
-      srt = srt,
-      scores = scores,
-      group.by = group.by,
-      assay_name = assay_name,
-      features = features,
-      top_n = top_n,
-      exp_method = exp_method,
-      heatmap_palette = heatmap_palette,
-      heatmap_palcolor = heatmap_palcolor,
-      group_palette = group_palette,
-      group_palcolor = group_palcolor,
-      heatmap_args = heatmap_args,
-      title = title,
-      network_label = network_label,
-      verbose = verbose
-    )
-    if (isTRUE(return_data)) {
-      ht$data <- list(
-        features = ht$feature_metadata[["features"]] %||%
-          rownames(scores)
-      )
-    }
-    return(ht)
-  }
 
   if (identical(plot_type, "dim")) {
     out <- dorothea_plot_dim(
@@ -356,33 +301,6 @@ DorotheaPlot <- function(
     return(out$plot)
   }
 
-  if (identical(plot_type, "stat")) {
-    out <- dorothea_plot_stat(
-      srt = srt,
-      scores = scores,
-      group.by = group.by,
-      assay_name = assay_name,
-      features = features,
-      top_n = top_n,
-      stat_plot_type = stat_plot_type,
-      group_palette = group_palette,
-      group_palcolor = group_palcolor,
-      theme_use = theme_use,
-      theme_args = theme_args,
-      legend.position = legend.position,
-      legend.direction = legend.direction,
-      aspect.ratio = aspect.ratio,
-      title = title,
-      ylab = ylab,
-      stat_args = stat_args,
-      network_label = network_label,
-      verbose = verbose
-    )
-    if (isTRUE(return_data)) {
-      return(out)
-    }
-    return(out$plot)
-  }
 
   if (identical(plot_type, "targets")) {
     out <- dorothea_plot_targets(
@@ -931,69 +849,6 @@ dorothea_plot_volcano <- function(
   p
 }
 
-dorothea_plot_heatmap <- function(
-  srt,
-  scores,
-  group.by,
-  assay_name,
-  features,
-  top_n,
-  exp_method,
-  heatmap_palette,
-  heatmap_palcolor,
-  group_palette,
-  group_palcolor,
-  heatmap_args,
-  title,
-  verbose,
-  network_label = "DoRothEA"
-) {
-  features <- dorothea_resolve_features(
-    scores = scores,
-    features = features,
-    top_n = top_n,
-    verbose = verbose
-  )
-
-  if (!assay_name %in% SeuratObject::Assays(srt)) {
-    srt <- dorothea_attach_assay(
-      srt = srt,
-      scores = scores,
-      assay_name = assay_name
-    )
-  }
-
-  log_message(
-    "Draw {.val {network_label}} TF activity heatmap for {.val {length(features)}} TFs",
-    verbose = verbose
-  )
-  args <- list(
-    object = srt,
-    features = features,
-    group.by = group.by,
-    assay = assay_name,
-    layer = "data",
-    aggregate_fun = base::mean,
-    exp_method = exp_method,
-    exp_legend_title = if (identical(exp_method, "zscore")) {
-      "Activity z"
-    } else {
-      "Mean activity"
-    },
-    lib_normalize = FALSE,
-    show_row_names = TRUE,
-    show_column_names = TRUE,
-    cluster_rows = TRUE,
-    cluster_columns = FALSE,
-    column_title = title %||% paste(network_label, "TF activity"),
-    heatmap_palette = heatmap_palette,
-    heatmap_palcolor = heatmap_palcolor,
-    group_palette = group_palette,
-    group_palcolor = group_palcolor
-  )
-  args[names(heatmap_args)] <- heatmap_args
-  do.call(GroupHeatmap, args)
-}
 
 dorothea_resolve_features <- function(scores, features, top_n, verbose) {
   if (is.null(features)) {
@@ -1181,60 +1036,6 @@ dorothea_plot_dim <- function(
   list(plot = p, data = features)
 }
 
-dorothea_plot_stat <- function(
-  srt,
-  scores,
-  group.by,
-  assay_name,
-  features,
-  top_n,
-  stat_plot_type,
-  group_palette,
-  group_palcolor,
-  theme_use,
-  theme_args,
-  legend.position,
-  legend.direction,
-  aspect.ratio,
-  title,
-  ylab,
-  stat_args,
-  verbose,
-  network_label = "DoRothEA"
-) {
-  features <- dorothea_resolve_features(
-    scores = scores,
-    features = features,
-    top_n = top_n,
-    verbose = verbose
-  )
-  srt <- dorothea_ensure_assay(srt, scores, assay_name)
-  log_message(
-    "Draw {.val {network_label}} activity distributions for {.val {length(features)}} TFs",
-    verbose = verbose
-  )
-  args <- list(
-    object = srt,
-    stat.by = features,
-    group.by = group.by,
-    assay = assay_name,
-    layer = "data",
-    plot_type = stat_plot_type,
-    palette = group_palette,
-    palcolor = group_palcolor,
-    ylab = ylab %||% "TF activity",
-    title = title,
-    theme_use = theme_use,
-    theme_args = theme_args,
-    legend.position = legend.position,
-    legend.direction = legend.direction,
-    aspect.ratio = aspect.ratio
-  )
-  extra <- stat_args[intersect(names(stat_args), names(formals(FeatureStatPlot)))]
-  extra <- extra[setdiff(names(extra), c("srt", "stat.by", "assay", "layer"))]
-  args[names(extra)] <- extra
-  list(plot = do.call(FeatureStatPlot, args), data = features)
-}
 
 dorothea_plot_targets <- function(
   srt,

@@ -197,10 +197,11 @@ Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_
 
 \item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
 
-\item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork-package]{patchwork::patchwork}. \code{combine = FALSE}
+\item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE}
 returns a list of ggplots.}
 
-\item{seed}{Random seed.}
+\item{seed}{Random seed used for plot construction. The caller's RNG state
+is restored on return, including errors.}
 
 \item{verbose}{Whether to print messages.}
 
@@ -261,7 +262,7 @@ uncombined result is a named list of ggplots with these columns in plot data.
 Generates various types of plots for enrichment (over-representation) analysis.
 }
 \details{
-Rank plots require one database and adjusted P values in \code{[0, 1]}.
+Rank plots require one database and adjusted P values in \verb{[0, 1]}.
 They compare stored ORA results, not between-group differential significance.
 \code{split_by} and \code{color_by} do not change rank panels: each group has one panel
 and one color. Missing or nonfinite rank scores/adjusted P values are omitted
@@ -270,7 +271,9 @@ only for the point-size transform. Groups without retained terms have empty
 panels; if no term passes the existing enrichment filter, an error is raised.
 
 Annotated bars place term labels inside bars and hit genes underneath, with
-rounded database bands. Colors map one-to-one to \code{db} in the requested order;
+rounded database bands. Term text switches between black and white for the displayed
+fill. A thin contrasting outline keeps overflow text readable.
+Colors map one-to-one to \code{db} in the requested order;
 named \code{palcolor} values must cover all selected databases. Descriptions are
 truncated to at most \code{character_width} characters, with shorter limits for
 shorter bars. Actual text fit also depends on export dimensions and font size.

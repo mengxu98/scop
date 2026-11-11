@@ -336,8 +336,8 @@ CellStatPlot <- function(
   byrow = TRUE,
   force = FALSE,
   seed = 11,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   cells <- cells %||% colnames(srt@assays[[1]])

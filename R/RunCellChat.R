@@ -77,12 +77,12 @@ RunCellChat <- function(
   check_r("jinworks/CellChat", verbose = FALSE)
   identifyOverExpressedGenes <- get_namespace_fun("CellChat", "identifyOverExpressedGenes")
   identify_formals <- names(formals(identifyOverExpressedGenes))
-  uses_fast_backend <- isTRUE(do.fast) &&
+  uses_fast_path <- isTRUE(do.fast) &&
     ("..." %in% identify_formals || "do.fast" %in% identify_formals)
-  if (uses_fast_backend &&
-    !isTRUE(all(unlist(check_r("immunogenomics/presto", verbose = FALSE), use.names = FALSE)))) {
+  if (uses_fast_path &&
+    !isTRUE(check_r("immunogenomics/presto", verbose = FALSE)[["presto"]])) {
     log_message(
-      "The optional {.pkg presto} backend required by {.arg do.fast = TRUE} is unavailable",
+      "The optional {.pkg presto} package required by {.arg do.fast = TRUE} is unavailable",
       message_type = "error"
     )
   }
@@ -619,7 +619,7 @@ cellchat_database <- function(species) {
     )
   )
 
-  db <- get_namespace_fun("CellChat", data_name)
+  db <- tryCatch(getExportedValue("CellChat", data_name), error = function(e) NULL)
   if (!is.null(db)) {
     return(db)
   }

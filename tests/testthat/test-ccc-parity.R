@@ -420,7 +420,7 @@ test_that("RunCCC dispatches methods, forwards backend, and rebuilds unified CCC
     RunCellChat = mock_method("CellChat", 1),
     RunCellphoneDB = mock_method("CellphoneDB", 2),
     RunLIANA = mock_method("LIANA", 3),
-    subset_cc_table = function(object, ..., dataset = NULL) {
+    subset_cc_table = function(object, dataset = NULL, ...) {
       data.frame(
         source = "Sender",
         target = "Receiver",
@@ -1061,7 +1061,7 @@ test_that("CellChat CCC data honors condition over cached unified table", {
   )
 
   testthat::local_mocked_bindings(
-    subset_cc_table = function(object, ..., dataset = NULL) {
+    subset_cc_table = function(object, dataset = NULL, ...) {
       data.frame(
         source = object$label,
         target = paste0(object$label, "_target"),

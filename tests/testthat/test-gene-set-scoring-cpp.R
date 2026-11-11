@@ -1,12 +1,3 @@
-gene_set_scoring_keep_variable_rows <- function(expr) {
-  if (inherits(expr, "dgCMatrix")) {
-    keep <- sparse_row_has_variable_finite(expr)
-    return(expr[keep, , drop = FALSE])
-  }
-  expr_mat <- as_matrix(expr)
-  keep <- dense_row_has_variable_finite(expr_mat)
-  expr[keep, , drop = FALSE]
-}
 reference_ssgsea_scores <- function(expr, gene_sets, alpha = 0.25, normalize = FALSE) {
   n_genes <- nrow(expr)
   n_cells <- ncol(expr)
@@ -118,48 +109,6 @@ reference_plage_scores <- function(expr, gene_sets, min_size = 1L, max_size = .M
 
   scores
 }
-
-test_that("dense gene-set variable-row filtering matches the R reference", {
-  expr <- rbind(
-    variable = c(0, 2, NA_real_, Inf),
-    constant = c(3, 3, 3, 3),
-    one_finite = c(NA_real_, 1, NA_real_, Inf),
-    no_finite = c(NA_real_, NaN, Inf, -Inf)
-  )
-  legacy_keep <- apply(expr, 1L, function(x) {
-    x <- x[is.finite(x)]
-    length(x) > 1L && diff(range(x)) > 0
-  })
-
-  expect_identical(
-    gene_set_scoring_keep_variable_rows(expr),
-    expr[legacy_keep, , drop = FALSE]
-  )
-})
-
-test_that("sparse gene-set variable-row filtering matches stored-value semantics", {
-  expr <- methods::as(Matrix::Matrix(
-    rbind(
-      variable = c(0, 2, NA_real_, Inf),
-      constant = c(3, 3, 3, 3),
-      one_finite = c(NA_real_, 1, NA_real_, Inf),
-      no_finite = c(NA_real_, NaN, Inf, -Inf),
-      structural_zero = c(0, 4, 0, 0)
-    ),
-    sparse = TRUE
-  ), "dgCMatrix")
-  legacy_keep <- vapply(split(expr@x, expr@i + 1L), function(x) {
-    x <- x[is.finite(x)]
-    length(x) > 1L && diff(range(x)) > 0
-  }, logical(1))
-  expected_keep <- rep(FALSE, nrow(expr))
-  expected_keep[as.integer(names(legacy_keep))] <- legacy_keep
-
-  expect_identical(
-    gene_set_scoring_keep_variable_rows(expr),
-    expr[expected_keep, , drop = FALSE]
-  )
-})
 
 test_that("ssGSEA sparse ranking matches full ranking with negative values", {
   expr <- matrix(
@@ -529,7 +478,7 @@ test_that("RunGSVA selects the native Gaussian kernel through backend", {
     nrow = 50,
     dimnames = list(paste0("g", seq_len(50)), paste0("c", seq_len(30)))
   )
-  srt <- Seurat::CreateSeuratObject(counts = counts)
+  srt <- Seurat::CreateSeuratObject(counts = methods::as(counts, "dgCMatrix"))
   srt <- Seurat::NormalizeData(srt, verbose = FALSE)
 
   out <- RunGSVA(
@@ -562,10 +511,6 @@ test_that("OpenMP kernels honour n_threads and match across thread counts", {
   auc1 <- aucell_auc_sparse(mat, sets, 8L, TRUE, 1L, 1L, 0L, 1L)
   auc2 <- aucell_auc_sparse(mat, sets, 8L, TRUE, 1L, 1L, 0L, 2L)
   expect_equal(auc1, auc2, tolerance = 1e-12)
-
-  poisson1 <- gsva_poisson_dense(mat, sets, TRUE, FALSE, 1, 0L, 1L)
-  poisson2 <- gsva_poisson_dense(mat, sets, TRUE, FALSE, 1, 0L, 2L)
-  expect_equal(poisson1, poisson2, tolerance = 1e-12)
 
   gaussian1 <- gsva_gaussian_dense(mat, sets, TRUE, FALSE, 1, 0L, 1L)
   gaussian2 <- gsva_gaussian_dense(mat, sets, TRUE, FALSE, 1, 0L, 2L)

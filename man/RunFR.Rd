@@ -41,7 +41,7 @@ RunFR(object, ...)
 \arguments{
 \item{object}{An object. This can be a Seurat object, a Neighbor object, or a Graph object.}
 
-\item{...}{Passed to \link[igraph:layout_with_fr]{igraph::layout_with_fr}.}
+\item{...}{Arguments passed to other functions.}
 
 \item{reduction}{Linear reduction used as input.}
 

@@ -52,7 +52,7 @@ RunGNIPLR(object, ...)
 \arguments{
 \item{object}{A Seurat object or expression matrix.}
 
-\item{...}{Additional backend-specific arguments.}
+\item{...}{Arguments passed to other functions.}
 
 \item{assay}{Assay used when `object` is a Seurat object.}
 
@@ -78,13 +78,13 @@ target. The default `Inf` keeps all positive-importance links.}
 
 \item{output_file}{Optional path where the adjacency table is written.}
 
-\item{work_dir}{Working directory used by the Python backend.}
+\item{work_dir}{Working directory used by Python.}
 
 \item{prefix}{Prefix for temporary files.}
 
-\item{envname}{Python environment used by the Python backend.}
+\item{envname}{Python environment used by Python.}
 
-\item{conda}{Conda-compatible executable used by the Python backend.}
+\item{conda}{Conda-compatible executable used by Python.}
 
 \item{force}{Whether to rebuild existing `output_file`.}
 

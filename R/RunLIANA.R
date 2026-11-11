@@ -22,8 +22,7 @@
 #' @param return_all Whether LIANA should return all possible interactions.
 #' @param backend Backend used only for result post-processing and unified CCC table
 #' aggregation. Upstream LIANA inference is unchanged.
-#' @param ... Additional arguments passed to `liana::liana_wrap()`.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A `Seurat` object with LIANA results stored in
 #' `srt@tools[["LIANA"]]`.
 #' @export
@@ -40,8 +39,8 @@ RunLIANA <- function(
   species = c("human", "mouse"),
   consensus = c("auto", "rank", "aggregate", "none"),
   consensus_args = list(),
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   backend <- match.arg(backend)
@@ -196,21 +195,21 @@ RunLIANA <- function(
 #'
 #' @description
 #' Enumerates the ligand-receptor databases and prior models exposed by the
-#' installed cell-cell communication backends: LIANA resources,
+#' installed cell-cell communication methods: LIANA resources,
 #' CellChat databases, NicheNet prior models, and CellphoneDB input data.
-#' Databases are listed without being loaded, and backends that are not
+#' Databases are listed without being loaded, and resources that are not
 #' installed or not configured are reported with their status instead of
 #' failing.
 #'
-#' @param db CCC backends to inspect. Any subset of `"LIANA"`,
+#' @param db CCC methods or resources to inspect. Any subset of `"LIANA"`,
 #' `"CellChat"`, `"Nichenetr"`, and `"CellphoneDB"`; the default inspects all
-#' supported backends.
+#' supported resources.
 #' @param species Optional species filter: any subset of `"human"`,
 #' `"mouse"`, and `"zebrafish"`.
 #'
 #' @return A data frame with columns `db`, `resource`, `species`,
 #' `default`, `status`, and `description`. A row with an `NA` resource and a
-#' non-`"available"` status describes a backend that could not be inspected.
+#' non-`"available"` status describes a resource that could not be inspected.
 #' @export
 ListCCCDB <- function(
   db = c("LIANA", "CellChat", "Nichenetr", "CellphoneDB"),

@@ -30,7 +30,7 @@ sample identity is never inferred from cluster labels.
 Results describe cells present in \code{object}, in its current cell order, rather
 than the original fit's full cell set. BANKSY domain counts and PRECAST cell,
 domain, and sample counts are recomputed from the returned assignments.
-Unfitted PRECAST cells are excluded. Parameters and the native bundles in
+Unfitted PRECAST cells are excluded. Parameters and the stored bundles in
 \code{object@tools} still describe the original fit; other methods' stored summaries
 are omitted when their cell set changes. PRECAST can be selected by its tool
 name or by \code{"PRECAST"} when that method identifies a unique stored bundle.

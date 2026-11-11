@@ -74,8 +74,8 @@ CCCNetworkPlot(
   spot_alpha = 0.35,
   composition_display = c("pie", "dominant", "none"),
   composition_radius = NULL,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -230,18 +230,20 @@ proportional pies, dominant cell type, or neutral points.}
 \item{composition_radius}{Radius of composition pies in display-coordinate
 units. \code{NULL} derives a density-aware default.}
 
-\item{...}{Additional plot-specific options. For chord plots, \code{reduce},
-\code{max.groups}, \code{small.gap}, \code{big.gap}, and \code{lab.cex} can be used to adjust
-the CellChat-like chord layout.}
-
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A ggplot, patchwork, or recorded plot object.
 }
 \description{
 CCC network and flow plots
+}
+\details{
+Canonical selection parameters and legacy aliases may be supplied
+together only when their values agree. Conflicting values raise an error.
 }
 \examples{
 data(pancreas_sub)

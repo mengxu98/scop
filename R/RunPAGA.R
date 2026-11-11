@@ -12,7 +12,7 @@
 #' implementation for the standard connectivity graph and tree, plus an
 #' approximate R igraph layout stored in `paga$pos`.
 #' All arguments stay on the selected backend; the C++ backend never switches
-#' to Python implicitly.
+#' the C++ implementation never switches to Python implicitly.
 #' @param use_rna_velocity Whether to use RNA velocity for PAGA analysis.
 #' @param vkey RNA velocity data to use if `use_rna_velocity` is `TRUE`.
 #' Default is `"stochastic"`. If the corresponding velocity embedding is not

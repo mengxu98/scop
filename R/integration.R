@@ -27,8 +27,7 @@
 #' @param nonlinear_reduction_params Shared parameters, optionally overridden by
 #' lists named after individual nonlinear reduction methods.
 #' @param append Append integrated results to `srt_merge`.
-#' @param ... Passed to the integration method functions.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A `Seurat` object. For `ChromatinAssay`, names follow the ATAC
 #' convention (`*lsi`, `*UMAP2D`, cluster aliases, `ATAC_default_*`).
 #'

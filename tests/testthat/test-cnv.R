@@ -58,7 +58,7 @@ mock_cnv_backend <- function(...) {
 test_that("RunCNV stores a unified result bundle and aligned metadata", {
   srt <- make_cnv_seurat()
   testthat::local_mocked_bindings(
-    cnv_run_backend = function(method, counts, ...) {
+    cnv_run_model = function(method, counts, ...) {
       expect_identical(method, "copykat")
       expect_s4_class(counts, "dgCMatrix")
       mock_cnv_backend()
@@ -81,7 +81,7 @@ test_that("RunCNV stores a unified result bundle and aligned metadata", {
 test_that("RunCNV orients cell-by-bin backend matrices", {
   srt <- make_cnv_seurat()
   testthat::local_mocked_bindings(
-    cnv_run_backend = function(...) {
+    cnv_run_model = function(...) {
       list(
         cnv_matrix = matrix(
           c(1, 2, 3, 4, 5, 6),
@@ -107,7 +107,7 @@ test_that("RunCNV validates reference and gene-order requirements before backend
     end = seq_len(nrow(srt)) * 100 + 99
   )
   testthat::local_mocked_bindings(
-    cnv_run_backend = function(...) stop("backend should not run")
+    cnv_run_model = function(...) stop("backend should not run")
   )
   expect_error(
     RunCNV(srt, method = "missing_method", verbose = FALSE),
@@ -162,7 +162,7 @@ test_that("RunCNV accepts common method aliases", {
   )
   seen <- character()
   testthat::local_mocked_bindings(
-    cnv_run_backend = function(method, ...) {
+    cnv_run_model = function(method, ...) {
       seen <<- c(seen, method)
       mock_cnv_backend()
     }
@@ -184,7 +184,7 @@ test_that("RunCNV accepts common method aliases", {
 test_that("RunCNV keeps method-specific metadata across multiple methods", {
   srt <- make_cnv_seurat()
   testthat::local_mocked_bindings(
-    cnv_run_backend = function(method, ...) {
+    cnv_run_model = function(method, ...) {
       out <- mock_cnv_backend()
       if (identical(method, "scevan")) {
         out$cell_info$prediction <- c("normal", "malignant")
@@ -216,7 +216,7 @@ test_that("RunCNV supports gene-order files and store_matrix = FALSE", {
   utils::write.table(gene_order, gene_file, sep = "\t", quote = FALSE, row.names = FALSE)
 
   testthat::local_mocked_bindings(
-    cnv_run_backend = function(method, gene_order, ...) {
+    cnv_run_model = function(method, gene_order, ...) {
       expect_identical(method, "infercnv")
       expect_equal(colnames(gene_order), c("gene", "chr", "start", "end"))
       mock_cnv_backend()
@@ -274,7 +274,7 @@ test_that("CNV standardization derives fallback predictions for every backend", 
   }
 })
 
-test_that("fastCNV extraction reads Seurat assays and derives cell predictions", {
+test_that("fastCNV extracts genomic scores even with DecontX UMAP present", {
   srt <- make_cnv_seurat()
   mat <- matrix(
     c(-0.2, 0.1, 0.3, 0.5, -0.4, 0.2),
@@ -285,6 +285,11 @@ test_that("fastCNV extraction reads Seurat assays and derives cell predictions",
   suppressWarnings({
     fast_obj[["genomicScores"]] <- SeuratObject::CreateAssayObject(data = mat)
   })
+  fast_obj@tools$decontX <- list(umap = matrix(
+    c(8, 2, 3, 1, 4, 6),
+    ncol = 2,
+    dimnames = list(colnames(srt), c("DecontX_UMAP_1", "DecontX_UMAP_2"))
+  ))
   fast_obj$CNV_fastCNV_score <- c(0.2, 0.1, 0.6)
   fast_obj$CNV_fastCNV_prediction <- NA_character_
   fast_obj$cnv_clusters <- c("A", "A", "B")
@@ -296,10 +301,17 @@ test_that("fastCNV extraction reads Seurat assays and derives cell predictions",
     reference = "Normal"
   )
 
-  expect_equal(dim(extracted$cnv_matrix), c(2, 3))
+  expect_equal(as.matrix(extracted$cnv_matrix), mat)
   expect_equal(extracted$cell_info$score, c(0.2, 0.1, 0.6))
   expect_equal(extracted$cell_info$prediction, c("aneuploid", "diploid", "aneuploid"))
   expect_equal(extracted$cell_info$cluster, c("A", "A", "B"))
+})
+
+test_that("fastCNV reports a missing genomicScores assay instead of using a tool matrix", {
+  srt <- make_cnv_seurat()
+  srt@tools$decontX <- list(umap = SeuratObject::Embeddings(srt[["umap"]]))
+
+  expect_error(cnv_extract_fastcnv(srt, cells = colnames(srt)), "genomicScores")
 })
 
 test_that("fastCNV runner skips expensive upstream preparation by default", {
@@ -318,6 +330,10 @@ test_that("fastCNV runner skips expensive upstream preparation by default", {
 
   testthat::local_mocked_bindings(
     check_r = function(...) TRUE,
+    cnv_attach_package_data = function(package) {
+      expect_identical(package, "fastCNV")
+      FALSE
+    },
     get_namespace_fun = function(package, name) {
       expect_identical(package, "fastCNV")
       expect_identical(name, "fastCNV")
@@ -354,6 +370,46 @@ test_that("fastCNV runner skips expensive upstream preparation by default", {
   )
 
   expect_equal(extracted$cell_info$prediction, c("aneuploid", "diploid", "aneuploid"))
+})
+
+test_that("RunCNV saves infercnv coordinates in matrix row order", {
+  srt <- make_cnv_seurat()
+  gene_order <- data.frame(
+    gene = c("Gene4", "Gene2", "Gene3", "Gene1"),
+    chr = c("chr2", "chr1", "chr2", "chr1"),
+    start = c(400, 200, 300, 100),
+    end = c(499, 299, 399, 199)
+  )
+  mat <- matrix(
+    c(0.99, 1.2, 0.81, 0.96, 1.1, 0.85, 1.01, 1.3, 0.86),
+    nrow = 3,
+    dimnames = list(c("Gene3", "Gene1", "unmatched"), colnames(srt))
+  )
+  testthat::local_mocked_bindings(
+    check_r = function(...) TRUE,
+    get_namespace_fun = function(package, name) {
+      if (identical(name, "CreateInfercnvObject")) {
+        return(function(...) list())
+      }
+      function(...) mat
+    }
+  )
+
+  out <- RunCNV(
+    srt,
+    method = "infercnv",
+    reference.by = "celltype",
+    reference = "Normal",
+    gene_order = gene_order,
+    verbose = FALSE
+  )
+  bundle <- out@tools$CNV$methods$infercnv
+
+  expect_identical(bundle$cnv_matrix, mat)
+  expect_identical(bundle$bin_info$gene, rownames(mat))
+  expect_identical(bundle$bin_info$chr, c("chr2", "chr1", NA_character_))
+  expect_identical(bundle$bin_info$start, c(300, 100, NA_real_))
+  expect_identical(bundle$bin_info$end, c(399, 199, NA_real_))
 })
 
 test_that("infercnv runner avoids subclusters by default and filters passthrough arguments", {
@@ -459,7 +515,7 @@ test_that("infercnv runner avoids subclusters by default and filters passthrough
 })
 
 test_that("backend argument filtering drops unsupported named arguments", {
-  out <- cnv_call_backend_fun(
+  out <- cnv_call_fun(
     function(a, b, ...) {
       list(a = a, b = b, passthrough = list(...))
     },
@@ -542,6 +598,9 @@ test_that("Numbat extraction reads posterior and clone tables", {
 
 test_that("fastCNV rejects unsupported mouse genome before backend execution", {
   srt <- make_cnv_seurat()
+  testthat::local_mocked_bindings(
+    check_r = function(...) stop("dependency installation should not run")
+  )
   expect_error(
     cnv_run_fastcnv(
       srt = srt,
@@ -558,7 +617,7 @@ test_that("fastCNV rejects unsupported mouse genome before backend execution", {
 test_that("CNVPlot returns bar, heatmap, and tree objects from stored results", {
   srt <- make_cnv_seurat()
   testthat::local_mocked_bindings(
-    cnv_run_backend = function(...) mock_cnv_backend()
+    cnv_run_model = function(...) mock_cnv_backend()
   )
   out <- RunCNV(srt, method = "copykat", verbose = FALSE)
 
@@ -581,4 +640,202 @@ test_that("CNVPlot returns bar, heatmap, and tree objects from stored results", 
 
   tree <- CNVPlot(out, plot_type = "tree", cluster_tree_by = "cell")
   expect_s3_class(tree, "hclust")
+})
+
+test_that("CNVPlot centers infercnv colors on one and preserves the original matrix", {
+  testthat::skip_if_not_installed("ComplexHeatmap")
+  testthat::skip_if_not_installed("circlize")
+  srt <- make_cnv_seurat()
+  mat <- matrix(
+    c(0.6, 0.75, 1, 1.25, 1.5, 2), nrow = 2,
+    dimnames = list(c("Gene1", "Gene2"), colnames(srt))
+  )
+  srt@tools$CNV <- list(
+    active_method = "infercnv",
+    methods = list(infercnv = list(method = "infercnv", cnv_matrix = mat))
+  )
+  colors <- c("#2166AC", "#FFFFFF", "#B2182B")
+
+  ht <- CNVPlot(srt, heatmap_palcolor = colors, cluster_columns = FALSE)
+  expect_equal(ht@matrix, t(mat))
+  mapped <- ht@matrix_color_mapping@col_fun(c(0.5, 0.75, 1, 1.25, 1.5))
+  expect_equal(mapped[c(1, 2, 4, 5)], c("#2166ACFF", "#2166ACFF", "#B2182BFF", "#B2182BFF"))
+  expect_true(all(grDevices::col2rgb(mapped[3]) >= 245))
+  expect_equal(ht@matrix_legend_param$at, c(0.75, 1, 1.25))
+
+  custom <- CNVPlot(
+    srt, heatmap_limits = c(0.9, 1.4), heatmap_palcolor = colors,
+    cluster_columns = FALSE
+  )
+  expect_equal(custom@matrix, t(mat))
+  expect_equal(
+    custom@matrix_color_mapping@col_fun(c(0.8, 1, 1.5)),
+    c("#2166ACFF", mapped[3], "#B2182BFF")
+  )
+  expect_equal(custom@matrix_legend_param$at, c(0.9, 1, 1.4))
+
+  two_colors <- CNVPlot(srt, heatmap_limits = c(0.9, 1.4), heatmap_palcolor = colors[c(1, 3)])
+  two_colors_symmetric <- CNVPlot(srt, heatmap_palcolor = colors[c(1, 3)])
+  expect_equal(
+    two_colors@matrix_color_mapping@col_fun(1),
+    two_colors_symmetric@matrix_color_mapping@col_fun(1)
+  )
+  expect_error(CNVPlot(srt, heatmap_limits = c(0.6, 0.8)), "heatmap_limits")
+  expect_error(CNVPlot(srt, heatmap_limits = c(NA, 1.4)), "heatmap_limits")
+})
+
+test_that("CNVPlot retains zero-centered default colors for other methods", {
+  testthat::skip_if_not_installed("ComplexHeatmap")
+  testthat::skip_if_not_installed("circlize")
+  srt <- make_cnv_seurat()
+  mat <- matrix(
+    c(-2, -0.5, 0, 0.5, 1, 2), nrow = 2,
+    dimnames = list(c("Gene1", "Gene2"), colnames(srt))
+  )
+  for (method in c("copykat", "fastCNV", "scevan", "numbat")) {
+    srt@tools$CNV <- list(
+      active_method = method,
+      methods = setNames(list(list(method = method, cnv_matrix = mat)), method)
+    )
+    ht <- CNVPlot(srt, heatmap_palcolor = c("#2166AC", "#FFFFFF", "#B2182B"))
+    expect_equal(ht@matrix, t(mat))
+    mapped <- ht@matrix_color_mapping@col_fun(c(-2, -1, 0, 1, 2))
+    expect_equal(mapped[c(1, 2, 4, 5)], c("#2166ACFF", "#2166ACFF", "#B2182BFF", "#B2182BFF"))
+    expect_true(all(grDevices::col2rgb(mapped[3]) >= 245))
+    expect_equal(ht@matrix_legend_param$at, c(-1, 0, 1))
+  }
+})
+
+test_that("CNVPlot orders chromosomes horizontally and cells by group", {
+  testthat::skip_if_not_installed("ComplexHeatmap")
+  testthat::skip_if_not_installed("circlize")
+  srt <- make_cnv_seurat()
+  srt$group <- factor(c("Tumor", "Reference", "Tumor"), levels = c("Reference", "Tumor"))
+  mat <- matrix(
+    c(1.4, 0.7, 0.8, 1.3, 1, 0.65, 1.05, 1.2, 1.1), nrow = 3,
+    dimnames = list(c("gene3", "gene2", "gene1"), colnames(srt))
+  )
+  bins <- data.frame(chr = c("chr2", "chr1", "chr1"), start = c(30, 20, 10))
+  srt@tools$CNV <- list(
+    active_method = "infercnv",
+    methods = list(infercnv = list(method = "infercnv", cnv_matrix = mat, bin_info = bins))
+  )
+
+  paper <- CNVPlot(srt, group.by = "group", title = "", use_raster = FALSE)
+  expect_equal(paper@matrix, t(mat[c(3, 2, 1), c(2, 1, 3)]))
+  expect_s4_class(paper@top_annotation, "HeatmapAnnotation")
+  expect_s4_class(paper@left_annotation, "HeatmapAnnotation")
+  expect_equal(paper@matrix_legend_param$at, c(0.75, 1, 1.25))
+  file <- tempfile(fileext = ".pdf")
+  grDevices::pdf(file)
+  rendered <- tryCatch(ComplexHeatmap::draw(paper), finally = grDevices::dev.off())
+  expect_equal(names(ComplexHeatmap::column_order(rendered)), c("chr1", "chr2"))
+  expect_null(rendered@ht_list[[1]]@column_title)
+  expect_equal(unname(unlist(ComplexHeatmap::row_order(rendered))), 1:3)
+  expect_equal(srt@tools$CNV$methods$infercnv$cnv_matrix, mat)
+})
+
+test_that("CNVPlot automatic display limits use the native midpoint and retain scores", {
+  testthat::skip_if_not_installed("ComplexHeatmap")
+  testthat::skip_if_not_installed("circlize")
+  srt <- make_cnv_seurat()
+  mat <- matrix(
+    c(0.88, 0.97, 1.04, 1.12, 1.2, 2), nrow = 2,
+    dimnames = list(c("gene1", "gene2"), colnames(srt))
+  )
+  srt@tools$CNV <- list(
+    active_method = "infercnv",
+    methods = list(infercnv = list(method = "infercnv", cnv_matrix = mat))
+  )
+
+  span <- as.double(stats::quantile(abs(mat - 1), 0.95))
+  auto <- CNVPlot(srt, heatmap_limits = "auto")
+  expect_equal(auto@matrix_legend_param$at, 1 + c(-span, 0, span))
+  expect_equal(auto@matrix, t(mat))
+  manual <- CNVPlot(srt, heatmap_limits = c(0.7, 1.8))
+  expect_equal(manual@matrix_legend_param$at, c(0.7, 1, 1.8))
+  expect_equal(manual@matrix, auto@matrix)
+
+  srt@tools$CNV$methods$infercnv$cnv_matrix[,] <- 1
+  constant <- CNVPlot(srt, heatmap_limits = "auto")
+  expect_equal(constant@matrix_legend_param$at, c(0.75, 1, 1.25))
+  expect_error(CNVPlot(srt, heatmap_limits = "unknown"), "heatmap_limits")
+})
+
+test_that("CNVPlot labels native fastCNV windows with missing coordinates", {
+  testthat::skip_if_not_installed("ComplexHeatmap")
+  testthat::skip_if_not_installed("circlize")
+  srt <- make_cnv_seurat()
+  mat <- matrix(
+    seq_len(9) / 10, nrow = 3,
+    dimnames = list(c("2.p1", "1.p1", "1.q1"), colnames(srt))
+  )
+  srt@tools$CNV <- list(
+    active_method = "fastCNV",
+    methods = list(fastCNV = list(
+      method = "fastCNV", cnv_matrix = mat,
+      bin_info = data.frame(chr = rep(NA_character_, nrow(mat)), start = NA_real_)
+    ))
+  )
+
+  paper <- CNVPlot(srt)
+  expect_equal(paper@matrix, t(mat[c(2, 3, 1), ]))
+  expect_s4_class(paper@top_annotation, "HeatmapAnnotation")
+  expect_true(all(is.na(srt@tools$CNV$methods$fastCNV$bin_info$chr)))
+})
+
+test_that("CNVPlot derives labels for custom legend ticks", {
+  testthat::skip_if_not_installed("ComplexHeatmap")
+  testthat::skip_if_not_installed("circlize")
+  srt <- make_cnv_seurat()
+  mat <- matrix(
+    c(0.8, 1, 1.1, 1.2, 1.3, 0.9), nrow = 2,
+    dimnames = list(c("gene1", "gene2"), colnames(srt))
+  )
+  srt@tools$CNV <- list(
+    active_method = "infercnv",
+    methods = list(infercnv = list(method = "infercnv", cnv_matrix = mat))
+  )
+  at <- c(0.75, 1, 1.1, 1.25)
+  ht <- CNVPlot(srt, heatmap_legend_param = list(at = at), use_raster = FALSE)
+  expect_equal(as.numeric(ht@matrix_legend_param$labels), at)
+  grDevices::pdf(tempfile(fileext = ".pdf"))
+  rendered <- tryCatch(ComplexHeatmap::draw(ht), finally = grDevices::dev.off())
+  expect_s4_class(rendered, "HeatmapList")
+  labels <- c("Loss", "Neutral", "Gain", "High")
+  custom <- CNVPlot(srt, heatmap_legend_param = list(at = at, labels = labels))
+  expect_identical(custom@matrix_legend_param$labels, labels)
+})
+
+test_that("CNVPlot keeps chromosome labels aligned when slices are clustered", {
+  testthat::skip_if_not_installed("ComplexHeatmap")
+  testthat::skip_if_not_installed("circlize")
+  srt <- make_cnv_seurat()
+  mat <- outer(
+    rep(c(0.1, 1.1, 0.11, 3.1), each = 2) + rep(c(0, 0.02), 4),
+    c(0, 0.2, 0.4), "+"
+  )
+  dimnames(mat) <- list(paste0("gene", 1:8), colnames(srt))
+  srt@tools$CNV <- list(
+    active_method = "infercnv",
+    methods = list(infercnv = list(
+      method = "infercnv", cnv_matrix = mat,
+      bin_info = data.frame(chr = rep(paste0("chr", 1:4), each = 2), start = rep(1:2, 4))
+    ))
+  )
+  ht <- CNVPlot(srt, cluster_rows = TRUE, cluster_column_slices = TRUE, use_raster = FALSE)
+  grDevices::pdf(tempfile(fileext = ".pdf"))
+  output <- tryCatch({
+    rendered <- ComplexHeatmap::draw(ht)
+    grob_names <- grid::grid.ls(print = FALSE)$name
+    text <- unlist(lapply(grob_names[grepl("^GRID.text", grob_names)], function(name) {
+      as.character(grid::grid.get(name)$label)
+    }))
+    list(
+      order = names(ComplexHeatmap::column_order(rendered)),
+      labels = text[text %in% as.character(1:4)]
+    )
+  }, finally = grDevices::dev.off())
+  expect_false(identical(output$order, paste0("chr", 1:4)))
+  expect_equal(output$labels, sub("^chr", "", output$order))
 })

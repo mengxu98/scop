@@ -390,20 +390,23 @@ scenic_rss_heatmap <- SCENICPlot(
 print_scop_plot(scenic_rss_heatmap)
 ```
 
-The `rss_heatmap` above illustrates cluster-level specificity (RSS), while
-`activity_heatmap` visualizes cellular Regulon Activity Scores (RAS) across
-cell types for comparison.
+The `rss_heatmap` above illustrates cluster-level specificity (RSS).
+Use `GroupHeatmap()` to compare Regulon Activity Scores (RAS) across cell types
+from the stored `scenic` assay.
 
 ```{r scenic-activity-heatmap, eval=FALSE, fig.width=8, fig.height=7}
-scenic_activity_heatmap <- SCENICPlot(
+activity_features <- rownames(pancreas_sub[["scenic"]])[
+  match(top_regulons, pancreas_sub[["scenic"]][[]]$termnames)
+]
+scenic_activity_heatmap <- GroupHeatmap(
   pancreas_sub,
   group.by = "SubCellType",
-  plot_type = "activity_heatmap",
-  features = top_regulons,
-  activity_scale = TRUE,
-  heatmap_order = "group",
-  heatmap_show_row_names = TRUE,
-  heatmap_cluster_columns = FALSE
+  assay = "scenic",
+  layer = "data",
+  features = activity_features,
+  exp_method = "zscore",
+  show_row_names = TRUE,
+  cluster_columns = FALSE
 )
 print_scop_plot(scenic_activity_heatmap)
 ```

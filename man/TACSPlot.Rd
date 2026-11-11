@@ -41,8 +41,8 @@ TACSPlot(
   nrow = NULL,
   ncol = NULL,
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -112,17 +112,17 @@ Options: \code{"sum"} (default), \code{"min"} (for "and"-like filter), \code{"ma
 
 \item{h}{Bandwidth for density plot.}
 
-\item{nrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE} returns a list of ggplots.}
+\item{nrow}{Combine plots with \code{\link[patchwork:wrap_plots]{patchwork::wrap_plots()}}. \code{combine = FALSE} returns a list of ggplots.}
 
 \item{ncol}{Number of columns of the combined plot.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{Additional parameters passed to \link[ggplot2:stat_density2d]{ggplot2::stat_density2d}.}
-
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \description{
 TACS is a method for plotting a FACS-like plot for two features based on sc-RNA-seq data.

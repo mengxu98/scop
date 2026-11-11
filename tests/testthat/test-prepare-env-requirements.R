@@ -446,6 +446,34 @@ test_that("environment requirements emit one pin per package", {
   )
 })
 
+test_that("scFEA installation sends one pandas pin with or without imputation", {
+  testthat::local_mocked_bindings(
+    resolve_conda = function(conda) NULL,
+    conda_python = function(...) NULL,
+    python_minor_version = function(...) "3.10",
+    env_exist = function(...) TRUE,
+    log_message = function(...) NULL,
+    .package = "scop"
+  )
+  for (impute in c(FALSE, TRUE)) {
+    installed <- NULL
+    checks <- 0L
+    testthat::local_mocked_bindings(
+      exist_python_pkgs = function(packages, ...) {
+        checks <<- checks + 1L
+        stats::setNames(rep(checks > 1L, length(packages)), packages)
+      },
+      conda_install = function(packages, ...) installed <<- packages,
+      .package = "scop"
+    )
+    modules <- if (impute) c("scfea", "magic") else "scfea"
+    requirements <- env_requirements(modules = modules, verbose = FALSE)$packages
+    expect_true(check_python(requirements, envname = "scop_env", verbose = FALSE))
+    expected <- if (impute) "pandas==2.0.3" else "pandas==2.2.0"
+    expect_identical(grep("^pandas", installed, value = TRUE), expected)
+  }
+})
+
 test_that("optional modules stay in the shared environment", {
   optional <- normalize_env_modules("optional")
   expect_false("magic" %in% optional)

@@ -80,8 +80,9 @@ A Seurat object containing a Signac \code{ChromatinAssay} with raw counts.
 \description{
 Import one explicitly shared peak universe from a sparse matrix and genomic
 ranges, a 10x ATAC/ARC H5 file, or Matrix Market/peaks BED/barcodes files.
-SCOP checks and aligns identifiers; Signac creates the native assay. No cells
-or peaks are filtered, and no resources are downloaded or installed.
+SCOP checks and aligns identifiers; Signac creates the chromatin assay. No cells
+or peaks are filtered. Required R packages are checked and installed through
+\code{thisutils::check_r()} as needed; genomic resources must be supplied locally.
 }
 \details{
 Signac uses genomic coordinates as feature names. Original matrix feature

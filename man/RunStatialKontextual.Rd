@@ -27,8 +27,8 @@ RunStatialKontextual(
   store_input = FALSE,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -71,7 +71,7 @@ units.}
 
 \item{store_results}{Whether to store results in \code{srt@tools}.}
 
-\item{store_input}{Whether to store the backend input cell table in
+\item{store_input}{Whether to store the input cell table in
 \code{object@tools}.}
 
 \item{verbose}{Whether to print the message.
@@ -81,10 +81,10 @@ Default is \code{TRUE}.}
 The default is raw acquisition coordinates; \code{"legacy_display"} remains an
 explicit compatibility option.}
 
-\item{...}{Additional named arguments passed to \code{Statial::Kontextual()}.}
-
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A \code{Seurat} object with Statial results stored in

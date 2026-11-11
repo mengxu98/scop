@@ -91,10 +91,10 @@ RunGSEA <- function(
   simplify_method = "Wang",
   simplify_similarityCutoff = 0.7,
   verbose = TRUE,
-  ...,
   nPermSimple = 1e5,
   eps = 0,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   log_message("Start {.pkg GSEA} analysis", verbose = verbose)
@@ -596,27 +596,24 @@ gsea_fgsea_result <- function(geneList, minGSSize, maxGSSize, nPermSimple,
       by = "fgsea", verbose = verbose
     ))
   }
-  if (!requireNamespace("fgsea", quietly = TRUE) ||
-    !requireNamespace("enrichit", quietly = TRUE)) {
-    log_message("RunGSEA requires fgsea and enrichit with this clusterProfiler version.", message_type = "error")
-  }
+  check_r(c("fgsea", "enrichit"), verbose = FALSE)
   gene_sets <- lapply(split(as.character(TERM2GENE[[2L]]), TERM2GENE[[1L]]), unique)
-  native <- as.data.frame(fgsea::fgsea(
+  res <- as.data.frame(fgsea::fgsea(
     pathways = gene_sets, stats = geneList, minSize = minGSSize,
     maxSize = maxGSSize, nPermSimple = nPermSimple, eps = eps,
     scoreType = scoreType, gseaParam = 1, nproc = 0
   ))
-  native$padj <- stats::p.adjust(native$pval, method = pAdjustMethod)
-  native <- native[!is.na(native$pval) & native$pval <= pvalueCutoff &
-    !is.na(native$padj) & native$padj <= pvalueCutoff, , drop = FALSE]
-  if (!nrow(native)) {
+  res$padj <- stats::p.adjust(res$pval, method = pAdjustMethod)
+  res <- res[!is.na(res$pval) & res$pval <= pvalueCutoff &
+    !is.na(res$padj) & res$padj <= pvalueCutoff, , drop = FALSE]
+  if (!nrow(res)) {
     return(NULL)
   }
-  native$Description <- as.character(TERM2NAME[[2L]])[
-    match(native$pathway, TERM2NAME[[1L]])
+  res$Description <- as.character(TERM2NAME[[2L]])[
+    match(res$pathway, TERM2NAME[[1L]])
   ]
   result <- enrichit::as_gseaResult(
-    native,
+    res,
     geneList = geneList, geneSets = gene_sets,
     exponent = 1, scoreType = scoreType, pAdjustMethod = pAdjustMethod
   )

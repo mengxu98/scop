@@ -24,10 +24,10 @@ RunRCTD(
   create_rctd_params = list(),
   run_rctd_params = list(),
   verbose = TRUE,
-  ...,
   coordinate_space = c("raw", "legacy_display"),
   tool_name = "RCTD",
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -81,8 +81,6 @@ compatibility option and does not recover original counts.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{Additional parameters passed to the RCTD run step.}
-
 \item{coordinate_space}{Coordinate space used for distance-sensitive input.
 The default is raw acquisition coordinates, so backend distances use raw
 coordinate units. Use \code{"legacy_display"} explicitly to reproduce the
@@ -92,6 +90,8 @@ display-scaled coordinates used before scop 0.9.0.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A \code{Seurat} object with RCTD proportion columns in metadata and

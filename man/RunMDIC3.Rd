@@ -40,8 +40,7 @@ RunMDIC3(object, ...)
 \arguments{
 \item{object}{A Seurat object or a gene-by-cell expression matrix.}
 
-\item{...}{Additional arguments passed to [RunGRNBoost2()] or [RunGNIPLR()]
-when those methods are selected through `grn_method`.}
+\item{...}{Arguments passed to other functions.}
 
 \item{group.by}{Metadata column used as cell labels when `object` is a Seurat
 object.}

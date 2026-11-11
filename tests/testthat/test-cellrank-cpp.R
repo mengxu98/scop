@@ -123,14 +123,6 @@ test_that("cellrank_schur_cpp defaults to n_components = 2 for small matrices", 
 })
 
 
-test_that("cellrank_auto_n_states_cpp returns valid range", {
-  evals <- c(1.0, 0.95, 0.8, 0.3, 0.1)
-  n <- cellrank_auto_n_states_cpp(evals, min_states = 2, max_states = 20)
-  expect_true(n >= 2)
-  expect_true(n <= length(evals))
-})
-
-
 test_that("cellrank_velocity_kernel_cpp produces valid transition matrix", {
   n_cells <- 20
   n_dims <- 2

@@ -76,7 +76,7 @@ supplied. If \code{FALSE}, returns a data frame of predictions.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{backend}{Region-inference backend. \code{"cpp"} uses a compiled sparse
+\item{backend}{Region-inference engine. \code{"cpp"} uses a compiled sparse
 AUCell scorer, Ward clustering, and spatial-neighbor refinement for Seurat
 input when \code{image = FALSE}. \code{"python"} retains the official
 scMalignantFinder/Squidpy path and is required for image features, AnnData,

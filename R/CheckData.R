@@ -8,6 +8,7 @@
 #' @md
 #' @inheritParams thisutils::log_message
 #' @param object A `Seurat` object or a matrix.
+#' @param ... Arguments passed to other functions.
 #'
 #' @return
 #' A string indicating the type of data.
@@ -145,18 +146,19 @@ CheckDataType.default <- function(
 #' @param vars_to_regress A vector of variable names to include as additional regression variables.
 #'
 #' @details
-#' For chromatin assays with `HVF_source = "separate"`, native
+#' For chromatin assays with `HVF_source = "separate"`,
 #' [Seurat::SelectIntegrationFeatures()] ranks peaks by the number of batches
 #' selecting them, then by their median variable-feature rank. The `nHVF` cap
 #' is also limited to the smallest per-batch variable-feature count;
 #' `HVF_min_intersection` is applied to the ranked selection. This preserves
-#' native within-batch peak frequency ranking instead of sorting tied peak IDs.
+#' within-batch peak frequency ranking instead of sorting tied peak IDs.
 #'
 #' @return
 #' A list containing the preprocessed `Seurat` objects,
 #' the highly variable features, the assay name,
 #' and the type of assay.
 #'
+#' @export
 #' @examples
 #' counts <- matrix(rep(6:1, 4),
 #'   nrow = 6,
@@ -176,8 +178,6 @@ CheckDataType.default <- function(
 #'   verbose = FALSE
 #' )
 #' checked$HVF
-#'
-#' @export
 CheckDataList <- function(
   srt_list,
   batch,

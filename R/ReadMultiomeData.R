@@ -8,7 +8,7 @@
 #'   `matrix.mtx.gz`, `features.tsv.gz` and `barcodes.tsv.gz`. The input must
 #'   contain exactly the `Gene Expression` and `Peaks` modalities. H5 input
 #'   requires at least two features per modality and two cells because the
-#'   native Seurat H5 reader otherwise drops matrix dimensions.
+#'   Seurat H5 reader otherwise drops matrix dimensions.
 #' @param metadata,cell.names,sample,genome,annotation,fragments,fragment.cells,project,verbose
 #'   Passed to [ReadATACData()]. Metadata and sample vectors use original
 #'   barcodes; fragment mappings use final cell names.
@@ -27,7 +27,7 @@
 #' @return A Seurat object with a `ChromatinAssay` and a measured RNA `Assay`,
 #'   both containing raw counts for the same ordered cells. The active assay is
 #'   `assay`. Provenance is stored in `Misc(object, "scop_multiome_input")` and
-#'   in the native ATAC import receipt. Native assay initialization also copies
+#'   in the ATAC import receipt. Assay initialization also copies
 #'   raw counts to the data layer; this is not normalized expression.
 #' @seealso [ReadATACData()], [CheckATACData()]
 #' @export
@@ -66,7 +66,7 @@ ReadMultiomeData <- function(
     )
     source <- "10x_arc_matrix_market"
   } else {
-    atac_backend_fun("hdf5r", "h5version")
+    check_r("hdf5r", verbose = FALSE)
     matrices <- Seurat::Read10X_h5(filename = path, use.names = FALSE, unique.features = FALSE)
     files <- path
     source <- "10x_arc_h5"

@@ -5,8 +5,7 @@
 #' points remain available with a warning in releases before 1.0.0 and will be
 #' removed in version 1.0.0.
 #'
-#' @param ... Arguments forwarded unchanged to the replacement function.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return The value returned by the replacement function.
 #' @name deprecated-workflows
 #' @keywords internal
@@ -47,8 +46,7 @@ integration_scop <- function(...) {
 #' [RunScrublet()], and [RunDoubletDetection()]. The compatibility entry points
 #' remain available with a warning and will be removed in version 1.0.0.
 #'
-#' @param ... Arguments forwarded unchanged to the replacement function.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return The value returned by the replacement function.
 #' @name deprecated-doublet-callers
 #' @keywords internal

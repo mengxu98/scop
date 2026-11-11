@@ -79,10 +79,15 @@ ExpressionStatPlot <- function(
   seed = 11,
   x_text_angle = 45
 ) {
+  check_r("withr", verbose = FALSE)
+  withr::local_preserve_seed()
   set.seed(seed)
 
   plot.by <- match.arg(plot.by)
   plot_type <- match.arg(plot_type)
+  if (identical(plot_type, "bar")) {
+    check_r("Hmisc", verbose = FALSE)
+  }
   fill.by <- match.arg(fill.by)
   sig_label <- match.arg(sig_label)
   add_stat <- match.arg(add_stat)
@@ -1287,23 +1292,10 @@ ExpressionStatPlot <- function(
               breaks = levels_order,
               limits = levels_order,
               drop = FALSE
-            ) +
-            scale_color_manual(
-              name = legend_title_use,
-              values = colors,
-              breaks = levels_order,
-              limits = levels_order,
-              drop = FALSE
             )
         } else {
           p <- p +
             scale_fill_manual(
-              name = legend_title_use,
-              values = colors,
-              breaks = levels_order,
-              drop = FALSE
-            ) +
-            scale_color_manual(
               name = legend_title_use,
               values = colors,
               breaks = levels_order,

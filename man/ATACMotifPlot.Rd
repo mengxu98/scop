@@ -7,18 +7,18 @@
 ATACMotifPlot(object, motifs, assay = NULL, use.names = TRUE, ...)
 }
 \arguments{
-\item{object}{A Seurat object with native motifs.}
+\item{object}{A Seurat object with motifs.}
 
 \item{motifs}{Unique motif IDs (not ambiguous common names).}
 
 \item{assay}{Chromatin assay.}
 
-\item{use.names}{Use native motif names in plot labels.}
+\item{use.names}{Use motif names in plot labels.}
 
-\item{...}{Arguments passed to Signac::MotifPlot and ggseqlogo.}
+\item{...}{Arguments passed to other functions.}
 }
 \value{
-Native motif-logo plot. Motif similarity is not TF binding evidence.
+A motif-logo plot. Motif similarity is not TF binding evidence.
 }
 \description{
 Plot motif sequence logos from a selected ATAC assay

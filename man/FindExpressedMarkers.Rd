@@ -154,7 +154,7 @@ of the two groups, currently only used for poisson and negative binomial tests}
 
 \item{verbose}{Whether to print messages.}
 
-\item{...}{Additional arguments passed to reduction methods.}
+\item{...}{Arguments passed to other functions.}
 }
 \description{
 Find Expressed Markers

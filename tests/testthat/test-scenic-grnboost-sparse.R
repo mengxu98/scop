@@ -105,24 +105,3 @@ test_that("C++ GRNBoost2 preserves sparse zero ordering on larger matrices", {
 
   expect_identical(sparse, dense)
 })
-
-test_that("SCENIC recovery uses one weight per ranked target", {
-  recovery <- getFromNamespace("scenic_ctx_recovery", "scop")
-  ranks <- matrix(
-    c(
-      0L, 1L, 2L,
-      1L, 0L, 3L
-    ),
-    nrow = 2L,
-    byrow = TRUE
-  )
-
-  expect_equal(
-    recovery(ranks, weights = c(1, 2, 3), rank_threshold = 3L),
-    matrix(c(1, 3, 6, 2, 3, 3), nrow = 2L, byrow = TRUE)
-  )
-  expect_error(
-    recovery(ranks, weights = c(1, 2), rank_threshold = 3L),
-    "one value per rank-matrix column"
-  )
-})

@@ -14,8 +14,7 @@
 #' @param ranges.group.by Optional grouping variable used for `ranges`.
 #' @param region.highlight Optional genomic ranges highlighted in the locus panel.
 #' @param verbose Whether to print progress messages.
-#' @param ... Additional parameters passed to `Signac::CoveragePlot`.
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A coverage plot object.
 #' @export
 #' @examples
@@ -46,8 +45,8 @@ CoverageTrackPlot <- function(
   ranges.group.by = NULL,
   region.highlight = NULL,
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   check_r("Signac", verbose = FALSE)
 

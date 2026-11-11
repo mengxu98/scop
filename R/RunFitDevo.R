@@ -116,9 +116,7 @@ RunFitDevo <- function(
 #' @param pt.size,pt.alpha Point size and alpha.
 #' @param palette,palcolor Palette arguments for grouped plots.
 #' @param theme_use,theme_args Theme arguments passed to `scop` plot helpers.
-#' @param ... Additional arguments passed to [FeatureDimPlot()] and
-#' [CellDimPlot()].
-#'
+#' @param ... Arguments passed to other functions.
 #' @return A patchwork object or a named list of `ggplot` objects.
 #' @export
 #'
@@ -143,8 +141,8 @@ FitDevoPlot <- function(
   palcolor = NULL,
   theme_use = "theme_scop",
   theme_args = list(),
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   required_cols <- c(score.name, relative.name)

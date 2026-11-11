@@ -1025,35 +1025,6 @@ List cellrank_schur_cpp(NumericMatrix T_, int n_components = 10)
   );
 }
 
-
-// [[Rcpp::export]]
-int cellrank_auto_n_states_cpp(NumericVector eigenvalues, int min_states = 2, int max_states = 20)
-{
-  int n = eigenvalues.size();
-  if (n <= min_states) return min_states;
-
-  double max_gap = 0.0;
-  int best_k = min_states;
-  for (int k = min_states; k < std::min(max_states, n - 1); ++k) {
-    double gap = std::abs(eigenvalues[k] - eigenvalues[k + 1]);
-    if (gap > max_gap) {
-      max_gap = gap;
-      best_k = k + 1;
-    }
-  }
-
-  for (int k = min_states; k < std::min(max_states, n - 1); ++k) {
-    double denom = std::abs(eigenvalues[k]);
-    if (denom > 1e-10) {
-      double rel_gap = std::abs(eigenvalues[k] - eigenvalues[k + 1]) / denom;
-      if (rel_gap > 0.3) return k + 1;
-    }
-  }
-
-  return best_k;
-}
-
-
 // [[Rcpp::export]]
 NumericMatrix cellrank_velocity_kernel_cpp(
     NumericMatrix velocity_embedding,
@@ -1183,7 +1154,6 @@ NumericMatrix cellrank_pseudotime_kernel_cpp(
 
   for (int cell = 0; cell < n_cells; ++cell) {
     double pt_cell = pseudotime[cell];
-    double w_cell = (cell_weights.size() >= n_cells) ? cell_weights[cell] : 1.0;
 
     double row_sum = 0.0;
     for (int col = 0; col < n_neighbors; ++col) {
@@ -1228,7 +1198,6 @@ NumericMatrix cellrank_cytotrace_kernel_cpp(
     bool backward = false)
 {
   const int n_cells = gene_counts.size();
-  const int n_neighbors = knn_idx.ncol();
 
   double gc_min = gene_counts[0], gc_max = gene_counts[0];
   for (int i = 1; i < n_cells; ++i) {

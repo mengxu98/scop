@@ -434,22 +434,6 @@ List dpt_from_connectivities_cpp(
 }
 
 // [[Rcpp::export]]
-List cell_dpt_pseudotime_cpp(
-    IntegerMatrix knn_idx,
-    NumericMatrix knn_dist,
-    int root_cell,
-    int n_dcs = 10)
-{
-  NumericMatrix connectivities = build_gauss_connectivities(knn_idx, knn_dist);
-  return dpt_from_transition(
-    transition_symmetric(connectivities),
-    root_cell,
-    n_dcs
-  );
-}
-
-
-// [[Rcpp::export]]
 List paga_velocity_transitions_cpp(
     NumericMatrix velocity_embedding,
     IntegerMatrix knn_idx,
@@ -482,7 +466,6 @@ List paga_velocity_transitions_cpp(
     vn = std::sqrt(vn);
     if (vn < 1e-10) continue;
 
-    double row_sum = 0.0;
     for (int col = 0; col < n_neighbors; ++col) {
       int nb = knn_idx(cell, col);
       if (nb == NA_INTEGER) continue;
@@ -505,7 +488,6 @@ List paga_velocity_transitions_cpp(
       if (cosine > 0 && std::isfinite(cosine)) {
         double weight = std::exp(cosine * softmax_scale);
         transitions(from_group, to_group) += weight;
-        row_sum += weight;
       }
     }
   }
@@ -558,21 +540,6 @@ IntegerVector paga_root_cell_cpp(
   }
   if (count == 0) count = 1;
   for (int d = 0; d < n_dims; ++d) centroid[d] /= count;
-
-  int best_cell = 0;
-  double best_dist = std::numeric_limits<double>::max();
-  for (int i = 0; i < n_cells; ++i) {
-    if (groups[i] != root_group) continue;
-    double dist = 0.0;
-    for (int d = 0; d < n_dims; ++d) {
-      double delta = embedding(i, d) - centroid[d];
-      dist += delta * delta;
-    }
-    if (dist < best_dist) {
-      best_dist = dist;
-      best_cell = i;
-    }
-  }
 
   std::vector<std::pair<double, int>> dist_idx;
   for (int i = 0; i < n_cells; ++i) {

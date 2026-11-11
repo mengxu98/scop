@@ -22,20 +22,19 @@
 #' @param t_max The maximum `t` to test.
 #' @param do_cluster Whether to perform clustering on the PHATE embeddings.
 #' @param backend PHATE backend. `"python"` calls the upstream `phate` Python
-#' package and `"cpp"` uses the native C++ helper path.
-#' The selected backend is stable; native arguments never trigger an implicit
+#' package and `"cpp"` uses the C++ helper path.
+#' The selected backend is stable; C++ arguments never trigger an implicit
 #' Python workflow. When another Python environment is already initialized,
 #' run the Python backend in a separate process without changing the active interpreter.
-#' @param mds MDS algorithm passed to PHATE. The native backend uses its C++
-#' classical MDS or R's native metric MDS implementation.
-#' @param mds_solver Metric MDS solver; recorded by the native backend and
+#' @param mds MDS algorithm passed to PHATE. The C++ backend uses its C++
+#' classical MDS or R's metric MDS implementation.
+#' @param mds_solver Metric MDS solver; recorded by the C++ backend and
 #' passed through to Python when that backend is selected.
 #' @param n_clusters A number of clusters to be identified.
 #' @param max_clusters The maximum number of clusters to test.
 #' @param reduction.name Reduction to be stored in the Seurat object.
 #' @param reduction.key The prefix for the column names of the PHATE embeddings.
-#' @param ... Passed to phate.PHATE.
-#'
+#' @param ... Arguments passed to other functions.
 #' @rdname RunPHATE
 #' @export
 #'
@@ -476,7 +475,7 @@ run_phate_cpp_reduction <- function(
       knn_max = if (is.null(knn_max)) -1L else as.integer(knn_max)
     )
   } else {
-    phate_native_affinity(data_use, knn_search, decay, knn_dist)
+    phate_calc_affinity(data_use, knn_search, decay, knn_dist)
   }
   diffusion_t <- if (identical(t, "auto")) {
     phate_find_optimal_t_cpp(
@@ -544,7 +543,7 @@ run_phate_cpp_reduction <- function(
   reduction
 }
 
-phate_native_affinity <- function(data, k, decay, metric) {
+phate_calc_affinity <- function(data, k, decay, metric) {
   metric <- tolower(metric)
   distance <- if (metric == "precomputed") {
     data

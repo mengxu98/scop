@@ -134,30 +134,18 @@ DynamicHeatmap(
   cell_annotation = NULL,
   cell_annotation_palette = "Chinese",
   cell_annotation_palcolor = NULL,
-  cell_annotation_params = if (flip) {
-     list(width = grid::unit(5, "mm"))
- } else {
- 
-       list(height = grid::unit(5, "mm"))
- },
+  cell_annotation_params = if (flip) list(width = grid::unit(5, "mm")) else list(height =
+    grid::unit(5, "mm")),
   feature_annotation = NULL,
   feature_annotation_palette = "Dark2",
   feature_annotation_palcolor = NULL,
-  feature_annotation_params = if (flip) {
-     list(height = grid::unit(5, "mm"))
- } else
-    {
-     list(width = grid::unit(5, "mm"))
- },
+  feature_annotation_params = if (flip) list(height = grid::unit(5, "mm")) else
+    list(width = grid::unit(5, "mm")),
   separate_annotation = NULL,
   separate_annotation_palette = "Chinese",
   separate_annotation_palcolor = NULL,
-  separate_annotation_params = if (flip) {
-     list(width = grid::unit(10, "mm"))
- }
-    else {
-     list(height = grid::unit(10, "mm"))
- },
+  separate_annotation_params = if (flip) list(width = grid::unit(10, "mm")) else
+    list(height = grid::unit(10, "mm")),
   reverse_ht = NULL,
   use_raster = NULL,
   raster_device = "png",
@@ -170,8 +158,8 @@ DynamicHeatmap(
   seed = 11,
   legend.position = "right",
   ht_params = list(),
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 }
 \arguments{
@@ -358,10 +346,10 @@ Gap to the heatmap grows automatically when long row names are on the right.}
 
 \item{ht_params}{Extra arguments passed to \link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap}, overriding defaults.}
 
-\item{...}{Additional arguments passed to helper functions.}
-
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{...}{Arguments passed to other functions.}
 }
 \description{
 Heatmap plot for dynamic features along lineages

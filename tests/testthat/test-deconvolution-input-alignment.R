@@ -1,4 +1,3 @@
-# These tests capture wrapper inputs; they do not replace real-backend validation.
 make_deconv_alignment_pair <- function(reverse_order = FALSE) {
   st <- matrix(c(10, 20, 970, 20, 10, 1970, 15, 15, 2970), 3,
     dimnames = list(c("g1", "g2", "other"), c("s1", "s2", "s3"))
@@ -31,8 +30,8 @@ capture_deconv_inputs <- function(method, pair, ...) {
   }
   testthat::local_mocked_bindings(
     rctd_run_spacexr = capture,
-    card_run_backend = capture,
-    spotlight_run_backend = capture,
+    card_run_model = capture,
+    spotlight_run_model = capture,
     check_r = function(...) TRUE,
     .package = "scop"
   )
@@ -85,7 +84,6 @@ test_that("RCTD preserves full selected-assay library depth before feature filte
   expect_equal(Matrix::colSums(captured$st_counts), c(s1 = 30, s3 = 30))
   expect_equal(Matrix::colSums(captured$ref_counts), c(A1 = 10, B1 = 10))
 
-  # Non-shared genes also contribute to full library depth when features = NULL.
   ref <- GetAssayData5(pair$reference, assay = "ALT")
   rownames(ref)[3] <- "reference-only"
   pair$reference[["ALT"]] <- SeuratObject::CreateAssay5Object(counts = ref)
@@ -97,7 +95,6 @@ test_that("RCTD preserves full selected-assay library depth before feature filte
 
 test_that("missing labels and selected-feature zero counts are filtered after alignment", {
   pair <- make_deconv_alignment_pair()
-  # Full library depth is positive, but B1 and s3 have no selected-gene counts.
   for (which in c("reference", "spatial")) {
     counts <- GetAssayData5(pair[[which]], assay = "ALT")
     counts[c("g1", "g2"), if (which == "reference") "B1" else "s3"] <- 0

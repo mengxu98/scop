@@ -223,7 +223,7 @@ RunscMalignantFinder <- function(
 #' @param image Whether to call `scMalignantFinder.spatial.image_cal`.
 #' Default is `FALSE` because Seurat-to-AnnData conversion does not generally
 #' carry histology images.
-#' @param backend Region-inference backend. `"cpp"` uses a compiled sparse
+#' @param backend Region-inference engine. `"cpp"` uses a compiled sparse
 #' AUCell scorer, Ward clustering, and spatial-neighbor refinement for Seurat
 #' input when `image = FALSE`. `"python"` retains the official
 #' scMalignantFinder/Squidpy path and is required for image features, AnnData,
@@ -347,7 +347,7 @@ RunscMalignantRegion <- function(
       assay = assay,
       layer = layer
     )
-    obs <- scmf_native_region(
+    obs <- scmf_region_scores(
       expr = expr,
       metadata = srt_input[[]],
       signature_gmt = signature_gmt,
@@ -443,7 +443,7 @@ RunscMalignantRegion <- function(
 #' @param gene_sets Path to a `.gmt` file containing cancer cell state gene
 #' sets, such as `Malignant_MPs.Gavish_2023.gmt` from the scMalignantFinder
 #' resources.
-#' @param backend State-scoring backend. `"cpp"` uses a compiled sparse
+#' @param backend State-scoring engine. `"cpp"` uses a compiled sparse
 #' AUCell implementation for Seurat input. `"python"` retains the official
 #' scMalignantFinder path and is used for AnnData or h5ad input.
 #'
@@ -668,7 +668,7 @@ scmf_auc_threshold <- function(expr) {
   )) / nrow(expr)
 }
 
-scmf_native_region <- function(
+scmf_region_scores <- function(
   expr,
   metadata,
   signature_gmt,

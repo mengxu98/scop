@@ -240,7 +240,7 @@ RunBANKSY <- function(
     "Run {.pkg Banksy} with {.val {nrow(expr)}} features and {.val {ncol(expr)}} spatial spots",
     verbose = verbose
   )
-  backend <- banksy_run_backend(
+  backend <- banksy_run_model(
     expr = expr,
     coords = coords,
     coldata = coldata,
@@ -273,8 +273,6 @@ RunBANKSY <- function(
     stringsAsFactors = FALSE
   )
   colnames(cluster_df) <- cluster_colname
-  # Replace the whole metadata column so a rerun cannot retain labels for
-  # cells excluded by this run (for example, zero-count spots).
   metadata_clusters <- stats::setNames(rep(NA_character_, ncol(srt)), colnames(srt))
   metadata_clusters[rownames(cluster_df)] <- cluster_df[[cluster_colname]]
   srt <- Seurat::AddMetaData(srt, metadata = metadata_clusters, col.name = cluster_colname)
@@ -767,7 +765,7 @@ banksy_run_by_sample <- function(
   srt
 }
 
-banksy_run_backend <- function(
+banksy_run_model <- function(
   expr,
   coords,
   coldata,
