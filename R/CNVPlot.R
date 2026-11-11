@@ -19,7 +19,7 @@
 #' and `c(-1, 1)` otherwise. `"auto"` uses the 95th percentile of absolute
 #' deviations from the method's midpoint (1 or 0), with the method limits as
 #' fallback. A numeric pair sets the limits and must span the midpoint.
-#' @param ... Additional parameters to other functions.
+#' @param ... Arguments passed to other functions.
 #'
 #' @return A `ComplexHeatmap::Heatmap` for `"heatmap"`, an `hclust` for
 #' `"tree"`, or a `ggplot`, `patchwork`, or list of `ggplot` objects otherwise.
@@ -346,7 +346,7 @@ cnv_chromosome_strip <- function(chromosomes, method) {
   n <- length(labels)
   if (n > 12L) {
     keep <- unique(c(seq.int(1L, n, by = 3L), n))
-    if (length(keep) > 1L && diff(tail(keep, 2L)) == 1L) {
+    if (length(keep) > 1L && diff(utils::tail(keep, 2L)) == 1L) {
       keep <- keep[-(length(keep) - 1L)]
     }
     labels[-keep] <- ""

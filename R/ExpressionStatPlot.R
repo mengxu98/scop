@@ -85,6 +85,9 @@ ExpressionStatPlot <- function(
 
   plot.by <- match.arg(plot.by)
   plot_type <- match.arg(plot_type)
+  if (identical(plot_type, "bar")) {
+    check_r("Hmisc", verbose = FALSE)
+  }
   fill.by <- match.arg(fill.by)
   sig_label <- match.arg(sig_label)
   add_stat <- match.arg(add_stat)

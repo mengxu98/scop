@@ -28,7 +28,7 @@
 #' @param tool_name Name used for `srt@tools`.
 #' @param store_matrix Whether to store the normalized CNV matrix in
 #' `srt@tools[[tool_name]]`.
-#' @param ... Additional parameters to other functions.
+#' @param ... Arguments passed to other functions.
 #'
 #' @return A `Seurat` object with CNV metadata columns and a result bundle in
 #' `srt@tools[[tool_name]]`.
@@ -364,13 +364,16 @@ cnv_run_fastcnv <- function(
   verbose = TRUE,
   ...
 ) {
-  check_r("must-bioinfo/fastCNV", verbose = FALSE)
   if (identical(genome, "mm10")) {
     log_message(
       "{.pkg fastCNV} currently supports human data only; use {.arg genome = 'hg38'} or {.arg genome = 'hg19'}",
       message_type = "error"
     )
   }
+  check_r(c(
+    "satijalab/seurat-wrappers",
+    "must-bioinfo/fastCNV"
+  ), verbose = FALSE)
   fastcnv_fun <- get_namespace_fun("fastCNV", "fastCNV")
   attached_fastcnv <- cnv_attach_package_data("fastCNV")
   on.exit(if (isTRUE(attached_fastcnv)) detach("package:fastCNV", character.only = TRUE), add = TRUE)
@@ -404,7 +407,7 @@ cnv_run_scevan <- function(
   verbose = TRUE,
   ...
 ) {
-  check_r(c("miccec/yaGST", "AntonioDeFalco/SCEVAN"), verbose = FALSE)
+  check_r(c("Yunuuuu/yaGST", "AntonioDeFalco/SCEVAN"), verbose = FALSE)
   sample_name <- "scop_cnv"
   scevan_fun <- get_namespace_fun("SCEVAN", "pipelineCNA")
   if (!is.function(scevan_fun)) {

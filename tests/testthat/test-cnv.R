@@ -598,6 +598,9 @@ test_that("Numbat extraction reads posterior and clone tables", {
 
 test_that("fastCNV rejects unsupported mouse genome before backend execution", {
   srt <- make_cnv_seurat()
+  testthat::local_mocked_bindings(
+    check_r = function(...) stop("dependency installation should not run")
+  )
   expect_error(
     cnv_run_fastcnv(
       srt = srt,

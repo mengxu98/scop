@@ -77,7 +77,7 @@ Default is \code{TRUE}.}
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
 
-\item{...}{Additional parameters to other functions.}
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A \code{Seurat} object with CNV metadata columns and a result bundle in
