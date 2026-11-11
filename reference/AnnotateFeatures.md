@@ -22,9 +22,9 @@ AnnotateFeatures(
     "gene_type"),
   assays = "RNA",
   overwrite = FALSE,
-  ...,
   verbose = TRUE,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 ```
 
@@ -98,10 +98,6 @@ AnnotateFeatures(
 
   Whether to overwrite existing metadata.
 
-- ...:
-
-  Passed to helper functions.
-
 - verbose:
 
   Whether to print the message. Default is `TRUE`.
@@ -110,6 +106,10 @@ AnnotateFeatures(
 
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
+
+- ...:
+
+  Arguments passed to other functions.
 
 ## See also
 
@@ -125,8 +125,8 @@ pancreas_sub <- AnnotateFeatures(
   species = "Mus_musculus",
   db = "TF"
 )
-#> ℹ [2026-11-10 09:47:20] Species: "Mus_musculus"
-#> ℹ [2026-11-10 09:47:20] Preparing database: TF
+#> ℹ [2026-11-11 04:37:59] Species: "Mus_musculus"
+#> ℹ [2026-11-11 04:37:59] Preparing database: TF
 head(
   GetFeaturesData(
     pancreas_sub

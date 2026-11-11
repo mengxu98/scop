@@ -29,8 +29,8 @@ RunStatialKontextual(
   store_input = FALSE,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 ```
 
@@ -108,7 +108,7 @@ RunStatialKontextual(
 
 - store_input:
 
-  Whether to store the backend input cell table in `object@tools`.
+  Whether to store the input cell table in `object@tools`.
 
 - verbose:
 
@@ -120,14 +120,14 @@ RunStatialKontextual(
   acquisition coordinates; `"legacy_display"` remains an explicit
   compatibility option.
 
-- ...:
-
-  Additional named arguments passed to `Statial::Kontextual()`.
-
 - srt:
 
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
+
+- ...:
+
+  Arguments passed to other functions.
 
 ## Value
 

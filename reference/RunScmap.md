@@ -85,10 +85,10 @@ query <- RunScmap(
   ref_group = "celltype", method = "scmapCluster", nfeatures = 200,
   verbose = FALSE
 )
-#> ℹ [2026-11-10 10:42:25] Data type is log-normalized
-#> ℹ [2026-11-10 10:42:25] Data type is log-normalized
+#> ℹ [2026-11-11 05:38:55] Data type is log-normalized
+#> ℹ [2026-11-11 05:38:55] Data type is log-normalized
 query <- RunStandardWorkflow(query, verbose = FALSE, linear_reduction_dims = 10)
-#> ℹ [2026-11-10 10:42:26] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-11 05:38:56] Skip `log1p()` because `layer = data` is not "counts"
 CellDimPlot(
   query,
   group.by = "scmap_annotation",

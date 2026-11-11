@@ -20,7 +20,7 @@ loom_to_adata(path, verbose = TRUE, ...)
 
 - ...:
 
-  Additional arguments passed to `scanpy.read_loom()`.
+  Arguments passed to other functions.
 
 ## Value
 

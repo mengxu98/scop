@@ -57,7 +57,7 @@ RunCIBERSORT(
 - absolute:
 
   Passed to CIBERSORT when supported by the installed package. The C++
-  backend currently returns relative fractions.
+  implementation currently returns relative fractions.
 
 - backend:
 
@@ -66,12 +66,12 @@ RunCIBERSORT(
 
 - cores:
 
-  Number of CPU cores used by the C++ backend. `NULL` uses up to 4 local
+  Number of CPU cores used by CIBERSORT. `NULL` uses up to 4 local
   cores.
 
 - seed:
 
-  Random seed used by the C++ permutation backend.
+  Random seed used by CIBERSORT permutation testing.
 
 - verbose:
 
@@ -79,7 +79,7 @@ RunCIBERSORT(
 
 - ...:
 
-  Additional parameters forwarded to the internal deconvolution backend.
+  Arguments passed to other functions.
 
 ## Value
 

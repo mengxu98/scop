@@ -350,23 +350,23 @@ A `ggplot`, `patchwork`, or list of `ggplot` objects.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-11-10 09:50:19] Start standard processing workflow...
-#> ℹ [2026-11-10 09:50:19] Checking a list of <Seurat>...
-#> ! [2026-11-10 09:50:19] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-11 04:41:25] Start standard processing workflow...
+#> ℹ [2026-11-11 04:41:25] Checking a list of <Seurat>...
+#> ! [2026-11-11 04:41:25] Data 1/1 of the `srt_list` is "unknown"
 #> Warning: Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-11-10 09:50:19] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-11-10 09:50:19] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-10 09:50:19] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-10 09:50:19] Number of available HVF: 2000
-#> ℹ [2026-11-10 09:50:19] Finished check
-#> ℹ [2026-11-10 09:50:19] Perform `ScaleData()`
-#> ℹ [2026-11-10 09:50:20] Perform pca linear dimension reduction
-#> ℹ [2026-11-10 09:50:20] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-11-10 09:50:20] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-10 09:50:20] Reorder clusters...
-#> ℹ [2026-11-10 09:50:21] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-10 09:50:21] Perform umap nonlinear dimension reduction
-#> ✔ [2026-11-10 09:50:27] Standard processing workflow completed
+#> ℹ [2026-11-11 04:41:25] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-11 04:41:25] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-11 04:41:25] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-11 04:41:25] Number of available HVF: 2000
+#> ℹ [2026-11-11 04:41:25] Finished check
+#> ℹ [2026-11-11 04:41:25] Perform `ScaleData()`
+#> ℹ [2026-11-11 04:41:25] Perform pca linear dimension reduction
+#> ℹ [2026-11-11 04:41:26] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-11-11 04:41:26] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-11 04:41:26] Reorder clusters...
+#> ℹ [2026-11-11 04:41:26] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-11 04:41:26] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-11 04:41:32] Standard processing workflow completed
 p1 <- CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType",
@@ -574,8 +574,10 @@ CellDimPlot(
   pt.alpha = 0,
   density_filled = TRUE,
   density_color = "#355D71",
-  density_filled_palcolor = c("#F2F7F5", "#C5DFD8", "#89BDB5",
-                             "#4A969E", "#286B87", "#253D63"),
+  density_filled_palcolor = c(
+    "#F2F7F5", "#C5DFD8", "#89BDB5",
+    "#4A969E", "#286B87", "#253D63"
+  ),
   theme_use = "theme_blank",
   xlab = "UMAP_1",
   ylab = "UMAP_2",
@@ -737,8 +739,8 @@ pancreas_sub <- RunPAGA(
   backend = "cpp",
   return_seurat = TRUE
 )
-#> ℹ [2026-11-10 09:50:41] Running PAGA with BiocNeighbors using 29 neighbors
-#> ✔ [2026-11-10 09:50:41] PAGA cpp backend completed
+#> ℹ [2026-11-11 04:41:50] Running PAGA with BiocNeighbors using 29 neighbors
+#> ✔ [2026-11-11 04:41:50] PAGA cpp backend completed
 
 CellDimPlot(
   pancreas_sub,
@@ -786,10 +788,10 @@ pancreas_sub <- RunSCVELO(
   show_plot = FALSE,
   return_seurat = TRUE
 )
-#> ℹ [2026-11-10 09:50:42] Running scanpy-compatible preprocessing (15998 features -> filter + normalize)...
-#> ℹ [2026-11-10 09:50:46] Running scVelo "stochastic" mode with `backend = 'cpp'` (9699 features)
-#> ✔ [2026-11-10 09:50:49] scVelo "stochastic" mode completed
-#> ✔ [2026-11-10 09:50:49] scVelo cpp backend completed
+#> ℹ [2026-11-11 04:41:52] Running scanpy-compatible preprocessing (15998 features -> filter + normalize)...
+#> ℹ [2026-11-11 04:41:55] Running scVelo "stochastic" mode with `backend = 'cpp'` (9699 features)
+#> ✔ [2026-11-11 04:41:57] scVelo "stochastic" mode completed
+#> ✔ [2026-11-11 04:41:57] scVelo cpp backend completed
 
 CellDimPlot(
   pancreas_sub,

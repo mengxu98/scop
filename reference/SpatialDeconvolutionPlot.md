@@ -5,7 +5,7 @@ Plot spot-by-cell-type proportions stored by
 [`RunCARD()`](https://mengxu98.github.io/scop/reference/RunCARD.md),
 [`RunSPOTlight()`](https://mengxu98.github.io/scop/reference/RunSPOTlight.md).
 The plot reads the stored result directly from `srt@tools[[tool_name]]`
-and never reruns a deconvolution backend.
+and never reruns a deconvolution method.
 [`RunCSIDE()`](https://mengxu98.github.io/scop/reference/RunCSIDE.md) is
 intentionally excluded because its output represents differential or
 context effects rather than cell-type proportions.
@@ -22,9 +22,10 @@ SpatialDeconvolutionPlot(
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE,
-  ...,
   image.scale = c("lowres", "hires"),
-  srt = NULL
+  srt = NULL,
+  image = NULL,
+  ...
 )
 ```
 
@@ -59,11 +60,6 @@ SpatialDeconvolutionPlot(
   Point-map layout controls. When both dimensions are `NULL`, a
   near-square layout with at most three columns is used.
 
-- ...:
-
-  Additional arguments passed to
-  [`SpatialSpotPlot()`](https://mengxu98.github.io/scop/reference/SpatialSpotPlot.md).
-
 - image.scale:
 
   Image scale factor matching the selected raster.
@@ -72,6 +68,14 @@ SpatialDeconvolutionPlot(
 
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
+
+- image:
+
+  Image name or named sample-to-image mapping.
+
+- ...:
+
+  Arguments passed to other functions.
 
 ## Value
 
@@ -128,19 +132,19 @@ spatial <- RunRCTD(
 #> get_de_genes: total DE genes: 35
 #> fitBulk: decomposing bulk
 #> chooseSigma: using initial Q_mat with sigma =  1
-#> Likelihood value: 40089.2008086034
+#> Likelihood value: 40089.2008086036
 #> Sigma value:  0.84
-#> Likelihood value: 39342.4105815424
+#> Likelihood value: 39342.4105815425
 #> Sigma value:  0.69
-#> Likelihood value: 38786.8209416112
+#> Likelihood value: 38786.8209416109
 #> Sigma value:  0.61
-#> Likelihood value: 38578.9034272752
+#> Likelihood value: 38578.9034272757
 #> Sigma value:  0.53
-#> Likelihood value: 38653.2368763568
+#> Likelihood value: 38653.2368763574
 #> Sigma value:  0.49
-#> Likelihood value: 38432.7589536898
+#> Likelihood value: 38432.7589536896
 #> Sigma value:  0.48
-#> Likelihood value: 38431.5741354966
+#> Likelihood value: 38431.5741354963
 #> Sigma value:  0.48
 SpatialDeconvolutionPlot(spatial, tool_name = "RCTD", plot_type = "dominant")
 ```

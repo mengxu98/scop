@@ -18,7 +18,7 @@ FindMultiModalNeighbors(object, ...)
 
 - ...:
 
-  Arguments passed unchanged to \[Seurat::FindMultiModalNeighbors()\].
+  Arguments passed to other functions.
 
 ## Value
 

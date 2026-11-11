@@ -106,10 +106,10 @@
 <span>  simplify_method <span class="op">=</span> <span class="st">"Wang"</span>,</span>
 <span>  simplify_similarityCutoff <span class="op">=</span> <span class="fl">0.7</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  <span class="va">...</span>,</span>
 <span>  nPermSimple <span class="op">=</span> <span class="fl">1e+05</span>,</span>
 <span>  eps <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  srt <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  srt <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -266,10 +266,6 @@ This argument is only used if <code>GO_simplify</code> is <code>TRUE</code>.</p>
 Default is <code>TRUE</code>.</p></dd>
 
 
-<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Passed to helper functions.</p></dd>
-
-
 <dt id="arg-npermsimple">nPermSimple<a class="anchor" aria-label="anchor" href="#arg-npermsimple"></a></dt>
 <dd><p>Number of initial simple permutations used by fgsea.</p></dd>
 
@@ -282,6 +278,10 @@ without a positive lower bound.</p></dd>
 <dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
 <dd><p>Deprecated alias for <code>object</code>; supply exactly one of the two. It
 will be removed in scop 1.0.0.</p></dd>
+
+
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>Arguments passed to other functions.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -325,14 +325,14 @@ Enrichment result is a list with the following component:</p><ul><li><p><code>en
 <span class="r-in"><span>  nPermSimple <span class="op">=</span> <span class="fl">10000</span>,</span></span>
 <span class="r-in"><span>  eps <span class="op">=</span> <span class="fl">0</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-10 10:19:34] Start <span style="color: #0000BB;">GSEA</span> analysis</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-11-10 10:19:34] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-10 10:19:34] Preparing custom GSEA database from `TERM2GENE`/`TERM2NAME` ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-10 10:19:34] Prepared <span style="color: #0000BB;">15</span> ranked gene rows after ID mapping.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-10 10:19:34] Running GSEA for <span style="color: #0000BB;">1</span> group/database combination(s) ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-10 10:19:34] Running GSEA: group <span style="color: #0000BB;">"Cluster1"</span>, database <span style="color: #0000BB;">"custom"</span>, genes <span style="color: #0000BB;">15</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-10 10:19:34] Finished GSEA: group <span style="color: #0000BB;">"Cluster1"</span>, database <span style="color: #0000BB;">"custom"</span>.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-11-10 10:19:34] <span style="color: #0000BB;">GSEA</span> analysis done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-11 05:14:47] Start <span style="color: #0000BB;">GSEA</span> analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-11-11 05:14:47] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-11 05:14:47] Preparing custom GSEA database from `TERM2GENE`/`TERM2NAME` ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-11 05:14:48] Prepared <span style="color: #0000BB;">15</span> ranked gene rows after ID mapping.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-11 05:14:48] Running GSEA for <span style="color: #0000BB;">1</span> group/database combination(s) ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-11 05:14:48] Running GSEA: group <span style="color: #0000BB;">"Cluster1"</span>, database <span style="color: #0000BB;">"custom"</span>, genes <span style="color: #0000BB;">15</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-11 05:14:48] Finished GSEA: group <span style="color: #0000BB;">"Cluster1"</span>, database <span style="color: #0000BB;">"custom"</span>.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-11-11 05:14:48] <span style="color: #0000BB;">GSEA</span> analysis done</span>
 <span class="r-in"><span><span class="fu"><a href="GSEAPlot.html">GSEAPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  res <span class="op">=</span> <span class="va">gsea_out</span>,</span></span>
 <span class="r-in"><span>  db <span class="op">=</span> <span class="st">"custom"</span>,</span></span>

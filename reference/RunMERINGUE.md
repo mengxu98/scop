@@ -102,8 +102,8 @@ RunMERINGUE(
 - cores:
 
   Number of cores passed to MERINGUE permutation tests. Mapped to
-  `ncores` for the R backend and `n_threads` for the native backend.
-  will be removed in scop 1.0.0.
+  `ncores` for the R backend and `n_threads` for the C++ backend. will
+  be removed in scop 1.0.0.
 
 - pairwise_features:
 

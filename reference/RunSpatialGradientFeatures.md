@@ -53,7 +53,7 @@ RunSpatialGradientFeatures(
 - backend:
 
   Computation backend. The supported backend is `"cpp"`, which uses the
-  compiled native spatial implementation.
+  compiled spatial implementation.
 
 - result_name:
 
@@ -70,7 +70,7 @@ RunSpatialGradientFeatures(
 
 - variables:
 
-  Numeric variables or genes tested by the native backend. If `NULL`,
+  Numeric variables or genes to test. If `NULL`,
   `srt@tools[["SpatialVariableFeatures"]]` is used first, then variable
   features, then all assay features.
 
@@ -86,18 +86,16 @@ RunSpatialGradientFeatures(
 
 - start, end, traj_df:
 
-  Trajectory geometry used by the native backend when
-  `reference = "trajectory"`.
+  Trajectory geometry used when `reference = "trajectory"`.
 
 - annotation.by, annotation.groups:
 
-  Metadata grouping used to create the native annotation mask.
+  Metadata grouping used to create the annotation mask.
 
 - annotation.variable, annotation.threshold:
 
-  Numeric variable and threshold used to create a native numeric
-  annotation mask. Numeric thresholds are interpreted as
-  `">{threshold}"`.
+  Numeric variable and threshold used to create a numeric annotation
+  mask. Numeric thresholds are interpreted as `">{threshold}"`.
 
 - unit:
 
@@ -107,12 +105,11 @@ RunSpatialGradientFeatures(
 - sign_var, sign_threshold:
 
   Column and cutoff used to select top gradient variables from the
-  native significance table.
+  significance table.
 
 - n_random, seed:
 
-  Permutation count and random seed used by the native screening
-  backend.
+  Permutation count and random seed used for screening.
 
 - n_bins:
 
@@ -148,7 +145,7 @@ RunSpatialGradientFeatures(
   is raw acquisition coordinates, so `start`, `end`, trajectory
   positions, and C++ distances share raw coordinate units. Use
   `"legacy_display"` explicitly for pre-0.9.0 display coordinates.
-  Results retain the raw coordinate units used by the native backend.
+  Results retain the raw coordinate units.
 
 - srt:
 
@@ -165,8 +162,8 @@ when `set_variable_features = TRUE`.
 
 ## Details
 
-The current native interface is intentionally small. Older calls that
-pass `sample_name`, `platform`, `img_scale_fct`, `assay_modality`,
+The current interface is intentionally small. Older calls that pass
+`sample_name`, `platform`, `img_scale_fct`, `assay_modality`,
 `trajectory_id`, `width`, `annotation_id`, `core`, `distance`,
 `angle_span`, `resolution`, `model_add`, `model_subset`, `model_remove`,
 `control`, or `annotation_ids` now fail as unused arguments. Use
@@ -174,7 +171,7 @@ pass `sample_name`, `platform`, `img_scale_fct`, `assay_modality`,
 use `annotation.by`/`annotation.groups` or
 `annotation.variable`/`annotation.threshold` for annotation references;
 and use `n_random`, `n_bins`, `min_spots`, `sign_threshold`, and
-`nfeatures` for native screening controls.
+`nfeatures` for screening controls.
 
 ## Examples
 

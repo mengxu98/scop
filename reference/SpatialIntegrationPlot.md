@@ -22,9 +22,10 @@ SpatialIntegrationPlot(
   palcolor = NULL,
   theme_use = "theme_scop",
   theme_args = list(),
-  ...,
   image.scale = c("lowres", "hires"),
-  srt = NULL
+  srt = NULL,
+  image = NULL,
+  ...
 )
 ```
 
@@ -94,17 +95,6 @@ SpatialIntegrationPlot(
 
   Theme name or function, plus extra theme arguments.
 
-- ...:
-
-  Additional arguments passed to
-  [`SpatialSpotPlot()`](https://mengxu98.github.io/scop/reference/SpatialSpotPlot.md)
-  or
-  [`CellDimPlot()`](https://mengxu98.github.io/scop/reference/CellDimPlot.md).
-  For spatial maps, `image` can be one image or a named sample-to-image
-  vector using names in the merged object. By default, each sample uses
-  its uniquely matching image. `nrow`, `ncol` and `byrow` control the
-  layout of separate image panels.
-
 - image.scale:
 
   Image scale factor matching the raster stored in the selected image.
@@ -115,6 +105,15 @@ SpatialIntegrationPlot(
 
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
+
+- image:
+
+  Spatial image name. Required when multiple images are present; a
+  single image is selected automatically when `NULL`.
+
+- ...:
+
+  Arguments passed to other functions.
 
 ## Value
 

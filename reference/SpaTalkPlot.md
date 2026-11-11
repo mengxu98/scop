@@ -1,7 +1,7 @@
 # Plot stored SpaTalk results
 
 Plot a stored SpaTalk communication result without rerunning the
-optional backend.
+analysis.
 
 ## Usage
 
@@ -37,7 +37,7 @@ SpaTalkPlot(
 
 - ...:
 
-  Arguments passed to the corresponding SCOP CCC plot.
+  Arguments passed to other functions.
 
 ## Value
 

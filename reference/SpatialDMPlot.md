@@ -17,8 +17,8 @@ SpatialDMPlot(
   palcolor = NULL,
   theme_use = "theme_scop",
   theme_args = list(),
-  ...,
-  image.scale = c("lowres", "hires")
+  image.scale = c("lowres", "hires"),
+  ...
 )
 ```
 
@@ -56,13 +56,13 @@ SpatialDMPlot(
 
   SCOP plotting controls.
 
-- ...:
-
-  Additional arguments passed to SCOP spatial plotting functions.
-
 - image.scale:
 
   Image scale factor matching the selected raster.
+
+- ...:
+
+  Arguments passed to other functions.
 
 ## Value
 

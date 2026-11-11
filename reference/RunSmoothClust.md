@@ -35,8 +35,8 @@ RunSmoothClust(
   seed = 11,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 ```
 
@@ -89,8 +89,7 @@ RunSmoothClust(
   Smoothing parameters passed to
   [`smoothclust::smoothclust()`](https://rdrr.io/pkg/smoothclust/man/smoothclust.html).
   `bandwidth` uses the selected coordinate units; `truncate` is the
-  backend's dimensionless kernel cutoff, and `k` and are unitless
-  counts.
+  method's dimensionless kernel cutoff, and `k` and are unitless counts.
 
 - cores:
 
@@ -147,15 +146,14 @@ RunSmoothClust(
   `"legacy_display"` explicitly to reproduce the display-scaled behavior
   used before scop 0.9.0.
 
-- ...:
-
-  Additional arguments passed to
-  [`smoothclust::smoothclust()`](https://rdrr.io/pkg/smoothclust/man/smoothclust.html).
-
 - srt:
 
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
+
+- ...:
+
+  Arguments passed to other functions.
 
 ## Value
 
@@ -168,8 +166,8 @@ A `Seurat` object with smoothclust clusters in metadata. When
 Stored results retain a private per-cell identity metadata column for
 [`GetSpatialResult()`](https://mengxu98.github.io/scop/reference/GetSpatialResult.md).
 Preserve this column when subsetting or renaming cells. The accessor
-returns current-cell assignments; stored native results and fit
-parameters remain unchanged.
+returns current-cell assignments; stored results and fit parameters
+remain unchanged.
 
 ## Examples
 
@@ -189,7 +187,7 @@ spatial <- RunSmoothClust(
   cores = 1,
   verbose = FALSE
 )
-#> ! [2026-11-10 10:44:08] Function "smoothness_metric" not found in smoothclust namespace
+#> ! [2026-11-11 05:40:37] Function "smoothness_metric" not found in smoothclust namespace
 SpatialSpotPlot(
   spatial,
   group.by = "SmoothClust_cluster",

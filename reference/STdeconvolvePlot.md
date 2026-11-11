@@ -1,6 +1,6 @@
 # Plot STdeconvolve topic proportions
 
-Plot stored topic proportions without rerunning the optional backend.
+Plot stored topic proportions without rerunning the deconvolution.
 Multi-topic point maps use one shared proportion scale and reserve title
 space above the automatic layout.
 
@@ -17,9 +17,10 @@ STdeconvolvePlot(
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE,
-  ...,
   image.scale = c("lowres", "hires"),
-  srt = NULL
+  srt = NULL,
+  image = NULL,
+  ...
 )
 ```
 
@@ -61,11 +62,6 @@ STdeconvolvePlot(
   Point-plot layout controls. When both `nrow` and `ncol` are `NULL`, a
   near-square layout with at most three columns is used.
 
-- ...:
-
-  Additional arguments passed to
-  [`SpatialSpotPlot()`](https://mengxu98.github.io/scop/reference/SpatialSpotPlot.md).
-
 - image.scale:
 
   Image scale factor matching the raster stored in the selected image.
@@ -76,6 +72,15 @@ STdeconvolvePlot(
 
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
+
+- image:
+
+  Spatial image name. Required when multiple images are present; a
+  single image is selected automatically when `NULL`.
+
+- ...:
+
+  Arguments passed to other functions.
 
 ## Value
 

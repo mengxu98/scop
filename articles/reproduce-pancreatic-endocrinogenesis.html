@@ -465,19 +465,22 @@ top regulons for heatmaps and network plots.</p>
 <span><span class="op">)</span></span>
 <span><span class="fu">print_scop_plot</span><span class="op">(</span><span class="va">scenic_rss_heatmap</span><span class="op">)</span></span></code></pre></div>
 <p>The <code>rss_heatmap</code> above illustrates cluster-level
-specificity (RSS), while <code>activity_heatmap</code> visualizes
-cellular Regulon Activity Scores (RAS) across cell types for
-comparison.</p>
+specificity (RSS). Use <code><a href="../reference/GroupHeatmap.html">GroupHeatmap()</a></code> to compare Regulon
+Activity Scores (RAS) across cell types from the stored
+<code>scenic</code> assay.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">scenic_activity_heatmap</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/SCENICPlot.html">SCENICPlot</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">activity_features</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">[[</span><span class="st">"scenic"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">[</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">top_regulons</span>, <span class="va">pancreas_sub</span><span class="op">[[</span><span class="st">"scenic"</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">termnames</span><span class="op">)</span></span>
+<span><span class="op">]</span></span>
+<span><span class="va">scenic_activity_heatmap</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/GroupHeatmap.html">GroupHeatmap</a></span><span class="op">(</span></span>
 <span>  <span class="va">pancreas_sub</span>,</span>
 <span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span>
-<span>  plot_type <span class="op">=</span> <span class="st">"activity_heatmap"</span>,</span>
-<span>  features <span class="op">=</span> <span class="va">top_regulons</span>,</span>
-<span>  activity_scale <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  heatmap_order <span class="op">=</span> <span class="st">"group"</span>,</span>
-<span>  heatmap_show_row_names <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  heatmap_cluster_columns <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  assay <span class="op">=</span> <span class="st">"scenic"</span>,</span>
+<span>  layer <span class="op">=</span> <span class="st">"data"</span>,</span>
+<span>  features <span class="op">=</span> <span class="va">activity_features</span>,</span>
+<span>  exp_method <span class="op">=</span> <span class="st">"zscore"</span>,</span>
+<span>  show_row_names <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  cluster_columns <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu">print_scop_plot</span><span class="op">(</span><span class="va">scenic_activity_heatmap</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">

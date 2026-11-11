@@ -59,8 +59,7 @@ RuntAge(
   `backend = "cpp"`, `.pkl` for `backend = "python"`). Names must match
   one or more of `"scaled"`, `"scaled_diff"`, `"yugene"`, and
   `"yugene_diff"`. If `NULL`, model files are downloaded from
-  `mengxu98/datasets` for the C++ backend or Zenodo for the Python
-  backend.
+  `mengxu98/datasets` for the C++ implementation or Zenodo for Python.
 
 - backend:
 

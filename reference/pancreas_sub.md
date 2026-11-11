@@ -1,4 +1,4 @@
-# A subsetted version of mouse 'pancreas' datasets
+# A subsetted mouse 'pancreas' datasets
 
 Mouse pancreatic endocrinogenesis dataset from [Bastidas-Ponce et al.
 (2019)](https://doi.org/10.1242/dev.173849). A total of 1000 cells were
@@ -11,7 +11,6 @@ A `Seurat` object.
 ## Source
 
 [scvelo.datasets.pancreas](https://scvelo.readthedocs.io/en/stable/scvelo.datasets.pancreas.html),
-
 [endocrinogenesis_day15.h5ad](https://github.com/theislab/scvelo_notebooks/raw/master/data/Pancreas/endocrinogenesis_day15.h5ad)
 
 ## Examples

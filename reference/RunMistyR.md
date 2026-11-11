@@ -35,8 +35,8 @@ RunMistyR(
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
   sample.by = NULL,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 ```
 
@@ -134,14 +134,14 @@ RunMistyR(
   separate runs; when NULL, the caller is responsible for supplying one
   spatial coordinate field.
 
-- ...:
-
-  Additional named arguments passed to `mistyR::run_misty()`.
-
 - srt:
 
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
+
+- ...:
+
+  Arguments passed to other functions.
 
 ## Value
 

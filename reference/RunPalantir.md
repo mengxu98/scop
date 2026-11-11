@@ -47,7 +47,6 @@ RunPalantir(
   envname = NULL,
   conda = "auto",
   backend = c("python", "cpp"),
-  allow_approximate = FALSE,
   return_seurat = !is.null(srt),
   verbose = TRUE,
   srt = NULL
@@ -234,13 +233,10 @@ RunPalantir(
 
   Backend used to compute Palantir. `"python"` keeps the reference
   Palantir workflow and remains the default. `"cpp"` uses an approximate
-  C++ workflow and stores results in `srt@tools[["Palantir"]]`. The C++
-  backend never switches to Python implicitly.
-
-- allow_approximate:
-
-  Whether to allow the approximate C++ workflow. This must be `TRUE`
-  when `backend = "cpp"`.
+  C++ workflow, stores results in `srt@tools[["Palantir"]]`, and issues
+  a warning that results may not be completely identical to the
+  reference workflow. The C++ implementation never switches to Python
+  implicitly.
 
 - return_seurat:
 
@@ -264,22 +260,22 @@ RunPalantir(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-11-10 10:39:25] Start standard processing workflow...
-#> ℹ [2026-11-10 10:39:25] Checking a list of <Seurat>...
-#> ! [2026-11-10 10:39:25] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-11-10 10:39:25] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-11-10 10:39:25] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-10 10:39:25] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-10 10:39:25] Number of available HVF: 2000
-#> ℹ [2026-11-10 10:39:25] Finished check
-#> ℹ [2026-11-10 10:39:25] Perform `ScaleData()`
-#> ℹ [2026-11-10 10:39:25] Perform pca linear dimension reduction
-#> ℹ [2026-11-10 10:39:25] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-11-10 10:39:26] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-10 10:39:26] Reorder clusters...
-#> ℹ [2026-11-10 10:39:26] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-10 10:39:26] Perform umap nonlinear dimension reduction
-#> ✔ [2026-11-10 10:39:36] Standard processing workflow completed
+#> ℹ [2026-11-11 05:35:51] Start standard processing workflow...
+#> ℹ [2026-11-11 05:35:51] Checking a list of <Seurat>...
+#> ! [2026-11-11 05:35:51] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-11 05:35:51] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-11 05:35:51] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-11 05:35:51] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-11 05:35:51] Number of available HVF: 2000
+#> ℹ [2026-11-11 05:35:51] Finished check
+#> ℹ [2026-11-11 05:35:51] Perform `ScaleData()`
+#> ℹ [2026-11-11 05:35:51] Perform pca linear dimension reduction
+#> ℹ [2026-11-11 05:35:52] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-11-11 05:35:52] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-11 05:35:52] Reorder clusters...
+#> ℹ [2026-11-11 05:35:52] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-11 05:35:52] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-11 05:36:01] Standard processing workflow completed
 pancreas_sub <- RunPalantir(
   pancreas_sub,
   group.by = "SubCellType",
@@ -287,11 +283,11 @@ pancreas_sub <- RunPalantir(
   nonlinear_reduction = "UMAP",
   early_group = "Ductal",
   terminal_groups = c("Alpha", "Beta", "Delta", "Epsilon"),
-  backend = "cpp",
-  allow_approximate = TRUE
+  backend = "cpp"
 )
-#> ℹ [2026-11-10 10:39:36] Computing Palantir KNN graph with BiocNeighbors...
-#> ✔ [2026-11-10 10:39:36] Palantir cpp backend completed
+#> ! [2026-11-11 05:36:01] RunPalantir(backend = "cpp") uses an approximate C++ implementation; results may not be completely identical to the reference python workflow.
+#> ℹ [2026-11-11 05:36:01] Computing Palantir KNN graph with BiocNeighbors...
+#> ✔ [2026-11-11 05:36:01] Palantir cpp backend completed
 
 FeatureDimPlot(
   pancreas_sub,

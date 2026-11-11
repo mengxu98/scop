@@ -1,6 +1,6 @@
 # Quantify gene activity from indexed ATAC fragments
 
-Run native
+Run
 [`Signac::GeneActivity()`](https://stuartlab.org/signac/reference/GeneActivity.html)
 with explicit annotation and counting parameters, then store the sparse
 result in a new gene-activity assay. Activity measures accessibility
@@ -49,7 +49,7 @@ RunGeneActivity(
 
 - normalize:
 
-  Whether to populate the new assay's data layer using native Seurat
+  Whether to populate the new assay's data layer using Seurat
   LogNormalize. Raw activity counts remain in counts.
 
 - scale.factor:
@@ -58,17 +58,17 @@ RunGeneActivity(
 
 - verbose:
 
-  Whether native backends print progress messages.
+  Whether to print progress messages.
 
 ## Value
 
 The Seurat object with a new activity assay and a source receipt in
 `Misc(object[[new.assay]], "scop_gene_activity")`. The default assay,
 source counts, original metadata columns and existing reductions are
-unchanged. Native count-QC columns may be added for the new assay. The
-receipt records active fragment resources and calculation-time IDs;
-later native subsetting or renaming does not synchronize this snapshot.
-Caller RNG state is restored.
+unchanged. Count-QC columns may be added for the new assay. The receipt
+records active fragment resources and calculation-time IDs; later
+subsetting or renaming does not synchronize this snapshot. Caller RNG
+state is restored.
 
 ## Details
 
@@ -77,26 +77,26 @@ Attach a verified transcript annotation with
 before calling this function. Its reference label must equal the source
 assay's label. Required fields are gene_id, gene_name and gene_biotype;
 gene_id must be non-missing and non-empty on every row. Repeated gene
-IDs may describe multiple transcripts only on the same contig and native
-strand (unstranded rows are treated as plus strand). Native Signac
-collapses transcript coordinates to gene spans, extends promoter
-intervals, and counts fragment-record overlaps; this wrapper does not
-substitute peak sums. Native handling of missing chromosomes and gene
-filtering is retained. Output genes and all source-assay cells are
-recorded in the assay receipt. Native Signac disambiguates repeated gene
-symbols; use `gene.id = TRUE` for stable gene identifiers. Final output
-IDs must be unique and survive native Seurat assay creation unchanged.
-Native backends that drop matrix dimensions for a single retained gene
-or cell are rejected rather than reconstructed. Width filtering uses the
-gene span before promoter extension; native gene filtering and
-missing-contig behavior do not establish sequencing coverage.
+IDs may describe multiple transcripts only on the same contig and strand
+(unstranded rows are treated as plus strand). Signac collapses
+transcript coordinates to gene spans, extends promoter intervals, and
+counts fragment-record overlaps; this wrapper does not substitute peak
+sums. Handling of missing chromosomes and gene filtering is retained.
+Output genes and all source-assay cells are recorded in the assay
+receipt. Signac disambiguates repeated gene symbols; use
+`gene.id = TRUE` for stable gene identifiers. Final output IDs must be
+unique and survive Seurat assay creation unchanged. Methods that drop
+matrix dimensions for a single retained gene or cell are rejected rather
+than reconstructed. Width filtering uses the gene span before promoter
+extension; gene filtering and missing-contig behavior do not establish
+sequencing coverage.
 
-Duplicate native output IDs, including distinct genes sharing an
-identical counting window, are rejected explicitly. No private
-version-specific recovery, synthetic IDs, row summation or silent gene
-dropping is performed. Select unambiguous genes or revise the annotation
-explicitly before retrying. Gene IDs alone do not resolve identical
-counting windows; their counts cannot distinguish the associated genes.
+Duplicate output IDs, including distinct genes sharing an identical
+counting window, are rejected explicitly. No private version-specific
+recovery, synthetic IDs, row summation or silent gene dropping is
+performed. Select unambiguous genes or revise the annotation explicitly
+before retrying. Gene IDs alone do not resolve identical counting
+windows; their counts cannot distinguish the associated genes.
 
 ## See also
 
@@ -106,41 +106,39 @@ counting windows; their counts cannot distinguish the associated genes.
 ## Examples
 
 ``` r
-if (requireNamespace("Rsamtools", quietly = TRUE)) {
-  (function() {
-    directory <- tempfile("activity_example_")
-    dir.create(directory)
-    on.exit(unlink(directory, recursive = TRUE))
-    plain <- file.path(directory, "fragments.tsv")
-    writeLines(c(
-      "chr1\t100\t120\tA\t5", "chr1\t300\t320\tB\t2",
-      "chr1\t610\t630\tC\t3"
-    ), plain)
-    path <- paste0(plain, ".gz")
-    Rsamtools::bgzip(plain, dest = path, overwrite = TRUE)
-    Rsamtools::indexTabix(path, format = "bed")
-    ranges <- GenomicRanges::makeGRangesFromDataFrame(data.frame(
-      seqnames = "chr1", start = c(101, 301, 601), end = c(150, 350, 650)
-    ))
-    annotation <- ranges
-    GenomeInfoDb::genome(annotation) <- "toy"
-    annotation$gene_id <- paste0("GENE", 1:3)
-    annotation$gene_name <- annotation$gene_id
-    annotation$gene_biotype <- "protein_coding"
-    annotation$type <- "gene"
-    annotation$tx_id <- annotation$gene_id
-    counts <- Matrix::sparseMatrix(
-      i = 1:3, j = 1:3, x = 1,
-      dimnames = list(paste0("p", 1:3), c("A", "B", "C"))
-    )
-    atac <- ReadATACData(counts,
-      ranges = ranges, genome = "toy", annotation = annotation,
-      fragments = path, fragment.cells = c(A = "A", B = "B", C = "C"), verbose = FALSE
-    )
-    activity <- RunGeneActivity(atac, gene.id = TRUE, extend.upstream = 0, verbose = FALSE)
-    SeuratObject::GetAssayData(activity, assay = "ACTIVITY", layer = "counts")
-  })()
-}
+(function() {
+  directory <- tempfile("activity_example_")
+  dir.create(directory)
+  on.exit(unlink(directory, recursive = TRUE))
+  plain <- file.path(directory, "fragments.tsv")
+  writeLines(c(
+    "chr1\t100\t120\tA\t5", "chr1\t300\t320\tB\t2",
+    "chr1\t610\t630\tC\t3"
+  ), plain)
+  path <- paste0(plain, ".gz")
+  Rsamtools::bgzip(plain, dest = path, overwrite = TRUE)
+  Rsamtools::indexTabix(path, format = "bed")
+  ranges <- GenomicRanges::makeGRangesFromDataFrame(data.frame(
+    seqnames = "chr1", start = c(101, 301, 601), end = c(150, 350, 650)
+  ))
+  annotation <- ranges
+  GenomeInfoDb::genome(annotation) <- "toy"
+  annotation$gene_id <- paste0("GENE", 1:3)
+  annotation$gene_name <- annotation$gene_id
+  annotation$gene_biotype <- "protein_coding"
+  annotation$type <- "gene"
+  annotation$tx_id <- annotation$gene_id
+  counts <- Matrix::sparseMatrix(
+    i = 1:3, j = 1:3, x = 1,
+    dimnames = list(paste0("p", 1:3), c("A", "B", "C"))
+  )
+  atac <- ReadATACData(counts,
+    ranges = ranges, genome = "toy", annotation = annotation,
+    fragments = path, fragment.cells = c(A = "A", B = "B", C = "C"), verbose = FALSE
+  )
+  activity <- RunGeneActivity(atac, gene.id = TRUE, extend.upstream = 0, verbose = FALSE)
+  SeuratObject::GetAssayData(activity, assay = "ACTIVITY", layer = "counts")
+})()
 #> 3 x 3 sparse Matrix of class "dgCMatrix"
 #>       A B C
 #> GENE1 1 . .

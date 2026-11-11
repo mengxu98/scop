@@ -35,8 +35,8 @@ RunEnrichment(
   simplify_method = "Wang",
   simplify_similarityCutoff = 0.7,
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 ```
 
@@ -90,7 +90,7 @@ RunEnrichment(
 
 - backend:
 
-  Enrichment backend. `"cpp"` is the default and uses a fast native
+  Enrichment backend. `"cpp"` is the default and uses a fast
   hypergeometric ORA implementation and returns the enrichment table
   without `enrichResult` objects. `"r"` uses
   [`clusterProfiler::enricher()`](https://rdrr.io/pkg/clusterProfiler/man/enricher.html)
@@ -195,14 +195,14 @@ RunEnrichment(
 
   Whether to print the message. Default is `TRUE`.
 
-- ...:
-
-  Passed to helper functions.
-
 - srt:
 
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
+
+- ...:
+
+  Arguments passed to other functions.
 
 ## Value
 
@@ -260,7 +260,7 @@ enrich_out <- RunEnrichment(
   TERM2GENE = term2gene,
   minGSSize = 2
 )
-#> ℹ [2026-11-10 10:18:38] Start Enrichment analysis
+#> ℹ [2026-11-11 05:13:51] Start Enrichment analysis
 EnrichmentPlot(
   res = enrich_out,
   db = "custom",

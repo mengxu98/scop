@@ -81,9 +81,7 @@ RunMDS(
 
 - ...:
 
-  Passed to [stats::cmdscale](https://rdrr.io/r/stats/cmdscale.html),
-  [MASS::isoMDS](https://rdrr.io/pkg/MASS/man/isoMDS.html) or
-  [MASS::sammon](https://rdrr.io/pkg/MASS/man/sammon.html).
+  Arguments passed to other functions.
 
 - assay:
 
@@ -145,22 +143,22 @@ the retained coordinates, where `n` is the number of embedded points.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-11-10 10:37:19] Start standard processing workflow...
-#> ℹ [2026-11-10 10:37:19] Checking a list of <Seurat>...
-#> ! [2026-11-10 10:37:19] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-11-10 10:37:19] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-11-10 10:37:19] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-10 10:37:19] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-10 10:37:19] Number of available HVF: 2000
-#> ℹ [2026-11-10 10:37:19] Finished check
-#> ℹ [2026-11-10 10:37:19] Perform `ScaleData()`
-#> ℹ [2026-11-10 10:37:19] Perform pca linear dimension reduction
-#> ℹ [2026-11-10 10:37:20] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-11-10 10:37:20] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-10 10:37:20] Reorder clusters...
-#> ℹ [2026-11-10 10:37:20] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-10 10:37:20] Perform umap nonlinear dimension reduction
-#> ✔ [2026-11-10 10:37:30] Standard processing workflow completed
+#> ℹ [2026-11-11 05:33:41] Start standard processing workflow...
+#> ℹ [2026-11-11 05:33:41] Checking a list of <Seurat>...
+#> ! [2026-11-11 05:33:41] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-11 05:33:41] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-11 05:33:41] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-11 05:33:41] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-11 05:33:41] Number of available HVF: 2000
+#> ℹ [2026-11-11 05:33:41] Finished check
+#> ℹ [2026-11-11 05:33:41] Perform `ScaleData()`
+#> ℹ [2026-11-11 05:33:41] Perform pca linear dimension reduction
+#> ℹ [2026-11-11 05:33:42] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-11-11 05:33:42] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-11 05:33:42] Reorder clusters...
+#> ℹ [2026-11-11 05:33:42] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-11 05:33:42] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-11 05:33:51] Standard processing workflow completed
 pancreas_sub <- RunMDS(pancreas_sub)
 CellDimPlot(
   pancreas_sub,

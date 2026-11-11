@@ -1,7 +1,7 @@
 # Plot stored MISTy results
 
 Plot model improvements or view contributions from a result produced by
-\[RunMistyR()\] without rerunning the backend.
+\[RunMistyR()\] without rerunning the model.
 
 ## Usage
 
@@ -42,7 +42,7 @@ MistyRPlot(
 
   Numeric result column to display. For \`type = "improvements"\` use
   \`"gain.R2"\` or \`"gain.RMSE"\`; for \`type = "contributions"\`, use
-  \`"contribution"\` or \`"importance"\` as provided by the backend.
+  \`"contribution"\` or \`"importance"\` as provided by the model.
   \`NULL\` defaults to \`"gain.R2"\` for improvements and
   \`"contribution"\` for contributions, and errors if that column is not
   present.

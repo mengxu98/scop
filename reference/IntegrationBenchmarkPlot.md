@@ -26,8 +26,8 @@ IntegrationBenchmarkPlot(
   nrow = NULL,
   ncol = NULL,
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 ```
 
@@ -75,13 +75,13 @@ IntegrationBenchmarkPlot(
 - combine:
 
   Combine plots with
-  [patchwork](https://patchwork.data-imaginist.com/reference/patchwork-package.html).
+  [`patchwork::wrap_plots()`](https://patchwork.data-imaginist.com/reference/wrap_plots.html).
   `combine = FALSE` returns a list of ggplots.
 
 - nrow:
 
   Combine plots with
-  [patchwork](https://patchwork.data-imaginist.com/reference/patchwork-package.html).
+  [`patchwork::wrap_plots()`](https://patchwork.data-imaginist.com/reference/wrap_plots.html).
   `combine = FALSE` returns a list of ggplots.
 
 - ncol:
@@ -92,14 +92,14 @@ IntegrationBenchmarkPlot(
 
   Whether to print the message. Default is `TRUE`.
 
-- ...:
-
-  The message to print.
-
 - srt:
 
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
+
+- ...:
+
+  Arguments passed to other functions.
 
 ## Value
 

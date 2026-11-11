@@ -18,8 +18,8 @@ RunSpaNorm(
   store_spe = FALSE,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 ```
 
@@ -60,8 +60,7 @@ RunSpaNorm(
 
 - store_spe:
 
-  Whether to store the backend `SpatialExperiment` returned by
-  `SpaNorm`.
+  Whether to store the `SpatialExperiment` returned by `SpaNorm`.
 
 - verbose:
 
@@ -73,22 +72,20 @@ RunSpaNorm(
   coordinates; use `"legacy_display"` explicitly to reproduce the
   display-scaled coordinates used before scop 0.9.0.
 
-- ...:
-
-  Additional arguments passed to
-  [`SpaNorm::SpaNorm()`](https://rdrr.io/pkg/SpaNorm/man/SpaNorm.html),
-  such as `sample.p`.
-
 - srt:
 
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
 
+- ...:
+
+  Arguments passed to other functions.
+
 ## Value
 
 A `Seurat` object with SpaNorm-normalized expression stored in
 `new_assay`. When `store_results = TRUE`, parameters, coordinates,
-features, cells, and optional backend output are stored in
+features, cells, and optional method output are stored in
 `srt@tools[[tool_name]]`.
 
 ## Examples
@@ -130,34 +127,34 @@ spatial <- RunSpaNorm(
 #> iter:  1, iter: 10, log-likelihood: -654745.935523
 #> iter:  1, iter: 11, log-likelihood: -654745.935523 (converged)
 #> iter:  2, estimating gene-wise dispersion
-#> iter:  2, log-likelihood: -645042.838570
+#> iter:  2, log-likelihood: -645042.838569
 #> iter:  2, fitting NB model
-#> iter:  2, iter:  1, log-likelihood: -645042.838570
-#> iter:  2, iter:  2, log-likelihood: -642726.403732
-#> iter:  2, iter:  2, log-likelihood: -642726.403732
-#> iter:  2, iter:  2, log-likelihood: -642726.403732
-#> iter:  2, iter:  3, log-likelihood: -642726.403732 (converged)
+#> iter:  2, iter:  1, log-likelihood: -645042.838569
+#> iter:  2, iter:  2, log-likelihood: -642726.403731
+#> iter:  2, iter:  2, log-likelihood: -642726.403731
+#> iter:  2, iter:  2, log-likelihood: -642726.403731
+#> iter:  2, iter:  3, log-likelihood: -642726.403731 (converged)
 #> iter:  3, estimating gene-wise dispersion
-#> iter:  3, log-likelihood: -642054.487044
+#> iter:  3, log-likelihood: -642054.487043
 #> iter:  3, fitting NB model
-#> iter:  3, iter:  1, log-likelihood: -642054.487044
-#> iter:  3, iter:  1, log-likelihood: -642054.487044
-#> iter:  3, iter:  1, log-likelihood: -642054.487044
-#> iter:  3, iter:  2, log-likelihood: -642054.487044
-#> iter:  3, iter:  2, log-likelihood: -642054.487044
-#> iter:  3, iter:  2, log-likelihood: -642054.487044
-#> iter:  3, iter:  3, log-likelihood: -642054.487044 (converged)
+#> iter:  3, iter:  1, log-likelihood: -642054.487043
+#> iter:  3, iter:  1, log-likelihood: -642054.487043
+#> iter:  3, iter:  1, log-likelihood: -642054.487043
+#> iter:  3, iter:  2, log-likelihood: -642054.487043
+#> iter:  3, iter:  2, log-likelihood: -642054.487043
+#> iter:  3, iter:  2, log-likelihood: -642054.487043
+#> iter:  3, iter:  3, log-likelihood: -642054.487043 (converged)
 #> iter:  4, estimating gene-wise dispersion
-#> iter:  4, log-likelihood: -642054.487044
+#> iter:  4, log-likelihood: -642054.487043
 #> iter:  4, fitting NB model
-#> iter:  4, iter:  1, log-likelihood: -642054.487044
-#> iter:  4, iter:  1, log-likelihood: -642054.487044
-#> iter:  4, iter:  1, log-likelihood: -642054.487044
-#> iter:  4, iter:  2, log-likelihood: -642054.487044
-#> iter:  4, iter:  2, log-likelihood: -642054.487044
-#> iter:  4, iter:  2, log-likelihood: -642054.487044
-#> iter:  4, iter:  3, log-likelihood: -642054.487044 (converged)
-#> iter:  5, log-likelihood: -642054.487044 (converged)
+#> iter:  4, iter:  1, log-likelihood: -642054.487043
+#> iter:  4, iter:  1, log-likelihood: -642054.487043
+#> iter:  4, iter:  1, log-likelihood: -642054.487043
+#> iter:  4, iter:  2, log-likelihood: -642054.487043
+#> iter:  4, iter:  2, log-likelihood: -642054.487043
+#> iter:  4, iter:  2, log-likelihood: -642054.487043
+#> iter:  4, iter:  3, log-likelihood: -642054.487043 (converged)
+#> iter:  5, log-likelihood: -642054.487043 (converged)
 #> (2/2) Normalising data
 SpatialSpotPlot(
   spatial,

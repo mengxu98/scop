@@ -3,9 +3,10 @@
 Report raw-count, peak-coordinate, cell/metadata and reference alignment
 for an existing Seurat `ChromatinAssay`. Fragment path/index
 availability is reported separately, so an otherwise valid matrix can be
-analysed without fragments. This check does not install packages,
-retrieve resources, modify the object, or inspect dependencies of
-downstream optional analyses.
+analysed without fragments. Required R packages follow
+[`thisutils::check_r()`](https://mengxu98.github.io/thisutils/reference/check_r.html)
+defaults. The check does not retrieve genomic resources, modify the
+object, or inspect dependencies of downstream optional analyses.
 
 ## Usage
 
@@ -41,8 +42,8 @@ A list with `valid`, `errors`, `warnings`, `assay`, `n_cells`,
 readiness checks local file/index existence and cell mapping for
 resources with cells in the selected assay. The resource table retains
 all attached files; its `active` column identifies those required for
-this assay. Empty mappings left by native subsetting do not block
-readiness. It does not hash files, scan their contents, or guarantee
+this assay. Empty mappings left by subsetting do not block readiness. It
+does not hash files, scan their contents, or guarantee
 fragment-dependent computation will pass. Use Signac's
 `ValidateFragments()` for content validation when required.
 

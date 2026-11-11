@@ -18,8 +18,8 @@ RunLIANA(
   species = c("human", "mouse"),
   consensus = c("auto", "rank", "aggregate", "none"),
   consensus_args = list(),
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 ```
 
@@ -81,14 +81,14 @@ RunLIANA(
 
   Named arguments passed to the selected LIANA aggregation function.
 
-- ...:
-
-  Additional arguments passed to `liana::liana_wrap()`.
-
 - srt:
 
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
+
+- ...:
+
+  Arguments passed to other functions.
 
 ## Value
 

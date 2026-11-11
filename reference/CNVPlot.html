@@ -95,8 +95,8 @@ srt@tools[[tool_name]] result bundle."></head><body>
 <span>  subtitle <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  theme_use <span class="op">=</span> <span class="st">"theme_scop"</span>,</span>
 <span>  theme_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  <span class="va">...</span>,</span>
-<span>  srt <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  srt <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -159,14 +159,13 @@ annotations.</p></dd>
 <dd><p>Theme name or function, plus extra theme arguments.</p></dd>
 
 
-<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Additional parameters forwarded to the underlying plotting
-function.</p></dd>
-
-
 <dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
 <dd><p>Deprecated alias for <code>object</code>; supply exactly one of the two. It
 will be removed in scop 1.0.0.</p></dd>
+
+
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>Arguments passed to other functions.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -182,13 +181,37 @@ for <code>"tree"</code>, returns an <code>hclust</code> object.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="va">srt</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunCNV.html">RunCNV</a></span><span class="op">(</span><span class="va">srt</span>, method <span class="op">=</span> <span class="st">"copykat"</span>, genome <span class="op">=</span> <span class="st">"hg38"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">srt</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunCNV.html">RunCNV</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">srt</span>,</span></span>
+<span class="r-in"><span>  method <span class="op">=</span> <span class="st">"copykat"</span>,</span></span>
+<span class="r-in"><span>  genome <span class="op">=</span> <span class="st">"hg38"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">CNVPlot</span><span class="op">(</span><span class="va">srt</span>, plot_type <span class="op">=</span> <span class="st">"heatmap"</span>, group.by <span class="op">=</span> <span class="st">"CNV_prediction"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">CNVPlot</span><span class="op">(</span><span class="va">srt</span>, plot_type <span class="op">=</span> <span class="st">"dim"</span>, value <span class="op">=</span> <span class="st">"CNV_prediction"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">CNVPlot</span><span class="op">(</span><span class="va">srt</span>, plot_type <span class="op">=</span> <span class="st">"dim"</span>, value <span class="op">=</span> <span class="st">"CNV_score"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">CNVPlot</span><span class="op">(</span><span class="va">srt</span>, plot_type <span class="op">=</span> <span class="st">"bar"</span>, group.by <span class="op">=</span> <span class="st">"seurat_clusters"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">CNVPlot</span><span class="op">(</span><span class="va">srt</span>, plot_type <span class="op">=</span> <span class="st">"tree"</span>, cluster_tree_by <span class="op">=</span> <span class="st">"cell"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">CNVPlot</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">srt</span>,</span></span>
+<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"heatmap"</span>,</span></span>
+<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CNV_prediction"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">CNVPlot</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">srt</span>,</span></span>
+<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"dim"</span>,</span></span>
+<span class="r-in"><span>  value <span class="op">=</span> <span class="st">"CNV_prediction"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">CNVPlot</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">srt</span>,</span></span>
+<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"dim"</span>,</span></span>
+<span class="r-in"><span>  value <span class="op">=</span> <span class="st">"CNV_score"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">CNVPlot</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">srt</span>,</span></span>
+<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"bar"</span>,</span></span>
+<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"seurat_clusters"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">CNVPlot</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">srt</span>,</span></span>
+<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"tree"</span>,</span></span>
+<span class="r-in"><span>  cluster_tree_by <span class="op">=</span> <span class="st">"cell"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

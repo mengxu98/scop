@@ -40,8 +40,8 @@ RunSpotSweeper(
   workers = NULL,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 ```
 
@@ -72,15 +72,15 @@ RunSpotSweeper(
 
   Optional metadata column identifying samples or images. If `NULL`, all
   spots are treated as one sample. The selected column must not contain
-  missing values. The reserved backend output name `"artifact"` cannot
-  be used when `run_artifact = TRUE`.
+  missing values. The reserved output name `"artifact"` cannot be used
+  when `run_artifact = TRUE`.
 
 - metrics:
 
   QC metrics used by `SpotSweeper::localOutliers()`. If `NULL`,
   `nCount_<assay>`, `nFeature_<assay>`, and `percent.mito` are used. The
   corresponding `<metric>_outliers` and `<metric>_z` names are reserved
-  for backend output and cannot also be requested as input columns.
+  for output and cannot also be requested as input columns.
 
 - directions:
 
@@ -118,14 +118,14 @@ RunSpotSweeper(
 - mito_percent:
 
   Metadata column used as mitochondrial percent for artifact detection.
-  If `NULL`, `percent.mito` is used. The reserved backend output name
+  If `NULL`, `percent.mito` is used. The reserved output name
   `"artifact"` cannot be used when `run_artifact = TRUE`.
 
 - mito_sum:
 
   Metadata column used as mitochondrial counts for artifact detection.
-  If `NULL`, mitochondrial counts are computed. The reserved backend
-  output name `"artifact"` cannot be used when `run_artifact = TRUE`.
+  If `NULL`, mitochondrial counts are computed. The reserved output name
+  `"artifact"` cannot be used when `run_artifact = TRUE`.
 
 - n_order, shape:
 
@@ -164,18 +164,17 @@ RunSpotSweeper(
 
   Coordinate system used for spatial neighborhoods. The default is raw
   acquisition coordinates; `"legacy_display"` remains an explicit
-  compatibility option. Neighbor counts are unitless, while any backend
-  distance calculation uses the selected coordinate units.
-
-- ...:
-
-  Additional named arguments passed to matching SpotSweeper backend
-  functions when those arguments are supported by the installed version.
+  compatibility option. Neighbor counts are unitless, while any distance
+  calculation uses the selected coordinate units.
 
 - srt:
 
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
+
+- ...:
+
+  Arguments passed to other functions.
 
 ## Value
 

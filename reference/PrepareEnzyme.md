@@ -80,7 +80,7 @@ PrepareEnzyme(
 
 - ...:
 
-  Passed to helper functions.
+  Arguments passed to other functions.
 
 ## Value
 

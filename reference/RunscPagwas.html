@@ -4,12 +4,12 @@ pathway, or block-annotation resources. The wrapper validates required GWAS
 columns, normalizes output paths, and records provenance in Seurat tools or
 a result attribute. It prefers the upstream scPagwas_main2 runner and
 applies Seurat 5 compatibility to local function copies without modifying
-the installed backend namespace."><meta property="og:description" content="Run the optional scPagwas package from scop without bundling LD,
+the installed package namespace."><meta property="og:description" content="Run the optional scPagwas package from scop without bundling LD,
 pathway, or block-annotation resources. The wrapper validates required GWAS
 columns, normalizes output paths, and records provenance in Seurat tools or
 a result attribute. It prefers the upstream scPagwas_main2 runner and
 applies Seurat 5 compatibility to local function copies without modifying
-the installed backend namespace."></head><body>
+the installed package namespace."></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -85,7 +85,7 @@ pathway, or block-annotation resources. The wrapper validates required GWAS
 columns, normalizes output paths, and records provenance in Seurat tools or
 a result attribute. It prefers the upstream <code>scPagwas_main2</code> runner and
 applies Seurat 5 compatibility to local function copies without modifying
-the installed backend namespace.</p>
+the installed package namespace.</p>
     </div>
 
     <div class="section level2">
@@ -103,8 +103,8 @@ the installed backend namespace.</p>
 <span>  cleanup_soar <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  return_seurat <span class="op">=</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">srt</span><span class="op">)</span> <span class="op">||</span> <span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">inherits</a></span><span class="op">(</span><span class="va">single_data</span>, <span class="st">"Seurat"</span><span class="op">)</span> <span class="op">||</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">object</span><span class="op">)</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  <span class="va">...</span>,</span>
-<span>  srt <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  srt <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -155,7 +155,7 @@ Seurat object and to <code>"RNA"</code> for other inputs.</p></dd>
 
 <dt id="arg-cleanup-soar">cleanup_soar<a class="anchor" aria-label="anchor" href="#arg-cleanup-soar"></a></dt>
 <dd><p>Deprecated compatibility argument. SOAR cleanup is
-managed by the upstream <code>scPagwas</code> backend and is ignored by <code>scop</code>.</p></dd>
+managed by upstream <code>scPagwas</code> and is ignored by <code>scop</code>.</p></dd>
 
 
 <dt id="arg-return-seurat">return_seurat<a class="anchor" aria-label="anchor" href="#arg-return-seurat"></a></dt>
@@ -167,14 +167,13 @@ managed by the upstream <code>scPagwas</code> backend and is ignored by <code>sc
 Default is <code>TRUE</code>.</p></dd>
 
 
-<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Additional arguments passed to the upstream <code>scPagwas</code> function
-after filtering by its formal arguments.</p></dd>
-
-
 <dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
 <dd><p>Deprecated alias for <code>object</code>; supply exactly one of the two. It
 will be removed in scop 1.0.0.</p></dd>
+
+
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>Arguments passed to other functions.</p></dd>
 
 </dl></div>
     <div class="section level2">

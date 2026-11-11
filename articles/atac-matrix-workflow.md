@@ -18,10 +18,12 @@ quick <- scop::ReadATACData(
   SeuratObject::LayerData(source, assay = "peaks", layer = "counts"),
   ranges = Signac::granges(source[["peaks"]]), verbose = FALSE
 )
-quick <- scop::RunStandardWorkflow(quick, assay = "peaks",
+quick <- scop::RunStandardWorkflow(quick,
+  assay = "peaks",
   nHVF = 100, linear_reduction_dims = 10, linear_reduction_dims_use = 2:8,
-  neighbor_k = 10, nonlinear_reduction_dims = 2, cores = 1, verbose = FALSE)
-#> ℹ [2026-11-10 10:52:21] Skip `log1p()` because `layer = data` is not "counts"
+  neighbor_k = 10, nonlinear_reduction_dims = 2, cores = 1, verbose = FALSE
+)
+#> ℹ [2026-11-11 05:49:21] Skip `log1p()` because `layer = data` is not "counts"
 record <- SeuratObject::Misc(quick[["ATAClsi"]], "scop_atac_representation")
 stopifnot(identical(record$dimensions, 2:8), scop::CheckATACData(quick)$valid)
 Seurat::DimPlot(quick, reduction = "ATACUMAP2D", group.by = "ATAClsiclusters")
@@ -47,15 +49,19 @@ resources.
 
 data_dir <- "atac_data"
 dir.create(data_dir)
-base <- paste0("https://cf.10xgenomics.com/samples/cell-atac/2.1.0/",
-  "10k_pbmc_ATACv2_nextgem_Chromium_Controller/")
+base <- paste0(
+  "https://cf.10xgenomics.com/samples/cell-atac/2.1.0/",
+  "10k_pbmc_ATACv2_nextgem_Chromium_Controller/"
+)
 prefix <- "10k_pbmc_ATACv2_nextgem_Chromium_Controller_"
 matrix_file <- file.path(data_dir, paste0(prefix, "filtered_peak_bc_matrix.h5"))
 utils::download.file(paste0(base, basename(matrix_file)), matrix_file, mode = "wb")
 fasta_gz <- file.path(data_dir, "hg38-chr1.fa.gz")
 utils::download.file(
   "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/chromosomes/chr1.fa.gz",
-  fasta_gz, mode = "wb")
+  fasta_gz,
+  mode = "wb"
+)
 fasta <- file.path(data_dir, "hg38-chr1.fa")
 Biostrings::writeXStringSet(Biostrings::readDNAStringSet(fasta_gz), fasta)
 Rsamtools::indexFa(fasta)
@@ -108,7 +114,8 @@ biology or automatically evidence of noise.
 atac <- scop::RunStandardWorkflow(atac,
   assay = "peaks", prefix = "ATACInitial", normalization_method = "TFIDF",
   nHVF = 5000, linear_reduction_dims = 25,
-  linear_reduction_dims_use = 2:20, cores = 1)
+  linear_reduction_dims_use = 2:20, cores = 1
+)
 representation <- SeuratObject::Misc(atac[["ATACInitiallsi"]], "scop_atac_representation")
 representation$dimensions
 representation$depth_correlation
@@ -132,10 +139,13 @@ display names repeat.
 ``` r
 
 pfm <- TFBSTools::getMatrixSet(JASPAR2020::JASPAR2020, opts = list(
-  ID = c("MA0139.1", "MA0080.5", "MA0105.4", "MA0107.1", "MA0039.4", "MA0466.2", "MA0098.3")))
+  ID = c("MA0139.1", "MA0080.5", "MA0105.4", "MA0107.1", "MA0039.4", "MA0466.2", "MA0098.3")
+))
 atac <- scop::AddATACMotifs(atac, reference, pfm, genome.id = "hg38")
-atac <- scop::RunChromVAR(atac, reference, genome.id = "hg38",
-  niterations = 25, seed = 19)
+atac <- scop::RunChromVAR(atac, reference,
+  genome.id = "hg38",
+  niterations = 25, seed = 19
+)
 scores <- SeuratObject::LayerData(atac, assay = "chromvar", layer = "data")
 receipt <- SeuratObject::Misc(atac[["chromvar"]], "scop_chromvar")
 dim(scores)

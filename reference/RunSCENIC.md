@@ -127,7 +127,7 @@ RunSCENIC(
 - max_regulon_targets:
 
   Maximum target genes retained per C++ regulon. The default preserves
-  the native fast path's bounded regulon size.
+  the fast path's bounded regulon size.
 
 - include_negative_regulons:
 
@@ -174,10 +174,9 @@ RunSCENIC(
 
 - parallel_backend:
 
-  Parallel backend used for native C++ cisTarget module processing.
-  `"auto"` preserves the current cross-platform PSOCK behavior. `"fork"`
-  is an explicit opt-in on macOS and Linux and is not available on
-  Windows.
+  Parallel backend used for C++ cisTarget module processing. `"auto"`
+  preserves the current cross-platform PSOCK behavior. `"fork"` is an
+  explicit opt-in on macOS and Linux and is not available on Windows.
 
 - seed:
 
@@ -238,18 +237,30 @@ scenic_rss <- SCENICPlot(
   group.by = "CellType",
   plot_type = "rss_rank"
 )
-example_regulons <- unique(scenic_rss$top_table$regulon)[1:2]
+example_regulons <- head(rownames(pancreas_sub[["scenic"]]), 6)
+GroupHeatmap(
+  pancreas_sub,
+  group.by = "CellType",
+  features = example_regulons,
+  assay = "scenic",
+  layer = "data",
+  exp_method = "raw",
+  lib_normalize = FALSE
+)$plot
 FeatureDimPlot(
   pancreas_sub,
   features = example_regulons,
   assay = "scenic",
-  reduction = "StandardpcaUMAP2D"
+  layer = "data",
+  reduction = "UMAP"
 )
 FeatureStatPlot(
   pancreas_sub,
   stat.by = example_regulons,
   group.by = "CellType",
-  assay = "scenic"
+  assay = "scenic",
+  layer = "data",
+  plot_type = "violin"
 )
 SCENICPlot(
   pancreas_sub,

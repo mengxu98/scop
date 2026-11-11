@@ -108,13 +108,13 @@ PalantirTrajectoryPlot(
 - trajectory_method:
 
   Method used to fit trajectory coordinates along pseudotime. `"loess"`
-  uses a fully R-native smoother over a Palantir-style pseudotime grid;
-  `"bin"` uses binned median coordinates.
+  uses a loess smoother over a Palantir-style pseudotime grid; `"bin"`
+  uses binned median coordinates.
 
 - smoothness:
 
-  Smoothing multiplier for the R-native loess span. Higher values yield
-  smoother curves.
+  Smoothing multiplier for the loess span. Higher values yield smoother
+  curves.
 
 - span:
 
@@ -196,7 +196,7 @@ PalantirTrajectoryPlot(
 
 - seed:
 
-  Random seed.
+  Random seed for plot construction. The caller's RNG state is restored.
 
 - verbose:
 
@@ -206,6 +206,10 @@ PalantirTrajectoryPlot(
 
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
+
+## Value
+
+A ggplot, or a named list of ggplot layers when `return_layer = TRUE`.
 
 ## See also
 

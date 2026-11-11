@@ -1,8 +1,8 @@
 # Run official SpaTalk spatial communication analysis
 
-Run the official SpaTalk R backend for single-cell spatial data or spot
-data with a single-cell reference. Results are stored as a compact
-method bundle and added to SCOP's unified CCC table.
+Run official SpaTalk for single-cell spatial data or spot data with a
+single-cell reference. Results are stored as a compact method bundle and
+added to SCOP's unified CCC table.
 
 ## Usage
 
@@ -27,8 +27,8 @@ RunSpaTalk(
   overwrite = FALSE,
   backend = c("cpp", "r"),
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 ```
 
@@ -108,14 +108,14 @@ RunSpaTalk(
 
   Whether to print progress messages.
 
-- ...:
-
-  Named arguments forwarded to compatible official SpaTalk steps.
-
 - srt:
 
   Deprecated alias for \`object\`; supply exactly one of the two. It
   will be removed in scop 1.0.0.
+
+- ...:
+
+  Arguments passed to other functions.
 
 ## Value
 

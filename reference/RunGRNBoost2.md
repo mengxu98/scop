@@ -85,7 +85,7 @@ RunGRNBoost2(
 
 - ...:
 
-  Additional backend-specific arguments.
+  Arguments passed to other functions.
 
 - assay:
 
@@ -141,30 +141,27 @@ RunGRNBoost2(
 
 - exclude_self:
 
-  Whether native GRNBoost2-like inference excludes a target gene from
-  its own regulator feature set.
+  Whether GRNBoost2-like inference excludes a target gene from its own
+  regulator feature set.
 
 - importance_norm_power:
 
-  Power used to normalize native GRNBoost2-like edge importance by the
-  total importance for each target. Set to \`0\` to disable
-  normalization.
+  Power used to normalize GRNBoost2-like edge importance by the total
+  importance for each target. Set to \`0\` to disable normalization.
 
 - correlation_fill:
 
-  Whether native GRNBoost2-like inference should fill missing TF-target
+  Whether GRNBoost2-like inference should fill missing TF-target
   candidates with expression-correlation support before applying
   \`max_edges_per_target\`.
 
 - boost_weight:
 
-  Weight of the native boosting score used when correlation fill is
-  enabled.
+  Weight of the boosting score used when correlation fill is enabled.
 
 - correlation_weight:
 
-  Weight of the correlation-fill score relative to native boosting
-  importance.
+  Weight of the correlation-fill score relative to boosting importance.
 
 - covariance_weight:
 
@@ -172,7 +169,7 @@ RunGRNBoost2(
 
 - correlation_method:
 
-  Correlation method used for native GRNBoost2-like candidate filling.
+  Correlation method used for GRNBoost2-like candidate filling.
 
 - output_file:
 
@@ -197,7 +194,7 @@ RunGRNBoost2(
 
 - cores:
 
-  Number of workers used by native/Python GRNBoost2.
+  Number of workers used by GRNBoost2.
 
 - seed:
 

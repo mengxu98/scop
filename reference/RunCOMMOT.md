@@ -111,7 +111,7 @@ RunCOMMOT(
 
 - backend:
 
-  Backend used only for SCOP CCC result aggregation.
+  Post-processing engine used for SCOP CCC result aggregation.
 
 - verbose:
 

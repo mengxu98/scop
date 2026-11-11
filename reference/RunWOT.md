@@ -168,7 +168,7 @@ pancreas_sub <- RunSlingshot(
   reduction = "UMAP"
 )
 
-print(range(pancreas_sub$Lineage1, na.rm = TRUE))
+range(pancreas_sub$Lineage1, na.rm = TRUE)
 
 pancreas_sub <- RunWOT(
   pancreas_sub,

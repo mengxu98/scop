@@ -94,7 +94,6 @@ requires explicit opt-in.</p>
 <span>  rna_layer <span class="op">=</span> <span class="st">"counts"</span>,</span>
 <span>  atac_layer <span class="op">=</span> <span class="st">"counts"</span>,</span>
 <span>  backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"python"</span>, <span class="st">"cpp"</span><span class="op">)</span>,</span>
-<span>  allow_approximate <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  grn_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"grnboost2"</span>, <span class="st">"regdiffusion"</span>, <span class="st">"genie3"</span>, <span class="st">"gniplr"</span><span class="op">)</span>,</span>
 <span>  regulators <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  rna_expr <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -172,13 +171,8 @@ requires explicit opt-in.</p>
 <dt id="arg-backend">backend<a class="anchor" aria-label="anchor" href="#arg-backend"></a></dt>
 <dd><p>Runtime backend. <code>"python"</code> reads or extracts official
 SCENIC+ result tables and remains the default; it does not run the SCENIC+
-pipeline itself. <code>"cpp"</code> runs the approximate package workflow and requires
-<code>allow_approximate = TRUE</code>.</p></dd>
-
-
-<dt id="arg-allow-approximate">allow_approximate<a class="anchor" aria-label="anchor" href="#arg-allow-approximate"></a></dt>
-<dd><p>Whether to allow the approximate C++ workflow. This
-must be <code>TRUE</code> when <code>backend = "cpp"</code>.</p></dd>
+pipeline itself. <code>"cpp"</code> runs the approximate package workflow and issues a
+warning that results may not be completely identical to the reference workflow.</p></dd>
 
 
 <dt id="arg-grn-method">grn_method<a class="anchor" aria-label="anchor" href="#arg-grn-method"></a></dt>
@@ -210,7 +204,7 @@ unambiguous.</p></dd>
 <dd><p>Optional precomputed TF-gene table with columns <code>TF</code>,
 <code>target</code>, and <code>importance</code>. When supplied with <code>backend = "cpp"</code>, C++
 GRN inference is skipped and the table is used as the TF-gene evidence layer.
-If a <code>rho</code> column is absent, correlations are computed from RNA when native
+If a <code>rho</code> column is absent, correlations are computed from RNA when
 GSEA is requested.</p></dd>
 
 
@@ -218,7 +212,7 @@ GSEA is requested.</p></dd>
 <dd><p>Optional precomputed region-gene table with columns
 <code>region</code>, <code>gene</code>, and <code>score</code>. When supplied with <code>backend = "cpp"</code>, C++
 importance fitting is skipped. If a <code>rho</code> column is absent, correlations are
-computed from RNA and ATAC when native GSEA is requested.</p></dd>
+computed from RNA and ATAC when GSEA is requested.</p></dd>
 
 
 <dt id="arg-tf-region-prior">tf_region_prior<a class="anchor" aria-label="anchor" href="#arg-tf-region-prior"></a></dt>
@@ -381,9 +375,9 @@ default matches official SCENIC+ command-line wrappers.</p></dd>
 <dt id="arg-python-result-dir">python_result_dir<a class="anchor" aria-label="anchor" href="#arg-python-result-dir"></a></dt>
 <dd><p>Input directory containing official SCENIC+ outputs
 already exported as <code>tf_gene</code>, <code>region_gene</code>, <code>tf_region</code>, <code>triplets</code>,
-<code>eregulons</code>, and <code>auc</code> tables. Tab-separated, comma-separated and plain-text files are
-accepted, optionally compressed with gzip, bzip2 or xz; a table in a single
-subdirectory is also found. Used only for <code>backend = "python"</code>.</p></dd>
+<code>eregulons</code>, and <code>auc</code> tables. Tab-separated, comma-separated and plain-text
+files are accepted, optionally compressed with gzip, bzip2 or xz; a table in
+a single subdirectory is also found. Used only for <code>backend = "python"</code>.</p></dd>
 
 
 <dt id="arg-scplus-object">scplus_object<a class="anchor" aria-label="anchor" href="#arg-scplus-object"></a></dt>
@@ -397,8 +391,8 @@ standardization. Used only for <code>backend = "python"</code>.</p></dd>
 neither <code>python_result_dir</code> nor <code>scplus_object</code> is supplied, and to extract
 standardized tables from a matching <code>.pkl</code>, <code>.pickle</code> or <code>.h5mu</code> found in
 <code>python_result_dir</code> or a conventional location. The search checks
-<code>scenicplus</code>, <code>scplus</code>, <code>scenic</code>, <code>outs</code> and the current directory.
-Default is <code>TRUE</code>; set to <code>FALSE</code> to require explicit inputs. Used only for
+<code>scenicplus</code>, <code>scplus</code>, <code>scenic</code>, <code>outs</code> and the current directory. Default
+is <code>TRUE</code>; set to <code>FALSE</code> to require explicit inputs. Used only for
 <code>backend = "python"</code>; the Python environment is prepared automatically when
 extraction is needed.</p></dd>
 
@@ -431,7 +425,7 @@ will be removed in scop 1.0.0.</p></dd>
 
 <dt id="arg-egrn-method">egrn_method<a class="anchor" aria-label="anchor" href="#arg-egrn-method"></a></dt>
 <dd><p>Local eModule filtering. <code>"gsea"</code> computes weighted
-permutation GSEA, NES and BH-adjusted p-values in native code. <code>"leading_edge"</code>
+permutation GSEA, NES and BH-adjusted p-values in compiled code. <code>"leading_edge"</code>
 retains the older approximation and its unfiltered fallback.</p></dd>
 
 
@@ -450,7 +444,7 @@ region signature AUC. If absent, rankings are computed locally from ATAC.</p></d
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The C++ route runs locally without importing or invoking Python. Native GSEA
+    <p>The C++ route runs locally without importing or invoking Python. GSEA
 filters modules before merging; it does not substitute unfiltered triplets
 when no module passes. The tool result includes module <code>gsea_statistics</code>,
 <code>region_regulon_list</code> and <code>region_auc</code> alongside gene AUC. Locally computed
@@ -460,8 +454,8 @@ inference and GSEA seed is controlled separately by <code>seed</code>.</p>
 <code>python_result_dir</code> instead of running SCENIC+ itself. When only a SCENIC+
 object is available, pass it with <code>scplus_object</code>; the standardized tables
 are extracted into <code>work_dir</code> before reading. <code>.h5mu</code> objects are read with
-the Python <code>mudata</code> package. Missing tables are reported together with the
-files found in <code>python_result_dir</code> and the required columns.</p>
+the Python <code>mudata</code> package. Missing tables are reported together with the files found
+in <code>python_result_dir</code> and the required columns.</p>
 <p>Neither backend downloads SCENIC+ reference databases or result tables.
 <code>backend = "python"</code> only reads local files (and may prepare the Python
 environment when <code>scplus_object</code> is supplied); <code>backend = "cpp"</code> uses motif
@@ -482,12 +476,30 @@ annotations already stored in the chromatin assay.</p>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">example_regulons</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">scenicplus_dot</span><span class="op">$</span><span class="va">top_table</span><span class="op">$</span><span class="va">regulon</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">example_regulons</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">[[</span><span class="st">"scenicplus"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>, <span class="fl">6</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="GroupHeatmap.html">GroupHeatmap</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
+<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
+<span class="r-in"><span>  features <span class="op">=</span> <span class="va">example_regulons</span>,</span></span>
+<span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"scenicplus"</span>,</span></span>
+<span class="r-in"><span>  layer <span class="op">=</span> <span class="st">"data"</span>,</span></span>
+<span class="r-in"><span>  exp_method <span class="op">=</span> <span class="st">"raw"</span>,</span></span>
+<span class="r-in"><span>  lib_normalize <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span><span class="op">)</span><span class="op">$</span><span class="va">plot</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="FeatureStatPlot.html">FeatureStatPlot</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
+<span class="r-in"><span>  stat.by <span class="op">=</span> <span class="va">example_regulons</span>,</span></span>
+<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
+<span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"scenicplus"</span>,</span></span>
+<span class="r-in"><span>  layer <span class="op">=</span> <span class="st">"data"</span>,</span></span>
+<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"violin"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="FeatureDimPlot.html">FeatureDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  features <span class="op">=</span> <span class="va">example_regulons</span>,</span></span>
 <span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"scenicplus"</span>,</span></span>
-<span class="r-in"><span>  reduction <span class="op">=</span> <span class="st">"StandardpcaUMAP2D"</span></span></span>
+<span class="r-in"><span>  layer <span class="op">=</span> <span class="st">"data"</span>,</span></span>
+<span class="r-in"><span>  reduction <span class="op">=</span> <span class="st">"UMAP"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="SCENICPlusPlot.html">SCENICPlusPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>

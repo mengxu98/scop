@@ -108,7 +108,7 @@ RunBayesSpace(
   columns. The default selection preserves existing
   `array_col`/`array_row` or `col`/`row` indices when available.
   Standard array names (`col`/`row`, `array_col`/`array_row`, or
-  `arraycol`/`arrayrow`, case-insensitive) preserve native array
+  `arraycol`/`arrayrow`, case-insensitive) preserve original array
   indices; other column names are treated as pixel coordinates from
   which a regular array grid is inferred.
 

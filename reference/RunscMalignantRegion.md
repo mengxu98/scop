@@ -119,9 +119,9 @@ RunscMalignantRegion(
 
 - backend:
 
-  Region-inference backend. `"cpp"` uses a compiled sparse AUCell
-  scorer, Ward clustering, and spatial-neighbor refinement for Seurat
-  input when `image = FALSE`. `"python"` retains the official
+  Region-inference engine. `"cpp"` uses a compiled sparse AUCell scorer,
+  Ward clustering, and spatial-neighbor refinement for Seurat input when
+  `image = FALSE`. `"python"` retains the official
   scMalignantFinder/Squidpy path and is required for image features,
   AnnData, and h5ad input.
 

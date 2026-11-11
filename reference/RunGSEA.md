@@ -36,10 +36,10 @@ RunGSEA(
   simplify_method = "Wang",
   simplify_similarityCutoff = 0.7,
   verbose = TRUE,
-  ...,
   nPermSimple = 1e+05,
   eps = 0,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 ```
 
@@ -202,10 +202,6 @@ RunGSEA(
 
   Whether to print the message. Default is `TRUE`.
 
-- ...:
-
-  Passed to helper functions.
-
 - nPermSimple:
 
   Number of initial simple permutations used by fgsea.
@@ -219,6 +215,10 @@ RunGSEA(
 
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
+
+- ...:
+
+  Arguments passed to other functions.
 
 ## Value
 
@@ -275,14 +275,14 @@ gsea_out <- RunGSEA(
   nPermSimple = 10000,
   eps = 0
 )
-#> ℹ [2026-11-10 10:19:34] Start GSEA analysis
-#> ! [2026-11-10 10:19:34] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
-#> ℹ [2026-11-10 10:19:34] Preparing custom GSEA database from `TERM2GENE`/`TERM2NAME` ...
-#> ℹ [2026-11-10 10:19:34] Prepared 15 ranked gene rows after ID mapping.
-#> ℹ [2026-11-10 10:19:34] Running GSEA for 1 group/database combination(s) ...
-#> ℹ [2026-11-10 10:19:34] Running GSEA: group "Cluster1", database "custom", genes 15 ...
-#> ℹ [2026-11-10 10:19:34] Finished GSEA: group "Cluster1", database "custom".
-#> ✔ [2026-11-10 10:19:34] GSEA analysis done
+#> ℹ [2026-11-11 05:14:47] Start GSEA analysis
+#> ! [2026-11-11 05:14:47] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
+#> ℹ [2026-11-11 05:14:47] Preparing custom GSEA database from `TERM2GENE`/`TERM2NAME` ...
+#> ℹ [2026-11-11 05:14:48] Prepared 15 ranked gene rows after ID mapping.
+#> ℹ [2026-11-11 05:14:48] Running GSEA for 1 group/database combination(s) ...
+#> ℹ [2026-11-11 05:14:48] Running GSEA: group "Cluster1", database "custom", genes 15 ...
+#> ℹ [2026-11-11 05:14:48] Finished GSEA: group "Cluster1", database "custom".
+#> ✔ [2026-11-11 05:14:48] GSEA analysis done
 GSEAPlot(
   res = gsea_out,
   db = "custom",

@@ -115,9 +115,8 @@ outgoing degree are used to select automatic labels. Widths retain edge weights.
 <span>  assay <span class="op">=</span> <span class="st">"scenic"</span>,</span>
 <span>  layer <span class="op">=</span> <span class="st">"data"</span>,</span>
 <span>  plot_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rss_rank"</span>, <span class="st">"rss_heatmap"</span>, <span class="st">"rss_dotplot"</span>, <span class="st">"heatmap_dotplot"</span>,</span>
-<span>    <span class="st">"activity_heatmap"</span>, <span class="st">"activity_violin"</span>, <span class="st">"activity_dim"</span>, <span class="st">"eregulon_dim"</span>,</span>
-<span>    <span class="st">"activity_cor_dumbbell"</span>, <span class="st">"regulon_size"</span>, <span class="st">"network_graph"</span>, <span class="st">"network"</span>, <span class="st">"egrn"</span>,</span>
-<span>    <span class="st">"overlap"</span>, <span class="st">"target_bar"</span>, <span class="st">"coverage"</span><span class="op">)</span>,</span>
+<span>    <span class="st">"eregulon_dim"</span>, <span class="st">"activity_cor_dumbbell"</span>, <span class="st">"regulon_size"</span>, <span class="st">"network_graph"</span>, <span class="st">"network"</span>,</span>
+<span>    <span class="st">"egrn"</span>, <span class="st">"overlap"</span>, <span class="st">"target_bar"</span>, <span class="st">"coverage"</span><span class="op">)</span>,</span>
 <span>  features <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  reduction <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  dims <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>,</span>
@@ -132,7 +131,6 @@ outgoing degree are used to select automatic labels. Widths retain edge weights.
 <span>  top_n <span class="op">=</span> <span class="fl">12</span>,</span>
 <span>  regulon_label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"auto"</span>, <span class="st">"regulon"</span>, <span class="st">"tf"</span><span class="op">)</span>,</span>
 <span>  rss_rank_yscale <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"shared"</span>, <span class="st">"free"</span><span class="op">)</span>,</span>
-<span>  activity_scale <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  rss_scale <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  heatmap_show_row_names <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  heatmap_show_column_names <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -152,11 +150,9 @@ outgoing degree are used to select automatic labels. Widths retain edge weights.
 <span>  heatmap_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  palette <span class="op">=</span> <span class="st">"RdYlBu"</span>,</span>
 <span>  palcolor <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  compare_expression <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  expression_assay <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  expression_layer <span class="op">=</span> <span class="st">"data"</span>,</span>
 <span>  expression_scale <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  violin_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  dim_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  atac_assay <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  extend.upstream <span class="op">=</span> <span class="fl">50000</span>,</span>
@@ -186,11 +182,11 @@ outgoing degree are used to select automatic labels. Widths retain edge weights.
 <span>  label_size <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  label_max_overlaps <span class="op">=</span> <span class="cn">Inf</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  <span class="va">...</span>,</span>
 <span>  srt <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  theme_use <span class="op">=</span> <span class="st">"theme_scop"</span>,</span>
 <span>  theme_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  network_display_targets <span class="op">=</span> <span class="cn">Inf</span></span>
+<span>  network_display_targets <span class="op">=</span> <span class="cn">Inf</span>,</span>
+<span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -220,8 +216,7 @@ outgoing degree are used to select automatic labels. Widths retain edge weights.
 
 <dt id="arg-plot-type">plot_type<a class="anchor" aria-label="anchor" href="#arg-plot-type"></a></dt>
 <dd><p>One of <code>"rss_rank"</code>, <code>"rss_heatmap"</code>, <code>"rss_dotplot"</code>,
-<code>"heatmap_dotplot"</code>, <code>"activity_heatmap"</code>, <code>"activity_violin"</code>,
-<code>"activity_dim"</code>, <code>"eregulon_dim"</code>, <code>"activity_cor_dumbbell"</code>,
+<code>"heatmap_dotplot"</code>, <code>"eregulon_dim"</code>, <code>"activity_cor_dumbbell"</code>,
 <code>"regulon_size"</code>, <code>"network"</code>, <code>"network_graph"</code>, <code>"egrn"</code>, <code>"overlap"</code>,
 <code>"target_bar"</code>, <code>"coverage"</code>.</p></dd>
 
@@ -231,7 +226,7 @@ outgoing degree are used to select automatic labels. Widths retain edge weights.
 
 
 <dt id="arg-reduction">reduction<a class="anchor" aria-label="anchor" href="#arg-reduction"></a></dt>
-<dd><p>Reduction for <code>"activity_dim"</code> / <code>"eregulon_dim"</code>.</p></dd>
+<dd><p>Reduction for <code>"eregulon_dim"</code>.</p></dd>
 
 
 <dt id="arg-dims">dims<a class="anchor" aria-label="anchor" href="#arg-dims"></a></dt>
@@ -287,10 +282,6 @@ regulon names; <code>"tf"</code> always shows TF names.</p></dd>
 direct score comparison, or <code>"free"</code> for the legacy per-panel scale.</p></dd>
 
 
-<dt id="arg-activity-scale">activity_scale<a class="anchor" aria-label="anchor" href="#arg-activity-scale"></a></dt>
-<dd><p>Z-score regulons in <code>"activity_heatmap"</code>.</p></dd>
-
-
 <dt id="arg-rss-scale">rss_scale<a class="anchor" aria-label="anchor" href="#arg-rss-scale"></a></dt>
 <dd><p>Z-score regulons in <code>"rss_heatmap"</code>.</p></dd>
 
@@ -328,19 +319,15 @@ direct score comparison, or <code>"free"</code> for the legacy per-panel scale.<
 
 
 <dt id="arg-heatmap-limits">heatmap_limits<a class="anchor" aria-label="anchor" href="#arg-heatmap-limits"></a></dt>
-<dd><p>Color-scale limits for RSS/activity heatmaps.</p></dd>
+<dd><p>Color-scale limits for RSS heatmaps.</p></dd>
 
 
 <dt id="arg-heatmap-args">heatmap_args<a class="anchor" aria-label="anchor" href="#arg-heatmap-args"></a></dt>
-<dd><p>Extra arguments for <code><a href="GroupHeatmap.html">GroupHeatmap()</a></code> / <code><a href="FeatureHeatmap.html">FeatureHeatmap()</a></code>.</p></dd>
+<dd><p>Extra arguments for RSS and overlap heatmaps.</p></dd>
 
 
 <dt id="arg-palette-palcolor">palette, palcolor<a class="anchor" aria-label="anchor" href="#arg-palette-palcolor"></a></dt>
 <dd><p>Palette for RSS, size, target, and network colors.</p></dd>
-
-
-<dt id="arg-compare-expression">compare_expression<a class="anchor" aria-label="anchor" href="#arg-compare-expression"></a></dt>
-<dd><p>Add TF expression next to <code>"activity_dim"</code>.</p></dd>
 
 
 <dt id="arg-expression-assay-expression-layer">expression_assay, expression_layer<a class="anchor" aria-label="anchor" href="#arg-expression-assay-expression-layer"></a></dt>
@@ -349,11 +336,6 @@ direct score comparison, or <code>"free"</code> for the legacy per-panel scale.<
 
 <dt id="arg-expression-scale">expression_scale<a class="anchor" aria-label="anchor" href="#arg-expression-scale"></a></dt>
 <dd><p>Z-score TF expression in <code>"heatmap_dotplot"</code>.</p></dd>
-
-
-<dt id="arg-violin-args">violin_args<a class="anchor" aria-label="anchor" href="#arg-violin-args"></a></dt>
-<dd><p>Extra arguments for <code><a href="FeatureStatPlot.html">FeatureStatPlot()</a></code> in
-<code>"activity_violin"</code>.</p></dd>
 
 
 <dt id="arg-dim-args">dim_args<a class="anchor" aria-label="anchor" href="#arg-dim-args"></a></dt>
@@ -403,7 +385,7 @@ TF color. The default legend includes each TF's top RSS group when available.</p
 
 
 <dt id="arg-combine">combine<a class="anchor" aria-label="anchor" href="#arg-combine"></a></dt>
-<dd><p>Combine plots with <a href="https://patchwork.data-imaginist.com/reference/patchwork-package.html" class="external-link">patchwork</a>. <code>combine = FALSE</code> returns a list of ggplots.</p></dd>
+<dd><p>Combine plots with <code><a href="https://patchwork.data-imaginist.com/reference/wrap_plots.html" class="external-link">patchwork::wrap_plots()</a></code>. <code>combine = FALSE</code> returns a list of ggplots.</p></dd>
 
 
 <dt id="arg-ncol">ncol<a class="anchor" aria-label="anchor" href="#arg-ncol"></a></dt>
@@ -467,10 +449,6 @@ will be removed in scop 1.0.0.</p></dd>
 <dd><p>Print messages.</p></dd>
 
 
-<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Extra heatmap arguments such as <code>width</code> and <code>height</code>.</p></dd>
-
-
 <dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
 <dd><p>Deprecated alias for <code>object</code>; supply exactly one of the two. It
 will be removed in scop 1.0.0.</p></dd>
@@ -489,14 +467,28 @@ genes. <code>plot_data$edges</code> and
 <code>plot_data$nodes</code> retain the network selected by <code>max_targets</code> and <code>max_edges</code>;
 the actual display subset is in <code>plot_data$display_edges</code> and <code>plot_data$display_nodes</code>.</p></dd>
 
+
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>Arguments passed to other functions.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>Plot, or a list with <code>rss_matrix</code>, <code>rank_table</code>, <code>top_table</code>, <code>plots</code>, and <code>plot</code> when <code>return_data = TRUE</code>.</p>
     </div>
     <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>For ordinary activity heatmaps, distributions, and embeddings, use
+<a href="GroupHeatmap.html">GroupHeatmap</a>, <a href="FeatureStatPlot.html">FeatureStatPlot</a>, and <a href="FeatureDimPlot.html">FeatureDimPlot</a> with the activity
+assay created by the analysis function. Use its stored feature names from
+<code>rownames(object[["scenic"]])</code> because Seurat may normalize regulon names.
+<code>"eregulon_dim"</code> retains the paired TF-expression, gene-activity, and
+available region-activity comparison.</p>
+    </div>
+    <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><a href="RunSCENIC.html">RunSCENIC</a>, <a href="RunSCENICPlus.html">RunSCENICPlus</a>, <a href="SCENICPlusPlot.html">SCENICPlusPlot</a></p></div>
+    <div class="dont-index"><p><a href="RunSCENIC.html">RunSCENIC</a>, <a href="RunSCENICPlus.html">RunSCENICPlus</a>, <a href="SCENICPlusPlot.html">SCENICPlusPlot</a>,
+<a href="GroupHeatmap.html">GroupHeatmap</a>, <a href="FeatureStatPlot.html">FeatureStatPlot</a>, <a href="FeatureDimPlot.html">FeatureDimPlot</a></p></div>
     </div>
 
     <div class="section level2">
@@ -512,11 +504,24 @@ the actual display subset is in <code>plot_data$display_edges</code> and <code>p
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">scenic_rss</span> <span class="op">&lt;-</span> <span class="fu">SCENICPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, group.by <span class="op">=</span> <span class="st">"CellType"</span>, plot_type <span class="op">=</span> <span class="st">"rss_rank"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">example_tfs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">scenic_rss</span><span class="op">$</span><span class="va">top_table</span><span class="op">$</span><span class="va">TF</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">regulons</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">[[</span><span class="st">"scenic"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>, <span class="fl">6</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="GroupHeatmap.html">GroupHeatmap</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">pancreas_sub</span>, group.by <span class="op">=</span> <span class="st">"CellType"</span>, features <span class="op">=</span> <span class="va">regulons</span>,</span></span>
+<span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"scenic"</span>, layer <span class="op">=</span> <span class="st">"data"</span>, exp_method <span class="op">=</span> <span class="st">"raw"</span>,</span></span>
+<span class="r-in"><span>  lib_normalize <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span><span class="op">)</span><span class="op">$</span><span class="va">plot</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="FeatureStatPlot.html">FeatureStatPlot</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">pancreas_sub</span>, group.by <span class="op">=</span> <span class="st">"CellType"</span>, stat.by <span class="op">=</span> <span class="va">regulons</span>,</span></span>
+<span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"scenic"</span>, layer <span class="op">=</span> <span class="st">"data"</span>, plot_type <span class="op">=</span> <span class="st">"violin"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="FeatureDimPlot.html">FeatureDimPlot</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">pancreas_sub</span>, features <span class="op">=</span> <span class="va">regulons</span>, assay <span class="op">=</span> <span class="st">"scenic"</span>,</span></span>
+<span class="r-in"><span>  layer <span class="op">=</span> <span class="st">"data"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">SCENICPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, group.by <span class="op">=</span> <span class="st">"CellType"</span>, plot_type <span class="op">=</span> <span class="st">"heatmap_dotplot"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">SCENICPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, group.by <span class="op">=</span> <span class="st">"CellType"</span>, plot_type <span class="op">=</span> <span class="st">"network"</span>, features <span class="op">=</span> <span class="va">example_tfs</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">SCENICPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, group.by <span class="op">=</span> <span class="st">"CellType"</span>, plot_type <span class="op">=</span> <span class="st">"network_graph"</span>, features <span class="op">=</span> <span class="va">example_tfs</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="SCENICPlusPlot.html">SCENICPlusPlot</a></span><span class="op">(</span><span class="va">pancreas_sub</span>, group.by <span class="op">=</span> <span class="st">"CellType"</span>, plot_type <span class="op">=</span> <span class="st">"egrn"</span>, features <span class="op">=</span> <span class="va">example_tfs</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="SCENICPlusPlot.html">SCENICPlusPlot</a></span><span class="op">(</span><span class="va">pancreas_sub</span>, group.by <span class="op">=</span> <span class="st">"CellType"</span>, plot_type <span class="op">=</span> <span class="st">"coverage"</span>, features <span class="op">=</span> <span class="va">example_tfs</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

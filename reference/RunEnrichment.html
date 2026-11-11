@@ -105,8 +105,8 @@
 <span>  simplify_method <span class="op">=</span> <span class="st">"Wang"</span>,</span>
 <span>  simplify_similarityCutoff <span class="op">=</span> <span class="fl">0.7</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  <span class="va">...</span>,</span>
-<span>  srt <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  srt <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -158,7 +158,7 @@ This argument is used to convert the gene IDs from <code>IDtype</code> to <code>
 
 
 <dt id="arg-backend">backend<a class="anchor" aria-label="anchor" href="#arg-backend"></a></dt>
-<dd><p>Enrichment backend. <code>"cpp"</code> is the default and uses a fast native
+<dd><p>Enrichment backend. <code>"cpp"</code> is the default and uses a fast
 hypergeometric ORA implementation and returns the enrichment table without
 <code>enrichResult</code> objects. <code>"r"</code> uses <code><a href="https://rdrr.io/pkg/clusterProfiler/man/enricher.html" class="external-link">clusterProfiler::enricher()</a></code> and returns
 <code>enrichResult</code> objects in <code>results</code>. <code>GO_simplify = TRUE</code> currently uses the R backend.</p></dd>
@@ -257,13 +257,13 @@ This argument is only used if <code>GO_simplify</code> is <code>TRUE</code>.</p>
 Default is <code>TRUE</code>.</p></dd>
 
 
-<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Passed to helper functions.</p></dd>
-
-
 <dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
 <dd><p>Deprecated alias for <code>object</code>; supply exactly one of the two. It
 will be removed in scop 1.0.0.</p></dd>
+
+
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>Arguments passed to other functions.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -305,7 +305,7 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-in"><span>  TERM2GENE <span class="op">=</span> <span class="va">term2gene</span>,</span></span>
 <span class="r-in"><span>  minGSSize <span class="op">=</span> <span class="fl">2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-10 10:18:38] Start <span style="color: #0000BB;">Enrichment</span> analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-11 05:13:51] Start <span style="color: #0000BB;">Enrichment</span> analysis</span>
 <span class="r-in"><span><span class="fu"><a href="EnrichmentPlot.html">EnrichmentPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  res <span class="op">=</span> <span class="va">enrich_out</span>,</span></span>
 <span class="r-in"><span>  db <span class="op">=</span> <span class="st">"custom"</span>,</span></span>

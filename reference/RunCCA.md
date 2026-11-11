@@ -20,7 +20,7 @@ RunCCA(object1, object2, ...)
 
 - ...:
 
-  Passed to methods.
+  Arguments passed to other functions.
 
 ## Value
 

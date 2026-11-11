@@ -212,8 +212,8 @@ RunPAGA(
   workflow and remains the default. `"cpp"` uses the package C++
   implementation for the standard connectivity graph and tree, plus an
   approximate R igraph layout stored in `paga$pos`. All arguments stay
-  on the selected backend; the C++ backend never switches to Python
-  implicitly.
+  on the selected backend; the C++ backend never switches the C++
+  implementation never switches to Python implicitly.
 
 - return_seurat:
 
@@ -239,22 +239,22 @@ RunPAGA(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-11-10 10:38:32] Start standard processing workflow...
-#> ℹ [2026-11-10 10:38:32] Checking a list of <Seurat>...
-#> ! [2026-11-10 10:38:32] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-11-10 10:38:32] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-11-10 10:38:32] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-10 10:38:32] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-10 10:38:32] Number of available HVF: 2000
-#> ℹ [2026-11-10 10:38:32] Finished check
-#> ℹ [2026-11-10 10:38:32] Perform `ScaleData()`
-#> ℹ [2026-11-10 10:38:32] Perform pca linear dimension reduction
-#> ℹ [2026-11-10 10:38:33] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-11-10 10:38:33] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-10 10:38:33] Reorder clusters...
-#> ℹ [2026-11-10 10:38:33] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-10 10:38:33] Perform umap nonlinear dimension reduction
-#> ✔ [2026-11-10 10:38:43] Standard processing workflow completed
+#> ℹ [2026-11-11 05:34:59] Start standard processing workflow...
+#> ℹ [2026-11-11 05:34:59] Checking a list of <Seurat>...
+#> ! [2026-11-11 05:35:00] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-11 05:35:00] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-11 05:35:00] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-11 05:35:00] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-11 05:35:00] Number of available HVF: 2000
+#> ℹ [2026-11-11 05:35:00] Finished check
+#> ℹ [2026-11-11 05:35:00] Perform `ScaleData()`
+#> ℹ [2026-11-11 05:35:00] Perform pca linear dimension reduction
+#> ℹ [2026-11-11 05:35:00] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-11-11 05:35:01] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-11 05:35:01] Reorder clusters...
+#> ℹ [2026-11-11 05:35:01] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-11 05:35:01] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-11 05:35:10] Standard processing workflow completed
 pancreas_sub <- RunPAGA(
   pancreas_sub,
   assay_x = "RNA",
@@ -263,8 +263,8 @@ pancreas_sub <- RunPAGA(
   nonlinear_reduction = "UMAP",
   backend = "cpp"
 )
-#> ℹ [2026-11-10 10:38:43] Running PAGA with BiocNeighbors using 29 neighbors
-#> ✔ [2026-11-10 10:38:43] PAGA cpp backend completed
+#> ℹ [2026-11-11 05:35:10] Running PAGA with BiocNeighbors using 29 neighbors
+#> ✔ [2026-11-11 05:35:10] PAGA cpp backend completed
 PAGAPlot(pancreas_sub, reduction = "UMAP")
 
 

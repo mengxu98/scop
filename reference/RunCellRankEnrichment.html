@@ -167,7 +167,19 @@ will be removed in scop 1.0.0.</p></dd>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>The Seurat object with results under
-`srt@tools$CellRank$enrichment[[lineage]]`.</p>
+`object@tools$CellRank$enrichment[[lineage]]`. Each table in `databases`
+includes `Groups` and `Database` columns accepted by [EnrichmentPlot].</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>Plot a stored database table with
+`EnrichmentPlot(res = list(enrichment = table), db = "GO_BP")`.
+The `Groups` column identifies the fitted gene module. PDF exports use
+the same [EnrichmentPlot] interface.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p>[EnrichmentPlot], [RunCellRankTrends], [RunDynamicEnrichment]</p></div>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

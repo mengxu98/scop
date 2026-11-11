@@ -46,7 +46,7 @@ RunGENIE3(
 
 - ...:
 
-  Additional backend-specific arguments.
+  Arguments passed to other functions.
 
 - assay:
 

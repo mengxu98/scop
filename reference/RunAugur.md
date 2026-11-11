@@ -29,8 +29,8 @@ RunAugur(
   tool_name = "Augur",
   add_meta = TRUE,
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 ```
 
@@ -63,9 +63,8 @@ RunAugur(
   Backend used to run Augur. `"cpp"` uses a parity-preserving `scop`
   R/C++ backend that keeps Augur's feature selection, sampling, random
   forest, and metric semantics without requiring the Augur package.
-  `"r"` calls the native
-  [`Augur::calculate_auc`](https://rdrr.io/pkg/Augur/man/calculate_auc.html)
-  implementation.
+  `"r"` calls
+  [`Augur::calculate_auc`](https://rdrr.io/pkg/Augur/man/calculate_auc.html).
 
 - features:
 
@@ -99,22 +98,21 @@ RunAugur(
 
   Whether to print the message. Default is `TRUE`.
 
-- ...:
-
-  Additional arguments passed to
-  [`Augur::calculate_auc`](https://rdrr.io/pkg/Augur/man/calculate_auc.html).
-
 - srt:
 
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
 
+- ...:
+
+  Arguments passed to other functions.
+
 ## Value
 
-A `Seurat` object with native Augur results stored in
-`srt@tools[[tool_name]]`. When `add_meta = TRUE`, cell-level metadata
-columns `prefix_auc` and `prefix_rank` are added for use with existing
-`scop` plotting functions such as
+A `Seurat` object with Augur results stored in `srt@tools[[tool_name]]`.
+When `add_meta = TRUE`, cell-level metadata columns `prefix_auc` and
+`prefix_rank` are added for use with existing `scop` plotting functions
+such as
 [`FeatureDimPlot()`](https://mengxu98.github.io/scop/reference/FeatureDimPlot.md).
 
 ## References
@@ -129,7 +127,7 @@ prioritization in single-cell data. *Nature Biotechnology*, 39, 30-34.
 data(panc8_sub)
 panc8_sub <- subset(panc8_sub, subset = tech %in% c("celseq", "celseq2"))
 panc8_sub <- RunStandardWorkflow(panc8_sub, verbose = FALSE)
-#> ℹ [2026-11-10 10:09:46] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-11 05:03:42] Skip `log1p()` because `layer = data` is not "counts"
 panc8_sub <- RunAugur(
   panc8_sub,
   celltype.by = "celltype",
@@ -146,15 +144,15 @@ panc8_sub <- RunAugur(
     importance = "accuracy"
   )
 )
-#> ! [2026-11-10 10:09:57] Skipping cell type [1] delta
+#> ! [2026-11-11 05:03:53] Skipping cell type [1] delta
 #> !                       9 Levels: acinar activated-stellate alpha beta delta ductal ... macrophage: minimum number of cells ([1] 11) is less than [1] 20
-#> ! [2026-11-10 10:10:04] Skipping cell type [1] activated-stellate
+#> ! [2026-11-11 05:04:02] Skipping cell type [1] activated-stellate
 #> !                       9 Levels: acinar activated-stellate alpha beta delta ductal ... macrophage: minimum number of cells ([1] 4) is less than [1] 20
-#> ! [2026-11-10 10:10:04] Skipping cell type [1] gamma
+#> ! [2026-11-11 05:04:02] Skipping cell type [1] gamma
 #> !                       9 Levels: acinar activated-stellate alpha beta delta ductal ... macrophage: minimum number of cells ([1] 2) is less than [1] 20
-#> ! [2026-11-10 10:10:04] Skipping cell type [1] macrophage
+#> ! [2026-11-11 05:04:02] Skipping cell type [1] macrophage
 #> !                       9 Levels: acinar activated-stellate alpha beta delta ductal ... macrophage: minimum number of cells ([1] 0) is less than [1] 20
-#> ! [2026-11-10 10:10:04] Skipping cell type [1] endothelial
+#> ! [2026-11-11 05:04:02] Skipping cell type [1] endothelial
 #> !                       9 Levels: acinar activated-stellate alpha beta delta ductal ... macrophage: minimum number of cells ([1] 0) is less than [1] 20
 
 panc8_sub@tools$Augur$AUC

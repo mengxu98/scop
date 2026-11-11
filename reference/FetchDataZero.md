@@ -11,8 +11,8 @@ FetchDataZero(
   assay = "RNA",
   layer = "data",
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 ```
 
@@ -38,12 +38,11 @@ FetchDataZero(
 
   Whether to print the message. Default is `TRUE`.
 
-- ...:
-
-  Other arguments to pass to
-  [Seurat::FetchData](https://satijalab.github.io/seurat-object/reference/FetchData.html).
-
 - srt:
 
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
+
+- ...:
+
+  Arguments passed to other functions.

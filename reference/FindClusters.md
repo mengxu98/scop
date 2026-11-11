@@ -18,7 +18,7 @@ FindClusters(object, ...)
 
 - ...:
 
-  Arguments passed unchanged to \[Seurat::FindClusters()\].
+  Arguments passed to other functions.
 
 ## Value
 

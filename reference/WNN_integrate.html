@@ -208,7 +208,7 @@ modality-specific selection. Inspect <code>WNN_dims_list</code> for the selected
 
 
 <dt id="arg-linear-reduction-params">linear_reduction_params<a class="anchor" aria-label="anchor" href="#arg-linear-reduction-params"></a></dt>
-<dd><p>Named arguments for the linear reduction backend.</p></dd>
+<dd><p>Named arguments for linear reduction.</p></dd>
 
 
 <dt id="arg-force-linear-reduction">force_linear_reduction<a class="anchor" aria-label="anchor" href="#arg-force-linear-reduction"></a></dt>
@@ -266,7 +266,7 @@ caller's random-number state is restored.</p>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Cells must represent paired measurements. RNA and ATAC preprocessing is
-followed by native multimodal neighbor construction. This function does not
+followed by multimodal neighbor construction. This function does not
 use batch labels to correct either modality. Specify assays explicitly after
 adding derived assays, for example <code>assay = c("RNA", "peaks")</code>.
 Both assays must contain the same cells as the object. Subset to verified
@@ -293,10 +293,10 @@ are selected independently from accessibility counts.</p>
 <span class="r-in"><span>  nHVF <span class="op">=</span> <span class="fl">100</span>, neighbor_k <span class="op">=</span> <span class="fl">10</span>, nonlinear_reduction_dims <span class="op">=</span> <span class="fl">2</span>,</span></span>
 <span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-10 10:51:10] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-10 10:51:19] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-10 10:51:29] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-10 10:51:29] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-11 05:48:11] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-11 05:48:19] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-11 05:48:28] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-11 05:48:28] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
 <span class="r-in"><span><span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/ObjectAccess.html" class="external-link">Reductions</a></span><span class="op">(</span><span class="va">paired</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "RNApca"        "RNApcaUMAP2D"  "RNAUMAP2D"     "ATACsvd"      </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [5] "ATACsvdUMAP2D" "ATACUMAP2D"    "ATAClsi"       "WNNUMAP2D"    </span>

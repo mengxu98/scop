@@ -39,10 +39,10 @@ SpatialNeighborhoodPlot(
   byrow = TRUE,
   seed = 11,
   verbose = TRUE,
-  ...,
   image.scale = c("lowres", "hires"),
   srt = NULL,
-  sample = NULL
+  sample = NULL,
+  ...
 )
 ```
 
@@ -156,10 +156,6 @@ SpatialNeighborhoodPlot(
 
   Whether to print the message. Default is `TRUE`.
 
-- ...:
-
-  Additional arguments passed to the selected backend.
-
 - image.scale:
 
   Image scale factor matching the raster stored in the selected image.
@@ -176,6 +172,10 @@ SpatialNeighborhoodPlot(
   Optional single sample ID for non-spatial plots. Results from multiple
   samples require explicit selection; no samples are aggregated. Use
   `comparison` and `condition` to resolve other repeated label pairs.
+
+- ...:
+
+  Arguments passed to other functions.
 
 ## Value
 

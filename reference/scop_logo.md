@@ -26,7 +26,7 @@ print(x, ...)
 
 - ...:
 
-  Additional arguments passed to \[cat()\].
+  Arguments passed to other functions.
 
 ## References
 

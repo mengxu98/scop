@@ -176,7 +176,7 @@ RunSCVELO(
 - log_transform:
 
   Whether to apply log transformation to AnnData `X` in the Python
-  backend. The C++ velocity calculation uses spliced/unspliced layers,
+  workflow. The C++ velocity calculation uses spliced/unspliced layers,
   matching scVelo, so this does not alter its velocity matrices.
 
 - use_raw:
@@ -246,8 +246,8 @@ RunSCVELO(
 
 - compute_terminal_states:
 
-  Whether to compute terminal states (root and end points). The C++
-  backend needs the optional `RSpectra` package for this step and for
+  Whether to compute terminal states (root and end points). The C++ path
+  needs the optional `RSpectra` package for this step and for
   `compute_pseudotime`.
 
 - compute_pseudotime:
@@ -308,7 +308,7 @@ RunSCVELO(
   scVelo workflow. `"cpp"` uses the package C++ implementation for a
   stochastic velocity embedding that is compatible with
   [VelocityPlot](https://mengxu98.github.io/scop/reference/VelocityPlot.md).
-  The C++ backend never switches to Python implicitly.
+  The C++ implementation never switches to Python implicitly.
 
 - max_dense_gib:
 
@@ -339,22 +339,22 @@ RunSCVELO(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-11-10 10:41:36] Start standard processing workflow...
-#> ℹ [2026-11-10 10:41:36] Checking a list of <Seurat>...
-#> ! [2026-11-10 10:41:36] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-11-10 10:41:36] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-11-10 10:41:36] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-10 10:41:36] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-10 10:41:36] Number of available HVF: 2000
-#> ℹ [2026-11-10 10:41:36] Finished check
-#> ℹ [2026-11-10 10:41:36] Perform `ScaleData()`
-#> ℹ [2026-11-10 10:41:36] Perform pca linear dimension reduction
-#> ℹ [2026-11-10 10:41:37] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-11-10 10:41:37] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-10 10:41:37] Reorder clusters...
-#> ℹ [2026-11-10 10:41:37] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-10 10:41:37] Perform umap nonlinear dimension reduction
-#> ✔ [2026-11-10 10:41:47] Standard processing workflow completed
+#> ℹ [2026-11-11 05:38:05] Start standard processing workflow...
+#> ℹ [2026-11-11 05:38:05] Checking a list of <Seurat>...
+#> ! [2026-11-11 05:38:05] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-11 05:38:05] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-11 05:38:05] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-11 05:38:05] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-11 05:38:05] Number of available HVF: 2000
+#> ℹ [2026-11-11 05:38:05] Finished check
+#> ℹ [2026-11-11 05:38:05] Perform `ScaleData()`
+#> ℹ [2026-11-11 05:38:05] Perform pca linear dimension reduction
+#> ℹ [2026-11-11 05:38:06] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-11-11 05:38:06] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-11 05:38:06] Reorder clusters...
+#> ℹ [2026-11-11 05:38:06] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-11 05:38:06] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-11 05:38:15] Standard processing workflow completed
 pancreas_sub <- RunSCVELO(
   pancreas_sub,
   assay_x = "RNA",
@@ -364,10 +364,10 @@ pancreas_sub <- RunSCVELO(
   backend = "cpp",
   show_plot = FALSE
 )
-#> ℹ [2026-11-10 10:41:47] Running scanpy-compatible preprocessing (15998 features -> filter + normalize)...
-#> ℹ [2026-11-10 10:41:52] Running scVelo "stochastic" mode with `backend = 'cpp'` (9699 features)
-#> ✔ [2026-11-10 10:41:55] scVelo "stochastic" mode completed
-#> ✔ [2026-11-10 10:41:55] scVelo cpp backend completed
+#> ℹ [2026-11-11 05:38:15] Running scanpy-compatible preprocessing (15998 features -> filter + normalize)...
+#> ℹ [2026-11-11 05:38:20] Running scVelo "stochastic" mode with `backend = 'cpp'` (9699 features)
+#> ✔ [2026-11-11 05:38:23] scVelo "stochastic" mode completed
+#> ✔ [2026-11-11 05:38:23] scVelo cpp backend completed
 
 FeatureDimPlot(
   pancreas_sub,

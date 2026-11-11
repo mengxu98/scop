@@ -60,7 +60,7 @@ check_python(
 
 - ...:
 
-  Other arguments to be passed to other functions.
+  Arguments passed to other functions.
 
 ## Examples
 

@@ -61,7 +61,7 @@ RunTriMap(
 
 - ...:
 
-  Passed to the trimap.TRIMAP function.
+  Arguments passed to other functions.
 
 - reduction:
 

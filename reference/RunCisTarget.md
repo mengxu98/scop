@@ -52,12 +52,12 @@ RunCisTarget(
 
 - backend:
 
-  CisTarget runtime backend.
+  CisTarget runtime engine.
 
   `"python"`
 
   :   Uses the pySCENIC/ctxcore Python pipeline. This is the most tested
-      backend and produces results identical to official SCENIC.
+      path and produces results identical to official SCENIC.
 
   `"cpp"`
 
@@ -69,8 +69,7 @@ RunCisTarget(
 
   :   Uses the `RcisTarget` Bioconductor package. Requires the cisTarget
       ranking databases and motif annotations to be available in the
-      same format as the Python backend (feather files and motif2tf
-      table).
+      same format as the Python path (feather files and motif2tf table).
 
 - ranking_dbs:
 
@@ -104,7 +103,7 @@ RunCisTarget(
 
 - work_dir:
 
-  Working directory used by Python backend.
+  Working directory used by Python.
 
 - prefix:
 
@@ -130,10 +129,9 @@ RunCisTarget(
 
 - parallel_backend:
 
-  Parallel backend used for native C++ cisTarget module processing.
-  `"auto"` preserves the current cross-platform PSOCK behavior. `"fork"`
-  is an explicit opt-in on macOS and Linux and is not available on
-  Windows.
+  Parallel backend used for C++ cisTarget module processing. `"auto"`
+  preserves the current cross-platform PSOCK behavior. `"fork"` is an
+  explicit opt-in on macOS and Linux and is not available on Windows.
 
 - force:
 
@@ -145,7 +143,7 @@ RunCisTarget(
 
 - ...:
 
-  Additional arguments passed to the backend.
+  Arguments passed to other functions.
 
 ## Value
 

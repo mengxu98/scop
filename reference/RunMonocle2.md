@@ -101,8 +101,8 @@ RunMonocle2(
 
 - backend:
 
-  Deprecated and ignored. Monocle now accelerates cell ordering natively
-  with C++, so the separate `"cpp"` backend has been removed.
+  Deprecated and ignored. Monocle accelerates cell ordering with
+  compiled C++, so the separate `"cpp"` option has been removed.
 
 - n_neighbors:
 

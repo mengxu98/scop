@@ -130,7 +130,7 @@ scRNA-seq reference via gene activity.</p>
 
 
 <dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
-<dd><p>Label-transfer backend. One of <code>"Seurat"</code> or <code>"scOMM"</code>.</p></dd>
+<dd><p>Label-transfer method. One of <code>"Seurat"</code> or <code>"scOMM"</code>.</p></dd>
 
 
 <dt id="arg-prefix">prefix<a class="anchor" aria-label="anchor" href="#arg-prefix"></a></dt>
@@ -236,7 +236,7 @@ will be removed in scop 1.0.0.</p></dd>
 backend, the tool result records actual anchor features and current prediction
 columns. This is a calculation-time snapshot, not automatically updated by
 later subsetting or renaming. Caller RNG state and original cell IDs are
-preserved; temporary query IDs isolate native suffix handling. Predictions
+preserved; temporary query IDs isolate suffix handling. Predictions
 describe similarity to the supplied reference, not independently established
 biological accuracy.</p>
     </div>

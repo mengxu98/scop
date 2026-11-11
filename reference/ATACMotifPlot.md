@@ -12,7 +12,7 @@ ATACMotifPlot(object, motifs, assay = NULL, use.names = TRUE, ...)
 
 - object:
 
-  A Seurat object with native motifs.
+  A Seurat object with motifs.
 
 - motifs:
 
@@ -24,15 +24,15 @@ ATACMotifPlot(object, motifs, assay = NULL, use.names = TRUE, ...)
 
 - use.names:
 
-  Use native motif names in plot labels.
+  Use motif names in plot labels.
 
 - ...:
 
-  Arguments passed to Signac::MotifPlot and ggseqlogo.
+  Arguments passed to other functions.
 
 ## Value
 
-Native motif-logo plot. Motif similarity is not TF binding evidence.
+A motif-logo plot. Motif similarity is not TF binding evidence.
 
 ## Details
 

@@ -48,7 +48,7 @@ RunIREA(
 
 - ...:
 
-  Arguments passed to the dispatched method.
+  Arguments passed to other functions.
 
 - reference:
 

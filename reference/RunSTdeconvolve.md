@@ -25,8 +25,8 @@ RunSTdeconvolve(
   store_results = TRUE,
   round_counts = TRUE,
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 ```
 
@@ -108,14 +108,14 @@ RunSTdeconvolve(
 
   Whether to print messages.
 
-- ...:
-
-  Additional arguments passed to the STdeconvolve fit steps.
-
 - srt:
 
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
+
+- ...:
+
+  Arguments passed to other functions.
 
 ## Value
 

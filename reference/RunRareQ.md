@@ -138,8 +138,8 @@ A `Seurat` object with RareQ results in metadata and
 Stored results retain a private per-cell identity metadata column for
 [`GetSpatialResult()`](https://mengxu98.github.io/scop/reference/GetSpatialResult.md).
 Preserve this column when subsetting or renaming cells. The accessor
-returns current-cell assignments; stored native results and fit
-parameters remain unchanged.
+returns current-cell assignments; stored results and fit parameters
+remain unchanged.
 
 ## References
 
@@ -155,16 +155,16 @@ pancreas_sub <- RunStandardWorkflow(
   pancreas_sub,
   verbose = FALSE
 )
-#> ℹ [2026-11-10 10:39:57] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-11 05:36:26] Skip `log1p()` because `layer = data` is not "counts"
 pancreas_sub <- RunRareQ(
   pancreas_sub,
   dims = 1:20
 )
-#> ℹ [2026-11-10 10:40:07] Build Seurat nearest neighbors for RareQ using reduction "Standardpca"
+#> ℹ [2026-11-11 05:36:35] Build Seurat nearest neighbors for RareQ using reduction "Standardpca"
 #> Computing nearest neighbors
-#> ℹ [2026-11-10 10:40:07] Only one graph name supplied, storing nearest-neighbor graph only
-#> ℹ [2026-11-10 10:40:07] Run RareQ with `k = 6`, `Q_cut = 0.6`, and `ratio = 0.2`
-#> ℹ [2026-11-10 10:40:07] RareQ clusters stored in metadata column "RareQ_cluster"
+#> ℹ [2026-11-11 05:36:35] Only one graph name supplied, storing nearest-neighbor graph only
+#> ℹ [2026-11-11 05:36:35] Run RareQ with `k = 6`, `Q_cut = 0.6`, and `ratio = 0.2`
+#> ℹ [2026-11-11 05:36:35] RareQ clusters stored in metadata column "RareQ_cluster"
 
 CellDimPlot(
   pancreas_sub,

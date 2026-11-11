@@ -483,15 +483,15 @@ print(head(gsea_endocrine[
 #>              ID                                                   Description
 #> 8228 GO:0009306                                             protein secretion
 #> 8229 GO:0051046                                       regulation of secretion
-#> 8230 GO:0035592 establishment of protein localization to extracellular region
-#> 8231 GO:0071692                  protein localization to extracellular region
-#> 8232 GO:0032940                                             secretion by cell
-#>           NES     p.adjust
-#> 8228 2.374474 7.275006e-12
-#> 8229 2.194113 7.275006e-12
-#> 8230 2.330899 7.531970e-12
-#> 8231 2.330899 7.531970e-12
-#> 8232 2.060459 7.531970e-12
+#> 8230 GO:1903047                                    mitotic cell cycle process
+#> 8231 GO:0046903                                                     secretion
+#> 8232 GO:0035592 establishment of protein localization to extracellular region
+#>            NES     p.adjust
+#> 8228  2.377325 7.450639e-12
+#> 8229  2.194131 7.450639e-12
+#> 8230 -2.022187 7.783835e-12
+#> 8231  2.010426 8.571817e-12
+#> 8232  2.328508 9.273303e-12
 
 print(GSEAPlot(
   pancreas_sub,
@@ -516,8 +516,6 @@ print(GSEAPlot(
   direction = "both",
   topTerm = 10
 ))
-#> Warning: `guide_colourbar()` cannot be used for alpha.
-#> ℹ Use one of colour, color, or fill instead.
 ```
 
 ![](differential-enrichment-workflow_files/figure-html/gsea-2.png)
@@ -585,12 +583,12 @@ data.frame(
 )
 #>                            file    bytes
 #> 1               all-markers.csv  5268635
-#> 2                  analysis.rds 50898613
+#> 2                  analysis.rds 50902919
 #> 3             cell-metadata.csv   146525
 #> 4    GO-BP-GSEA-memberships.csv 12612015
 #> 5 GO-BP-measured-background.csv 10159062
 #> 6                 GO-source.txt       41
-#> 7                      GSEA.csv  6702564
+#> 7                      GSEA.csv  6702197
 #> 8                       ORA.csv  3986172
 ```
 
@@ -652,9 +650,9 @@ build_receipt <- data.frame(
 )
 build_receipt
 #>                            article               built_utc  scop     R
-#> 1 differential-enrichment-workflow 2026-11-10 10:56:37 UTC 0.9.2 4.6.2
+#> 1 differential-enrichment-workflow 2026-11-11 05:54:23 UTC 0.9.2 4.6.2
 #>                            source_revision source_has_local_changes
-#> 1 1ae6058d875064a3d9b1ef3b3ceca07f248c4796                    FALSE
+#> 1 25b081ffa1fc454a71183a45263ccf5bf161b5eb                    FALSE
 #>                        article_md5 R_seed cells_retained genes_in_active_assay
 #> 1 1c730bbafc9f5f0c6783a90f73de724d     11           1000                 15998
 utils::write.csv(build_receipt, file.path(output_dir, "build-receipt.csv"),
@@ -695,7 +693,7 @@ sessionInfo()
 #>   [1] RcppAnnoy_0.0.23        splines_4.6.2           ggplotify_0.1.4        
 #>   [4] tibble_3.3.1            polyclip_1.10-7         enrichit_0.2.7         
 #>   [7] fastDummies_1.7.6       lifecycle_1.0.5         httr2_1.3.0            
-#>  [10] thisplot_0.4.6          doParallel_1.0.17       globals_0.20.0         
+#>  [10] thisplot_0.4.7          doParallel_1.0.17       globals_0.20.0         
 #>  [13] processx_3.9.0          lattice_0.23-1          MASS_7.3-66            
 #>  [16] magrittr_2.0.5          sass_0.4.10             rmarkdown_2.32         
 #>  [19] jquerylib_0.1.4         yaml_2.3.12             thisutils_0.5.3        

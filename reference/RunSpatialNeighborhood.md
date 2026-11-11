@@ -27,8 +27,8 @@ RunSpatialNeighborhood(
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
   backend = c("cpp", "r"),
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 ```
 
@@ -80,8 +80,8 @@ RunSpatialNeighborhood(
 
 - subject.by:
 
-  Optional metadata column identifying subjects for backends that
-  support paired or repeated designs.
+  Optional metadata column identifying subjects for methods that support
+  paired or repeated designs.
 
 - radius:
 
@@ -96,7 +96,7 @@ RunSpatialNeighborhood(
 
 - features:
 
-  Optional features to extract into the backend input table.
+  Optional features to extract into the input table.
 
 - from, to:
 
@@ -126,14 +126,14 @@ RunSpatialNeighborhood(
   data-frame aggregation; `"r"` retains the reference implementation.
   This does not alter the external `"spicyR"` method.
 
-- ...:
-
-  Additional arguments passed to the selected backend.
-
 - srt:
 
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
+
+- ...:
+
+  Arguments passed to other functions.
 
 ## Value
 

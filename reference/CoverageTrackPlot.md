@@ -24,8 +24,8 @@ CoverageTrackPlot(
   ranges.group.by = NULL,
   region.highlight = NULL,
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 ```
 
@@ -82,15 +82,14 @@ CoverageTrackPlot(
 
   Whether to print progress messages.
 
-- ...:
-
-  Additional parameters passed to
-  [`Signac::CoveragePlot`](https://stuartlab.org/signac/reference/CoveragePlot.html).
-
 - srt:
 
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
+
+- ...:
+
+  Arguments passed to other functions.
 
 ## Value
 

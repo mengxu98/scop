@@ -31,8 +31,8 @@ MetaCellPlot(
   theme_use = "theme_scop",
   theme_args = list(),
   return_layer = FALSE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 ```
 
@@ -142,16 +142,14 @@ MetaCellPlot(
   (`cells`, `fill_scale`, `centroids`, `scale_fill`, `scale_size`,
   `labels`) instead of a complete plot.
 
-- ...:
-
-  Additional arguments passed to
-  [`geom_point()`](https://ggplot2.tidyverse.org/reference/geom_point.html)
-  for metacell centroids.
-
 - srt:
 
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
+
+- ...:
+
+  Arguments passed to other functions.
 
 ## Value
 
@@ -163,16 +161,16 @@ A `ggplot` object, or a named list of ggplot2 layers when
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub, verbose = FALSE)
-#> ℹ [2026-11-10 10:06:43] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-11 05:00:30] Skip `log1p()` because `layer = data` is not "counts"
 mc <- RunMetaCell(
   pancreas_sub,
   method = "supercell",
   gamma = 20
 )
-#> ℹ [2026-11-10 10:06:52] Running SuperCell with gamma = 20, k.knn = 5 on 1000 cells
-#> ℹ [2026-11-10 10:06:53] `RunMetaCell()` ("supercell") built 50 metacells from 1000 cells
-#> ℹ [2026-11-10 10:06:53] Metacell size summary: min 5, median 16.5, mean 20, max 56 cells
-#> ✔ [2026-11-10 10:06:53] `RunMetaCell()` returned metacell Seurat with 50 metacells. Original cells in `@misc[["original_srt"]]`
+#> ℹ [2026-11-11 05:00:38] Running SuperCell with gamma = 20, k.knn = 5 on 1000 cells
+#> ℹ [2026-11-11 05:00:39] `RunMetaCell()` ("supercell") built 50 metacells from 1000 cells
+#> ℹ [2026-11-11 05:00:39] Metacell size summary: min 5, median 16.5, mean 20, max 56 cells
+#> ✔ [2026-11-11 05:00:39] `RunMetaCell()` returned metacell Seurat with 50 metacells. Original cells in `@misc[["original_srt"]]`
 
 MetaCellPlot(
   mc,

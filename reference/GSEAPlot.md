@@ -122,8 +122,9 @@ GSEAPlot(
 
 - topTerm:
 
-  The number of top terms to display. Default is `6`, or `100` if
-  `plot_type` is `"enrichmap"`.
+  The number of top terms to display. Default is `6`, `100` for
+  `"enrichmap"`, or `80` for `"rank"`. Rank plots select the highest
+  `rank_by` values after significance filtering.
 
 - direction:
 
@@ -273,7 +274,8 @@ GSEAPlot(
 
 - palette:
 
-  Color palette name. Available palettes can be found in
+  Color palette name. Defaults to `"Chinese"` for rank plots and
+  `"Spectral"` otherwise. Available palettes can be found in
   [thisplot::show_palettes](https://mengxu98.github.io/thisplot/reference/show_palettes.html).
 
 - palcolor:
@@ -297,15 +299,31 @@ GSEAPlot(
 
   Theme name or function, plus extra theme arguments.
 
-- combine, nrow, ncol, byrow:
+- combine:
 
   Combine plots with
-  [patchwork](https://patchwork.data-imaginist.com/reference/patchwork-package.html).
+  [`patchwork::wrap_plots()`](https://patchwork.data-imaginist.com/reference/wrap_plots.html).
   `combine = FALSE` returns a list of ggplots.
+
+- nrow:
+
+  Combine plots with
+  [`patchwork::wrap_plots()`](https://patchwork.data-imaginist.com/reference/wrap_plots.html).
+  `combine = FALSE` returns a list of ggplots.
+
+- ncol:
+
+  Number of columns of the combined plot.
+
+- byrow:
+
+  Whether to fill combined panels by row. `FALSE` fills panels by
+  column. Only used when `combine = TRUE`.
 
 - seed:
 
-  Random seed.
+  Random seed used for plot construction. The caller's RNG state is
+  restored on return, including errors.
 
 - verbose:
 
@@ -315,6 +333,12 @@ GSEAPlot(
 
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
+
+## Details
+
+Zero P values use `.Machine$double.xmin` when computing display weights.
+Positive P values and signed NES values are retained. Non-missing P
+values must be finite and between zero and one.
 
 ## See also
 
@@ -339,14 +363,14 @@ gsea_out <- RunGSEA(
   nPermSimple = 10000,
   eps = 0
 )
-#> ℹ [2026-11-10 10:04:47] Start GSEA analysis
-#> ! [2026-11-10 10:04:47] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
-#> ℹ [2026-11-10 10:04:47] Preparing custom GSEA database from `TERM2GENE`/`TERM2NAME` ...
-#> ℹ [2026-11-10 10:04:47] Prepared 10 ranked gene rows after ID mapping.
-#> ℹ [2026-11-10 10:04:47] Running GSEA for 1 group/database combination(s) ...
-#> ℹ [2026-11-10 10:04:47] Running GSEA: group "Cluster1", database "custom", genes 10 ...
-#> ℹ [2026-11-10 10:04:47] Finished GSEA: group "Cluster1", database "custom".
-#> ✔ [2026-11-10 10:04:47] GSEA analysis done
+#> ℹ [2026-11-11 04:58:23] Start GSEA analysis
+#> ! [2026-11-11 04:58:23] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
+#> ℹ [2026-11-11 04:58:23] Preparing custom GSEA database from `TERM2GENE`/`TERM2NAME` ...
+#> ℹ [2026-11-11 04:58:23] Prepared 10 ranked gene rows after ID mapping.
+#> ℹ [2026-11-11 04:58:23] Running GSEA for 1 group/database combination(s) ...
+#> ℹ [2026-11-11 04:58:23] Running GSEA: group "Cluster1", database "custom", genes 10 ...
+#> ℹ [2026-11-11 04:58:23] Finished GSEA: group "Cluster1", database "custom".
+#> ✔ [2026-11-11 04:58:23] GSEA analysis done
 GSEAPlot(res = gsea_out, db = "custom", plot_type = "comparison")
 
 GSEAPlot(res = gsea_out, db = "custom", plot_type = "bar")

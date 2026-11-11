@@ -24,7 +24,7 @@ CheckDataType(object, verbose = TRUE, ...)
 
 - ...:
 
-  The message to print.
+  Arguments passed to other functions.
 
 - layer:
 
@@ -49,6 +49,6 @@ A string indicating the type of data. Possible values are:
 ``` r
 data(pancreas_sub)
 CheckDataType(pancreas_sub)
-#> ! [2026-11-10 09:55:05] Infinite values detected
+#> ! [2026-11-11 04:47:54] Infinite values detected
 #> [1] "unknown"
 ```

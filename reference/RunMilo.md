@@ -78,7 +78,7 @@ RunMilo(
 - backend:
 
   Backend used to compute Milo neighborhoods and tests. `"r"` calls the
-  upstream `miloR` implementation. `"cpp"` uses native `scop`
+  upstream `miloR` implementation. `"cpp"` uses compiled `scop`
   graph/neighborhood/counting kernels and keeps edgeR for the
   neighborhood-level quasi-likelihood test.
 

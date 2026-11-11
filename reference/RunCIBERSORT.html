@@ -139,7 +139,7 @@ in columns. Used when <code>object</code> is not provided as a matrix.</p></dd>
 
 <dt id="arg-absolute">absolute<a class="anchor" aria-label="anchor" href="#arg-absolute"></a></dt>
 <dd><p>Passed to CIBERSORT when supported by the installed package.
-The C++ backend currently returns relative fractions.</p></dd>
+The C++ implementation currently returns relative fractions.</p></dd>
 
 
 <dt id="arg-backend">backend<a class="anchor" aria-label="anchor" href="#arg-backend"></a></dt>
@@ -149,12 +149,12 @@ implementation. <code>"r"</code> is an optional reference backend from
 
 
 <dt id="arg-cores">cores<a class="anchor" aria-label="anchor" href="#arg-cores"></a></dt>
-<dd><p>Number of CPU cores used by the C++ backend. <code>NULL</code> uses up to
+<dd><p>Number of CPU cores used by CIBERSORT. <code>NULL</code> uses up to
 4 local cores.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
-<dd><p>Random seed used by the C++ permutation backend.</p></dd>
+<dd><p>Random seed used by CIBERSORT permutation testing.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
@@ -163,8 +163,7 @@ Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Additional parameters forwarded to the internal deconvolution
-backend.</p></dd>
+<dd><p>Arguments passed to other functions.</p></dd>
 
 </dl></div>
     <div class="section level2">

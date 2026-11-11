@@ -80,11 +80,11 @@
 <span>  assay <span class="op">=</span> <span class="st">"RNA"</span>,</span>
 <span>  db_rate <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">srt</span><span class="op">)</span><span class="op">/</span><span class="fl">1000</span> <span class="op">*</span> <span class="fl">0.01</span>,</span>
 <span>  data_type <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  <span class="va">...</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  srt <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  sample.by <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  seed <span class="op">=</span> <span class="fl">1L</span></span>
+<span>  seed <span class="op">=</span> <span class="fl">1L</span>,</span>
+<span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -109,10 +109,6 @@
 rescanning the count matrix.</p></dd>
 
 
-<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Additional arguments to be passed to <code><a href="https://plger.github.io/scDblFinder/reference/scDblFinder.html" class="external-link">scDblFinder::scDblFinder()</a></code>.</p></dd>
-
-
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
 <dd><p>Whether to print messages.</p></dd>
 
@@ -125,11 +121,15 @@ will be removed in scop 1.0.0.</p></dd>
 <dt id="arg-sample-by">sample.by<a class="anchor" aria-label="anchor" href="#arg-sample-by"></a></dt>
 <dd><p>For ATAC, required metadata column identifying captures or
 libraries in which doublets can form. Biological conditions are not capture
-IDs. Native scDblFinder runs independently per capture (<code>multiSampleMode = "split"</code>). RNA behavior is unchanged.</p></dd>
+IDs. <code>scDblFinder</code> runs independently per capture (<code>multiSampleMode = "split"</code>). RNA behavior is unchanged.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
 <dd><p>Random seed for the ATAC path, restoring the caller's RNG.</p></dd>
+
+
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>Arguments passed to other functions.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -137,14 +137,14 @@ IDs. Native scDblFinder runs independently per capture (<code>multiSampleMode = 
     <p>A Seurat object with <code>db.scDblFinder_score</code> and
 <code>db.scDblFinder_class</code> updated only for selected-assay cells. For ATAC,
 <code>Misc(assay, "scop_atac_doublets")</code> records input cells, capture assignments,
-parameters, native output and backend version; RNA-only cells are preserved.</p>
+parameters, model output and dependency version; RNA-only cells are preserved.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>For ChromatinAssay input, use all raw peaks with native feature aggregation
+    <p>For ChromatinAssay input, use all raw peaks with feature aggregation
 (<code>aggregateFeatures = TRUE</code>, <code>nfeatures = 25</code>, <code>processing = "normFeatures"</code>).
-<code>nfeatures</code> and other native model parameters can be supplied in <code>...</code>.
-With omitted <code>db_rate</code>, the ATAC path uses the backend's per-capture expected
+<code>nfeatures</code> and other model parameters can be supplied in <code>...</code>.
+With omitted <code>db_rate</code>, the ATAC path uses the per-capture expected
 rate; explicitly supply the appropriate rate for the capture chemistry.
 Scores/classes are predictions, not ground-truth doublet labels. No cells
 are removed. Existing upstream doublet labels can instead be used directly

@@ -10,11 +10,11 @@ RunscDblFinder(
   assay = "RNA",
   db_rate = ncol(srt)/1000 * 0.01,
   data_type = NULL,
-  ...,
   verbose = TRUE,
   srt = NULL,
   sample.by = NULL,
-  seed = 1L
+  seed = 1L,
+  ...
 )
 ```
 
@@ -38,11 +38,6 @@ RunscDblFinder(
   [CheckDataType](https://mengxu98.github.io/scop/reference/CheckDataType.md)
   result, used internally to avoid rescanning the count matrix.
 
-- ...:
-
-  Additional arguments to be passed to
-  [`scDblFinder::scDblFinder()`](https://plger.github.io/scDblFinder/reference/scDblFinder.html).
-
 - verbose:
 
   Whether to print messages.
@@ -56,29 +51,33 @@ RunscDblFinder(
 
   For ATAC, required metadata column identifying captures or libraries
   in which doublets can form. Biological conditions are not capture IDs.
-  Native scDblFinder runs independently per capture
+  `scDblFinder` runs independently per capture
   (`multiSampleMode = "split"`). RNA behavior is unchanged.
 
 - seed:
 
   Random seed for the ATAC path, restoring the caller's RNG.
 
+- ...:
+
+  Arguments passed to other functions.
+
 ## Value
 
 A Seurat object with `db.scDblFinder_score` and `db.scDblFinder_class`
 updated only for selected-assay cells. For ATAC,
 `Misc(assay, "scop_atac_doublets")` records input cells, capture
-assignments, parameters, native output and backend version; RNA-only
+assignments, parameters, model output and dependency version; RNA-only
 cells are preserved.
 
 ## Details
 
-For ChromatinAssay input, use all raw peaks with native feature
-aggregation (`aggregateFeatures = TRUE`, `nfeatures = 25`,
-`processing = "normFeatures"`). `nfeatures` and other native model
-parameters can be supplied in `...`. With omitted `db_rate`, the ATAC
-path uses the backend's per-capture expected rate; explicitly supply the
-appropriate rate for the capture chemistry. Scores/classes are
-predictions, not ground-truth doublet labels. No cells are removed.
-Existing upstream doublet labels can instead be used directly to select
-cells; running a second detector is not required.
+For ChromatinAssay input, use all raw peaks with feature aggregation
+(`aggregateFeatures = TRUE`, `nfeatures = 25`,
+`processing = "normFeatures"`). `nfeatures` and other model parameters
+can be supplied in `...`. With omitted `db_rate`, the ATAC path uses the
+per-capture expected rate; explicitly supply the appropriate rate for
+the capture chemistry. Scores/classes are predictions, not ground-truth
+doublet labels. No cells are removed. Existing upstream doublet labels
+can instead be used directly to select cells; running a second detector
+is not required.

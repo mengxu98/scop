@@ -84,11 +84,10 @@ Default <code>"heatmap_dotplot"</code>: color = TF expression, size = RSS.</p>
 <span>  tool_name <span class="op">=</span> <span class="st">"SCENICPlus"</span>,</span>
 <span>  assay <span class="op">=</span> <span class="st">"scenicplus"</span>,</span>
 <span>  plot_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"heatmap_dotplot"</span>, <span class="st">"rss_rank"</span>, <span class="st">"rss_heatmap"</span>, <span class="st">"rss_dotplot"</span>,</span>
-<span>    <span class="st">"activity_heatmap"</span>, <span class="st">"activity_violin"</span>, <span class="st">"activity_dim"</span>, <span class="st">"eregulon_dim"</span>,</span>
-<span>    <span class="st">"activity_cor_dumbbell"</span>, <span class="st">"regulon_size"</span>, <span class="st">"network_graph"</span>, <span class="st">"network"</span>, <span class="st">"egrn"</span>,</span>
-<span>    <span class="st">"overlap"</span>, <span class="st">"target_bar"</span>, <span class="st">"coverage"</span><span class="op">)</span>,</span>
-<span>  <span class="va">...</span>,</span>
-<span>  srt <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>    <span class="st">"eregulon_dim"</span>, <span class="st">"activity_cor_dumbbell"</span>, <span class="st">"regulon_size"</span>, <span class="st">"network_graph"</span>, <span class="st">"network"</span>,</span>
+<span>    <span class="st">"egrn"</span>, <span class="st">"overlap"</span>, <span class="st">"target_bar"</span>, <span class="st">"coverage"</span><span class="op">)</span>,</span>
+<span>  srt <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -116,13 +115,13 @@ Default <code>"heatmap_dotplot"</code>: color = TF expression, size = RSS.</p>
 <dd><p>Plot type. Default <code>"heatmap_dotplot"</code>.</p></dd>
 
 
-<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Passed to <code><a href="SCENICPlot.html">SCENICPlot()</a></code>.</p></dd>
-
-
 <dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
 <dd><p>Deprecated alias for <code>object</code>; supply exactly one of the two. It
 will be removed in scop 1.0.0.</p></dd>
+
+
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>Arguments passed to other functions.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -131,7 +130,8 @@ will be removed in scop 1.0.0.</p></dd>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><a href="RunSCENICPlus.html">RunSCENICPlus</a>, <a href="SCENICPlot.html">SCENICPlot</a></p></div>
+    <div class="dont-index"><p><a href="RunSCENICPlus.html">RunSCENICPlus</a>, <a href="SCENICPlot.html">SCENICPlot</a>, <a href="GroupHeatmap.html">GroupHeatmap</a>,
+<a href="FeatureStatPlot.html">FeatureStatPlot</a>, <a href="FeatureDimPlot.html">FeatureDimPlot</a></p></div>
     </div>
 
     <div class="section level2">
@@ -146,6 +146,20 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">scenicplus_dot</span> <span class="op">&lt;-</span> <span class="fu">SCENICPlusPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, group.by <span class="op">=</span> <span class="st">"CellType"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">example_tfs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">scenicplus_dot</span><span class="op">$</span><span class="va">top_table</span><span class="op">$</span><span class="va">TF</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">regulons</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">[[</span><span class="st">"scenicplus"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>, <span class="fl">6</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="GroupHeatmap.html">GroupHeatmap</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">pancreas_sub</span>, group.by <span class="op">=</span> <span class="st">"CellType"</span>, features <span class="op">=</span> <span class="va">regulons</span>,</span></span>
+<span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"scenicplus"</span>, layer <span class="op">=</span> <span class="st">"data"</span>, exp_method <span class="op">=</span> <span class="st">"raw"</span>,</span></span>
+<span class="r-in"><span>  lib_normalize <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span><span class="op">)</span><span class="op">$</span><span class="va">plot</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="FeatureStatPlot.html">FeatureStatPlot</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">pancreas_sub</span>, group.by <span class="op">=</span> <span class="st">"CellType"</span>, stat.by <span class="op">=</span> <span class="va">regulons</span>,</span></span>
+<span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"scenicplus"</span>, layer <span class="op">=</span> <span class="st">"data"</span>, plot_type <span class="op">=</span> <span class="st">"violin"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="FeatureDimPlot.html">FeatureDimPlot</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">pancreas_sub</span>, features <span class="op">=</span> <span class="va">regulons</span>, assay <span class="op">=</span> <span class="st">"scenicplus"</span>,</span></span>
+<span class="r-in"><span>  layer <span class="op">=</span> <span class="st">"data"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">SCENICPlusPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, group.by <span class="op">=</span> <span class="st">"CellType"</span>, plot_type <span class="op">=</span> <span class="st">"egrn"</span>, features <span class="op">=</span> <span class="va">example_tfs</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">SCENICPlusPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>

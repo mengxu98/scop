@@ -24,8 +24,8 @@ RunCSIDE(
   tool_name = "CSIDE",
   store_results = TRUE,
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 ```
 
@@ -47,7 +47,7 @@ RunCSIDE(
   Named numeric vector used by
   [`spacexr::run.CSIDE.single()`](https://rdrr.io/pkg/spacexr/man/run.CSIDE.single.html).
   Names must match spatial spot names. Spots with missing or non-finite
-  values are excluded before backend dispatch.
+  values are excluded before model fitting.
 
 - group.by:
 
@@ -97,8 +97,8 @@ RunCSIDE(
 - features:
 
   Optional features retained in the normalized result table. C-SIDE
-  itself still applies its own gene filtering through backend parameters
-  such as `gene_threshold`.
+  itself still applies its own gene filtering through parameters such as
+  `gene_threshold`.
 
 - prefix:
 
@@ -118,20 +118,14 @@ RunCSIDE(
 
   Whether to print the message. Default is `TRUE`.
 
-- ...:
-
-  Additional named parameters passed to the selected C-SIDE backend,
-  such as `cell_type_threshold`, `gene_threshold`, `doublet_mode`,
-  `cell_type_specific`, or `params_to_test`. When using the stored
-  result from
-  [`RunRCTD()`](https://mengxu98.github.io/scop/reference/RunRCTD.md)
-  with `rctd_mode = "full"`, `doublet_mode` defaults to `FALSE` unless
-  explicitly supplied.
-
 - srt:
 
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
+
+- ...:
+
+  Arguments passed to other functions.
 
 ## Value
 

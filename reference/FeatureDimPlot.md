@@ -194,11 +194,13 @@ FeatureDimPlot(
   `keep_scale` apply to the selected scale. `bg_cutoff` only affects
   cell marks. When neither fill-color option is supplied, expression
   surfaces inherit `palette` and `palcolor`; explicit fill options
-  override this default. For compatibility, explicitly supplying
-  `density_color` retains the old fixed-color cell-density layer.
-  Blended multi-feature plots using `compare_features = TRUE` also
-  retain the original cell-density layer, including filled density bands
-  and their original default colors. Use
+  override this default. The expression layer excludes cells with
+  non-finite coordinates or values. Panels with fewer than three finite
+  cells or a constant coordinate omit contours and issue a warning. For
+  compatibility, explicitly supplying `density_color` retains the old
+  fixed-color cell-density layer. Blended multi-feature plots using
+  `compare_features = TRUE` also retain the original cell-density layer,
+  including filled density bands and their original default colors. Use
   [`CellDimPlot()`](https://mengxu98.github.io/scop/reference/CellDimPlot.md)
   for cell-distribution density layers.
 
@@ -362,13 +364,13 @@ FeatureDimPlot(
 - combine:
 
   Combine plots with
-  [patchwork](https://patchwork.data-imaginist.com/reference/patchwork-package.html).
+  [`patchwork::wrap_plots()`](https://patchwork.data-imaginist.com/reference/wrap_plots.html).
   `combine = FALSE` returns a list of ggplots.
 
 - nrow:
 
   Combine plots with
-  [patchwork](https://patchwork.data-imaginist.com/reference/patchwork-package.html).
+  [`patchwork::wrap_plots()`](https://patchwork.data-imaginist.com/reference/wrap_plots.html).
   `combine = FALSE` returns a list of ggplots.
 
 - ncol:
@@ -417,21 +419,6 @@ FeatureDimPlot(
   `FALSE` for contour-only or surface-only plots. Labels and graph or
   lineage overlays are controlled separately. Defaults to `TRUE`.
 
-## Details
-
-Expression-colored contours use a 240 by 240 grid, Gaussian bandwidths
-from [`stats::bw.nrd()`](https://rdrr.io/r/stats/bandwidth.html), and
-nine density levels from 8% to 92% of peak density. Major contours use a
-wider stroke every third level. Grid limits extend three bandwidths
-beyond the finite coordinates to avoid clipping outer contours. Local
-means are interpolated onto contour vertices; filled surfaces omit grid
-points below 2% of peak kernel support, fade in between 2% and 3.5%
-support, and interpolate raster pixels for smooth edges. Cells with
-non-finite coordinates or feature values are omitted from this
-calculation. Panels with fewer than three finite cells or no variation
-in either coordinate return no contours with a warning. No additional
-public plotting function or dependency is required.
-
 ## See also
 
 [CellDimPlot](https://mengxu98.github.io/scop/reference/CellDimPlot.md)
@@ -441,22 +428,22 @@ public plotting function or dependency is required.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-11-10 10:01:25] Start standard processing workflow...
-#> ℹ [2026-11-10 10:01:25] Checking a list of <Seurat>...
-#> ! [2026-11-10 10:01:25] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-11-10 10:01:25] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-11-10 10:01:25] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-10 10:01:25] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-10 10:01:25] Number of available HVF: 2000
-#> ℹ [2026-11-10 10:01:25] Finished check
-#> ℹ [2026-11-10 10:01:25] Perform `ScaleData()`
-#> ℹ [2026-11-10 10:01:25] Perform pca linear dimension reduction
-#> ℹ [2026-11-10 10:01:26] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-11-10 10:01:26] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-10 10:01:26] Reorder clusters...
-#> ℹ [2026-11-10 10:01:26] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-10 10:01:26] Perform umap nonlinear dimension reduction
-#> ✔ [2026-11-10 10:01:35] Standard processing workflow completed
+#> ℹ [2026-11-11 04:54:40] Start standard processing workflow...
+#> ℹ [2026-11-11 04:54:40] Checking a list of <Seurat>...
+#> ! [2026-11-11 04:54:40] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-11 04:54:40] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-11 04:54:40] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-11 04:54:40] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-11 04:54:40] Number of available HVF: 2000
+#> ℹ [2026-11-11 04:54:40] Finished check
+#> ℹ [2026-11-11 04:54:40] Perform `ScaleData()`
+#> ℹ [2026-11-11 04:54:40] Perform pca linear dimension reduction
+#> ℹ [2026-11-11 04:54:41] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-11-11 04:54:41] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-11 04:54:41] Reorder clusters...
+#> ℹ [2026-11-11 04:54:41] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-11 04:54:41] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-11 04:54:49] Standard processing workflow completed
 FeatureDimPlot(
   pancreas_sub,
   features = "G2M_score", reduction = "UMAP"
@@ -522,7 +509,8 @@ FeatureDimPlot(
 
 
 FeatureDimPlot(
-  pancreas_sub, features = c("Rbp4", "Sst"), reduction = "UMAP",
+  pancreas_sub,
+  features = c("Rbp4", "Sst"), reduction = "UMAP",
   title.color = c(Rbp4 = "#2A6F97", Sst = "#B14B28")
 )
 
@@ -537,8 +525,10 @@ FeatureDimPlot(
   theme_use = "theme_blank",
   xlab = "UMAP_1",
   ylab = "UMAP_2",
-  palcolor = c("#345C96", "#349AA4", "#91C6B0", "#DDBF63",
-               "#D77A52", "#AC4968", "#753858")
+  palcolor = c(
+    "#345C96", "#349AA4", "#91C6B0", "#DDBF63",
+    "#D77A52", "#AC4968", "#753858"
+  )
 )
 
 
@@ -562,8 +552,10 @@ FeatureDimPlot(
   theme_use = "theme_blank",
   xlab = "UMAP_1",
   ylab = "UMAP_2",
-  density_filled_palcolor = c("#F2F7F5", "#C5DFD8", "#89BDB5",
-                             "#4A969E", "#286B87", "#253D63")
+  density_filled_palcolor = c(
+    "#F2F7F5", "#C5DFD8", "#89BDB5",
+    "#4A969E", "#286B87", "#253D63"
+  )
 )
 
 
@@ -621,20 +613,16 @@ FeatureDimPlot(
 
 # Input a named feature list
 markers <- list(
-  "Ductal" = c("Sox9", "Anxa2", "Bicc1"),
-  "EPs" = c("Neurog3", "Hes6"),
-  "Pre-endocrine" = c("Fev", "Neurod1"),
-  "Endocrine" = c("Rbp4", "Pyy"),
-  "Beta" = "Ins1",
-  "Alpha" = "Gcg",
-  "Delta" = "Sst",
-  "Epsilon" = "Ghrl"
+  Ductal = c("Sox9", "Anxa2"),
+  Endocrine = c("Rbp4", "Pyy")
 )
 FeatureDimPlot(
   pancreas_sub,
   features = markers,
   reduction = "UMAP",
   theme_use = "theme_blank",
+  xlab = "UMAP 1",
+  ylab = "UMAP 2",
   theme_args = list(
     plot.subtitle = ggplot2::element_text(size = 10),
     strip.text = ggplot2::element_text(size = 8)

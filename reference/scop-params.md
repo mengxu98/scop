@@ -27,9 +27,9 @@ Shared parameters
 
 - cores:
 
-  Number of CPU cores. `NULL` lets each backend pick its own default:
-  the process OpenMP team (`OMP_NUM_THREADS`) for C++ kernels and one
-  worker for R/Python parallel backends.
+  Number of CPU cores. `NULL` lets each method pick its own default: the
+  process OpenMP team (`OMP_NUM_THREADS`) for C++ kernels and one worker
+  for R/Python parallel execution.
 
 - group.by:
 
@@ -76,7 +76,7 @@ Shared parameters
 
 - backend:
 
-  Implementation backend.
+  Execution engine or implementation method.
 
 - tool_name:
 
@@ -84,7 +84,7 @@ Shared parameters
 
 - ...:
 
-  Additional arguments passed to the underlying method.
+  Arguments passed to other functions.
 
 - byrow:
 
@@ -130,7 +130,7 @@ Shared parameters
 - combine:
 
   Combine plots with
-  [patchwork](https://patchwork.data-imaginist.com/reference/patchwork-package.html).
+  [`patchwork::wrap_plots()`](https://patchwork.data-imaginist.com/reference/wrap_plots.html).
   `combine = FALSE` returns a list of ggplots.
 
 - complex.mean:
@@ -322,7 +322,7 @@ Shared parameters
 - nrow:
 
   Combine plots with
-  [patchwork](https://patchwork.data-imaginist.com/reference/patchwork-package.html).
+  [`patchwork::wrap_plots()`](https://patchwork.data-imaginist.com/reference/wrap_plots.html).
   `combine = FALSE` returns a list of ggplots.
 
 - overlay_image:

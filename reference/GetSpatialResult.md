@@ -12,7 +12,7 @@ Results describe cells present in `object`, in its current cell order,
 rather than the original fit's full cell set. BANKSY domain counts and
 PRECAST cell, domain, and sample counts are recomputed from the returned
 assignments. Unfitted PRECAST cells are excluded. Parameters and the
-native bundles in `object@tools` still describe the original fit; other
+stored bundles in `object@tools` still describe the original fit; other
 methods' stored summaries are omitted when their cell set changes.
 PRECAST can be selected by its tool name or by `"PRECAST"` when that
 method identifies a unique stored bundle.

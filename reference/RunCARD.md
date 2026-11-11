@@ -28,9 +28,9 @@ RunCARD(
   create_card_params = list(),
   card_deconvolution_params = list(),
   verbose = TRUE,
-  ...,
   coordinate_space = c("raw", "legacy_display"),
-  srt = NULL
+  srt = NULL,
+  ...
 )
 ```
 
@@ -119,10 +119,6 @@ RunCARD(
 
   Whether to print the message. Default is `TRUE`.
 
-- ...:
-
-  Additional parameters passed to the RCTD run step.
-
 - coordinate_space:
 
   Coordinate space used for distance-sensitive input. The default is raw
@@ -134,6 +130,10 @@ RunCARD(
 
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
+
+- ...:
+
+  Arguments passed to other functions.
 
 ## Value
 

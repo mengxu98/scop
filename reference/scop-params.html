@@ -100,9 +100,9 @@ will be removed in scop 1.0.0.</p></dd>
 
 
 <dt id="arg-cores">cores<a class="anchor" aria-label="anchor" href="#arg-cores"></a></dt>
-<dd><p>Number of CPU cores. <code>NULL</code> lets each backend pick its own
+<dd><p>Number of CPU cores. <code>NULL</code> lets each method pick its own
 default: the process OpenMP team (<code>OMP_NUM_THREADS</code>) for C++ kernels and one
-worker for R/Python parallel backends.</p></dd>
+worker for R/Python parallel execution.</p></dd>
 
 
 <dt id="arg-group-by">group.by<a class="anchor" aria-label="anchor" href="#arg-group-by"></a></dt>
@@ -148,7 +148,7 @@ the default; <code>"legacy_display"</code> remains available for compatibility.<
 
 
 <dt id="arg-backend">backend<a class="anchor" aria-label="anchor" href="#arg-backend"></a></dt>
-<dd><p>Implementation backend.</p></dd>
+<dd><p>Execution engine or implementation method.</p></dd>
 
 
 <dt id="arg-tool-name">tool_name<a class="anchor" aria-label="anchor" href="#arg-tool-name"></a></dt>
@@ -156,7 +156,7 @@ the default; <code>"legacy_display"</code> remains available for compatibility.<
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Additional arguments passed to the underlying method.</p></dd>
+<dd><p>Arguments passed to other functions.</p></dd>
 
 
 <dt id="arg-byrow">byrow<a class="anchor" aria-label="anchor" href="#arg-byrow"></a></dt>
@@ -200,7 +200,7 @@ the default; <code>"legacy_display"</code> remains available for compatibility.<
 
 
 <dt id="arg-combine">combine<a class="anchor" aria-label="anchor" href="#arg-combine"></a></dt>
-<dd><p>Combine plots with <a href="https://patchwork.data-imaginist.com/reference/patchwork-package.html" class="external-link">patchwork</a>. <code>combine = FALSE</code> returns a list of ggplots.</p></dd>
+<dd><p>Combine plots with <code><a href="https://patchwork.data-imaginist.com/reference/wrap_plots.html" class="external-link">patchwork::wrap_plots()</a></code>. <code>combine = FALSE</code> returns a list of ggplots.</p></dd>
 
 
 <dt id="arg-complex-mean">complex.mean<a class="anchor" aria-label="anchor" href="#arg-complex-mean"></a></dt>
@@ -373,7 +373,7 @@ that do not expose it should document their own alternative.</p></dd>
 
 
 <dt id="arg-nrow">nrow<a class="anchor" aria-label="anchor" href="#arg-nrow"></a></dt>
-<dd><p>Combine plots with <a href="https://patchwork.data-imaginist.com/reference/patchwork-package.html" class="external-link">patchwork</a>. <code>combine = FALSE</code> returns a list of ggplots.</p></dd>
+<dd><p>Combine plots with <code><a href="https://patchwork.data-imaginist.com/reference/wrap_plots.html" class="external-link">patchwork::wrap_plots()</a></code>. <code>combine = FALSE</code> returns a list of ggplots.</p></dd>
 
 
 <dt id="arg-overlay-image">overlay_image<a class="anchor" aria-label="anchor" href="#arg-overlay-image"></a></dt>

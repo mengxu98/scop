@@ -11,9 +11,9 @@ RunDoubletCalling(
   db_rate = ncol(object)/1000 * 0.01,
   db_method = "scDblFinder",
   data_type = NULL,
-  ...,
   verbose = TRUE,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 ```
 
@@ -42,13 +42,6 @@ RunDoubletCalling(
   [CheckDataType](https://mengxu98.github.io/scop/reference/CheckDataType.md)
   result, used internally to avoid rescanning the count matrix.
 
-- ...:
-
-  Passed to the selected doublet method. For a ChromatinAssay, use
-  `db_method = "scDblFinder"` and explicitly supply `sample.by` naming
-  the capture/library column; see
-  [`RunscDblFinder()`](https://mengxu98.github.io/scop/reference/RunscDblFinder.md).
-
 - verbose:
 
   Whether to print messages.
@@ -57,6 +50,10 @@ RunDoubletCalling(
 
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
+
+- ...:
+
+  Arguments passed to other functions.
 
 ## Value
 
@@ -67,30 +64,30 @@ A `Seurat` object with doublet class and score columns in `meta.data`.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-11-10 10:15:33] Start standard processing workflow...
-#> ℹ [2026-11-10 10:15:33] Checking a list of <Seurat>...
-#> ! [2026-11-10 10:15:33] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-11-10 10:15:33] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-11-10 10:15:33] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-10 10:15:33] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-10 10:15:33] Number of available HVF: 2000
-#> ℹ [2026-11-10 10:15:33] Finished check
-#> ℹ [2026-11-10 10:15:33] Perform `ScaleData()`
-#> ℹ [2026-11-10 10:15:33] Perform pca linear dimension reduction
-#> ℹ [2026-11-10 10:15:34] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-11-10 10:15:34] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-10 10:15:34] Reorder clusters...
-#> ℹ [2026-11-10 10:15:34] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-10 10:15:34] Perform umap nonlinear dimension reduction
-#> ✔ [2026-11-10 10:15:43] Standard processing workflow completed
+#> ℹ [2026-11-11 05:10:20] Start standard processing workflow...
+#> ℹ [2026-11-11 05:10:20] Checking a list of <Seurat>...
+#> ! [2026-11-11 05:10:20] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-11 05:10:20] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-11 05:10:21] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-11 05:10:21] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-11 05:10:21] Number of available HVF: 2000
+#> ℹ [2026-11-11 05:10:21] Finished check
+#> ℹ [2026-11-11 05:10:21] Perform `ScaleData()`
+#> ℹ [2026-11-11 05:10:21] Perform pca linear dimension reduction
+#> ℹ [2026-11-11 05:10:21] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-11-11 05:10:22] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-11 05:10:22] Reorder clusters...
+#> ℹ [2026-11-11 05:10:22] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-11 05:10:22] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-11 05:10:30] Standard processing workflow completed
 set.seed(11)
 pancreas_sub <- RunDoubletCalling(
   pancreas_sub,
   db_method = "scDblFinder",
   iter = 2L
 )
-#> ℹ [2026-11-10 10:15:44] Data type is raw counts
-#> ℹ [2026-11-10 10:15:44] Running scDblFinder
+#> ℹ [2026-11-11 05:10:31] Data type is raw counts
+#> ℹ [2026-11-11 05:10:31] Running scDblFinder
 table(pancreas_sub$db.scDblFinder_class)
 #> 
 #> singlet doublet 

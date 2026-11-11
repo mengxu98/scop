@@ -18,9 +18,9 @@ Cell2locationPlot(
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE,
-  ...,
   image.scale = c("lowres", "hires"),
-  srt = NULL
+  srt = NULL,
+  ...
 )
 ```
 
@@ -72,11 +72,6 @@ Cell2locationPlot(
 
   Point-map layout controls.
 
-- ...:
-
-  Additional arguments passed to
-  [`SpatialSpotPlot()`](https://mengxu98.github.io/scop/reference/SpatialSpotPlot.md).
-
 - image.scale:
 
   Image scale factor matching the raster stored in the selected image.
@@ -87,6 +82,10 @@ Cell2locationPlot(
 
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
+
+- ...:
+
+  Arguments passed to other functions.
 
 ## Value
 

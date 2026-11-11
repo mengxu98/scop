@@ -77,7 +77,7 @@ RunscMalignantStates(
 
 - backend:
 
-  State-scoring backend. `"cpp"` uses a compiled sparse AUCell
+  State-scoring engine. `"cpp"` uses a compiled sparse AUCell
   implementation for Seurat input. `"python"` retains the official
   scMalignantFinder path and is used for AnnData or h5ad input.
 

@@ -103,7 +103,7 @@ matrix without dropping cells, normalizing counts, or inferring RNA from ATAC.</
 <code>matrix.mtx.gz</code>, <code>features.tsv.gz</code> and <code>barcodes.tsv.gz</code>. The input must
 contain exactly the <code>Gene Expression</code> and <code>Peaks</code> modalities. H5 input
 requires at least two features per modality and two cells because the
-native Seurat H5 reader otherwise drops matrix dimensions.</p></dd>
+Seurat H5 reader otherwise drops matrix dimensions.</p></dd>
 
 
 <dt id="arg-metadata-cell-names-sample-genome-annotation-fragments-fragment-cells-project-verbose">metadata, cell.names, sample, genome, annotation, fragments, fragment.cells, project, verbose<a class="anchor" aria-label="anchor" href="#arg-metadata-cell-names-sample-genome-annotation-fragments-fragment-cells-project-verbose"></a></dt>
@@ -124,7 +124,7 @@ barcodes; fragment mappings use final cell names.</p></dd>
     <p>A Seurat object with a <code>ChromatinAssay</code> and a measured RNA <code>Assay</code>,
 both containing raw counts for the same ordered cells. The active assay is
 <code>assay</code>. Provenance is stored in <code>Misc(object, "scop_multiome_input")</code> and
-in the native ATAC import receipt. Native assay initialization also copies
+in the ATAC import receipt. Assay initialization also copies
 raw counts to the data layer; this is not normalized expression.</p>
     </div>
     <div class="section level2">

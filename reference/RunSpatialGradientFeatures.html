@@ -126,7 +126,7 @@ with distance from annotated regions.</p>
 
 <dt id="arg-backend">backend<a class="anchor" aria-label="anchor" href="#arg-backend"></a></dt>
 <dd><p>Computation backend. The supported backend is <code>"cpp"</code>, which
-uses the compiled native spatial implementation.</p></dd>
+uses the compiled spatial implementation.</p></dd>
 
 
 <dt id="arg-result-name">result_name<a class="anchor" aria-label="anchor" href="#arg-result-name"></a></dt>
@@ -143,7 +143,7 @@ generated from <code>reference</code>.</p></dd>
 
 
 <dt id="arg-variables">variables<a class="anchor" aria-label="anchor" href="#arg-variables"></a></dt>
-<dd><p>Numeric variables or genes tested by the native backend. If <code>NULL</code>,
+<dd><p>Numeric variables or genes to test. If <code>NULL</code>,
 <code>srt@tools[["SpatialVariableFeatures"]]</code> is used first, then variable
 features, then all assay features.</p></dd>
 
@@ -159,18 +159,18 @@ backend when no image coordinates are available.</p></dd>
 
 
 <dt id="arg-start-end-traj-df">start, end, traj_df<a class="anchor" aria-label="anchor" href="#arg-start-end-traj-df"></a></dt>
-<dd><p>Trajectory geometry used by the native backend when
+<dd><p>Trajectory geometry used when
 <code>reference = "trajectory"</code>.</p></dd>
 
 
 <dt id="arg-annotation-by-annotation-groups">annotation.by, annotation.groups<a class="anchor" aria-label="anchor" href="#arg-annotation-by-annotation-groups"></a></dt>
 <dd><p>Metadata grouping used to create the
-native annotation mask.</p></dd>
+annotation mask.</p></dd>
 
 
 <dt id="arg-annotation-variable-annotation-threshold">annotation.variable, annotation.threshold<a class="anchor" aria-label="anchor" href="#arg-annotation-variable-annotation-threshold"></a></dt>
 <dd><p>Numeric variable and
-threshold used to create a native numeric annotation mask. Numeric
+threshold used to create a numeric annotation mask. Numeric
 thresholds are interpreted as <code>"&gt;{threshold}"</code>.</p></dd>
 
 
@@ -181,12 +181,12 @@ does not transform coordinates.</p></dd>
 
 <dt id="arg-sign-var-sign-threshold">sign_var, sign_threshold<a class="anchor" aria-label="anchor" href="#arg-sign-var-sign-threshold"></a></dt>
 <dd><p>Column and cutoff used to select top gradient
-variables from the native significance table.</p></dd>
+variables from the significance table.</p></dd>
 
 
 <dt id="arg-n-random-seed">n_random, seed<a class="anchor" aria-label="anchor" href="#arg-n-random-seed"></a></dt>
-<dd><p>Permutation count and random seed used by the native
-screening backend.</p></dd>
+<dd><p>Permutation count and random seed used for
+screening.</p></dd>
 
 
 <dt id="arg-n-bins">n_bins<a class="anchor" aria-label="anchor" href="#arg-n-bins"></a></dt>
@@ -224,8 +224,7 @@ Default is <code>TRUE</code>.</p></dd>
 calculations. The default is raw acquisition coordinates, so <code>start</code>,
 <code>end</code>, trajectory positions, and C++ distances share raw
 coordinate units. Use <code>"legacy_display"</code> explicitly for pre-0.9.0 display
-coordinates. Results retain the raw coordinate units used by the native
-backend.</p></dd>
+coordinates. Results retain the raw coordinate units.</p></dd>
 
 
 <dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
@@ -242,7 +241,7 @@ independently updated only when <code>set_variable_features = TRUE</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The current native interface is intentionally small. Older calls that pass
+    <p>The current interface is intentionally small. Older calls that pass
 <code>sample_name</code>, <code>platform</code>, <code>img_scale_fct</code>, <code>assay_modality</code>,
 <code>trajectory_id</code>, <code>width</code>, <code>annotation_id</code>, <code>core</code>, <code>distance</code>,
 <code>angle_span</code>, <code>resolution</code>, <code>model_add</code>, <code>model_subset</code>, <code>model_remove</code>,
@@ -251,7 +250,7 @@ independently updated only when <code>set_variable_features = TRUE</code>.</p>
 <code>annotation.by</code>/<code>annotation.groups</code> or
 <code>annotation.variable</code>/<code>annotation.threshold</code> for annotation references;
 and use <code>n_random</code>, <code>n_bins</code>, <code>min_spots</code>, <code>sign_threshold</code>, and
-<code>nfeatures</code> for native screening controls.</p>
+<code>nfeatures</code> for screening controls.</p>
     </div>
 
     <div class="section level2">

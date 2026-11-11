@@ -103,10 +103,8 @@ tAgePlot(
 
 - theme_use:
 
-  Theme function name. Default is `"theme_scop"`, which maps to
-  [`thisplot::theme_this()`](https://mengxu98.github.io/thisplot/reference/theme_this.html),
-  matching the style used by
-  [`thisplot::StatPlot()`](https://mengxu98.github.io/thisplot/reference/StatPlot.html).
+  Theme function name passed to the shared expression-statistics
+  renderer. Default is `"theme_scop"`.
 
 - theme_args:
 
@@ -138,7 +136,7 @@ tAgePlot(
 
 - ...:
 
-  Reserved for future use.
+  Arguments passed to other functions.
 
 ## Value
 
@@ -146,11 +144,21 @@ A `ggplot` object.
 
 ## See also
 
-[RuntAge](https://mengxu98.github.io/scop/reference/RuntAge.md)
+[RuntAge](https://mengxu98.github.io/scop/reference/RuntAge.md),
+[FeatureStatPlot](https://mengxu98.github.io/scop/reference/FeatureStatPlot.md)
 
 ## Examples
 
 ``` r
+predictions <- data.frame(
+  group = rep(c("Young", "Aged"), each = 4),
+  Mouse_tAge = c(3.1, 4.2, 5.0, 4.6, 18.2, 20.1, 21.3, 19.6)
+)
+tAgePlot(predictions, group.by = "group")
+#> Coordinate system already present.
+#> ℹ Adding new coordinate system, which will replace the existing one.
+
+
 if (FALSE) { # \dontrun{
 pancreas_sub <- RuntAge(pancreas_sub, group.by = "CellType")
 tAgePlot(pancreas_sub, group.by = "CellType")

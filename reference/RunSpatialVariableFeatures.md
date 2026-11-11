@@ -2,8 +2,7 @@
 
 Score genes by spot-level spatial autocorrelation. The package `"moran"`
 and `"geary"` methods use a lightweight coordinate KNN graph. `"SPARKX"`
-and `"nnSVG"` use optional external backends when their packages are
-installed.
+and `"nnSVG"` use optional external packages when installed.
 
 ## Usage
 
@@ -28,8 +27,8 @@ RunSpatialVariableFeatures(
   backend = c("cpp", "r"),
   cores = NULL,
   max_dense_gb = 2,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 ```
 
@@ -123,16 +122,16 @@ RunSpatialVariableFeatures(
 
   Maximum estimated GB for an expression matrix conversion in the
   R-reference or nnSVG path. The C++ and SPARK-X paths retain sparse
-  input. This guard bounds one conversion, not total backend memory.
-
-- ...:
-
-  Additional arguments passed to external backends.
+  input. This guard bounds one conversion, not total memory.
 
 - srt:
 
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
+
+- ...:
+
+  Arguments passed to other functions.
 
 ## Value
 
@@ -168,8 +167,8 @@ spatial <- RunSpatialVariableFeatures(
   assay = "Spatial",
   nfeatures = 50
 )
-#> ◌ [2026-11-10 10:44:32] Running spatial variable feature detection
-#> ✔ [2026-11-10 10:44:32] Spatial variable features completed: 100 tested, 50 ranked in the top set
+#> ◌ [2026-11-11 05:41:06] Running spatial variable feature detection
+#> ✔ [2026-11-11 05:41:06] Spatial variable features completed: 100 tested, 50 ranked in the top set
 #> ℹ   Scope method "moran" ("cpp" backend); assay "Spatial", layer "data"; 1986 spots; coordinates "raw"
 #> ℹ   Saved 50 top features as assay `VariableFeatures`; full result in returned object tool bundle `SpatialVariableFeatures`
 #> ℹ   Plot returned object `SpatialVariableFeaturePlot(<returned_object>, plot_type = "combined", assay = "Spatial", image = "slice1", coord.cols = c("x", "y"))`

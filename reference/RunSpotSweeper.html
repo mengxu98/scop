@@ -120,8 +120,8 @@ evaluated is never reported as a negative artifact call.</p>
 <span>  workers <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  coordinate_space <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"raw"</span>, <span class="st">"legacy_display"</span><span class="op">)</span>,</span>
-<span>  <span class="va">...</span>,</span>
-<span>  srt <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  srt <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -154,7 +154,7 @@ are present; a single image is selected automatically when <code>NULL</code>.</p
 <dt id="arg-sample-by">sample.by<a class="anchor" aria-label="anchor" href="#arg-sample-by"></a></dt>
 <dd><p>Optional metadata column identifying samples or images.
 If <code>NULL</code>, all spots are treated as one sample. The selected column must not
-contain missing values. The reserved backend output name <code>"artifact"</code> cannot
+contain missing values. The reserved output name <code>"artifact"</code> cannot
 be used when <code>run_artifact = TRUE</code>.</p></dd>
 
 
@@ -162,7 +162,7 @@ be used when <code>run_artifact = TRUE</code>.</p></dd>
 <dd><p>QC metrics used by <code>SpotSweeper::localOutliers()</code>. If <code>NULL</code>,
 <code>nCount_&lt;assay&gt;</code>, <code>nFeature_&lt;assay&gt;</code>, and <code>percent.mito</code> are used.
 The corresponding <code>&lt;metric&gt;_outliers</code> and <code>&lt;metric&gt;_z</code> names are reserved for
-backend output and cannot also be requested as input columns.</p></dd>
+output and cannot also be requested as input columns.</p></dd>
 
 
 <dt id="arg-directions">directions<a class="anchor" aria-label="anchor" href="#arg-directions"></a></dt>
@@ -200,14 +200,14 @@ returned metadata and stored result are marked as partial.</p></dd>
 
 <dt id="arg-mito-percent">mito_percent<a class="anchor" aria-label="anchor" href="#arg-mito-percent"></a></dt>
 <dd><p>Metadata column used as mitochondrial percent for
-artifact detection. If <code>NULL</code>, <code>percent.mito</code> is used. The reserved backend
+artifact detection. If <code>NULL</code>, <code>percent.mito</code> is used. The reserved
 output name <code>"artifact"</code> cannot be used when <code>run_artifact = TRUE</code>.</p></dd>
 
 
 <dt id="arg-mito-sum">mito_sum<a class="anchor" aria-label="anchor" href="#arg-mito-sum"></a></dt>
 <dd><p>Metadata column used as mitochondrial counts for artifact
 detection. If <code>NULL</code>, mitochondrial counts are computed. The reserved
-backend output name <code>"artifact"</code> cannot be used when <code>run_artifact = TRUE</code>.</p></dd>
+output name <code>"artifact"</code> cannot be used when <code>run_artifact = TRUE</code>.</p></dd>
 
 
 <dt id="arg-n-order-shape">n_order, shape<a class="anchor" aria-label="anchor" href="#arg-n-order-shape"></a></dt>
@@ -248,17 +248,16 @@ incomplete.</p></dd>
 <dd><p>Coordinate system used for spatial neighborhoods.
 The default is raw acquisition coordinates; <code>"legacy_display"</code> remains an
 explicit compatibility option. Neighbor counts are unitless, while any
-backend distance calculation uses the selected coordinate units.</p></dd>
-
-
-<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Additional named arguments passed to matching SpotSweeper backend
-functions when those arguments are supported by the installed version.</p></dd>
+distance calculation uses the selected coordinate units.</p></dd>
 
 
 <dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
 <dd><p>Deprecated alias for <code>object</code>; supply exactly one of the two. It
 will be removed in scop 1.0.0.</p></dd>
+
+
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>Arguments passed to other functions.</p></dd>
 
 </dl></div>
     <div class="section level2">

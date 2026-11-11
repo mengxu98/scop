@@ -295,58 +295,6 @@ ht <- GroupHeatmap(
   add_dot = TRUE,
   add_reticle = TRUE
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
 print(ht$plot)
 ```
 
@@ -380,7 +328,7 @@ data.frame(
   bytes = file.info(list.files(output_dir, full.names = TRUE))$size
 )
 #>                file    bytes
-#> 1      analysis.rds 34271050
+#> 1      analysis.rds 34270939
 #> 2 cell-metadata.csv   236267
 ```
 
@@ -438,9 +386,9 @@ build_receipt <- data.frame(
 )
 build_receipt
 #>                     article               built_utc  scop     R
-#> 1 single-cell-main-workflow 2026-11-10 10:59:40 UTC 0.9.2 4.6.2
+#> 1 single-cell-main-workflow 2026-11-11 05:57:51 UTC 0.9.2 4.6.2
 #>                            source_revision source_has_local_changes
-#> 1 1ae6058d875064a3d9b1ef3b3ceca07f248c4796                    FALSE
+#> 1 25b081ffa1fc454a71183a45263ccf5bf161b5eb                    FALSE
 #>                        article_md5 R_seed cells_retained genes_in_active_assay
 #> 1 2c5a3d3c700eb7db8ec2b44b16fcceda     11           1000                 15998
 utils::write.csv(build_receipt, file.path(output_dir, "build-receipt.csv"),
@@ -493,7 +441,7 @@ sessionInfo()
 #>  [37] scattermore_1.2       Rcpp_1.1.2            iterators_1.0.14     
 #>  [40] knitr_1.52            future.apply_1.21.0   IRanges_2.46.0       
 #>  [43] sctransform_0.4.3     Matrix_1.7-6          igraph_2.3.4         
-#>  [46] tidyselect_1.2.1      thisplot_0.4.6        dichromat_2.0-1      
+#>  [46] tidyselect_1.2.1      thisplot_0.4.7        dichromat_2.0-1      
 #>  [49] yaml_2.3.12           doParallel_1.0.17     codetools_0.2-20     
 #>  [52] listenv_1.1.0         lattice_0.23-1        tibble_3.3.1         
 #>  [55] plyr_1.8.9            withr_3.0.3           S7_0.2.2             

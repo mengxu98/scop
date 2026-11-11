@@ -54,9 +54,9 @@ RunSpatialEcoTyper(
   store_results = TRUE,
   allow_partial = FALSE,
   verbose = TRUE,
-  ...,
   image = NULL,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 ```
 
@@ -243,10 +243,6 @@ RunSpatialEcoTyper(
 
   Whether to print the message. Default is `TRUE`.
 
-- ...:
-
-  Additional arguments passed to the selected SpatialEcoTyper function.
-
 - image:
 
   Optional image name for single discovery, or named sample-to-image map
@@ -257,6 +253,10 @@ RunSpatialEcoTyper(
 
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
+
+- ...:
+
+  Arguments passed to other functions.
 
 ## Value
 

@@ -11,9 +11,9 @@ RunDoubletDetection(
   db_rate = ncol(srt)/1000 * 0.01,
   cores = 1,
   data_type = NULL,
-  ...,
   verbose = TRUE,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 ```
 
@@ -41,11 +41,6 @@ RunDoubletDetection(
   [CheckDataType](https://mengxu98.github.io/scop/reference/CheckDataType.md)
   result, used internally to avoid rescanning the count matrix.
 
-- ...:
-
-  Additional arguments to be passed to
-  [doubletdetection.BoostClassifier](https://github.com/JonathanShor/DoubletDetection).
-
 - verbose:
 
   Whether to print messages.
@@ -55,20 +50,24 @@ RunDoubletDetection(
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
 
+- ...:
+
+  Arguments passed to other functions.
+
 ## Examples
 
 ``` r
 PrepareEnv(modules = "doubletdetection")
-#> ◌ [2026-11-10 10:16:31] Preparing python environment...
-#> ℹ [2026-11-10 10:16:31] Environment name: scop_env and python version: 3.10-1
-#> ℹ [2026-11-10 10:16:31] Auto-detecting conda-compatible environment manager...
-#> ℹ [2026-11-10 10:16:31] Using micromamba executable: /home/runner/.cache/R/scop/micromamba/linux-64/bin/micromamba
-#> ℹ [2026-11-10 10:16:31] Using existing environment: /home/runner/work/_temp/pkgdown-python/envs/scop_env
-#> ℹ [2026-11-10 10:16:31] 14 requirements to check, 3 conda requirements and 11 pip requirements
-#> ℹ [2026-11-10 10:16:31] Checking 3 conda requirements
-#> ℹ [2026-11-10 10:16:32] Checking 13 requirements using uv
+#> ◌ [2026-11-11 05:11:22] Preparing python environment...
+#> ℹ [2026-11-11 05:11:22] Environment name: scop_env and python version: 3.10-1
+#> ℹ [2026-11-11 05:11:22] Auto-detecting conda-compatible environment manager...
+#> ℹ [2026-11-11 05:11:22] Using micromamba executable: /home/runner/.cache/R/scop/micromamba/linux-64/bin/micromamba
+#> ℹ [2026-11-11 05:11:22] Using existing environment: /home/runner/work/_temp/pkgdown-python/envs/scop_env
+#> ℹ [2026-11-11 05:11:22] 14 requirements to check, 3 conda requirements and 11 pip requirements
+#> ℹ [2026-11-11 05:11:22] Checking 3 conda requirements
+#> ℹ [2026-11-11 05:11:23] Checking 13 requirements using uv
 #> + /home/runner/work/_temp/pkgdown-python/envs/scop_env/bin/python3.10 -m pip check
-#> ✔ [2026-11-10 10:16:34] Python environment ready
+#> ✔ [2026-11-11 05:11:26] Python environment ready
 #> ✔                       Until next loading, the environment will be cached
 #> Environment manager config:
 #>  Manager:       micromamba
@@ -79,37 +78,37 @@ PrepareEnv(modules = "doubletdetection")
 #>  version:       Python 3.10.1
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-11-10 10:16:34] Start standard processing workflow...
-#> ℹ [2026-11-10 10:16:34] Checking a list of <Seurat>...
-#> ! [2026-11-10 10:16:34] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-11-10 10:16:34] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-11-10 10:16:34] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-10 10:16:35] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-10 10:16:35] Number of available HVF: 2000
-#> ℹ [2026-11-10 10:16:35] Finished check
-#> ℹ [2026-11-10 10:16:35] Perform `ScaleData()`
-#> ℹ [2026-11-10 10:16:35] Perform pca linear dimension reduction
-#> ℹ [2026-11-10 10:16:35] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-11-10 10:16:35] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-10 10:16:36] Reorder clusters...
-#> ℹ [2026-11-10 10:16:36] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-10 10:16:36] Perform umap nonlinear dimension reduction
-#> ✔ [2026-11-10 10:16:45] Standard processing workflow completed
+#> ℹ [2026-11-11 05:11:26] Start standard processing workflow...
+#> ℹ [2026-11-11 05:11:26] Checking a list of <Seurat>...
+#> ! [2026-11-11 05:11:26] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-11 05:11:26] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-11 05:11:26] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-11 05:11:27] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-11 05:11:27] Number of available HVF: 2000
+#> ℹ [2026-11-11 05:11:27] Finished check
+#> ℹ [2026-11-11 05:11:27] Perform `ScaleData()`
+#> ℹ [2026-11-11 05:11:27] Perform pca linear dimension reduction
+#> ℹ [2026-11-11 05:11:27] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-11-11 05:11:27] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-11 05:11:28] Reorder clusters...
+#> ℹ [2026-11-11 05:11:28] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-11 05:11:28] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-11 05:11:36] Standard processing workflow completed
 pancreas_sub <- RunDoubletDetection(pancreas_sub)
-#> ℹ [2026-11-10 10:16:45] Running DoubletDetection
-#> ✔ [2026-11-10 10:16:45] Python environment completed
+#> ℹ [2026-11-11 05:11:36] Running DoubletDetection
+#> ✔ [2026-11-11 05:11:36] Python environment completed
 #> ✔                       Until next loading, the environment will be cached
-#> ℹ [2026-11-10 10:16:45] Data type is raw counts
-#> ℹ [2026-11-10 10:16:45] Checking 1 package in environment: scop_env
-#> ℹ [2026-11-10 10:16:45] Retrieving package list for environment: scop_env
-#> ℹ [2026-11-10 10:16:46] Found 102 packages installed
-#> ✔ [2026-11-10 10:16:46] doubletdetection == 4.3.0.post1
-#> ℹ [2026-11-10 10:16:46] Checking 1 package in environment: scop_env
-#> ℹ [2026-11-10 10:16:46] Retrieving package list for environment: scop_env
-#> ℹ [2026-11-10 10:16:47] Found 102 packages installed
-#> ✔ [2026-11-10 10:16:47] louvain == 0.8.2
-#> ! [2026-11-10 10:17:03] Found 1 cells with unexpected DoubletDetection labels; setting to "doublet"
-#> ✔ [2026-11-10 10:17:03] DoubletDetection doublet calling completed
+#> ℹ [2026-11-11 05:11:37] Data type is raw counts
+#> ℹ [2026-11-11 05:11:37] Checking 1 package in environment: scop_env
+#> ℹ [2026-11-11 05:11:37] Retrieving package list for environment: scop_env
+#> ℹ [2026-11-11 05:11:38] Found 102 packages installed
+#> ✔ [2026-11-11 05:11:38] doubletdetection == 4.3.0.post1
+#> ℹ [2026-11-11 05:11:38] Checking 1 package in environment: scop_env
+#> ℹ [2026-11-11 05:11:38] Retrieving package list for environment: scop_env
+#> ℹ [2026-11-11 05:11:39] Found 102 packages installed
+#> ✔ [2026-11-11 05:11:39] louvain == 0.8.2
+#> ! [2026-11-11 05:11:58] Found 1 cells with unexpected DoubletDetection labels; setting to "doublet"
+#> ✔ [2026-11-11 05:11:58] DoubletDetection doublet calling completed
 CellDimPlot(
   pancreas_sub,
   reduction = "umap",

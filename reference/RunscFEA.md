@@ -47,7 +47,7 @@ RunscFEA(
 
 - sc_imputation:
 
-  Whether to run MAGIC imputation inside the scFEA backend.
+  Whether to run MAGIC imputation inside scFEA.
 
 - assay_flux:
 
@@ -69,7 +69,7 @@ RunscFEA(
 
 - seed:
 
-  Random seed passed to R and the Python scFEA backend.
+  Random seed passed to R and the Python scFEA implementation.
 
 - max_cells:
 

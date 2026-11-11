@@ -231,7 +231,8 @@ Default is <code>NULL</code> (all groups).</p></dd>
 
 <dt id="arg-topterm">topTerm<a class="anchor" aria-label="anchor" href="#arg-topterm"></a></dt>
 <dd><p>The number of top terms to display.
-Default is <code>6</code>, or <code>100</code> if <code>plot_type</code> is <code>"enrichmap"</code>.</p></dd>
+Default is <code>6</code>, <code>100</code> for <code>"enrichmap"</code>, or <code>80</code> for <code>"rank"</code>.
+Rank plots select the highest <code>rank_by</code> values after significance filtering.</p></dd>
 
 
 <dt id="arg-score-cutoff">score_cutoff<a class="anchor" aria-label="anchor" href="#arg-score-cutoff"></a></dt>
@@ -470,7 +471,8 @@ a plot.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
-<dd><p>Random seed.</p></dd>
+<dd><p>Random seed used for plot construction. The caller's RNG state
+is restored on return, including errors.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
@@ -510,14 +512,14 @@ sample-level statistical tests and adjusted p-values on GSVA scores.</p>
 <span class="r-in"><span>  minGSSize <span class="op">=</span> <span class="fl">2</span>,</span></span>
 <span class="r-in"><span>  min.sz <span class="op">=</span> <span class="fl">2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-10 10:04:49] Start <span style="color: #0000BB;">GSVA</span> analysis</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-10 10:04:49] Single-cell GSVA mode: using expression matrix directly ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-10 10:04:49] Expression matrix: <span style="color: #0000BB;">12238</span> genes x <span style="color: #0000BB;">80</span> cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-10 10:04:49] Processing database: <span style="color: #0000BB;">"custom"</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-10 10:04:49] Initial overlap: <span style="color: #0000BB;">6</span> genes out of <span style="color: #0000BB;">12238</span> expression genes and <span style="color: #0000BB;">10</span> genes in gene sets</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-10 10:04:49] Running GSVA for <span style="color: #0000BB;">2</span> gene sets ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-10 10:04:49] <span style="color: #0000BB;">GSVA</span> results stored in assay <span style="color: #0000BB;">"GSVA"</span>, meta.data, and tools slot <span style="color: #0000BB;">"GSVA_cell_zscore"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-11-10 10:04:49] <span style="color: #0000BB;">GSVA</span> analysis done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-11 04:58:25] Start <span style="color: #0000BB;">GSVA</span> analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-11 04:58:25] Single-cell GSVA mode: using expression matrix directly ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-11 04:58:25] Expression matrix: <span style="color: #0000BB;">12238</span> genes x <span style="color: #0000BB;">80</span> cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-11 04:58:25] Processing database: <span style="color: #0000BB;">"custom"</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-11 04:58:25] Initial overlap: <span style="color: #0000BB;">6</span> genes out of <span style="color: #0000BB;">12238</span> expression genes and <span style="color: #0000BB;">10</span> genes in gene sets</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-11 04:58:25] Running GSVA for <span style="color: #0000BB;">2</span> gene sets ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-11 04:58:25] <span style="color: #0000BB;">GSVA</span> results stored in assay <span style="color: #0000BB;">"GSVA"</span>, meta.data, and tools slot <span style="color: #0000BB;">"GSVA_cell_zscore"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-11-11 04:58:25] <span style="color: #0000BB;">GSVA</span> analysis done</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">ht</span> <span class="op">&lt;-</span> <span class="fu">GSVAPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>

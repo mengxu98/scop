@@ -17,8 +17,8 @@ RunCellCycle(
   phase_col = NULL,
   overwrite = FALSE,
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 ```
 
@@ -63,14 +63,14 @@ RunCellCycle(
 
   Whether to print the message. Default is `TRUE`.
 
-- ...:
-
-  Additional arguments passed to the selected method.
-
 - srt:
 
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
+
+- ...:
+
+  Arguments passed to other functions.
 
 ## Value
 

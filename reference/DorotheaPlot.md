@@ -3,14 +3,14 @@
 Visualize TF activity stored by
 [`RunDorothea()`](https://mengxu98.github.io/scop/reference/RunDorothea.md).
 Comparison plots (`"bar"`, `"lollipop"`, `"volcano"`) test two groups
-and show the mean activity difference `group1 - group2`. `"heatmap"`
-uses
-[`GroupHeatmap()`](https://mengxu98.github.io/scop/reference/GroupHeatmap.md)
-to summarize activity across all groups in `group.by`. `"dim"` compares
-TF activity with TF expression on embeddings, `"stat"` draws per-group
-activity distributions with
-[`FeatureStatPlot()`](https://mengxu98.github.io/scop/reference/FeatureStatPlot.md),
-and `"targets"` shows a regulon-target volcano for one TF.
+and show the mean activity difference `group1 - group2`. `"dim"`
+compares TF activity with TF expression on embeddings, and `"targets"`
+shows a regulon-target volcano for one TF. Use
+[GroupHeatmap](https://mengxu98.github.io/scop/reference/GroupHeatmap.md),
+[FeatureStatPlot](https://mengxu98.github.io/scop/reference/FeatureStatPlot.md),
+and
+[FeatureDimPlot](https://mengxu98.github.io/scop/reference/FeatureDimPlot.md)
+directly for ordinary activity visualizations.
 
 ## Usage
 
@@ -20,7 +20,7 @@ DorotheaPlot(
   group.by,
   group1 = NULL,
   group2 = NULL,
-  plot_type = c("bar", "lollipop", "heatmap", "volcano", "dim", "stat", "targets"),
+  plot_type = c("bar", "lollipop", "volcano", "dim", "targets"),
   tool_name = "Dorothea",
   assay_name = NULL,
   features = NULL,
@@ -34,18 +34,10 @@ DorotheaPlot(
   padjustCutoff = 0.05,
   palette = "RdBu",
   palcolor = NULL,
-  heatmap_palette = "RdBu",
-  heatmap_palcolor = NULL,
-  group_palette = "Chinese",
-  group_palcolor = NULL,
-  exp_method = c("zscore", "raw"),
-  heatmap_args = list(),
   dim_args = list(),
-  stat_args = list(),
   compare_expression = TRUE,
   expression_assay = NULL,
   expression_layer = "data",
-  stat_plot_type = c("violin", "box", "dot", "bar", "col"),
   nlabel = 10,
   reduction = NULL,
   bar_width = 0.72,
@@ -83,18 +75,14 @@ DorotheaPlot(
 
   Two group labels to compare. Required for `"bar"`, `"lollipop"`,
   `"volcano"`, and `"targets"`. Positive logFC means higher TF activity
-  (or target expression) in `group1`. Ignored for `"heatmap"`, `"dim"`,
-  and `"stat"`.
+  (or target expression) in `group1`. Ignored for `"dim"`.
 
 - plot_type:
 
   Plot type. `"bar"` and `"lollipop"` show signed activity differences,
-  `"volcano"` shows TF-level significance versus logFC, `"heatmap"`
-  draws a
-  [`GroupHeatmap()`](https://mengxu98.github.io/scop/reference/GroupHeatmap.md)
-  of TF activity, `"dim"` compares activity and expression on
-  embeddings, `"stat"` draws activity distributions, and `"targets"`
-  shows a regulon-target volcano.
+  `"volcano"` shows TF-level significance versus logFC, `"dim"` compares
+  activity and expression on embeddings, and `"targets"` shows a
+  regulon-target volcano.
 
 - tool_name:
 
@@ -103,18 +91,16 @@ DorotheaPlot(
 
 - assay_name:
 
-  Assay used for `"heatmap"`, `"dim"`, and `"stat"`. If `NULL`, the
-  assay stored by
+  Activity assay used for `"dim"`. If `NULL`, the assay stored by
   [`RunDorothea()`](https://mengxu98.github.io/scop/reference/RunDorothea.md)
   is used, or `"dorothea"`.
 
 - features:
 
   TFs to plot. If `NULL`, `"bar"`/`"lollipop"` use the top `top_n` TFs,
-  `"volcano"` shows all tested TFs, heatmaps and `"stat"` use the
-  `top_n` most variable TFs, `"dim"` uses TFs present in both activity
-  and expression assays, and `"targets"` uses the TF with the largest
-  absolute activity difference.
+  `"volcano"` shows all tested TFs, `"dim"` uses TFs present in both
+  activity and expression assays, and `"targets"` uses the TF with the
+  largest absolute activity difference.
 
 - top_n:
 
@@ -157,41 +143,11 @@ DorotheaPlot(
 
   Palette passed to `palette_colors()` for comparison plots.
 
-- heatmap_palette, heatmap_palcolor:
-
-  Palette passed to
-  [`GroupHeatmap()`](https://mengxu98.github.io/scop/reference/GroupHeatmap.md)
-  when `plot_type = "heatmap"`.
-
-- group_palette, group_palcolor:
-
-  Group annotation palette passed to
-  [`GroupHeatmap()`](https://mengxu98.github.io/scop/reference/GroupHeatmap.md)
-  and
-  [`FeatureStatPlot()`](https://mengxu98.github.io/scop/reference/FeatureStatPlot.md).
-
-- exp_method:
-
-  Scaling method passed to
-  [`GroupHeatmap()`](https://mengxu98.github.io/scop/reference/GroupHeatmap.md)
-  for `plot_type = "heatmap"`.
-
-- heatmap_args:
-
-  Additional arguments passed to
-  [`GroupHeatmap()`](https://mengxu98.github.io/scop/reference/GroupHeatmap.md).
-
 - dim_args:
 
   Additional arguments passed to
   [`FeatureDimPlot()`](https://mengxu98.github.io/scop/reference/FeatureDimPlot.md)
   when `plot_type = "dim"`.
-
-- stat_args:
-
-  Additional arguments passed to
-  [`FeatureStatPlot()`](https://mengxu98.github.io/scop/reference/FeatureStatPlot.md)
-  when `plot_type = "stat"`.
 
 - compare_expression:
 
@@ -201,12 +157,6 @@ DorotheaPlot(
 
   Assay and layer used for TF expression in `"dim"` and for target genes
   in `"targets"`.
-
-- stat_plot_type:
-
-  Distribution plot type passed to
-  [`FeatureStatPlot()`](https://mengxu98.github.io/scop/reference/FeatureStatPlot.md)
-  when `plot_type = "stat"`.
 
 - nlabel:
 
@@ -276,10 +226,8 @@ DorotheaPlot(
 
 ## Value
 
-For `"bar"`, `"lollipop"`, `"volcano"`, `"dim"`, `"stat"`, and
-`"targets"`, a `ggplot` or patchwork object, or a list with `plot` and
-`data` when `return_data = TRUE`. For `"heatmap"`, the list returned by
-[`GroupHeatmap()`](https://mengxu98.github.io/scop/reference/GroupHeatmap.md).
+A `ggplot` or patchwork object, or a list with `plot` and `data` when
+`return_data = TRUE`.
 
 ## See also
 
@@ -293,7 +241,7 @@ For `"bar"`, `"lollipop"`, `"volcano"`, `"dim"`, `"stat"`, and
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub, verbose = FALSE)
-#> ℹ [2026-11-10 09:57:31] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-11 04:50:24] Skip `log1p()` because `layer = data` is not "counts"
 pancreas_sub <- RunDorothea(
   pancreas_sub,
   layer = "counts",
@@ -301,9 +249,9 @@ pancreas_sub <- RunDorothea(
   method = "ulm",
   minsize = 5
 )
-#> ℹ [2026-11-10 09:57:39] Run "DoRothEA"/decoupleR with 12895 regulon edges
-#> ℹ [2026-11-10 09:57:49] "DoRothEA" TF activity scores stored in assay "dorothea"
-#> ℹ [2026-11-10 09:57:50] "DoRothEA" TF activity scores stored in <Seurat> metadata
+#> ℹ [2026-11-11 04:50:31] Run "DoRothEA"/decoupleR with 12895 regulon edges
+#> ℹ [2026-11-11 04:50:42] "DoRothEA" TF activity scores stored in assay "dorothea"
+#> ℹ [2026-11-11 04:50:42] "DoRothEA" TF activity scores stored in <Seurat> metadata
 
 DorotheaPlot(
   pancreas_sub,
@@ -313,7 +261,7 @@ DorotheaPlot(
   plot_type = "bar",
   top_n = 20
 )
-#> ℹ [2026-11-10 09:57:50] Compare "DoRothEA" TF activity: "Endocrine" vs "Ductal"
+#> ℹ [2026-11-11 04:50:42] Compare "DoRothEA" TF activity: "Endocrine" vs "Ductal"
 
 
 DorotheaPlot(
@@ -324,7 +272,7 @@ DorotheaPlot(
   plot_type = "lollipop",
   top_n = 20
 )
-#> ℹ [2026-11-10 09:57:50] Compare "DoRothEA" TF activity: "Endocrine" vs "Ductal"
+#> ℹ [2026-11-11 04:50:43] Compare "DoRothEA" TF activity: "Endocrine" vs "Ductal"
 
 
 DorotheaPlot(
@@ -334,17 +282,19 @@ DorotheaPlot(
   group2 = "Ductal",
   plot_type = "volcano"
 )
-#> ℹ [2026-11-10 09:57:50] Compare "DoRothEA" TF activity: "Endocrine" vs "Ductal"
+#> ℹ [2026-11-11 04:50:43] Compare "DoRothEA" TF activity: "Endocrine" vs "Ductal"
 
 
-ht <- DorotheaPlot(
+tfs <- head(rownames(pancreas_sub[["dorothea"]]), 20)
+GroupHeatmap(
   pancreas_sub,
   group.by = "CellType",
-  plot_type = "heatmap",
-  top_n = 20
-)
-#> ℹ [2026-11-10 09:57:51] Draw "DoRothEA" TF activity heatmap for 20 TFs
-ht$plot
+  features = tfs,
+  assay = "dorothea",
+  layer = "data",
+  exp_method = "raw",
+  lib_normalize = FALSE
+)$plot
 
 
 DorotheaPlot(
@@ -353,17 +303,24 @@ DorotheaPlot(
   features = "Sox9",
   plot_type = "dim"
 )
-#> ℹ [2026-11-10 09:57:51] Draw "DoRothEA" embedding plots for 1 TFs
+#> ℹ [2026-11-11 04:50:44] Draw "DoRothEA" embedding plots for 1 TFs
 
 
-DorotheaPlot(
+FeatureStatPlot(
   pancreas_sub,
   group.by = "CellType",
-  features = c("Sox9", "Neurod1", "Pdx1"),
-  plot_type = "stat",
-  stat_plot_type = "violin"
+  stat.by = c("Sox9", "Neurod1", "Pdx1"),
+  assay = "dorothea",
+  layer = "data",
+  plot_type = "violin"
 )
-#> ℹ [2026-11-10 09:57:52] Draw "DoRothEA" activity distributions for 3 TFs
+
+FeatureDimPlot(
+  pancreas_sub,
+  features = c("Sox9", "Neurod1", "Pdx1"),
+  assay = "dorothea",
+  layer = "data"
+)
 
 
 DorotheaPlot(
@@ -374,6 +331,6 @@ DorotheaPlot(
   features = "Sox9",
   plot_type = "targets"
 )
-#> ! [2026-11-10 09:57:53] Dropping 3 "Sox9" targets missing from assay "RNA"
-#> ℹ [2026-11-10 09:57:53] Draw "DoRothEA" regulon-target volcano for "Sox9" (10 targets)
+#> ! [2026-11-11 04:50:46] Dropping 3 "Sox9" targets missing from assay "RNA"
+#> ℹ [2026-11-11 04:50:46] Draw "DoRothEA" regulon-target volcano for "Sox9" (10 targets)
 ```

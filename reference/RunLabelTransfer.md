@@ -55,7 +55,7 @@ RunLabelTransfer(
 
 - method:
 
-  Label-transfer backend. One of `"Seurat"` or `"scOMM"`.
+  Label-transfer method. One of `"Seurat"` or `"scOMM"`.
 
 - prefix:
 
@@ -161,9 +161,9 @@ A `Seurat` object with prediction metadata added. For the Seurat
 backend, the tool result records actual anchor features and current
 prediction columns. This is a calculation-time snapshot, not
 automatically updated by later subsetting or renaming. Caller RNG state
-and original cell IDs are preserved; temporary query IDs isolate native
-suffix handling. Predictions describe similarity to the supplied
-reference, not independently established biological accuracy.
+and original cell IDs are preserved; temporary query IDs isolate suffix
+handling. Predictions describe similarity to the supplied reference, not
+independently established biological accuracy.
 
 ## Examples
 

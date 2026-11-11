@@ -1,4 +1,4 @@
-# Infer gene regulatory networks with a selected backend method
+# Infer gene regulatory networks with a selected method
 
 Unified GRN inference entry point for GRNBoost2, GENIE3, RegDiffusion,
 and GNIPLR. It returns a standardized adjacency table with at least
@@ -62,7 +62,7 @@ RunGRN(
 
 - ...:
 
-  Additional backend-specific arguments.
+  Arguments passed to other functions.
 
 - assay:
 

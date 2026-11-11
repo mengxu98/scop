@@ -25,7 +25,7 @@ GetFeaturesData(object, ...)
 
 - ...:
 
-  Additional arguments passed to the method.
+  Arguments passed to other functions.
 
 - assay:
 

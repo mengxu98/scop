@@ -38,10 +38,7 @@ ReadSpatialData(
 
 - ...:
 
-  Extra arguments to Seurat's Load10X_Spatial or LoadXenium. Xenium
-  defaults to cell segmentation and does not load molecule coordinates
-  unless requested; cell segmentation must already exist in the vendor
-  output.
+  Arguments passed to other functions.
 
 ## Value
 

@@ -146,7 +146,7 @@ default also excludes <code>"scvi"</code>, <code>"glue"</code>, and <code>"multi
 upstream stacks are more reliable when requested explicitly for
 method-specific workflows.
 CellOracle uses an explicit standalone <code>"celloracle_env"</code> profile with Python
-3.10 and official CellOracle 0.20.0; native Windows is unsupported.</p></dd>
+3.10 and official CellOracle 0.20.0; Windows is unsupported.</p></dd>
 
 
 <dt id="arg-pip-options">pip_options<a class="anchor" aria-label="anchor" href="#arg-pip-options"></a></dt>
@@ -160,7 +160,7 @@ CellOracle uses an explicit standalone <code>"celloracle_env"</code> profile wit
 collects packages declared through <code>check_r()</code> and checks/installs them,
 including optional workflow dependencies not listed in <code>DESCRIPTION</code>.
 CHOIR is R-only, so <code>PrepareEnv(modules = "choir")</code> prepares its
-optional R backend without creating a Python environment.</p></dd>
+optional R implementation without creating a Python environment.</p></dd>
 
 
 <dt id="arg-cores">cores<a class="anchor" aria-label="anchor" href="#arg-cores"></a></dt>
@@ -178,7 +178,7 @@ Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Additional arguments passed to package installation functions.</p></dd>
+<dd><p>Arguments passed to other functions.</p></dd>
 
 </dl></div>
 

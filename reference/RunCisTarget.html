@@ -126,9 +126,9 @@ values are <code>"Homo_sapiens"</code>, <code>"Mus_musculus"</code>, and
 
 
 <dt id="arg-backend">backend<a class="anchor" aria-label="anchor" href="#arg-backend"></a></dt>
-<dd><p>CisTarget runtime backend.</p><dl><dt><code>"python"</code></dt>
+<dd><p>CisTarget runtime engine.</p><dl><dt><code>"python"</code></dt>
 <dd><p>Uses the pySCENIC/ctxcore Python pipeline. This is the
-most tested backend and produces results identical to official SCENIC.</p></dd>
+most tested path and produces results identical to official SCENIC.</p></dd>
 
 <dt><code>"cpp"</code></dt>
 <dd><p>Uses a compiled cisTarget workflow with recovery, AUC/NES,
@@ -138,7 +138,7 @@ database and motif annotation inputs.</p></dd>
 <dt><code>"r"</code></dt>
 <dd><p>Uses the <code>RcisTarget</code> Bioconductor package. Requires the
 cisTarget ranking databases and motif annotations to be available in
-the same format as the Python backend (feather files and motif2tf
+the same format as the Python path (feather files and motif2tf
 table).</p></dd>
 
 
@@ -176,7 +176,7 @@ from the unique genes in <code>adj</code> as a minimal stub.</p></dd>
 
 
 <dt id="arg-work-dir">work_dir<a class="anchor" aria-label="anchor" href="#arg-work-dir"></a></dt>
-<dd><p>Working directory used by Python backend.</p></dd>
+<dd><p>Working directory used by Python.</p></dd>
 
 
 <dt id="arg-prefix">prefix<a class="anchor" aria-label="anchor" href="#arg-prefix"></a></dt>
@@ -202,7 +202,7 @@ reference files. If <code>NULL</code>, files are stored under
 
 
 <dt id="arg-parallel-backend">parallel_backend<a class="anchor" aria-label="anchor" href="#arg-parallel-backend"></a></dt>
-<dd><p>Parallel backend used for native C++ cisTarget
+<dd><p>Parallel backend used for C++ cisTarget
 module processing. <code>"auto"</code> preserves the current cross-platform PSOCK
 behavior. <code>"fork"</code> is an explicit opt-in on macOS and Linux and is not
 available on Windows.</p></dd>
@@ -217,7 +217,7 @@ available on Windows.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Additional arguments passed to the backend.</p></dd>
+<dd><p>Arguments passed to other functions.</p></dd>
 
 </dl></div>
     <div class="section level2">

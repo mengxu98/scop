@@ -3,7 +3,7 @@
 Run supported spatial domain clustering methods from the same immutable
 input, compare their aligned labels with a gold standard, and record
 classification quality, elapsed time, and sampled peak process-tree
-memory. Each method runs in an isolated R process so one failed backend
+memory. Each method runs in an isolated R process so one failed method
 does not corrupt the input or prevent the remaining methods from being
 assessed.
 
@@ -47,7 +47,7 @@ RunSpatialBenchmark(
 - method_params:
 
   Named list of per-method argument lists. Arguments are passed to the
-  corresponding SCOP producer, never directly to its backend.
+  corresponding SCOP producer.
 
 - n_clusters:
 
@@ -68,7 +68,7 @@ RunSpatialBenchmark(
 
 - install_missing:
 
-  Whether missing optional backends may enter their producer's normal
+  Whether missing optional packages may enter their producer's normal
   `check_r()` installation path. The default records them as unavailable
   without changing the R library.
 

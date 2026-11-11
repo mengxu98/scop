@@ -1,9 +1,9 @@
 # List CCC ligand-receptor and prior-model databases
 
 Enumerates the ligand-receptor databases and prior models exposed by the
-installed cell-cell communication backends: LIANA resources, CellChat
+installed cell-cell communication methods: LIANA resources, CellChat
 databases, NicheNet prior models, and CellphoneDB input data. Databases
-are listed without being loaded, and backends that are not installed or
+are listed without being loaded, and resources that are not installed or
 not configured are reported with their status instead of failing.
 
 ## Usage
@@ -19,9 +19,9 @@ ListCCCDB(
 
 - db:
 
-  CCC backends to inspect. Any subset of \`"LIANA"\`, \`"CellChat"\`,
-  \`"Nichenetr"\`, and \`"CellphoneDB"\`; the default inspects all
-  supported backends.
+  CCC methods or resources to inspect. Any subset of \`"LIANA"\`,
+  \`"CellChat"\`, \`"Nichenetr"\`, and \`"CellphoneDB"\`; the default
+  inspects all supported resources.
 
 - species:
 
@@ -32,5 +32,5 @@ ListCCCDB(
 
 A data frame with columns \`db\`, \`resource\`, \`species\`,
 \`default\`, \`status\`, and \`description\`. A row with an \`NA\`
-resource and a non-\`"available"\` status describes a backend that could
-not be inspected.
+resource and a non-\`"available"\` status describes a resource that
+could not be inspected.

@@ -1,4 +1,4 @@
-# Build a native spatial network
+# Build a spatial network
 
 Build a k-nearest-neighbor or radius spatial network from raw Seurat
 spatial coordinates. Results are stored as named graphs in
@@ -87,5 +87,4 @@ data(visium_human_pancreas_sub)
 spatial <- visium_human_pancreas_sub
 spatial <- RunSpatialNetwork(object = spatial, k = 6, verbose = FALSE)
 SpatialNetworkPlot(object = spatial, group.by = "coda_label")
-
 ```

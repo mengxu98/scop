@@ -123,7 +123,7 @@ DeconvolutionPlot(
 
 - ...:
 
-  Reserved for future use.
+  Arguments passed to other functions.
 
 ## Value
 
@@ -131,13 +131,35 @@ A `ggplot` object. For `plot_type = "heatmap"`, returns a
 [`ComplexHeatmap::Heatmap`](https://rdrr.io/pkg/ComplexHeatmap/man/Heatmap.html)
 object.
 
+## Details
+
+Bar plots use
+[ImmuneAbundancePlot](https://mengxu98.github.io/scop/reference/ImmuneAbundancePlot.md)
+with stacked stored proportions. Box plots use the shared
+expression-statistics renderer. Neither view estimates cell-type
+proportions again. The constructed result table below demonstrates
+plotting previously computed proportions.
+
 ## See also
 
-[RunDeconvolution](https://mengxu98.github.io/scop/reference/RunDeconvolution.md)
+[RunDeconvolution](https://mengxu98.github.io/scop/reference/RunDeconvolution.md),
+[ImmuneAbundancePlot](https://mengxu98.github.io/scop/reference/ImmuneAbundancePlot.md),
+[FeatureStatPlot](https://mengxu98.github.io/scop/reference/FeatureStatPlot.md)
 
 ## Examples
 
 ``` r
+proportions <- data.frame(
+  sample = rep(paste0("Sample", 1:4), each = 2),
+  cell_type = rep(c("Alpha", "Beta"), 4),
+  proportion = c(0.7, 0.3, 0.6, 0.4, 0.4, 0.6, 0.3, 0.7),
+  method = "CIBERSORT"
+)
+DeconvolutionPlot(res = proportions, plot_type = "bar")
+
+DeconvolutionPlot(res = proportions, plot_type = "box")
+
+
 data(islet_bulk)
 islet_bulk <- RunDeconvolution(
   islet_bulk,
@@ -145,7 +167,7 @@ islet_bulk <- RunDeconvolution(
   backend = "cpp",
   perm = 0
 )
-#> ℹ [2026-11-10 09:57:09] Use 400 shared genes for CIBERSORT
+#> ℹ [2026-11-11 04:50:02] Use 400 shared genes for CIBERSORT
 DeconvolutionPlot(islet_bulk, plot_type = "bar")
 
 

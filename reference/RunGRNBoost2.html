@@ -157,7 +157,7 @@ standardized adjacency table with columns `TF`, `target`, and `importance`.</p>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Additional backend-specific arguments.</p></dd>
+<dd><p>Arguments passed to other functions.</p></dd>
 
 
 <dt id="arg-assay">assay<a class="anchor" aria-label="anchor" href="#arg-assay"></a></dt>
@@ -215,30 +215,30 @@ GRNBoost2 early stopping.</p></dd>
 
 
 <dt id="arg-exclude-self">exclude_self<a class="anchor" aria-label="anchor" href="#arg-exclude-self"></a></dt>
-<dd><p>Whether native GRNBoost2-like inference excludes a target
+<dd><p>Whether GRNBoost2-like inference excludes a target
 gene from its own regulator feature set.</p></dd>
 
 
 <dt id="arg-importance-norm-power">importance_norm_power<a class="anchor" aria-label="anchor" href="#arg-importance-norm-power"></a></dt>
-<dd><p>Power used to normalize native GRNBoost2-like
+<dd><p>Power used to normalize GRNBoost2-like
 edge importance by the total importance for each target. Set to `0` to
 disable normalization.</p></dd>
 
 
 <dt id="arg-correlation-fill">correlation_fill<a class="anchor" aria-label="anchor" href="#arg-correlation-fill"></a></dt>
-<dd><p>Whether native GRNBoost2-like inference should fill
+<dd><p>Whether GRNBoost2-like inference should fill
 missing TF-target candidates with expression-correlation support before
 applying `max_edges_per_target`.</p></dd>
 
 
 <dt id="arg-boost-weight">boost_weight<a class="anchor" aria-label="anchor" href="#arg-boost-weight"></a></dt>
-<dd><p>Weight of the native boosting score used when
+<dd><p>Weight of the boosting score used when
 correlation fill is enabled.</p></dd>
 
 
 <dt id="arg-correlation-weight">correlation_weight<a class="anchor" aria-label="anchor" href="#arg-correlation-weight"></a></dt>
 <dd><p>Weight of the correlation-fill score relative to
-native boosting importance.</p></dd>
+boosting importance.</p></dd>
 
 
 <dt id="arg-covariance-weight">covariance_weight<a class="anchor" aria-label="anchor" href="#arg-covariance-weight"></a></dt>
@@ -247,7 +247,7 @@ correlation fill is enabled.</p></dd>
 
 
 <dt id="arg-correlation-method">correlation_method<a class="anchor" aria-label="anchor" href="#arg-correlation-method"></a></dt>
-<dd><p>Correlation method used for native GRNBoost2-like
+<dd><p>Correlation method used for GRNBoost2-like
 candidate filling.</p></dd>
 
 
@@ -273,7 +273,7 @@ candidate filling.</p></dd>
 
 
 <dt id="arg-cores">cores<a class="anchor" aria-label="anchor" href="#arg-cores"></a></dt>
-<dd><p>Number of workers used by native/Python GRNBoost2.</p></dd>
+<dd><p>Number of workers used by GRNBoost2.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>

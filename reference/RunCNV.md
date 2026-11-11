@@ -1,7 +1,7 @@
 # Run copy-number alteration inference
 
 Run expression-based single-cell or spatial copy-number alteration
-backends and store the results in a consistent SCOP result bundle.
+methods and store the results in a consistent SCOP result bundle.
 
 ## Usage
 
@@ -24,8 +24,8 @@ RunCNV(
   tool_name = "CNV",
   store_matrix = TRUE,
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 ```
 
@@ -37,7 +37,7 @@ RunCNV(
 
 - method:
 
-  CNA/CNV backend. Supported backends are `"copykat"`, `"fastCNV"`,
+  CNA/CNV method. Supported methods are `"copykat"`, `"fastCNV"`,
   `"scevan"`, `"infercnv"`, and `"numbat"`.
 
 - assay:
@@ -50,7 +50,7 @@ RunCNV(
 
 - group.by:
 
-  Optional metadata column forwarded to supported backends and stored as
+  Optional metadata column forwarded to supported methods and stored as
   cell annotation.
 
 - reference.by:
@@ -88,7 +88,7 @@ RunCNV(
 
 - output_dir:
 
-  Optional backend output directory.
+  Optional output directory.
 
 - prefix:
 
@@ -107,14 +107,14 @@ RunCNV(
 
   Whether to print the message. Default is `TRUE`.
 
-- ...:
-
-  Additional parameters forwarded to the selected backend.
-
 - srt:
 
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
+
+- ...:
+
+  Arguments passed to other functions.
 
 ## Value
 

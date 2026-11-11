@@ -17,8 +17,7 @@ A `Seurat` object with 12405 RNA genes, 12000 peaks, and 500 cells.
 ## Source
 
 Derived from the PBMC multiome reference data distributed through
-[SeuratData](https://github.com/satijalab/seurat-data) /
-`pbmcMultiome.SeuratData`.
+[SeuratData](https://github.com/satijalab/seurat-data).
 
 ## Examples
 

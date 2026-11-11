@@ -1,8 +1,8 @@
 # Plot stored SpatialCellChat results
 
-Plot normalized SpatialCellChat results without rerunning the backend.
-The network view is a group-aggregated network over group centroids, not
-a materialized individual cell-by-cell edge table.
+Plot normalized SpatialCellChat results without rerunning the model. The
+network view is a group-aggregated network over group centroids, not a
+materialized individual cell-by-cell edge table.
 
 ## Usage
 

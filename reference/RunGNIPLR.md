@@ -59,7 +59,7 @@ RunGNIPLR(
 
 - ...:
 
-  Additional backend-specific arguments.
+  Arguments passed to other functions.
 
 - assay:
 
@@ -108,7 +108,7 @@ RunGNIPLR(
 
 - work_dir:
 
-  Working directory used by the Python backend.
+  Working directory used by Python.
 
 - prefix:
 
@@ -116,11 +116,11 @@ RunGNIPLR(
 
 - envname:
 
-  Python environment used by the Python backend.
+  Python environment used by Python.
 
 - conda:
 
-  Conda-compatible executable used by the Python backend.
+  Conda-compatible executable used by Python.
 
 - force:
 
@@ -169,7 +169,7 @@ grn <- RunGNIPLR(
   max_lag = 1,
   max_edges_per_target = 2
 )
-#> ℹ [2026-11-10 10:19:32] Running GNIPLR with `backend = cpp` on 5 genes and 8 cells
+#> ℹ [2026-11-11 05:14:46] Running GNIPLR with `backend = cpp` on 5 genes and 8 cells
 head(grn)
 #>     TF target importance      pvalue
 #> 3 Iapp   Nnat  2.2454349 0.005682836

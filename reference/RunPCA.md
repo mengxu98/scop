@@ -16,11 +16,7 @@ RunPCA(object, ...)
 
 - ...:
 
-  Passed to methods. The \`"cpp"\` backend of the \`matrix\` and assay
-  methods accepts \`cores\` to bound its BLAS calls; \`NULL\` keeps the
-  process default. The \`Seurat\` method also accepts \`features\`,
-  \`layer\`, \`reduction.name\` and the remaining \`Seurat::RunPCA()\`
-  arguments.
+  Arguments passed to other functions.
 
 ## Value
 

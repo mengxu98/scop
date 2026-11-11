@@ -107,14 +107,7 @@ RunSpatialIntegration(
 
 - ...:
 
-  Named backend argument lists: `create_params`, `adj_params`,
-  `par_params`, `run_params`, and `select_params`. The default adjacency
-  is `adj_params = list(type = "fixed_number", number = 6)`, using
-  distances in the selected coordinate space and SCOP's exact spatial
-  KNN implementation. PRECAST's fixed-distance Visium/ST array-index
-  mode is not compatible with these coordinates and is rejected. For
-  generic distance-based adjacency, explicitly choose
-  `platform = "Other_SRT"`.
+  Arguments passed to other functions.
 
 ## Value
 

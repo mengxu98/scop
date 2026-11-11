@@ -1,8 +1,8 @@
 # Call MACS2 peaks for explicitly selected capture groups
 
-Split selected cells with native Signac, run the installed MACS2
-executable, and retain separate peak sets, command arguments and logs.
-Peak inference is performed by MACS2; no caller is installed or silently
+Split selected cells with Signac, run the installed MACS2 executable,
+and retain separate peak sets, command arguments and logs. Peak
+inference is performed by MACS2; no caller is installed or silently
 substituted.
 
 ## Usage
@@ -57,7 +57,7 @@ CallATACPeaks(
 
 - outdir:
 
-  New output directory. Existing paths are rejected. Split BEDs, native
+  New output directory. Existing paths are rejected. Split BEDs, MACS2
   outputs and logs remain here, including when a call fails.
 
 - effective.genome.size:
@@ -81,10 +81,10 @@ CallATACPeaks(
 
 A list with named `peaks` (`GRanges` per call), `groups` with columns
 `call_id`, `sample` and optional `group`, and `receipt` containing
-actual cell membership, reference, fragment resources, backend versions,
-command arguments, logs, exit status and output files. The receipt
-identifies the original `sample.by` and `group.by` metadata fields;
-their names cannot collide with the fixed output columns. Counts
+actual cell membership, reference, fragment resources, dependency
+versions, command arguments, logs, exit status and output files. The
+receipt identifies the original `sample.by` and `group.by` metadata
+fields; their names cannot collide with the fixed output columns. Counts
 represent the supplied fragment records, not fifth-column read-support
 weights. Peak significance is a caller result, not a
 biological-replicate condition comparison.

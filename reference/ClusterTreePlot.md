@@ -139,7 +139,7 @@ ClusterTreePlot(
 - combine:
 
   Combine plots with
-  [patchwork](https://patchwork.data-imaginist.com/reference/patchwork-package.html).
+  [`patchwork::wrap_plots()`](https://patchwork.data-imaginist.com/reference/wrap_plots.html).
   `combine = FALSE` returns a list of ggplots.
 
 - ncol:
@@ -178,7 +178,7 @@ data when `return_data = TRUE`.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub, verbose = FALSE)
-#> ℹ [2026-11-10 09:55:07] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-11 04:47:56] Skip `log1p()` because `layer = data` is not "counts"
 pancreas_sub <- Seurat::FindNeighbors(
   pancreas_sub,
   reduction = "Standardpca",
@@ -191,12 +191,12 @@ pancreas_sub <- Seurat::FindClusters(
   verbose = FALSE
 )
 ClusterTreePlot(pancreas_sub)
-#> ℹ [2026-11-10 09:55:15] Multiple clustering prefixes detected. Use "RNA_snn" for `ClusterTreePlot()`. Pass `prefix` to choose another prefix.
+#> ℹ [2026-11-11 04:48:03] Multiple clustering prefixes detected. Use "RNA_snn" for `ClusterTreePlot()`. Pass `prefix` to choose another prefix.
 
 
 ClusterTreePlot(
   pancreas_sub,
   features = c("Ins1", "Gcg")
 )
-#> ℹ [2026-11-10 09:55:16] Multiple clustering prefixes detected. Use "RNA_snn" for `ClusterTreePlot()`. Pass `prefix` to choose another prefix.
+#> ℹ [2026-11-11 04:48:04] Multiple clustering prefixes detected. Use "RNA_snn" for `ClusterTreePlot()`. Pass `prefix` to choose another prefix.
 ```

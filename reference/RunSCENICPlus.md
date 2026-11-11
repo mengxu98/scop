@@ -16,7 +16,6 @@ RunSCENICPlus(
   rna_layer = "counts",
   atac_layer = "counts",
   backend = c("python", "cpp"),
-  allow_approximate = FALSE,
   grn_method = c("grnboost2", "regdiffusion", "genie3", "gniplr"),
   regulators = NULL,
   rna_expr = NULL,
@@ -93,13 +92,9 @@ RunSCENICPlus(
 
   Runtime backend. `"python"` reads or extracts official SCENIC+ result
   tables and remains the default; it does not run the SCENIC+ pipeline
-  itself. `"cpp"` runs the approximate package workflow and requires
-  `allow_approximate = TRUE`.
-
-- allow_approximate:
-
-  Whether to allow the approximate C++ workflow. This must be `TRUE`
-  when `backend = "cpp"`.
+  itself. `"cpp"` runs the approximate package workflow and issues a
+  warning that results may not be completely identical to the reference
+  workflow.
 
 - grn_method:
 
@@ -134,15 +129,15 @@ RunSCENICPlus(
   Optional precomputed TF-gene table with columns `TF`, `target`, and
   `importance`. When supplied with `backend = "cpp"`, C++ GRN inference
   is skipped and the table is used as the TF-gene evidence layer. If a
-  `rho` column is absent, correlations are computed from RNA when native
-  GSEA is requested.
+  `rho` column is absent, correlations are computed from RNA when GSEA
+  is requested.
 
 - region_gene_prior:
 
   Optional precomputed region-gene table with columns `region`, `gene`,
   and `score`. When supplied with `backend = "cpp"`, C++ importance
   fitting is skipped. If a `rho` column is absent, correlations are
-  computed from RNA and ATAC when native GSEA is requested.
+  computed from RNA and ATAC when GSEA is requested.
 
 - tf_region_prior:
 
@@ -354,8 +349,8 @@ RunSCENICPlus(
 - egrn_method:
 
   Local eModule filtering. `"gsea"` computes weighted permutation GSEA,
-  NES and BH-adjusted p-values in native code. `"leading_edge"` retains
-  the older approximation and its unfiltered fallback.
+  NES and BH-adjusted p-values in compiled code. `"leading_edge"`
+  retains the older approximation and its unfiltered fallback.
 
 - egrn_n_perm:
 
@@ -372,8 +367,8 @@ A Seurat object with SCENICPlus-style results.
 
 ## Details
 
-The C++ route runs locally without importing or invoking Python. Native
-GSEA filters modules before merging; it does not substitute unfiltered
+The C++ route runs locally without importing or invoking Python. GSEA
+filters modules before merging; it does not substitute unfiltered
 triplets when no module passes. The tool result includes module
 `gsea_statistics`, `region_regulon_list` and `region_auc` alongside gene
 AUC. Locally computed gene and region rankings use PCG tie-breaking with
@@ -408,12 +403,30 @@ scenicplus_dot <- SCENICPlusPlot(
   pancreas_sub,
   group.by = "CellType"
 )
-example_regulons <- unique(scenicplus_dot$top_table$regulon)[1:2]
+example_regulons <- head(rownames(pancreas_sub[["scenicplus"]]), 6)
+GroupHeatmap(
+  pancreas_sub,
+  group.by = "CellType",
+  features = example_regulons,
+  assay = "scenicplus",
+  layer = "data",
+  exp_method = "raw",
+  lib_normalize = FALSE
+)$plot
+FeatureStatPlot(
+  pancreas_sub,
+  stat.by = example_regulons,
+  group.by = "CellType",
+  assay = "scenicplus",
+  layer = "data",
+  plot_type = "violin"
+)
 FeatureDimPlot(
   pancreas_sub,
   features = example_regulons,
   assay = "scenicplus",
-  reduction = "StandardpcaUMAP2D"
+  layer = "data",
+  reduction = "UMAP"
 )
 SCENICPlusPlot(
   pancreas_sub,

@@ -3,8 +3,8 @@
 Draw independent ranked GO or other database results on opposite sides
 of zero. No enrichment or differential comparison is computed. Group
 colors and shared significance opacity encode the saved results; full
-black term labels may extend past bars. Hit genes appear below each bar
-and database bands are rounded.
+term labels may extend past bars. Hit genes appear below each bar and
+database bands are rounded.
 
 ## Usage
 
@@ -140,8 +140,10 @@ Opposite rows need not represent the same pathway. Asymmetric axis
 extents include a character-count estimate of label width; large fonts
 or narrow exports may need additional space. No automatic font-size
 fitting is performed. Missing or blank descriptions use the term ID; if
-that is also missing or blank, the display label is `(unnamed term)`.
-Original rows are preserved.
+that is also missing or blank, the display label is \`(unnamed term)\`.
+Original rows are preserved. Term text switches between black and white
+for contrast with each bar's displayed fill. A thin contrasting outline
+keeps overflow text readable.
 
 ## See also
 
@@ -150,8 +152,10 @@ Original rows are preserved.
 ## Examples
 
 ``` r
-tab <- data.frame(ID = c("a", "b"), Description = c("Process A", "Process B"),
+tab <- data.frame(
+  ID = c("a", "b"), Description = c("Process A", "Process B"),
   Database = "GO_BP", Groups = c("A", "B"), p.adjust = c(0.01, 0.001),
-  geneID = c("Gene1/Gene2", "Gene3/Gene4"))
+  geneID = c("Gene1/Gene2", "Gene3/Gene4")
+)
 EnrichmentMirrorPlot(res = list(enrichment = tab), group_use = c("A", "B"), db = "GO_BP")
 ```

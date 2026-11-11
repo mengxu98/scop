@@ -1,6 +1,6 @@
 # Combine explicit peak sets into one common interval universe
 
-Apply native
+Apply
 [`GenomicRanges::reduce()`](https://rdrr.io/pkg/IRanges/man/inter-range-methods.html)
 within declared groups, optionally require support from several input
 peak sets within each group, then take the union of retained group
@@ -54,10 +54,10 @@ CombineATACPeaks(
 
 ## Value
 
-A list with `ranges` in native sorted order, named by canonical peak
-IDs, and a `receipt` recording input sets, support groups, filtering and
-backend versions. Recount fragments over these ranges before comparing
-counts from previously different peak universes.
+A list with `ranges` in sorted order, named by canonical peak IDs, and a
+`receipt` recording input sets, support groups, filtering and dependency
+versions. Recount fragments over these ranges before comparing counts
+from previously different peak universes.
 
 ## Details
 

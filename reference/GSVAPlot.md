@@ -159,8 +159,9 @@ GSVAPlot(
 
 - topTerm:
 
-  The number of top terms to display. Default is `6`, or `100` if
-  `plot_type` is `"enrichmap"`.
+  The number of top terms to display. Default is `6`, `100` for
+  `"enrichmap"`, or `80` for `"rank"`. Rank plots select the highest
+  `rank_by` values after significance filtering.
 
 - score_cutoff:
 
@@ -410,7 +411,8 @@ GSVAPlot(
 
 - seed:
 
-  Random seed.
+  Random seed used for plot construction. The caller's RNG state is
+  restored on return, including errors.
 
 - verbose:
 
@@ -451,14 +453,14 @@ pancreas_sub <- RunGSVA(
   minGSSize = 2,
   min.sz = 2
 )
-#> ℹ [2026-11-10 10:04:49] Start GSVA analysis
-#> ℹ [2026-11-10 10:04:49] Single-cell GSVA mode: using expression matrix directly ...
-#> ℹ [2026-11-10 10:04:49] Expression matrix: 12238 genes x 80 cells
-#> ℹ [2026-11-10 10:04:49] Processing database: "custom" ...
-#> ℹ [2026-11-10 10:04:49] Initial overlap: 6 genes out of 12238 expression genes and 10 genes in gene sets
-#> ℹ [2026-11-10 10:04:49] Running GSVA for 2 gene sets ...
-#> ℹ [2026-11-10 10:04:49] GSVA results stored in assay "GSVA", meta.data, and tools slot "GSVA_cell_zscore"
-#> ✔ [2026-11-10 10:04:49] GSVA analysis done
+#> ℹ [2026-11-11 04:58:25] Start GSVA analysis
+#> ℹ [2026-11-11 04:58:25] Single-cell GSVA mode: using expression matrix directly ...
+#> ℹ [2026-11-11 04:58:25] Expression matrix: 12238 genes x 80 cells
+#> ℹ [2026-11-11 04:58:25] Processing database: "custom" ...
+#> ℹ [2026-11-11 04:58:25] Initial overlap: 6 genes out of 12238 expression genes and 10 genes in gene sets
+#> ℹ [2026-11-11 04:58:25] Running GSVA for 2 gene sets ...
+#> ℹ [2026-11-11 04:58:25] GSVA results stored in assay "GSVA", meta.data, and tools slot "GSVA_cell_zscore"
+#> ✔ [2026-11-11 04:58:25] GSVA analysis done
 
 ht <- GSVAPlot(
   pancreas_sub,

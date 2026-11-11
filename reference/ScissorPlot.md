@@ -47,8 +47,8 @@ ScissorPlot(
   theme_use = "theme_scop",
   theme_args = list(),
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 ```
 
@@ -230,20 +230,14 @@ ScissorPlot(
 
   Whether to print messages.
 
-- ...:
-
-  Additional arguments passed to
-  [CellDimPlot](https://mengxu98.github.io/scop/reference/CellDimPlot.md),
-  [FeatureDimPlot](https://mengxu98.github.io/scop/reference/FeatureDimPlot.md),
-  [FeatureHeatmap](https://mengxu98.github.io/scop/reference/FeatureHeatmap.md),
-  or
-  [thisplot::StatPlot](https://mengxu98.github.io/thisplot/reference/StatPlot.html),
-  depending on `plot_type`.
-
 - srt:
 
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
+
+- ...:
+
+  Arguments passed to other functions.
 
 ## Value
 
@@ -274,11 +268,11 @@ panc8_sub <- RunScissor(
   alpha = 0.2,
   cutoff = 0.5
 )
-#> ℹ [2026-11-10 10:48:12] Build a temporary Scissor-style SNN graph
-#> ℹ [2026-11-10 10:48:14] Scissor alpha 0.2 selected 1 positive and 501 negative cells (31.375%)
-#> ✔ [2026-11-10 10:48:14] Scissor stored 1 Scissor+ and 501 Scissor- cells
+#> ℹ [2026-11-11 05:44:39] Build a temporary Scissor-style SNN graph
+#> ℹ [2026-11-11 05:44:43] Scissor alpha 0.2 selected 1 positive and 501 negative cells (31.375%)
+#> ✔ [2026-11-11 05:44:43] Scissor stored 1 Scissor+ and 501 Scissor- cells
 panc8_sub <- RunStandardWorkflow(panc8_sub, verbose = FALSE)
-#> ℹ [2026-11-10 10:48:16] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-11 05:44:44] Skip `log1p()` because `layer = data` is not "counts"
 
 ScissorPlot(
   panc8_sub,

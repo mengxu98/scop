@@ -1,6 +1,6 @@
 # Convert Giotto to Seurat
 
-Convert a native Giotto object into a new Seurat object.
+Convert a Giotto object into a new Seurat object. Requires GiottoClass.
 
 ## Usage
 
@@ -12,26 +12,17 @@ giotto_to_srt(giotto, ...)
 
 - giotto:
 
-  A native Giotto object.
+  A Giotto object. For a round trip, normalize the Seurat object with
+  [`Seurat::NormalizeData()`](https://satijalab.org/seurat/reference/NormalizeData.html)
+  before converting it to Giotto.
 
 - ...:
 
-  Additional arguments passed to the Giotto converter.
+  Arguments passed to other functions.
 
 ## Value
 
-A new \`Seurat\` object.
-
-## Details
-
-The bridge selects the GiottoClass v4 or v5 converter according to the
-installed Seurat major version. If GiottoClass is already installed, it
-is reused instead of reinstalling \`drieslab/Giotto\`. For round trips
-produced by \[srt_to_giotto()\], normalize the Seurat input first (for
-example with \[Seurat::NormalizeData()\]); the official GiottoClass
-converter records an empty normalized layer otherwise, which its reverse
-converter cannot read back. Conversion does not initialize Giotto's
-optional Python/conda environment.
+A new `Seurat` object.
 
 ## Examples
 
@@ -44,7 +35,6 @@ spatial <- Seurat::NormalizeData(
   verbose = FALSE
 )
 giotto <- srt_to_giotto(spatial, image = "slice1")
-roundtrip <- giotto_to_srt(giotto)
-print(roundtrip)
+giotto_to_srt(giotto)
 } # }
 ```

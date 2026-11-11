@@ -49,8 +49,7 @@ RunFR(
 
 - ...:
 
-  Passed to
-  [igraph::layout_with_fr](https://r.igraph.org/reference/layout_with_fr.html).
+  Arguments passed to other functions.
 
 - reduction:
 
@@ -115,29 +114,29 @@ RunFR(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-11-10 10:18:39] Start standard processing workflow...
-#> ℹ [2026-11-10 10:18:39] Checking a list of <Seurat>...
-#> ! [2026-11-10 10:18:39] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-11-10 10:18:39] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-11-10 10:18:40] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-10 10:18:40] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-10 10:18:40] Number of available HVF: 2000
-#> ℹ [2026-11-10 10:18:40] Finished check
-#> ℹ [2026-11-10 10:18:40] Perform `ScaleData()`
-#> ℹ [2026-11-10 10:18:40] Perform pca linear dimension reduction
-#> ℹ [2026-11-10 10:18:40] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-11-10 10:18:40] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-10 10:18:40] Reorder clusters...
-#> ℹ [2026-11-10 10:18:41] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-10 10:18:41] Perform umap nonlinear dimension reduction
-#> ✔ [2026-11-10 10:18:50] Standard processing workflow completed
+#> ℹ [2026-11-11 05:13:52] Start standard processing workflow...
+#> ℹ [2026-11-11 05:13:52] Checking a list of <Seurat>...
+#> ! [2026-11-11 05:13:52] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-11 05:13:52] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-11 05:13:52] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-11 05:13:52] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-11 05:13:52] Number of available HVF: 2000
+#> ℹ [2026-11-11 05:13:52] Finished check
+#> ℹ [2026-11-11 05:13:52] Perform `ScaleData()`
+#> ℹ [2026-11-11 05:13:52] Perform pca linear dimension reduction
+#> ℹ [2026-11-11 05:13:53] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-11-11 05:13:53] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-11 05:13:53] Reorder clusters...
+#> ℹ [2026-11-11 05:13:53] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-11 05:13:53] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-11 05:14:02] Standard processing workflow completed
 pancreas_sub <- RunFR(
   object = pancreas_sub,
   graph = "Standardpca_SNN",
   niter = 100
 )
-#> ℹ [2026-11-10 10:18:50] Running force-directed layout
-#> ℹ [2026-11-10 10:18:50] Force-directed layout computed
+#> ℹ [2026-11-11 05:14:02] Running force-directed layout
+#> ℹ [2026-11-11 05:14:02] Force-directed layout computed
 CellDimPlot(
   pancreas_sub,
   group.by = "CellType",

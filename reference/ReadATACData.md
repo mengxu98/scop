@@ -3,8 +3,10 @@
 Import one explicitly shared peak universe from a sparse matrix and
 genomic ranges, a 10x ATAC/ARC H5 file, or Matrix Market/peaks
 BED/barcodes files. SCOP checks and aligns identifiers; Signac creates
-the native assay. No cells or peaks are filtered, and no resources are
-downloaded or installed.
+the chromatin assay. No cells or peaks are filtered. Required R packages
+are checked and installed through
+[`thisutils::check_r()`](https://mengxu98.github.io/thisutils/reference/check_r.html)
+as needed; genomic resources must be supplied locally.
 
 ## Usage
 

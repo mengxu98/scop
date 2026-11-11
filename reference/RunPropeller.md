@@ -2,14 +2,14 @@
 
 Method-specific implementation used by
 [RunProportionTest](https://mengxu98.github.io/scop/reference/RunProportionTest.md)
-when `proportion_method = "propeller"`. Uses the optional speckle
-backend: `getTransformedProps()` computes the transformed proportions
-and `propeller.ttest()` performs limma empirical Bayes moderated tests.
-Each requested comparison is a two-group test; multiple conditions
-produce pairwise results, not an omnibus ANOVA. P-values, FDR, and
-`Tstatistic` come from speckle. `obs_log2FD` and bootstrap intervals
-describe the ratio of mean untransformed sample proportions, with a
-`1e-5` pseudocount; these intervals are not moderated-test intervals.
+when `proportion_method = "propeller"`. Uses speckle:
+`getTransformedProps()` computes the transformed proportions and
+`propeller.ttest()` performs limma empirical Bayes moderated tests. Each
+requested comparison is a two-group test; multiple conditions produce
+pairwise results, not an omnibus ANOVA. P-values, FDR, and `Tstatistic`
+come from speckle. `obs_log2FD` and bootstrap intervals describe the
+ratio of mean untransformed sample proportions, with a `1e-5`
+pseudocount; these intervals are not moderated-test intervals.
 
 ## Usage
 

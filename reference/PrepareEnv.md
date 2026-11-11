@@ -77,8 +77,7 @@ PrepareEnv(
   `"glue"`, and `"multimap"` because those upstream stacks are more
   reliable when requested explicitly for method-specific workflows.
   CellOracle uses an explicit standalone `"celloracle_env"` profile with
-  Python 3.10 and official CellOracle 0.20.0; native Windows is
-  unsupported.
+  Python 3.10 and official CellOracle 0.20.0; Windows is unsupported.
 
 - pip_options:
 
@@ -93,7 +92,7 @@ PrepareEnv(
   component collects packages declared through `check_r()` and
   checks/installs them, including optional workflow dependencies not
   listed in `DESCRIPTION`. CHOIR is R-only, so
-  `PrepareEnv(modules = "choir")` prepares its optional R backend
+  `PrepareEnv(modules = "choir")` prepares its optional R implementation
   without creating a Python environment.
 
 - cores:
@@ -112,4 +111,4 @@ PrepareEnv(
 
 - ...:
 
-  Additional arguments passed to package installation functions.
+  Arguments passed to other functions.

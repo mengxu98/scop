@@ -24,8 +24,7 @@ theme_scop(aspect.ratio = NULL, base_size = 12, ...)
 
 - ...:
 
-  Arguments passed to the
-  [ggplot2::theme](https://ggplot2.tidyverse.org/reference/theme.html).
+  Arguments passed to other functions.
 
 ## Value
 

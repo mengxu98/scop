@@ -49,8 +49,7 @@ ATACFragmentPlot(
 
 - ...:
 
-  Additional arguments to
-  [`Signac::FragmentHistogram()`](https://stuartlab.org/signac/reference/FragmentHistogram.html).
+  Arguments passed to other functions.
 
 ## Value
 
@@ -59,11 +58,11 @@ A ggplot object. The input object is not modified.
 ## Details
 
 Requires local bgzip fragment files with a `.tbi` or `.csi` index and
-explicit cell/barcode mappings. The native histogram counts fragment
-records, not column-five read multiplicities, and displays lengths
-between 0 and 800 bp by default. As in Signac, a fragment returned for
-several query intervals can contribute more than once; use a single
-region for an unambiguous regional histogram.
+explicit cell/barcode mappings. The histogram counts fragment records,
+not column-five read multiplicities, and displays lengths between 0 and
+800 bp by default. As in Signac, a fragment returned for several query
+intervals can contribute more than once; use a single region for an
+unambiguous regional histogram.
 
 ## See also
 

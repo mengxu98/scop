@@ -5,7 +5,7 @@ pathway, or block-annotation resources. The wrapper validates required
 GWAS columns, normalizes output paths, and records provenance in Seurat
 tools or a result attribute. It prefers the upstream `scPagwas_main2`
 runner and applies Seurat 5 compatibility to local function copies
-without modifying the installed backend namespace.
+without modifying the installed package namespace.
 
 ## Usage
 
@@ -23,8 +23,8 @@ RunscPagwas(
   cleanup_soar = TRUE,
   return_seurat = !is.null(srt) || inherits(single_data, "Seurat") || !is.null(object),
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 ```
 
@@ -72,8 +72,8 @@ RunscPagwas(
 
 - cleanup_soar:
 
-  Deprecated compatibility argument. SOAR cleanup is managed by the
-  upstream `scPagwas` backend and is ignored by `scop`.
+  Deprecated compatibility argument. SOAR cleanup is managed by upstream
+  `scPagwas` and is ignored by `scop`.
 
 - return_seurat:
 
@@ -83,15 +83,14 @@ RunscPagwas(
 
   Whether to print the message. Default is `TRUE`.
 
-- ...:
-
-  Additional arguments passed to the upstream `scPagwas` function after
-  filtering by its formal arguments.
-
 - srt:
 
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
+
+- ...:
+
+  Arguments passed to other functions.
 
 ## Value
 

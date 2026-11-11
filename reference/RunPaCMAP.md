@@ -61,7 +61,7 @@ RunPaCMAP(
 
 - ...:
 
-  Passed to pacmap.PaCMAP.
+  Arguments passed to other functions.
 
 - reduction:
 

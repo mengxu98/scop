@@ -71,8 +71,7 @@ AggregateExpression(
 
 - ...:
 
-  Arguments to be passed to methods such as
-  [`CreateSeuratObject`](https://satijalab.github.io/seurat-object/reference/CreateSeuratObject.html)
+  Arguments passed to other functions.
 
 ## Value
 

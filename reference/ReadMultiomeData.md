@@ -30,7 +30,7 @@ ReadMultiomeData(
   `matrix.mtx.gz`, `features.tsv.gz` and `barcodes.tsv.gz`. The input
   must contain exactly the `Gene Expression` and `Peaks` modalities. H5
   input requires at least two features per modality and two cells
-  because the native Seurat H5 reader otherwise drops matrix dimensions.
+  because the Seurat H5 reader otherwise drops matrix dimensions.
 
 - metadata, cell.names, sample, genome, annotation, fragments,
   fragment.cells, project, verbose:
@@ -53,8 +53,8 @@ ReadMultiomeData(
 A Seurat object with a `ChromatinAssay` and a measured RNA `Assay`, both
 containing raw counts for the same ordered cells. The active assay is
 `assay`. Provenance is stored in `Misc(object, "scop_multiome_input")`
-and in the native ATAC import receipt. Native assay initialization also
-copies raw counts to the data layer; this is not normalized expression.
+and in the ATAC import receipt. Assay initialization also copies raw
+counts to the data layer; this is not normalized expression.
 
 ## Details
 

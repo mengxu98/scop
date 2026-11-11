@@ -1,12 +1,12 @@
-# Convert Seurat to a native Giotto object
+# Convert Seurat to a Giotto object
 
-Convert one Seurat spatial image into a native Giotto object without
-running a Giotto workflow or changing the input object.
+Convert one Seurat spatial image into a Giotto object without running a
+Giotto workflow or changing the input object. Requires GiottoClass.
 
 ## Usage
 
 ``` r
-srt_to_giotto(object, image = NULL, ..., srt = NULL)
+srt_to_giotto(object, image = NULL, srt = NULL, ...)
 ```
 
 ## Arguments
@@ -19,26 +19,18 @@ srt_to_giotto(object, image = NULL, ..., srt = NULL)
 
   Seurat image name. Multi-image objects require an explicit name.
 
-- ...:
-
-  Additional arguments passed to the Giotto converter.
-
 - srt:
 
   Deprecated alias for \`object\`; supply exactly one of the two. It
   will be removed in scop 1.0.0.
 
+- ...:
+
+  Arguments passed to other functions.
+
 ## Value
 
-A native Giotto object.
-
-## Details
-
-Converters live in GiottoClass. If that package is already installed
-from any source, the bridge reuses it and does not reinstall
-\`drieslab/Giotto\`. A GitHub reinstall is requested only when
-GiottoClass is missing. Conversion does not initialize Giotto's optional
-Python/conda environment.
+A Giotto object.
 
 ## Examples
 
@@ -50,7 +42,6 @@ spatial <- Seurat::NormalizeData(
   assay = "Spatial",
   verbose = FALSE
 )
-giotto <- srt_to_giotto(spatial, image = "slice1")
-print(giotto)
+srt_to_giotto(spatial, image = "slice1")
 } # }
 ```

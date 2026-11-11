@@ -38,7 +38,7 @@ CellCycleScoring(
 
 - ...:
 
-  Arguments passed to \[AddModuleScore()\].
+  Arguments passed to other functions.
 
 ## Value
 

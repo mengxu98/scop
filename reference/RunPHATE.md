@@ -73,7 +73,7 @@ RunPHATE(
 
 - ...:
 
-  Passed to phate.PHATE.
+  Arguments passed to other functions.
 
 - reduction:
 
@@ -152,20 +152,20 @@ RunPHATE(
 - backend:
 
   PHATE backend. `"python"` calls the upstream `phate` Python package
-  and `"cpp"` uses the native C++ helper path. The selected backend is
-  stable; native arguments never trigger an implicit Python workflow.
-  When another Python environment is already initialized, run the Python
-  backend in a separate process without changing the active interpreter.
+  and `"cpp"` uses the C++ helper path. The selected backend is stable;
+  C++ arguments never trigger an implicit Python workflow. When another
+  Python environment is already initialized, run the Python backend in a
+  separate process without changing the active interpreter.
 
 - mds:
 
-  MDS algorithm passed to PHATE. The native backend uses its C++
-  classical MDS or R's native metric MDS implementation.
+  MDS algorithm passed to PHATE. The C++ backend uses its C++ classical
+  MDS or R's metric MDS implementation.
 
 - mds_solver:
 
-  Metric MDS solver; recorded by the native backend and passed through
-  to Python when that backend is selected.
+  Metric MDS solver; recorded by the C++ backend and passed through to
+  Python when that backend is selected.
 
 - n_clusters:
 

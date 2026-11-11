@@ -48,8 +48,8 @@ TACSPlot(
   nrow = NULL,
   ncol = NULL,
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 ```
 
@@ -189,7 +189,7 @@ TACSPlot(
 - nrow:
 
   Combine plots with
-  [patchwork](https://patchwork.data-imaginist.com/reference/patchwork-package.html).
+  [`patchwork::wrap_plots()`](https://patchwork.data-imaginist.com/reference/wrap_plots.html).
   `combine = FALSE` returns a list of ggplots.
 
 - ncol:
@@ -200,15 +200,14 @@ TACSPlot(
 
   Whether to print the message. Default is `TRUE`.
 
-- ...:
-
-  Additional parameters passed to
-  [ggplot2::stat_density2d](https://ggplot2.tidyverse.org/reference/geom_density_2d.html).
-
 - srt:
 
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
+
+- ...:
+
+  Arguments passed to other functions.
 
 ## References
 
@@ -224,22 +223,22 @@ doi:10.1016/j.immuni.2018.04.015
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-11-10 10:49:50] Start standard processing workflow...
-#> ℹ [2026-11-10 10:49:50] Checking a list of <Seurat>...
-#> ! [2026-11-10 10:49:50] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-11-10 10:49:50] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-11-10 10:49:50] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-10 10:49:50] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-10 10:49:50] Number of available HVF: 2000
-#> ℹ [2026-11-10 10:49:50] Finished check
-#> ℹ [2026-11-10 10:49:50] Perform `ScaleData()`
-#> ℹ [2026-11-10 10:49:50] Perform pca linear dimension reduction
-#> ℹ [2026-11-10 10:49:50] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-11-10 10:49:51] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-10 10:49:51] Reorder clusters...
-#> ℹ [2026-11-10 10:49:51] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-10 10:49:51] Perform umap nonlinear dimension reduction
-#> ✔ [2026-11-10 10:50:01] Standard processing workflow completed
+#> ℹ [2026-11-11 05:46:45] Start standard processing workflow...
+#> ℹ [2026-11-11 05:46:45] Checking a list of <Seurat>...
+#> ! [2026-11-11 05:46:45] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-11 05:46:46] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-11 05:46:46] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-11 05:46:46] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-11 05:46:46] Number of available HVF: 2000
+#> ℹ [2026-11-11 05:46:46] Finished check
+#> ℹ [2026-11-11 05:46:46] Perform `ScaleData()`
+#> ℹ [2026-11-11 05:46:46] Perform pca linear dimension reduction
+#> ℹ [2026-11-11 05:46:46] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-11-11 05:46:47] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-11 05:46:47] Reorder clusters...
+#> ℹ [2026-11-11 05:46:47] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-11 05:46:47] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-11 05:46:56] Standard processing workflow completed
 TACSPlot(
   pancreas_sub,
   feature1 = "H3f3b",

@@ -70,11 +70,11 @@ The Seurat object with the filtered `ChromatinAssay`. All cells and
 retained peak order/counts are preserved. The new assay retains
 reference, gene annotation and fragment references, but not
 normalized/scaled data, variable features, motifs, links or downstream
-results. Native initialization puts raw counts in the data layer. Source
+results. Assay initialization puts raw counts in the data layer. Source
 assays, active assay and existing reductions are unchanged.
 `Misc(object[[new.assay]], "scop_peak_filter")` stores one row per
 source peak with each criterion and the final keep flag. At least two
-peaks and two cells must remain for native assay construction.
+peaks and two cells must remain for assay construction.
 
 ## See also
 

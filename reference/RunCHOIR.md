@@ -1,9 +1,8 @@
 # Run CHOIR clustering
 
-Runs the optional CHOIR backend on a single-modality `Seurat` object.
-CHOIR builds and prunes a hierarchical clustering tree using
-random-forest classifiers and permutation tests to identify
-statistically distinct cell populations.
+Runs CHOIR on a single-modality `Seurat` object. CHOIR builds and prunes
+a hierarchical clustering tree using random-forest classifiers and
+permutation tests to identify statistically distinct cell populations.
 
 The upstream CHOIR records remain available in `srt@misc[[key]]`. This
 wrapper also writes a stable cluster column to cell metadata and a
@@ -38,8 +37,8 @@ RunCHOIR(
   store_tool = TRUE,
   verbose = TRUE,
   overwrite = FALSE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 ```
 
@@ -102,13 +101,13 @@ RunCHOIR(
 - max_clusters:
 
   Must be `"auto"`. Numeric limits are rejected because the upstream
-  backend can fail to terminate when the number of clusters plateaus.
+  method can fail to terminate when the number of clusters plateaus.
 
 - normalization_method:
 
   Normalization performed inside CHOIR. Use `"none"` for previously
   normalized data or `"SCTransform"` with a counts layer. The upstream
-  backend does not support `"SCTransform"` for Seurat v5 `Assay5`
+  method does not support `"SCTransform"` for Seurat v5 `Assay5`
   objects.
 
 - batch.by:
@@ -136,7 +135,7 @@ RunCHOIR(
 
 - cores:
 
-  Number of cores used by CHOIR. The upstream backend supports macOS and
+  Number of cores used by CHOIR. The upstream package supports macOS and
   Linux; Windows execution is rejected before installation.
 
 - seed:
@@ -157,16 +156,14 @@ RunCHOIR(
   Whether to replace existing CHOIR metadata, reduction, and `misc`
   entries, plus the `tools` entry when `store_tool = TRUE`.
 
-- ...:
-
-  Additional named arguments passed to the installed CHOIR entry point.
-  Unsupported arguments produce an error rather than being silently
-  ignored.
-
 - srt:
 
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
+
+- ...:
+
+  Arguments passed to other functions.
 
 ## Value
 
@@ -179,7 +176,7 @@ complete upstream records in `srt@misc[[key]]`, and, when
 Stored results retain a private per-cell identity metadata column for
 [`GetSpatialResult()`](https://mengxu98.github.io/scop/reference/GetSpatialResult.md).
 Preserve this column when subsetting or renaming cells. The accessor
-returns current-cell assignments; stored native results and fit
+returns current-cell assignments; stored original results and fit
 parameters remain unchanged.
 
 ## References

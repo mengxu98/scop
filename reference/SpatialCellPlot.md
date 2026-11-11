@@ -24,14 +24,14 @@ SpatialCellPlot(
   theme_args = list(),
   assay = NULL,
   layer = "data",
-  ...,
   combine = TRUE,
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE,
   legend.position = "right",
   legend.direction = "vertical",
-  legend.title = NULL
+  legend.title = NULL,
+  ...
 )
 ```
 
@@ -95,10 +95,6 @@ SpatialCellPlot(
 
   Layer used when \`features\` are fetched from \`object\`.
 
-- ...:
-
-  Additional arguments passed to \`ggplot2::geom_polygon()\`.
-
 - combine:
 
   Return combined panels, or a named list when \`FALSE\`.
@@ -110,6 +106,10 @@ SpatialCellPlot(
 - legend.position, legend.direction, legend.title:
 
   Legend controls.
+
+- ...:
+
+  Arguments passed to other functions.
 
 ## Value
 

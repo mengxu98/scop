@@ -42,7 +42,7 @@ AddModuleScore(
 
 - ...:
 
-  Additional arguments passed to Seurat on fallback.
+  Arguments passed to other functions.
 
 ## Value
 

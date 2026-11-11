@@ -25,7 +25,7 @@ AddFeaturesData(object, features, ...)
 
 - ...:
 
-  Additional arguments passed to the method.
+  Arguments passed to other functions.
 
 - features:
 

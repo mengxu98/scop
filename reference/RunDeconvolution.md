@@ -33,7 +33,7 @@ RunDeconvolution(
 
 - ...:
 
-  Additional parameters forwarded to the internal deconvolution backend.
+  Arguments passed to other functions.
 
 - reference:
 
@@ -52,13 +52,13 @@ RunDeconvolution(
 - sample.by:
 
   Metadata column in `reference` defining biological sample / donor IDs.
-  Used by the `r` backends of `MuSiC` and `BisqueRNA`. If `NULL`, SCOP
-  will try to infer a suitable column automatically.
+  Used by the `r` implementation of `MuSiC` and `BisqueRNA`. If `NULL`,
+  SCOP will try to infer a suitable column automatically.
 
 - cellstate.by:
 
   Metadata column in `reference` defining cell states for the `r`
-  backend of `BayesPrism`. If `NULL`, `group.by` is reused.
+  implementation of `BayesPrism`. If `NULL`, `group.by` is reused.
 
 - bulk_assay:
 
@@ -101,7 +101,7 @@ islet_bulk <- RunDeconvolution(
   backend = "cpp",
   perm = 0
 )
-#> ℹ [2026-11-10 10:14:54] Use 400 shared genes for CIBERSORT
+#> ℹ [2026-11-11 05:09:39] Use 400 shared genes for CIBERSORT
 DeconvolutionPlot(islet_bulk, plot_type = "bar")
 
 
@@ -117,10 +117,11 @@ DeconvolutionPlot(islet_bulk, plot_type = "box")
 
 
 if (FALSE) { # \dontrun{
-# MuSiC needs the optional MuSiC backend pre-installed.
+# MuSiC needs the optional MuSiC package pre-installed.
 data(panc8_sub)
 islet_bulk <- RunDeconvolution(
-  islet_bulk, reference = panc8_sub,
+  islet_bulk,
+  reference = panc8_sub,
   method = "MuSiC", group.by = "celltype", verbose = FALSE
 )
 DeconvolutionPlot(islet_bulk, plot_type = "bar")

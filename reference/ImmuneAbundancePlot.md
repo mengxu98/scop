@@ -179,3 +179,36 @@ ImmuneAbundancePlot(
 ## Value
 
 A `ggplot` object.
+
+## Details
+
+Matrix values are displayed as supplied. Stacked bars retain the
+original abundance values; `bar_position = "fill"` explicitly normalizes
+each sample. The constructed matrix in the examples demonstrates the
+plotting interface.
+
+## See also
+
+[DeconvolutionPlot](https://mengxu98.github.io/scop/reference/DeconvolutionPlot.md),
+[FeatureStatPlot](https://mengxu98.github.io/scop/reference/FeatureStatPlot.md)
+
+## Examples
+
+``` r
+abundance <- matrix(
+  c(0.7, 0.3, 0.6, 0.4, 0.4, 0.6, 0.3, 0.7),
+  ncol = 2, byrow = TRUE,
+  dimnames = list(paste0("Sample", 1:4), c("T cells", "B cells"))
+)
+groups <- stats::setNames(c("Control", "Control", "Treated", "Treated"), rownames(abundance))
+ImmuneAbundancePlot(immune.data = abundance, plot_type = "bar")
+
+ImmuneAbundancePlot(
+  immune.data = abundance, group.data = groups,
+  group.by = "condition", plot_type = "box"
+)
+
+ImmuneAbundancePlot(immune.data = abundance, plot_type = "heatmap")
+
+ImmuneAbundancePlot(immune.data = abundance, plot_type = "cor")
+```

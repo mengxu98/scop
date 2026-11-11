@@ -33,4 +33,4 @@ GetCCCObject(
 
 ## Value
 
-An upstream backend object.
+An upstream CellChat or SpatialCellChat object.

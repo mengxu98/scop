@@ -41,7 +41,7 @@ SelectIntegrationFeatures(
 
 - ...:
 
-  Passed to Seurat on delegated paths.
+  Arguments passed to other functions.
 
 ## Value
 

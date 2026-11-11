@@ -1,8 +1,8 @@
 # Run Spatial CellChat analysis
 
-Run the SpatialCellChat v3 backend with explicit micron-scale
-coordinates and sample isolation. Cell-, spot-, and composition-level
-results retain distinct interpretations.
+Run SpatialCellChat v3 with explicit micron-scale coordinates and sample
+isolation. Cell-, spot-, and composition-level results retain distinct
+interpretations.
 
 ## Usage
 
@@ -152,7 +152,7 @@ RunSpatialCellChat(
 
 - min.cells, min.links:
 
-  Positive minimum group size and individual-link count used by backend
+  Positive minimum group size and individual-link count used by
   filtering.
 
 - avg.type:
@@ -169,7 +169,7 @@ RunSpatialCellChat(
 
 - seed.use:
 
-  Random seed passed to the backend.
+  Random seed passed to the method.
 
 - result.name:
 
@@ -178,7 +178,7 @@ RunSpatialCellChat(
 - store.object:
 
   \`"minimal"\` stores normalized tables, coordinates, and diagnostics.
-  \`"full"\` additionally stores each upstream backend object.
+  \`"full"\` additionally stores each upstream object.
 
 - overwrite:
 
@@ -235,10 +235,10 @@ are retained only for plotting stored results.
 
 Objects with multiple images require an explicit \`image\` selection.
 When \`sample.by\` contains multiple samples, supply a named character
-vector that maps every sample to one image. Upstream backend objects are
-omitted by default because they can be large; use \`store.object =
-"full"\` only if subsequent additional analysis with the upstream
-SpatialCellChat object is needed.
+vector that maps every sample to one image. Upstream objects are omitted
+by default because they can be large; use \`store.object = "full"\` only
+if subsequent additional analysis with the upstream SpatialCellChat
+object is needed.
 
 ## References
 

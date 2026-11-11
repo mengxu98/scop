@@ -165,12 +165,12 @@ and the type of assay.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>For chromatin assays with <code>HVF_source = "separate"</code>, native
+    <p>For chromatin assays with <code>HVF_source = "separate"</code>,
 <code><a href="https://satijalab.org/seurat/reference/SelectIntegrationFeatures.html" class="external-link">Seurat::SelectIntegrationFeatures()</a></code> ranks peaks by the number of batches
 selecting them, then by their median variable-feature rank. The <code>nHVF</code> cap
 is also limited to the smallest per-batch variable-feature count;
 <code>HVF_min_intersection</code> is applied to the ranked selection. This preserves
-native within-batch peak frequency ranking instead of sorting tied peak IDs.</p>
+within-batch peak frequency ranking instead of sorting tied peak IDs.</p>
     </div>
 
     <div class="section level2">
@@ -194,7 +194,6 @@ native within-batch peak frequency ranking instead of sorting tied peak IDs.</p>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">checked</span><span class="op">$</span><span class="va">HVF</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "chr1-1-50"    "chr1-101-150" "chr1-201-250"</span>
-<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

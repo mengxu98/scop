@@ -70,9 +70,7 @@ RunCytoTRACE(
 
 - ...:
 
-  Additional arguments passed to the official
-  [`CytoTRACE2::cytotrace2()`](https://rdrr.io/pkg/CytoTRACE2/man/cytotrace2.html)
-  call when `backend = "r"`.
+  Arguments passed to other functions.
 
 - assay:
 
@@ -107,7 +105,7 @@ RunCytoTRACE(
 
   Number of cores for parallel processing. `NULL` (the default) uses the
   process OpenMP team for the C++ kernels and one worker for the
-  CytoTRACE2 backend.
+  CytoTRACE2 package.
 
 - backend:
 
@@ -174,38 +172,38 @@ Model data: <https://github.com/mengxu98/datasets/tree/main/CytoTRACE2>
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-11-10 10:12:02] Start standard processing workflow...
-#> ℹ [2026-11-10 10:12:02] Checking a list of <Seurat>...
-#> ! [2026-11-10 10:12:02] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-11-10 10:12:02] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-11-10 10:12:02] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-10 10:12:03] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-10 10:12:03] Number of available HVF: 2000
-#> ℹ [2026-11-10 10:12:03] Finished check
-#> ℹ [2026-11-10 10:12:03] Perform `ScaleData()`
-#> ℹ [2026-11-10 10:12:03] Perform pca linear dimension reduction
-#> ℹ [2026-11-10 10:12:03] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-11-10 10:12:04] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-10 10:12:04] Reorder clusters...
-#> ℹ [2026-11-10 10:12:04] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-10 10:12:04] Perform umap nonlinear dimension reduction
-#> ✔ [2026-11-10 10:12:13] Standard processing workflow completed
+#> ℹ [2026-11-11 05:06:30] Start standard processing workflow...
+#> ℹ [2026-11-11 05:06:30] Checking a list of <Seurat>...
+#> ! [2026-11-11 05:06:30] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-11 05:06:30] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-11 05:06:30] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-11 05:06:30] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-11 05:06:30] Number of available HVF: 2000
+#> ℹ [2026-11-11 05:06:30] Finished check
+#> ℹ [2026-11-11 05:06:30] Perform `ScaleData()`
+#> ℹ [2026-11-11 05:06:30] Perform pca linear dimension reduction
+#> ℹ [2026-11-11 05:06:31] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-11-11 05:06:31] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-11 05:06:31] Reorder clusters...
+#> ℹ [2026-11-11 05:06:32] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-11 05:06:32] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-11 05:06:40] Standard processing workflow completed
 pancreas_sub <- RunCytoTRACE(
   pancreas_sub,
   species = "Mus_musculus",
   backend = "cpp"
 )
-#> ◌ [2026-11-10 10:12:13] Running CytoTRACE2
-#> ℹ [2026-11-10 10:12:13] Extracting expression matrix from `assay = RNA, layer = counts`
-#> ◌ [2026-11-10 10:12:13] Running CytoTRACE2 with `backend = cpp`
-#> ℹ [2026-11-10 10:12:13] Loading cached: CytoTRACE2 version: 1.1.0
-#> ℹ [2026-11-10 10:12:13] Loading model from /home/runner/.local/share/R/scop/CytoTRACE2
-#> ℹ [2026-11-10 10:12:15] Dataset contains 15998 genes and 1000 cells.
-#> ℹ [2026-11-10 10:12:15] Running on 1 subsample
-#> ℹ [2026-11-10 10:12:15] Using 1 core
-#> ℹ [2026-11-10 10:12:15] 12486 input genes mapped to model genes.
-#> ℹ [2026-11-10 10:12:15] Building results
-#> ✔ [2026-11-10 10:12:25] CytoTRACE2 computed successfully
+#> ◌ [2026-11-11 05:06:40] Running CytoTRACE2
+#> ℹ [2026-11-11 05:06:40] Extracting expression matrix from `assay = RNA, layer = counts`
+#> ◌ [2026-11-11 05:06:40] Running CytoTRACE2 with `backend = cpp`
+#> ℹ [2026-11-11 05:06:40] Loading cached: CytoTRACE2 version: 1.1.0
+#> ℹ [2026-11-11 05:06:40] Loading model from /home/runner/.local/share/R/scop/CytoTRACE2
+#> ℹ [2026-11-11 05:06:43] Dataset contains 15998 genes and 1000 cells.
+#> ℹ [2026-11-11 05:06:43] Running on 1 subsample
+#> ℹ [2026-11-11 05:06:43] Using 1 core
+#> ℹ [2026-11-11 05:06:43] 12486 input genes mapped to model genes.
+#> ℹ [2026-11-11 05:06:43] Building results
+#> ✔ [2026-11-11 05:06:53] CytoTRACE2 computed successfully
 
 CytoTRACEPlot(
   pancreas_sub,

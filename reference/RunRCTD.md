@@ -26,10 +26,10 @@ RunRCTD(
   create_rctd_params = list(),
   run_rctd_params = list(),
   verbose = TRUE,
-  ...,
   coordinate_space = c("raw", "legacy_display"),
   tool_name = "RCTD",
-  srt = NULL
+  srt = NULL,
+  ...
 )
 ```
 
@@ -119,10 +119,6 @@ RunRCTD(
 
   Whether to print the message. Default is `TRUE`.
 
-- ...:
-
-  Additional parameters passed to the RCTD run step.
-
 - coordinate_space:
 
   Coordinate space used for distance-sensitive input. The default is raw
@@ -138,6 +134,10 @@ RunRCTD(
 
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
+
+- ...:
+
+  Arguments passed to other functions.
 
 ## Value
 
@@ -199,19 +199,19 @@ spatial <- RunRCTD(
 #> get_de_genes: total DE genes: 35
 #> fitBulk: decomposing bulk
 #> chooseSigma: using initial Q_mat with sigma =  1
-#> Likelihood value: 4605.44465250976
+#> Likelihood value: 4605.44465250967
 #> Sigma value:  0.84
-#> Likelihood value: 4509.24334104217
+#> Likelihood value: 4509.24334104243
 #> Sigma value:  0.69
-#> Likelihood value: 4433.74437551853
+#> Likelihood value: 4433.7443755185
 #> Sigma value:  0.61
-#> Likelihood value: 4402.86433424713
+#> Likelihood value: 4402.86433424729
 #> Sigma value:  0.53
-#> Likelihood value: 4381.61430997104
+#> Likelihood value: 4381.61430997094
 #> Sigma value:  0.46
-#> Likelihood value: 4373.21937275516
+#> Likelihood value: 4373.21937275515
 #> Sigma value:  0.45
-#> Likelihood value: 4372.94033462064
+#> Likelihood value: 4372.94033462053
 #> Sigma value:  0.45
 SpatialDeconvolutionPlot(
   spatial,

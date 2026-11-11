@@ -93,4 +93,16 @@ RunCellRankEnrichment(
 ## Value
 
 The Seurat object with results under
-\`srt@tools\$CellRank\$enrichment\[\[lineage\]\]\`.
+\`object@tools\$CellRank\$enrichment\[\[lineage\]\]\`. Each table in
+\`databases\` includes \`Groups\` and \`Database\` columns accepted by
+\[EnrichmentPlot\].
+
+## Details
+
+Plot a stored database table with \`EnrichmentPlot(res = list(enrichment
+= table), db = "GO_BP")\`. The \`Groups\` column identifies the fitted
+gene module. PDF exports use the same \[EnrichmentPlot\] interface.
+
+## See also
+
+\[EnrichmentPlot\], \[RunCellRankTrends\], \[RunDynamicEnrichment\]

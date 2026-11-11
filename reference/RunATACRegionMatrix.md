@@ -1,75 +1,94 @@
 # Count strand-oriented insertion endpoints around ATAC regions
 
-Build group-specific region-by-position matrices from indexed fragments
-without subsampling. This explicit SCOP counter is not Signac
-RegionMatrix. Repeated endpoints are counted with multiplicity.
+Build group-specific region-by-position matrices from local indexed
+fragments, without subsampling cells or regions. Repeated endpoints are
+counted with their multiplicity. This is an explicit SCOP endpoint
+counter, not a call to Signac's RegionMatrix.
 
 ## Usage
 
 ``` r
-RunATACRegionMatrix(object, regions, assay = NULL, group.by = NULL,
-  cells = NULL, upstream = 3000L, downstream = 3000L, bin.size = 50L,
-  max.entries = 5e7, verbose = TRUE)
+RunATACRegionMatrix(
+  object,
+  regions,
+  assay = NULL,
+  group.by = NULL,
+  cells = NULL,
+  upstream = 3000L,
+  downstream = 3000L,
+  bin.size = 50L,
+  max.entries = 5e+07,
+  verbose = TRUE
+)
 ```
 
 ## Arguments
 
 - object:
 
-  Seurat object with a validated ChromatinAssay, local indexed fragments
-  and explicit cell-to-barcode mappings.
+  A Seurat object containing a validated ChromatinAssay with local
+  indexed fragments and explicit cell-to-barcode mappings.
 
 - regions:
 
-  Non-empty GRanges in 1-based closed coordinates. The center is start +
-  floor((width - 1)/2). Minus-strand regions are reversed. Genomic
-  intervals and names, if supplied, must be unique.
+  Non-empty GRanges in 1-based closed coordinates. Each region is
+  centered at start + floor((width - 1)/2). Minus-strand regions are
+  reversed; unstranded regions use genomic orientation. Duplicate
+  genomic intervals are rejected even when their names differ. Unique
+  names are used as row IDs when provided, otherwise genomic coordinate
+  IDs are used.
 
 - assay:
 
-  Chromatin assay; NULL selects the active assay.
+  Chromatin assay; defaults to the active assay.
 
 - group.by:
 
-  Metadata grouping column; NULL uses active identities.
+  Metadata column for grouping. NULL uses active identities.
 
 - cells:
 
-  Unique source-assay cells; NULL includes all.
+  Unique source-assay cells; NULL includes all assay cells.
 
-- upstream,downstream:
+- upstream, downstream:
 
-  Non-negative integer flank widths. Windows must fit inside known
-  chromosome boundaries.
+  Non-negative integer distances from the center. Windows must fit
+  entirely within known chromosome boundaries; no trimming or
+  reference/chromosome conversion is performed.
 
 - bin.size:
 
-  Positive integer positional bin width. A shorter last bin is retained.
+  Positive integer width of positional bins. The last bin may be
+  shorter; actual widths and centers are returned.
 
 - max.entries:
 
-  Dense-output entry guard across all groups. Errors rather than
-  sampling when exceeded; transient single-query memory is not capped.
+  Maximum number of dense output entries across all groups. Exceeding
+  this explicit memory guard errors rather than sampling. This guards
+  output size, not transient memory for a single dense fragment query.
 
 - verbose:
 
   Whether to print progress messages.
 
-## Details
-
-A BED fragment \[start,end) contributes endpoints start + 1 and end.
-Only endpoints inside each window count. Column 5 is not a weight; no
-extra Tn5 shift, bias correction or depth normalization is applied.
-Overlapping windows can count the same endpoint. The source object is
-unchanged. Group signal is descriptive, not a replicate-level
-statistical test or evidence of binding.
-
 ## Value
 
-A scop_atac_regions list with raw matrices, regions, bin positions and
-widths, selected group cell counts and a receipt.
+A scop_atac_regions list with matrices (one raw count matrix per group),
+regions, bin positions/widths, cells.per.group, and a receipt.
+
+## Details
+
+A BED fragment \[start,end) contributes two endpoints, start + 1 and
+end, in 1-based coordinates. Only endpoints inside each region window
+are counted. Read-support column 5 is not a weight. There is no extra
+Tn5 shift, bias correction, fragment-length weighting or depth
+normalization. Overlapping windows can count the same endpoint. Grouping
+is descriptive, not a replicate-level statistical test; library-size and
+cell-composition confounding remain. Declared reference contigs absent
+from a file produce zero counts for that file, not evidence of
+biological inaccessibility. The caller's object is not modified.
 
 ## See also
 
-[`ATACRegionHeatmap`](https://mengxu98.github.io/scop/reference/ATACRegionHeatmap.md),
-[`ATACRegionPlot`](https://mengxu98.github.io/scop/reference/ATACRegionHeatmap.md)
+[`ATACRegionHeatmap()`](https://mengxu98.github.io/scop/reference/ATACRegionHeatmap.md),
+[`ATACRegionPlot()`](https://mengxu98.github.io/scop/reference/ATACRegionHeatmap.md)

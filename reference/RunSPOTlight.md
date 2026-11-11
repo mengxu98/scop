@@ -27,8 +27,8 @@ RunSPOTlight(
   tool_name = "SPOTlight",
   store_results = TRUE,
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 ```
 
@@ -109,14 +109,14 @@ RunSPOTlight(
 
   Whether to print the message. Default is `TRUE`.
 
-- ...:
-
-  Additional parameters passed to `SPOTlight::SPOTlight()`.
-
 - srt:
 
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
+
+- ...:
+
+  Arguments passed to other functions.
 
 ## Value
 

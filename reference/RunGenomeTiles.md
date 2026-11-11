@@ -1,55 +1,72 @@
 # Count fragments in fixed-width genome tiles
 
-Generate non-overlapping genome tiles and delegate sparse fragment
-counting to RecountATAC. No peak universe is required to define tiles;
-the source assay provides fragment mappings and reference provenance.
+Construct explicit non-overlapping genome tiles and delegate validated
+sparse fragment counting to
+[`RecountATAC()`](https://mengxu98.github.io/scop/reference/RecountATAC.md).
+No peaks are needed for defining the tile universe; the source
+ChromatinAssay supplies verified fragment mappings and reference
+provenance.
 
 ## Usage
 
 ``` r
-RunGenomeTiles(object, assay = NULL, seqlengths = NULL, chromosomes = NULL,
-  bin.size = 5000L, cells = NULL, new.assay = NULL, process_n = 2000L,
-  max.tiles = 2000000L, verbose = TRUE)
+RunGenomeTiles(
+  object,
+  assay = NULL,
+  seqlengths = NULL,
+  chromosomes = NULL,
+  bin.size = 5000L,
+  cells = NULL,
+  new.assay = NULL,
+  process_n = 2000L,
+  max.tiles = 2000000L,
+  verbose = TRUE
+)
 ```
 
 ## Arguments
 
 - object:
 
-  Seurat object with validated ChromatinAssay and fragments.
+  A Seurat object with a validated ChromatinAssay and fragments.
 
 - assay:
 
-  Source assay; NULL selects active assay.
+  Source chromatin assay; NULL uses the active assay.
 
 - seqlengths:
 
-  Named positive integer reference lengths, or NULL to use known assay
-  lengths. Supplied lengths must agree with known source lengths.
+  Optional named positive integer chromosome lengths. NULL uses declared
+  assay lengths, which must all be known for selected contigs. Supplied
+  lengths must agree with known assay lengths. Names are not used to
+  guess assembly or chromosome style.
 
 - chromosomes:
 
-  Optional unique contigs in output order.
+  Optional unique contig names in desired output order.
 
 - bin.size:
 
-  Positive integer tile width; last tile per chromosome is truncated.
+  Positive integer tile width. The last tile per chromosome is truncated
+  at that chromosome's end, never dropped or extended.
 
 - cells:
 
-  Source-assay cells; see RecountATAC.
+  Selected source-assay cells; see
+  [`RecountATAC()`](https://mengxu98.github.io/scop/reference/RecountATAC.md).
 
 - new.assay:
 
-  Unused assay name for writeback; NULL returns a list.
+  Optional unused assay name; NULL returns counts/ranges/receipt.
 
 - process_n:
 
-  Native FeatureMatrix chunk size.
+  FeatureMatrix chunk size; see
+  [`RecountATAC()`](https://mengxu98.github.io/scop/reference/RecountATAC.md).
 
 - max.tiles:
 
-  Positive upper bound on tile count before allocation.
+  Positive integer upper bound on tile count before allocation.
 
 - verbose:
 
@@ -57,11 +74,12 @@ RunGenomeTiles(object, assay = NULL, seqlengths = NULL, chromosomes = NULL,
 
 ## Value
 
-RecountATAC's return value with tile parameters in its receipt. Counts
-are overlapping fragment records, not insertion endpoints or unique
-fragments across bins. A fragment crossing a boundary can count in both
-bins.
+The
+[`RecountATAC()`](https://mengxu98.github.io/scop/reference/RecountATAC.md)
+return value with tile parameters in its receipt. Counts are overlapping
+fragment records, not insertion endpoints or unique fragments across
+bins. A fragment crossing a boundary can count in two bins.
 
 ## See also
 
-[`RecountATAC`](https://mengxu98.github.io/scop/reference/RecountATAC.md)
+[`RecountATAC()`](https://mengxu98.github.io/scop/reference/RecountATAC.md)

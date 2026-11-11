@@ -269,7 +269,7 @@ data.frame(
   bytes = file.info(list.files(output_dir, full.names = TRUE))$size
 )
 #>                file    bytes
-#> 1      analysis.rds 48008450
+#> 1      analysis.rds 48007421
 #> 2 cell-metadata.csv   186170
 ```
 
@@ -327,9 +327,9 @@ build_receipt <- data.frame(
 )
 build_receipt
 #>                article               built_utc  scop     R
-#> 1 integration-workflow 2026-11-10 10:57:59 UTC 0.9.2 4.6.2
+#> 1 integration-workflow 2026-11-11 05:55:54 UTC 0.9.2 4.6.2
 #>                            source_revision source_has_local_changes
-#> 1 1ae6058d875064a3d9b1ef3b3ceca07f248c4796                    FALSE
+#> 1 25b081ffa1fc454a71183a45263ccf5bf161b5eb                    FALSE
 #>                        article_md5 R_seed cells_retained genes_in_active_assay
 #> 1 258fa719de827f5739c0606e0dfd1e7c     11           1600                 12932
 utils::write.csv(build_receipt, file.path(output_dir, "build-receipt.csv"),
@@ -387,7 +387,7 @@ sessionInfo()
 #> [52] reshape2_1.4.5      pbapply_1.7-5       cachem_1.1.0       
 #> [55] stringr_1.6.0       parallel_4.6.2      proxyC_0.6.0       
 #> [58] matrixStats_1.5.0   vctrs_0.7.3         Matrix_1.7-6       
-#> [61] jsonlite_2.0.0      patchwork_1.3.2     thisplot_0.4.6     
+#> [61] jsonlite_2.0.0      patchwork_1.3.2     thisplot_0.4.7     
 #> [64] ggrepel_0.9.8       irlba_2.4.1         scattermore_1.2    
 #> [67] listenv_1.1.0       systemfonts_1.3.2   harmony_2.1.0      
 #> [70] jquerylib_0.1.4     pls_2.9-0           glue_1.8.1         

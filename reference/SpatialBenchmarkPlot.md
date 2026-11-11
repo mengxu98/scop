@@ -37,8 +37,8 @@ SpatialBenchmarkPlot(
   theme_use = "theme_scop",
   theme_args = list(),
   verbose = TRUE,
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 ```
 
@@ -137,14 +137,14 @@ SpatialBenchmarkPlot(
 
   Whether to print the message. Default is `TRUE`.
 
-- ...:
-
-  The message to print.
-
 - srt:
 
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
+
+- ...:
+
+  Arguments passed to other functions.
 
 ## Value
 
@@ -181,5 +181,4 @@ SpatialBenchmarkPlot(
   features = c("MethodA_batch_LISI", "MethodB_batch_LISI"),
   plot_type = "boxplot"
 )
-
 ```

@@ -16,7 +16,7 @@ ScaleData(object, ...)
 
 - ...:
 
-  Passed to methods.
+  Arguments passed to other functions.
 
 ## Value
 

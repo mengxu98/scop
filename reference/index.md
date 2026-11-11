@@ -408,7 +408,7 @@
 - [`RunCellRank()`](https://mengxu98.github.io/scop/reference/RunCellRank.md)
   : Run CellRank analysis
 - [`CellRankPlot()`](https://mengxu98.github.io/scop/reference/CellRankPlot.md)
-  : Plot stored CellRank results
+  : Plot CellRank results
 - [`RunWOT()`](https://mengxu98.github.io/scop/reference/RunWOT.md) :
   Run WOT analysis
 - [`LineagePlot()`](https://mengxu98.github.io/scop/reference/LineagePlot.md)
@@ -532,7 +532,7 @@
 ### Network Inference
 
 - [`RunGRN()`](https://mengxu98.github.io/scop/reference/RunGRN.md) :
-  Infer gene regulatory networks with a selected backend method
+  Infer gene regulatory networks with a selected method
 - [`RunGRNBoost2()`](https://mengxu98.github.io/scop/reference/RunGRNBoost2.md)
   : Infer gene regulatory networks with GRNBoost2
 - [`RunGENIE3()`](https://mengxu98.github.io/scop/reference/RunGENIE3.md)
@@ -629,21 +629,20 @@
 - [`RunATACFootprint()`](https://mengxu98.github.io/scop/reference/RunATACFootprint.md)
   : Bias-corrected ATAC footprinting
 - [`ATACFootprintPlot()`](https://mengxu98.github.io/scop/reference/ATACFootprintPlot.md)
-  : Plot bias-corrected footprints
+  : Plot bias-corrected ATAC footprints
 - [`ATACMotifPlot()`](https://mengxu98.github.io/scop/reference/ATACMotifPlot.md)
   : Plot motif sequence logos from a selected ATAC assay
 - [`AddATACMotifs()`](https://mengxu98.github.io/scop/reference/AddATACMotifs.md)
-  : Add native motif matches and sequence statistics
+  : Add motif matches and sequence statistics
 - [`RunMotifEnrichment()`](https://mengxu98.github.io/scop/reference/RunMotifEnrichment.md)
   : Test motif enrichment within an explicit peak universe
 - [`RunChromVAR()`](https://mengxu98.github.io/scop/reference/RunChromVAR.md)
-  : Compute native chromVAR deviations from an explicit sequence
-  reference
+  : Compute chromVAR deviations from an explicit sequence reference
 
 ### Gene Activity and Peak-Gene Associations
 
 - [`RunATACCoaccessibility()`](https://mengxu98.github.io/scop/reference/RunATACCoaccessibility.md)
-  : Infer coaccessibility using native Cicero
+  : Infer peak coaccessibility with Cicero
 - [`RunGeneActivity()`](https://mengxu98.github.io/scop/reference/RunGeneActivity.md)
   : Quantify gene activity from indexed ATAC fragments
 - [`RunLinkPeaks()`](https://mengxu98.github.io/scop/reference/RunLinkPeaks.md)
@@ -716,9 +715,9 @@
 - [`SpatialNeighborhoodPlot()`](https://mengxu98.github.io/scop/reference/SpatialNeighborhoodPlot.md)
   : Spatial neighborhood plot
 - [`RunSpatialNetwork()`](https://mengxu98.github.io/scop/reference/RunSpatialNetwork.md)
-  : Build a native spatial network
+  : Build a spatial network
 - [`SpatialNetworkPlot()`](https://mengxu98.github.io/scop/reference/SpatialNetworkPlot.md)
-  : Plot a native spatial network
+  : Plot a spatial network
 - [`RunMistyR()`](https://mengxu98.github.io/scop/reference/RunMistyR.md)
   : Run mistyR multiview spatial modeling
 - [`MistyRPlot()`](https://mengxu98.github.io/scop/reference/MistyRPlot.md)
@@ -860,7 +859,7 @@
 - [`spe_to_srt()`](https://mengxu98.github.io/scop/reference/spe_to_srt.md)
   : Convert SpatialExperiment to Seurat
 - [`srt_to_giotto()`](https://mengxu98.github.io/scop/reference/srt_to_giotto.md)
-  : Convert Seurat to a native Giotto object
+  : Convert Seurat to a Giotto object
 - [`giotto_to_srt()`](https://mengxu98.github.io/scop/reference/giotto_to_srt.md)
   : Convert Giotto to Seurat
 
@@ -1006,7 +1005,7 @@
 - [`panc8_sub`](https://mengxu98.github.io/scop/reference/panc8_sub.md)
   : A subsetted version of human 'panc8' datasets
 - [`pancreas_sub`](https://mengxu98.github.io/scop/reference/pancreas_sub.md)
-  : A subsetted version of mouse 'pancreas' datasets
+  : A subsetted mouse 'pancreas' datasets
 - [`pbmcmultiome_sub`](https://mengxu98.github.io/scop/reference/pbmcmultiome_sub.md)
   : A small human PBMC multiome example dataset
 - [`ref_scMCA`](https://mengxu98.github.io/scop/reference/ref_scMCA.md)

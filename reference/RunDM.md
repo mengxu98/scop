@@ -52,7 +52,7 @@ RunDM(
 
 - ...:
 
-  Passed to `destiny::DiffusionMap`.
+  Arguments passed to other functions.
 
 - reduction:
 

@@ -138,7 +138,7 @@ WNN_integrate(
 
 - linear_reduction_params:
 
-  Named arguments for the linear reduction backend.
+  Named arguments for linear reduction.
 
 - force_linear_reduction:
 
@@ -195,17 +195,17 @@ random-number state is restored.
 ## Details
 
 Cells must represent paired measurements. RNA and ATAC preprocessing is
-followed by native multimodal neighbor construction. This function does
-not use batch labels to correct either modality. Specify assays
-explicitly after adding derived assays, for example
-`assay = c("RNA", "peaks")`. Both assays must contain the same cells as
-the object. Subset to verified paired cells explicitly before running
-WNN. Nonlinear reductions supported here are `"umap"`, `"umap-naive"`
-and `"fr"`; use [`character()`](https://rdrr.io/r/base/character.html)
-to retain graphs and clusters without computing an embedding. RNA uses
-the requested normalization and PCA. ATAC always uses TF-IDF and SVD,
-including when RNA uses SCT. `HVF` supplies RNA features; ATAC features
-are selected independently from accessibility counts.
+followed by multimodal neighbor construction. This function does not use
+batch labels to correct either modality. Specify assays explicitly after
+adding derived assays, for example `assay = c("RNA", "peaks")`. Both
+assays must contain the same cells as the object. Subset to verified
+paired cells explicitly before running WNN. Nonlinear reductions
+supported here are `"umap"`, `"umap-naive"` and `"fr"`; use
+[`character()`](https://rdrr.io/r/base/character.html) to retain graphs
+and clusters without computing an embedding. RNA uses the requested
+normalization and PCA. ATAC always uses TF-IDF and SVD, including when
+RNA uses SCT. `HVF` supplies RNA features; ATAC features are selected
+independently from accessibility counts.
 
 ## See also
 
@@ -225,10 +225,10 @@ paired <- WNN_integrate(
   nHVF = 100, neighbor_k = 10, nonlinear_reduction_dims = 2,
   verbose = FALSE
 )
-#> ℹ [2026-11-10 10:51:10] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-10 10:51:19] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-10 10:51:29] Reorder clusters...
-#> ℹ [2026-11-10 10:51:29] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-11 05:48:11] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-11 05:48:19] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-11 05:48:28] Reorder clusters...
+#> ℹ [2026-11-11 05:48:28] Skip `log1p()` because `layer = data` is not "counts"
 SeuratObject::Reductions(paired)
 #> [1] "RNApca"        "RNApcaUMAP2D"  "RNAUMAP2D"     "ATACsvd"      
 #> [5] "ATACsvdUMAP2D" "ATACUMAP2D"    "ATAClsi"       "WNNUMAP2D"    

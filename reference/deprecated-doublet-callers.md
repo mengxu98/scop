@@ -22,7 +22,7 @@ db_DoubletDetection(...)
 
 - ...:
 
-  Arguments forwarded unchanged to the replacement function.
+  Arguments passed to other functions.
 
 ## Value
 

@@ -34,8 +34,7 @@ GetAssayData5(object, layer = "counts", features = NULL, cells = NULL, ...)
 
 - ...:
 
-  Additional arguments passed to
-  [SeuratObject::GetAssayData](https://satijalab.github.io/seurat-object/reference/AssayData.html).
+  Arguments passed to other functions.
 
 - layer:
 

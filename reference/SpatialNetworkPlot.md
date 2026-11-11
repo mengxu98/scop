@@ -1,4 +1,4 @@
-# Plot a native spatial network
+# Plot a spatial network
 
 Plot a graph produced by \[RunSpatialNetwork()\]. The graph can be read
 from a Seurat object or supplied directly as
@@ -92,5 +92,4 @@ SpatialNetworkPlot(
   edge.linewidth = 0.15,
   pt.size = 0.8
 )
-
 ```

@@ -42,7 +42,7 @@ COMMOTPlot(
 
 - ...:
 
-  Arguments passed to the SCOP network plot for \`"network"\`.
+  Arguments passed to other functions.
 
 ## Value
 

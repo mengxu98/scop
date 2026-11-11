@@ -86,12 +86,12 @@ features, the assay name, and the type of assay.
 
 ## Details
 
-For chromatin assays with `HVF_source = "separate"`, native
+For chromatin assays with `HVF_source = "separate"`,
 [`Seurat::SelectIntegrationFeatures()`](https://satijalab.org/seurat/reference/SelectIntegrationFeatures.html)
 ranks peaks by the number of batches selecting them, then by their
 median variable-feature rank. The `nHVF` cap is also limited to the
 smallest per-batch variable-feature count; `HVF_min_intersection` is
-applied to the ranked selection. This preserves native within-batch peak
+applied to the ranked selection. This preserves within-batch peak
 frequency ranking instead of sorting tied peak IDs.
 
 ## Examples

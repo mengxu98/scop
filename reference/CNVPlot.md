@@ -24,8 +24,8 @@ CNVPlot(
   subtitle = NULL,
   theme_use = "theme_scop",
   theme_args = list(),
-  ...,
-  srt = NULL
+  srt = NULL,
+  ...
 )
 ```
 
@@ -85,14 +85,14 @@ CNVPlot(
 
   Theme name or function, plus extra theme arguments.
 
-- ...:
-
-  Additional parameters forwarded to the underlying plotting function.
-
 - srt:
 
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
+
+- ...:
+
+  Arguments passed to other functions.
 
 ## Value
 
@@ -107,12 +107,36 @@ A plot object. For `"heatmap"`, returns a `ComplexHeatmap` object; for
 
 ``` r
 if (FALSE) { # \dontrun{
-srt <- RunCNV(srt, method = "copykat", genome = "hg38")
+srt <- RunCNV(
+  srt,
+  method = "copykat",
+  genome = "hg38"
+)
 
-CNVPlot(srt, plot_type = "heatmap", group.by = "CNV_prediction")
-CNVPlot(srt, plot_type = "dim", value = "CNV_prediction")
-CNVPlot(srt, plot_type = "dim", value = "CNV_score")
-CNVPlot(srt, plot_type = "bar", group.by = "seurat_clusters")
-CNVPlot(srt, plot_type = "tree", cluster_tree_by = "cell")
+CNVPlot(
+  srt,
+  plot_type = "heatmap",
+  group.by = "CNV_prediction"
+)
+CNVPlot(
+  srt,
+  plot_type = "dim",
+  value = "CNV_prediction"
+)
+CNVPlot(
+  srt,
+  plot_type = "dim",
+  value = "CNV_score"
+)
+CNVPlot(
+  srt,
+  plot_type = "bar",
+  group.by = "seurat_clusters"
+)
+CNVPlot(
+  srt,
+  plot_type = "tree",
+  cluster_tree_by = "cell"
+)
 } # }
 ```

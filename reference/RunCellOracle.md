@@ -174,11 +174,11 @@ dimnames. No live Python object is stored.
 ## Details
 
 Requires official `celloracle==0.20.0`, either in a Linux/macOS Python
-environment or in `docker_container`. Native Windows Python is not
-supported. Prepare the environment or container explicitly before
-analysis. The raw import performs CellOracle's own log transformation;
-no additional library-size normalization is introduced. PCA, imputation,
-network inference, edge filtering, coefficient fitting, simulation and
+environment or in `docker_container`. Windows Python is not supported.
+Prepare the environment or container explicitly before analysis. The raw
+import performs CellOracle's own log transformation; no additional
+library-size normalization is introduced. PCA, imputation, network
+inference, edge filtering, coefficient fitting, simulation and
 projection all run in CellOracle. Network edge p-values are not
 perturbation-effect p-values. Results are predictions, not experimental
 knockout measurements.
@@ -207,7 +207,8 @@ data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 # Supply an official TF-info parquet prepared for the matching species.
 pancreas_sub <- RunCellOracle(
-  pancreas_sub, perturbation = c(Pdx1 = 0), group.by = "CellType",
+  pancreas_sub,
+  perturbation = c(Pdx1 = 0), group.by = "CellType",
   base_grn = "mouse_promoter_base_GRN.parquet",
   stage_args = list(
     imputation = list(k = 20L, n_pca_dims = 20L),
@@ -216,5 +217,6 @@ pancreas_sub <- RunCellOracle(
   )
 )
 CellOraclePlot(pancreas_sub, plot_type = "quiver")
+CellOraclePlot(pancreas_sub, plot_type = "effect")
 } # }
 ```

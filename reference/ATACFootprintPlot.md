@@ -1,23 +1,30 @@
-# Plot bias-corrected footprints
+# Plot bias-corrected ATAC footprints
 
-Plot bias-corrected footprints.
+Plot bias-corrected ATAC footprints
 
 ## Usage
 
 ``` r
-ATACFootprintPlot(object, motifs, assay = NULL, group.by = NULL,
-  normalization = "subtract", show.expected = TRUE, ...)
+ATACFootprintPlot(
+  object,
+  motifs,
+  assay = NULL,
+  group.by = NULL,
+  normalization = "subtract",
+  show.expected = TRUE,
+  ...
+)
 ```
 
 ## Arguments
 
 - object:
 
-  Seurat object returned by RunATACFootprint.
+  A Seurat object returned by RunATACFootprint.
 
 - motifs:
 
-  Unique stored footprint IDs.
+  Unique footprint keys.
 
 - assay:
 
@@ -25,11 +32,11 @@ ATACFootprintPlot(object, motifs, assay = NULL, group.by = NULL,
 
 - group.by:
 
-  Complete cell metadata column, or identities when NULL.
+  Metadata column, or NULL for identities.
 
 - normalization:
 
-  Native subtract, divide, or NULL normalization.
+  Signac normalization: \`subtract\`, \`divide\`, or NULL.
 
 - show.expected:
 
@@ -37,13 +44,8 @@ ATACFootprintPlot(object, motifs, assay = NULL, group.by = NULL,
 
 - ...:
 
-  Additional Signac::PlotFootprint arguments.
+  Arguments passed to other functions.
 
 ## Value
 
-Native ggplot or patchwork object.
-
-## Details
-
-Missing or stale cell/peak receipts are rejected. This plot does not
-establish TF occupancy.
+A ggplot/patchwork object from Signac.

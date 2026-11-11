@@ -30,9 +30,8 @@ SCENICPlot(
   assay = "scenic",
   layer = "data",
   plot_type = c("rss_rank", "rss_heatmap", "rss_dotplot", "heatmap_dotplot",
-    "activity_heatmap", "activity_violin", "activity_dim", "eregulon_dim",
-    "activity_cor_dumbbell", "regulon_size", "network_graph", "network", "egrn",
-    "overlap", "target_bar", "coverage"),
+    "eregulon_dim", "activity_cor_dumbbell", "regulon_size", "network_graph", "network",
+    "egrn", "overlap", "target_bar", "coverage"),
   features = NULL,
   reduction = NULL,
   dims = c(1, 2),
@@ -47,7 +46,6 @@ SCENICPlot(
   top_n = 12,
   regulon_label = c("auto", "regulon", "tf"),
   rss_rank_yscale = c("shared", "free"),
-  activity_scale = FALSE,
   rss_scale = FALSE,
   heatmap_show_row_names = FALSE,
   heatmap_show_column_names = FALSE,
@@ -67,11 +65,9 @@ SCENICPlot(
   heatmap_args = list(),
   palette = "RdYlBu",
   palcolor = NULL,
-  compare_expression = FALSE,
   expression_assay = NULL,
   expression_layer = "data",
   expression_scale = TRUE,
-  violin_args = list(),
   dim_args = list(),
   atac_assay = NULL,
   extend.upstream = 50000,
@@ -101,11 +97,11 @@ SCENICPlot(
   label_size = 3,
   label_max_overlaps = Inf,
   verbose = TRUE,
-  ...,
   srt = NULL,
   theme_use = "theme_scop",
   theme_args = list(),
-  network_display_targets = Inf
+  network_display_targets = Inf,
+  ...
 )
 ```
 
@@ -134,8 +130,7 @@ SCENICPlot(
 - plot_type:
 
   One of `"rss_rank"`, `"rss_heatmap"`, `"rss_dotplot"`,
-  `"heatmap_dotplot"`, `"activity_heatmap"`, `"activity_violin"`,
-  `"activity_dim"`, `"eregulon_dim"`, `"activity_cor_dumbbell"`,
+  `"heatmap_dotplot"`, `"eregulon_dim"`, `"activity_cor_dumbbell"`,
   `"regulon_size"`, `"network"`, `"network_graph"`, `"egrn"`,
   `"overlap"`, `"target_bar"`, `"coverage"`.
 
@@ -145,7 +140,7 @@ SCENICPlot(
 
 - reduction:
 
-  Reduction for `"activity_dim"` / `"eregulon_dim"`.
+  Reduction for `"eregulon_dim"`.
 
 - dims:
 
@@ -200,10 +195,6 @@ SCENICPlot(
   Use a `"shared"` y-axis across RSS rank panels for direct score
   comparison, or `"free"` for the legacy per-panel scale.
 
-- activity_scale:
-
-  Z-score regulons in `"activity_heatmap"`.
-
 - rss_scale:
 
   Z-score regulons in `"rss_heatmap"`.
@@ -242,22 +233,15 @@ SCENICPlot(
 
 - heatmap_limits:
 
-  Color-scale limits for RSS/activity heatmaps.
+  Color-scale limits for RSS heatmaps.
 
 - heatmap_args:
 
-  Extra arguments for
-  [`GroupHeatmap()`](https://mengxu98.github.io/scop/reference/GroupHeatmap.md)
-  /
-  [`FeatureHeatmap()`](https://mengxu98.github.io/scop/reference/FeatureHeatmap.md).
+  Extra arguments for RSS and overlap heatmaps.
 
 - palette, palcolor:
 
   Palette for RSS, size, target, and network colors.
-
-- compare_expression:
-
-  Add TF expression next to `"activity_dim"`.
 
 - expression_assay, expression_layer:
 
@@ -266,12 +250,6 @@ SCENICPlot(
 - expression_scale:
 
   Z-score TF expression in `"heatmap_dotplot"`.
-
-- violin_args:
-
-  Extra arguments for
-  [`FeatureStatPlot()`](https://mengxu98.github.io/scop/reference/FeatureStatPlot.md)
-  in `"activity_violin"`.
 
 - dim_args:
 
@@ -335,7 +313,7 @@ SCENICPlot(
 - combine:
 
   Combine plots with
-  [patchwork](https://patchwork.data-imaginist.com/reference/patchwork-package.html).
+  [`patchwork::wrap_plots()`](https://patchwork.data-imaginist.com/reference/wrap_plots.html).
   `combine = FALSE` returns a list of ggplots.
 
 - ncol:
@@ -400,10 +378,6 @@ SCENICPlot(
 
   Print messages.
 
-- ...:
-
-  Extra heatmap arguments such as `width` and `height`.
-
 - srt:
 
   Deprecated alias for `object`; supply exactly one of the two. It will
@@ -423,16 +397,35 @@ SCENICPlot(
   `max_targets` and `max_edges`; the actual display subset is in
   `plot_data$display_edges` and `plot_data$display_nodes`.
 
+- ...:
+
+  Arguments passed to other functions.
+
 ## Value
 
 Plot, or a list with `rss_matrix`, `rank_table`, `top_table`, `plots`,
 and `plot` when `return_data = TRUE`.
 
+## Details
+
+For ordinary activity heatmaps, distributions, and embeddings, use
+[GroupHeatmap](https://mengxu98.github.io/scop/reference/GroupHeatmap.md),
+[FeatureStatPlot](https://mengxu98.github.io/scop/reference/FeatureStatPlot.md),
+and
+[FeatureDimPlot](https://mengxu98.github.io/scop/reference/FeatureDimPlot.md)
+with the activity assay created by the analysis function. Use its stored
+feature names from `rownames(object[["scenic"]])` because Seurat may
+normalize regulon names. `"eregulon_dim"` retains the paired
+TF-expression, gene-activity, and available region-activity comparison.
+
 ## See also
 
 [RunSCENIC](https://mengxu98.github.io/scop/reference/RunSCENIC.md),
 [RunSCENICPlus](https://mengxu98.github.io/scop/reference/RunSCENICPlus.md),
-[SCENICPlusPlot](https://mengxu98.github.io/scop/reference/SCENICPlusPlot.md)
+[SCENICPlusPlot](https://mengxu98.github.io/scop/reference/SCENICPlusPlot.md),
+[GroupHeatmap](https://mengxu98.github.io/scop/reference/GroupHeatmap.md),
+[FeatureStatPlot](https://mengxu98.github.io/scop/reference/FeatureStatPlot.md),
+[FeatureDimPlot](https://mengxu98.github.io/scop/reference/FeatureDimPlot.md)
 
 ## Examples
 
@@ -448,10 +441,23 @@ pancreas_sub <- RunSCENIC(
 )
 scenic_rss <- SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "rss_rank")
 example_tfs <- unique(scenic_rss$top_table$TF)[1:3]
+regulons <- head(rownames(pancreas_sub[["scenic"]]), 6)
+GroupHeatmap(
+  pancreas_sub, group.by = "CellType", features = regulons,
+  assay = "scenic", layer = "data", exp_method = "raw",
+  lib_normalize = FALSE
+)$plot
+FeatureStatPlot(
+  pancreas_sub, group.by = "CellType", stat.by = regulons,
+  assay = "scenic", layer = "data", plot_type = "violin"
+)
+FeatureDimPlot(
+  pancreas_sub, features = regulons, assay = "scenic",
+  layer = "data", reduction = "UMAP"
+)
+
 SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "heatmap_dotplot")
 SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "network", features = example_tfs)
 SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "network_graph", features = example_tfs)
-SCENICPlusPlot(pancreas_sub, group.by = "CellType", plot_type = "egrn", features = example_tfs)
-SCENICPlusPlot(pancreas_sub, group.by = "CellType", plot_type = "coverage", features = example_tfs)
 } # }
 ```

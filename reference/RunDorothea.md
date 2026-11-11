@@ -89,7 +89,7 @@ RunDorothea(
 
 - method:
 
-  Activity inference backend from `decoupleR`.
+  Activity inference method from `decoupleR`.
 
 - minsize:
 
@@ -165,7 +165,7 @@ pancreas_sub <- RunStandardWorkflow(
   pancreas_sub,
   verbose = FALSE
 )
-#> ℹ [2026-11-10 10:15:08] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-11 05:09:55] Skip `log1p()` because `layer = data` is not "counts"
 
 pancreas_sub <- RunDorothea(
   pancreas_sub,
@@ -175,9 +175,9 @@ pancreas_sub <- RunDorothea(
   method = "ulm",
   minsize = 5
 )
-#> ℹ [2026-11-10 10:15:17] Run "DoRothEA"/decoupleR with 12895 regulon edges
-#> ℹ [2026-11-10 10:15:27] "DoRothEA" TF activity scores stored in assay "dorothea"
-#> ℹ [2026-11-10 10:15:28] "DoRothEA" TF activity scores stored in <Seurat> metadata
+#> ℹ [2026-11-11 05:10:03] Run "DoRothEA"/decoupleR with 12895 regulon edges
+#> ℹ [2026-11-11 05:10:14] "DoRothEA" TF activity scores stored in assay "dorothea"
+#> ℹ [2026-11-11 05:10:14] "DoRothEA" TF activity scores stored in <Seurat> metadata
 
 pancreas_sub@tools$Dorothea$regulon_summary
 #>   n_tfs n_targets n_edges confidence
@@ -217,7 +217,7 @@ DorotheaPlot(
   features = "Sox9",
   plot_type = "dim"
 )
-#> ℹ [2026-11-10 10:15:29] Draw "DoRothEA" embedding plots for 1 TFs
+#> ℹ [2026-11-11 05:10:16] Draw "DoRothEA" embedding plots for 1 TFs
 
 DorotheaPlot(
   pancreas_sub,
@@ -227,16 +227,17 @@ DorotheaPlot(
   plot_type = "bar",
   top_n = 20
 )
-#> ℹ [2026-11-10 10:15:30] Compare "DoRothEA" TF activity: "Endocrine" vs "Ductal"
+#> ℹ [2026-11-11 05:10:17] Compare "DoRothEA" TF activity: "Endocrine" vs "Ductal"
 
-ht <- DorotheaPlot(
+GroupHeatmap(
   pancreas_sub,
   group.by = "CellType",
-  plot_type = "heatmap",
-  top_n = 20
-)
-#> ℹ [2026-11-10 10:15:30] Draw "DoRothEA" TF activity heatmap for 20 TFs
-ht$plot
+  features = tf_use,
+  assay = "dorothea",
+  layer = "data",
+  exp_method = "raw",
+  lib_normalize = FALSE
+)$plot
 
 DorotheaPlot(
   pancreas_sub,
@@ -246,8 +247,8 @@ DorotheaPlot(
   features = "Sox9",
   plot_type = "targets"
 )
-#> ! [2026-11-10 10:15:31] Dropping 3 "Sox9" targets missing from assay "RNA"
-#> ℹ [2026-11-10 10:15:31] Draw "DoRothEA" regulon-target volcano for "Sox9" (10 targets)
+#> ! [2026-11-11 05:10:18] Dropping 3 "Sox9" targets missing from assay "RNA"
+#> ℹ [2026-11-11 05:10:18] Draw "DoRothEA" regulon-target volcano for "Sox9" (10 targets)
 
 
 # A RunGRN-compatible unsigned network can be passed directly.
@@ -266,7 +267,7 @@ pancreas_sub <- RunDorothea(
   add_meta = FALSE,
   verbose = FALSE
 )
-#> ℹ [2026-11-10 10:15:31] The supplied network is unsigned; "importance" is used as positive edge weight. Scores represent target-program activity, not signed TF activation or repression.
+#> ℹ [2026-11-11 05:10:18] The supplied network is unsigned; "importance" is used as positive edge weight. Scores represent target-program activity, not signed TF activation or repression.
 pancreas_sub@tools$Dorothea$network_info
 #> $source
 #> [1] "custom"
