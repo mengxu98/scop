@@ -201,7 +201,7 @@ pancreas_sub <- RunscTenifoldKnk(
   store_networks = TRUE,
   store_manifold = TRUE
 )
-#> ℹ [2026-11-11 05:48:42] Run the upstream scTenifoldKnk workflow
+#> ℹ [2026-11-11 12:30:52] Run the upstream scTenifoldKnk workflow
 #> 
 #> ── scTenifoldKnk Pipeline ──────────────────────────────────────────────────────
 #> ℹ Step 2/7: CPM normalization
@@ -221,7 +221,7 @@ pancreas_sub <- RunscTenifoldKnk(
 #> ℹ Computing distances for 301 genes
 #> ✔ Differential regulation complete: 7/301 significant genes (FDR < 0.05)
 #> ✔ scTenifoldKnk pipeline complete
-#> ✔ [2026-11-11 05:48:42] scTenifoldKnk results stored in `object@tools[[scTenifoldKnk]]`
+#> ✔ [2026-11-11 12:30:53] scTenifoldKnk results stored in `object@tools[[scTenifoldKnk]]`
 
 scTenifoldKnkPlot(pancreas_sub, plot_type = "qq")
 

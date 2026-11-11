@@ -41,6 +41,7 @@
     <li><a class="dropdown-item" href="../articles/integration-workflow.html">Data integration workflow</a></li>
     <li><a class="dropdown-item" href="../articles/integration-benchmark-workflow.html">Integration benchmark workflow</a></li>
     <li><a class="dropdown-item" href="../articles/cell-annotation-workflow.html">Cell annotation workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/cell-tree-advanced.html">Cell annotation trees with CIMA</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Interpret cell states</h6></li>
     <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
@@ -176,16 +177,16 @@ tissue.</p>
 <span></span>
 <span><span class="va">bench</span><span class="op">$</span><span class="va">summary</span></span>
 <span><span class="co">#&gt;        method      workflow ARI NMI purity runtime_s baseline_memory_mb</span></span>
-<span><span class="co">#&gt; 1  BayesSpace SpatialDomain   1   1      1    14.103           290.7188</span></span>
-<span><span class="co">#&gt; 2      BANKSY SpatialDomain  NA  NA     NA        NA                 NA</span></span>
-<span><span class="co">#&gt; 3 SmoothClust SpatialDomain   1   1      1     6.026           290.6797</span></span>
-<span><span class="co">#&gt;   peak_memory_mb memory_delta_mb n_evaluated n_clusters      status</span></span>
-<span><span class="co">#&gt; 1      1090.4102        799.6914          36          3     success</span></span>
-<span><span class="co">#&gt; 2             NA              NA           0         NA unavailable</span></span>
-<span><span class="co">#&gt; 3       972.6211        681.9414          36          3     success</span></span>
-<span><span class="co">#&gt;            error</span></span>
-<span><span class="co">#&gt; 1               </span></span>
-<span><span class="co">#&gt; 2 Banksy=missing</span></span>
+<span><span class="co">#&gt; 1  BayesSpace SpatialDomain   1   1      1    12.380           290.6562</span></span>
+<span><span class="co">#&gt; 2      BANKSY SpatialDomain  NA  NA     NA     4.926           290.5859</span></span>
+<span><span class="co">#&gt; 3 SmoothClust SpatialDomain   1   1      1     5.456           290.6797</span></span>
+<span><span class="co">#&gt;   peak_memory_mb memory_delta_mb n_evaluated n_clusters  status</span></span>
+<span><span class="co">#&gt; 1      1090.5977        799.9414          36          3 success</span></span>
+<span><span class="co">#&gt; 2       801.7969        511.2109           0         NA  failed</span></span>
+<span><span class="co">#&gt; 3       972.3438        681.6641          36          3 success</span></span>
+<span><span class="co">#&gt;                                                          error</span></span>
+<span><span class="co">#&gt; 1                                                             </span></span>
+<span><span class="co">#&gt; 2 lazy=TRUE only supports M=0 (no AGF). Use lazy=FALSE for AGF</span></span>
 <span><span class="co">#&gt; 3</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -209,14 +210,14 @@ tissue.</p>
 <span><span class="co">#&gt;  $ ARI               : num  1 NA 1</span></span>
 <span><span class="co">#&gt;  $ NMI               : num  1 NA 1</span></span>
 <span><span class="co">#&gt;  $ purity            : num  1 NA 1</span></span>
-<span><span class="co">#&gt;  $ runtime_s         : num  14.1 NA 6.03</span></span>
-<span><span class="co">#&gt;  $ baseline_memory_mb: num  291 NA 291</span></span>
-<span><span class="co">#&gt;  $ peak_memory_mb    : num  1090 NA 973</span></span>
-<span><span class="co">#&gt;  $ memory_delta_mb   : num  800 NA 682</span></span>
+<span><span class="co">#&gt;  $ runtime_s         : num  12.38 4.93 5.46</span></span>
+<span><span class="co">#&gt;  $ baseline_memory_mb: num  291 291 291</span></span>
+<span><span class="co">#&gt;  $ peak_memory_mb    : num  1091 802 972</span></span>
+<span><span class="co">#&gt;  $ memory_delta_mb   : num  800 511 682</span></span>
 <span><span class="co">#&gt;  $ n_evaluated       : int  36 0 36</span></span>
 <span><span class="co">#&gt;  $ n_clusters        : int  3 NA 3</span></span>
-<span><span class="co">#&gt;  $ status            : chr  "success" "unavailable" "success"</span></span>
-<span><span class="co">#&gt;  $ error             : chr  "" "Banksy=missing" ""</span></span>
+<span><span class="co">#&gt;  $ status            : chr  "success" "failed" "success"</span></span>
+<span><span class="co">#&gt;  $ error             : chr  "" "lazy=TRUE only supports M=0 (no AGF). Use lazy=FALSE for AGF" ""</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">bench</span><span class="op">$</span><span class="va">predictions</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   spot_id gold_standard     method prediction</span></span>
 <span><span class="co">#&gt; 1   spot1          left BayesSpace          1</span></span>

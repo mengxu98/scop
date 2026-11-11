@@ -15,6 +15,8 @@
   workflow](https://mengxu98.github.io/scop/articles/integration-benchmark-workflow.md):
 - [Cell annotation
   workflow](https://mengxu98.github.io/scop/articles/cell-annotation-workflow.md):
+- [Cell annotation trees with
+  CIMA](https://mengxu98.github.io/scop/articles/cell-tree-advanced.md):
 
 ### Explain cell states and changing programs
 

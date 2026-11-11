@@ -1,7 +1,6 @@
 # Run copy-number alteration inference
 
-Run expression-based single-cell or spatial copy-number alteration
-methods and store the results in a consistent SCOP result bundle.
+Run copy-number alteration inference
 
 ## Usage
 
@@ -28,6 +27,11 @@ RunCNV(
   ...
 )
 ```
+
+## Source
+
+The example uses expression and cell annotations from
+[GSE70630](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE70630).
 
 ## Arguments
 
@@ -79,12 +83,14 @@ RunCNV(
 - allele_counts:
 
   Allele count table for `"numbat"`. This is forwarded to
-  `numbat::run_numbat()` as `df_allele`.
+  [`numbat::run_numbat()`](https://kharchenkolab.github.io/numbat/reference/run_numbat.html)
+  as `df_allele`.
 
 - reference_counts:
 
   Reference expression profile for `"numbat"`. This is forwarded to
-  `numbat::run_numbat()` as `lambdas_ref`.
+  [`numbat::run_numbat()`](https://kharchenkolab.github.io/numbat/reference/run_numbat.html)
+  as `lambdas_ref`.
 
 - output_dir:
 
@@ -128,41 +134,47 @@ A `Seurat` object with CNV metadata columns and a result bundle in
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
-# copykat uses raw counts and can infer diploid/aneuploid cells directly.
-srt <- RunCNV(
-  srt,
-  method = "copykat",
-  genome = "hg38"
+base_url <- paste0(
+  "https://raw.githubusercontent.com/broadinstitute/infercnv/",
+  "1def6c930335d00ddf251474abb0a31a1c74b0da/inst/extdata/"
 )
-
-# fastCNV and inferCNV require a normal/reference cell annotation.
-srt <- RunCNV(
-  srt,
-  method = "fastCNV",
-  reference.by = "celltype",
-  reference = "Normal",
-  genome = "hg38"
+files <- c("oligodendroglioma_expression_downsampled.counts.matrix.gz",
+           "oligodendroglioma_annotations_downsampled.txt")
+counts_file <- tempfile(fileext = ".gz")
+labels_file <- tempfile()
+utils::download.file(paste0(base_url, files[1]), counts_file, mode = "wb")
+utils::download.file(paste0(base_url, files[2]), labels_file, mode = "wb")
+counts <- as.matrix(utils::read.delim(counts_file, row.names = 1, check.names = FALSE))
+labels <- utils::read.delim(labels_file, header = FALSE, row.names = 1)
+cohort <- labels[colnames(counts), 1]
+colnames(counts) <- paste0("cell_", colnames(counts))
+srt <- SeuratObject::CreateSeuratObject(Matrix::Matrix(counts, sparse = TRUE))
+srt$group <- factor(
+  ifelse(startsWith(cohort, "malignant_"), sub("^malignant_", "Tumor ", cohort), "Reference"),
+  levels = c("Reference", "Tumor 93", "Tumor 97", "Tumor MGH36", "Tumor MGH53")
 )
-
-gene_order <- data.frame(
-  gene = rownames(srt),
-  chr = "chr1",
-  start = seq_len(nrow(srt)) * 1000,
-  end = seq_len(nrow(srt)) * 1000 + 999
-)
-srt <- RunCNV(
-  srt,
-  method = "infercnv",
-  reference.by = "celltype",
-  reference = "Normal",
-  gene_order = gene_order
-)
-
-# Numbat can also be run when allele-aware preprocessing
-# outputs are available.
-
-CNVPlot(srt, plot_type = "heatmap", group.by = "CNV_prediction")
-CNVPlot(srt, plot_type = "dim", value = "CNV_prediction")
-} # }
+set.seed(42)
+srt <- RunCNV(srt, method = "copykat", reference.by = "group", reference = "Reference")
+#> ℹ [2026-11-11 11:44:53] Run copykat CNV backend with 10338 features and 184 cells
+#> ℹ [2026-11-11 11:44:53] Attached copykat to the search path so its lazy data objects are resolvable by the backend
+#> [1] "running copykat v1.2.5"
+#> [1] "step1: read and filter data ..."
+#> [1] "10338 genes, 184 cells in raw data"
+#> [1] "9450 genes past LOW.DR filtering"
+#> [1] "step 2: annotations gene coordinates ..."
+#> [1] "start annotation ..."
+#> [1] "step 3: smoothing data with dlm ..."
+#> [1] "step 4: measuring baselines ..."
+#> [1] "42 known normal cells found in dataset"
+#> [1] "run with known normal..."
+#> [1] "baseline is from known input"
+#> [1] "step 5: segmentation..."
+#> [1] "step 6: convert to genomic bins..."
+#> [1] "step 7: re-adjust baseline ..."
+#> [1] "step 8: final prediction ..."
+#> [1] "step 9: saving results..."
+#> [1] "step 10: ploting heatmap ..."
+#> Time difference of 54.2815 secs
+#> ✔ [2026-11-11 11:45:47] copykat CNV results stored in `srt@tools[[CNV]]`
+CNVPlot(srt, group.by = "group", heatmap_limits = "auto")
 ```

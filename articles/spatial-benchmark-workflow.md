@@ -80,16 +80,16 @@ bench <- RunSpatialBenchmark(
 
 bench$summary
 #>        method      workflow ARI NMI purity runtime_s baseline_memory_mb
-#> 1  BayesSpace SpatialDomain   1   1      1    14.103           290.7188
-#> 2      BANKSY SpatialDomain  NA  NA     NA        NA                 NA
-#> 3 SmoothClust SpatialDomain   1   1      1     6.026           290.6797
-#>   peak_memory_mb memory_delta_mb n_evaluated n_clusters      status
-#> 1      1090.4102        799.6914          36          3     success
-#> 2             NA              NA           0         NA unavailable
-#> 3       972.6211        681.9414          36          3     success
-#>            error
-#> 1               
-#> 2 Banksy=missing
+#> 1  BayesSpace SpatialDomain   1   1      1    12.380           290.6562
+#> 2      BANKSY SpatialDomain  NA  NA     NA     4.926           290.5859
+#> 3 SmoothClust SpatialDomain   1   1      1     5.456           290.6797
+#>   peak_memory_mb memory_delta_mb n_evaluated n_clusters  status
+#> 1      1090.5977        799.9414          36          3 success
+#> 2       801.7969        511.2109           0         NA  failed
+#> 3       972.3438        681.6641          36          3 success
+#>                                                          error
+#> 1                                                             
+#> 2 lazy=TRUE only supports M=0 (no AGF). Use lazy=FALSE for AGF
 #> 3
 ```
 
@@ -111,14 +111,14 @@ str(bench$summary, max.level = 1)
 #>  $ ARI               : num  1 NA 1
 #>  $ NMI               : num  1 NA 1
 #>  $ purity            : num  1 NA 1
-#>  $ runtime_s         : num  14.1 NA 6.03
-#>  $ baseline_memory_mb: num  291 NA 291
-#>  $ peak_memory_mb    : num  1090 NA 973
-#>  $ memory_delta_mb   : num  800 NA 682
+#>  $ runtime_s         : num  12.38 4.93 5.46
+#>  $ baseline_memory_mb: num  291 291 291
+#>  $ peak_memory_mb    : num  1091 802 972
+#>  $ memory_delta_mb   : num  800 511 682
 #>  $ n_evaluated       : int  36 0 36
 #>  $ n_clusters        : int  3 NA 3
-#>  $ status            : chr  "success" "unavailable" "success"
-#>  $ error             : chr  "" "Banksy=missing" ""
+#>  $ status            : chr  "success" "failed" "success"
+#>  $ error             : chr  "" "lazy=TRUE only supports M=0 (no AGF). Use lazy=FALSE for AGF" ""
 head(bench$predictions)
 #>   spot_id gold_standard     method prediction
 #> 1   spot1          left BayesSpace          1

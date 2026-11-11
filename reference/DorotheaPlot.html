@@ -36,6 +36,7 @@ FeatureDimPlot directly for ordinary activity visualizations.'></head><body>
     <li><a class="dropdown-item" href="../articles/integration-workflow.html">Data integration workflow</a></li>
     <li><a class="dropdown-item" href="../articles/integration-benchmark-workflow.html">Integration benchmark workflow</a></li>
     <li><a class="dropdown-item" href="../articles/cell-annotation-workflow.html">Cell annotation workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/cell-tree-advanced.html">Cell annotation trees with CIMA</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Interpret cell states</h6></li>
     <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
@@ -314,7 +315,7 @@ will be removed in scop 1.0.0.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span><span class="va">pancreas_sub</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-11 04:50:24] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-11 11:31:52] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunDorothea.html">RunDorothea</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  layer <span class="op">=</span> <span class="st">"counts"</span>,</span></span>
@@ -322,9 +323,9 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-in"><span>  method <span class="op">=</span> <span class="st">"ulm"</span>,</span></span>
 <span class="r-in"><span>  minsize <span class="op">=</span> <span class="fl">5</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-11 04:50:31] Run <span style="color: #0000BB;">"DoRothEA"</span>/<span style="color: #0000BB;">decoupleR</span> with <span style="color: #0000BB;">12895</span> regulon edges</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-11 04:50:42] <span style="color: #0000BB;">"DoRothEA"</span> TF activity scores stored in assay <span style="color: #0000BB;">"dorothea"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-11 04:50:42] <span style="color: #0000BB;">"DoRothEA"</span> TF activity scores stored in <span style="color: #0000BB;">&lt;Seurat&gt;</span> metadata</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-11 11:32:00] Run <span style="color: #0000BB;">"DoRothEA"</span>/<span style="color: #0000BB;">decoupleR</span> with <span style="color: #0000BB;">12895</span> regulon edges</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-11 11:32:07] <span style="color: #0000BB;">"DoRothEA"</span> TF activity scores stored in assay <span style="color: #0000BB;">"dorothea"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-11 11:32:08] <span style="color: #0000BB;">"DoRothEA"</span> TF activity scores stored in <span style="color: #0000BB;">&lt;Seurat&gt;</span> metadata</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">DorotheaPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -334,7 +335,7 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"bar"</span>,</span></span>
 <span class="r-in"><span>  top_n <span class="op">=</span> <span class="fl">20</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-11 04:50:42] Compare <span style="color: #0000BB;">"DoRothEA"</span> TF activity: <span style="color: #0000BB;">"Endocrine"</span> vs <span style="color: #0000BB;">"Ductal"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-11 11:32:08] Compare <span style="color: #0000BB;">"DoRothEA"</span> TF activity: <span style="color: #0000BB;">"Endocrine"</span> vs <span style="color: #0000BB;">"Ductal"</span></span>
 <span class="r-plt img"><img src="DorotheaPlot-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">DorotheaPlot</span><span class="op">(</span></span></span>
@@ -345,7 +346,7 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"lollipop"</span>,</span></span>
 <span class="r-in"><span>  top_n <span class="op">=</span> <span class="fl">20</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-11 04:50:43] Compare <span style="color: #0000BB;">"DoRothEA"</span> TF activity: <span style="color: #0000BB;">"Endocrine"</span> vs <span style="color: #0000BB;">"Ductal"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-11 11:32:08] Compare <span style="color: #0000BB;">"DoRothEA"</span> TF activity: <span style="color: #0000BB;">"Endocrine"</span> vs <span style="color: #0000BB;">"Ductal"</span></span>
 <span class="r-plt img"><img src="DorotheaPlot-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">DorotheaPlot</span><span class="op">(</span></span></span>
@@ -355,7 +356,7 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-in"><span>  group2 <span class="op">=</span> <span class="st">"Ductal"</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"volcano"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-11 04:50:43] Compare <span style="color: #0000BB;">"DoRothEA"</span> TF activity: <span style="color: #0000BB;">"Endocrine"</span> vs <span style="color: #0000BB;">"Ductal"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-11 11:32:09] Compare <span style="color: #0000BB;">"DoRothEA"</span> TF activity: <span style="color: #0000BB;">"Endocrine"</span> vs <span style="color: #0000BB;">"Ductal"</span></span>
 <span class="r-plt img"><img src="DorotheaPlot-3.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">tfs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">[[</span><span class="st">"dorothea"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>, <span class="fl">20</span><span class="op">)</span></span></span>
@@ -376,7 +377,7 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-in"><span>  features <span class="op">=</span> <span class="st">"Sox9"</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"dim"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-11 04:50:44] Draw <span style="color: #0000BB;">"DoRothEA"</span> embedding plots for <span style="color: #0000BB;">1</span> TFs</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-11 11:32:09] Draw <span style="color: #0000BB;">"DoRothEA"</span> embedding plots for <span style="color: #0000BB;">1</span> TFs</span>
 <span class="r-plt img"><img src="DorotheaPlot-5.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="FeatureStatPlot.html">FeatureStatPlot</a></span><span class="op">(</span></span></span>
@@ -404,8 +405,8 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-in"><span>  features <span class="op">=</span> <span class="st">"Sox9"</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"targets"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-11-11 04:50:46] Dropping <span style="color: #0000BB;">3</span> <span style="color: #0000BB;">"Sox9"</span> targets missing from assay <span style="color: #0000BB;">"RNA"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-11 04:50:46] Draw <span style="color: #0000BB;">"DoRothEA"</span> regulon-target volcano for <span style="color: #0000BB;">"Sox9"</span> (<span style="color: #0000BB;">10</span> targets)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-11-11 11:32:11] Dropping <span style="color: #0000BB;">3</span> <span style="color: #0000BB;">"Sox9"</span> targets missing from assay <span style="color: #0000BB;">"RNA"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-11-11 11:32:11] Draw <span style="color: #0000BB;">"DoRothEA"</span> regulon-target volcano for <span style="color: #0000BB;">"Sox9"</span> (<span style="color: #0000BB;">10</span> targets)</span>
 <span class="r-plt img"><img src="DorotheaPlot-8.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>

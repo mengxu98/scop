@@ -23,7 +23,7 @@ quick <- scop::RunStandardWorkflow(quick,
   nHVF = 100, linear_reduction_dims = 10, linear_reduction_dims_use = 2:8,
   neighbor_k = 10, nonlinear_reduction_dims = 2, cores = 1, verbose = FALSE
 )
-#> ℹ [2026-11-11 05:49:21] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-11 12:31:29] Skip `log1p()` because `layer = data` is not "counts"
 record <- SeuratObject::Misc(quick[["ATAClsi"]], "scop_atac_representation")
 stopifnot(identical(record$dimensions, 2:8), scop::CheckATACData(quick)$valid)
 Seurat::DimPlot(quick, reduction = "ATACUMAP2D", group.by = "ATAClsiclusters")

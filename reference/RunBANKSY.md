@@ -92,7 +92,8 @@ RunBANKSY(
 
 - algo:
 
-  Clustering algorithm passed to `Banksy::clusterBanksy()`.
+  Clustering algorithm passed to
+  [`Banksy::clusterBanksy()`](https://prabhakarlab.github.io/Banksy/reference/clusterBanksy.html).
 
 - k_neighbors:
 
@@ -113,20 +114,25 @@ RunBANKSY(
 
 - compute_banksy_params:
 
-  Additional parameters passed to `Banksy::computeBanksy()`.
+  Additional parameters passed to
+  [`Banksy::computeBanksy()`](https://prabhakarlab.github.io/Banksy/reference/computeBanksy.html).
 
 - run_pca_params:
 
-  Additional parameters passed to `Banksy::runBanksyPCA()`.
+  Additional parameters passed to
+  [`Banksy::runBanksyPCA()`](https://prabhakarlab.github.io/Banksy/reference/runBanksyPCA.html).
 
 - cluster_banksy_params:
 
-  Additional parameters passed to `Banksy::clusterBanksy()`.
+  Additional parameters passed to
+  [`Banksy::clusterBanksy()`](https://prabhakarlab.github.io/Banksy/reference/clusterBanksy.html).
 
 - cluster_source:
 
   Optional BANKSY `colData` column to copy. If `NULL`, the first cluster
-  name reported by `Banksy::clusterNames()` is used when available.
+  name reported by
+  [`Banksy::clusterNames()`](https://prabhakarlab.github.io/Banksy/reference/clusterNames.html)
+  is used when available.
 
 - cluster_colname:
 

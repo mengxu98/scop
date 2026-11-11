@@ -1389,6 +1389,11 @@ etc.
 
 ## Cell Type Annotation
 
+### Annotation Visualization
+
+- [`CellTreePlot()`](https://mengxu98.github.io/scop/reference/CellTreePlot.md)
+  : Plot a circular cell annotation tree
+
 ### Reference-Based Annotation and Models
 
 - [`CellTypistModels()`](https://mengxu98.github.io/scop/reference/CellTypistModels.md)
@@ -1922,7 +1927,7 @@ etc.
 - [`RunCNV()`](https://mengxu98.github.io/scop/reference/RunCNV.md) :
   Run copy-number alteration inference
 - [`CNVPlot()`](https://mengxu98.github.io/scop/reference/CNVPlot.md) :
-  Plot SCOP CNV results
+  Plot CNV results
 
 ### GWAS and Trait Association
 
@@ -2219,6 +2224,8 @@ etc.
   workflow](https://mengxu98.github.io/scop/articles/integration-benchmark-workflow.md):
 - [Cell annotation
   workflow](https://mengxu98.github.io/scop/articles/cell-annotation-workflow.md):
+- [Cell annotation trees with
+  CIMA](https://mengxu98.github.io/scop/articles/cell-tree-advanced.md):
 
 ### Explain cell states and changing programs
 

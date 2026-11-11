@@ -260,22 +260,22 @@ RunPalantir(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-11-11 05:35:51] Start standard processing workflow...
-#> ℹ [2026-11-11 05:35:51] Checking a list of <Seurat>...
-#> ! [2026-11-11 05:35:51] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-11-11 05:35:51] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-11-11 05:35:51] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-11 05:35:51] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-11 05:35:51] Number of available HVF: 2000
-#> ℹ [2026-11-11 05:35:51] Finished check
-#> ℹ [2026-11-11 05:35:51] Perform `ScaleData()`
-#> ℹ [2026-11-11 05:35:51] Perform pca linear dimension reduction
-#> ℹ [2026-11-11 05:35:52] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-11-11 05:35:52] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-11 05:35:52] Reorder clusters...
-#> ℹ [2026-11-11 05:35:52] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-11 05:35:52] Perform umap nonlinear dimension reduction
-#> ✔ [2026-11-11 05:36:01] Standard processing workflow completed
+#> ℹ [2026-11-11 12:17:58] Start standard processing workflow...
+#> ℹ [2026-11-11 12:17:58] Checking a list of <Seurat>...
+#> ! [2026-11-11 12:17:58] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-11 12:17:58] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-11 12:17:58] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-11 12:17:58] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-11 12:17:58] Number of available HVF: 2000
+#> ℹ [2026-11-11 12:17:58] Finished check
+#> ℹ [2026-11-11 12:17:58] Perform `ScaleData()`
+#> ℹ [2026-11-11 12:17:58] Perform pca linear dimension reduction
+#> ℹ [2026-11-11 12:17:59] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-11-11 12:17:59] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-11 12:17:59] Reorder clusters...
+#> ℹ [2026-11-11 12:17:59] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-11 12:17:59] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-11 12:18:10] Standard processing workflow completed
 pancreas_sub <- RunPalantir(
   pancreas_sub,
   group.by = "SubCellType",
@@ -285,9 +285,9 @@ pancreas_sub <- RunPalantir(
   terminal_groups = c("Alpha", "Beta", "Delta", "Epsilon"),
   backend = "cpp"
 )
-#> ! [2026-11-11 05:36:01] RunPalantir(backend = "cpp") uses an approximate C++ implementation; results may not be completely identical to the reference python workflow.
-#> ℹ [2026-11-11 05:36:01] Computing Palantir KNN graph with BiocNeighbors...
-#> ✔ [2026-11-11 05:36:01] Palantir cpp backend completed
+#> ! [2026-11-11 12:18:10] RunPalantir(backend = "cpp") uses an approximate C++ implementation; results may not be completely identical to the reference python workflow.
+#> ℹ [2026-11-11 12:18:10] Computing Palantir KNN graph with BiocNeighbors...
+#> ✔ [2026-11-11 12:18:10] Palantir cpp backend completed
 
 FeatureDimPlot(
   pancreas_sub,
