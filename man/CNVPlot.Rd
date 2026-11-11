@@ -66,7 +66,7 @@ fallback. A numeric pair sets the limits and must span the midpoint.}
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
 
-\item{...}{Additional parameters to other functions.}
+\item{...}{Arguments passed to other functions.}
 }
 \value{
 A \code{ComplexHeatmap::Heatmap} for \code{"heatmap"}, an \code{hclust} for

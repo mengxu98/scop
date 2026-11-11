@@ -15,7 +15,6 @@ gsea_layout_fixture <- function() {
 test_that("GSEAPlot arranges combined plots in the requested direction", {
   skip_if_not_installed("DOSE")
   skip_if_not_installed("ggwordcloud")
-  loadNamespace("DOSE")
   res <- gsea_layout_fixture()
   panels <- GSEAPlot(res = res, db = "custom", plot_type = "wordcloud", combine = FALSE)
   expect_length(panels, 4L)
@@ -36,7 +35,6 @@ test_that("GSEAPlot arranges combined plots in the requested direction", {
 
 test_that("enrichment plots retain selected IDs and reject invalid group keys", {
   skip_if_not_installed("DOSE")
-  loadNamespace("DOSE")
   res <- gsea_layout_fixture()
   original <- serialize(res, NULL)
   for (plotter in list(EnrichmentPlot, GSEAPlot)) {

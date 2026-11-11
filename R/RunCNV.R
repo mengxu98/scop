@@ -28,7 +28,7 @@
 #' @param tool_name Name used for `srt@tools`.
 #' @param store_matrix Whether to store the normalized CNV matrix in
 #' `srt@tools[[tool_name]]`.
-#' @param ... Additional parameters to other functions.
+#' @param ... Arguments passed to other functions.
 #'
 #' @return A `Seurat` object with CNV metadata columns and a result bundle in
 #' `srt@tools[[tool_name]]`.

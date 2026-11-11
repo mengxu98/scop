@@ -69,7 +69,6 @@ test_that("only GO term wordclouds request the GO keyword dependency", {
 test_that("term and feature wordclouds retain their distinct top-word scopes", {
   skip_if_not_installed("DOSE")
   skip_if_not_installed("ggwordcloud")
-  loadNamespace("DOSE")
   res <- wordcloud_result_fixture()
   first <- res$enrichment
   second <- first
@@ -94,7 +93,6 @@ test_that("an empty GO keyword group retains the following groups", {
   skip_if_not_installed("DOSE")
   skip_if_not_installed("ggwordcloud")
   skip_if_not_installed("simplifyEnrichment")
-  loadNamespace("DOSE")
   res <- wordcloud_result_fixture()
   first <- res$enrichment
   first$Database <- "GO_BP"
