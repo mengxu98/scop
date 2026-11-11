@@ -80,9 +80,16 @@ NULL
 #' if (interactive()) {
 #'   data(pancreas_sub)
 #'
-#'   SeuratData::InstallData("panc8")
-#'   data(panc8)
-#'   panc8 <- UpdateSeuratObject(panc8)
+#'   archive <- tempfile(fileext = ".tar.gz")
+#'   utils::download.file(
+#'     "https://seurat.nygenome.org/src/contrib/panc8.SeuratData_3.0.2.tar.gz",
+#'     archive,
+#'     mode = "wb"
+#'   )
+#'   exdir <- tempfile()
+#'   utils::untar(archive, files = "panc8.SeuratData/data/panc8.rda", exdir = exdir)
+#'   load(file.path(exdir, "panc8.SeuratData", "data", "panc8.rda"))
+#'   panc8 <- SeuratObject::UpdateSeuratObject(panc8)
 #'   set.seed(98)
 #'   cells_sub <- unlist(
 #'     lapply(
@@ -95,7 +102,7 @@ NULL
 #'     panc8_sub,
 #'     layer = "counts"
 #'   )
-#'   panc8_sub <- CreateSeuratObject(
+#'   panc8_sub <- SeuratObject::CreateSeuratObject(
 #'     counts = counts,
 #'     meta.data = panc8_sub@meta.data
 #'   )
@@ -136,19 +143,36 @@ NULL
 #' @name pbmcmultiome_sub
 #' @examples
 #' if (interactive()) {
-#'   SeuratData::InstallData("pbmcMultiome")
-#'   data(pbmcMultiome)
-#'   pbmcMultiome <- UpdateSeuratObject(pbmcMultiome)
+#'   archive <- tempfile(fileext = ".tar.gz")
+#'   utils::download.file(
+#'     "https://seurat.nygenome.org/src/contrib/pbmcMultiome.SeuratData_0.1.4.tar.gz",
+#'     archive,
+#'     mode = "wb"
+#'   )
+#'   exdir <- tempfile()
+#'   utils::untar(archive, files = "pbmcMultiome.SeuratData/data", exdir = exdir)
+#'   load(file.path(exdir, "pbmcMultiome.SeuratData", "data", "pbmc.rna.rda"))
+#'   load(file.path(exdir, "pbmcMultiome.SeuratData", "data", "pbmc.atac.rda"))
+#'   pbmcMultiome <- SeuratObject::UpdateSeuratObject(pbmc.rna)
+#'   pbmcMultiome[["peaks"]] <- SeuratObject::UpdateSeuratObject(pbmc.atac)[["ATAC"]]
+#'
+#'   groups <- c(
+#'     "Intermediate B" = "B", "Memory B" = "B", "Naive B" = "B",
+#'     "CD4 Naive" = "CD4 T", "CD4 TCM" = "CD4 T", "CD4 TEM" = "CD4 T",
+#'     Treg = "CD4 T", "CD8 Naive" = "CD8 T", "CD8 TEM_1" = "CD8 T",
+#'     "CD8 TEM_2" = "CD8 T", gdT = "CD8 T", MAIT = "CD8 T",
+#'     cDC = "DC", pDC = "DC", "CD14 Mono" = "Mono", "CD16 Mono" = "Mono",
+#'     NK = "NK"
+#'   )
+#'   pbmcMultiome$SubCellType <- as.character(pbmcMultiome$seurat_annotations)
+#'   pbmcMultiome$CellType <- unname(groups[pbmcMultiome$SubCellType])
 #'
 #'   set.seed(98)
-#'   n_per_type <- ceiling(500 / length(unique(pbmcMultiome$cell_type)))
-#'   cells_sub <- unlist(
-#'     lapply(
-#'       split(colnames(pbmcMultiome), pbmcMultiome$cell_type),
-#'       function(x) sample(x, size = min(n_per_type, length(x)))
-#'     ),
-#'     use.names = FALSE
-#'   )
+#'   cell_types <- split(colnames(pbmcMultiome), pbmcMultiome$CellType)
+#'   n_per_type <- rep(500 %/% length(cell_types), length(cell_types))
+#'   extra <- seq_len(500 %% length(cell_types))
+#'   n_per_type[extra] <- n_per_type[extra] + 1L
+#'   cells_sub <- unlist(Map(sample, cell_types, n_per_type), use.names = FALSE)
 #'   pbmcmultiome_sub <- subset(pbmcMultiome, cells = cells_sub)
 #'
 #'   peak_counts <- GetAssayData5(pbmcmultiome_sub, assay = "peaks", layer = "counts")

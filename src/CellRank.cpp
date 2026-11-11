@@ -1025,35 +1025,6 @@ List cellrank_schur_cpp(NumericMatrix T_, int n_components = 10)
   );
 }
 
-
-// [[Rcpp::export]]
-int cellrank_auto_n_states_cpp(NumericVector eigenvalues, int min_states = 2, int max_states = 20)
-{
-  int n = eigenvalues.size();
-  if (n <= min_states) return min_states;
-
-  double max_gap = 0.0;
-  int best_k = min_states;
-  for (int k = min_states; k < std::min(max_states, n - 1); ++k) {
-    double gap = std::abs(eigenvalues[k] - eigenvalues[k + 1]);
-    if (gap > max_gap) {
-      max_gap = gap;
-      best_k = k + 1;
-    }
-  }
-
-  for (int k = min_states; k < std::min(max_states, n - 1); ++k) {
-    double denom = std::abs(eigenvalues[k]);
-    if (denom > 1e-10) {
-      double rel_gap = std::abs(eigenvalues[k] - eigenvalues[k + 1]) / denom;
-      if (rel_gap > 0.3) return k + 1;
-    }
-  }
-
-  return best_k;
-}
-
-
 // [[Rcpp::export]]
 NumericMatrix cellrank_velocity_kernel_cpp(
     NumericMatrix velocity_embedding,

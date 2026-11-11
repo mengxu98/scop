@@ -434,22 +434,6 @@ List dpt_from_connectivities_cpp(
 }
 
 // [[Rcpp::export]]
-List cell_dpt_pseudotime_cpp(
-    IntegerMatrix knn_idx,
-    NumericMatrix knn_dist,
-    int root_cell,
-    int n_dcs = 10)
-{
-  NumericMatrix connectivities = build_gauss_connectivities(knn_idx, knn_dist);
-  return dpt_from_transition(
-    transition_symmetric(connectivities),
-    root_cell,
-    n_dcs
-  );
-}
-
-
-// [[Rcpp::export]]
 List paga_velocity_transitions_cpp(
     NumericMatrix velocity_embedding,
     IntegerMatrix knn_idx,

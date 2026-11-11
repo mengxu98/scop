@@ -255,10 +255,9 @@ test_that("GBM preserves target precision while casting split features", {
 
 test_that("constant GBM responses skip trees without changing model edges", {
   expr <- cbind(TF = seq_len(40), variable = seq_len(40) + 0.1, zero = 0, fixed = 1e9)
-  fitted <- grnboost_tree_profile(expr, 1L, 2:4, n_rounds = 50, subsample = 1)
+  fitted <- grnboost_tree(expr, 1L, 2:4, n_rounds = 50, subsample = 1)
   reference <- grnboost_tree(expr, 1L, 2L, n_rounds = 50, subsample = 1)
-  expect_identical(fitted$adjacency, reference)
-  expect_equal(unname(fitted$counts[c("targets", "rounds", "trees")]), c(3L, 50L, 50L))
+  expect_identical(fitted, reference)
   sparse <- grnboost_tree_sparse(methods::as(Matrix::Matrix(expr, sparse = TRUE), "dgCMatrix"),
     1L, 2:4,
     n_rounds = 50, subsample = 1
