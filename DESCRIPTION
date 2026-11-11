@@ -174,7 +174,7 @@ Suggests:
     SpaNorm,
     withr
 Remotes:
-    mengxu98/thisplot@4445799988d6094706883e5b0cce99b47c3de272,
+    mengxu98/thisplot,
     mengxu98/thisutils
 LinkingTo:
     cli,
