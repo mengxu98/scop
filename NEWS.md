@@ -1,5 +1,9 @@
 # scop (development version)
 
+* **fix**: `CNVPlot()` heatmaps show cells in rows and genomic features in
+  columns, use method-specific neutral values, and support automatic or
+  explicit color limits. The help example runs CopyKAT on public expression data.
+
 * **feat**: Add `CellTreePlot()` for hierarchical cell annotations with group-colored leaf tiles, cell proportions, and optional numeric rings.
 
 * **breaking**: Remove `allow_approximate` from `RunCellRank()`, `RunPalantir()` and `RunSCENICPlus()`; selecting their C++ implementations emits an approximation warning. `CellRankPlot()` removes `trends`, `clusters`, `enrichment` and `database`; use `DynamicHeatmap()`, `DynamicPlot()` and `EnrichmentPlot()` for these views.

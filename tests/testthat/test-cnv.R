@@ -638,3 +638,201 @@ test_that("CNVPlot returns bar, heatmap, and tree objects from stored results", 
   tree <- CNVPlot(out, plot_type = "tree", cluster_tree_by = "cell")
   expect_s3_class(tree, "hclust")
 })
+
+test_that("CNVPlot centers infercnv colors on one and preserves the original matrix", {
+  testthat::skip_if_not_installed("ComplexHeatmap")
+  testthat::skip_if_not_installed("circlize")
+  srt <- make_cnv_seurat()
+  mat <- matrix(
+    c(0.6, 0.75, 1, 1.25, 1.5, 2), nrow = 2,
+    dimnames = list(c("Gene1", "Gene2"), colnames(srt))
+  )
+  srt@tools$CNV <- list(
+    active_method = "infercnv",
+    methods = list(infercnv = list(method = "infercnv", cnv_matrix = mat))
+  )
+  colors <- c("#2166AC", "#FFFFFF", "#B2182B")
+
+  ht <- CNVPlot(srt, heatmap_palcolor = colors, cluster_columns = FALSE)
+  expect_equal(ht@matrix, t(mat))
+  mapped <- ht@matrix_color_mapping@col_fun(c(0.5, 0.75, 1, 1.25, 1.5))
+  expect_equal(mapped[c(1, 2, 4, 5)], c("#2166ACFF", "#2166ACFF", "#B2182BFF", "#B2182BFF"))
+  expect_true(all(grDevices::col2rgb(mapped[3]) >= 245))
+  expect_equal(ht@matrix_legend_param$at, c(0.75, 1, 1.25))
+
+  custom <- CNVPlot(
+    srt, heatmap_limits = c(0.9, 1.4), heatmap_palcolor = colors,
+    cluster_columns = FALSE
+  )
+  expect_equal(custom@matrix, t(mat))
+  expect_equal(
+    custom@matrix_color_mapping@col_fun(c(0.8, 1, 1.5)),
+    c("#2166ACFF", mapped[3], "#B2182BFF")
+  )
+  expect_equal(custom@matrix_legend_param$at, c(0.9, 1, 1.4))
+
+  two_colors <- CNVPlot(srt, heatmap_limits = c(0.9, 1.4), heatmap_palcolor = colors[c(1, 3)])
+  two_colors_symmetric <- CNVPlot(srt, heatmap_palcolor = colors[c(1, 3)])
+  expect_equal(
+    two_colors@matrix_color_mapping@col_fun(1),
+    two_colors_symmetric@matrix_color_mapping@col_fun(1)
+  )
+  expect_error(CNVPlot(srt, heatmap_limits = c(0.6, 0.8)), "heatmap_limits")
+  expect_error(CNVPlot(srt, heatmap_limits = c(NA, 1.4)), "heatmap_limits")
+})
+
+test_that("CNVPlot retains zero-centered default colors for other methods", {
+  testthat::skip_if_not_installed("ComplexHeatmap")
+  testthat::skip_if_not_installed("circlize")
+  srt <- make_cnv_seurat()
+  mat <- matrix(
+    c(-2, -0.5, 0, 0.5, 1, 2), nrow = 2,
+    dimnames = list(c("Gene1", "Gene2"), colnames(srt))
+  )
+  for (method in c("copykat", "fastCNV", "scevan", "numbat")) {
+    srt@tools$CNV <- list(
+      active_method = method,
+      methods = setNames(list(list(method = method, cnv_matrix = mat)), method)
+    )
+    ht <- CNVPlot(srt, heatmap_palcolor = c("#2166AC", "#FFFFFF", "#B2182B"))
+    expect_equal(ht@matrix, t(mat))
+    mapped <- ht@matrix_color_mapping@col_fun(c(-2, -1, 0, 1, 2))
+    expect_equal(mapped[c(1, 2, 4, 5)], c("#2166ACFF", "#2166ACFF", "#B2182BFF", "#B2182BFF"))
+    expect_true(all(grDevices::col2rgb(mapped[3]) >= 245))
+    expect_equal(ht@matrix_legend_param$at, c(-1, 0, 1))
+  }
+})
+
+test_that("CNVPlot orders chromosomes horizontally and cells by group", {
+  testthat::skip_if_not_installed("ComplexHeatmap")
+  testthat::skip_if_not_installed("circlize")
+  srt <- make_cnv_seurat()
+  srt$group <- factor(c("Tumor", "Reference", "Tumor"), levels = c("Reference", "Tumor"))
+  mat <- matrix(
+    c(1.4, 0.7, 0.8, 1.3, 1, 0.65, 1.05, 1.2, 1.1), nrow = 3,
+    dimnames = list(c("gene3", "gene2", "gene1"), colnames(srt))
+  )
+  bins <- data.frame(chr = c("chr2", "chr1", "chr1"), start = c(30, 20, 10))
+  srt@tools$CNV <- list(
+    active_method = "infercnv",
+    methods = list(infercnv = list(method = "infercnv", cnv_matrix = mat, bin_info = bins))
+  )
+
+  paper <- CNVPlot(srt, group.by = "group", title = "", use_raster = FALSE)
+  expect_equal(paper@matrix, t(mat[c(3, 2, 1), c(2, 1, 3)]))
+  expect_s4_class(paper@top_annotation, "HeatmapAnnotation")
+  expect_s4_class(paper@left_annotation, "HeatmapAnnotation")
+  expect_equal(paper@matrix_legend_param$at, c(0.75, 1, 1.25))
+  file <- tempfile(fileext = ".pdf")
+  grDevices::pdf(file)
+  rendered <- tryCatch(ComplexHeatmap::draw(paper), finally = grDevices::dev.off())
+  expect_equal(names(ComplexHeatmap::column_order(rendered)), c("chr1", "chr2"))
+  expect_null(rendered@ht_list[[1]]@column_title)
+  expect_equal(unname(unlist(ComplexHeatmap::row_order(rendered))), 1:3)
+  expect_equal(srt@tools$CNV$methods$infercnv$cnv_matrix, mat)
+})
+
+test_that("CNVPlot automatic display limits use the native midpoint and retain scores", {
+  testthat::skip_if_not_installed("ComplexHeatmap")
+  testthat::skip_if_not_installed("circlize")
+  srt <- make_cnv_seurat()
+  mat <- matrix(
+    c(0.88, 0.97, 1.04, 1.12, 1.2, 2), nrow = 2,
+    dimnames = list(c("gene1", "gene2"), colnames(srt))
+  )
+  srt@tools$CNV <- list(
+    active_method = "infercnv",
+    methods = list(infercnv = list(method = "infercnv", cnv_matrix = mat))
+  )
+
+  span <- as.double(stats::quantile(abs(mat - 1), 0.95))
+  auto <- CNVPlot(srt, heatmap_limits = "auto")
+  expect_equal(auto@matrix_legend_param$at, 1 + c(-span, 0, span))
+  expect_equal(auto@matrix, t(mat))
+  manual <- CNVPlot(srt, heatmap_limits = c(0.7, 1.8))
+  expect_equal(manual@matrix_legend_param$at, c(0.7, 1, 1.8))
+  expect_equal(manual@matrix, auto@matrix)
+
+  srt@tools$CNV$methods$infercnv$cnv_matrix[,] <- 1
+  constant <- CNVPlot(srt, heatmap_limits = "auto")
+  expect_equal(constant@matrix_legend_param$at, c(0.75, 1, 1.25))
+  expect_error(CNVPlot(srt, heatmap_limits = "unknown"), "heatmap_limits")
+})
+
+test_that("CNVPlot labels native fastCNV windows with missing coordinates", {
+  testthat::skip_if_not_installed("ComplexHeatmap")
+  testthat::skip_if_not_installed("circlize")
+  srt <- make_cnv_seurat()
+  mat <- matrix(
+    seq_len(9) / 10, nrow = 3,
+    dimnames = list(c("2.p1", "1.p1", "1.q1"), colnames(srt))
+  )
+  srt@tools$CNV <- list(
+    active_method = "fastCNV",
+    methods = list(fastCNV = list(
+      method = "fastCNV", cnv_matrix = mat,
+      bin_info = data.frame(chr = rep(NA_character_, nrow(mat)), start = NA_real_)
+    ))
+  )
+
+  paper <- CNVPlot(srt)
+  expect_equal(paper@matrix, t(mat[c(2, 3, 1), ]))
+  expect_s4_class(paper@top_annotation, "HeatmapAnnotation")
+  expect_true(all(is.na(srt@tools$CNV$methods$fastCNV$bin_info$chr)))
+})
+
+test_that("CNVPlot derives labels for custom legend ticks", {
+  testthat::skip_if_not_installed("ComplexHeatmap")
+  testthat::skip_if_not_installed("circlize")
+  srt <- make_cnv_seurat()
+  mat <- matrix(
+    c(0.8, 1, 1.1, 1.2, 1.3, 0.9), nrow = 2,
+    dimnames = list(c("gene1", "gene2"), colnames(srt))
+  )
+  srt@tools$CNV <- list(
+    active_method = "infercnv",
+    methods = list(infercnv = list(method = "infercnv", cnv_matrix = mat))
+  )
+  at <- c(0.75, 1, 1.1, 1.25)
+  ht <- CNVPlot(srt, heatmap_legend_param = list(at = at), use_raster = FALSE)
+  expect_equal(as.numeric(ht@matrix_legend_param$labels), at)
+  grDevices::pdf(tempfile(fileext = ".pdf"))
+  rendered <- tryCatch(ComplexHeatmap::draw(ht), finally = grDevices::dev.off())
+  expect_s4_class(rendered, "HeatmapList")
+  labels <- c("Loss", "Neutral", "Gain", "High")
+  custom <- CNVPlot(srt, heatmap_legend_param = list(at = at, labels = labels))
+  expect_identical(custom@matrix_legend_param$labels, labels)
+})
+
+test_that("CNVPlot keeps chromosome labels aligned when slices are clustered", {
+  testthat::skip_if_not_installed("ComplexHeatmap")
+  testthat::skip_if_not_installed("circlize")
+  srt <- make_cnv_seurat()
+  mat <- outer(
+    rep(c(0.1, 1.1, 0.11, 3.1), each = 2) + rep(c(0, 0.02), 4),
+    c(0, 0.2, 0.4), "+"
+  )
+  dimnames(mat) <- list(paste0("gene", 1:8), colnames(srt))
+  srt@tools$CNV <- list(
+    active_method = "infercnv",
+    methods = list(infercnv = list(
+      method = "infercnv", cnv_matrix = mat,
+      bin_info = data.frame(chr = rep(paste0("chr", 1:4), each = 2), start = rep(1:2, 4))
+    ))
+  )
+  ht <- CNVPlot(srt, cluster_rows = TRUE, cluster_column_slices = TRUE, use_raster = FALSE)
+  grDevices::pdf(tempfile(fileext = ".pdf"))
+  output <- tryCatch({
+    rendered <- ComplexHeatmap::draw(ht)
+    grob_names <- grid::grid.ls(print = FALSE)$name
+    text <- unlist(lapply(grob_names[grepl("^GRID.text", grob_names)], function(name) {
+      as.character(grid::grid.get(name)$label)
+    }))
+    list(
+      order = names(ComplexHeatmap::column_order(rendered)),
+      labels = text[text %in% as.character(1:4)]
+    )
+  }, finally = grDevices::dev.off())
+  expect_false(identical(output$order, paste0("chr", 1:4)))
+  expect_equal(output$labels, sub("^chr", "", output$order))
+})

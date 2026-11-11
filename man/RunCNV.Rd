@@ -3,6 +3,10 @@
 \name{RunCNV}
 \alias{RunCNV}
 \title{Run copy-number alteration inference}
+\source{
+The example uses expression and cell annotations from
+\href{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE70630}{GSE70630}.
+}
 \usage{
 RunCNV(
   object,
@@ -73,54 +77,38 @@ Default is \code{TRUE}.}
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
 
-\item{...}{Arguments passed to other functions.}
+\item{...}{Additional parameters to other functions.}
 }
 \value{
 A \code{Seurat} object with CNV metadata columns and a result bundle in
 \code{srt@tools[[tool_name]]}.
 }
 \description{
-Run expression-based single-cell or spatial copy-number alteration methods
-and store the results in a consistent SCOP result bundle.
+Run copy-number alteration inference
 }
 \examples{
-\dontrun{
-# copykat uses raw counts and can infer diploid/aneuploid cells directly.
-srt <- RunCNV(
-  srt,
-  method = "copykat",
-  genome = "hg38"
+base_url <- paste0(
+  "https://raw.githubusercontent.com/broadinstitute/infercnv/",
+  "1def6c930335d00ddf251474abb0a31a1c74b0da/inst/extdata/"
 )
-
-# fastCNV and inferCNV require a normal/reference cell annotation.
-srt <- RunCNV(
-  srt,
-  method = "fastCNV",
-  reference.by = "celltype",
-  reference = "Normal",
-  genome = "hg38"
+files <- c("oligodendroglioma_expression_downsampled.counts.matrix.gz",
+           "oligodendroglioma_annotations_downsampled.txt")
+counts_file <- tempfile(fileext = ".gz")
+labels_file <- tempfile()
+utils::download.file(paste0(base_url, files[1]), counts_file, mode = "wb")
+utils::download.file(paste0(base_url, files[2]), labels_file, mode = "wb")
+counts <- as.matrix(utils::read.delim(counts_file, row.names = 1, check.names = FALSE))
+labels <- utils::read.delim(labels_file, header = FALSE, row.names = 1)
+cohort <- labels[colnames(counts), 1]
+colnames(counts) <- paste0("cell_", colnames(counts))
+srt <- SeuratObject::CreateSeuratObject(Matrix::Matrix(counts, sparse = TRUE))
+srt$group <- factor(
+  ifelse(startsWith(cohort, "malignant_"), sub("^malignant_", "Tumor ", cohort), "Reference"),
+  levels = c("Reference", "Tumor 93", "Tumor 97", "Tumor MGH36", "Tumor MGH53")
 )
-
-gene_order <- data.frame(
-  gene = rownames(srt),
-  chr = "chr1",
-  start = seq_len(nrow(srt)) * 1000,
-  end = seq_len(nrow(srt)) * 1000 + 999
-)
-srt <- RunCNV(
-  srt,
-  method = "infercnv",
-  reference.by = "celltype",
-  reference = "Normal",
-  gene_order = gene_order
-)
-
-# Numbat can also be run when allele-aware preprocessing
-# outputs are available.
-
-CNVPlot(srt, plot_type = "heatmap", group.by = "CNV_prediction")
-CNVPlot(srt, plot_type = "dim", value = "CNV_prediction")
-}
+set.seed(42)
+srt <- RunCNV(srt, method = "copykat", reference.by = "group", reference = "Reference")
+CNVPlot(srt, group.by = "group", heatmap_limits = "auto")
 }
 \seealso{
 \link{CNVPlot}
