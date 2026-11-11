@@ -48,7 +48,7 @@ jobs:
         env:
           GITHUB_PAT: ${{ github.token }}
         with:
-          extra-packages: any::rcmdcheck, any::testthat, any::callr, any::ps, any::harmony, github::immunogenomics/presto, bioc::speckle, bioc::glmGamPoi, any::Signac, bioc::ComplexHeatmap, any::ggforce
+          extra-packages: any::rcmdcheck, any::testthat, any::callr, any::ps, any::harmony, github::immunogenomics/presto, bioc::speckle, bioc::glmGamPoi, any::Signac, bioc::ComplexHeatmap, any::ggforce, any::Hmisc, any::lmtest, any::plotly, any::shadowtext, bioc::AUCell, bioc::BiocNeighbors
           needs: check
           dependencies: '"hard"'
 
@@ -78,6 +78,8 @@ jobs:
       - uses: actions/checkout@v5
 
       - uses: ./.github/actions/ubuntu-apt-mirrors
+
+      - uses: r-lib/actions/setup-pandoc@v2
 
       - uses: r-lib/actions/setup-r@v2
         with:

@@ -8,6 +8,29 @@ make_feature_stat_meta <- function(score, group, group_levels = unique(group)) {
   )
 }
 
+test_that("ExpressionStatPlot checks its bar summary dependency before rendering", {
+  requested <- character()
+  original_check <- get("check_r", asNamespace("scop"))
+  testthat::local_mocked_bindings(
+    check_r = function(packages, ...) {
+      requested <<- c(requested, packages)
+      if ("Hmisc" %in% packages) stop("bar summary dependency requested")
+      original_check(packages, ...)
+    },
+    .package = "scop"
+  )
+  meta <- make_feature_stat_meta(seq_len(12), rep(c("A", "B"), each = 6))
+  expect_no_error(ExpressionStatPlot(
+    meta.data = meta, stat.by = "score", group.by = "group",
+    plot_type = "box", force = TRUE
+  ))
+  expect_false("Hmisc" %in% requested)
+  expect_error(ExpressionStatPlot(
+    meta.data = meta, stat.by = "score", group.by = "group",
+    plot_type = "bar", force = TRUE
+  ), "bar summary dependency requested")
+})
+
 test_that("ExpressionStatPlot retains fill colours without unused colour warnings", {
   meta <- make_feature_stat_meta(seq_len(12), rep(c("A", "B"), each = 6))
   colors <- c(A = "#123456", B = "#FEDCBA")

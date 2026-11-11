@@ -29,7 +29,7 @@ jobs:
         env:
           GITHUB_PAT: ${{ github.token }}
         with:
-          extra-packages: any::covr, any::testthat, any::callr, any::ps, any::harmony, github::immunogenomics/presto, bioc::speckle, bioc::glmGamPoi, any::Signac, bioc::ComplexHeatmap, any::ggforce
+          extra-packages: any::covr, any::testthat, any::callr, any::ps, any::harmony, github::immunogenomics/presto, bioc::speckle, bioc::glmGamPoi, any::Signac, bioc::ComplexHeatmap, any::ggforce, any::Hmisc, any::lmtest, any::plotly, any::shadowtext, bioc::AUCell, bioc::BiocNeighbors
           needs: coverage
           dependencies: '"hard"'
 
