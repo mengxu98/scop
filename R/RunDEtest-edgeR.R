@@ -1,4 +1,3 @@
-# Explicit models are deliberately limited to the existing edgeR sample path.
 RunDEtestCheckDesign <- function(design, contrast, test.use = "edgeR") {
   explicit <- !is.null(design) || !is.null(contrast)
   if (!explicit) {

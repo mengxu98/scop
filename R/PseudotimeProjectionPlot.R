@@ -32,7 +32,6 @@
 #' Defaults is `"black"`.
 #' @param label.bg Background color of labels.
 #' Defaults is `"white"`.
-#'
 #' @param seed Random seed for plot construction. The caller's RNG state is restored.
 #' @return A ggplot, or a named list of ggplot layers when `return_layer = TRUE`.
 #'

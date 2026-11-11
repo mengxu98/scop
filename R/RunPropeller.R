@@ -180,7 +180,6 @@ run_propeller_speckle <- function(
   prop_mat <- props$Proportions[result$clusters, , drop = FALSE]
   group_1 <- which(pairs$condition == cluster_1)
   group_2 <- which(pairs$condition == cluster_2)
-  # Align donor IDs before both effect calculation and paired bootstrap.
   if (paired) {
     group_2 <- group_2[match(pairs$sample[group_1], pairs$sample[group_2])]
   }

@@ -122,8 +122,6 @@ CombineATACPeaks <- function(
   problems <- atac_ranges_problems(ranges)
   if (length(problems)) log_message("{paste(problems, collapse = ' ')}", message_type = "error")
   index <- as.list(ranges$revmap)
-  # Extract ordinary vectors once: repeated S4 subsetting per interval is costly
-  # for full peak universes and does not change the native revmap semantics.
   combined_input_sets <- as.list(combined$input_sets)
   combined_support_group <- as.character(combined$support_group)
   ranges$input_sets <- character_list(lapply(index, function(i) {

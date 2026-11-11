@@ -1982,8 +1982,6 @@ RunDEtest_pseudobulk <- function(
     if (!nrow(comparison_metadata)) {
       log_message("No selected-assay cells participate in the requested explicit comparison.", message_type = "error")
     }
-    # Sample identity and covariates must be consistent across all participating
-    # groups, not just within each independently fitted cell-type subset.
     RunDEtestModelSampleData(comparison_metadata, sample_col, condition_col, design)
   }
   target_groups <- if (is.null(group.by)) {

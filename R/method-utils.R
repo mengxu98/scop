@@ -154,8 +154,6 @@ resolve_reference_labels <- function(reference, reference_label) {
   reference[[reference_label, drop = TRUE]]
 }
 
-# Deconvolution matrices may contain only a subset of a Seurat object's cells.
-# Metadata is keyed by identity, never by its position in the whole object.
 deconv_validate_cell_ids <- function(ids, data_label) {
   if (is.null(ids) || anyNA(ids) || any(!nzchar(ids)) || anyDuplicated(ids)) {
     log_message(

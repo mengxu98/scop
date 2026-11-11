@@ -273,8 +273,6 @@ RunBANKSY <- function(
     stringsAsFactors = FALSE
   )
   colnames(cluster_df) <- cluster_colname
-  # Replace the whole metadata column so a rerun cannot retain labels for
-  # cells excluded by this run (for example, zero-count spots).
   metadata_clusters <- stats::setNames(rep(NA_character_, ncol(srt)), colnames(srt))
   metadata_clusters[rownames(cluster_df)] <- cluster_df[[cluster_colname]]
   srt <- Seurat::AddMetaData(srt, metadata = metadata_clusters, col.name = cluster_colname)

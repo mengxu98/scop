@@ -58,7 +58,6 @@
 #' Defaults is `0.5`.
 #' @param title The text for the title.
 #' Defaults is `"Cell velocity"`.
-#'
 #' @param seed Random seed for plot construction. The caller's RNG state is restored.
 #' @return A ggplot, or a named list of ggplot layers when `return_layer = TRUE`.
 #'

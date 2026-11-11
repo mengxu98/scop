@@ -371,8 +371,6 @@ bayesspace_add_spatial_coords <- function(
   coords <- if (
     is.null(resolved_image$image) && !identical(coord.cols, c("col", "row"))
   ) {
-    # Normalize only the selected, parsed pair. Unrelated metadata coordinate
-    # names must not override coord.cols or disagree with the raw provenance.
     metadata_coords <- raw$data[, c("x", "y"), drop = FALSE]
     selected_cols <- tolower(raw$source$coord.cols)
     if (

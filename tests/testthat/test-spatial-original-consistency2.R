@@ -385,8 +385,6 @@ test_that("RunSpatialIntegration PRECAST domains match the original PRECAST pipe
     project = "spatial_integration",
     customGenelist = common_genes
   )
-  # Compare the original model on the same exact graph; independent distance
-  # assertions for this graph are in test-spatial-precast.R.
   precast@AdjList <- lapply(precast@seulist, function(sample) {
     coords <- data.frame(cell_id = colnames(sample), x = sample$col, y = sample$row)
     graph <- spatial_graph_compute(coords, method = "knn", k = 6, directed = TRUE)

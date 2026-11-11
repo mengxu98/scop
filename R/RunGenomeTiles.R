@@ -65,8 +65,6 @@ RunGenomeTiles <- function(
   } else {
     receipt <- SeuratObject::Misc(result[[new.assay]], "scop_atac_recount")
     receipt$tiles <- tile.receipt
-    # Enrich only the receipt of the newly created assay. Avoid Misc's
-    # overwrite warning for this expected addition of tile provenance.
     result[[new.assay]]@misc$scop_atac_recount <- receipt
   }
   result

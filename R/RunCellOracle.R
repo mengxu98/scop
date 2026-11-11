@@ -277,7 +277,6 @@ RunCellOracle <- function(
       layer_x = layer, assay_y = character(), reductions = reduction,
       graphs = character(), neighbors = character(), prepare_env = FALSE, verbose = verbose
     )
-    # Use a private copy and explicit ordered coordinates, leaving Seurat unchanged.
     pd <- reticulate::import("pandas", convert = FALSE)
     reticulate::py_set_item(
       reticulate::py_get_attr(adata, "obs"), group.by,

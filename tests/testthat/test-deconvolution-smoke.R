@@ -1,5 +1,3 @@
-# Optional genuine-backend checks. Package checks are read-only: these tests
-# never install dependencies or download spacexr's likelihood matrices.
 make_real_deconv_smoke_pair <- function(reverse_order = FALSE, full_depth = FALSE) {
   withr::local_seed(4815)
   genes <- paste0("g", seq_len(80))
@@ -131,8 +129,6 @@ test_that("real spacexr preprocessing preserves full-assay depths and identity",
   preprocessing_verified <- FALSE
 
   testthat::local_mocked_bindings(
-    # Accept the installed Bioconductor API without requesting a GitHub-source
-    # replacement. The constructor and profile calculations below are genuine.
     check_r = deconv_smoke_check_installed,
     get_namespace_fun = function(pkg, fun) {
       original <- namespace_fun(pkg, fun)
@@ -167,8 +163,6 @@ test_that("real spacexr preprocessing preserves full-assay depths and identity",
           expect_equal(unname(profiles[, cell_type]), unname(expected), tolerance = 1e-12)
         }
         preprocessing_verified <<- TRUE
-        # Deliberately stop before runRctd: this is a preprocessing check, not
-        # a fitted-weight test, and must not download external Q matrices.
         stop("Completed genuine spacexr preprocessing smoke", call. = FALSE)
       }
     },

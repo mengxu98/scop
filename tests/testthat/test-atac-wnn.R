@@ -83,7 +83,6 @@ test_that("WNN append and dispatch retain reusable modality results", {
       SeuratObject::LayerData(full[["peaks"]], layer = "data")
     )
   }
-  # A supplied batch must be acknowledged before any analysis or input error.
   expect_warning(
     expect_error(WNN_integrate(batch = "sample", verbose = FALSE), "must be provided"),
     "does not perform batch correction"

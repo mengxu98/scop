@@ -1,9 +1,3 @@
-# Backend parity: the cpp aggregation and the reference R aggregation of
-# observed label pairs must return identical pair tables, including row order
-# (deterministic ordering added in spatial_neighborhood_observed_pairs). The
-# neighbor graph is mocked, so the regression also runs where the suggested
-# BiocNeighbors dependency is absent, as in R CMD check.
-
 spatial_parity_cells <- function(n = 60L, seed = 11L) {
   set.seed(seed)
   data.frame(

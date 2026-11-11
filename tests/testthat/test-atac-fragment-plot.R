@@ -50,7 +50,6 @@ test_that("fragment histograms preserve per-file barcode maps and ignore inactiv
   p <- ATACFragmentPlot(object, "chr1-1-1000", group.by = "group")
   expect_equal(sort(p$data$length), c(40, 50, 180, 370))
   expect_equal(sort(unique(as.character(p$data$cell))), c("A", "B", "C", "D"))
-  # An unrelated capture must not make the requested capture unreadable.
   object[["peaks"]]@fragments[[2]]@path <- file.path(directory, "absent.tsv.gz")
   p <- ATACFragmentPlot(object, "chr1-1-1000", cells = c("B", "A"))
   expect_equal(sort(p$data$length), c(40, 180))

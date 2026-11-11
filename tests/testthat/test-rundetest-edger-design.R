@@ -514,7 +514,6 @@ test_that("partial assay and renamed cells retain true sample aggregation", {
   expect_equal(SeuratObject::GetAssayData(out, assay = "peaks", layer = "counts"), before_peaks)
   expect_equal(out[[]], partial[[]])
   expect_identical(out[["existing"]], partial[["existing"]])
-  # RNA-only condition must not make the selected ATAC assay a three-condition design.
   auto <- RunDEtest(partial,
     assay = "peaks", test.use = "edgeR", layer = "counts",
     sample_col = "sample", condition_col = "condition", min.cells.sample = 5,

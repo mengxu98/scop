@@ -1,6 +1,3 @@
-# Optional synthetic integration acceptance; no mocked estimation backends.
-# Run with SCOP_RUN_NATIVE_CICERO=true and official monocle3-compatible Cicero.
-# This verifies native parity, not biological validity or real-data performance.
 test_that("coaccessibility agrees exactly with native Cicero on synthetic data", {
   skip_if(Sys.getenv("SCOP_RUN_NATIVE_CICERO") != "true", "opt-in native Cicero integration test")
   for (pkg in c("Signac", "monocle3", "cicero", "withr")) skip_if_not_installed(pkg)

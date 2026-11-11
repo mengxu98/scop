@@ -241,7 +241,6 @@ static double scenic_tree_feature_value(const NumericMatrix& expr, int row, int 
   return static_cast<double>(static_cast<float>(scenic_target_value(expr, row, feature)));
 }
 
-// Read-only columns keep per-gene candidate matrices inside the existing GBM kernel.
 struct ScenicColumnView {
   int rows;
   std::vector<const double*> columns;
@@ -631,7 +630,6 @@ static ScenicSplit scenic_best_split(
     int feature_best_right = 0;
     double left_sum = 0.0;
     int n_left = 0;
-    // Reuse cached float32 values, while sorting the current node sample order.
     const bool cached = feature >= 0 && feature < static_cast<int>(feature_order_ranks.size()) &&
       static_cast<int>(feature_order_ranks[feature].size()) == expr.nrow();
     if (cached) {
@@ -840,8 +838,6 @@ static double scenic_predict_tree(
   return 0.0;
 }
 
-// Accumulate fitted predictions, then derive residuals from the original response.
-// The same update is used by production fitting and diagnostic tree traces.
 template <typename Expr>
 static void scenic_boost_update(
     const Expr& expr, const std::vector<ScenicTreeNode>& nodes,
@@ -921,8 +917,6 @@ static void scenic_grnboost_run_targets(
       prediction[i] = means[target];
       residual[i] = y - means[target];
     }
-    // A constant response cannot yield a split or a nonzero importance. The
-    // OOB monitor otherwise repeats all rounds because its improvement is zero.
     if (constant_target) {
       scenic_profile_add_elapsed(
         profile, &ScenicGrnProfile::target_setup_seconds, target_setup_start);
@@ -1332,7 +1326,6 @@ List scenicplus_region_gbm_cpp(
     }
     means[n_regions] /= static_cast<double>(n_cells);
     weights[task].assign(n_regions, 0.0);
-    // A constant target has no edges; avoid preparing predictor caches for it.
     if (constant_response) return;
     std::vector<std::vector<double> > values;
     std::vector<std::vector<int> > ranks;

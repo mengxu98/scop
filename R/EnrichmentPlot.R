@@ -1636,7 +1636,6 @@ EnrichmentHeatmap <- function(
   do.call(GroupHeatmap, c(base_args, user_args))
 }
 
-# Render already-filtered ORA results without recomputing enrichment.
 enrichment_rank_plot <- function(
   res, db, group_use, score_col, topTerm, label_n, label_terms,
   palcolor, palette, point_size, point_alpha, label_size, label_width,
@@ -1742,8 +1741,6 @@ enrichment_rank_plot <- function(
       panel_ylim <- yr + c(-0.04, 0.20) * ys
     }
     xmax <- max(z$.rank)
-    # Ordered callouts, inspired by heatmap anno_mark. Lines anchor to the
-    # original point coordinates; labels never change rank or enrichment.
     if (nrow(hi)) {
       line_count <- lengths(strsplit(hi$.label, "\n", fixed = TRUE))
       weights <- line_count + 1.0
@@ -1763,14 +1760,10 @@ enrichment_rank_plot <- function(
 
     p <- ggplot2::ggplot(z, ggplot2::aes(.data[[".rank"]], .data[[".score"]]))
     if (nrow(z) >= 4L) {
-      # Decorative envelope of the point cloud, not a fitted enrichment score
-      # or uncertainty interval. Original point coordinates remain unchanged.
       sizes <- point_size[1] + diff(point_size) * sqrt(
         (z$.significance - size_limits[1]) / diff(size_limits)
       )
       radius <- sizes * diff(panel_ylim) / 260
-      # Compare distances in normalized panel coordinates. Split before fitting
-      # so a spline cannot bridge a visibly empty interval between point clouds.
       distance <- sqrt((diff(z$.rank) / (xmax + 0.1))^2 +
         (diff(z$.score) / diff(panel_ylim))^2)
       reach <- pmax(0.04, 1.5 * (head(sizes, -1) + utils::tail(sizes, -1)) / 260)
@@ -1782,7 +1775,6 @@ enrichment_rank_plot <- function(
         lower <- stats::predict(stats::smooth.spline(z$.rank[idx], z$.score[idx] - radius[idx], spar = 0.35), xx)$y
         mid <- (upper + lower) / 2
         half <- pmax((upper - lower) / 2, min(radius[idx]))
-        # Nested translucent silhouettes soften the outer edge.
         for (band in c(1.6, 1.3, 1)) {
           contour <- data.frame(.x = xx, .lower = mid - half * band, .upper = mid + half * band)
           p <- p + ggplot2::geom_ribbon(

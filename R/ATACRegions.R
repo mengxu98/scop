@@ -114,7 +114,6 @@ RunATACRegionMatrix <- function(
   for (file in fragments) {
     connection <- Rsamtools::TabixFile(file$path, index = file$index)
     open(connection)
-    # Each connection is closed even when parsing or counting fails.
     matrices <- tryCatch(
       {
         for (i in which(chromosomes %in% file$contigs)) {

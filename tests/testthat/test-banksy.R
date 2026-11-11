@@ -298,7 +298,6 @@ test_that("BANKSY lightweight results retain exact samples and custom columns", 
   srt <- make_banksy_seurat()
   srt$sample <- c("S1", "S1", "S1_A", "S1_A")
   srt$BANKSY_cluster <- rep("stale", 4)
-  # An earlier default result must not override the newest custom column.
   srt@tools$BANKSY <- list(clusters = data.frame(
     BANKSY_cluster = rep("stale", 4), row.names = colnames(srt)
   ))
@@ -335,7 +334,6 @@ test_that("BANKSY lightweight results retain exact samples and custom columns", 
     }
     expect_error(GetSpatialResult(compact, tool, sample = "S"), "No .* results")
     expect_error(GetSpatialResult(compact, tool, sample = "missing"), "No .* results")
-    # Retrieval uses the captured run membership even after metadata changes.
     compact$sample <- "changed"
     expect_equal(nrow(GetSpatialResult(compact, tool, sample = "S1")$clusters), 2L)
   }
@@ -448,7 +446,6 @@ test_that("BANKSY getters follow current cells and order in both storage modes",
       compact <- do.call(RunBANKSY, c(list(object = srt, store_results = FALSE), args))
     })
     for (rename in c(FALSE, TRUE)) {
-      # Reversing the existing IDs is a permutation, not detectable from sets.
       outputs <- list(detailed, compact)
       if (rename) {
         outputs <- lapply(outputs, SeuratObject::RenameCells,
@@ -521,8 +518,6 @@ test_that("BANKSY getters return typed empty results for absent fitted cells", {
         data.frame(domain = character(), count = integer())
       )
     }
-    # With detailed storage, neither assignments nor subsets require the label
-    # metadata column. The identity marker is retained independently.
     if (store) {
       single$BANKSY_cluster <- NULL
       expect_equal(nrow(GetSpatialResult(single[, "Spot2"], "BANKSY")$clusters), 0L)
@@ -582,8 +577,6 @@ test_that("BANKSY identity markers are collision safe and reused on reruns", {
       rownames(GetSpatialResult(renamed_rerun, "other_fit")$clusters),
       colnames(renamed_rerun)
     )
-    # A requested output column that collides with the old identity locator
-    # must retain its cluster labels and receive a new independent locator.
     collision <- RunBANKSY(out,
       layer = "counts", group = "sample",
       cluster_colname = column, verbose = FALSE
