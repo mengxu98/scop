@@ -19,56 +19,13 @@ meringue_test_weight <- function(srt) {
   )
 }
 
-test_that("meringue_moran_cpp matches MERINGUE::moranTest exactly", {
+test_that("meringue_moran_matrix_cpp matches MERINGUE::moranTest exactly", {
   skip_on_cran()
   skip_if_not_installed("MERINGUE")
 
   srt <- make_visium_test_subset(n = 120)
   expr <- Seurat::GetAssayData(srt, assay = SeuratObject::DefaultAssay(srt), layer = "data")
   features <- meringue_real_features(srt)
-  weight <- meringue_test_weight(srt)
-  rounding <- tryCatch(
-    identical(RNGkind()[3], "Rounding"),
-    error = function(e) FALSE
-  )
-
-  for (feature in features) {
-    z <- expr[feature, ]
-    z <- z[rownames(weight)]
-    cpp_out <- getFromNamespace("meringue_moran_cpp", "scop")(
-      z = z,
-      weight = weight,
-      n_perm = 0,
-      alternative = "greater",
-      rounding_sample = rounding
-    )
-    r_out <- MERINGUE::moranTest(z, weight, alternative = "greater")
-    expect_equal(cpp_out[["observed"]], r_out[["observed"]],
-      tolerance = 1e-12,
-      label = paste0(feature, " observed")
-    )
-    expect_equal(cpp_out[["expected"]], r_out[["expected"]],
-      tolerance = 1e-12,
-      label = paste0(feature, " expected")
-    )
-    expect_equal(cpp_out[["sd"]], r_out[["sd"]],
-      tolerance = 1e-12,
-      label = paste0(feature, " sd")
-    )
-    expect_equal(cpp_out[["p_value"]], r_out[["p.value"]],
-      tolerance = 1e-12,
-      label = paste0(feature, " p")
-    )
-  }
-})
-
-test_that("meringue_moran_matrix_cpp batch matches per-gene kernel and moranTest", {
-  skip_on_cran()
-  skip_if_not_installed("MERINGUE")
-
-  srt <- make_visium_test_subset(n = 120)
-  expr <- Seurat::GetAssayData(srt, assay = SeuratObject::DefaultAssay(srt), layer = "data")
-  features <- meringue_real_features(srt, k = 20)
   weight <- meringue_test_weight(srt)
   rounding <- tryCatch(
     identical(RNGkind()[3], "Rounding"),
@@ -82,17 +39,12 @@ test_that("meringue_moran_matrix_cpp batch matches per-gene kernel and moranTest
     rounding
   )
   for (i in seq_along(features)) {
-    feature <- features[i]
-    z <- expr[feature, ]
-    z <- z[rownames(weight)]
-    per_gene <- getFromNamespace("meringue_moran_cpp", "scop")(
-      z = z, weight = weight, n_perm = 0, alternative = "greater",
-      rounding_sample = rounding
-    )
-    expect_equal(batch[i, 1], per_gene[["observed"]], tolerance = 1e-12)
-    expect_equal(batch[i, 2], per_gene[["expected"]], tolerance = 1e-12)
-    expect_equal(batch[i, 3], per_gene[["sd"]], tolerance = 1e-12)
-    expect_equal(batch[i, 4], per_gene[["p_value"]], tolerance = 1e-12)
+    feature <- features[[i]]
+    r_out <- MERINGUE::moranTest(expr[feature, rownames(weight)], weight, alternative = "greater")
+    expect_equal(batch[i, "observed"], r_out[["observed"]], tolerance = 1e-12, label = paste0(feature, " observed"))
+    expect_equal(batch[i, "expected"], r_out[["expected"]], tolerance = 1e-12, label = paste0(feature, " expected"))
+    expect_equal(batch[i, "sd"], r_out[["sd"]], tolerance = 1e-12, label = paste0(feature, " sd"))
+    expect_equal(batch[i, "p_value"], r_out[["p.value"]], tolerance = 1e-12, label = paste0(feature, " p"))
   }
 })
 
@@ -122,7 +74,7 @@ test_that("RunMERINGUE batch cpp path matches the r backend end to end", {
   expect_identical(ct$variance, rt$variance)
 })
 
-test_that("meringue_moran_cpp permutation matches MERINGUE::moranPermutationTest", {
+test_that("meringue_moran_matrix_cpp permutation matches MERINGUE::moranPermutationTest", {
   skip_on_cran()
   skip_if_not_installed("MERINGUE")
 
@@ -136,19 +88,18 @@ test_that("meringue_moran_cpp permutation matches MERINGUE::moranPermutationTest
   )
 
   for (feature in features) {
-    z <- expr[feature, ]
-    z <- z[rownames(weight)]
     set.seed(11)
-    cpp_out <- getFromNamespace("meringue_moran_cpp", "scop")(
-      z = z,
-      weight = weight,
-      n_perm = 100,
-      alternative = "greater",
-      rounding_sample = rounding
+    cpp_out <- getFromNamespace("meringue_moran_matrix_cpp", "scop")(
+      as.matrix(expr[feature, rownames(weight), drop = FALSE]),
+      weight,
+      "greater",
+      rounding,
+      n_perm = 100L,
+      n_threads = 1L
     )
     set.seed(11)
     r_out <- MERINGUE::moranPermutationTest(
-      z = z,
+      z = expr[feature, rownames(weight)],
       w = weight,
       alternative = "greater",
       N = 100,
@@ -156,26 +107,14 @@ test_that("meringue_moran_cpp permutation matches MERINGUE::moranPermutationTest
       ncores = 1,
       plot = FALSE
     )
-    expect_equal(cpp_out[["observed"]], r_out[["observed"]],
-      tolerance = 1e-12,
-      label = paste0(feature, " observed")
-    )
-    expect_equal(cpp_out[["expected"]], r_out[["expected"]],
-      tolerance = 1e-12,
-      label = paste0(feature, " expected")
-    )
-    expect_equal(cpp_out[["sd"]], r_out[["sd"]],
-      tolerance = 1e-12,
-      label = paste0(feature, " sd")
-    )
-    expect_equal(cpp_out[["p_value"]], r_out[["p.value"]],
-      tolerance = 1e-12,
-      label = paste0(feature, " p")
-    )
+    expect_equal(cpp_out[1, "observed"], r_out[["observed"]], tolerance = 1e-12, label = paste0(feature, " observed"))
+    expect_equal(cpp_out[1, "expected"], r_out[["expected"]], tolerance = 1e-12, label = paste0(feature, " expected"))
+    expect_equal(cpp_out[1, "sd"], r_out[["sd"]], tolerance = 1e-12, label = paste0(feature, " sd"))
+    expect_equal(cpp_out[1, "p_value"], r_out[["p.value"]], tolerance = 1e-12, label = paste0(feature, " p"))
   }
 })
 
-test_that("meringue permutation batch matches the seeded per-gene kernel", {
+test_that("meringue permutation batch is invariant to thread count", {
   skip_on_cran()
   skip_if_not_installed("MERINGUE")
 
@@ -207,18 +146,16 @@ test_that("meringue permutation batch matches the seeded per-gene kernel", {
     c("observed", "expected", "sd", "p_value", "N")
   )
 
-  for (i in seq_along(features)) {
-    z <- expr[features[[i]], rownames(weight)]
-    set.seed(11)
-    per_gene <- getFromNamespace("meringue_moran_cpp", "scop")(
-      z = z,
-      weight = weight,
-      n_perm = 100L,
-      alternative = "greater",
-      rounding_sample = rounding
-    )
-    expect_equal(batch[i, ], per_gene, tolerance = 1e-12)
-  }
+  set.seed(11)
+  single <- getFromNamespace("meringue_moran_matrix_cpp", "scop")(
+    as.matrix(expr[features, rownames(weight)]),
+    weight,
+    "greater",
+    rounding,
+    n_perm = 100L,
+    n_threads = 1L
+  )
+  expect_equal(batch, single, tolerance = 1e-12)
 })
 
 test_that("RunMERINGUE cpp and r backends give identical autocorrelation tables", {

@@ -443,63 +443,6 @@ test_that("palantir_markov_chain_cpp handles single cell", {
 })
 
 
-test_that("palantir_absorption_cpp returns correct dimensions", {
-  n <- 10
-  T_i <- as.integer(c(1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10))
-  T_j <- as.integer(c(2, 3, 1, 4, 1, 5, 4, 5, 3, 6, 5, 7, 6, 8, 7, 9, 8, 10, 9, 10))
-  T_x <- rep(0.5, 20)
-
-  bp <- palantir_absorption_cpp(
-    T_i = T_i,
-    T_j = T_j,
-    T_x = T_x,
-    n = n,
-    terminal_state_indices = as.integer(c(1, 10))
-  )
-
-  expect_true(is.matrix(bp))
-  expect_equal(nrow(bp), n)
-  expect_equal(ncol(bp), 2)
-  expect_equal(bp[1, 1], 1.0)
-  expect_equal(bp[10, 2], 1.0)
-  expect_true(all(bp >= 0 & bp <= 1, na.rm = TRUE))
-})
-
-test_that("palantir_absorption_cpp row-sums are 1", {
-  n <- 8
-  T_i <- as.integer(c(1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8))
-  T_j <- as.integer(c(2, 3, 1, 4, 1, 5, 4, 5, 3, 6, 5, 7, 6, 8, 7, 8))
-  T_x <- rep(0.5, 16)
-
-  bp <- palantir_absorption_cpp(
-    T_i = T_i,
-    T_j = T_j,
-    T_x = T_x,
-    n = n,
-    terminal_state_indices = as.integer(c(1, 8))
-  )
-
-  rs <- rowSums(bp)
-  expect_equal(rs, rep(1, n), tolerance = 1e-10)
-})
-
-test_that("palantir_absorption_cpp all cells terminal", {
-  n <- 5
-  T_i <- as.integer(c(1, 2, 3, 4, 5))
-  T_j <- as.integer(c(2, 3, 4, 5, 1))
-  T_x <- rep(1.0, 5)
-
-  bp <- palantir_absorption_cpp(
-    T_i = T_i,
-    T_j = T_j,
-    T_x = T_x,
-    n = n,
-    terminal_state_indices = as.integer(1:5)
-  )
-
-  expect_equal(diag(bp), rep(1, 5))
-})
-
 test_that("palantir_row_entropy_cpp matches Palantir branch post-processing", {
   probabilities <- matrix(
     c(

@@ -410,7 +410,7 @@ test_that("DPT with n_branchings returns branch count", {
 })
 
 
-test_that("cell_dpt_pseudotime_cpp returns per-cell pseudotime", {
+test_that("cell-level DPT returns per-cell pseudotime", {
   dat <- make_paga_mock(n_cells = 12, n_groups = 3, n_neighbors = 4, seed = 9)
   knn_dist <- matrix(NA_real_, dat$n_cells, ncol(dat$knn_idx))
   for (i in seq_len(dat$n_cells)) {
@@ -424,9 +424,9 @@ test_that("cell_dpt_pseudotime_cpp returns per-cell pseudotime", {
     groups = dat$groups,
     root_group = 1L
   )
-  out <- cell_dpt_pseudotime_cpp(
-    knn_idx = dat$knn_idx,
-    knn_dist = knn_dist,
+  connectivities <- gauss_connectivities_cpp(dat$knn_idx, knn_dist)
+  out <- dpt_from_connectivities_cpp(
+    connectivities,
     root_cell = root_cells[[1L]],
     n_dcs = 3L
   )

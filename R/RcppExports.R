@@ -41,10 +41,6 @@ cellrank_schur_cpp <- function(T_, n_components = 10L) {
   .Call(`_scop_cellrank_schur_cpp`, T_, n_components)
 }
 
-cellrank_auto_n_states_cpp <- function(eigenvalues, min_states = 2L, max_states = 20L) {
-  .Call(`_scop_cellrank_auto_n_states_cpp`, eigenvalues, min_states, max_states)
-}
-
 cellrank_velocity_kernel_cpp <- function(velocity_embedding, embedding, knn_idx, backward = FALSE, softmax_scale = 4.0, n_neighbors_velo = -1L) {
   .Call(`_scop_cellrank_velocity_kernel_cpp`, velocity_embedding, embedding, knn_idx, backward, softmax_scale, n_neighbors_velo)
 }
@@ -173,18 +169,6 @@ gsva_gaussian_dense <- function(expr, gene_sets, max_diff = TRUE, abs_ranking = 
   .Call(`_scop_gsva_gaussian_dense`, expr, gene_sets, max_diff, abs_ranking, tau, chunk_size, n_threads, legacy_zero_walk)
 }
 
-gsva_poisson_dense <- function(expr, gene_sets, max_diff = TRUE, abs_ranking = FALSE, tau = 1.0, chunk_size = 0L, n_threads = 0L) {
-  .Call(`_scop_gsva_poisson_dense`, expr, gene_sets, max_diff, abs_ranking, tau, chunk_size, n_threads)
-}
-
-dense_row_has_variable_finite <- function(expr) {
-  .Call(`_scop_dense_row_has_variable_finite`, expr)
-}
-
-sparse_row_has_variable_finite <- function(expr) {
-  .Call(`_scop_sparse_row_has_variable_finite`, expr)
-}
-
 knn_vote_labels_cpp <- function(labels, n_levels) {
   .Call(`_scop_knn_vote_labels_cpp`, labels, n_levels)
 }
@@ -195,10 +179,6 @@ mdic3_score_cpp <- function(expression, grn, group) {
 
 meringue_moran_matrix_cpp <- function(expr, weight, alternative, rounding_sample = FALSE, n_perm = 0L, n_threads = 1L) {
   .Call(`_scop_meringue_moran_matrix_cpp`, expr, weight, alternative, rounding_sample, n_perm, n_threads)
-}
-
-meringue_moran_cpp <- function(z, weight, n_perm, alternative, rounding_sample = FALSE) {
-  .Call(`_scop_meringue_moran_cpp`, z, weight, n_perm, alternative, rounding_sample)
 }
 
 manifold_exact_knn_cpp <- function(data, k, metric = 1L) {
@@ -259,10 +239,6 @@ gauss_connectivities_cpp <- function(knn_idx, knn_dist) {
 
 dpt_from_connectivities_cpp <- function(connectivities, root_cell, n_dcs = 10L) {
   .Call(`_scop_dpt_from_connectivities_cpp`, connectivities, root_cell, n_dcs)
-}
-
-cell_dpt_pseudotime_cpp <- function(knn_idx, knn_dist, root_cell, n_dcs = 10L) {
-  .Call(`_scop_cell_dpt_pseudotime_cpp`, knn_idx, knn_dist, root_cell, n_dcs)
 }
 
 paga_velocity_transitions_cpp <- function(velocity_embedding, knn_idx, groups, n_groups, softmax_scale = 4.0) {
@@ -333,16 +309,8 @@ palantir_markov_chain_cpp <- function(wp_data, knn, pseudotime) {
   .Call(`_scop_palantir_markov_chain_cpp`, wp_data, knn, pseudotime)
 }
 
-palantir_absorption_cpp <- function(T_i, T_j, T_x, n, terminal_state_indices) {
-  .Call(`_scop_palantir_absorption_cpp`, T_i, T_j, T_x, n, terminal_state_indices)
-}
-
 palantir_row_entropy_cpp <- function(probabilities) {
   .Call(`_scop_palantir_row_entropy_cpp`, probabilities)
-}
-
-scanpy_filter_genes_cpp <- function(spliced, unspliced, min_counts = 3L, min_counts_u = 3L, n_threads = 0L) {
-  .Call(`_scop_scanpy_filter_genes_cpp`, spliced, unspliced, min_counts, min_counts_u, n_threads)
 }
 
 scanpy_normalize_cpp <- function(spliced, unspliced, initial_spliced_totals, initial_unspliced_totals) {
@@ -371,18 +339,6 @@ pseudotime_velocity_gradient <- function(x_emb, pseudotime, neighbors, smooth = 
 
 rctd_sparse_quality_cpp <- function(st_counts, ref_counts) {
   .Call(`_scop_rctd_sparse_quality_cpp`, st_counts, ref_counts)
-}
-
-rctd_normalize_weights_cpp <- function(weights) {
-  .Call(`_scop_rctd_normalize_weights_cpp`, weights)
-}
-
-rctd_metadata_cpp <- function(weights, all_spots) {
-  .Call(`_scop_rctd_metadata_cpp`, weights, all_spots)
-}
-
-rctd_finalize_weights_cpp <- function(weights, all_spots) {
-  .Call(`_scop_rctd_finalize_weights_cpp`, weights, all_spots)
 }
 
 estimate_ssgsea_scores_cpp <- function(ranked, sample_order, gene_sets) {
@@ -425,14 +381,6 @@ grnboost_tree_sparse_parallel <- function(expr, regulator_idx, target_idx, n_rou
   .Call(`_scop_grnboost_tree_sparse_parallel`, expr, regulator_idx, target_idx, n_rounds, learning_rate, max_edges_per_target, max_depth, max_features, subsample, early_stop_window_length, random_seed, exclude_self, cores)
 }
 
-grnboost_tree_profile <- function(expr, regulator_idx, target_idx, n_rounds = 5000L, learning_rate = 0.01, max_edges_per_target = 0L, max_depth = 3L, max_features = 0.1, subsample = 0.9, early_stop_window_length = 25L, random_seed = 1234L, exclude_self = TRUE) {
-  .Call(`_scop_grnboost_tree_profile`, expr, regulator_idx, target_idx, n_rounds, learning_rate, max_edges_per_target, max_depth, max_features, subsample, early_stop_window_length, random_seed, exclude_self)
-}
-
-scenic_ctx_recovery <- function(ranks, weights, rank_threshold) {
-  .Call(`_scop_scenic_ctx_recovery`, ranks, weights, rank_threshold)
-}
-
 scenic_ctx_auc_avg2sd <- function(ranks, total_genes, rank_threshold, rank_cutoff) {
   .Call(`_scop_scenic_ctx_auc_avg2sd`, ranks, total_genes, rank_threshold, rank_cutoff)
 }
@@ -445,20 +393,8 @@ scenicplus_triplets_cpp <- function(tf_gene_tf, tf_gene_target, tf_gene_importan
   .Call(`_scop_scenicplus_triplets_cpp`, tf_gene_tf, tf_gene_target, tf_gene_importance, region_gene_region, region_gene_gene, region_gene_score, tf_region_tf, tf_region_region, tf_region_score)
 }
 
-scanpy_normalize_log_cpp <- function(spliced, unspliced, n_threads = 0L) {
-  .Call(`_scop_scanpy_normalize_log_cpp`, spliced, unspliced, n_threads)
-}
-
-scanpy_moments_cpp <- function(spliced, unspliced, knn_idx, n_threads = 0L) {
-  .Call(`_scop_scanpy_moments_cpp`, spliced, unspliced, knn_idx, n_threads)
-}
-
 scanpy_moments_connectivities_cpp <- function(spliced, unspliced, knn_idx, compute_second_order = TRUE, n_threads = 0L) {
   .Call(`_scop_scanpy_moments_connectivities_cpp`, spliced, unspliced, knn_idx, compute_second_order, n_threads)
-}
-
-scanpy_second_order_moments_cpp <- function(spliced, unspliced, knn_idx, n_threads = 0L) {
-  .Call(`_scop_scanpy_second_order_moments_cpp`, spliced, unspliced, knn_idx, n_threads)
 }
 
 scanpy_deterministic_cpp <- function(Ms, Mu, knn_idx, embedding, fit_offset = FALSE, perc = 0.0, n_threads = 0L) {
@@ -495,10 +431,6 @@ scanpy_pseudotime_cpp <- function(velocity_embedding, embedding, knn_idx, root_c
 
 scanpy_pseudotime_graph_cpp <- function(graph_rows, graph_cols, graph_vals, graph_neg_rows, graph_neg_cols, graph_neg_vals, knn_idx, root_cells, end_points, n_dcs = 10L) {
   .Call(`_scop_scanpy_pseudotime_graph_cpp`, graph_rows, graph_cols, graph_vals, graph_neg_rows, graph_neg_cols, graph_neg_vals, knn_idx, root_cells, end_points, n_dcs)
-}
-
-scanpy_stochastic_embedding_cpp <- function(spliced, unspliced, knn_idx, embedding) {
-  .Call(`_scop_scanpy_stochastic_embedding_cpp`, spliced, unspliced, knn_idx, embedding)
 }
 
 scibet_fit_predict <- function(ref, query, labels, n_labels, n_top, additional_per_label = 0L, return_probabilities = TRUE) {

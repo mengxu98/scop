@@ -1,5 +1,9 @@
 # scop (development version)
 
+* **docs**: Dataset and `RunMonocle3()` examples load SeuratData archives directly and select a Monocle 3 lineage with igraph, so examples no longer require SeuratData or interactive Monocle 3 selection. The `pbmcmultiome_sub` example maps `seurat_annotations` to six cell types before sampling.
+
+* **refactor**: Remove unused native kernels. Tests cover the MERINGUE, PAGA, scVelo and SCENIC kernels used by analysis functions.
+
 * **fix**: `CNVPlot()` heatmaps show cells in rows and genomic features in
   columns, use method-specific neutral values, and support automatic or
   explicit color limits. The help example runs CopyKAT on public expression data.

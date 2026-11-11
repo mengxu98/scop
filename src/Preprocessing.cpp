@@ -13,38 +13,6 @@
 
 using namespace Rcpp;
 
-
-// [[Rcpp::export]]
-IntegerVector scanpy_filter_genes_cpp(
-    NumericMatrix spliced,
-    NumericMatrix unspliced,
-    int min_counts = 3,
-    int min_counts_u = 3,
-    int n_threads = 0)
-{
-  const int n_genes = spliced.nrow();
-  const int n_cells = spliced.ncol();
-  if (unspliced.nrow() != n_genes || unspliced.ncol() != n_cells)
-    thisutils::log_message("spliced and unspliced must have identical dimensions", "error");
-
-  IntegerVector keep(n_genes, 1);
-  const int threads = omp_thread_count(n_threads, n_genes);
-  #ifdef _OPENMP
-  #pragma omp parallel for num_threads(threads) schedule(dynamic, 16)
-  #endif
-  for (int g = 0; g < n_genes; ++g) {
-    double sum_s = 0.0, sum_u = 0.0;
-    for (int c = 0; c < n_cells; ++c) {
-      sum_s += spliced(g, c);
-      sum_u += unspliced(g, c);
-    }
-    if (sum_s < min_counts || sum_u < min_counts_u)
-      keep[g] = 0;
-  }
-  return keep;
-}
-
-
 // [[Rcpp::export]]
 List scanpy_normalize_cpp(
     NumericMatrix spliced,

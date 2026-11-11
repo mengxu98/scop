@@ -9,90 +9,6 @@
 
 using namespace Rcpp;
 
-
-
-// [[Rcpp::export]]
-List scanpy_normalize_log_cpp(
-    NumericMatrix spliced,
-    NumericMatrix unspliced,
-    int n_threads = 0)
-{
-  const int n_genes = spliced.nrow();
-  const int n_cells = spliced.ncol();
-  if (unspliced.nrow() != n_genes || unspliced.ncol() != n_cells)
-    thisutils::log_message("spliced and unspliced must have identical dimensions", "error");
-
-  NumericMatrix ns(n_genes, n_cells);
-  NumericMatrix nu(n_genes, n_cells);
-  const int threads = omp_thread_count(n_threads, n_cells);
-
-#ifdef _OPENMP
-#pragma omp parallel for num_threads(threads) schedule(static)
-#endif
-  for (int c = 0; c < n_cells; ++c) {
-    double cell_sum = 0.0;
-    for (int g = 0; g < n_genes; ++g)
-      cell_sum += spliced(g, c) + unspliced(g, c);
-    double scale = cell_sum > 0 ? 1e4 / cell_sum : 1.0;
-    for (int g = 0; g < n_genes; ++g) {
-      ns(g, c) = std::log1p(spliced(g, c) * scale);
-      nu(g, c) = std::log1p(unspliced(g, c) * scale);
-    }
-  }
-  return List::create(_["spliced_norm"] = ns, _["unspliced_norm"] = nu);
-}
-
-
-
-// [[Rcpp::export]]
-List scanpy_moments_cpp(
-    NumericMatrix spliced,
-    NumericMatrix unspliced,
-    IntegerMatrix knn_idx,
-    int n_threads = 0)
-{
-  const int n_genes = spliced.nrow();
-  const int n_cells = spliced.ncol();
-  const int n_neighbors = knn_idx.ncol();
-
-  if (unspliced.nrow() != n_genes || unspliced.ncol() != n_cells)
-    thisutils::log_message("spliced and unspliced must have identical dimensions", "error");
-  if (knn_idx.nrow() != n_cells)
-    thisutils::log_message("knn_idx rows must match number of cells", "error");
-
-  NumericMatrix Ms(n_genes, n_cells);
-  NumericMatrix Mu(n_genes, n_cells);
-  const int threads = omp_thread_count(n_threads, n_cells);
-
-#ifdef _OPENMP
-#pragma omp parallel for num_threads(threads) schedule(static)
-#endif
-  for (int cell = 0; cell < n_cells; ++cell) {
-    int count = 1;
-    for (int gene = 0; gene < n_genes; ++gene) {
-      Ms(gene, cell) = spliced(gene, cell);
-      Mu(gene, cell) = unspliced(gene, cell);
-    }
-    for (int col = 0; col < n_neighbors; ++col) {
-      int nb = knn_idx(cell, col);
-      if (nb == NA_INTEGER) continue;
-      nb -= 1;
-      if (nb < 0 || nb >= n_cells || nb == cell) continue;
-      ++count;
-      for (int gene = 0; gene < n_genes; ++gene) {
-        Ms(gene, cell) += spliced(gene, nb);
-        Mu(gene, cell) += unspliced(gene, nb);
-      }
-    }
-    double inv = 1.0 / count;
-    for (int gene = 0; gene < n_genes; ++gene) {
-      Ms(gene, cell) *= inv;
-      Mu(gene, cell) *= inv;
-    }
-  }
-  return List::create(_["Ms"] = Ms, _["Mu"] = Mu);
-}
-
 // [[Rcpp::export]]
 List scanpy_moments_connectivities_cpp(
     NumericMatrix spliced,
@@ -192,63 +108,6 @@ List scanpy_moments_connectivities_cpp(
     _["Mus"] = R_NilValue
   );
 }
-
-// [[Rcpp::export]]
-List scanpy_second_order_moments_cpp(
-    NumericMatrix spliced,
-    NumericMatrix unspliced,
-    IntegerMatrix knn_idx,
-    int n_threads = 0)
-{
-  const int n_genes = spliced.nrow();
-  const int n_cells = spliced.ncol();
-  const int n_neighbors = knn_idx.ncol();
-
-  if (unspliced.nrow() != n_genes || unspliced.ncol() != n_cells)
-    thisutils::log_message("spliced and unspliced must have identical dimensions", "error");
-  if (knn_idx.nrow() != n_cells)
-    thisutils::log_message("knn_idx rows must match number of cells", "error");
-
-  std::vector<std::vector<int> > adj(n_cells);
-  for (int cell = 0; cell < n_cells; ++cell) {
-    adj[cell].push_back(cell);
-  }
-  for (int cell = 0; cell < n_cells; ++cell) {
-    for (int col = 0; col < n_neighbors; ++col) {
-      int nb = knn_idx(cell, col);
-      if (nb == NA_INTEGER) continue;
-      nb -= 1;
-      if (nb < 0 || nb >= n_cells || nb == cell) continue;
-      adj[cell].push_back(nb);
-      adj[nb].push_back(cell);
-    }
-  }
-  for (int cell = 0; cell < n_cells; ++cell) {
-    std::sort(adj[cell].begin(), adj[cell].end());
-    adj[cell].erase(std::unique(adj[cell].begin(), adj[cell].end()), adj[cell].end());
-  }
-
-  NumericMatrix Mss(n_genes, n_cells);
-  NumericMatrix Mus(n_genes, n_cells);
-  const int threads = omp_thread_count(n_threads, n_cells);
-#ifdef _OPENMP
-#pragma omp parallel for num_threads(threads) schedule(static)
-#endif
-  for (int cell = 0; cell < n_cells; ++cell) {
-    const double inv = adj[cell].empty() ? 1.0 : 1.0 / static_cast<double>(adj[cell].size());
-    for (int nb : adj[cell]) {
-      for (int gene = 0; gene < n_genes; ++gene) {
-        const double s = spliced(gene, nb);
-        Mss(gene, cell) += s * s * inv;
-        Mus(gene, cell) += s * unspliced(gene, nb) * inv;
-      }
-    }
-  }
-
-  return List::create(_["Mss"] = Mss, _["Mus"] = Mus);
-}
-
-
 
 static double scanpy_quantile_linear(
     const std::vector<double>& values,
@@ -1631,22 +1490,4 @@ List scanpy_pseudotime_graph_cpp(
     _["diffusion_components"] = dc,
     _["diffusion_eigenvalues"] = evals
   );
-}
-
-
-
-// [[Rcpp::export]]
-List scanpy_stochastic_embedding_cpp(
-  NumericMatrix spliced,
-  NumericMatrix unspliced,
-  IntegerMatrix knn_idx,
-  NumericMatrix embedding
-) {
-  List moments = scanpy_moments_cpp(spliced, unspliced, knn_idx);
-  NumericMatrix Ms = moments["Ms"];
-  NumericMatrix Mu = moments["Mu"];
-  List second = scanpy_second_order_moments_cpp(spliced, unspliced, knn_idx);
-  NumericMatrix Mss = second["Mss"];
-  NumericMatrix Mus = second["Mus"];
-  return scanpy_stochastic_cpp(Ms, Mu, Mss, Mus, knn_idx, embedding);
 }
