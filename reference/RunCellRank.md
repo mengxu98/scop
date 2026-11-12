@@ -449,22 +449,22 @@ fits changing gene-set scores along pseudotime.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-11-12 03:45:19] Start standard processing workflow...
-#> ℹ [2026-11-12 03:45:19] Checking a list of <Seurat>...
-#> ! [2026-11-12 03:45:19] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-11-12 03:45:19] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-11-12 03:45:19] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-12 03:45:19] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-12 03:45:19] Number of available HVF: 2000
-#> ℹ [2026-11-12 03:45:19] Finished check
-#> ℹ [2026-11-12 03:45:19] Perform `ScaleData()`
-#> ℹ [2026-11-12 03:45:19] Perform pca linear dimension reduction
-#> ℹ [2026-11-12 03:45:20] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-11-12 03:45:20] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-12 03:45:20] Reorder clusters...
-#> ℹ [2026-11-12 03:45:20] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-12 03:45:20] Perform umap nonlinear dimension reduction
-#> ✔ [2026-11-12 03:45:28] Standard processing workflow completed
+#> ℹ [2026-11-12 05:28:38] Start standard processing workflow...
+#> ℹ [2026-11-12 05:28:38] Checking a list of <Seurat>...
+#> ! [2026-11-12 05:28:38] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-12 05:28:38] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-12 05:28:38] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-12 05:28:38] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-12 05:28:38] Number of available HVF: 2000
+#> ℹ [2026-11-12 05:28:38] Finished check
+#> ℹ [2026-11-12 05:28:38] Perform `ScaleData()`
+#> ℹ [2026-11-12 05:28:39] Perform pca linear dimension reduction
+#> ℹ [2026-11-12 05:28:39] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-11-12 05:28:39] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-12 05:28:40] Reorder clusters...
+#> ℹ [2026-11-12 05:28:40] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-12 05:28:40] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-12 05:28:49] Standard processing workflow completed
 reduction <- DefaultReduction(pancreas_sub, pattern = "UMAP")
 pancreas_sub <- RunSCVELO(
   object = pancreas_sub,
@@ -476,10 +476,10 @@ pancreas_sub <- RunSCVELO(
   backend = "cpp",
   show_plot = FALSE
 )
-#> ℹ [2026-11-12 03:45:28] Running scanpy-compatible preprocessing (15998 features -> filter + normalize)...
-#> ℹ [2026-11-12 03:45:33] Running scVelo "stochastic" mode with `backend = 'cpp'` (9699 features)
-#> ✔ [2026-11-12 03:45:37] scVelo "stochastic" mode completed
-#> ✔ [2026-11-12 03:45:37] scVelo cpp backend completed
+#> ℹ [2026-11-12 05:28:49] Running scanpy-compatible preprocessing (15998 features -> filter + normalize)...
+#> ℹ [2026-11-12 05:28:53] Running scVelo "stochastic" mode with `backend = 'cpp'` (9699 features)
+#> ✔ [2026-11-12 05:28:58] scVelo "stochastic" mode completed
+#> ✔ [2026-11-12 05:28:58] scVelo cpp backend completed
 pancreas_sub <- RunCellRank(
   object = pancreas_sub,
   group.by = "SubCellType",
@@ -490,8 +490,8 @@ pancreas_sub <- RunCellRank(
   backend = "cpp",
   show_plot = FALSE
 )
-#> ! [2026-11-12 03:45:37] RunCellRank(backend = "cpp") uses an approximate C++ implementation; results may not be completely identical to the reference python workflow.
-#> ✔ [2026-11-12 03:45:40] CellRank cpp backend ("gpcca" + "pseudotime_connectivity_combined" kernel) completed
+#> ! [2026-11-12 05:28:58] RunCellRank(backend = "cpp") uses an approximate C++ implementation; results may not be completely identical to the reference python workflow.
+#> ✔ [2026-11-12 05:29:01] CellRank cpp backend ("gpcca" + "pseudotime_connectivity_combined" kernel) completed
 
 CellDimPlot(
   pancreas_sub,
@@ -529,17 +529,17 @@ pancreas_sub <- RunDynamicFeatures(
   features = c("Rbp4", "Sst", "Pyy"),
   assay = "RNA"
 )
-#> ℹ [2026-11-12 03:45:41] Start find dynamic features
-#> ℹ [2026-11-12 03:45:42] Data type is raw counts
-#> ℹ [2026-11-12 03:45:42] Number of candidate features (union): 3
-#> ℹ [2026-11-12 03:45:42] Data type is raw counts
-#> ℹ [2026-11-12 03:45:42] Calculating dynamic features for "stochastic_pseudotime"...
-#> ℹ [2026-11-12 03:45:42] Using 1 core
-#> ⠙ [2026-11-12 03:45:42] Running for 1 [1/3] ■■■         33% | ETA:  0s
-#> ✔ [2026-11-12 03:45:42] Completed 3 tasks in 139ms
+#> ℹ [2026-11-12 05:29:02] Start find dynamic features
+#> ℹ [2026-11-12 05:29:03] Data type is raw counts
+#> ℹ [2026-11-12 05:29:03] Number of candidate features (union): 3
+#> ℹ [2026-11-12 05:29:03] Data type is raw counts
+#> ℹ [2026-11-12 05:29:03] Calculating dynamic features for "stochastic_pseudotime"...
+#> ℹ [2026-11-12 05:29:03] Using 1 core
+#> ⠙ [2026-11-12 05:29:03] Running for 1 [1/3] ■■■         33% | ETA:  0s
+#> ✔ [2026-11-12 05:29:03] Completed 3 tasks in 150ms
 #> 
-#> ℹ [2026-11-12 03:45:42] Building results
-#> ✔ [2026-11-12 03:45:42] Find dynamic features done
+#> ℹ [2026-11-12 05:29:03] Building results
+#> ✔ [2026-11-12 05:29:03] Find dynamic features done
 
 DynamicHeatmap(
   pancreas_sub,

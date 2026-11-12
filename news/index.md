@@ -17,8 +17,23 @@
   interactive Monocle 3 selection. The `pbmcmultiome_sub` example maps
   `seurat_annotations` to six cell types before sampling.
 
-- **refactor**: Remove unused native kernels. Tests cover the MERINGUE,
-  PAGA, scVelo and SCENIC kernels used by analysis functions.
+- **docs**:
+  [`RunKNNPredict()`](https://mengxu98.github.io/scop/reference/RunKNNPredict.md)
+  examples again annotate `pancreas_sub` with the bundled `ref_scMCA`
+  bulk reference, including low-frequency filtering and cluster-level
+  annotation. Four `ref_scMCA` cell type labels with mis-encoded
+  characters (for example `β-cell(Pancreas)`) now match the original
+  scMCA names; expression values are unchanged.
+
+- **test**: The bulk-container initialization test checks for stack
+  imbalance only, so DelayedArray re-exports from S4Arrays built with
+  retained sources no longer fail the check.
+
+- **refactor**: Remove unused native kernels and internal helpers.
+  CellRank transition validation, stationary distribution and Schur
+  routines and the proportion bootstrap sampler are internal to their
+  entry points; unused Python scCODA and SCENIC command-line helpers and
+  stale global variable declarations are removed.
 
 - **fix**:
   [`CNVPlot()`](https://mengxu98.github.io/scop/reference/CNVPlot.md)

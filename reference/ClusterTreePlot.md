@@ -178,7 +178,7 @@ data when `return_data = TRUE`.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub, verbose = FALSE)
-#> ℹ [2026-11-12 03:26:20] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-12 05:08:53] Skip `log1p()` because `layer = data` is not "counts"
 pancreas_sub <- Seurat::FindNeighbors(
   pancreas_sub,
   reduction = "Standardpca",
@@ -191,12 +191,12 @@ pancreas_sub <- Seurat::FindClusters(
   verbose = FALSE
 )
 ClusterTreePlot(pancreas_sub)
-#> ℹ [2026-11-12 03:26:28] Multiple clustering prefixes detected. Use "RNA_snn" for `ClusterTreePlot()`. Pass `prefix` to choose another prefix.
+#> ℹ [2026-11-12 05:09:01] Multiple clustering prefixes detected. Use "RNA_snn" for `ClusterTreePlot()`. Pass `prefix` to choose another prefix.
 
 
 ClusterTreePlot(
   pancreas_sub,
   features = c("Ins1", "Gcg")
 )
-#> ℹ [2026-11-12 03:26:28] Multiple clustering prefixes detected. Use "RNA_snn" for `ClusterTreePlot()`. Pass `prefix` to choose another prefix.
+#> ℹ [2026-11-12 05:09:01] Multiple clustering prefixes detected. Use "RNA_snn" for `ClusterTreePlot()`. Pass `prefix` to choose another prefix.
 ```

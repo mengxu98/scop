@@ -122,17 +122,17 @@ pancreas_sub <- RunStandardWorkflow(
   nonlinear_reduction_dims = 2,
   verbose = FALSE
 )
-#> ℹ [2026-11-12 04:13:21] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-12 05:57:47] Skip `log1p()` because `layer = data` is not "counts"
 
 mc1 <- RunMetaCell(
   pancreas_sub,
   method = "supercell",
   gamma = 20
 )
-#> ℹ [2026-11-12 04:13:30] Running SuperCell with gamma = 20, k.knn = 5 on 1000 cells
-#> ℹ [2026-11-12 04:13:31] `RunMetaCell()` ("supercell") built 50 metacells from 1000 cells
-#> ℹ [2026-11-12 04:13:31] Metacell size summary: min 5, median 16.5, mean 20, max 56 cells
-#> ✔ [2026-11-12 04:13:31] `RunMetaCell()` returned metacell Seurat with 50 metacells. Original cells in `@misc[["original_srt"]]`
+#> ℹ [2026-11-12 05:57:57] Running SuperCell with gamma = 20, k.knn = 5 on 1000 cells
+#> ℹ [2026-11-12 05:57:58] `RunMetaCell()` ("supercell") built 50 metacells from 1000 cells
+#> ℹ [2026-11-12 05:57:58] Metacell size summary: min 5, median 16.5, mean 20, max 56 cells
+#> ✔ [2026-11-12 05:57:58] `RunMetaCell()` returned metacell Seurat with 50 metacells. Original cells in `@misc[["original_srt"]]`
 
 MetaCellPlot(mc1, group.by = "CellType")
 
@@ -142,10 +142,10 @@ mc2 <- RunMetaCell(
   method = "metacell",
   gamma = 20
 )
-#> ℹ [2026-11-12 04:13:34] Running MetaCell-style KNN partitioning with k = 20 on 1000 cells
-#> ℹ [2026-11-12 04:13:34] `RunMetaCell()` ("metacell") built 8 metacells from 1000 cells
-#> ℹ [2026-11-12 04:13:34] Metacell size summary: min 17, median 136.5, mean 125, max 206 cells
-#> ✔ [2026-11-12 04:13:34] `RunMetaCell()` returned metacell Seurat with 8 metacells. Original cells in `@misc[["original_srt"]]`
+#> ℹ [2026-11-12 05:58:01] Running MetaCell-style KNN partitioning with k = 20 on 1000 cells
+#> ℹ [2026-11-12 05:58:01] `RunMetaCell()` ("metacell") built 8 metacells from 1000 cells
+#> ℹ [2026-11-12 05:58:01] Metacell size summary: min 17, median 136.5, mean 125, max 206 cells
+#> ✔ [2026-11-12 05:58:01] `RunMetaCell()` returned metacell Seurat with 8 metacells. Original cells in `@misc[["original_srt"]]`
 
 MetaCellPlot(mc2, group.by = "CellType")
 ```

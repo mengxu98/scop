@@ -225,10 +225,10 @@ paired <- WNN_integrate(
   nHVF = 100, neighbor_k = 10, nonlinear_reduction_dims = 2,
   verbose = FALSE
 )
-#> ℹ [2026-11-12 04:27:46] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-12 04:27:54] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-12 04:28:02] Reorder clusters...
-#> ℹ [2026-11-12 04:28:03] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-12 06:12:59] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-12 06:13:08] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-12 06:13:17] Reorder clusters...
+#> ℹ [2026-11-12 06:13:17] Skip `log1p()` because `layer = data` is not "counts"
 SeuratObject::Reductions(paired)
 #> [1] "RNApca"        "RNApcaUMAP2D"  "RNAUMAP2D"     "ATACsvd"      
 #> [5] "ATACsvdUMAP2D" "ATACUMAP2D"    "ATAClsi"       "WNNUMAP2D"    

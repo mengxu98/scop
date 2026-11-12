@@ -177,17 +177,13 @@ tissue.</p>
 <span></span>
 <span><span class="va">bench</span><span class="op">$</span><span class="va">summary</span></span>
 <span><span class="co">#&gt;        method      workflow ARI NMI purity runtime_s baseline_memory_mb</span></span>
-<span><span class="co">#&gt; 1  BayesSpace SpatialDomain   1   1      1    14.036           290.5117</span></span>
-<span><span class="co">#&gt; 2      BANKSY SpatialDomain  NA  NA     NA     5.415           290.5078</span></span>
-<span><span class="co">#&gt; 3 SmoothClust SpatialDomain   1   1      1     6.054           290.5156</span></span>
-<span><span class="co">#&gt;   peak_memory_mb memory_delta_mb n_evaluated n_clusters  status</span></span>
-<span><span class="co">#&gt; 1      1090.0156        799.5039          36          3 success</span></span>
-<span><span class="co">#&gt; 2       802.4141        511.9062           0         NA  failed</span></span>
-<span><span class="co">#&gt; 3       972.6445        682.1289          36          3 success</span></span>
-<span><span class="co">#&gt;                                                          error</span></span>
-<span><span class="co">#&gt; 1                                                             </span></span>
-<span><span class="co">#&gt; 2 lazy=TRUE only supports M=0 (no AGF). Use lazy=FALSE for AGF</span></span>
-<span><span class="co">#&gt; 3</span></span></code></pre></div>
+<span><span class="co">#&gt; 1  BayesSpace SpatialDomain   1   1      1    14.411           290.3008</span></span>
+<span><span class="co">#&gt; 2      BANKSY SpatialDomain   1   1      1     6.728           290.2422</span></span>
+<span><span class="co">#&gt; 3 SmoothClust SpatialDomain   1   1      1     6.501           290.2500</span></span>
+<span><span class="co">#&gt;   peak_memory_mb memory_delta_mb n_evaluated n_clusters  status error</span></span>
+<span><span class="co">#&gt; 1      1089.0938        798.7930          36          3 success      </span></span>
+<span><span class="co">#&gt; 2       948.5703        658.3281          36          3 success      </span></span>
+<span><span class="co">#&gt; 3       972.4336        682.1836          36          3 success</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="inspect-the-result-object">Inspect the result object<a class="anchor" aria-label="anchor" href="#inspect-the-result-object"></a>
@@ -207,17 +203,17 @@ tissue.</p>
 <span><span class="co">#&gt; 'data.frame':    3 obs. of  13 variables:</span></span>
 <span><span class="co">#&gt;  $ method            : chr  "BayesSpace" "BANKSY" "SmoothClust"</span></span>
 <span><span class="co">#&gt;  $ workflow          : chr  "SpatialDomain" "SpatialDomain" "SpatialDomain"</span></span>
-<span><span class="co">#&gt;  $ ARI               : num  1 NA 1</span></span>
-<span><span class="co">#&gt;  $ NMI               : num  1 NA 1</span></span>
-<span><span class="co">#&gt;  $ purity            : num  1 NA 1</span></span>
-<span><span class="co">#&gt;  $ runtime_s         : num  14.04 5.42 6.05</span></span>
-<span><span class="co">#&gt;  $ baseline_memory_mb: num  291 291 291</span></span>
-<span><span class="co">#&gt;  $ peak_memory_mb    : num  1090 802 973</span></span>
-<span><span class="co">#&gt;  $ memory_delta_mb   : num  800 512 682</span></span>
-<span><span class="co">#&gt;  $ n_evaluated       : int  36 0 36</span></span>
-<span><span class="co">#&gt;  $ n_clusters        : int  3 NA 3</span></span>
-<span><span class="co">#&gt;  $ status            : chr  "success" "failed" "success"</span></span>
-<span><span class="co">#&gt;  $ error             : chr  "" "lazy=TRUE only supports M=0 (no AGF). Use lazy=FALSE for AGF" ""</span></span>
+<span><span class="co">#&gt;  $ ARI               : num  1 1 1</span></span>
+<span><span class="co">#&gt;  $ NMI               : num  1 1 1</span></span>
+<span><span class="co">#&gt;  $ purity            : num  1 1 1</span></span>
+<span><span class="co">#&gt;  $ runtime_s         : num  14.41 6.73 6.5</span></span>
+<span><span class="co">#&gt;  $ baseline_memory_mb: num  290 290 290</span></span>
+<span><span class="co">#&gt;  $ peak_memory_mb    : num  1089 949 972</span></span>
+<span><span class="co">#&gt;  $ memory_delta_mb   : num  799 658 682</span></span>
+<span><span class="co">#&gt;  $ n_evaluated       : int  36 36 36</span></span>
+<span><span class="co">#&gt;  $ n_clusters        : int  3 3 3</span></span>
+<span><span class="co">#&gt;  $ status            : chr  "success" "success" "success"</span></span>
+<span><span class="co">#&gt;  $ error             : chr  "" "" ""</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">bench</span><span class="op">$</span><span class="va">predictions</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   spot_id gold_standard     method prediction</span></span>
 <span><span class="co">#&gt; 1   spot1          left BayesSpace          1</span></span>

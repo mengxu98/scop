@@ -241,7 +241,7 @@ A `ggplot` or patchwork object, or a list with `plot` and `data` when
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub, verbose = FALSE)
-#> ℹ [2026-11-12 03:28:50] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-12 05:11:30] Skip `log1p()` because `layer = data` is not "counts"
 pancreas_sub <- RunDorothea(
   pancreas_sub,
   layer = "counts",
@@ -249,9 +249,9 @@ pancreas_sub <- RunDorothea(
   method = "ulm",
   minsize = 5
 )
-#> ℹ [2026-11-12 03:28:58] Run "DoRothEA"/decoupleR with 12895 regulon edges
-#> ℹ [2026-11-12 03:29:08] "DoRothEA" TF activity scores stored in assay "dorothea"
-#> ℹ [2026-11-12 03:29:09] "DoRothEA" TF activity scores stored in <Seurat> metadata
+#> ℹ [2026-11-12 05:11:37] Run "DoRothEA"/decoupleR with 12895 regulon edges
+#> ℹ [2026-11-12 05:11:48] "DoRothEA" TF activity scores stored in assay "dorothea"
+#> ℹ [2026-11-12 05:11:48] "DoRothEA" TF activity scores stored in <Seurat> metadata
 
 DorotheaPlot(
   pancreas_sub,
@@ -261,7 +261,7 @@ DorotheaPlot(
   plot_type = "bar",
   top_n = 20
 )
-#> ℹ [2026-11-12 03:29:09] Compare "DoRothEA" TF activity: "Endocrine" vs "Ductal"
+#> ℹ [2026-11-12 05:11:48] Compare "DoRothEA" TF activity: "Endocrine" vs "Ductal"
 
 
 DorotheaPlot(
@@ -272,7 +272,7 @@ DorotheaPlot(
   plot_type = "lollipop",
   top_n = 20
 )
-#> ℹ [2026-11-12 03:29:09] Compare "DoRothEA" TF activity: "Endocrine" vs "Ductal"
+#> ℹ [2026-11-12 05:11:49] Compare "DoRothEA" TF activity: "Endocrine" vs "Ductal"
 
 
 DorotheaPlot(
@@ -282,7 +282,7 @@ DorotheaPlot(
   group2 = "Ductal",
   plot_type = "volcano"
 )
-#> ℹ [2026-11-12 03:29:10] Compare "DoRothEA" TF activity: "Endocrine" vs "Ductal"
+#> ℹ [2026-11-12 05:11:50] Compare "DoRothEA" TF activity: "Endocrine" vs "Ductal"
 
 
 tfs <- head(rownames(pancreas_sub[["dorothea"]]), 20)
@@ -303,7 +303,7 @@ DorotheaPlot(
   features = "Sox9",
   plot_type = "dim"
 )
-#> ℹ [2026-11-12 03:29:11] Draw "DoRothEA" embedding plots for 1 TFs
+#> ℹ [2026-11-12 05:11:51] Draw "DoRothEA" embedding plots for 1 TFs
 
 
 FeatureStatPlot(
@@ -331,6 +331,6 @@ DorotheaPlot(
   features = "Sox9",
   plot_type = "targets"
 )
-#> ! [2026-11-12 03:29:13] Dropping 3 "Sox9" targets missing from assay "RNA"
-#> ℹ [2026-11-12 03:29:13] Draw "DoRothEA" regulon-target volcano for "Sox9" (10 targets)
+#> ! [2026-11-12 05:11:53] Dropping 3 "Sox9" targets missing from assay "RNA"
+#> ℹ [2026-11-12 05:11:53] Draw "DoRothEA" regulon-target volcano for "Sox9" (10 targets)
 ```
