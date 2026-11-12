@@ -733,6 +733,7 @@ env_module_requirements <- function() {
   list(
     scanpy = env_python_spec(c(
       "scanpy" = "scanpy==1.11.3",
+      "pynndescent" = "pynndescent==0.6.0",
       "loompy" = "loompy"
     )),
     scvi = env_python_spec(
