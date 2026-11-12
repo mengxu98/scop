@@ -29,18 +29,6 @@ cellrank_hard_threshold_kernel_cpp <- function(connectivities, pseudotime, frac_
   .Call(`_scop_cellrank_hard_threshold_kernel_cpp`, connectivities, pseudotime, frac_to_keep, backward)
 }
 
-cellrank_validate_transition_matrix_cpp <- function(T_, eps = 1e-10, min_self_loop = 0.01) {
-  .Call(`_scop_cellrank_validate_transition_matrix_cpp`, T_, eps, min_self_loop)
-}
-
-cellrank_stationary_distribution_cpp <- function(T_, max_iter = 1000L, tol = 1e-10) {
-  .Call(`_scop_cellrank_stationary_distribution_cpp`, T_, max_iter, tol)
-}
-
-cellrank_schur_cpp <- function(T_, n_components = 10L) {
-  .Call(`_scop_cellrank_schur_cpp`, T_, n_components)
-}
-
 cellrank_velocity_kernel_cpp <- function(velocity_embedding, embedding, knn_idx, backward = FALSE, softmax_scale = 4.0, n_neighbors_velo = -1L) {
   .Call(`_scop_cellrank_velocity_kernel_cpp`, velocity_embedding, embedding, knn_idx, backward, softmax_scale, n_neighbors_velo)
 }
@@ -319,10 +307,6 @@ scanpy_normalize_cpp <- function(spliced, unspliced, initial_spliced_totals, ini
 
 scanpy_knn_cpp <- function(coords, n_neighbors = 10L, exclude_self = TRUE, n_threads = 0L) {
   .Call(`_scop_scanpy_knn_cpp`, coords, n_neighbors, exclude_self, n_threads)
-}
-
-proportion_bootstrap_log2fd <- function(v1, v2, n_bootstrap = 1000L, pseudocount = 1e-5, verbose = FALSE) {
-  .Call(`_scop_proportion_bootstrap_log2fd`, v1, v2, n_bootstrap, pseudocount, verbose)
 }
 
 proportion_bootstrap_stats <- function(v1, v2, n_bootstrap = 1000L, pseudocount = 1e-5, verbose = FALSE) {

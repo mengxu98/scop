@@ -118,6 +118,42 @@ Default is \code{TRUE}.}
 Performs KNN prediction to annotate cell types based on reference scRNA-seq or bulk RNA-seq data.
 }
 \examples{
+data(pancreas_sub)
+data(ref_scMCA)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
+
+pancreas_sub <- RunKNNPredict(
+  srt_query = pancreas_sub,
+  bulk_ref = ref_scMCA
+)
+CellDimPlot(
+  pancreas_sub,
+  group.by = "KNNPredict_classification",
+  label = TRUE
+)
+
+pancreas_sub <- RunKNNPredict(
+  srt_query = pancreas_sub,
+  bulk_ref = ref_scMCA,
+  filter_lowfreq = 30
+)
+CellDimPlot(
+  pancreas_sub,
+  group.by = "KNNPredict_classification",
+  label = TRUE
+)
+
+pancreas_sub <- RunKNNPredict(
+  srt_query = pancreas_sub,
+  query_group = "SubCellType",
+  bulk_ref = ref_scMCA
+)
+CellDimPlot(
+  pancreas_sub,
+  group.by = "KNNPredict_classification",
+  label = TRUE
+)
+
 data(panc8_sub)
 keep <- panc8_sub$celltype \%in\% c("ductal", "alpha", "beta")
 reference <- Seurat::NormalizeData(

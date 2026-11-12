@@ -124,44 +124,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// cellrank_validate_transition_matrix_cpp
-List cellrank_validate_transition_matrix_cpp(NumericMatrix T_, double eps, double min_self_loop);
-RcppExport SEXP _scop_cellrank_validate_transition_matrix_cpp(SEXP T_SEXP, SEXP epsSEXP, SEXP min_self_loopSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type T_(T_SEXP);
-    Rcpp::traits::input_parameter< double >::type eps(epsSEXP);
-    Rcpp::traits::input_parameter< double >::type min_self_loop(min_self_loopSEXP);
-    rcpp_result_gen = Rcpp::wrap(cellrank_validate_transition_matrix_cpp(T_, eps, min_self_loop));
-    return rcpp_result_gen;
-END_RCPP
-}
-// cellrank_stationary_distribution_cpp
-NumericVector cellrank_stationary_distribution_cpp(NumericMatrix T_, int max_iter, double tol);
-RcppExport SEXP _scop_cellrank_stationary_distribution_cpp(SEXP T_SEXP, SEXP max_iterSEXP, SEXP tolSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type T_(T_SEXP);
-    Rcpp::traits::input_parameter< int >::type max_iter(max_iterSEXP);
-    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
-    rcpp_result_gen = Rcpp::wrap(cellrank_stationary_distribution_cpp(T_, max_iter, tol));
-    return rcpp_result_gen;
-END_RCPP
-}
-// cellrank_schur_cpp
-List cellrank_schur_cpp(NumericMatrix T_, int n_components);
-RcppExport SEXP _scop_cellrank_schur_cpp(SEXP T_SEXP, SEXP n_componentsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type T_(T_SEXP);
-    Rcpp::traits::input_parameter< int >::type n_components(n_componentsSEXP);
-    rcpp_result_gen = Rcpp::wrap(cellrank_schur_cpp(T_, n_components));
-    return rcpp_result_gen;
-END_RCPP
-}
 // cellrank_velocity_kernel_cpp
 NumericMatrix cellrank_velocity_kernel_cpp(NumericMatrix velocity_embedding, NumericMatrix embedding, IntegerMatrix knn_idx, bool backward, double softmax_scale, int n_neighbors_velo);
 RcppExport SEXP _scop_cellrank_velocity_kernel_cpp(SEXP velocity_embeddingSEXP, SEXP embeddingSEXP, SEXP knn_idxSEXP, SEXP backwardSEXP, SEXP softmax_scaleSEXP, SEXP n_neighbors_veloSEXP) {
@@ -1169,21 +1131,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// proportion_bootstrap_log2fd
-NumericVector proportion_bootstrap_log2fd(NumericVector v1, NumericVector v2, int n_bootstrap, double pseudocount, bool verbose);
-RcppExport SEXP _scop_proportion_bootstrap_log2fd(SEXP v1SEXP, SEXP v2SEXP, SEXP n_bootstrapSEXP, SEXP pseudocountSEXP, SEXP verboseSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type v1(v1SEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type v2(v2SEXP);
-    Rcpp::traits::input_parameter< int >::type n_bootstrap(n_bootstrapSEXP);
-    Rcpp::traits::input_parameter< double >::type pseudocount(pseudocountSEXP);
-    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(proportion_bootstrap_log2fd(v1, v2, n_bootstrap, pseudocount, verbose));
-    return rcpp_result_gen;
-END_RCPP
-}
 // proportion_bootstrap_stats
 List proportion_bootstrap_stats(NumericVector v1, NumericVector v2, int n_bootstrap, double pseudocount, bool verbose);
 RcppExport SEXP _scop_proportion_bootstrap_stats(SEXP v1SEXP, SEXP v2SEXP, SEXP n_bootstrapSEXP, SEXP pseudocountSEXP, SEXP verboseSEXP) {
@@ -2064,9 +2011,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_ccc_aggregate_liana_table_cpp", (DL_FUNC) &_scop_ccc_aggregate_liana_table_cpp, 12},
     {"_scop_cibersort_cpp", (DL_FUNC) &_scop_cibersort_cpp, 8},
     {"_scop_cellrank_hard_threshold_kernel_cpp", (DL_FUNC) &_scop_cellrank_hard_threshold_kernel_cpp, 4},
-    {"_scop_cellrank_validate_transition_matrix_cpp", (DL_FUNC) &_scop_cellrank_validate_transition_matrix_cpp, 3},
-    {"_scop_cellrank_stationary_distribution_cpp", (DL_FUNC) &_scop_cellrank_stationary_distribution_cpp, 3},
-    {"_scop_cellrank_schur_cpp", (DL_FUNC) &_scop_cellrank_schur_cpp, 2},
     {"_scop_cellrank_velocity_kernel_cpp", (DL_FUNC) &_scop_cellrank_velocity_kernel_cpp, 6},
     {"_scop_cellrank_connectivity_kernel_cpp", (DL_FUNC) &_scop_cellrank_connectivity_kernel_cpp, 2},
     {"_scop_cellrank_pseudotime_kernel_cpp", (DL_FUNC) &_scop_cellrank_pseudotime_kernel_cpp, 5},
@@ -2137,7 +2081,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_palantir_row_entropy_cpp", (DL_FUNC) &_scop_palantir_row_entropy_cpp, 1},
     {"_scop_scanpy_normalize_cpp", (DL_FUNC) &_scop_scanpy_normalize_cpp, 4},
     {"_scop_scanpy_knn_cpp", (DL_FUNC) &_scop_scanpy_knn_cpp, 4},
-    {"_scop_proportion_bootstrap_log2fd", (DL_FUNC) &_scop_proportion_bootstrap_log2fd, 5},
     {"_scop_proportion_bootstrap_stats", (DL_FUNC) &_scop_proportion_bootstrap_stats, 5},
     {"_scop_pseudotime_velocity_knn", (DL_FUNC) &_scop_pseudotime_velocity_knn, 4},
     {"_scop_pseudotime_velocity_gradient", (DL_FUNC) &_scop_pseudotime_velocity_gradient, 5},

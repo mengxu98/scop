@@ -25,7 +25,6 @@ sys.path = [
 import anndata as ad
 import numpy as np
 import pandas as pd
-from pathlib import Path
 
 try:
     from log_message import log_message

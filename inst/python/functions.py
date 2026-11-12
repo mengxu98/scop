@@ -350,7 +350,6 @@ def SCVELO(
     import matplotlib.pyplot as plt
     import scvelo as scv
     import scanpy as sc
-    import pandas as pd
     import numpy as np
     from scipy import sparse
     import warnings
@@ -1002,7 +1001,7 @@ def compute_transition_matrix(kernel, verbose=True, **kwargs):
                 )
             try:
                 import numpy as np
-                from scipy.sparse import issparse, csr_matrix
+                from scipy.sparse import issparse
 
                 if hasattr(kernel, "connectivity"):
                     conn = kernel.connectivity
@@ -1073,7 +1072,7 @@ def fix_transition_matrix(kernel, verbose=True):
     """
     try:
         import numpy as np
-        from scipy.sparse import diags, issparse, csr_matrix
+        from scipy.sparse import diags, issparse
 
         tmat = kernel.transition_matrix
         matrix_modified = False
@@ -3183,7 +3182,6 @@ def CellRank(
                     message_type="warning",
                     verbose=verbose,
                 )
-                import traceback
 
                 log_message(
                     "Projection error traceback: {.val {traceback.format_exc()}}",
@@ -3953,7 +3951,6 @@ def Palantir(
         )
 
     import matplotlib.pyplot as plt
-    import matplotlib
     import statistics
     from math import hypot
     import sys
@@ -4319,10 +4316,7 @@ def WOT(
 
     import matplotlib.pyplot as plt
     import scanpy as sc
-    import numpy as np
-    import statistics
     import pandas as pd
-    from math import hypot
     import sys
     import importlib.abc
 
@@ -4944,7 +4938,6 @@ def CellTypist(
     """
     import os
     import platform
-    import sys
 
     os.environ["OMP_NUM_THREADS"] = "1"
     os.environ["OPENBLAS_NUM_THREADS"] = "1"
@@ -5514,80 +5507,6 @@ def _sccoda_resolve_reference(reference_cell_type, cell_types):
             f"'{ref_cell}'. Choose one of {list(cell_types)} or 'automatic'."
         )
     return ref_cell
-
-
-def _sccoda_fallback_pair(
-    counts_df,
-    meta_df,
-    condition_key,
-    cluster_1,
-    cluster_2,
-    credible_effect_threshold=0.95,
-):
-    import numpy as np
-    import pandas as pd
-
-    try:
-        from scipy import stats as scipy_stats
-    except Exception:
-        scipy_stats = None
-
-    keep = meta_df[condition_key].isin([cluster_1, cluster_2])
-    sub_meta = meta_df.loc[keep].copy()
-    if sub_meta.empty:
-        return pd.DataFrame()
-
-    sub_counts = counts_df.loc[sub_meta.index].copy()
-    row_sum = sub_counts.sum(axis=1).replace(0, np.nan)
-    props = sub_counts.div(row_sum, axis=0).fillna(0.0)
-
-    results = []
-    for ct in props.columns:
-        v1 = props.loc[sub_meta[condition_key] == cluster_1, ct].astype(float).to_numpy()
-        v2 = props.loc[sub_meta[condition_key] == cluster_2, ct].astype(float).to_numpy()
-
-        m1 = np.nanmean(v1) if v1.size else np.nan
-        m2 = np.nanmean(v2) if v2.size else np.nan
-        log2fd = float(np.log2((m1 + 1e-8) / (m2 + 1e-8)))
-
-        pval = np.nan
-        if scipy_stats is not None and v1.size >= 2 and v2.size >= 2:
-            try:
-                pval = float(
-                    scipy_stats.ttest_ind(v1, v2, equal_var=False, nan_policy="omit").pvalue
-                )
-            except Exception:
-                pval = np.nan
-
-        if np.isnan(pval):
-            inclusion_prob = float(1 - np.exp(-abs(log2fd)))
-        else:
-            inclusion_prob = float(max(0.0, min(1.0, 1.0 - pval)))
-
-        results.append(
-            {
-                "clusters": str(ct),
-                "obs_log2FD": log2fd,
-                "pval": pval,
-                "inclusion_prob": inclusion_prob,
-                "credible": bool(inclusion_prob >= credible_effect_threshold),
-                "boot_mean_log2FD": np.nan,
-                "boot_CI_2.5": np.nan,
-                "boot_CI_97.5": np.nan,
-            }
-        )
-
-    out = pd.DataFrame(results)
-    if "pval" in out.columns:
-        if out["pval"].notna().any():
-            out["FDR"] = out["pval"].rank(method="average", na_option="bottom") / max(
-                1, out["pval"].notna().sum()
-            )
-        else:
-            out["FDR"] = np.nan
-    else:
-        out["FDR"] = np.nan
-    return out
 
 
 def ScCODA(
@@ -6355,72 +6274,6 @@ def RunSCENICAUCell(
     return {"auc_output": auc_output}
 
 
-def RunSCENICCli(
-    expression_mtx,
-    regulators,
-    ranking_dbs,
-    motif_annotations,
-    adj_output,
-    ctx_output,
-    gmt_output,
-    txt_output,
-    min_regulon_size=10,
-    cores=1,
-    seed=1234,
-    force=False,
-    verbose=True,
-):
-    """Run GRNBoost2, SCENIC ctx, and regulon conversion."""
-    expression_mtx = str(Path(expression_mtx).expanduser())
-    regulators = str(Path(regulators).expanduser())
-    motif_annotations = str(Path(motif_annotations).expanduser())
-    ranking_dbs = [str(Path(x).expanduser()) for x in ranking_dbs]
-    adj_output = str(Path(adj_output).expanduser())
-    ctx_output = str(Path(ctx_output).expanduser())
-    gmt_output = str(Path(gmt_output).expanduser())
-    txt_output = str(Path(txt_output).expanduser())
-
-    RunSCENICGrn(
-        expression_mtx=expression_mtx,
-        regulators=regulators,
-        adj_output=adj_output,
-        cores=cores,
-        seed=seed,
-        force=force,
-        verbose=verbose,
-    )
-    RunSCENICCtx(
-        expression_mtx=expression_mtx,
-        ranking_dbs=ranking_dbs,
-        motif_annotations=motif_annotations,
-        adj_output=adj_output,
-        ctx_output=ctx_output,
-        cores=cores,
-        force=force,
-        verbose=verbose,
-    )
-
-    if force or not Path(gmt_output).exists() or not Path(txt_output).exists():
-        SCENICRegulonsToFiles(
-            ctx_output,
-            gmt_output,
-            txt_output,
-            min_regulon_size=min_regulon_size,
-        )
-    else:
-        log_message(
-            "Reusing existing SCENIC regulon files",
-            verbose=verbose,
-        )
-
-    return {
-        "adj_output": adj_output,
-        "ctx_output": ctx_output,
-        "gmt_output": gmt_output,
-        "txt_output": txt_output,
-    }
-
-
 def RunSEACells(
     adata,
     n_SEACells,
@@ -6554,7 +6407,6 @@ def CellRankTrends(
 ):
     """Fit and cluster CellRank GAM trends and return plain R-friendly arrays."""
     import numpy as np
-    import pandas as pd
     import cellrank as cr
 
     if lineage not in list(fate_columns):
