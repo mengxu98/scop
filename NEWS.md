@@ -4,7 +4,7 @@
 
 * **docs**: Dataset and `RunMonocle3()` examples load SeuratData archives directly and select a Monocle 3 lineage with igraph, so examples no longer require SeuratData or interactive Monocle 3 selection. The `pbmcmultiome_sub` example maps `seurat_annotations` to six cell types before sampling.
 
-* **docs**: `RunKNNPredict()` examples again annotate `pancreas_sub` with the bundled `ref_scMCA` bulk reference, including low-frequency filtering and cluster-level annotation.
+* **docs**: `RunKNNPredict()` examples again annotate `pancreas_sub` with the bundled `ref_scMCA` bulk reference, including low-frequency filtering and cluster-level annotation. Four `ref_scMCA` cell type labels with mis-encoded characters (for example `β-cell(Pancreas)`) now match the original scMCA names; expression values are unchanged.
 
 * **test**: The bulk-container initialization test checks for stack imbalance only, so DelayedArray re-exports from S4Arrays built with retained sources no longer fail the check.
 
