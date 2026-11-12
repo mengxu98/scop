@@ -161,16 +161,16 @@ A `ggplot` object, or a named list of ggplot2 layers when
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub, verbose = FALSE)
-#> ℹ [2026-11-11 11:41:14] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-12 03:38:53] Skip `log1p()` because `layer = data` is not "counts"
 mc <- RunMetaCell(
   pancreas_sub,
   method = "supercell",
   gamma = 20
 )
-#> ℹ [2026-11-11 11:41:23] Running SuperCell with gamma = 20, k.knn = 5 on 1000 cells
-#> ℹ [2026-11-11 11:41:24] `RunMetaCell()` ("supercell") built 50 metacells from 1000 cells
-#> ℹ [2026-11-11 11:41:24] Metacell size summary: min 5, median 16.5, mean 20, max 56 cells
-#> ✔ [2026-11-11 11:41:24] `RunMetaCell()` returned metacell Seurat with 50 metacells. Original cells in `@misc[["original_srt"]]`
+#> ℹ [2026-11-12 03:39:01] Running SuperCell with gamma = 20, k.knn = 5 on 1000 cells
+#> ℹ [2026-11-12 03:39:03] `RunMetaCell()` ("supercell") built 50 metacells from 1000 cells
+#> ℹ [2026-11-12 03:39:03] Metacell size summary: min 5, median 16.5, mean 20, max 56 cells
+#> ✔ [2026-11-12 03:39:03] `RunMetaCell()` returned metacell Seurat with 50 metacells. Original cells in `@misc[["original_srt"]]`
 
 MetaCellPlot(
   mc,

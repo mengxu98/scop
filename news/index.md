@@ -2,6 +2,24 @@
 
 ## scop (development version)
 
+- **fix**: Pin PyNNDescent 0.6.0 in Scanpy environments to prevent
+  sparse-array `getnnz` failures in large-data
+  [`RunPAGA()`](https://mengxu98.github.io/scop/reference/RunPAGA.md)
+  neighbor searches.
+  [`RunPAGA()`](https://mengxu98.github.io/scop/reference/RunPAGA.md)
+  now requests an R-session restart if an older PyNNDescent module
+  remains loaded after the environment is updated.
+
+- **docs**: Dataset and
+  [`RunMonocle3()`](https://mengxu98.github.io/scop/reference/RunMonocle3.md)
+  examples load SeuratData archives directly and select a Monocle 3
+  lineage with igraph, so examples no longer require SeuratData or
+  interactive Monocle 3 selection. The `pbmcmultiome_sub` example maps
+  `seurat_annotations` to six cell types before sampling.
+
+- **refactor**: Remove unused native kernels. Tests cover the MERINGUE,
+  PAGA, scVelo and SCENIC kernels used by analysis functions.
+
 - **fix**:
   [`CNVPlot()`](https://mengxu98.github.io/scop/reference/CNVPlot.md)
   heatmaps show cells in rows and genomic features in columns, use

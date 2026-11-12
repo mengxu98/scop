@@ -101,6 +101,8 @@ env_requirements("3.10-1")
 #>                                "scipy==1.15.3" 
 #>                                         scanpy 
 #>                               "scanpy==1.11.3" 
+#>                                    pynndescent 
+#>                           "pynndescent==0.6.0" 
 #>                                         loompy 
 #>                                       "loompy" 
 #>                                     scvi-tools 
@@ -169,22 +171,22 @@ env_requirements("3.10-1")
 #>              "pip"              "pip"              "pip"              "pip" 
 #>          packaging             pandas       scikit-learn              scipy 
 #>              "pip"              "pip"              "pip"              "pip" 
-#>             scanpy             loompy         scvi-tools                jax 
-#>              "pip"              "pip"            "conda"              "pip" 
-#>             jaxlib            numpyro              optax               flax 
+#>             scanpy        pynndescent             loompy         scvi-tools 
+#>              "pip"              "pip"              "pip"            "conda" 
+#>                jax             jaxlib            numpyro              optax 
 #>              "pip"              "pip"              "pip"              "pip" 
-#>               chex   orbax-checkpoint        tensorstore             scglue 
+#>               flax               chex   orbax-checkpoint        tensorstore 
 #>              "pip"              "pip"              "pip"              "pip" 
-#>           bedtools               zlib          scanorama              bbknn 
-#>            "conda"            "conda"              "pip"              "pip" 
-#>         celltypist        cellphonedb           scrublet   doubletdetection 
+#>             scglue           bedtools               zlib          scanorama 
+#>              "pip"            "conda"            "conda"              "pip" 
+#>              bbknn         celltypist        cellphonedb           scrublet 
 #>              "pip"              "pip"              "pip"              "pip" 
-#>            louvain           palantir             scvelo           cellrank 
+#>   doubletdetection            louvain           palantir             scvelo 
 #>              "pip"              "pip"              "pip"              "pip" 
-#>                wot             pacmap             trimap           multimap 
+#>           cellrank                wot             pacmap             trimap 
 #>              "pip"              "pip"              "pip"              "pip" 
-#>           SEACells             joblib charset-normalizer 
-#>              "pip"              "pip"              "pip" 
+#>           multimap           SEACells             joblib charset-normalizer 
+#>              "pip"              "pip"              "pip"              "pip" 
 #> 
 #> $package_aliases
 #> $package_aliases$`python-igraph`

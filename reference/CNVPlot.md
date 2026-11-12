@@ -138,8 +138,8 @@ srt$group <- factor(
 )
 set.seed(42)
 srt <- RunCNV(srt, method = "copykat", reference.by = "group", reference = "Reference")
-#> ℹ [2026-11-11 11:21:05] Run copykat CNV backend with 10338 features and 184 cells
-#> ℹ [2026-11-11 11:21:05] Attached copykat to the search path so its lazy data objects are resolvable by the backend
+#> ℹ [2026-11-12 03:17:11] Run copykat CNV backend with 10338 features and 184 cells
+#> ℹ [2026-11-12 03:17:11] Attached copykat to the search path so its lazy data objects are resolvable by the backend
 #> [1] "running copykat v1.2.5"
 #> [1] "step1: read and filter data ..."
 #> [1] "10338 genes, 184 cells in raw data"
@@ -157,7 +157,7 @@ srt <- RunCNV(srt, method = "copykat", reference.by = "group", reference = "Refe
 #> [1] "step 8: final prediction ..."
 #> [1] "step 9: saving results..."
 #> [1] "step 10: ploting heatmap ..."
-#> Time difference of 55.49614 secs
-#> ✔ [2026-11-11 11:22:00] copykat CNV results stored in `srt@tools[[CNV]]`
+#> Time difference of 1.142122 mins
+#> ✔ [2026-11-12 03:18:19] copykat CNV results stored in `srt@tools[[CNV]]`
 CNVPlot(srt, group.by = "group", heatmap_limits = "auto")
 ```

@@ -118,23 +118,23 @@ A ggplot or patchwork object.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-11-11 11:24:52] Start standard processing workflow...
-#> ℹ [2026-11-11 11:24:52] Checking a list of <Seurat>...
-#> ! [2026-11-11 11:24:52] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-12 03:21:26] Start standard processing workflow...
+#> ℹ [2026-11-12 03:21:26] Checking a list of <Seurat>...
+#> ! [2026-11-12 03:21:26] Data 1/1 of the `srt_list` is "unknown"
 #> Warning: Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-11-11 11:24:52] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-11-11 11:24:52] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-11 11:24:52] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-11 11:24:52] Number of available HVF: 2000
-#> ℹ [2026-11-11 11:24:52] Finished check
-#> ℹ [2026-11-11 11:24:52] Perform `ScaleData()`
-#> ℹ [2026-11-11 11:24:52] Perform pca linear dimension reduction
-#> ℹ [2026-11-11 11:24:53] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-11-11 11:24:53] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-11 11:24:53] Reorder clusters...
-#> ℹ [2026-11-11 11:24:53] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-11 11:24:53] Perform umap nonlinear dimension reduction
-#> ✔ [2026-11-11 11:25:00] Standard processing workflow completed
+#> ℹ [2026-11-12 03:21:26] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-12 03:21:26] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-12 03:21:26] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-12 03:21:26] Number of available HVF: 2000
+#> ℹ [2026-11-12 03:21:26] Finished check
+#> ℹ [2026-11-12 03:21:26] Perform `ScaleData()`
+#> ℹ [2026-11-12 03:21:26] Perform pca linear dimension reduction
+#> ℹ [2026-11-12 03:21:27] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-11-12 03:21:27] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-12 03:21:27] Reorder clusters...
+#> ℹ [2026-11-12 03:21:27] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-12 03:21:27] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-12 03:21:34] Standard processing workflow completed
 pancreas_sub <- RunCellRank(
   pancreas_sub,
   group.by = "SubCellType",
@@ -143,16 +143,16 @@ pancreas_sub <- RunCellRank(
   schur_method = "brandts",
   backend = "cpp"
 )
-#> ! [2026-11-11 11:25:00] RunCellRank(backend = "cpp") uses an approximate C++ implementation; results may not be completely identical to the reference python workflow.
+#> ! [2026-11-12 03:21:34] RunCellRank(backend = "cpp") uses an approximate C++ implementation; results may not be completely identical to the reference python workflow.
 #> Warning: RunCellRank(backend = "cpp") uses an approximate C++ implementation; results may not be completely identical to the reference python workflow.
-#> ℹ [2026-11-11 11:25:00] Running `RunSCVELO()` cpp backend before `RunCellRank()`
-#> ℹ [2026-11-11 11:25:00] Running scanpy-compatible preprocessing (15998 features -> filter + normalize)...
-#> ℹ [2026-11-11 11:25:04] Running scVelo "stochastic" mode with `backend = 'cpp'` (9699 features)
-#> ✔ [2026-11-11 11:25:07] scVelo "stochastic" mode completed
-#> ✔ [2026-11-11 11:25:07] scVelo cpp backend completed
-#> ! [2026-11-11 11:25:07] Pseudotime not found; computing velocity pseudotime
+#> ℹ [2026-11-12 03:21:34] Running `RunSCVELO()` cpp backend before `RunCellRank()`
+#> ℹ [2026-11-12 03:21:34] Running scanpy-compatible preprocessing (15998 features -> filter + normalize)...
+#> ℹ [2026-11-12 03:21:37] Running scVelo "stochastic" mode with `backend = 'cpp'` (9699 features)
+#> ✔ [2026-11-12 03:21:40] scVelo "stochastic" mode completed
+#> ✔ [2026-11-12 03:21:40] scVelo cpp backend completed
+#> ! [2026-11-12 03:21:40] Pseudotime not found; computing velocity pseudotime
 #> Warning: Pseudotime not found; computing velocity pseudotime
-#> ✔ [2026-11-11 11:25:10] CellRank cpp backend ("gpcca" + "pseudotime_connectivity_combined" kernel) completed
+#> ✔ [2026-11-12 03:21:44] CellRank cpp backend ("gpcca" + "pseudotime_connectivity_combined" kernel) completed
 
 CellRankPlot(
   pancreas_sub,

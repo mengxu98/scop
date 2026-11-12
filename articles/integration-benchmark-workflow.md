@@ -133,8 +133,8 @@ batch scores; the metrics view lists every metric per method.
 bench <- panc8_sub@tools$IntegrationBenchmark
 bench$runs
 #>        method  status error runtime_s         latent              umap
-#> 1 Uncorrected success          13.696 Uncorrectedpca UncorrectedUMAP2D
-#> 2     Harmony success           9.473        Harmony     HarmonyUMAP2D
+#> 1 Uncorrected success          14.230 Uncorrectedpca UncorrectedUMAP2D
+#> 2     Harmony success           9.853        Harmony     HarmonyUMAP2D
 stopifnot(all(bench$runs$status == "success"))
 
 thisplot::print_colored_table(
@@ -143,8 +143,8 @@ thisplot::print_colored_table(
   palette = "Chinese"
 )
 #> method       status   overall    bio        batch      iLISI       cLISI      celltype_ASW  batch_ASW_mixing  celltype_graph_connectivity  celltype_ARI  celltype_NMI  runtime_s  latent          umap             
-#> Uncorrected  success  0.6710946  0.7850261  0.5001973  0.05972029  0.9906632  0.6055287     0.9406743         0.9464146                    0.4704063     0.7371439     13.696     Uncorrectedpca  UncorrectedUMAP2D
-#> Harmony      success  0.7796145  0.8679485  0.6471136  0.37231389  0.9939489  0.6688806     0.9219133         0.9457216                    0.7640205     0.8676191     9.473      Harmony         HarmonyUMAP2D    
+#> Uncorrected  success  0.6711161  0.7850665  0.5001905  0.05974077  0.9906647  0.6055206     0.9406402         0.9464146                    0.4699072     0.7378917     14.230     Uncorrectedpca  UncorrectedUMAP2D
+#> Harmony      success  0.7792839  0.8673961  0.6471157  0.37244914  0.9939972  0.6688506     0.9217823         0.9457216                    0.7628313     0.8654756     9.853      Harmony         HarmonyUMAP2D    
 
 metrics <- bench$metrics
 metrics <- metrics[
@@ -157,22 +157,22 @@ thisplot::print_colored_table(
   palette = "Paired"
 )
 #> metric                       category  value      scaled      direction  method     
-#> batch_ASW_mixing             batch     0.9406743  0.94067433  higher     Uncorrected
-#> celltype_ASW                 bio       0.2110575  0.60552873  higher     Uncorrected
+#> batch_ASW_mixing             batch     0.9406402  0.94064019  higher     Uncorrected
+#> celltype_ASW                 bio       0.2110412  0.60552059  higher     Uncorrected
 #> celltype_graph_connectivity  bio       0.9464146  0.94641456  higher     Uncorrected
-#> celltype_NMI                 bio       0.7371439  0.73714392  higher     Uncorrected
-#> celltype_ARI                 bio       0.4704063  0.47040634  higher     Uncorrected
+#> celltype_NMI                 bio       0.7378917  0.73789171  higher     Uncorrected
+#> celltype_ARI                 bio       0.4699072  0.46990724  higher     Uncorrected
 #> celltype_purity              bio       0.9600000  0.96000000  higher     Uncorrected
-#> iLISI                        batch     1.2388812  0.05972029  higher     Uncorrected
-#> cLISI                        bio       1.1120416  0.99066320  higher     Uncorrected
-#> batch_ASW_mixing             batch     0.9219133  0.92191335  higher     Harmony    
-#> celltype_ASW                 bio       0.3377612  0.66888060  higher     Harmony    
+#> iLISI                        batch     1.2389631  0.05974077  higher     Uncorrected
+#> cLISI                        bio       1.1120233  0.99066473  higher     Uncorrected
+#> batch_ASW_mixing             batch     0.9217823  0.92178231  higher     Harmony    
+#> celltype_ASW                 bio       0.3377013  0.66885063  higher     Harmony    
 #> celltype_graph_connectivity  bio       0.9457216  0.94572156  higher     Harmony    
-#> celltype_NMI                 bio       0.8676191  0.86761912  higher     Harmony    
-#> celltype_ARI                 bio       0.7640205  0.76402051  higher     Harmony    
+#> celltype_NMI                 bio       0.8654756  0.86547564  higher     Harmony    
+#> celltype_ARI                 bio       0.7628313  0.76283130  higher     Harmony    
 #> celltype_purity              bio       0.9675000  0.96750000  higher     Harmony    
-#> iLISI                        batch     2.4892555  0.37231389  higher     Harmony    
-#> cLISI                        bio       1.0726130  0.99394891  higher     Harmony    
+#> iLISI                        batch     2.4897966  0.37244914  higher     Harmony    
+#> cLISI                        bio       1.0720339  0.99399717  higher     Harmony    
 ```
 
 ## Read the scores without overclaiming
@@ -275,11 +275,11 @@ data.frame(
   bytes = file.info(list.files(output_dir, full.names = TRUE))$size
 )
 #>                    file    bytes
-#> 1          analysis.rds 47324995
-#> 2 benchmark-metrics.csv     1600
-#> 3    benchmark-runs.csv      180
-#> 4 benchmark-summary.csv      658
-#> 5     cell-metadata.csv   274871
+#> 1          analysis.rds 47321154
+#> 2 benchmark-metrics.csv     1599
+#> 3    benchmark-runs.csv      179
+#> 4 benchmark-summary.csv      655
+#> 5     cell-metadata.csv   274198
 ```
 
 ## Use your own data and recover common errors
@@ -336,9 +336,9 @@ build_receipt <- data.frame(
 )
 build_receipt
 #>                          article               built_utc  scop     R
-#> 1 integration-benchmark-workflow 2026-11-11 12:36:49 UTC 0.9.2 4.6.2
+#> 1 integration-benchmark-workflow 2026-11-12 04:35:01 UTC 0.9.2 4.6.2
 #>                            source_revision source_has_local_changes
-#> 1 fce961e0e303ffc7bcb7aa68b6f72914fc1474e6                    FALSE
+#> 1 33ed10adb5179fdefd3dc0bcd3a24c35fa3f46f6                    FALSE
 #>                        article_md5 R_seed cells_retained genes_in_active_assay
 #> 1 8fe304a2e6bb06793cb671d232710b92     11           1600                 12932
 utils::write.csv(build_receipt, file.path(output_dir, "build-receipt.csv"),

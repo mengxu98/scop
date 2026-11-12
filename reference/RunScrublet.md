@@ -53,16 +53,16 @@ RunScrublet(
 
 ``` r
 PrepareEnv(modules = "scrublet")
-#> ◌ [2026-11-11 12:21:22] Preparing python environment...
-#> ℹ [2026-11-11 12:21:22] Environment name: scop_env and python version: 3.10-1
-#> ℹ [2026-11-11 12:21:22] Auto-detecting conda-compatible environment manager...
-#> ℹ [2026-11-11 12:21:22] Using micromamba executable: /home/runner/.cache/R/scop/micromamba/linux-64/bin/micromamba
-#> ℹ [2026-11-11 12:21:22] Using existing environment: /home/runner/work/_temp/pkgdown-python/envs/scop_env
-#> ℹ [2026-11-11 12:21:22] 13 requirements to check, 3 conda requirements and 10 pip requirements
-#> ℹ [2026-11-11 12:21:22] Checking 3 conda requirements
-#> ℹ [2026-11-11 12:21:23] Checking 12 requirements using uv
+#> ◌ [2026-11-12 04:18:34] Preparing python environment...
+#> ℹ [2026-11-12 04:18:34] Environment name: scop_env and python version: 3.10-1
+#> ℹ [2026-11-12 04:18:34] Auto-detecting conda-compatible environment manager...
+#> ℹ [2026-11-12 04:18:34] Using micromamba executable: /home/runner/.cache/R/scop/micromamba/linux-64/bin/micromamba
+#> ℹ [2026-11-12 04:18:34] Using existing environment: /home/runner/work/_temp/pkgdown-python/envs/scop_env
+#> ℹ [2026-11-12 04:18:34] 13 requirements to check, 3 conda requirements and 10 pip requirements
+#> ℹ [2026-11-12 04:18:34] Checking 3 conda requirements
+#> ℹ [2026-11-12 04:18:35] Checking 12 requirements using uv
 #> + /home/runner/work/_temp/pkgdown-python/envs/scop_env/bin/python3.10 -m pip check
-#> ✔ [2026-11-11 12:21:25] Python environment ready
+#> ✔ [2026-11-12 04:18:37] Python environment ready
 #> ✔                       Until next loading, the environment will be cached
 #> Environment manager config:
 #>  Manager:       micromamba
@@ -73,28 +73,28 @@ PrepareEnv(modules = "scrublet")
 #>  version:       Python 3.10.1
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-11-11 12:21:25] Start standard processing workflow...
-#> ℹ [2026-11-11 12:21:25] Checking a list of <Seurat>...
-#> ! [2026-11-11 12:21:25] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-11-11 12:21:25] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-11-11 12:21:25] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-11 12:21:25] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-11 12:21:25] Number of available HVF: 2000
-#> ℹ [2026-11-11 12:21:25] Finished check
-#> ℹ [2026-11-11 12:21:25] Perform `ScaleData()`
-#> ℹ [2026-11-11 12:21:25] Perform pca linear dimension reduction
-#> ℹ [2026-11-11 12:21:26] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-11-11 12:21:26] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-11 12:21:26] Reorder clusters...
-#> ℹ [2026-11-11 12:21:26] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-11 12:21:26] Perform umap nonlinear dimension reduction
-#> ✔ [2026-11-11 12:21:36] Standard processing workflow completed
+#> ℹ [2026-11-12 04:18:38] Start standard processing workflow...
+#> ℹ [2026-11-12 04:18:38] Checking a list of <Seurat>...
+#> ! [2026-11-12 04:18:38] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-12 04:18:38] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-12 04:18:38] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-12 04:18:38] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-12 04:18:38] Number of available HVF: 2000
+#> ℹ [2026-11-12 04:18:38] Finished check
+#> ℹ [2026-11-12 04:18:38] Perform `ScaleData()`
+#> ℹ [2026-11-12 04:18:38] Perform pca linear dimension reduction
+#> ℹ [2026-11-12 04:18:39] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-11-12 04:18:39] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-12 04:18:39] Reorder clusters...
+#> ℹ [2026-11-12 04:18:39] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-12 04:18:39] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-12 04:18:48] Standard processing workflow completed
 pancreas_sub <- RunScrublet(pancreas_sub)
-#> ℹ [2026-11-11 12:21:36] Running Scrublet
-#> ✔ [2026-11-11 12:21:36] Python environment completed
+#> ℹ [2026-11-12 04:18:48] Running Scrublet
+#> ✔ [2026-11-12 04:18:48] Python environment completed
 #> ✔                       Until next loading, the environment will be cached
-#> ℹ [2026-11-11 12:21:37] Data type is raw counts
-#> ✔ [2026-11-11 12:21:38] Scrublet doublet calling completed
+#> ℹ [2026-11-12 04:18:48] Data type is raw counts
+#> ✔ [2026-11-12 04:18:50] Scrublet doublet calling completed
 CellDimPlot(
   pancreas_sub,
   reduction = "umap",
