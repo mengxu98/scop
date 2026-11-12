@@ -94,7 +94,7 @@ test_that("sample-level obs_log2FD is log2(group1 / group2)", {
 })
 
 test_that("bootstrap log2FD uses group1 as numerator", {
-  boot <- getFromNamespace("proportion_bootstrap_log2fd", "scop")
+  boot <- getFromNamespace("proportion_bootstrap_stats", "scop")
   set.seed(11)
   values <- boot(
     v1 = c(0.8, 0.8, 0.8),
@@ -102,7 +102,7 @@ test_that("bootstrap log2FD uses group1 as numerator", {
     n_bootstrap = 30,
     pseudocount = 1e-8,
     verbose = FALSE
-  )
+  )$boot_samples
   expect_true(all(values > 0))
   expect_equal(mean(values), log2(0.8 / 0.2), tolerance = 1e-6)
 })

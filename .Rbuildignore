@@ -39,7 +39,6 @@
 ^.*\.tar\.gz$
 ^.*\.dll$
 ^.*\.pyc$
-^outputs$
 (^|/)\.pytest_cache($|/)
 (^|/)__pycache__($|/)
 ^\.git($|/)

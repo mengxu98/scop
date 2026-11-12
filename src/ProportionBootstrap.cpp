@@ -71,8 +71,7 @@ double bootstrap_sample_mean(
 
 }
 
-// [[Rcpp::export]]
-NumericVector proportion_bootstrap_log2fd(
+static NumericVector proportion_bootstrap_log2fd(
     NumericVector v1,
     NumericVector v2,
     int n_bootstrap = 1000,

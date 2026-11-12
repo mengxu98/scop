@@ -61,7 +61,7 @@ test_that("CellRank hard threshold reproduces NumPy 1.26 quicksort ties", {
 })
 
 
-test_that("cellrank_validate_transition_matrix_cpp fixes NaN/Inf", {
+test_that("CFLARE validates transition matrices with NaN/Inf", {
   n <- 10
   T <- make_transition_matrix(n)
   T[1, 2] <- NaN
@@ -69,56 +69,54 @@ test_that("cellrank_validate_transition_matrix_cpp fixes NaN/Inf", {
   T[5, 6] <- -0.1
   T[7, ] <- 0
 
-  out <- cellrank_validate_transition_matrix_cpp(T)
+  out <- cellrank_cflare_cpp(T, n_states = 3)
   expect_true(all(is.finite(out$transition_matrix)))
   expect_true(all(out$transition_matrix >= 0))
   expect_equal(rowSums(out$transition_matrix), rep(1, n), tolerance = 1e-8)
-  expect_true(out$nans_fixed >= 1 || out$negs_clipped >= 1 || out$zero_rows_fixed >= 1)
 })
 
 
-test_that("cellrank_stationary_distribution_cpp sums to 1", {
+test_that("CFLARE stationary distribution sums to 1", {
   T <- make_transition_matrix(30, seed = 2)
-  pi <- cellrank_stationary_distribution_cpp(T)
+  pi <- cellrank_cflare_cpp(T, n_states = 3, tol = 1e-10)$stationary_distribution
   expect_equal(sum(pi), 1, tolerance = 1e-8)
   expect_true(all(pi >= 0))
 })
 
-test_that("stationary distribution satisfies pi = pi * T", {
+test_that("CFLARE stationary distribution satisfies pi = pi * T", {
   n <- 15
   T <- make_transition_matrix(n, seed = 5)
-  pi <- cellrank_stationary_distribution_cpp(T)
-  pi_next <- as.numeric(pi %*% T)
+  out <- cellrank_cflare_cpp(T, n_states = 3, tol = 1e-10)
+  pi <- out$stationary_distribution
+  pi_next <- as.numeric(pi %*% out$transition_matrix)
   expect_equal(pi, pi_next, tolerance = 1e-6)
 })
 
 
-test_that("cellrank_schur_cpp returns valid components", {
+test_that("CFLARE Schur vectors span an invariant subspace", {
   n <- 30
   T <- make_transition_matrix(n, seed = 3)
-  out <- cellrank_schur_cpp(T, n_components = 5)
+  out <- cellrank_cflare_cpp(T, n_states = 5)
   expect_true(abs(out$eigenvalues[1] - 1.0) < 0.15)
   expect_equal(ncol(out$schur_vectors), 5)
   expect_equal(nrow(out$schur_vectors), n)
   expect_true(all(out$macrostate_assignment >= 1))
   expect_true(all(out$macrostate_assignment <= 5))
-  expect_equal(length(out$stationary_distribution), n)
-  expect_equal(length(out$eigenvalues_imaginary), 5)
-  expect_identical(out$method, "lapack_real_schur")
 
+  T_valid <- out$transition_matrix
   schur_vectors <- as.matrix(out$schur_vectors)
   projected <- schur_vectors %*%
-    crossprod(schur_vectors, T %*% schur_vectors)
+    crossprod(schur_vectors, T_valid %*% schur_vectors)
   expect_lt(
-    norm(T %*% schur_vectors - projected, type = "F") /
-      norm(T %*% schur_vectors, type = "F"),
+    norm(T_valid %*% schur_vectors - projected, type = "F") /
+      norm(T_valid %*% schur_vectors, type = "F"),
     1e-10
   )
 })
 
-test_that("cellrank_schur_cpp defaults to n_components = 2 for small matrices", {
+test_that("CFLARE limits Schur components for small matrices", {
   T <- make_transition_matrix(3, seed = 10)
-  out <- cellrank_schur_cpp(T, n_components = 10)
+  out <- cellrank_cflare_cpp(T, n_states = 10)
   expect_true(ncol(out$schur_vectors) <= 3)
 })
 

@@ -944,8 +944,7 @@ Eigen::SparseMatrix<double> cellrank_hard_threshold_kernel_cpp(
 }
 
 
-// [[Rcpp::export]]
-List cellrank_validate_transition_matrix_cpp(
+static List cellrank_validate_transition_matrix_cpp(
     NumericMatrix T_,
     double eps = 1e-10,
     double min_self_loop = 0.01)
@@ -965,16 +964,14 @@ List cellrank_validate_transition_matrix_cpp(
 }
 
 
-// [[Rcpp::export]]
-NumericVector cellrank_stationary_distribution_cpp(
+static NumericVector cellrank_stationary_distribution_cpp(
     NumericMatrix T_, int max_iter = 1000, double tol = 1e-10)
 {
   return scop_util::stationary_distribution(T_, max_iter, tol);
 }
 
 
-// [[Rcpp::export]]
-List cellrank_schur_cpp(NumericMatrix T_, int n_components = 10)
+static List cellrank_schur_cpp(NumericMatrix T_, int n_components = 10)
 {
   int n = T_.nrow();
   if (n_components < 2) n_components = 2;

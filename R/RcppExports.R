@@ -2,521 +2,505 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 augur_subsample_cpp <- function(mat, cols) {
-  .Call(`_scop_augur_subsample_cpp`, mat, cols)
+    .Call(`_scop_augur_subsample_cpp`, mat, cols)
 }
 
 bayesprism_gibbs_initial_cpp <- function(mixture, phi, gibbs_idx, alpha = 1.0, seed = 123L, cores = 1L) {
-  .Call(`_scop_bayesprism_gibbs_initial_cpp`, mixture, phi, gibbs_idx, alpha, seed, cores)
+    .Call(`_scop_bayesprism_gibbs_initial_cpp`, mixture, phi, gibbs_idx, alpha, seed, cores)
 }
 
 bayesprism_gibbs_final_cpp <- function(mixture, phi, gibbs_idx, alpha = 1.0, seed = 123L, cores = 1L) {
-  .Call(`_scop_bayesprism_gibbs_final_cpp`, mixture, phi, gibbs_idx, alpha, seed, cores)
+    .Call(`_scop_bayesprism_gibbs_final_cpp`, mixture, phi, gibbs_idx, alpha, seed, cores)
 }
 
 ccc_aggregate_long_cpp <- function(sender, receiver, score, significant) {
-  .Call(`_scop_ccc_aggregate_long_cpp`, sender, receiver, score, significant)
+    .Call(`_scop_ccc_aggregate_long_cpp`, sender, receiver, score, significant)
 }
 
 ccc_aggregate_liana_table_cpp <- function(source, target, ligand_complex, receptor_complex, sample, score, pvalue, classification, method, liana_method, resource, has_sample) {
-  .Call(`_scop_ccc_aggregate_liana_table_cpp`, source, target, ligand_complex, receptor_complex, sample, score, pvalue, classification, method, liana_method, resource, has_sample)
+    .Call(`_scop_ccc_aggregate_liana_table_cpp`, source, target, ligand_complex, receptor_complex, sample, score, pvalue, classification, method, liana_method, resource, has_sample)
 }
 
 cibersort_cpp <- function(signature, mixture, perm = 0L, QN = TRUE, absolute = FALSE, cores = 1L, seed = 123L, verbose = FALSE) {
-  .Call(`_scop_cibersort_cpp`, signature, mixture, perm, QN, absolute, cores, seed, verbose)
+    .Call(`_scop_cibersort_cpp`, signature, mixture, perm, QN, absolute, cores, seed, verbose)
 }
 
 cellrank_hard_threshold_kernel_cpp <- function(connectivities, pseudotime, frac_to_keep = 0.3, backward = FALSE) {
-  .Call(`_scop_cellrank_hard_threshold_kernel_cpp`, connectivities, pseudotime, frac_to_keep, backward)
-}
-
-cellrank_validate_transition_matrix_cpp <- function(T_, eps = 1e-10, min_self_loop = 0.01) {
-  .Call(`_scop_cellrank_validate_transition_matrix_cpp`, T_, eps, min_self_loop)
-}
-
-cellrank_stationary_distribution_cpp <- function(T_, max_iter = 1000L, tol = 1e-10) {
-  .Call(`_scop_cellrank_stationary_distribution_cpp`, T_, max_iter, tol)
-}
-
-cellrank_schur_cpp <- function(T_, n_components = 10L) {
-  .Call(`_scop_cellrank_schur_cpp`, T_, n_components)
+    .Call(`_scop_cellrank_hard_threshold_kernel_cpp`, connectivities, pseudotime, frac_to_keep, backward)
 }
 
 cellrank_velocity_kernel_cpp <- function(velocity_embedding, embedding, knn_idx, backward = FALSE, softmax_scale = 4.0, n_neighbors_velo = -1L) {
-  .Call(`_scop_cellrank_velocity_kernel_cpp`, velocity_embedding, embedding, knn_idx, backward, softmax_scale, n_neighbors_velo)
+    .Call(`_scop_cellrank_velocity_kernel_cpp`, velocity_embedding, embedding, knn_idx, backward, softmax_scale, n_neighbors_velo)
 }
 
 cellrank_connectivity_kernel_cpp <- function(knn_idx, knn_dist) {
-  .Call(`_scop_cellrank_connectivity_kernel_cpp`, knn_idx, knn_dist)
+    .Call(`_scop_cellrank_connectivity_kernel_cpp`, knn_idx, knn_dist)
 }
 
 cellrank_pseudotime_kernel_cpp <- function(pseudotime, knn_idx, cell_weights, bandwidth = 1.0, backward = FALSE) {
-  .Call(`_scop_cellrank_pseudotime_kernel_cpp`, pseudotime, knn_idx, cell_weights, bandwidth, backward)
+    .Call(`_scop_cellrank_pseudotime_kernel_cpp`, pseudotime, knn_idx, cell_weights, bandwidth, backward)
 }
 
 cellrank_cytotrace_kernel_cpp <- function(gene_counts, knn_idx, bandwidth = 1.0, backward = FALSE) {
-  .Call(`_scop_cellrank_cytotrace_kernel_cpp`, gene_counts, knn_idx, bandwidth, backward)
+    .Call(`_scop_cellrank_cytotrace_kernel_cpp`, gene_counts, knn_idx, bandwidth, backward)
 }
 
 cellrank_cflare_cpp <- function(T_, n_states = 5L, max_iter = 1000L, tol = 1e-6) {
-  .Call(`_scop_cellrank_cflare_cpp`, T_, n_states, max_iter, tol)
+    .Call(`_scop_cellrank_cflare_cpp`, T_, n_states, max_iter, tol)
 }
 
 cellrank_gpcca_cpp <- function(T_, n_states = 5L, n_cells_terminal = 10L, skip_perron = FALSE, schur_n_components = -1L) {
-  .Call(`_scop_cellrank_gpcca_cpp`, T_, n_states, n_cells_terminal, skip_perron, schur_n_components)
+    .Call(`_scop_cellrank_gpcca_cpp`, T_, n_states, n_cells_terminal, skip_perron, schur_n_components)
 }
 
 cellrank_lineage_drivers_cpp <- function(expression, abs_probs, lineage_idx = integer()) {
-  .Call(`_scop_cellrank_lineage_drivers_cpp`, expression, abs_probs, lineage_idx)
+    .Call(`_scop_cellrank_lineage_drivers_cpp`, expression, abs_probs, lineage_idx)
 }
 
 combine_conserved_pvalues_cpp <- function(pvalues, method) {
-  .Call(`_scop_combine_conserved_pvalues_cpp`, pvalues, method)
+    .Call(`_scop_combine_conserved_pvalues_cpp`, pvalues, method)
 }
 
 cytospace_assign <- function(sc_expr, st_expr, spot_capacities, seed = 1L, upstream_tie_break = TRUE, verbose = FALSE) {
-  .Call(`_scop_cytospace_assign`, sc_expr, st_expr, spot_capacities, seed, upstream_tie_break, verbose)
+    .Call(`_scop_cytospace_assign`, sc_expr, st_expr, spot_capacities, seed, upstream_tie_break, verbose)
 }
 
 cytotrace2_preprocess_numeric <- function(expression_mapped, n_threads = 0L) {
-  .Call(`_scop_cytotrace2_preprocess_numeric`, expression_mapped, n_threads)
+    .Call(`_scop_cytotrace2_preprocess_numeric`, expression_mapped, n_threads)
 }
 
 cytotrace2_preprocess_sparse_numeric <- function(expression_mapped, n_threads = 0L) {
-  .Call(`_scop_cytotrace2_preprocess_sparse_numeric`, expression_mapped, n_threads)
+    .Call(`_scop_cytotrace2_preprocess_sparse_numeric`, expression_mapped, n_threads)
 }
 
 cytotrace2_main <- function(rank_data, log2_data, parameter_dict, smooth_groups, cores, seed, pca_coords) {
-  .Call(`_scop_cytotrace2_main`, rank_data, log2_data, parameter_dict, smooth_groups, cores, seed, pca_coords)
+    .Call(`_scop_cytotrace2_main`, rank_data, log2_data, parameter_dict, smooth_groups, cores, seed, pca_coords)
 }
 
 dynamic_row_unique_counts_dense_cpp <- function(x) {
-  .Call(`_scop_dynamic_row_unique_counts_dense_cpp`, x)
+    .Call(`_scop_dynamic_row_unique_counts_dense_cpp`, x)
 }
 
 dynamic_row_unique_counts_sparse_cpp <- function(x) {
-  .Call(`_scop_dynamic_row_unique_counts_sparse_cpp`, x)
+    .Call(`_scop_dynamic_row_unique_counts_sparse_cpp`, x)
 }
 
 scanpy_dynamical_nm_cpp <- function(Ms, Mu, use_genes, max_iter = 10L, init_alpha = -1.0, init_beta = -1.0, init_gamma = -1.0, n_threads = 0L) {
-  .Call(`_scop_scanpy_dynamical_nm_cpp`, Ms, Mu, use_genes, max_iter, init_alpha, init_beta, init_gamma, n_threads)
+    .Call(`_scop_scanpy_dynamical_nm_cpp`, Ms, Mu, use_genes, max_iter, init_alpha, init_beta, init_gamma, n_threads)
 }
 
 scanpy_dynamical_velocity_cpp <- function(Ms, Mu, alpha, beta, gamma, t_, knn_idx, embedding, n_threads = 0L) {
-  .Call(`_scop_scanpy_dynamical_velocity_cpp`, Ms, Mu, alpha, beta, gamma, t_, knn_idx, embedding, n_threads)
+    .Call(`_scop_scanpy_dynamical_velocity_cpp`, Ms, Mu, alpha, beta, gamma, t_, knn_idx, embedding, n_threads)
 }
 
 scanpy_dynamical_em_cpp <- function(Ms, Mu, use_genes, max_iter_em = 10L, conv_tol = 1e-6, em_oversampling = 2L, init_alpha = -1.0, init_beta = -1.0, init_gamma = -1.0) {
-  .Call(`_scop_scanpy_dynamical_em_cpp`, Ms, Mu, use_genes, max_iter_em, conv_tol, em_oversampling, init_alpha, init_beta, init_gamma)
+    .Call(`_scop_scanpy_dynamical_em_cpp`, Ms, Mu, use_genes, max_iter_em, conv_tol, em_oversampling, init_alpha, init_beta, init_gamma)
 }
 
 feature_cor_geometric_mean_sparse_cpp <- function(x, log_normalized) {
-  .Call(`_scop_feature_cor_geometric_mean_sparse_cpp`, x, log_normalized)
+    .Call(`_scop_feature_cor_geometric_mean_sparse_cpp`, x, log_normalized)
 }
 
 fitdevo_spearman_weights_cpp <- function(scaled, target_centered) {
-  .Call(`_scop_fitdevo_spearman_weights_cpp`, scaled, target_centered)
+    .Call(`_scop_fitdevo_spearman_weights_cpp`, scaled, target_centered)
 }
 
 gniplr_cpp <- function(expression, target_idx, correlation_threshold = 0.3, lasso_degree = 30L, lasso_alpha = 0.1, max_lag = 3L) {
-  .Call(`_scop_gniplr_cpp`, expression, target_idx, correlation_threshold, lasso_degree, lasso_alpha, max_lag)
+    .Call(`_scop_gniplr_cpp`, expression, target_idx, correlation_threshold, lasso_degree, lasso_alpha, max_lag)
 }
 
 aucell_auc_sparse <- function(expr, gene_sets, auc_max_rank, norm_auc = TRUE, strategy = 1L, algorithm = 1L, seed = 0L, n_threads = 0L) {
-  .Call(`_scop_aucell_auc_sparse`, expr, gene_sets, auc_max_rank, norm_auc, strategy, algorithm, seed, n_threads)
+    .Call(`_scop_aucell_auc_sparse`, expr, gene_sets, auc_max_rank, norm_auc, strategy, algorithm, seed, n_threads)
 }
 
 ucell_scores_sparse <- function(expr, positive_sets, positive_missing, negative_sets, negative_missing, max_rank = 1500L, negative_weight = 1.0, tie_method = 1L, n_threads = 0L) {
-  .Call(`_scop_ucell_scores_sparse`, expr, positive_sets, positive_missing, negative_sets, negative_missing, max_rank, negative_weight, tie_method, n_threads)
+    .Call(`_scop_ucell_scores_sparse`, expr, positive_sets, positive_missing, negative_sets, negative_missing, max_rank, negative_weight, tie_method, n_threads)
 }
 
 aucell_auc_ranked <- function(rankings, gene_sets, auc_max_rank) {
-  .Call(`_scop_aucell_auc_ranked`, rankings, gene_sets, auc_max_rank)
+    .Call(`_scop_aucell_auc_ranked`, rankings, gene_sets, auc_max_rank)
 }
 
 aucell_auc_ranked_full <- function(rankings, gene_sets, auc_max_rank, norm_auc = TRUE) {
-  .Call(`_scop_aucell_auc_ranked_full`, rankings, gene_sets, auc_max_rank, norm_auc)
+    .Call(`_scop_aucell_auc_ranked_full`, rankings, gene_sets, auc_max_rank, norm_auc)
 }
 
 ora_hypergeom <- function(genes, term_ids, term_genes, term_name_ids, term_names, min_size = 10L, max_size = 2147483647L) {
-  .Call(`_scop_ora_hypergeom`, genes, term_ids, term_genes, term_name_ids, term_names, min_size, max_size)
+    .Call(`_scop_ora_hypergeom`, genes, term_ids, term_genes, term_name_ids, term_names, min_size, max_size)
 }
 
 ora_hypergeom_batch <- function(genes, term_ids, term_genes, term_name_ids, term_names, min_size = 10L, max_size = 2147483647L) {
-  .Call(`_scop_ora_hypergeom_batch`, genes, term_ids, term_genes, term_name_ids, term_names, min_size, max_size)
+    .Call(`_scop_ora_hypergeom_batch`, genes, term_ids, term_genes, term_name_ids, term_names, min_size, max_size)
 }
 
 module_score_sparse <- function(expr, feature_sets, control_sets, n_threads = 0L) {
-  .Call(`_scop_module_score_sparse`, expr, feature_sets, control_sets, n_threads)
+    .Call(`_scop_module_score_sparse`, expr, feature_sets, control_sets, n_threads)
 }
 
 proportion_permutation <- function(sample_ids, cluster_ids, cluster_levels, n_permutations, pseudocount = 1e-8, verbose = FALSE) {
-  .Call(`_scop_proportion_permutation`, sample_ids, cluster_ids, cluster_levels, n_permutations, pseudocount, verbose)
+    .Call(`_scop_proportion_permutation`, sample_ids, cluster_ids, cluster_levels, n_permutations, pseudocount, verbose)
 }
 
 ssgsea_rank_dense <- function(expr, gene_sets, alpha = 0.25, normalize = TRUE) {
-  .Call(`_scop_ssgsea_rank_dense`, expr, gene_sets, alpha, normalize)
+    .Call(`_scop_ssgsea_rank_dense`, expr, gene_sets, alpha, normalize)
 }
 
 zscore_dense <- function(expr, gene_sets, min_size = 1L, max_size = 2147483647L, sparse_standardize = FALSE, sparse_standardize_full = FALSE) {
-  .Call(`_scop_zscore_dense`, expr, gene_sets, min_size, max_size, sparse_standardize, sparse_standardize_full)
+    .Call(`_scop_zscore_dense`, expr, gene_sets, min_size, max_size, sparse_standardize, sparse_standardize_full)
 }
 
 plage_dense <- function(expr, gene_sets, min_size = 1L, max_size = 2147483647L, dense_standardize = FALSE) {
-  .Call(`_scop_plage_dense`, expr, gene_sets, min_size, max_size, dense_standardize)
+    .Call(`_scop_plage_dense`, expr, gene_sets, min_size, max_size, dense_standardize)
 }
 
 gsva_gaussian_dense <- function(expr, gene_sets, max_diff = TRUE, abs_ranking = FALSE, tau = 1.0, chunk_size = 0L, n_threads = 0L, legacy_zero_walk = FALSE) {
-  .Call(`_scop_gsva_gaussian_dense`, expr, gene_sets, max_diff, abs_ranking, tau, chunk_size, n_threads, legacy_zero_walk)
+    .Call(`_scop_gsva_gaussian_dense`, expr, gene_sets, max_diff, abs_ranking, tau, chunk_size, n_threads, legacy_zero_walk)
 }
 
 knn_vote_labels_cpp <- function(labels, n_levels) {
-  .Call(`_scop_knn_vote_labels_cpp`, labels, n_levels)
+    .Call(`_scop_knn_vote_labels_cpp`, labels, n_levels)
 }
 
 mdic3_score_cpp <- function(expression, grn, group) {
-  .Call(`_scop_mdic3_score_cpp`, expression, grn, group)
+    .Call(`_scop_mdic3_score_cpp`, expression, grn, group)
 }
 
 meringue_moran_matrix_cpp <- function(expr, weight, alternative, rounding_sample = FALSE, n_perm = 0L, n_threads = 1L) {
-  .Call(`_scop_meringue_moran_matrix_cpp`, expr, weight, alternative, rounding_sample, n_perm, n_threads)
+    .Call(`_scop_meringue_moran_matrix_cpp`, expr, weight, alternative, rounding_sample, n_perm, n_threads)
 }
 
 manifold_exact_knn_cpp <- function(data, k, metric = 1L) {
-  .Call(`_scop_manifold_exact_knn_cpp`, data, k, metric)
+    .Call(`_scop_manifold_exact_knn_cpp`, data, k, metric)
 }
 
 pacmap_optimize_cpp <- function(data, initial, knn_index, n_mid, n_far, learning_rate, iterations, seed, metric = 1L) {
-  .Call(`_scop_pacmap_optimize_cpp`, data, initial, knn_index, n_mid, n_far, learning_rate, iterations, seed, metric)
+    .Call(`_scop_pacmap_optimize_cpp`, data, initial, knn_index, n_mid, n_far, learning_rate, iterations, seed, metric)
 }
 
 trimap_optimize_cpp <- function(data, initial, knn_index, n_outliers, n_random, learning_rate, iterations, optimizer, seed, metric = 1L) {
-  .Call(`_scop_trimap_optimize_cpp`, data, initial, knn_index, n_outliers, n_random, learning_rate, iterations, optimizer, seed, metric)
+    .Call(`_scop_trimap_optimize_cpp`, data, initial, knn_index, n_outliers, n_random, learning_rate, iterations, optimizer, seed, metric)
 }
 
 wilcox_rank_sum_sparse <- function(mat, n_group1, min_expression = 0.0, n_threads = 0L) {
-  .Call(`_scop_wilcox_rank_sum_sparse`, mat, n_group1, min_expression, n_threads)
+    .Call(`_scop_wilcox_rank_sum_sparse`, mat, n_group1, min_expression, n_threads)
 }
 
 milo_neighborhood_medians_cpp <- function(coords, knn_idx) {
-  .Call(`_scop_milo_neighborhood_medians_cpp`, coords, knn_idx)
+    .Call(`_scop_milo_neighborhood_medians_cpp`, coords, knn_idx)
 }
 
 milo_nhood_counts_cpp <- function(knn_idx, sampled_vertices, sample_id, n_samples, k_dist) {
-  .Call(`_scop_milo_nhood_counts_cpp`, knn_idx, sampled_vertices, sample_id, n_samples, k_dist)
+    .Call(`_scop_milo_nhood_counts_cpp`, knn_idx, sampled_vertices, sample_id, n_samples, k_dist)
 }
 
 milo_weighted_fdr_cpp <- function(pvalues, weights) {
-  .Call(`_scop_milo_weighted_fdr_cpp`, pvalues, weights)
+    .Call(`_scop_milo_weighted_fdr_cpp`, pvalues, weights)
 }
 
 vector_weighted_arrows_cpp <- function(centers, scores, embedding_range, p, arrow_length) {
-  .Call(`_scop_vector_weighted_arrows_cpp`, centers, scores, embedding_range, p, arrow_length)
+    .Call(`_scop_vector_weighted_arrows_cpp`, centers, scores, embedding_range, p, arrow_length)
 }
 
 cytospace_estimate_fractions_cpp <- function(st_expr, ref_expr, labels, n_types, spot_weights) {
-  .Call(`_scop_cytospace_estimate_fractions_cpp`, st_expr, ref_expr, labels, n_types, spot_weights)
+    .Call(`_scop_cytospace_estimate_fractions_cpp`, st_expr, ref_expr, labels, n_types, spot_weights)
 }
 
 spatial_pair_count_cpp <- function(sample, condition, subject, from, to) {
-  .Call(`_scop_spatial_pair_count_cpp`, sample, condition, subject, from, to)
+    .Call(`_scop_spatial_pair_count_cpp`, sample, condition, subject, from, to)
 }
 
 bbknn_fuzzy_membership_cpp <- function(index, distance, local_connectivity = 1.0, bandwidth = 1.0) {
-  .Call(`_scop_bbknn_fuzzy_membership_cpp`, index, distance, local_connectivity, bandwidth)
+    .Call(`_scop_bbknn_fuzzy_membership_cpp`, index, distance, local_connectivity, bandwidth)
 }
 
 paga_connectivities_cpp <- function(knn_idx, groups, n_groups) {
-  .Call(`_scop_paga_connectivities_cpp`, knn_idx, groups, n_groups)
+    .Call(`_scop_paga_connectivities_cpp`, knn_idx, groups, n_groups)
 }
 
 paga_diffusion_pseudotime_cpp <- function(connectivities, root_group, n_dcs = 10L, n_branchings = 0L, group_sizes = numeric(), min_group_size = 0.01) {
-  .Call(`_scop_paga_diffusion_pseudotime_cpp`, connectivities, root_group, n_dcs, n_branchings, group_sizes, min_group_size)
+    .Call(`_scop_paga_diffusion_pseudotime_cpp`, connectivities, root_group, n_dcs, n_branchings, group_sizes, min_group_size)
 }
 
 gauss_connectivities_cpp <- function(knn_idx, knn_dist) {
-  .Call(`_scop_gauss_connectivities_cpp`, knn_idx, knn_dist)
+    .Call(`_scop_gauss_connectivities_cpp`, knn_idx, knn_dist)
 }
 
 dpt_from_connectivities_cpp <- function(connectivities, root_cell, n_dcs = 10L) {
-  .Call(`_scop_dpt_from_connectivities_cpp`, connectivities, root_cell, n_dcs)
+    .Call(`_scop_dpt_from_connectivities_cpp`, connectivities, root_cell, n_dcs)
 }
 
 paga_velocity_transitions_cpp <- function(velocity_embedding, knn_idx, groups, n_groups, softmax_scale = 4.0) {
-  .Call(`_scop_paga_velocity_transitions_cpp`, velocity_embedding, knn_idx, groups, n_groups, softmax_scale)
+    .Call(`_scop_paga_velocity_transitions_cpp`, velocity_embedding, knn_idx, groups, n_groups, softmax_scale)
 }
 
 paga_root_cell_cpp <- function(embedding, groups, root_group) {
-  .Call(`_scop_paga_root_cell_cpp`, embedding, groups, root_group)
+    .Call(`_scop_paga_root_cell_cpp`, embedding, groups, root_group)
 }
 
 pca_backend_run <- function(X, npcs, weight_by_var = TRUE, n_threads = 0L) {
-  .Call(`_scop_pca_backend_run`, X, npcs, weight_by_var, n_threads)
+    .Call(`_scop_pca_backend_run`, X, npcs, weight_by_var, n_threads)
 }
 
 cca_crossprod_matrix <- function(X1, X2) {
-  .Call(`_scop_cca_crossprod_matrix`, X1, X2)
+    .Call(`_scop_cca_crossprod_matrix`, X1, X2)
 }
 
 matrix_product <- function(A, B) {
-  .Call(`_scop_matrix_product`, A, B)
+    .Call(`_scop_matrix_product`, A, B)
 }
 
 phate_graphtools_affinity_data_cpp <- function(data, knn, decay, thresh = 1e-4, knn_max = -1L) {
-  .Call(`_scop_phate_graphtools_affinity_data_cpp`, data, knn, decay, thresh, knn_max)
+    .Call(`_scop_phate_graphtools_affinity_data_cpp`, data, knn, decay, thresh, knn_max)
 }
 
 phate_diffusion_operator_cpp <- function(rows, cols, vals, n_cells, t_max = 10L) {
-  .Call(`_scop_phate_diffusion_operator_cpp`, rows, cols, vals, n_cells, t_max)
+    .Call(`_scop_phate_diffusion_operator_cpp`, rows, cols, vals, n_cells, t_max)
 }
 
 phate_potential_distance_cpp <- function(log_transition, n_landmarks = -1L) {
-  .Call(`_scop_phate_potential_distance_cpp`, log_transition, n_landmarks)
+    .Call(`_scop_phate_potential_distance_cpp`, log_transition, n_landmarks)
 }
 
 phate_metric_mds_cpp <- function(D, n_components = 2L) {
-  .Call(`_scop_phate_metric_mds_cpp`, D, n_components)
+    .Call(`_scop_phate_metric_mds_cpp`, D, n_components)
 }
 
 phate_find_optimal_t_cpp <- function(rows, cols, vals, n_cells, t_max = 20L) {
-  .Call(`_scop_phate_find_optimal_t_cpp`, rows, cols, vals, n_cells, t_max)
+    .Call(`_scop_phate_find_optimal_t_cpp`, rows, cols, vals, n_cells, t_max)
 }
 
 palantir_compute_kernel_cpp <- function(data, knn_idx, knn_dist, knn, alpha = 0.0) {
-  .Call(`_scop_palantir_compute_kernel_cpp`, data, knn_idx, knn_dist, knn, alpha)
+    .Call(`_scop_palantir_compute_kernel_cpp`, data, knn_idx, knn_dist, knn, alpha)
 }
 
 palantir_normalize_kernel_cpp <- function(kernel_i, kernel_j, kernel_x, n) {
-  .Call(`_scop_palantir_normalize_kernel_cpp`, kernel_i, kernel_j, kernel_x, n)
+    .Call(`_scop_palantir_normalize_kernel_cpp`, kernel_i, kernel_j, kernel_x, n)
 }
 
 palantir_multiscale_space_cpp <- function(eigenvectors, eigenvalues) {
-  .Call(`_scop_palantir_multiscale_space_cpp`, eigenvectors, eigenvalues)
+    .Call(`_scop_palantir_multiscale_space_cpp`, eigenvectors, eigenvalues)
 }
 
 palantir_numpy_random_sample_cpp <- function(n, seed = 0L) {
-  .Call(`_scop_palantir_numpy_random_sample_cpp`, n, seed)
+    .Call(`_scop_palantir_numpy_random_sample_cpp`, n, seed)
 }
 
 palantir_maxmin_waypoints_cpp <- function(ms_data, num_waypoints, seed = 20L) {
-  .Call(`_scop_palantir_maxmin_waypoints_cpp`, ms_data, num_waypoints, seed)
+    .Call(`_scop_palantir_maxmin_waypoints_cpp`, ms_data, num_waypoints, seed)
 }
 
 palantir_pseudotime_cpp <- function(ms_data, start_cell, waypoints, knn, max_iterations = 25L, n_jobs = 1L, knn_idx = matrix(), knn_dist = matrix()) {
-  .Call(`_scop_palantir_pseudotime_cpp`, ms_data, start_cell, waypoints, knn, max_iterations, n_jobs, knn_idx, knn_dist)
+    .Call(`_scop_palantir_pseudotime_cpp`, ms_data, start_cell, waypoints, knn, max_iterations, n_jobs, knn_idx, knn_dist)
 }
 
 palantir_markov_chain_cpp <- function(wp_data, knn, pseudotime) {
-  .Call(`_scop_palantir_markov_chain_cpp`, wp_data, knn, pseudotime)
+    .Call(`_scop_palantir_markov_chain_cpp`, wp_data, knn, pseudotime)
 }
 
 palantir_row_entropy_cpp <- function(probabilities) {
-  .Call(`_scop_palantir_row_entropy_cpp`, probabilities)
+    .Call(`_scop_palantir_row_entropy_cpp`, probabilities)
 }
 
 scanpy_normalize_cpp <- function(spliced, unspliced, initial_spliced_totals, initial_unspliced_totals) {
-  .Call(`_scop_scanpy_normalize_cpp`, spliced, unspliced, initial_spliced_totals, initial_unspliced_totals)
+    .Call(`_scop_scanpy_normalize_cpp`, spliced, unspliced, initial_spliced_totals, initial_unspliced_totals)
 }
 
 scanpy_knn_cpp <- function(coords, n_neighbors = 10L, exclude_self = TRUE, n_threads = 0L) {
-  .Call(`_scop_scanpy_knn_cpp`, coords, n_neighbors, exclude_self, n_threads)
-}
-
-proportion_bootstrap_log2fd <- function(v1, v2, n_bootstrap = 1000L, pseudocount = 1e-5, verbose = FALSE) {
-  .Call(`_scop_proportion_bootstrap_log2fd`, v1, v2, n_bootstrap, pseudocount, verbose)
+    .Call(`_scop_scanpy_knn_cpp`, coords, n_neighbors, exclude_self, n_threads)
 }
 
 proportion_bootstrap_stats <- function(v1, v2, n_bootstrap = 1000L, pseudocount = 1e-5, verbose = FALSE) {
-  .Call(`_scop_proportion_bootstrap_stats`, v1, v2, n_bootstrap, pseudocount, verbose)
+    .Call(`_scop_proportion_bootstrap_stats`, v1, v2, n_bootstrap, pseudocount, verbose)
 }
 
 pseudotime_velocity_knn <- function(x_emb, pseudotime, neighbors, normalize = TRUE) {
-  .Call(`_scop_pseudotime_velocity_knn`, x_emb, pseudotime, neighbors, normalize)
+    .Call(`_scop_pseudotime_velocity_knn`, x_emb, pseudotime, neighbors, normalize)
 }
 
 pseudotime_velocity_gradient <- function(x_emb, pseudotime, neighbors, smooth = 0.5, normalize = TRUE) {
-  .Call(`_scop_pseudotime_velocity_gradient`, x_emb, pseudotime, neighbors, smooth, normalize)
+    .Call(`_scop_pseudotime_velocity_gradient`, x_emb, pseudotime, neighbors, smooth, normalize)
 }
 
 rctd_sparse_quality_cpp <- function(st_counts, ref_counts) {
-  .Call(`_scop_rctd_sparse_quality_cpp`, st_counts, ref_counts)
+    .Call(`_scop_rctd_sparse_quality_cpp`, st_counts, ref_counts)
 }
 
 estimate_ssgsea_scores_cpp <- function(ranked, sample_order, gene_sets) {
-  .Call(`_scop_estimate_ssgsea_scores_cpp`, ranked, sample_order, gene_sets)
+    .Call(`_scop_estimate_ssgsea_scores_cpp`, ranked, sample_order, gene_sets)
 }
 
 scenic_edge_correlation_cpp <- function(expr, tf_index, target_index, n_threads = 0L) {
-  .Call(`_scop_scenic_edge_correlation_cpp`, expr, tf_index, target_index, n_threads)
+    .Call(`_scop_scenic_edge_correlation_cpp`, expr, tf_index, target_index, n_threads)
 }
 
 scenicplus_order_cpp <- function(values, decreasing = FALSE) {
-  .Call(`_scop_scenicplus_order_cpp`, values, decreasing)
+    .Call(`_scop_scenicplus_order_cpp`, values, decreasing)
 }
 
 scenicplus_rank_cpp <- function(expression, random_seed = 123L, cores = 1L) {
-  .Call(`_scop_scenicplus_rank_cpp`, expression, random_seed, cores)
+    .Call(`_scop_scenicplus_rank_cpp`, expression, random_seed, cores)
 }
 
 scenicplus_region_gbm_cpp <- function(accessibility, expression, candidates, n_rounds = 500L, max_features = 0.1, random_seed = 666L, cores = 1L) {
-  .Call(`_scop_scenicplus_region_gbm_cpp`, accessibility, expression, candidates, n_rounds, max_features, random_seed, cores)
+    .Call(`_scop_scenicplus_region_gbm_cpp`, accessibility, expression, candidates, n_rounds, max_features, random_seed, cores)
 }
 
 scenicplus_gsea_cpp <- function(rankings, hits, n_perm = 1000L, random_seed = 666L, cores = 1L) {
-  .Call(`_scop_scenicplus_gsea_cpp`, rankings, hits, n_perm, random_seed, cores)
+    .Call(`_scop_scenicplus_gsea_cpp`, rankings, hits, n_perm, random_seed, cores)
 }
 
 grnboost_tree <- function(expr, regulator_idx, target_idx, n_rounds = 5000L, learning_rate = 0.01, max_edges_per_target = 0L, max_depth = 3L, max_features = 0.1, subsample = 0.9, early_stop_window_length = 25L, random_seed = 1234L, exclude_self = TRUE) {
-  .Call(`_scop_grnboost_tree`, expr, regulator_idx, target_idx, n_rounds, learning_rate, max_edges_per_target, max_depth, max_features, subsample, early_stop_window_length, random_seed, exclude_self)
+    .Call(`_scop_grnboost_tree`, expr, regulator_idx, target_idx, n_rounds, learning_rate, max_edges_per_target, max_depth, max_features, subsample, early_stop_window_length, random_seed, exclude_self)
 }
 
 grnboost_tree_parallel <- function(expr, regulator_idx, target_idx, n_rounds = 5000L, learning_rate = 0.01, max_edges_per_target = 0L, max_depth = 3L, max_features = 0.1, subsample = 0.9, early_stop_window_length = 25L, random_seed = 1234L, exclude_self = TRUE, cores = 1L) {
-  .Call(`_scop_grnboost_tree_parallel`, expr, regulator_idx, target_idx, n_rounds, learning_rate, max_edges_per_target, max_depth, max_features, subsample, early_stop_window_length, random_seed, exclude_self, cores)
+    .Call(`_scop_grnboost_tree_parallel`, expr, regulator_idx, target_idx, n_rounds, learning_rate, max_edges_per_target, max_depth, max_features, subsample, early_stop_window_length, random_seed, exclude_self, cores)
 }
 
 grnboost_tree_sparse <- function(expr, regulator_idx, target_idx, n_rounds = 5000L, learning_rate = 0.01, max_edges_per_target = 0L, max_depth = 3L, max_features = 0.1, subsample = 0.9, early_stop_window_length = 25L, random_seed = 1234L, exclude_self = TRUE) {
-  .Call(`_scop_grnboost_tree_sparse`, expr, regulator_idx, target_idx, n_rounds, learning_rate, max_edges_per_target, max_depth, max_features, subsample, early_stop_window_length, random_seed, exclude_self)
+    .Call(`_scop_grnboost_tree_sparse`, expr, regulator_idx, target_idx, n_rounds, learning_rate, max_edges_per_target, max_depth, max_features, subsample, early_stop_window_length, random_seed, exclude_self)
 }
 
 grnboost_tree_sparse_parallel <- function(expr, regulator_idx, target_idx, n_rounds = 5000L, learning_rate = 0.01, max_edges_per_target = 0L, max_depth = 3L, max_features = 0.1, subsample = 0.9, early_stop_window_length = 25L, random_seed = 1234L, exclude_self = TRUE, cores = 1L) {
-  .Call(`_scop_grnboost_tree_sparse_parallel`, expr, regulator_idx, target_idx, n_rounds, learning_rate, max_edges_per_target, max_depth, max_features, subsample, early_stop_window_length, random_seed, exclude_self, cores)
+    .Call(`_scop_grnboost_tree_sparse_parallel`, expr, regulator_idx, target_idx, n_rounds, learning_rate, max_edges_per_target, max_depth, max_features, subsample, early_stop_window_length, random_seed, exclude_self, cores)
 }
 
 scenic_ctx_auc_avg2sd <- function(ranks, total_genes, rank_threshold, rank_cutoff) {
-  .Call(`_scop_scenic_ctx_auc_avg2sd`, ranks, total_genes, rank_threshold, rank_cutoff)
+    .Call(`_scop_scenic_ctx_auc_avg2sd`, ranks, total_genes, rank_threshold, rank_cutoff)
 }
 
 scenicplus_region_gene_cor <- function(atac_log, rna_log, region_idx, gene_idx) {
-  .Call(`_scop_scenicplus_region_gene_cor`, atac_log, rna_log, region_idx, gene_idx)
+    .Call(`_scop_scenicplus_region_gene_cor`, atac_log, rna_log, region_idx, gene_idx)
 }
 
 scenicplus_triplets_cpp <- function(tf_gene_tf, tf_gene_target, tf_gene_importance, region_gene_region, region_gene_gene, region_gene_score, tf_region_tf, tf_region_region, tf_region_score) {
-  .Call(`_scop_scenicplus_triplets_cpp`, tf_gene_tf, tf_gene_target, tf_gene_importance, region_gene_region, region_gene_gene, region_gene_score, tf_region_tf, tf_region_region, tf_region_score)
+    .Call(`_scop_scenicplus_triplets_cpp`, tf_gene_tf, tf_gene_target, tf_gene_importance, region_gene_region, region_gene_gene, region_gene_score, tf_region_tf, tf_region_region, tf_region_score)
 }
 
 scanpy_moments_connectivities_cpp <- function(spliced, unspliced, knn_idx, compute_second_order = TRUE, n_threads = 0L) {
-  .Call(`_scop_scanpy_moments_connectivities_cpp`, spliced, unspliced, knn_idx, compute_second_order, n_threads)
+    .Call(`_scop_scanpy_moments_connectivities_cpp`, spliced, unspliced, knn_idx, compute_second_order, n_threads)
 }
 
 scanpy_deterministic_cpp <- function(Ms, Mu, knn_idx, embedding, fit_offset = FALSE, perc = 0.0, n_threads = 0L) {
-  .Call(`_scop_scanpy_deterministic_cpp`, Ms, Mu, knn_idx, embedding, fit_offset, perc, n_threads)
+    .Call(`_scop_scanpy_deterministic_cpp`, Ms, Mu, knn_idx, embedding, fit_offset, perc, n_threads)
 }
 
 scanpy_stochastic_cpp <- function(Ms, Mu, Mss, Mus, knn_idx, embedding, perc = 95.0, n_threads = 0L) {
-  .Call(`_scop_scanpy_stochastic_cpp`, Ms, Mu, Mss, Mus, knn_idx, embedding, perc, n_threads)
+    .Call(`_scop_scanpy_stochastic_cpp`, Ms, Mu, Mss, Mus, knn_idx, embedding, perc, n_threads)
 }
 
 scanpy_velocity_graph_cpp <- function(Ms, Mu, residual, knn_idx, n_neighbors_velo = -1L, softmax_scale = 4.0, sqrt_transform = FALSE, n_recurse_neighbors = 1L, n_threads = 0L) {
-  .Call(`_scop_scanpy_velocity_graph_cpp`, Ms, Mu, residual, knn_idx, n_neighbors_velo, softmax_scale, sqrt_transform, n_recurse_neighbors, n_threads)
+    .Call(`_scop_scanpy_velocity_graph_cpp`, Ms, Mu, residual, knn_idx, n_neighbors_velo, softmax_scale, sqrt_transform, n_recurse_neighbors, n_threads)
 }
 
 scanpy_project_velocity_embedding_cpp <- function(graph_rows, graph_cols, graph_vals, graph_neg_rows, graph_neg_cols, graph_neg_vals, embedding, scale = 10.0, self_transitions = TRUE, use_negative_cosines = TRUE) {
-  .Call(`_scop_scanpy_project_velocity_embedding_cpp`, graph_rows, graph_cols, graph_vals, graph_neg_rows, graph_neg_cols, graph_neg_vals, embedding, scale, self_transitions, use_negative_cosines)
+    .Call(`_scop_scanpy_project_velocity_embedding_cpp`, graph_rows, graph_cols, graph_vals, graph_neg_rows, graph_neg_cols, graph_neg_vals, embedding, scale, self_transitions, use_negative_cosines)
 }
 
 scanpy_velocity_confidence_cpp <- function(Ms, residual, knn_idx) {
-  .Call(`_scop_scanpy_velocity_confidence_cpp`, Ms, residual, knn_idx)
+    .Call(`_scop_scanpy_velocity_confidence_cpp`, Ms, residual, knn_idx)
 }
 
 scanpy_terminal_states_cpp <- function(velocity_embedding, embedding, knn_idx, n_neighbors_velo = 10L, seed = 0L) {
-  .Call(`_scop_scanpy_terminal_states_cpp`, velocity_embedding, embedding, knn_idx, n_neighbors_velo, seed)
+    .Call(`_scop_scanpy_terminal_states_cpp`, velocity_embedding, embedding, knn_idx, n_neighbors_velo, seed)
 }
 
 scanpy_terminal_states_graph_cpp <- function(graph_rows, graph_cols, graph_vals, graph_neg_rows, graph_neg_cols, graph_neg_vals, knn_idx, eps = 1e-3) {
-  .Call(`_scop_scanpy_terminal_states_graph_cpp`, graph_rows, graph_cols, graph_vals, graph_neg_rows, graph_neg_cols, graph_neg_vals, knn_idx, eps)
+    .Call(`_scop_scanpy_terminal_states_graph_cpp`, graph_rows, graph_cols, graph_vals, graph_neg_rows, graph_neg_cols, graph_neg_vals, knn_idx, eps)
 }
 
 scanpy_pseudotime_cpp <- function(velocity_embedding, embedding, knn_idx, root_cells, end_points, n_neighbors_velo = 10L) {
-  .Call(`_scop_scanpy_pseudotime_cpp`, velocity_embedding, embedding, knn_idx, root_cells, end_points, n_neighbors_velo)
+    .Call(`_scop_scanpy_pseudotime_cpp`, velocity_embedding, embedding, knn_idx, root_cells, end_points, n_neighbors_velo)
 }
 
 scanpy_pseudotime_graph_cpp <- function(graph_rows, graph_cols, graph_vals, graph_neg_rows, graph_neg_cols, graph_neg_vals, knn_idx, root_cells, end_points, n_dcs = 10L) {
-  .Call(`_scop_scanpy_pseudotime_graph_cpp`, graph_rows, graph_cols, graph_vals, graph_neg_rows, graph_neg_cols, graph_neg_vals, knn_idx, root_cells, end_points, n_dcs)
+    .Call(`_scop_scanpy_pseudotime_graph_cpp`, graph_rows, graph_cols, graph_vals, graph_neg_rows, graph_neg_cols, graph_neg_vals, knn_idx, root_cells, end_points, n_dcs)
 }
 
 scibet_fit_predict <- function(ref, query, labels, n_labels, n_top, additional_per_label = 0L, return_probabilities = TRUE) {
-  .Call(`_scop_scibet_fit_predict`, ref, query, labels, n_labels, n_top, additional_per_label, return_probabilities)
+    .Call(`_scop_scibet_fit_predict`, ref, query, labels, n_labels, n_top, additional_per_label, return_probabilities)
 }
 
 scibet_fit_predict_sparse <- function(ref, query, labels, n_labels, n_top, additional_per_label = 0L, return_probabilities = TRUE) {
-  .Call(`_scop_scibet_fit_predict_sparse`, ref, query, labels, n_labels, n_top, additional_per_label, return_probabilities)
+    .Call(`_scop_scibet_fit_predict_sparse`, ref, query, labels, n_labels, n_top, additional_per_label, return_probabilities)
 }
 
 OmegaC <- function(Omega, sgn) {
-  .Call(`_scop_OmegaC`, Omega, sgn)
+    .Call(`_scop_OmegaC`, Omega, sgn)
 }
 
 OmegaSC <- function(OmegaS, sgn) {
-  .Call(`_scop_OmegaSC`, OmegaS, sgn)
+    .Call(`_scop_OmegaSC`, OmegaS, sgn)
 }
 
 cvTrimCoxC <- function(beta, nn, nn2, loco, XF, NF, neventF, nevent1F, loc1F, nF, X, N, nevent, nevent1, loc1, n, ifast, itwo) {
-  .Call(`_scop_cvTrimCoxC`, beta, nn, nn2, loco, XF, NF, neventF, nevent1F, loc1F, nF, X, N, nevent, nevent1, loc1, n, ifast, itwo)
+    .Call(`_scop_cvTrimCoxC`, beta, nn, nn2, loco, XF, NF, neventF, nevent1F, loc1F, nF, X, N, nevent, nevent1, loc1, n, ifast, itwo)
 }
 
 EnetCoxC <- function(X, tevent, alpha, lambda, nlambda, ilambda, wbeta, N, nevent, nevent1, loc1, n, p, N0, thresh, maxit, ifast) {
-  .Call(`_scop_EnetCoxC`, X, tevent, alpha, lambda, nlambda, ilambda, wbeta, N, nevent, nevent1, loc1, n, p, N0, thresh, maxit, ifast)
+    .Call(`_scop_EnetCoxC`, X, tevent, alpha, lambda, nlambda, ilambda, wbeta, N, nevent, nevent1, loc1, n, p, N0, thresh, maxit, ifast)
 }
 
 cvEnetCoxC <- function(X, tevent, alpha, lambda, nlambda, wbeta, N, nevent, nevent1, loc1, n, p, N0, thresh, maxit, ifast, XF, NF, neventF, nevent1F, loc1F, nF) {
-  .Call(`_scop_cvEnetCoxC`, X, tevent, alpha, lambda, nlambda, wbeta, N, nevent, nevent1, loc1, n, p, N0, thresh, maxit, ifast, XF, NF, neventF, nevent1F, loc1F, nF)
+    .Call(`_scop_cvEnetCoxC`, X, tevent, alpha, lambda, nlambda, wbeta, N, nevent, nevent1, loc1, n, p, N0, thresh, maxit, ifast, XF, NF, neventF, nevent1F, loc1F, nF)
 }
 
 NetCoxC <- function(X, tevent, alpha, lambda, nlambda, ilambda, wbeta, Omega, loc, nadj, N, nevent, nevent1, loc1, n, p, N0, thresh, maxit, ifast) {
-  .Call(`_scop_NetCoxC`, X, tevent, alpha, lambda, nlambda, ilambda, wbeta, Omega, loc, nadj, N, nevent, nevent1, loc1, n, p, N0, thresh, maxit, ifast)
+    .Call(`_scop_NetCoxC`, X, tevent, alpha, lambda, nlambda, ilambda, wbeta, Omega, loc, nadj, N, nevent, nevent1, loc1, n, p, N0, thresh, maxit, ifast)
 }
 
 cvNetCoxC <- function(X, tevent, alpha, lambda, nlambda, wbeta, Omega, loc, nadj, N, nevent, nevent1, loc1, n, p, N0, thresh, maxit, ifast, XF, NF, neventF, nevent1F, loc1F, nF) {
-  .Call(`_scop_cvNetCoxC`, X, tevent, alpha, lambda, nlambda, wbeta, Omega, loc, nadj, N, nevent, nevent1, loc1, n, p, N0, thresh, maxit, ifast, XF, NF, neventF, nevent1F, loc1F, nF)
+    .Call(`_scop_cvNetCoxC`, X, tevent, alpha, lambda, nlambda, wbeta, Omega, loc, nadj, N, nevent, nevent1, loc1, n, p, N0, thresh, maxit, ifast, XF, NF, neventF, nevent1F, loc1F, nF)
 }
 
 scissor_gaussian_net_fit_cpp <- function(x, y, omega, alpha, lambda = NULL, nlambda = 100L, foldid = NULL, inzero = TRUE, isd = FALSE, thresh = 1e-7, maxit = 100000L, threshP = 1e-5) {
-  .Call(`_scop_scissor_gaussian_net_fit_cpp`, x, y, omega, alpha, lambda, nlambda, foldid, inzero, isd, thresh, maxit, threshP)
+    .Call(`_scop_scissor_gaussian_net_fit_cpp`, x, y, omega, alpha, lambda, nlambda, foldid, inzero, isd, thresh, maxit, threshP)
 }
 
 scissor_binomial_net_fit_cpp <- function(x, y, omega, alpha, lambda = NULL, nlambda = 100L, foldid = NULL, inzero = TRUE, isd = FALSE, thresh = 1e-7, maxit = 100000L, threshP = 1e-5) {
-  .Call(`_scop_scissor_binomial_net_fit_cpp`, x, y, omega, alpha, lambda, nlambda, foldid, inzero, isd, thresh, maxit, threshP)
+    .Call(`_scop_scissor_binomial_net_fit_cpp`, x, y, omega, alpha, lambda, nlambda, foldid, inzero, isd, thresh, maxit, threshP)
 }
 
 spatial_gradient_screening_cpp <- function(expr, coords, reference_spots, trajectory, variables, mode, n_bins = 50L, n_random = 0L, seed = 123L, min_spots = 3L) {
-  .Call(`_scop_spatial_gradient_screening_cpp`, expr, coords, reference_spots, trajectory, variables, mode, n_bins, n_random, seed, min_spots)
+    .Call(`_scop_spatial_gradient_screening_cpp`, expr, coords, reference_spots, trajectory, variables, mode, n_bins, n_random, seed, min_spots)
 }
 
 spatial_variable_score_cpp <- function(expr, edge_from, edge_to, method, n_permutations = 0L, n_threads = 0L) {
-  .Call(`_scop_spatial_variable_score_cpp`, expr, edge_from, edge_to, method, n_permutations, n_threads)
+    .Call(`_scop_spatial_variable_score_cpp`, expr, edge_from, edge_to, method, n_permutations, n_threads)
 }
 
 exact_knn_f32 <- function(data, k, cores) {
-  .Call(`_scop_exact_knn_f32`, data, k, cores)
+    .Call(`_scop_exact_knn_f32`, data, k, cores)
 }
 
 cross_knn_f32 <- function(reference, query, k, metric, cores) {
-  .Call(`_scop_cross_knn_f32`, reference, query, k, metric, cores)
+    .Call(`_scop_cross_knn_f32`, reference, query, k, metric, cores)
 }
 
 log_normalize_dgc <- function(mat, scale_factor, grain_size = 100L, n_threads = 0L) {
-  invisible(.Call(`_scop_log_normalize_dgc`, mat, scale_factor, grain_size, n_threads))
+    invisible(.Call(`_scop_log_normalize_dgc`, mat, scale_factor, grain_size, n_threads))
 }
 
 scale_sparse_full <- function(sparse_mat, gene_indices, scale_max, n_threads = 0L) {
-  .Call(`_scop_scale_sparse_full`, sparse_mat, gene_indices, scale_max, n_threads)
+    .Call(`_scop_scale_sparse_full`, sparse_mat, gene_indices, scale_max, n_threads)
 }
 
 scale_sparse_rows_from_stats <- function(sparse_mat, center, scale, n_threads = 0L) {
-  .Call(`_scop_scale_sparse_rows_from_stats`, sparse_mat, center, scale, n_threads)
+    .Call(`_scop_scale_sparse_rows_from_stats`, sparse_mat, center, scale, n_threads)
 }
 
 spatial_neighborhood_profile_cpp <- function(xy, group, query, radii, ng) {
-  .Call(`_scop_spatial_neighborhood_profile_cpp`, xy, group, query, radii, ng)
+    .Call(`_scop_spatial_neighborhood_profile_cpp`, xy, group, query, radii, ng)
 }
 
 tage_elastic_net_predict_cpp <- function(expr, feature_match, imputer, center, scale, coef, intercept) {
-  .Call(`_scop_tage_elastic_net_predict_cpp`, expr, feature_match, imputer, center, scale, coef, intercept)
+    .Call(`_scop_tage_elastic_net_predict_cpp`, expr, feature_match, imputer, center, scale, coef, intercept)
 }
 
 sparse_row_mean_var <- function(p, i, x, nrow, ncol) {
-  .Call(`_scop_sparse_row_mean_var`, p, i, x, nrow, ncol)
+    .Call(`_scop_sparse_row_mean_var`, p, i, x, nrow, ncol)
 }
 
 sparse_row_var_std <- function(p, i, x, nrow, ncol, mu, sd, vmax, nnzPerRow) {
-  .Call(`_scop_sparse_row_var_std`, p, i, x, nrow, ncol, mu, sd, vmax, nnzPerRow)
+    .Call(`_scop_sparse_row_var_std`, p, i, x, nrow, ncol, mu, sd, vmax, nnzPerRow)
 }
