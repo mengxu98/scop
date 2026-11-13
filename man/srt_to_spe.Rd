@@ -18,7 +18,8 @@ srt_to_spe(
 \arguments{
 \item{object}{A \code{Seurat} object.}
 
-\item{assay}{Assay to export. If \code{NULL}, the default assay is used.}
+\item{assay}{Assay to export. If \code{NULL}, use the selected image's assay,
+or the object's default assay when coordinates come from metadata.}
 
 \item{layer}{Assay layer to export.}
 

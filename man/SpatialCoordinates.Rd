@@ -35,15 +35,17 @@ A plain list with \code{data}, \code{source}, and \code{transform} entries.
 \description{
 Return raw analysis coordinates or display coordinates together with their
 source and reversible transform. Image-backed coordinates are normalized to
-horizontal \code{x} and vertical \code{y}. Seurat's standard \code{VisiumV2} loader stores
+horizontal \code{x} and vertical \code{y}. Legacy binned \code{VisiumV2} loaders store
 source \code{imagerow}/\code{imagecol} values positionally as centroid \code{x}/\code{y}; SCOP
 restores horizontal image-column and vertical image-row order. Generic FOV
 centroid tables with explicit \code{x}/\code{y} retain their order. SCOP then applies
 only the selected scale and display-axis flip.
-Custom VisiumV2 loaders storing horizontal centroid \code{x} must call
+Official VisiumV2 orientation slots are respected. Unmarked legacy segmented
+images use horizontal x, while unmarked binned images use vertical x.
+Custom loaders with a different convention must call
 \code{\link[=SetSpatialImageAxes]{SetSpatialImageAxes()}} with \code{x_orientation = "horizontal"} once. This
 persists the convention in the Seurat misc slot through subsetting
-and renaming; \code{"vertical"} (or no marker) uses the standard Seurat loader
+and renaming; \code{"vertical"} explicitly selects the historical binned
 convention. Legacy \code{coords_x_orientation} image attributes are readable but
 should be migrated with \code{\link[=SetSpatialImageAxes]{SetSpatialImageAxes()}} before subsetting.
 Cell metadata never determines image axis order. Metadata-only coordinates

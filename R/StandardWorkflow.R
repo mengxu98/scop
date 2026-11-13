@@ -811,7 +811,7 @@ run_standard_spatial_workflow <- function(
   ...
 ) {
   log_message(
-    "Start standard spot-level spatial workflow...",
+    "Start standard spatial workflow...",
     text_color = "blue",
     verbose = verbose
   )
@@ -822,9 +822,12 @@ run_standard_spatial_workflow <- function(
       message_type = "error"
     )
   }
-  if (is.null(assay) || length(assay) != 1L || is.na(assay)) {
+  if (is.null(assay)) {
+    assay <- spatial_input_info(srt, image = image, coord.cols = coord.cols)$assay
+  }
+  if (length(assay) != 1L || is.na(assay)) {
     log_message(
-      "{.arg assay} must be specified for {.arg workflow = 'spatial'}",
+      "{.arg assay} must resolve to one assay for {.arg workflow = 'spatial'}",
       message_type = "error"
     )
   }
@@ -1927,14 +1930,14 @@ run_standard_spatial_workflow <- function(
 
   if (identical(workflow_status, "completed")) {
     log_message(
-      "Standard spot-level spatial workflow completed",
+      "Standard spatial workflow completed",
       message_type = "success",
       text_color = "green",
       verbose = verbose
     )
   } else {
     log_message(
-      "Standard spot-level spatial workflow finished with skipped requested stages",
+      "Standard spatial workflow finished with skipped requested stages",
       message_type = "warning",
       verbose = verbose
     )

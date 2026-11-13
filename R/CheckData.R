@@ -14,6 +14,9 @@
 #' A string indicating the type of data.
 #' Possible values are:
 #' `"raw_counts"`, `"log_normalized_counts"`, `"raw_normalized_counts"`, or `"unknown"`.
+#' Disk-backed iterable matrices return `"unknown"` without materializing their
+#' values. Set `do_normalization` explicitly in preprocessing workflows when
+#' retaining externally normalized disk layers.
 #'
 #' @export
 CheckDataType <- function(object, ...) {
@@ -56,6 +59,10 @@ CheckDataType.default <- function(
   verbose = TRUE,
   ...
 ) {
+  if (inherits(object, "IterableMatrix")) {
+    log_message("Disk-backed normalization state is unknown; set do_normalization explicitly to retain an existing normalized layer", verbose = verbose)
+    return("unknown")
+  }
   data_range <- if (inherits(object, "dgCMatrix")) {
     c(min(object, na.rm = TRUE), max(object, na.rm = TRUE))
   } else {

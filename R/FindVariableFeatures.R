@@ -83,6 +83,23 @@ FindVariableFeatures.StdAssay <- function(
   selection.method = "vst",
   ...
 ) {
+  if (inherits(object, "StdAssay")) {
+    selected_layers <- SeuratObject::Layers(object, search = layer %||% "counts")
+    native <- vapply(methods::slot(object, "layers")[selected_layers], inherits,
+      logical(1),
+      what = c("matrix", "sparseMatrix")
+    )
+    if (any(!native) || !is.null(method)) {
+      return(invoke_fun("FindVariableFeatures.StdAssay",
+        c(list(
+          object = object, method = method, nfeatures = nfeatures,
+          layer = layer, span = span, clip = clip, key = key, verbose = verbose,
+          selection.method = selection.method
+        ), list(...)),
+        .env = asNamespace("Seurat")
+      ))
+    }
+  }
   if (!identical(selection.method, "vst")) {
     log_message("FindVariableFeatures.StdAssay supports selection.method = 'vst'.", message_type = "error")
   }
@@ -211,7 +228,7 @@ FindVariableFeatures.StdAssay <- function(
   object[[names(hvf.info)]] <- NULL
   object[[names(hvf.info)]] <- hvf.info
   SeuratObject::VariableFeatures(object) <- rownames(hvf.info)[
-    order(hvf.info$vf_vst_counts_rank, na.last = NA)
+    order(hvf.info[[paste0("vf_vst_", counts_layers[[1L]], "_rank")]], na.last = NA)
   ]
   object
 }
@@ -312,10 +329,12 @@ FindVariableFeatures.Seurat <- function(
     assay[1L]
   }
   assay_obj <- object[[assay]]
+  assay_layers <- if (inherits(assay_obj, "StdAssay")) methods::slot(assay_obj, "layers") else list()
+  disk_layers <- any(!vapply(assay_layers, inherits, logical(1), what = c("matrix", "sparseMatrix")))
   native_layer <- dots[["layer"]]
   remaining_dots <- dots[setdiff(names(dots), "layer")]
   if (
-    unnamed_dots || length(remaining_dots) > 0L ||
+    disk_layers || unnamed_dots || length(remaining_dots) > 0L ||
       inherits(assay_obj, "SCTAssay") ||
       (!is.null(native_layer) && !identical(selection.method, "vst"))
   ) {

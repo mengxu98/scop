@@ -277,8 +277,11 @@ spatial_coords_raw <- function(
 spatial_image_x_orientation <- function(object, image) {
   orientation <- object@misc$spatial_image_axes[[image]]
   if (is.null(orientation)) {
+    # S4 slots are attributes; old serialized images may lack a newly defined slot.
     orientation <- attr(object[[image]], "coords_x_orientation", exact = TRUE)
-    if (length(orientation) == 0L) orientation <- "vertical"
+    if (length(orientation) == 0L) {
+      orientation <- if (length(spatial_segmentation_names(object[[image]]))) "horizontal" else "vertical"
+    }
   }
   if (length(orientation) != 1L || is.na(orientation) ||
     !orientation %in% c("horizontal", "vertical")) {
@@ -412,15 +415,17 @@ spatial_analysis_coords <- function(
 #' @description
 #' Return raw analysis coordinates or display coordinates together with their
 #' source and reversible transform. Image-backed coordinates are normalized to
-#' horizontal `x` and vertical `y`. Seurat's standard `VisiumV2` loader stores
+#' horizontal `x` and vertical `y`. Legacy binned `VisiumV2` loaders store
 #' source `imagerow`/`imagecol` values positionally as centroid `x`/`y`; SCOP
 #' restores horizontal image-column and vertical image-row order. Generic FOV
 #' centroid tables with explicit `x`/`y` retain their order. SCOP then applies
 #' only the selected scale and display-axis flip.
-#' Custom VisiumV2 loaders storing horizontal centroid `x` must call
+#' Official VisiumV2 orientation slots are respected. Unmarked legacy segmented
+#' images use horizontal x, while unmarked binned images use vertical x.
+#' Custom loaders with a different convention must call
 #' [SetSpatialImageAxes()] with `x_orientation = "horizontal"` once. This
 #' persists the convention in the Seurat misc slot through subsetting
-#' and renaming; `"vertical"` (or no marker) uses the standard Seurat loader
+#' and renaming; `"vertical"` explicitly selects the historical binned
 #' convention. Legacy `coords_x_orientation` image attributes are readable but
 #' should be migrated with [SetSpatialImageAxes()] before subsetting.
 #' Cell metadata never determines image axis order. Metadata-only coordinates
@@ -638,9 +643,13 @@ spatial_graph_compute <- function(
   )
 }
 
-spatial_segmentation_name <- function(image, required = FALSE) {
+spatial_segmentation_names <- function(image) {
   available <- tryCatch(SeuratObject::Boundaries(image), error = function(e) character())
-  candidates <- available[vapply(available, function(name) inherits(image[[name]], "Segmentation"), logical(1))]
+  available[vapply(available, function(name) inherits(image[[name]], "Segmentation"), logical(1))]
+}
+
+spatial_segmentation_name <- function(image, required = FALSE) {
+  candidates <- spatial_segmentation_names(image)
   conventional <- intersect(c("segmentation", "segmentations"), candidates)
   if (length(conventional) == 1L) {
     return(conventional)
@@ -648,7 +657,7 @@ spatial_segmentation_name <- function(image, required = FALSE) {
   if (length(candidates) == 1L) {
     return(candidates)
   }
-  if (length(candidates) > 1L) log_message("Multiple segmentation boundaries; supply an explicit boundaries table", message_type = "error")
+  if (length(candidates) > 1L) log_message("Multiple segmentation boundaries; select boundary explicitly", message_type = "error")
   if (isTRUE(required)) log_message("The selected image does not contain segmentation boundaries", message_type = "error")
   NULL
 }
@@ -706,7 +715,10 @@ spatial_boundary_validate <- function(boundaries, image = NULL) {
   if (nrow(out) == 0L) {
     log_message("No valid segmentation boundaries remain", message_type = "error")
   }
-  ring_key <- interaction(out$cell_id, out$polygon_id, out$ring_id, drop = TRUE, lex.order = TRUE)
+  cell_index <- match(out$cell_id, unique(out$cell_id))
+  polygon_index <- match(out$polygon_id, unique(out$polygon_id))
+  ring_index <- match(out$ring_id, unique(out$ring_id))
+  ring_key <- interaction(cell_index, polygon_index, ring_index, drop = TRUE, lex.order = TRUE)
   valid_ring <- vapply(
     split(seq_len(nrow(out)), ring_key),
     function(i) nrow(unique(out[i, c("x", "y"), drop = FALSE])) >= 3L,
@@ -718,8 +730,59 @@ spatial_boundary_validate <- function(boundaries, image = NULL) {
       message_type = "error"
     )
   }
-  out$.polygon_group <- interaction(out$cell_id, out$polygon_id, drop = TRUE, lex.order = TRUE)
+  out$.polygon_group <- interaction(cell_index, polygon_index, drop = TRUE, lex.order = TRUE)
   out <- out[order(out$.polygon_group, out$ring_id, out$vertex_order), , drop = FALSE]
   rownames(out) <- NULL
   out
+}
+
+spatial_roi_cells <- function(coords, cells = NULL, xlim = NULL, ylim = NULL) {
+  keep <- if (is.null(cells)) rep(TRUE, nrow(coords)) else coords$cell_id %in% cells
+  for (axis in c("x", "y")) {
+    limits <- if (axis == "x") xlim else ylim
+    if (is.null(limits)) next
+    if (!is.numeric(limits) || length(limits) != 2L || any(!is.finite(limits)) || limits[1L] >= limits[2L]) {
+      log_message("ROI limits must contain two finite increasing coordinates", message_type = "error")
+    }
+    keep <- keep & coords[[axis]] >= limits[1L] & coords[[axis]] <= limits[2L]
+  }
+  if (!any(keep)) log_message("No cells remain in the selected ROI", message_type = "error")
+  coords$cell_id[keep]
+}
+
+spatial_segmentation_table <- function(segmentation, cells) {
+  segmentation <- subset(segmentation, cells = cells)
+  sf_data <- if ("sf.data" %in% methods::slotNames(segmentation)) methods::slot(segmentation, "sf.data") else NULL
+  if (!is.null(sf_data)) {
+    pieces <- lapply(split(sf_data, factor(sf_data$cell, levels = unique(sf_data$cell))), function(dat) {
+      # Seurat stores sf-derived vertices as x/y/cell, including closing points.
+      # Recover closed rings before polygon rendering rather than joining them.
+      ring <- integer(nrow(dat))
+      start <- 1L
+      current <- 1L
+      for (i in seq_len(nrow(dat))) {
+        ring[i] <- current
+        if (i >= start + 3L && dat$x[i] == dat$x[start] && dat$y[i] == dat$y[start]) {
+          start <- i + 1L
+          current <- current + 1L
+        }
+      }
+      data.frame(
+        cell_id = dat$cell, x = dat$x, y = dat$y,
+        polygon_id = 1L, ring_id = ring, vertex_order = seq_len(nrow(dat))
+      )
+    })
+  } else {
+    pieces <- lapply(methods::slot(segmentation, "polygons"), function(cell) {
+      rings <- methods::slot(cell, "Polygons")
+      do.call(rbind, lapply(seq_along(rings), function(k) {
+        xy <- methods::slot(rings[[k]], "coords")
+        data.frame(
+          cell_id = methods::slot(cell, "ID"), x = xy[, 1L], y = xy[, 2L],
+          polygon_id = 1L, ring_id = k, vertex_order = seq_len(nrow(xy))
+        )
+      }))
+    })
+  }
+  do.call(rbind, pieces)
 }

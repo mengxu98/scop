@@ -130,7 +130,9 @@ ScaleData.Seurat <- function(
     assay[1L]
   }
   assay_obj <- methods::slot(object, "assays")[[assay_name]]
-  if (length(dots) > 0L || inherits(assay_obj, "SCTAssay")) {
+  assay_layers <- if (inherits(assay_obj, "StdAssay")) methods::slot(assay_obj, "layers") else list()
+  disk_layers <- any(!vapply(assay_layers, inherits, logical(1), what = c("matrix", "sparseMatrix")))
+  if (disk_layers || length(dots) > 0L || inherits(assay_obj, "SCTAssay")) {
     return(invoke_fun(
       "ScaleData.Seurat",
       c(

@@ -8,7 +8,8 @@
 #' @param srt Deprecated alias for `object`; supply exactly one of the two. It
 #' will be removed in scop 1.0.0.
 #' @param object A `Seurat` object.
-#' @param assay Assay to export. If `NULL`, the default assay is used.
+#' @param assay Assay to export. If `NULL`, use the selected image's assay,
+#' or the object's default assay when coordinates come from metadata.
 #' @param layer Assay layer to export.
 #' @param coord.cols Metadata coordinate columns. By default, SCOP resolves
 #' `x/y` first and then `col/row`.
@@ -38,11 +39,12 @@ srt_to_spe <- function(
     log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
   }
   check_r(c("SpatialExperiment", "SummarizedExperiment", "S4Vectors"), verbose = FALSE)
-  assay <- assay %||% SeuratObject::DefaultAssay(srt)
+  info <- spatial_input_info(srt, assay = assay, image = image, coord.cols = coord.cols)
+  assay <- info$assay
   if (!assay %in% SeuratObject::Assays(srt)) {
     log_message("{.arg assay} {.val {assay}} is not present in {.cls Seurat}", message_type = "error")
   }
-  expr <- GetAssayData5(srt, assay = assay, layer = layer)
+  expr <- GetAssayData5(srt, assay = assay, layer = layer, cells = info$cells)
   coordinate_space <- match.arg(coordinate_space)
   resolved <- spatial_analysis_coords(
     srt = srt,
@@ -68,7 +70,9 @@ srt_to_spe <- function(
     spatialCoords = as.matrix(coords),
     metadata = list(scop_spatial_coordinates = list(
       source = resolved$source,
-      transform = resolved$transform
+      transform = resolved$transform,
+      coordinate_units = info$coordinate_units,
+      data_type = info$data_type
     ))
   )
 }
@@ -170,6 +174,14 @@ spe_to_srt <- function(
     meta.data = meta,
     project = project
   )
-  if (!is.null(provenance)) out@misc$spatial_coordinate_import <- provenance
+  if (!is.null(provenance)) {
+    out@misc$spatial_coordinate_import <- provenance
+    out@misc$scop_spatial_input[[assay]] <- list(
+      assay = assay, image = NULL, cells = colnames(out),
+      data_type = provenance$data_type %||% "unknown",
+      coordinate_units = provenance$coordinate_units %||% "unknown",
+      resolution_um = NA_real_, loader = "scop::spe_to_srt"
+    )
+  }
   out
 }

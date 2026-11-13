@@ -35,7 +35,8 @@ spatialcellchat_validate_input <- function(
   assay,
   layer,
   result.name,
-  composition
+  composition,
+  cells = colnames(srt)
 ) {
   if (!inherits(srt, "Seurat")) {
     log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
@@ -57,12 +58,12 @@ spatialcellchat_validate_input <- function(
   if (!is.character(result.name) || length(result.name) != 1L || is.na(result.name) || !nzchar(result.name)) {
     log_message("{.arg result.name} must be one non-empty string", message_type = "error")
   }
-  labels <- as.character(srt@meta.data[[group.by]])
+  labels <- as.character(srt@meta.data[cells, group.by])
   if (anyNA(labels) || any(!nzchar(labels))) {
     log_message("{.arg group.by} contains missing or empty labels", message_type = "error")
   }
   if (!is.null(sample.by)) {
-    samples <- as.character(srt@meta.data[[sample.by]])
+    samples <- as.character(srt@meta.data[cells, sample.by])
     if (anyNA(samples) || any(!nzchar(samples))) {
       log_message("{.arg sample.by} contains missing or empty labels", message_type = "error")
     }
@@ -102,7 +103,7 @@ spatialcellchat_validate_expression <- function(expression, expected_cells) {
 spatialcellchat_detect_technology <- function(srt, technology, image = NULL) {
   technology <- match.arg(
     technology,
-    c("auto", "visium", "visium_hd", "xenium", "cosmx", "merfish", "generic")
+    c("auto", "visium", "visium_hd", "xenium", "atera", "cosmx", "merfish", "generic")
   )
   if (!identical(technology, "auto")) {
     return(technology)
@@ -114,10 +115,18 @@ spatialcellchat_detect_technology <- function(srt, technology, image = NULL) {
     image_assay <- SeuratObject::DefaultAssay(image_object)
     input_record <- srt@misc$scop_spatial_input[[image]]
     is_hd <- identical(input_record$technology, "visium_hd") ||
-      grepl("[.]\\d+um$", image_assay)
+      grepl("[.]\\d+um$", image_assay) ||
+      (inherits(image_object, "VisiumV2") && length(spatial_segmentation_names(image_object)) > 0L)
     if (inherits(image_object, c("VisiumV1", "VisiumV2"))) {
       evidence <- c(evidence, if (is_hd) "visium_hd" else "visium")
     }
+    if (identical(input_record$technology, "atera") ||
+      identical(srt@misc$atera.molecules$fov, image) ||
+      (length(SeuratObject::Images(srt)) == 1L &&
+        isTRUE(grepl("^Atera ", srt@misc$run_metadata$chemistry_version)))) {
+      evidence <- c(evidence, "atera")
+    }
+    if (identical(input_record$technology, "xenium")) evidence <- c(evidence, "xenium")
   }
   values <- c(
     srt@misc$technology %||% character(),
@@ -130,6 +139,7 @@ spatialcellchat_detect_technology <- function(srt, technology, image = NULL) {
     visium_hd = "visium[_ -]?hd",
     visium = "visium",
     xenium = "xenium",
+    atera = "atera",
     cosmx = "cosmx|cos mx",
     merfish = "merfish"
   )
@@ -158,10 +168,9 @@ spatialcellchat_detect_level <- function(srt, analysis.level, technology, compos
   has_segmentation <- !is.null(image) &&
     image %in% tryCatch(SeuratObject::Images(srt), error = function(e) character()) &&
     (
-      "segmentation" %in% tryCatch(SeuratObject::Boundaries(srt[[image]]), error = function(e) character()) ||
-        (inherits(srt[[image]], "FOV") && !inherits(srt[[image]], c("VisiumV1", "VisiumV2")))
+      length(spatial_segmentation_names(srt[[image]])) > 0L
     )
-  if (has_segmentation || technology %in% c("xenium", "cosmx", "merfish")) {
+  if (has_segmentation || technology %in% c("xenium", "atera", "cosmx", "merfish")) {
     return("cell")
   }
   if (technology %in% c("visium", "visium_hd")) {
@@ -282,7 +291,7 @@ spatialcellchat_metric_coordinates <- function(
   if (identical(coordinate.unit, "auto")) {
     coordinate.unit <- if (technology %in% c("visium", "visium_hd")) {
       "pixel"
-    } else if (technology %in% c("xenium", "cosmx", "merfish")) {
+    } else if (technology %in% c("xenium", "atera", "cosmx", "merfish")) {
       "micron"
     } else {
       log_message(
@@ -297,7 +306,7 @@ spatialcellchat_metric_coordinates <- function(
       log_message("Micron coordinates require {.arg ratio = 1}", message_type = "error")
     }
     ratio <- 1
-    unit_source <- if (technology %in% c("xenium", "cosmx", "merfish")) "technology" else "user"
+    unit_source <- if (technology %in% c("xenium", "atera", "cosmx", "merfish")) "technology" else "user"
   } else if (is.null(ratio)) {
     if (identical(technology, "visium_hd")) {
       log_message("Visium HD pixel coordinates require an explicit calibrated {.arg ratio}; the 65-micron Visium diameter does not apply", message_type = "error")
@@ -849,12 +858,13 @@ spatialcellchat_run_one <- function(
 #'   spatial coordinates.
 #' @param group.by One metadata column defining cell types for cell-level runs,
 #'   or spot/domain labels for spot- and composition-level runs. Values must be
-#'   complete and non-empty.
+#'   complete and non-empty for the selected assay/image observations.
 #' @param sample.by Optional metadata column defining independent spatial
 #'   samples. Samples are processed separately. When omitted, all observations
 #'   are treated as one sample.
 #' @param assay,layer Assay and normalized expression layer. `assay = NULL`
-#'   uses the default assay.
+#'   uses the selected image's assay when one image is selected, otherwise the
+#'   object's default assay. Only selected assay/image observations are analyzed.
 #' @param image Spatial image name, or a named character vector mapping samples
 #'   to images, for example `c(section1 = "slice1", section2 = "slice2")`.
 #'   Multi-image objects never silently select the first image.
@@ -945,7 +955,7 @@ RunSpatialCellChat <- function(
   species = c("Homo_sapiens", "Mus_musculus"),
   database = c("protein", "all", "custom"),
   custom.db = NULL,
-  technology = c("auto", "visium", "visium_hd", "xenium", "cosmx", "merfish", "generic"),
+  technology = c("auto", "visium", "visium_hd", "xenium", "atera", "cosmx", "merfish", "generic"),
   analysis.level = c("auto", "cell", "spot", "composition"),
   composition = NULL,
   composition.normalize = TRUE,
@@ -970,7 +980,20 @@ RunSpatialCellChat <- function(
   srt = NULL
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
-  assay <- assay %||% DefaultAssay(srt)
+  images <- SeuratObject::Images(srt)
+  selected_images <- image %||% if (length(images) == 1L) images else NULL
+  if (length(selected_images) && any(!selected_images %in% images)) {
+    log_message("Unknown spatial image in image selection", message_type = "error")
+  }
+  assay <- assay %||% if (length(selected_images) == 1L) SeuratObject::DefaultAssay(srt[[selected_images[[1L]]]]) else DefaultAssay(srt)
+  cells_use <- colnames(srt[[assay]])
+  if (length(selected_images)) {
+    image_cells <- unique(unlist(lapply(selected_images, function(n) SeuratObject::Cells(srt[[n]]))))
+    if (!all(image_cells %in% cells_use)) {
+      log_message("Selected image cells are absent from assay; choose the matching assay", message_type = "error")
+    }
+    cells_use <- cells_use[cells_use %in% image_cells]
+  }
   species <- match.arg(species)
   database <- match.arg(database)
   technology <- match.arg(technology)
@@ -979,7 +1002,7 @@ RunSpatialCellChat <- function(
   avg.type <- match.arg(avg.type)
   store.object <- match.arg(store.object)
   backend <- match.arg(backend)
-  spatialcellchat_validate_input(srt, group.by, sample.by, assay, layer, result.name, composition)
+  spatialcellchat_validate_input(srt, group.by, sample.by, assay, layer, result.name, composition, cells = cells_use)
   spatialcellchat_validate_scalar(interaction.range, "interaction.range", positive = TRUE)
   spatialcellchat_validate_scalar(scale.distance, "scale.distance", positive = TRUE)
   spatialcellchat_validate_scalar(min.cells, "min.cells", positive = TRUE)
@@ -996,8 +1019,8 @@ RunSpatialCellChat <- function(
     )
   }
 
-  sample_values <- if (is.null(sample.by)) rep("ALL", ncol(srt)) else as.character(srt@meta.data[[sample.by]])
-  names(sample_values) <- colnames(srt)
+  sample_values <- if (is.null(sample.by)) rep("ALL", length(cells_use)) else as.character(srt@meta.data[cells_use, sample.by])
+  names(sample_values) <- cells_use
   sample_names <- unique(sample_values)
   image_map <- spatialcellchat_image_map(srt, sample_names, image = image)
   technology_requested <- technology
@@ -1069,13 +1092,17 @@ RunSpatialCellChat <- function(
   }
   database.use <- spatialcellchat_database(species, database, custom.db = custom.db)
   expression_all <- tryCatch(
-    GetAssayData5(srt, assay = assay, layer = layer),
+    GetAssayData5(srt, assay = assay, layer = layer, cells = cells_use),
     error = function(e) NULL
   )
   if (is.null(expression_all)) {
     log_message("Cannot read normalized expression from assay {.val {assay}} layer {.val {layer}}", message_type = "error")
   }
-  spatialcellchat_validate_expression(expression_all, colnames(srt))
+  if (inherits(expression_all, "IterableMatrix")) {
+    log_message("Materializing selected observations for SpatialCellChat", verbose = verbose)
+    expression_all <- methods::as(expression_all, "dgCMatrix")
+  }
+  spatialcellchat_validate_expression(expression_all, cells_use)
 
   log_message(
     "Start SpatialCellChat {.val {analysis.level}} analysis using {.val {technology}} coordinates",

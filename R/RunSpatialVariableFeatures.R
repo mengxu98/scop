@@ -107,7 +107,7 @@ RunSpatialVariableFeatures <- function(
   )
   validate_scalar_flag(set_variable_features, "set_variable_features")
   validate_scalar_flag(store_results, "store_results")
-  assay <- assay %||% SeuratObject::DefaultAssay(srt)
+  assay <- spatial_input_info(srt, assay = assay, image = image, coord.cols = coord.cols)$assay
   if (!assay %in% SeuratObject::Assays(srt)) {
     log_message(
       "{.arg assay} {.val {assay}} is not present in {.cls Seurat}",
@@ -174,7 +174,7 @@ RunSpatialVariableFeatures <- function(
     coordinate_space = coordinate_space
   )
   coords <- coordinate_input$data
-  spots <- intersect(colnames(srt), rownames(coords))
+  spots <- intersect(colnames(srt[[assay]]), rownames(coords))
   if (length(spots) == 0L) {
     log_message(
       "No spatial coordinates match spots in {.arg srt}",
@@ -195,7 +195,6 @@ RunSpatialVariableFeatures <- function(
     k <- length(spots) - 1L
   }
 
-  expr <- GetAssayData5(srt, assay = assay, layer = layer)
   if (is.null(features)) {
     features <- suppressWarnings(
       SeuratObject::VariableFeatures(srt, assay = assay)
@@ -203,11 +202,11 @@ RunSpatialVariableFeatures <- function(
     features <- as.character(features)
     features <- features[!is.na(features) & nzchar(features)]
     if (length(features) == 0L) {
-      features <- rownames(expr)
+      features <- rownames(srt[[assay]])
     }
   }
   features <- unique(features)
-  features <- intersect(features, rownames(expr))
+  features <- intersect(features, rownames(srt[[assay]]))
   if (length(features) == 0L) {
     log_message(
       "No requested {.arg features} are present in assay {.val {assay}}",
@@ -215,7 +214,11 @@ RunSpatialVariableFeatures <- function(
     )
   }
 
-  expr <- expr[features, spots, drop = FALSE]
+  expr <- GetAssayData5(srt, assay = assay, layer = layer, features = features, cells = spots)
+  if (inherits(expr, "IterableMatrix")) {
+    log_message("Materializing selected features and observations for spatial feature statistics", verbose = verbose)
+    expr <- methods::as(expr, "dgCMatrix")
+  }
   expressed_spots <- Matrix::rowSums(expr > 0)
   keep_features <- expressed_spots >= min_spots
   if (!any(keep_features)) {
