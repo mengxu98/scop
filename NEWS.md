@@ -6,6 +6,8 @@
 
 * **feat**: Run transcriptomic and multiomic network methods through `RunGRN()`, with complete native results, separate group networks and isolated method runtimes. `GetGRN()` reads evidence layers and target programs, and `GRNPlot()` displays networks, layered paths and common edges.
 
+* **fix**: RegDiffusion uses its separate Python runtime for all output types, and SCENIC with `backend = "cpp"` no longer looks for a Python environment. RegDiffusion accepts its supported trainer options through `method_args`; the old `cell_types` passthrough is unavailable. Use `force = TRUE` to replace an existing edge output file.
+
 * **fix**: Preserve gene-by-cell orientation in GENIE3 inference. Complete GNIPLR result views respect requested regulators while the default edge-table path retains its existing behavior.
 
 * **fix**: Pin PyNNDescent 0.6.0 in Scanpy environments to prevent sparse-array `getnnz` failures in large-data `RunPAGA()` neighbor searches. `RunPAGA()` now requests an R-session restart if an older PyNNDescent module remains loaded after the environment is updated.
