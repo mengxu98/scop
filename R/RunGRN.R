@@ -120,11 +120,7 @@ filter_grn_adjacency_file <- function(
   invisible(output_file)
 }
 
-grn_python_packages <- function(module = c("grnboost2", "regdiffusion")) {
-  module <- match.arg(module)
-  if (identical(module, "regdiffusion")) {
-    return(c("regdiffusion"))
-  }
+grn_python_packages <- function() {
   c(
     "pyscenic==0.12.1",
     "arboreto==0.1.6",
@@ -553,7 +549,7 @@ grnboost_python <- function(
     verbose = verbose
   )
   check_python(
-    packages = grn_python_packages("grnboost2"),
+    packages = grn_python_packages(),
     envname = envname,
     conda = conda,
     verbose = verbose
@@ -603,92 +599,6 @@ grnboost_python <- function(
   adjacency
 }
 
-regdiffusion_python <- function(
-  grn_matrix,
-  regulators,
-  targets = NULL,
-  output_file = NULL,
-  work_dir = tempdir(),
-  prefix = "regdiffusion",
-  envname = NULL,
-  conda = "auto",
-  force = FALSE,
-  verbose = TRUE,
-  ...
-) {
-  envname <- envname %||% "scenic_env"
-  output_file <- output_file %||%
-    file.path(work_dir, paste0(prefix, "_adj.tsv"))
-  if (file.exists(output_file) && isFALSE(force)) {
-    log_message(
-      "Reusing existing Python RegDiffusion output",
-      verbose = verbose
-    )
-    return(utils::read.delim(
-      output_file,
-      stringsAsFactors = FALSE,
-      check.names = FALSE
-    ))
-  }
-  inputs <- normalize_grn_inputs(
-    grn_matrix,
-    regulators = regulators,
-    targets = targets
-  )
-  dir.create(work_dir, recursive = TRUE, showWarnings = FALSE)
-  expr_csv <- file.path(work_dir, paste0(prefix, "_expression_mtx.csv"))
-  regulators_file <- file.path(work_dir, paste0(prefix, "_regulators.txt"))
-  raw_file <- if (identical(inputs[["targets"]], colnames(grn_matrix))) {
-    output_file
-  } else {
-    file.path(work_dir, paste0(prefix, "_adj_raw.tsv"))
-  }
-  genes_keep <- union(inputs[["regulators"]], inputs[["targets"]])
-  grn_sub <- grn_matrix[, genes_keep, drop = FALSE]
-  utils::write.csv(as.matrix(grn_sub), file = expr_csv, row.names = TRUE)
-  writeLines(inputs[["regulators"]], regulators_file, useBytes = TRUE)
-  PrepareEnv(
-    envname = envname,
-    conda = conda,
-    modules = c("scenic", "regdiffusion"),
-    verbose = verbose
-  )
-  check_python(
-    packages = grn_python_packages("regdiffusion"),
-    envname = envname,
-    conda = conda,
-    verbose = verbose
-  )
-  conda_resolved <- resolve_conda(conda)
-  python_path <- conda_python(conda = conda_resolved, envname = envname)
-  assert_python_runtime_switchable(
-    python_path,
-    restart_hint = python_runtime_restart_hint(
-      envname = envname,
-      modules = "regdiffusion"
-    )
-  )
-  configure_python_runtime(python_path)
-  functions <- scop_python_import("functions", convert = TRUE)
-  functions$RunSCENICRegDiffusion(
-    expression_mtx = expr_csv,
-    regulators = regulators_file,
-    adj_output = raw_file,
-    force = TRUE,
-    verbose = isTRUE(verbose),
-    ...
-  )
-  if (!identical(raw_file, output_file)) {
-    filter_grn_adjacency_file(
-      raw_file,
-      output_file,
-      inputs[["targets"]],
-      verbose = verbose
-    )
-  }
-  utils::read.delim(output_file, stringsAsFactors = FALSE, check.names = FALSE)
-}
-
 #' @title Infer gene regulatory networks with a selected method
 #'
 #' @description
@@ -729,7 +639,8 @@ regdiffusion_python <- function(
 #' @param max_lag Maximum lag used by GNIPLR.
 #' @param envname Python environment used by Python backends. If `NULL`,
 #' GNIPLR uses the default `"scop_env"` through [RunGNIPLR()], while pySCENIC
-#' GRNBoost2 and RegDiffusion use the isolated `"scenic_env"` environment.
+#' GRNBoost2 uses `"scenic_env"` on the legacy path; RegDiffusion uses
+#' its own `"regdiffusion_env"` environment.
 #' @param conda Conda-compatible executable used by Python backends.
 #' @param cores Number of workers used by supported methods.
 #' @param seed Random seed passed to supported backends.
@@ -848,7 +759,7 @@ RunGRN.default <- function(
     exclude_self = exclude_self, correlation_threshold = correlation_threshold,
     lasso_degree = lasso_degree, lasso_alpha = lasso_alpha, max_lag = max_lag)
   assay <- if (is_seurat) assay %||% SeuratObject::DefaultAssay(object) else assay
-  legacy <- spec$method %in% c("grnboost2", "regdiffusion", "genie3", "gniplr") &&
+  legacy <- spec$method %in% c("grnboost2", "genie3", "gniplr") &&
     return_type == "edges" && is.null(group.by) && is.null(groups) &&
     is.null(pseudotime) && is.null(input_mode) && !length(resources) && !length(method_args) && spec$backend %in% c("cpp", "python")
   if (legacy) {
@@ -1099,7 +1010,7 @@ grn_legacy_inference <- function(
   regulators = NULL,
   targets = NULL,
   genes_in = c("rows", "columns"),
-  grn_method = c("grnboost2", "regdiffusion", "genie3", "gniplr"),
+  grn_method = c("grnboost2", "genie3", "gniplr"),
   backend = c("cpp", "python"),
   output_file = NULL,
   work_dir = tempdir(),
@@ -1156,28 +1067,6 @@ grn_legacy_inference <- function(
       conda = conda,
       cores = cores,
       seed = seed,
-      force = force,
-      verbose = verbose,
-      ...
-    ))
-  }
-  if (identical(grn_method, "regdiffusion")) {
-    if (!identical(backend, "python")) {
-      log_message(
-        "{.arg methods = 'regdiffusion'} is only available with {.arg backend = 'python'}.",
-        message_type = "error"
-      )
-    }
-    regdiffusion_envname <- envname %||% "scenic_env"
-    return(regdiffusion_python(
-      grn_matrix = grn_matrix,
-      regulators = regulators,
-      targets = targets %||% colnames(grn_matrix),
-      output_file = output_file,
-      work_dir = work_dir,
-      prefix = prefix,
-      envname = regdiffusion_envname,
-      conda = conda,
       force = force,
       verbose = verbose,
       ...

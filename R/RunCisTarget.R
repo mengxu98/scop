@@ -327,7 +327,7 @@ cisTarget_python <- function(
     verbose = verbose
   )
   check_python(
-    packages = grn_python_packages("grnboost2"),
+    packages = grn_python_packages(),
     envname = envname,
     conda = conda,
     verbose = verbose

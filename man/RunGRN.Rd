@@ -130,7 +130,8 @@ from its own regulator feature set.}
 
 \item{envname}{Python environment used by Python backends. If `NULL`,
 GNIPLR uses the default `"scop_env"` through [RunGNIPLR()], while pySCENIC
-GRNBoost2 and RegDiffusion use the isolated `"scenic_env"` environment.}
+GRNBoost2 uses `"scenic_env"` on the legacy path; RegDiffusion uses
+its own `"regdiffusion_env"` environment.}
 
 \item{conda}{Conda-compatible executable used by Python backends.}
 

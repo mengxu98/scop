@@ -42,6 +42,7 @@ grn_method_spec <- function(method, backend = NULL) {
     spec$allowed_args <- legacy_args
     spec$profile <- "r"
   }
+  if (key == "scenic" && spec$backend == "cpp") spec$profile <- "r"
   if (key == "gniplr" && spec$runner != "grn_run_legacy") spec$profile <- "gniplr"
   if (key %in% c("genie3", "ppcor", "pidc", "scorpion", "leap", "scode", "sincerities", "multicsn")) spec$profile <- key
   spec
