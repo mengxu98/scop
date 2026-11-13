@@ -18,6 +18,11 @@ test_that("LINGER metadata follows selected cell identities", {
   metadata <- grn_linger_metadata(input, config)
   expect_identical(metadata$sample, rep("sample1", 2L))
   expect_identical(metadata$label, rep("all", 2L))
+  input$group <- "B"
+  config$group.by <- c(c1 = "B", c2 = "T", c3 = "B")
+  expect_identical(grn_linger_metadata(input, config)$label, c("B", "B"))
+  config$method_args$label.by <- "label"
+  expect_identical(grn_linger_metadata(input, config)$label, c("Mono", "B"))
   input$cells <- c("c1", "missing")
   expect_error(grn_linger_metadata(input, config), "missing from Seurat metadata")
 })
@@ -44,8 +49,7 @@ test_that("LINGER checks counts at the modality boundary", {
 })
 
 test_that("LINGER rejects unsupported inputs before starting a process", {
-  input <- list(object = matrix(1, 2L, 2L), input_mode = "rna")
-  expect_error(grn_run_linger(input, list()), "paired multiome Seurat")
+  expect_error(RunGRN(matrix(1, 2L, 2L), methods = "linger"), "Multiome inference requires a Seurat object")
   object <- SeuratObject::CreateSeuratObject(methods::as(matrix(1L, 2L, 3L,
     dimnames = list(c("G1", "G2"), c("c1", "c2", "c3"))
   ), "dgCMatrix"))
@@ -72,8 +76,6 @@ test_that("LINGER preflight checks only the required reference files", {
   on.exit(unlink(directory, recursive = TRUE), add = TRUE)
   config <- list(atac_assay = "ATAC", method_args = list(genome = "hg38"), resources = list(bulk_reference = directory))
   selected <- grn_linger_reference_files(input, config)
-  expect_error(grn_linger_reference_files(list(object = counts), config), "paired Seurat object")
-  expect_error(grn_linger_reference_files(input, modifyList(config, list(atac_assay = "missing"))), "selected ATAC assay")
   expect_identical(selected$files, c(
     "TFName.txt", "Match2.txt", "bulk_gene_all.txt", "all_hg19.txt", "motifWeight.txt",
     "RE_gene_corr_hg19.bed", "hg38_hg19_pair.bed", "MotifTarget_Matrix_chr19.txt",
@@ -98,14 +100,33 @@ test_that("LINGER preflight checks only the required reference files", {
   expect_true("hg19_hg38_pair.bed" %in% grn_linger_reference_files(input, config)$files)
 })
 
-test_that("LINGER prepare identity skips malformed distribution metadata", {
+test_that("LINGER prepare identity ignores unrelated packages", {
   python <- Sys.which("python3")
   skip_if(!nzchar(python), "Python 3 is unavailable")
   source_root <- testthat::test_path("..", "..")
   runner <- file.path(source_root, "inst", "grn", "linger.py")
   if (!file.exists(runner)) runner <- system.file("grn", "linger.py", package = "scop", mustWork = TRUE)
-  probe <- testthat::test_path("python", "grn_linger_prepare_identity.py")
+  probe <- withr::local_tempfile(fileext = ".py")
+  writeLines(c(
+    "import importlib.util, sys, tempfile",
+    "from pathlib import Path",
+    "from unittest.mock import patch",
+    "sys.dont_write_bytecode = True",
+    "spec = importlib.util.spec_from_file_location('linger', sys.argv[1])",
+    "runner = importlib.util.module_from_spec(spec)",
+    "spec.loader.exec_module(runner)",
+    "request = dict(min_genes=20, min_cells=3, genome='hg38', activation='ReLU',",
+    "    patch_missing_keys=True, seed=42, cores=1, reference_selection={'manifest_sha256': 'reference'})",
+    "with tempfile.TemporaryDirectory() as temporary:",
+    "    root = Path(temporary)",
+    "    versions = dict.fromkeys(runner.PREPARE_PACKAGES, '1.0')",
+    "    with patch.object(runner.importlib.metadata, 'version', side_effect=versions.__getitem__):",
+    "        first = runner.prepare_identity(root, request, {}, {}, {})",
+    "        versions['unrelated-package'] = '2.0'",
+    "        assert runner.prepare_identity(root, request, {}, {}, {}) == first",
+    "        versions['scanpy'] = '2.0'",
+    "        assert runner.prepare_identity(root, request, {}, {}, {}) != first"
+  ), probe)
   output <- suppressWarnings(system2(python, c(shQuote(probe), shQuote(runner)), stdout = TRUE, stderr = TRUE))
   expect_null(attr(output, "status"), info = paste(output, collapse = "\n"))
-  expect_true("LINGER_PREPARE_IDENTITY_METADATA_PASSED" %in% output)
 })

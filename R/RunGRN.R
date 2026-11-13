@@ -82,6 +82,16 @@ RunGRN <- function(object, ...) {
     startsWith("return_seurat", output_args))) {
     stop("Use 'return_type' to select the GRN output.", call. = FALSE)
   }
+  if ("method" %in% argument_names) {
+    args <- list(...)
+    method <- args[names(args) %in% "method"]
+    args$method <- NULL
+    if (!is.null(args$method_args) && !is.list(args$method_args)) {
+      stop("method_args must be a named list.", call. = FALSE)
+    }
+    args$method_args <- c(method, args$method_args)
+    return(do.call(RunGRN, c(list(object = object), args)))
+  }
   UseMethod("RunGRN", object)
 }
 
@@ -140,7 +150,6 @@ RunGRN.default <- function(
   seed = 1234,
   force = FALSE,
   verbose = TRUE,
-  ...,
   return_type = NULL,
   input_mode = NULL,
   assay = NULL,
@@ -153,7 +162,8 @@ RunGRN.default <- function(
   resources = list(),
   method_args = list(),
   tool_name = NULL,
-  overwrite = FALSE
+  overwrite = FALSE,
+  ...
 ) {
   dots <- list(...)
   if (length(methods) != 1L || is.na(methods)) stop("Choose exactly one GRN method.", call. = FALSE)
@@ -174,21 +184,6 @@ RunGRN.default <- function(
     lasso_degree = lasso_degree, lasso_alpha = lasso_alpha, max_lag = max_lag
   )
   assay <- if (is_seurat) assay %||% SeuratObject::DefaultAssay(object) else assay
-  legacy <- spec$method %in% c("grnboost2", "genie3", "gniplr") &&
-    return_type == "edges" && is.null(group.by) && is.null(groups) &&
-    is.null(pseudotime) && is.null(input_mode) && !length(resources) && !length(method_args) && spec$backend %in% c("cpp", "python")
-  if (legacy) {
-    expression <- if (is_seurat) GetAssayData5(object, assay = assay, layer = layer) else object
-    old_backend <- if (missing(backend) || is.null(backend)) "cpp" else backend
-    return(do.call(grn_legacy_inference, c(
-      list(
-        object = expression, regulators = regulators,
-        targets = targets, genes_in = genes_in, grn_method = spec$method, backend = old_backend,
-        output_file = output_file, work_dir = work_dir, prefix = prefix
-      ), scientific,
-      list(envname = envname, conda = conda, cores = cores, seed = seed, force = force, verbose = verbose), dots
-    )))
-  }
   if (!is.list(method_args) || !is.list(resources) || (length(method_args) && (is.null(names(method_args)) || any(!nzchar(names(method_args))) || anyDuplicated(names(method_args))))) stop("method_args and resources must be named lists.", call. = FALSE)
   explicit <- intersect(names(match.call(expand.dots = FALSE)), names(scientific))
   arguments <- c(scientific[explicit], dots, method_args)
@@ -279,16 +274,25 @@ RunGRN.default <- function(
     pseudotime <- pseudotime[cells, , drop = FALSE]
     if (any(!is.finite(pseudotime) & !is.na(pseudotime)) || any(rowSums(is.finite(pseudotime)) == 0L)) stop("Each cell needs a finite pseudotime on at least one trajectory.", call. = FALSE)
   } else if (spec$method %in% c("leap", "scode", "sincerities")) stop("This method requires named pseudotime values.", call. = FALSE)
-  regulators <- unique(as.character(regulators %||% genes))
+  if (spec$method != "scenic" || length(regulators)) {
+    regulators <- intersect(as.character(regulators %||% genes), genes)
+  } else {
+    regulators <- NULL
+  }
   select_pando_targets <- spec$method == "pando" && is.null(targets)
-  targets <- unique(as.character(targets %||% genes))
-  if (!length(intersect(regulators, genes)) || !length(intersect(targets, genes))) stop("No candidate regulators or targets occur in the input.", call. = FALSE)
+  targets <- intersect(as.character(targets %||% genes), genes)
+  if ((!is.null(regulators) && !length(regulators)) || !length(targets)) stop("No candidate regulators or targets occur in the input.", call. = FALSE)
+  edge_limit <- arguments$max_edges_per_target
+  if (!is.null(edge_limit) && (!is.numeric(edge_limit) || length(edge_limit) != 1L ||
+    is.na(edge_limit) || edge_limit < 1 || (is.finite(edge_limit) && edge_limit != floor(edge_limit)))) {
+    stop("max_edges_per_target must be a positive integer or Inf.", call. = FALSE)
+  }
   if (length(cores) != 1L || !is.finite(cores) || cores < 1 || cores != as.integer(cores)) stop("cores must be a positive integer.", call. = FALSE)
   if (length(seed) != 1L || !is.finite(seed)) stop("seed must be a finite number.", call. = FALSE)
   config <- list(
-    method = spec$method, backend = spec$backend, input_mode = input_mode,
+    method = spec$method, backend = spec$backend,
     method_args = arguments, resources = resources, runtime = runtime, assay = assay, layer = layer,
-    atac_assay = atac_assay, atac_layer = atac_layer, group.by = group.by, groups = group_cells,
+    atac_assay = atac_assay, atac_layer = atac_layer,
     cores = as.integer(cores), seed = as.integer(seed), work_dir = work_dir, envname = envname,
     conda = conda, verbose = verbose
   )
@@ -298,12 +302,10 @@ RunGRN.default <- function(
     regulators = regulators, targets = if (select_pando_targets) NULL else targets, input_mode = input_mode
   )
   config$external_sources <- if (spec$backend != "cpp") grn_external_sources(spec$method, resources)
-  if (spec$method == "scenicplus") {
-    config$scenicplus_resources <- grn_scenicplus_check_resources(resources)
-  }
   dir.create(work_dir, recursive = TRUE, showWarnings = FALSE)
   attempt <- tempfile(paste0(prefix, "-"), tmpdir = work_dir)
   dir.create(attempt, recursive = TRUE, showWarnings = FALSE)
+  attempt <- normalizePath(attempt, winslash = "/", mustWork = TRUE)
   run_config <- config
   run_config$work_dir <- attempt
   prepared <- if (spec$method == "multicsn") {
@@ -355,8 +357,13 @@ RunGRN.default <- function(
     object@tools[[tool_name]] <- result
     return(object)
   }
-  edges <- GetGRN(result)
-  adjacency <- data.frame(TF = edges$source, target = edges$target, importance = edges$raw_score, stringsAsFactors = FALSE)
+  native <- fitted[[1L]]$native
+  if (identical(spec$runner, grn_run_direct)) {
+    adjacency <- native
+  } else {
+    edges <- GetGRN(result)
+    adjacency <- data.frame(TF = edges$source, target = edges$target, importance = edges$raw_score, stringsAsFactors = FALSE)
+  }
   write_grn_adjacency(adjacency, output_file = output_file, force = force)
 }
 
@@ -391,29 +398,46 @@ grn_run_scenic <- function(input, config) {
   )
 }
 
-grn_run_legacy <- function(input, config) {
+grn_run_direct <- function(input, config) {
   args <- config$method_args
-  if (config$method == "genie3") {
-    native <- do.call(RunGENIE3, c(list(
-      object = input$expression, regulators = input$regulators,
-      targets = input$targets, genes_in = "rows", cores = config$cores, verbose = config$verbose
-    ), args))
-  } else {
-    native <- do.call(grn_legacy_inference, c(list(
-      object = input$expression,
-      regulators = input$regulators, targets = input$targets, genes_in = "rows", grn_method = config$method,
-      backend = config$backend, cores = config$cores, seed = config$seed, verbose = config$verbose
-    ), args))
-  }
-  attr(native, "grn_matrix") <- NULL
-  relevant <- switch(config$method,
-    grnboost2 = c("max_edges_per_target", "n_rounds", "learning_rate", "max_depth", "max_features", "subsample", "early_stop_window_length", "exclude_self"),
-    gniplr = c("max_edges_per_target", "correlation_threshold", "lasso_degree", "lasso_alpha", "max_lag"),
-    genie3 = "max_edges_per_target"
+  method <- config$method
+  common <- list(
+    object = input$expression, targets = input$targets, genes_in = "rows",
+    verbose = config$verbose
   )
-  defaults <- lapply(formals(grn_legacy_inference)[relevant], eval, envir = baseenv())
-  if (config$method == "genie3") defaults <- c(defaults, lapply(formals(GENIE3::GENIE3)[c("treeMethod", "K", "nTrees")], eval, envir = baseenv()))
-  parameters <- utils::modifyList(defaults, args)
+  if (method == "gniplr") {
+    limit <- args$max_edges_per_target %||% Inf
+    args$max_edges_per_target <- NULL
+    native <- do.call(RunGNIPLR, c(common, list(backend = "cpp"), args))
+    network <- attr(native, "grn_matrix")
+    native <- cap_grn_edges_per_target(
+      native[native$TF %in% input$regulators, , drop = FALSE], limit
+    )
+    attr(native, "grn_matrix") <- network
+    parameters <- utils::modifyList(list(
+      correlation_threshold = 0.3, lasso_degree = 30, lasso_alpha = 0.1,
+      max_lag = 3, max_edges_per_target = limit, candidate_filter = "postfit_view"
+    ), args)
+  } else {
+    common$regulators <- input$regulators
+    common$cores <- config$cores
+    if (method == "grnboost2") {
+      fit <- RunGRNBoost2
+      common$backend <- "cpp"
+      common$seed <- config$seed
+    } else {
+      fit <- RunGENIE3
+    }
+    native <- do.call(fit, c(common, args))
+    defaults <- if (method == "grnboost2") {
+      formals(RunGRNBoost2.default)[c("max_edges_per_target", "n_rounds", "learning_rate", "max_depth",
+        "max_features", "subsample", "early_stop_window_length", "exclude_self", "importance_norm_power",
+        "correlation_fill", "boost_weight", "correlation_weight", "covariance_weight", "correlation_method")]
+    } else {
+      c(formals(RunGENIE3.default)["max_edges_per_target"], formals(GENIE3::GENIE3)[c("treeMethod", "K", "nTrees")])
+    }
+    parameters <- utils::modifyList(lapply(defaults, eval, envir = baseenv()), args)
+  }
   parameters$cores <- config$cores
   parameters$seed <- config$seed
   spec <- list(
@@ -421,116 +445,10 @@ grn_run_legacy <- function(input, config) {
     score = "importance", source_type = "TF", target_type = "gene", score_type = "importance", directed = TRUE,
     sign_column = NULL, sign_basis = "unknown", rank_by = "score"
   )
-  if (config$method == "gniplr") {
-    spec$rows <- which(native$TF %in% input$regulators & native$target %in% input$targets)
-    parameters$candidate_filter <- "postfit_view"
-  }
   list(
     cells = input$cells, native = native, layer_specs = list(tf_gene = spec),
-    parameters = parameters, implementation = paste0("scop::", config$method, "/", config$backend),
+    parameters = parameters, implementation = paste0("scop::", method, "/", config$backend),
     package_versions = c(scop = as.character(utils::packageVersion("scop"))), execution = list(status = "completed", artifacts = list())
-  )
-}
-
-grn_legacy_inference <- function(
-  object,
-  regulators = NULL,
-  targets = NULL,
-  genes_in = c("rows", "columns"),
-  grn_method = c("grnboost2", "genie3", "gniplr"),
-  backend = c("cpp", "python"),
-  output_file = NULL,
-  work_dir = tempdir(),
-  prefix = "grn",
-  max_edges_per_target = Inf,
-  n_rounds = 5000,
-  learning_rate = 0.01,
-  max_depth = 3,
-  max_features = 0.1,
-  subsample = 0.9,
-  early_stop_window_length = 25,
-  exclude_self = TRUE,
-  correlation_threshold = 0.3,
-  lasso_degree = 30,
-  lasso_alpha = 0.1,
-  max_lag = 3,
-  envname = NULL,
-  conda = "auto",
-  cores = 1,
-  seed = 1234,
-  force = FALSE,
-  verbose = TRUE,
-  ...
-) {
-  grn_method <- match.arg(grn_method)
-  backend <- match.arg(backend)
-  grn_matrix <- grn_matrix_from_object(object, genes_in = genes_in)
-  regulators <- regulators %||% colnames(grn_matrix)
-  targets <- targets %||% colnames(grn_matrix)
-  if (identical(grn_method, "grnboost2")) {
-    grnboost_envname <- if (identical(backend, "python")) {
-      envname %||% "scenic_env"
-    } else {
-      envname
-    }
-    return(RunGRNBoost2(
-      grn_matrix,
-      regulators = regulators,
-      targets = targets,
-      genes_in = "columns",
-      backend = if (identical(backend, "python")) "python" else "cpp",
-      max_edges_per_target = max_edges_per_target,
-      n_rounds = n_rounds,
-      learning_rate = learning_rate,
-      max_depth = max_depth,
-      max_features = max_features,
-      subsample = subsample,
-      early_stop_window_length = early_stop_window_length,
-      exclude_self = exclude_self,
-      output_file = output_file,
-      work_dir = work_dir,
-      prefix = prefix,
-      envname = grnboost_envname,
-      conda = conda,
-      cores = cores,
-      seed = seed,
-      force = force,
-      verbose = verbose,
-      ...
-    ))
-  }
-  if (identical(grn_method, "gniplr")) {
-    return(RunGNIPLR(
-      grn_matrix,
-      targets = targets,
-      genes_in = "columns",
-      correlation_threshold = correlation_threshold,
-      lasso_degree = lasso_degree,
-      lasso_alpha = lasso_alpha,
-      max_lag = max_lag,
-      backend = backend,
-      max_edges_per_target = max_edges_per_target,
-      output_file = output_file,
-      work_dir = work_dir,
-      prefix = prefix,
-      envname = envname,
-      conda = conda,
-      force = force,
-      verbose = verbose,
-      ...
-    ))
-  }
-  RunGENIE3(
-    grn_matrix,
-    regulators = regulators,
-    targets = targets,
-    genes_in = "columns",
-    max_edges_per_target = max_edges_per_target,
-    output_file = output_file,
-    cores = cores,
-    force = force,
-    verbose = verbose,
-    ...
   )
 }
 
@@ -679,16 +597,20 @@ grn_method_spec <- function(method, backend = NULL) {
   if (!method %in% methods) {
     stop("Unknown GRN method. Choose one of: ", paste(methods, collapse = ", "), call. = FALSE)
   }
+  boost_cpp_args <- c("exclude_self", "importance_norm_power", "correlation_fill", "boost_weight",
+    "correlation_weight", "covariance_weight", "correlation_method")
+  boost_args <- c("max_edges_per_target", "n_rounds", "learning_rate", "max_depth",
+    "max_features", "subsample", "early_stop_window_length")
   spec <- switch(method,
-    grnboost2 = list(backends = c("cpp", "python", "native", "official"), runner = grn_run_rna, args = "early_stop_window_length"),
+    grnboost2 = list(backends = c("cpp", "python", "native", "official"), runner = grn_run_rna, args = boost_args),
     regdiffusion = list(backends = c("python", "native"), runner = grn_run_rna, args = c(
       "T", "start_noise", "end_noise", "time_dim", "celltype_dim", "hidden_dims", "init_coef", "lr_nn", "lr_adj",
       "weight_decay_nn", "weight_decay_adj", "sparse_loss_coef", "adj_dropout", "batch_size", "n_steps", "train_split",
       "train_split_seed", "device", "compile", "eval_on_n_steps", "gradient_accumulation", "use_amp",
       "memory_efficient", "top_gene_percentile", "workers"
     )),
-    genie3 = list(backends = c("cpp", "r", "native"), runner = grn_run_legacy, args = c("nTrees", "treeMethod", "K", "max_edges_per_target")),
-    gniplr = list(backends = c("cpp", "python", "native", "official"), runner = grn_run_rna, args = c("lasso_degree", "lasso_alpha")),
+    genie3 = list(backends = c("cpp", "r", "native"), runner = grn_run_direct, args = c("nTrees", "treeMethod", "K", "max_edges_per_target")),
+    gniplr = list(backends = c("cpp", "python", "native", "official"), runner = grn_run_rna, args = c("lasso_degree", "lasso_alpha", "max_edges_per_target")),
     ppcor = list(backends = c("r", "native"), runner = grn_run_rna, args = "method"),
     pidc = list(backends = c("r", "native"), runner = grn_run_rna, args = "log_scale"),
     scorpion = list(backends = c("r", "native"), runner = grn_run_rna, args = c("n_pc", "gamma_value", "show_progress", "tf_motifs", "ppi_network", "pad_small_input")),
@@ -707,8 +629,9 @@ grn_method_spec <- function(method, backend = NULL) {
     stop("Unsupported backend for ", method, ". Choose: ", paste(spec$backends, collapse = ", "), call. = FALSE)
   }
   if (backend == "cpp" && method %in% c("grnboost2", "gniplr")) {
-    spec$runner <- grn_run_legacy
-    spec$args <- c("max_edges_per_target", "n_rounds", "learning_rate", "max_depth", "max_features", "subsample", "early_stop_window_length", "exclude_self", "correlation_threshold", "lasso_degree", "lasso_alpha", "max_lag")
+    spec$runner <- grn_run_direct
+    spec$args <- if (method == "grnboost2") c(boost_args, boost_cpp_args) else
+      c(spec$args, "correlation_threshold", "max_lag")
   }
   spec$method <- method
   spec$backend <- backend
@@ -761,16 +684,11 @@ grn_run_rna <- function(input, config) {
   arguments <- config$method_args
   expression <- input$expression
   genes <- rownames(expression)
-  regulators <- intersect(as.character(input$regulators), genes)
-  targets <- intersect(as.character(input$targets), genes)
+  regulators <- input$regulators
+  targets <- input$targets
   keep <- union(regulators, targets)
   expression <- as.matrix(expression[genes %in% keep, , drop = FALSE])
-  if (nrow(expression) < 2L || !length(regulators) || !length(targets)) {
-    stop("RNA inference needs at least two candidate genes and nonempty regulators and targets.", call. = FALSE)
-  }
-  if (method %in% c("gniplr", "pidc", "scsgl")) {
-    config$external_sources <- config$external_sources %||% grn_external_sources(method, config$resources)
-  }
+  if (nrow(expression) < 2L) stop("RNA inference needs at least two candidate genes.", call. = FALSE)
   execution <- list(status = "completed", artifacts = list(), fit_genes = rownames(expression), candidate_policy = "fit_union_then_filter")
   if (method %in% c("ppcor", "pidc", "scorpion")) {
     fit <- switch(method,
@@ -787,6 +705,8 @@ grn_run_rna <- function(input, config) {
     edges <- edges[order(if (method == "ppcor") -abs(edges$weight) else -edges$weight, method = "radix"), , drop = FALSE]
     rownames(edges) <- NULL
   } else {
+    limit <- arguments$max_edges_per_target
+    arguments$max_edges_per_target <- NULL
     python <- config$runtime$python %||% conda_python(
       envname = config$envname %||% env_module_environment(method),
       conda = config$conda %||% "auto"
@@ -800,8 +720,8 @@ grn_run_rna <- function(input, config) {
       sep = "\t", row.names = FALSE, quote = TRUE
     )
     request <- list(
-      method = method, expression = normalizePath(expression_path), output = normalizePath(output_path, mustWork = FALSE),
-      receipt = normalizePath(receipt_path, mustWork = FALSE), work_dir = normalizePath(config$work_dir),
+      method = method, expression = normalizePath(expression_path), output = output_path,
+      receipt = receipt_path, work_dir = config$work_dir,
       regulators = I(regulators), targets = I(targets), method_args = arguments, seed = config$seed, cores = config$cores, verbose = config$verbose
     )
     if (method %in% c("gniplr", "scsgl")) {
@@ -822,6 +742,14 @@ grn_run_rna <- function(input, config) {
     implementation <- receipt$implementation
     versions <- unlist(receipt$package_versions)
     arguments <- receipt$parameters
+    if (!is.null(limit)) {
+      arguments$max_edges_per_target <- limit
+      if (is.finite(limit)) {
+        names(edges) <- c("TF", "target", "importance")
+        edges <- cap_grn_edges_per_target(edges, limit)
+        names(edges) <- c("regulator", "target", "weight")
+      }
+    }
     execution <- list(
       status = "completed", artifacts = list(receipt = receipt_path, edges = output_path), process = process,
       fit_genes = rownames(expression), candidate_policy = "fit_union_then_filter"
@@ -855,14 +783,6 @@ grn_run_rna <- function(input, config) {
 grn_time_data <- function(input, config) {
   expression <- as.matrix(input$expression)
   time <- input$pseudotime
-  if (!is.matrix(time) || !is.numeric(time) || is.null(rownames(time)) ||
-    anyDuplicated(rownames(time)) || !setequal(rownames(time), colnames(expression))) {
-    stop("Time methods require a numeric pseudotime matrix with unique cell IDs matching expression.", call. = FALSE)
-  }
-  time <- time[colnames(expression), , drop = FALSE]
-  if (!ncol(time) || any(rowSums(is.finite(time)) == 0L) || any(is.infinite(time))) {
-    stop("Every cell must have a finite pseudotime in at least one trajectory.", call. = FALSE)
-  }
   genes <- rownames(expression)
   regulators <- input$regulators
   targets <- input$targets
@@ -902,9 +822,7 @@ grn_time_data <- function(input, config) {
 
 grn_run_time <- function(input, config) {
   data <- grn_time_data(input, config)
-  sources <- if (config$method %in% c("scode", "sincerities")) {
-    config$external_sources %||% grn_external_sources(config$method, config$resources)
-  }
+  source <- config$external_sources[["entry"]]
   fit <- switch(config$method,
     leap = run_leap,
     scode = run_scode,
@@ -912,8 +830,8 @@ grn_run_time <- function(input, config) {
   )
   inputs <- list(expression = data$expression, pseudotime = data$pseudotime)
   inputs <- c(inputs, switch(config$method,
-    scode = list(source = sources[["entry"]], work_dir = config$work_dir, seed = config$seed),
-    sincerities = list(source = sources[["entry"]], cores = config$cores, verbose = config$verbose)
+    scode = list(source = source, work_dir = config$work_dir, seed = config$seed),
+    sincerities = list(source = source, cores = config$cores, verbose = config$verbose)
   ))
   arguments <- config$method_args
   arguments$trajectory <- NULL

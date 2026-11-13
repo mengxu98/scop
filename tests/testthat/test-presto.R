@@ -308,7 +308,6 @@ test_that("optional GitHub backends stay out of the package metadata", {
   expect_false("presto" %in% dependencies)
   expect_false(any(grepl("presto", remotes, fixed = TRUE)))
   expect_setequal(remotes, c(
-    "mengxu98/multiCSN",
     "mengxu98/thisplot",
     "mengxu98/thisutils"
   ))

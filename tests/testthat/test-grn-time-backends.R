@@ -32,12 +32,17 @@ for (method in names(time_methods)) {
       targets = rownames(expression)[5:8]
     )
     resources <- if (method == "leap") list() else list(source_dir = source_dir)
-    config <- list(
-      method = method, backend = "r", method_args = time_methods[[method]], resources = resources,
-      work_dir = tempfile(paste0("grn-", method, "-")), cores = 1L,
-      seed = 42L, force = FALSE, verbose = FALSE
+    result <- RunGRN(expression, methods = method, pseudotime = time,
+      regulators = input$regulators, targets = input$targets, resources = resources,
+      method_args = time_methods[[method]], return_type = "result", seed = 42L, verbose = FALSE
     )
-    fit <- grn_run_time(input, config)
+    shuffled_time <- time[rev(seq_len(nrow(time))), , drop = FALSE]
+    shuffled <- RunGRN(expression, methods = method, pseudotime = shuffled_time,
+      regulators = input$regulators, targets = input$targets, resources = resources,
+      method_args = time_methods[[method]], return_type = "result", seed = 42L, verbose = FALSE
+    )
+    expect_identical(GetGRN(shuffled), GetGRN(result))
+    fit <- result$groups$all
     expect_identical(fit$cells, input$cells)
     expect_identical(fit$execution$status, "completed")
     expect_null(fit$execution$process)

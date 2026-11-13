@@ -5,7 +5,7 @@ test_that("time methods align by cell ID and preserve measured time", {
   config <- list(method = "scode", method_args = list())
   expected <- grn_time_data(input, config)
   input$expression <- expression[, c(6, 2, 5, 1, 4, 3)]
-  input$pseudotime <- time[c(4, 3, 5, 2, 1, 6), , drop = FALSE]
+  input$pseudotime <- time[colnames(input$expression), , drop = FALSE]
   actual <- grn_time_data(input, config)
   expect_identical(actual, expected)
   expect_identical(as.numeric(actual$pseudotime), c(1, 2, 2, 3, 4, 5))
@@ -14,17 +14,15 @@ test_that("time methods align by cell ID and preserve measured time", {
 test_that("time methods reject missing or duplicate cell identities", {
   expression <- matrix(seq_len(24), 4L, dimnames = list(letters[1:4], paste0("c", 1:6)))
   time <- matrix(seq_len(6), ncol = 1L, dimnames = list(colnames(expression), "trajectory"))
+  expect_error(RunGRN(expression, methods = "scode", pseudotime = time[-1L, , drop = FALSE]), "unique cell IDs")
+  duplicate <- time
+  rownames(duplicate)[2L] <- rownames(duplicate)[1L]
+  expect_error(RunGRN(expression, methods = "scode", pseudotime = duplicate), "unique cell IDs")
+  missing <- time
+  missing[2L, 1L] <- NA_real_
+  expect_error(RunGRN(expression, methods = "scode", pseudotime = missing), "Each cell")
   input <- list(expression = expression, pseudotime = time)
   config <- list(method = "scode", method_args = list())
-  input$pseudotime <- time[-1L, , drop = FALSE]
-  expect_error(grn_time_data(input, config), "matching expression")
-  input$pseudotime <- time
-  rownames(input$pseudotime)[2L] <- rownames(input$pseudotime)[1L]
-  expect_error(grn_time_data(input, config), "unique cell IDs")
-  input$pseudotime <- time
-  input$pseudotime[2L, 1L] <- NA_real_
-  expect_error(grn_time_data(input, config), "Every cell")
-  input$pseudotime <- time
   input$pseudotime[] <- 1
   expect_error(grn_time_data(input, config), "two distinct")
 })

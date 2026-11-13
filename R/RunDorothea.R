@@ -36,11 +36,10 @@
 #' @param add_meta Whether to also write TF activity scores to `srt@meta.data`
 #' with the `assay_name` prefix for direct plotting with [FeatureDimPlot()].
 #' @details
-#' `RunGRN(return_type = "edges")` returns a `TF`, `target`, and `importance` table that can be
-#' supplied directly through `regulons`. Such a network is unsigned: its
-#' scores describe target-program activity and do not distinguish activation
-#' from repression. For signed TF activity, supply a network with a `mor`
-#' column instead.
+#' Pass directed `RunGRN(return_type = "edges")` networks with positive
+#' `importance` directly to `regulons`. For signed activity, use directed
+#' TF-to-gene edges from [GetGRN()] with known signs and set
+#' `mor = sign * abs(raw_score)`, omitting zero weights.
 #'
 #' @return A `Seurat` object with TF activity results stored in
 #' `srt@tools[["Dorothea"]]`, optionally TF activity scores stored in

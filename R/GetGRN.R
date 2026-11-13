@@ -9,7 +9,6 @@
 #'   groups direct targets by regulator and sign.
 #' @param tool_name Seurat tools entry. Omit when only one GRN is stored.
 #' @param all_groups Return results for every group instead of selecting `group`.
-#' @param ... Additional parameters to other functions. Currently unused.
 #' @return The selected result, or a named list with `all_groups = TRUE`.
 #'   Edge tables preserve the native score and direction, with `NA` for unknown signs.
 #' @seealso [RunGRN()], [GRNPlot()], [CellScoring()]
@@ -20,10 +19,8 @@ GetGRN <- function(
   layer = "tf_gene",
   what = "edges",
   tool_name = NULL,
-  all_groups = FALSE,
-  ...
+  all_groups = FALSE
 ) {
-  if (length(list(...))) stop("Unused GetGRN arguments.", call. = FALSE)
   if (inherits(object, "Seurat")) {
     tools <- object@tools
     candidates <- names(tools)[vapply(tools, inherits, logical(1), what = "GRNResult")]
@@ -49,9 +46,7 @@ GetGRN <- function(
     if (!is.null(group)) stop("Choose group or all_groups, rather than both.", call. = FALSE)
     selected <- available
   } else {
-    if (is.null(group) && length(available) != 1L) stop("Select a group or use all_groups = TRUE.", call. = FALSE)
-    selected <- group %||% available
-    if (length(selected) != 1L || !selected %in% available) stop("Unknown or ambiguous GRN group.", call. = FALSE)
+    selected <- grn_select_group(available, group)
   }
   read_group <- function(name) {
     entry <- object$groups[[name]]
@@ -81,6 +76,15 @@ GetGRN <- function(
     return(stats::setNames(lapply(selected, read_group), selected))
   }
   read_group(selected)
+}
+
+grn_select_group <- function(available, group) {
+  if (is.null(group) && length(available) != 1L) stop("Select a group or use all_groups = TRUE.", call. = FALSE)
+  group <- group %||% available
+  if (!is.character(group) || length(group) != 1L || !group %in% available) {
+    stop("Unknown or ambiguous GRN group.", call. = FALSE)
+  }
+  group
 }
 
 grn_native_table <- function(native, path, rows = NULL) {

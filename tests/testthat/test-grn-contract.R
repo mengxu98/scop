@@ -16,9 +16,6 @@ test_that("default GRN calls preserve legacy numerical results and position", {
     genes_in = "rows", n_rounds = 20, verbose = FALSE)
   expect_identical(actual, direct)
   expect_identical(names(formals(RunGRN.default))[1:5], c("object", "regulators", "targets", "genes_in", "methods"))
-  old <- names(formals(grn_legacy_inference))
-  old[old == "grn_method"] <- "methods"
-  expect_identical(names(formals(RunGRN.default))[seq_along(old)], old)
   expect_identical(RunGRN(expression, regulators = regulators, targets = targets,
     methods = "GRNBoost2", n_rounds = 20, verbose = FALSE), direct)
 })
@@ -133,7 +130,7 @@ test_that("GENIE3 accepts gene-by-cell input and preserves orientation", {
   targets <- rownames(expression)[5:10]
   set.seed(7)
   actual <- RunGRN(expression, regulators = regulators, targets = targets,
-    methods = "genie3", nTrees = 20, verbose = FALSE)
+    methods = "genie3", nTrees = 20, seed = 7, verbose = FALSE)
   set.seed(7)
   weights <- GENIE3::GENIE3(exprMatrix = expression, regulators = regulators,
     targets = targets, nTrees = 20, nCores = 1L)
@@ -143,6 +140,20 @@ test_that("GENIE3 accepts gene-by-cell input and preserves orientation", {
   expect_identical(actual, direct)
   set.seed(7)
   columns <- RunGRN(t(expression), genes_in = "columns", regulators = regulators,
-    targets = targets, methods = "genie3", nTrees = 20, verbose = FALSE)
+    targets = targets, methods = "genie3", nTrees = 20, seed = 7, verbose = FALSE)
   expect_identical(actual, columns)
+})
+
+test_that("return format does not change inference or the GNIPLR candidate limit", {
+  set.seed(1)
+  expression <- matrix(rnorm(120), 4L, dimnames = list(LETTERS[1:4], paste0("c", 1:30)))
+  args <- list(object = expression, methods = "gniplr", regulators = "D", targets = "B",
+    correlation_threshold = 0, lasso_degree = 3L, max_lag = 1L,
+    max_edges_per_target = 1L, verbose = FALSE)
+  edges <- do.call(RunGRN, args)
+  result <- GetGRN(do.call(RunGRN, c(args, list(return_type = "result"))))
+  expect_identical(edges$TF, "D")
+  expect_identical(edges$target, "B")
+  expect_identical(result$source, edges$TF)
+  expect_identical(result$raw_score, edges$importance)
 })

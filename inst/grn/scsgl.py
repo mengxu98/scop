@@ -15,11 +15,7 @@ def infer(expression, request):
     if not any(value > 0 for value in parameters.values()):
         raise ValueError("SCSGL requires at least one positive edge density")
     output = Path(request["work_dir"]) / "scsgl-native.tsv"
-    load_upstream(request).run_inference(
-        expression, output,
-        pos_density=float(parameters.get("pos_density", 0.01)),
-        neg_density=float(parameters.get("neg_density", 0.01)),
-    )
+    load_upstream(request).run_inference(expression, output, **parameters)
     edges = pd.read_csv(output, sep="\t", dtype={"Gene1": str, "Gene2": str}, keep_default_na=False)
     edges = edges.rename(columns={"Gene1": "regulator", "Gene2": "target", "EdgeWeight": "weight"})
     return edges.sort_values("weight", ascending=False), "scSGL::signed_graph_learning", ["scipy", "numba"], parameters

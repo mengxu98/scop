@@ -10,8 +10,7 @@ GetGRN(
   layer = "tf_gene",
   what = "edges",
   tool_name = NULL,
-  all_groups = FALSE,
-  ...
+  all_groups = FALSE
 )
 }
 \arguments{
@@ -28,8 +27,6 @@ groups direct targets by regulator and sign.}
 \item{tool_name}{Seurat tools entry. Omit when only one GRN is stored.}
 
 \item{all_groups}{Return results for every group instead of selecting \code{group}.}
-
-\item{...}{Additional parameters to other functions. Currently unused.}
 }
 \value{
 The selected result, or a named list with \code{all_groups = TRUE}.

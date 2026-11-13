@@ -217,7 +217,6 @@ runner_run_process <- function(command, args, work_dir, timeout = Inf, env = cha
   )
   result$exit_status <- process$get_exit_status()
   if (!identical(result$exit_status, 0L)) {
-    result$status <- "failed"
     detail <- paste(runner_tail_lines(stderr, max_lines = 10L), collapse = "\n")
     stop("Subprocess failed with exit status ", result$exit_status, ". Logs: ", stdout, "; ", stderr,
       if (nzchar(detail)) paste0("\n", detail),

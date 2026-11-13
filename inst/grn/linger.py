@@ -17,6 +17,7 @@ from pathlib import Path
 
 PHASES = ("prepare", "preprocess", "train", "networks", "export")
 PREPARE_FILES = ("data/adata_RNA.h5ad", "data/adata_ATAC.h5ad", "data/TG_pseudobulk.tsv", "data/RE_pseudobulk.tsv", "data/Peaks.txt", "retained_cells.tsv", "input-summary.json")
+PREPARE_PACKAGES = ("anndata", "h5py", "LingerGRN", "llvmlite", "numba", "numpy", "pandas", "pynndescent", "scanpy", "scikit-learn", "scipy", "threadpoolctl", "umap-learn")
 
 
 def file_sha256(path):
@@ -31,26 +32,21 @@ def prepare_identity(root, request, input_hashes, reference_hashes, dependency):
     parameters = {name: request[name] for name in ("min_genes", "min_cells", "genome", "activation", "patch_missing_keys", "seed", "cores")}
     parameters.update({name: request.get(name, []) for name in ("regulators", "targets")})
     runtime_source = root / "runtime-source" / "LingerGRN"
-    packages = {}
-    for distribution in importlib.metadata.distributions():
-        metadata = distribution.metadata
-        name = metadata.get("Name") if metadata is not None else None
-        if name:
-            packages[name] = distribution.version
     return {
-        "schema": "linger-prepare-v1", "input_sha256": input_hashes, "reference_sha256": reference_hashes,
+        "schema": "linger-prepare-v2", "input_sha256": input_hashes, "reference_sha256": reference_hashes,
         "parameters": parameters, "dependency": dependency,
         "python": {"executable": str(Path(sys.executable).resolve()), "version": sys.version},
-        "packages": packages,
+        "packages": {name: importlib.metadata.version(name) for name in PREPARE_PACKAGES},
         "source_sha256": {path.name: file_sha256(path) for path in sorted(runtime_source.glob("*.py"))},
         "runner_sha256": file_sha256(Path(__file__)),
         "reference_spec_sha256": request["reference_selection"]["manifest_sha256"],
     }
 
 
-def write_prepare_checkpoint(root, identity):
-    manifest = {"status": "completed", "identity": identity,
-                "files": {name: file_sha256(root / name) for name in PREPARE_FILES}}
+def write_prepare_checkpoint(root, identity, files=None):
+    if files is None:
+        files = {name: file_sha256(root / name) for name in PREPARE_FILES}
+    manifest = {"status": "completed", "identity": identity, "files": files}
     candidate = root / ".prepare.completed.json"
     candidate.write_text(json.dumps(manifest, indent=2, sort_keys=True))
     candidate.replace(root / "prepare.completed.json")
@@ -62,25 +58,27 @@ def restore_prepare_checkpoint(source, root, identity):
     if not manifest_path.is_file():
         raise ValueError(f"LINGER resume_dir has no completed prepare checkpoint: {source}")
     try:
-        manifest = json.loads(manifest_path.read_text())
+        manifest_bytes = manifest_path.read_bytes()
+        manifest = json.loads(manifest_bytes)
     except (ValueError, OSError) as error:
         raise ValueError("LINGER resume_dir contains an unreadable prepare checkpoint manifest.") from error
     if manifest.get("status") != "completed" or manifest.get("identity") != identity:
         raise ValueError("LINGER prepare checkpoint belongs to different inputs, reference contents, parameters or runtime/source identity.")
-    if set(manifest.get("files", {})) != set(PREPARE_FILES):
+    files = manifest.get("files", {})
+    if set(files) != set(PREPARE_FILES):
         raise ValueError("LINGER prepare checkpoint has an incomplete artifact manifest.")
     for name in PREPARE_FILES:
         path = source / name
-        if not path.is_file() or file_sha256(path) != manifest["files"][name]:
+        if not path.is_file() or file_sha256(path) != files[name]:
             raise ValueError(f"LINGER prepare checkpoint artifact is missing or changed: {name}")
     for name in PREPARE_FILES:
         destination = root / name
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(source / name, destination)
-        if file_sha256(destination) != manifest["files"][name]:
+        if file_sha256(destination) != files[name]:
             raise ValueError(f"LINGER prepare checkpoint artifact changed while copying: {name}")
-    write_prepare_checkpoint(root, identity)
-    return {"stage": "prepare", "source": str(source), "manifest_sha256": file_sha256(manifest_path), "verified_files": len(PREPARE_FILES)}
+    write_prepare_checkpoint(root, identity, files)
+    return {"stage": "prepare", "source": str(source), "manifest_sha256": hashlib.sha256(manifest_bytes).hexdigest(), "verified_files": len(files)}
 
 
 def canonical_region(region):
@@ -93,14 +91,6 @@ def canonical_region(region):
     if start < 0 or end <= start:
         raise ValueError(f"LINGER requires valid primary-chromosome regions: {region}")
     return f"{chromosome}:{start}-{end}"
-
-
-def check_reference(reference, files):
-    if not files or any(Path(name).name != name or name in (".", "..") for name in files):
-        raise ValueError("LINGER requires selected bulk reference file names.")
-    missing = [name for name in files if not (reference / name).is_file()]
-    if missing:
-        raise ValueError("Missing LINGER bulk reference files: " + ", ".join(missing))
 
 
 def prepare_dependency(root, patch_missing_keys):
@@ -184,9 +174,6 @@ def prepare(root, request):
     atac = mmread(inputs / "atac.mtx").tocsc()
     if rna.shape != (len(genes), len(metadata)) or atac.shape != (len(regions), len(metadata)):
         raise ValueError("LINGER matrix dimensions do not match cell and feature identifiers.")
-    for matrix in (rna, atac):
-        if not np.isfinite(matrix.data).all() or (matrix.data < 0).any() or (matrix.data != np.floor(matrix.data)).any():
-            raise ValueError("LINGER requires finite nonnegative integer counts in both modalities.")
     rna_data = ad.AnnData(rna.T.tocsr(), obs=metadata.copy(), var=pd.DataFrame(index=genes))
     atac_data = ad.AnnData(atac.T.tocsr(), obs=metadata.copy(), var=pd.DataFrame(index=regions))
     rna_data.var["gene_ids"] = genes
@@ -357,7 +344,8 @@ def run(request):
     if selection["genome"] != request["genome"] or selection["chromosomes"] != chromosomes:
         raise ValueError("LINGER reference selection does not match the requested genome and peak chromosomes.")
     reference_files = request["expected_reference_files"]
-    check_reference(Path(request["bulk_reference"]), reference_files)
+    if not reference_files or any(Path(name).name != name or name in (".", "..") for name in reference_files):
+        raise ValueError("LINGER requires selected bulk reference file names.")
     dependency = prepare_dependency(root, request["patch_missing_keys"])
     reference_hashes = {name: file_sha256(Path(request["bulk_reference"]) / name) for name in reference_files}
     input_hashes = {name: file_sha256(inputs / name) for name in ("rna.mtx", "atac.mtx", "genes.txt", "regions.txt", "cells.tsv")}

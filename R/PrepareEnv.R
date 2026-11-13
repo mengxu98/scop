@@ -1082,7 +1082,7 @@ env_r_packages <- function(modules = NULL) {
   grn <- list(genie3 = "GENIE3", ppcor = "ppcor", pidc = c("pbapply", "purrr", "thisutils"), scorpion = "SCORPION",
               leap = "LEAP", scode = "MASS", sincerities = c("glmnet", "ppcor", "thisutils"),
               multicsn = c("mengxu98/multiCSN", "mengxu98/inferCSN"),
-              pando = c("quadbiolab/Pando", "Signac", "BSgenome.Hsapiens.UCSC.hg38", "foreach", "doParallel"))
+              pando = c("quadbiolab/Pando@3ffbc21bd827646476357acdc3a3a6ec9048052f", "Signac", "BSgenome.Hsapiens.UCSC.hg38"))
   if (length(modules) && all(modules %in% names(grn))) return(unique(unlist(grn[modules], use.names = FALSE)))
   description_path <- if (file.exists("DESCRIPTION")) {
     "DESCRIPTION"

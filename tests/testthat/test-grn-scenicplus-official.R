@@ -31,6 +31,42 @@ test_that("official SCENIC+ validates all resources before starting a process", 
   expect_setequal(grn_scenicplus_check_resources(resources), c(required, "region_sets"))
 })
 
+test_that("official SCENIC+ requests preserve defaults and relative resume directories", {
+  directory <- tempfile("scenicplus-request-")
+  dir.create(directory)
+  on.exit(unlink(directory, recursive = TRUE), add = TRUE)
+  withr::local_dir(directory)
+  required <- c("cistopic", "gex", "ranking_db", "scores_db", "motif_annotation", "genome_annotation", "chromsizes")
+  resources <- stats::setNames(as.list(file.path(directory, required)), required)
+  for (path in resources) writeLines("resource", path)
+  resources$region_sets <- file.path(directory, "regions")
+  dir.create(file.path(resources$region_sets, "topics"), recursive = TRUE)
+  for (name in c("one.bed", "two.bed")) {
+    writeLines("chr1\t1\t10", file.path(resources$region_sets, "topics", name))
+  }
+  cells <- c("01", "1")
+  expression <- Matrix::Matrix(matrix(1:4, 2L, dimnames = list(c("G1", "G2"), cells)))
+  input <- list(cells = cells, expression = expression, group = "all")
+  config <- list(resources = resources, work_dir = "new", cores = 1L, seed = 42L,
+    runtime = list(python = "python"), method_args = list())
+  dir.create("checkpoint")
+  testthat::local_mocked_bindings(runner_run_process = function(command, args, work_dir, ...) {
+    request_path <- tail(args, 1L)
+    request <- jsonlite::read_json(request_path)
+    if (length(request$method_args)) {
+      expect_identical(request$output_dir, normalizePath("checkpoint"))
+    } else {
+      expect_match(paste(readLines(request_path), collapse = "\n"), '"method_args": {}', fixed = TRUE)
+      expect_identical(request$output_dir, file.path(normalizePath(config$work_dir), "official"))
+    }
+    expect_identical(unlist(request$cells), cells)
+    stop("Request validated", call. = FALSE)
+  }, .package = "scop")
+  expect_error(grn_run_scenicplus(input, config), "Request validated", fixed = TRUE)
+  config$method_args <- list(resume_dir = "checkpoint")
+  expect_error(grn_run_scenicplus(input, config), "Request validated", fixed = TRUE)
+})
+
 test_that("official SCENIC+ retains separate evidence, identifiers and native modalities", {
   directory <- tempfile("scenicplus-native-")
   dir.create(directory)

@@ -2767,12 +2767,13 @@ scenicplus_tf_gene_rho <- function(pairs, rna_counts) {
 }
 
 grn_run_scenicplus <- function(input, config) {
-  required <- config$scenicplus_resources %||% grn_scenicplus_check_resources(config$resources)
+  required <- grn_scenicplus_check_resources(config$resources)
   resume_dir <- config$method_args$resume_dir
   if (!is.null(resume_dir)) {
-    if (!is.character(resume_dir) || length(resume_dir) != 1L || is.na(resume_dir) || !nzchar(resume_dir)) {
-      stop("SCENIC+ resume_dir must be one directory path.", call. = FALSE)
+    if (!is.character(resume_dir) || length(resume_dir) != 1L || is.na(resume_dir) || !dir.exists(resume_dir)) {
+      stop("SCENIC+ resume_dir must be an existing directory.", call. = FALSE)
     }
+    resume_dir <- normalizePath(resume_dir, winslash = "/", mustWork = TRUE)
     manifest <- file.path(resume_dir, "execution.json")
     if (file.exists(manifest) && identical(runner_read_json(manifest)$status, "completed")) {
       stop("This SCENIC+ run is complete. Read scplusmdata.h5mu with RunSCENICPlus(scplus_object = ...) or select a new work_dir.", call. = FALSE)
@@ -2783,9 +2784,6 @@ grn_run_scenicplus <- function(input, config) {
   directory <- normalizePath(config$work_dir, winslash = "/", mustWork = TRUE)
   expression_path <- file.path(directory, "scenicplus-expression.mtx")
   feature_path <- file.path(directory, "scenicplus-features.tsv")
-  if (!identical(colnames(input$expression), input$cells)) {
-    stop("SCENIC+ expression columns must match the requested cells.", call. = FALSE)
-  }
   if (any(grepl("[\r\n]", rownames(input$expression)))) {
     stop("SCENIC+ feature identifiers cannot contain line breaks.", call. = FALSE)
   }
@@ -2795,11 +2793,12 @@ grn_run_scenicplus <- function(input, config) {
   output <- resume_dir %||% file.path(directory, "official")
   resources <- config$resources[intersect(c(required, "workflow"), names(config$resources))]
   resources <- lapply(resources, normalizePath, winslash = "/", mustWork = TRUE)
+  method_args <- config$method_args
+  if (!length(method_args)) method_args <- stats::setNames(list(), character())
   jsonlite::write_json(
     list(
-      resources = resources, cells = unname(input$cells), group = input$group,
-      cores = config$cores, seed = config$seed, method_args = config$method_args,
-      resource_identity = lapply(resources, scenicplus_resource_identity),
+      resources = resources, cells = I(unname(input$cells)), group = input$group,
+      cores = config$cores, seed = config$seed, method_args = method_args,
       expression = expression_path, features = feature_path, output_dir = output
     ),
     request_path,
@@ -2815,21 +2814,6 @@ grn_run_scenicplus <- function(input, config) {
     env = c(PYTHONHASHSEED = as.character(config$seed), OMP_NUM_THREADS = "1", OPENBLAS_NUM_THREADS = "1")
   )
   grn_scenicplus_group(output, input, process)
-}
-
-scenicplus_resource_identity <- function(path) {
-  directory <- dir.exists(path)
-  files <- if (directory) {
-    sort(list.files(path, recursive = TRUE, full.names = TRUE, all.files = TRUE, no.. = TRUE))
-  } else {
-    path
-  }
-  files <- files[!dir.exists(files)]
-  names <- if (directory) substring(files, nchar(path) + 2L) else basename(files)
-  list(list(
-    path = path,
-    files = stats::setNames(vapply(files, function(file) digest::digest(file = file, algo = "sha256"), ""), names)
-  ))
 }
 
 grn_scenicplus_check_resources <- function(resources) {
@@ -2850,13 +2834,16 @@ grn_scenicplus_check_resources <- function(resources) {
   if (!dir.exists(resources$region_sets)) {
     stop("SCENIC+ region_sets must be a directory.", call. = FALSE)
   }
-  if (length(Sys.glob(file.path(resources$region_sets, "*", "*.bed"))) < 2L) {
+  beds <- Sys.glob(file.path(resources$region_sets, "*", "*.bed"))
+  if (sum(!dir.exists(beds)) < 2L) {
     stop("Official SCENIC+ DEM requires at least two region sets to define foreground and background.", call. = FALSE)
   }
   if (!is.null(resources$workflow)) {
     workflow <- resources$workflow
-    if (!is.character(workflow) || length(workflow) != 1L || is.na(workflow) ||
-      !all(file.exists(file.path(workflow, c("Snakefile", "config.yaml"))))) {
+    files <- if (is.character(workflow) && length(workflow) == 1L && !is.na(workflow)) {
+      file.info(file.path(workflow, c("Snakefile", "config.yaml")))
+    }
+    if (is.null(files) || anyNA(files$isdir) || any(files$isdir)) {
       stop("SCENIC+ workflow must contain the official Snakefile and config.yaml.", call. = FALSE)
     }
   }

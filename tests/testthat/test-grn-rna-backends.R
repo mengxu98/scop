@@ -27,6 +27,11 @@ test_that("PPCOR retains negative associations and numeric-like gene identifiers
     targets = input$targets, return_type = "result", verbose = FALSE
   )
   expect_identical(GetGRN(pearson, what = "parameters")$method, "pearson")
+  object <- SeuratObject::CreateSeuratObject(methods::as(abs(expression), "dgCMatrix"))
+  stored <- RunGRN(object, methods = "ppcor", method = "pearson", verbose = FALSE)
+  expect_identical(GetGRN(stored, what = "parameters")$method, "pearson")
+  expect_error(RunGRN(expression, methods = "ppcor", method = "pearson",
+    method_args = list(method = "kendall")), "named lists")
   expect_setequal(result$native$edges$regulator, c("01", "1"))
   expect_identical(result$native$edges$target, rep("target", 2L))
   expect_true(any(result$native$edges$weight < 0))
@@ -49,11 +54,9 @@ test_that("PIDC maps rectangular native regulator rows to target columns", {
     dimnames = list(c("01", "1", "TF-A", "target-a", "target-b"), paste0("cell", seq_len(60L)))
   )
   input <- list(expression = expression, regulators = c("01", "1", "TF-A"), targets = c("target-a", "target-b"), cells = colnames(expression))
-  config <- list(
-    method = "pidc", method_args = list(), resources = list(source_dir = source_dir),
-    work_dir = tempdir(), cores = 1L, seed = 1L, verbose = FALSE
-  )
-  result <- grn_run_rna(input, config)
+  result <- RunGRN(expression, methods = "pidc", regulators = input$regulators, targets = input$targets,
+    resources = list(source_dir = source_dir), return_type = "result", verbose = FALSE
+  )$groups$all
   expect_setequal(result$native$edges$regulator, input$regulators)
   expect_setequal(result$native$edges$target, input$targets)
   expect_equal(nrow(result$native$edges), 6L)

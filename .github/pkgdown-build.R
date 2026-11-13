@@ -134,7 +134,11 @@ if (mode == "dependencies") {
   writeLines(unlist(lapply(code, deparse), use.names = FALSE), path)
   dependencies <- renv::dependencies(path, root = dirname(path), progress = FALSE, errors = "fatal")
   unlink(path)
-  packages <- unique(c(dependencies$Package, optional))
+  article_packages <- list(
+    `grn-framework` = "ppcor",
+    `grn-multiome` = "Pando"
+  )
+  packages <- unique(c(dependencies$Package, optional, unlist(article_packages[plan$articles], use.names = FALSE)))
   packages <- packages[order(!grepl("/", packages, fixed = TRUE))]
   package_names <- sub("@.*$", "", sub("^.*/", "", packages))
   packages <- packages[!duplicated(package_names)]
@@ -144,7 +148,9 @@ if (mode == "dependencies") {
   packages <- vapply(sort(packages), function(package) {
     record <- locked[[package]]
     if (identical(record$Source, "GitHub")) {
-      return(paste0("github::", paste(c(record$RemoteUsername, record$RemoteRepo, record$RemoteSubdir), collapse = "/")))
+      repo <- paste(c(record$RemoteUsername, record$RemoteRepo, record$RemoteSubdir), collapse = "/")
+      ref <- record$RemoteSha
+      return(paste0("github::", repo, if (length(ref) && nzchar(ref)) paste0("@", ref)))
     }
     package
   }, "", USE.NAMES = FALSE)

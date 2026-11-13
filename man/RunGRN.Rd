@@ -47,7 +47,6 @@ RunGRN(object, ...)
   seed = 1234,
   force = FALSE,
   verbose = TRUE,
-  ...,
   return_type = NULL,
   input_mode = NULL,
   assay = NULL,
@@ -60,7 +59,8 @@ RunGRN(object, ...)
   resources = list(),
   method_args = list(),
   tool_name = NULL,
-  overwrite = FALSE
+  overwrite = FALSE,
+  ...
 )
 }
 \arguments{

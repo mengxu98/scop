@@ -1563,7 +1563,8 @@ preparedb_linger <- function(data_source, db_update, verbose) {
   }
   complete_dir <- function(directory) {
     paths <- file.path(directory, expected)
-    present <- file_test("-f", paths) & !is.na(file.size(paths)) & file.size(paths) > 0
+    size <- file.size(paths)
+    present <- file_test("-f", paths) & !is.na(size) & size > 0
     complete(expected[present])
   }
   if (is.null(data_source)) {

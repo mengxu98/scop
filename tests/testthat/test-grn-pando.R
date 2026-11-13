@@ -45,105 +45,42 @@ test_that("Pando retains successful empty native layers", {
 
 test_that("Pando rejects incomplete native outputs and missing multiome input", {
   expect_error(grn_pando_group(list(), list(cells = "cell1"), list()), "incomplete native result")
-  expect_error(grn_run_pando(list(object = matrix(1, 2, 2)), list()), "Seurat object")
+  expect_error(RunGRN(matrix(1, 2, 2), methods = "pando"), "requires a Seurat object")
   counts <- Matrix::sparseMatrix(i = c(1L, 1L, 2L), j = c(1L, 2L, 2L), x = c(1, 2, 3), dims = c(2L, 2L), dimnames = list(c("a", "b"), c("c1", "c2")))
   object <- SeuratObject::CreateSeuratObject(counts)
   expect_error(grn_run_pando(list(object = object), list(resources = list())), "resources\\$genome")
-  expect_error(grn_run_pando(list(object = object), list(resources = list(genome = TRUE), method_args = list(typo = 1))), "Unknown Pando argument")
+  expect_error(RunGRN(object, methods = "pando", method_args = list(typo = 1)), "Unknown argument")
   expect_error(grn_run_pando(list(object = object), list(resources = list(genome = TRUE), method_args = list(interaction_term = "*"))), "interaction_term")
   expect_error(grn_run_pando(list(object = object), list(resources = list(genome = TRUE), method_args = list(extend = 5000))), "custom extend")
   expect_identical(grn_pando_defaults()$p_thresh, 0.05)
 })
 
-test_that("Pando whole-call cleanup restores search, options and random state", {
-  snapshot <- function() list(search = search(), options = options(), rng = if (exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) get(".Random.seed", envir = .GlobalEnv) else NULL)
-  before <- snapshot()
-  mutate_session <- function(fail = FALSE) {
-    cleanup <- grn_pando_preserve_session()
-    on.exit(cleanup(), add = TRUE)
-    attach(list(pando_fixture_marker = TRUE), name = "scop_pando_session_fixture", warn.conflicts = FALSE)
-    options(scop_pando_fixture = TRUE)
-    set.seed(173L)
-    stats::runif(3L)
-    if (fail) stop("PANDO_SESSION_FAILURE")
-    warning("PANDO_SESSION_WARNING")
-    invisible(NULL)
-  }
-  expect_warning(mutate_session(), "PANDO_SESSION_WARNING")
-  expect_identical(snapshot(), before)
-  expect_error(mutate_session(TRUE), "PANDO_SESSION_FAILURE")
-  expect_identical(snapshot(), before)
-  interrupted <- tryCatch((function() {
-    cleanup <- grn_pando_preserve_session()
-    on.exit(cleanup(), add = TRUE)
-    options(scop_pando_fixture = TRUE)
-    set.seed(199L)
-    stop(structure(list(message = "PANDO_SESSION_INTERRUPT"), class = c("interrupt", "condition")))
-  })(), interrupt = function(condition) TRUE)
-  expect_true(interrupted)
-  expect_identical(snapshot(), before)
-})
-
-test_that("Pando session cleanup preserves a registered foreach backend", {
-  skip_if_not_installed("foreach")
-  skip_if_not_installed("doParallel")
-  outer_cleanup <- grn_pando_preserve_session()
-  on.exit(outer_cleanup(), add = TRUE)
-  doParallel::registerDoParallel(cores = 2L)
-  registry <- get(".foreachGlobals", asNamespace("foreach"))
-  previous <- as.list(registry, all.names = TRUE)
-  cleanup <- grn_pando_preserve_session()
-  foreach::registerDoSEQ()
-  cleanup()
-  expect_identical(as.list(registry, all.names = TRUE), previous)
-  expect_equal(foreach::getDoParWorkers(), 2L)
-})
-
-test_that("Pando cleanup preserves multiCSN coefficient dispatch in the current session", {
+test_that("Pando module inference preserves multiCSN dispatch in both load orders", {
   skip_if_not_installed("callr")
   skip_if(!length(find.package("Pando", quiet = TRUE)), "Pando is not installed")
   skip_if_not_installed("multiCSN", minimum_version = "0.1.0")
-  result <- callr::r(function() {
-    restore_session <- getFromNamespace("grn_pando_preserve_session", "scop")
-    before <- getS3method("coef", "Network", optional = TRUE)
-    for (i in seq_len(2L)) {
-      cleanup <- restore_session()
-      stopifnot(requireNamespace("Pando", quietly = TRUE))
-      cleanup()
-      stopifnot(
-        !"Pando" %in% loadedNamespaces(),
-        identical(getS3method("coef", "Network", optional = TRUE), before)
+  for (pando_first in c(FALSE, TRUE)) {
+    result <- callr::r(function(pando_first) {
+      if (pando_first) loadNamespace("Pando")
+      loadNamespace("multiCSN")
+      before <- search()
+      network <- methods::new(methods::getClassDef("Network", where = asNamespace("multiCSN")))
+      coefficients <- stats::coef(network)
+      method <- getS3method("coef", "Network")
+      functions <- getFromNamespace("grn_pando_functions", "scop")(1L)
+      native <- methods::new(methods::getClassDef("Network", where = asNamespace("Pando")),
+        fit = data.frame(target = "gene", rsq = 1, nvariables = 20L),
+        coefs = data.frame(target = "gene", tf = "tf", region = "peak", estimate = 2, pval = 0, padj = 0),
+        params = list(method = "glm")
       )
-    }
-    stopifnot(requireNamespace("Pando", quietly = TRUE), requireNamespace("multiCSN", quietly = TRUE))
-    pando <- methods::new(methods::getClassDef("Network", where = asNamespace("Pando")),
-      fit = data.frame(target = "gene", rsq = 1, nvariables = 20L),
-      coefs = data.frame(target = "gene", tf = "tf", region = "peak", estimate = 2, pval = 0, padj = 0),
-      params = list(method = "glm")
-    )
-    network <- methods::new(methods::getClassDef("Network", where = asNamespace("multiCSN")))
-    before <- stats::coef(network)
-    method <- getS3method("coef", "Network")
-    fit <- function() {
-      cleanup <- restore_session()
-      on.exit(cleanup(), add = TRUE)
-      suppressPackageStartupMessages(library("Pando", character.only = TRUE))
-      Pando::find_modules(pando, verbose = FALSE)
-    }
-    fitted <- fit()
-    stopifnot(
-      identical(Pando::NetworkModules(fitted)@meta$estimate, 2),
-      identical(getS3method("coef", "Network"), method),
-      !"package:Pando" %in% search()
-    )
-    pando@params$method <- "invalid"
-    stopifnot(
-      inherits(tryCatch(fit(), error = identity), "error"),
-      identical(getS3method("coef", "Network"), method),
-      !"package:Pando" %in% search()
-    )
-    "Pando" %in% loadedNamespaces() && is.data.frame(before) &&
-      identical(stats::coef(network), before)
-  }, libpath = .libPaths())
-  expect_true(result)
+      fitted <- environment(functions$find_modules)$find_modules(native, verbose = FALSE)
+      list(
+        estimate = getExportedValue("Pando", "NetworkModules")(fitted)@meta$estimate,
+        multiCSN = identical(stats::coef(network), coefficients) &&
+          identical(getS3method("coef", "Network"), method),
+        attached = !identical(search(), before)
+      )
+    }, args = list(pando_first), libpath = .libPaths())
+    expect_identical(result, list(estimate = 2, multiCSN = TRUE, attached = FALSE))
+  }
 })

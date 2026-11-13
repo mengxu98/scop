@@ -1,7 +1,4 @@
 grn_run_linger <- function(input, config) {
-  if (!inherits(input$object, "Seurat") || !identical(input$input_mode, "multiome")) {
-    stop("LINGER requires a paired multiome Seurat object.", call. = FALSE)
-  }
   arguments <- config$method_args
   resume_dir <- arguments$resume_dir
   if (!is.null(resume_dir)) {
@@ -139,11 +136,6 @@ grn_run_linger <- function(input, config) {
 )
 
 grn_linger_reference_files <- function(input, config) {
-  if (!inherits(input$object, "Seurat") || is.null(config$atac_assay) ||
-    !is.character(config$atac_assay) || length(config$atac_assay) != 1L ||
-    !config$atac_assay %in% SeuratObject::Assays(input$object)) {
-    stop("LINGER reference selection requires a paired Seurat object and the selected ATAC assay.", call. = FALSE)
-  }
   spec <- .linger_reference_spec
   genome <- config$method_args$genome %||% "hg38"
   if (!is.character(genome) || length(genome) != 1L || is.na(genome) || !genome %in% names(spec$genome_pair)) {
@@ -197,8 +189,6 @@ grn_linger_metadata <- function(input, config) {
     stop("LINGER cell identifiers are missing from Seurat metadata.", call. = FALSE)
   }
   metadata <- metadata[cells, , drop = FALSE]
-  sample_by <- arguments$sample.by
-  label_by <- arguments$label.by %||% config$group.by
   read_column <- function(column, fallback) {
     if (is.null(column)) {
       return(rep(fallback, length(cells)))
@@ -214,8 +204,8 @@ grn_linger_metadata <- function(input, config) {
   }
   data.frame(
     cell_id = cells,
-    sample = read_column(sample_by, "sample1"),
-    label = read_column(label_by, input$group %||% "all"),
+    sample = read_column(arguments$sample.by, "sample1"),
+    label = read_column(arguments$label.by, input$group %||% "all"),
     stringsAsFactors = FALSE
   )
 }

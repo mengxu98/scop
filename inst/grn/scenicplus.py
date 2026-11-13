@@ -173,24 +173,13 @@ def sha256_file(path):
 
 
 def validate_request(request):
-    resources = request.get("resources", {})
-    missing = [name for name in RESOURCE_NAMES if not resources.get(name) or not Path(resources[name]).exists()]
-    if missing:
-        raise ValueError("Missing SCENIC+ resources: " + ", ".join(missing))
+    resources = request["resources"]
     for name in RESOURCE_NAMES:
-        path = Path(resources[name]).resolve()
-        if name != "region_sets" and (not path.is_file() or not path.stat().st_size):
-            raise ValueError(f"SCENIC+ resource {name} must be a nonempty file")
+        path = Path(resources[name])
         if any(character.isspace() or character in "'\";$`\\|&<>(){}[]*?!" for character in str(path)):
             raise ValueError(f"The official SCENIC+ shell workflow requires resource paths without shell metacharacters: {name}")
-    cells = request.get("cells", [])
-    if not cells or len(cells) != len(set(cells)):
-        raise ValueError("SCENIC+ requires nonempty unique cell identifiers")
-    region_sets = list(Path(resources["region_sets"]).glob("*/*.bed"))
-    if len(region_sets) < 2:
-        raise ValueError("Official SCENIC+ DEM requires at least two region sets to define foreground and background")
-    workflow = Path(resources["workflow"]) if resources.get("workflow") else Path(str(files("scenicplus.snakemake")))
-    if not (workflow / "Snakefile").is_file() or not (workflow / "config.yaml").is_file():
+    workflow = Path(resources["workflow"]) if "workflow" in resources else Path(str(files("scenicplus.snakemake")))
+    if "workflow" not in resources and not all((workflow / name).is_file() for name in ("Snakefile", "config.yaml")):
         raise ValueError("The official workflow files are missing; set resources$workflow to the SCENIC+ snakemake source directory")
     return resources, workflow
 
@@ -245,7 +234,7 @@ def configure(request, resources, workflow, output, prepared):
     config["params_data_preparation"].update(is_multiome=True, bc_transform_func='"lambda x: x"')
     config["output_data"]["genome_annotation"] = str(Path(resources["genome_annotation"]).resolve())
     config["output_data"]["chromsizes"] = str(Path(resources["chromsizes"]).resolve())
-    args = dict(request.get("method_args", {}))
+    args = dict(request["method_args"])
     args.pop("resume_dir", None)
     allowed = {"gsea_n_perm", "min_target_genes", "data_preparation", "motif_enrichment", "inference"}
     unknown = set(args) - allowed
@@ -336,33 +325,48 @@ def main(request_path):
         run_locked(request, resources, workflow, output, lock_fd)
 
 
+def request_identity(request, resources, workflow):
+    identity = {key: value for key, value in request.items() if key != "output_dir"}
+    identity["method_args"] = {key: value for key, value in request["method_args"].items() if key != "resume_dir"}
+    for name in ("expression", "features"):
+        identity[name] = sha256_file(identity[name])
+    fingerprints = {}
+    resource_identity = {}
+    for name, value in resources.items():
+        path = Path(value)
+        paths = sorted(child for child in path.rglob("*") if child.is_file()) if path.is_dir() else [path]
+        hashes = []
+        for child in paths:
+            if child not in fingerprints:
+                fingerprints[child] = sha256_file(child)
+            hashes.append(fingerprints[child])
+        resource_identity[name] = [{"path": value, "files": hashes[0] if len(hashes) == 1 else hashes}]
+    identity["resource_identity"] = identity["verified_resource_identity"] = resource_identity
+    regions = Path(resources["region_sets"])
+    identity["region_sets"] = {str(path.relative_to(regions)): fingerprints[path] for path in sorted(regions.glob("*/*.bed"))}
+    snakefile = workflow / "Snakefile"
+    identity["workflow_sha256"] = fingerprints[snakefile] if snakefile in fingerprints else sha256_file(snakefile)
+    identity["runner_sha256"] = sha256_file(__file__)
+    return identity
+
+
 def run_locked(request, resources, workflow, output, lock_fd):
     manifest = output / "execution.json"
     identity_path = output / "request_identity.json"
     if not identity_path.is_file() and any(path.name != ".scop-execution.lock" for path in output.iterdir()):
         raise ValueError("The official SCENIC+ directory must be empty or contain a verified scop request identity")
-    identity = dict(request)
-    identity.pop("output_dir", None)
-    identity["method_args"] = {key: value for key, value in request.get("method_args", {}).items() if key != "resume_dir"}
-    for name in ("expression", "features"):
-        if identity.get(name):
-            identity[name] = hashlib.sha256(Path(identity[name]).read_bytes()).hexdigest()
-    if request.get("resource_identity") is not None:
-        identity["verified_resource_identity"] = request["resource_identity"]
-    else:
-        for name in RESOURCE_NAMES:
-            if name != "region_sets":
-                identity[name + "_sha256"] = sha256_file(resources[name])
-    identity["region_sets"] = {str(path.relative_to(resources["region_sets"])): hashlib.sha256(path.read_bytes()).hexdigest()
-        for path in sorted(Path(resources["region_sets"]).glob("*/*.bed"))}
-    identity["workflow_sha256"] = hashlib.sha256((workflow / "Snakefile").read_bytes()).hexdigest()
-    identity["runner_sha256"] = sha256_file(__file__)
-    if identity_path.exists() and json.loads(identity_path.read_text()) != identity:
-        raise ValueError("SCENIC+ resume inputs or parameters differ from the existing execution")
     if manifest.exists() and json.loads(manifest.read_text())["status"] == "completed":
-        raise ValueError("Use the framework's verified completed cache instead of rerunning a completed SCENIC+ directory")
+        raise ValueError("This SCENIC+ run is complete. Read scplusmdata.h5mu with RunSCENICPlus(scplus_object = ...) or select a new work_dir.")
+    identity = request_identity(request, resources, workflow)
+    if identity_path.exists():
+        previous = json.loads(identity_path.read_text())
+        if previous != identity:
+            predecessor = "486b8d7b6d0b30a6d9802f7c7d06b26e5f4328bf51bf25fcbd1fe19ff54e5bcb"
+            if previous != dict(identity, runner_sha256=predecessor):
+                raise ValueError("SCENIC+ resume inputs or parameters differ from the existing execution")
+            identity = previous
     identity_sha256 = hashlib.sha256(json.dumps(identity, sort_keys=True).encode()).hexdigest()
-    stale_locks = verify_resume_locks(output, identity_sha256, bool(request.get("method_args", {}).get("resume_dir")))
+    stale_locks = verify_resume_locks(output, identity_sha256, bool(request["method_args"].get("resume_dir")))
     prepared = (str(output / "input_cistopic.pkl"), str(output / "input_GEX.h5ad"))
     config, config_path = configure(request, resources, workflow, output, prepared)
     atomic_json(identity_path, identity)
@@ -396,7 +400,7 @@ def run_locked(request, resources, workflow, output, lock_fd):
         for path in sorted(output.glob("*.tsv")):
             artifacts[path.name] = hashlib.sha256(path.read_bytes()).hexdigest()
         status.update(status="completed", elapsed_seconds=time.time() - started, rows=rows, auc_files=auc_files,
-            artifacts=artifacts, workflow_sha256=hashlib.sha256((workflow / "Snakefile").read_bytes()).hexdigest())
+            artifacts=artifacts, workflow_sha256=identity["workflow_sha256"])
     except BaseException as error:
         status.update(status="cancelled" if isinstance(error, (WorkflowCancelled, KeyboardInterrupt)) else "failed",
             elapsed_seconds=time.time() - started, error=str(error))

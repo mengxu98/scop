@@ -12,7 +12,7 @@
 
 * **fix**: RegDiffusion uses its separate Python runtime for all output types, and SCENIC with `backend = "cpp"` no longer looks for a Python environment. RegDiffusion accepts its supported trainer options through `method_args`; the old `cell_types` passthrough is unavailable. Use `force = TRUE` to replace an existing edge output file.
 
-* **fix**: Preserve gene-by-cell orientation in GENIE3 inference. Complete GNIPLR result views respect requested regulators while the default edge-table path retains its existing behavior.
+* **fix**: Preserve gene-by-cell orientation in GENIE3 and filter GNIPLR regulators before limiting edges. Returning edges or a complete result uses the same inference.
 
 * **fix**: Pin PyNNDescent 0.6.0 in Scanpy environments to prevent sparse-array `getnnz` failures in large-data `RunPAGA()` neighbor searches. `RunPAGA()` now requests an R-session restart if an older PyNNDescent module remains loaded after the environment is updated.
 

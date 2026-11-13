@@ -3,8 +3,7 @@ title: "Infer layered networks from paired RNA and ATAC"
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(error = FALSE, collapse = TRUE, comment = "#>",
-	eval = isTRUE(getOption("scop.grn.multiome", FALSE)))
+knitr::opts_chunk$set(error = FALSE, collapse = TRUE, comment = "#>")
 ```
 
 ## Prepare the paired PBMC input
@@ -16,14 +15,12 @@ monocyte networks through the same `RunGRN` entry point.
 Install the independent [multiCSN package](https://github.com/mengxu98/multiCSN)
 and a matching hg38 BSgenome before running the main example. This interface
 requires multiCSN 0.1.0 or later. The selected genome must match your peak
-coordinates and gene annotation. Run the chunks interactively, or set
-`options(scop.grn.multiome = TRUE)` when rendering the main example.
+coordinates and gene annotation.
 
 ```{r paired-input}
-library(scop)
-data("pbmcmultiome_sub", package = "scop")
+data(pbmcmultiome_sub, package = "scop")
 paired <- pbmcmultiome_sub
-genome <- getExportedValue("BSgenome.Hsapiens.UCSC.hg38", "BSgenome.Hsapiens.UCSC.hg38")
+genome <- BSgenome.Hsapiens.UCSC.hg38::BSgenome.Hsapiens.UCSC.hg38
 peak_ranges <- multiCSN::parse_peak_ranges(rownames(paired[["peaks"]]))
 keep <- as.character(GenomeInfoDb::seqnames(peak_ranges)) %in%
 	GenomeInfoDb::standardChromosomes(genome)
@@ -31,7 +28,6 @@ paired[["peaks"]] <- subset(paired[["peaks"]], features = rownames(paired[["peak
 paired <- Seurat::NormalizeData(paired, assay = "RNA",
 	normalization.method = "LogNormalize", scale.factor = 10000, verbose = FALSE)
 paired <- Signac::RunTFIDF(paired, assay = "peaks", verbose = FALSE)
-stopifnot(identical(colnames(paired[["RNA"]]), colnames(paired[["peaks"]])))
 table(paired$CellType)
 ```
 
@@ -40,32 +36,31 @@ The reference-compatible filter uses the actual matrix peak IDs. It retains
 layer for multiCSN. Use `SeuratObject::JoinLayers()` first if your assays have
 split layers.
 
-Choose target genes before fitting. Here, the 64 highest-variance annotated RNA
-genes define the demonstration target set. The bundled motif map supplies the
-candidate TFs.
+Use motifs for a predefined panel of B-cell and myeloid regulators. All RNA
+genes remain eligible as targets, subject to the native annotation and
+detection rules.
 
-```{r paired-targets}
-rna <- SeuratObject::LayerData(paired, assay = "RNA", layer = "data")
-variance <- Matrix::rowMeans(rna^2) - Matrix::rowMeans(rna)^2
-annotated <- unique(as.character(Signac::Annotation(paired[["peaks"]])$gene_name))
-variance <- variance[names(variance) %in% annotated]
-targets <- names(sort(variance, decreasing = TRUE))[seq_len(64L)]
-stopifnot(length(targets) == 64L)
+```{r paired-regulators}
+data(motifs, motif2tf, package = "multiCSN")
+regulators <- c("BACH2", "CEBPA", "CEBPB", "EBF1", "IKZF1", "IRF8",
+	"NFKB1", "PAX5", "REL", "RUNX1", "SPI1", "STAT1")
+regulator_motifs <- subset(motif2tf, tf %in% regulators)
+pfm <- motifs[intersect(names(motifs), regulator_motifs$motif)]
 ```
 
 ## Fit independent network layers
 
 ```{r paired-network}
-paired <- RunGRN(
+paired <- scop::RunGRN(
 	paired, methods = "multiCSN", input_mode = "multiome",
 	assay = "RNA", layer = "data", atac_assay = "peaks", atac_layer = "data",
-	group.by = "CellType", groups = c("B", "Mono"), targets = targets,
-	resources = list(genome = genome), method_args = list(preset = "state"),
+	group.by = "CellType", groups = c("B", "Mono"), regulators = regulators,
+	resources = list(genome = genome, motif = pfm, motif_tfs = regulator_motifs), method_args = list(preset = "state"),
 	work_dir = file.path(tempdir(), "scop-pbmc-multicsn"),
 	cores = 1L, seed = 1201L, verbose = FALSE
 )
-names(GetGRN(paired, what = "result")$groups)
-GetGRN(paired, group = "B", what = "parameters")
+names(scop::GetGRN(paired, what = "result")$groups)
+scop::GetGRN(paired, group = "B", what = "parameters")[c("preset", "min_detected", "min_peak_cells")]
 ```
 
 `group.by` defines separate fits. Each group retains its actual cells, targets,
@@ -79,15 +74,14 @@ requested detection threshold. Inspect `GetGRN(..., what = "parameters")` for
 the effective settings used in each group.
 
 ```{r inspect-layered-network}
-tf_gene <- GetGRN(paired, group = "B", layer = "tf_gene")
-tf_region <- GetGRN(paired, group = "B", layer = "tf_region")
-region_gene <- GetGRN(paired, group = "B", layer = "region_gene")
-chains <- GetGRN(paired, group = "B", what = "chains")
-native <- GetGRN(paired, group = "B", what = "native")
+tf_gene <- scop::GetGRN(paired, group = "B", layer = "tf_gene")
+tf_region <- scop::GetGRN(paired, group = "B", layer = "tf_region")
+region_gene <- scop::GetGRN(paired, group = "B", layer = "region_gene")
+chains <- scop::GetGRN(paired, group = "B", what = "chains")
+native <- scop::GetGRN(paired, group = "B", what = "native")
 head(tf_region[, c("source", "target", "standardized_beta", "deletion_delta_bic",
 	"raw_score", "sign", "sign_basis")])
 native$summary
-stopifnot(identical(tf_gene$raw_score, native$tf_gene$weight))
 ```
 
 Each endpoint layer has its own regression coefficient and deletion evidence.
@@ -96,18 +90,18 @@ triplet table retains path evidence and backbone-support flags. The
 `mediated_tf_gene` layer retains its separate native definition.
 
 ```{r paired-network-plot, fig.width=8, fig.height=6}
-GRNPlot(paired, group = "B", type = "network", layer = "tf_gene", top_n = 50L)
+scop::GRNPlot(paired, group = "B", type = "network", layer = "tf_gene", top_n = 50L)
 ```
 
 ```{r paired-layered-plot, fig.width=10, fig.height=6}
-GRNPlot(paired, group = "B", type = "layered", top_n = 20L)
+scop::GRNPlot(paired, group = "B", type = "layered", top_n = 20L)
 ```
 
 ```{r paired-save}
 result_file <- file.path(tempdir(), "pbmc-multicsn-grn.rds")
 saveRDS(paired, result_file)
 reloaded <- readRDS(result_file)
-stopifnot(identical(GetGRN(paired, group = "B"), GetGRN(reloaded, group = "B")))
+head(scop::GetGRN(reloaded, group = "B"))
 ```
 
 Use `GetGRN(..., what = "gene_sets")` with `CellScoring` to score predicted
@@ -116,21 +110,22 @@ shows the existing `FeatureDimPlot` and `GroupHeatmap` plotting path.
 
 ## Run multiCSN independently
 
-The standalone package remains the owner of multiCSN inference. You can use
-its public API directly with the same preprocessed input and target set.
-The scop adapter calls these public functions and stores their native result.
+For a standalone analysis, start from the same preprocessed input and regulator
+motifs. multiCSN can fit and write its native endpoint tables without scop.
 
-```{r standalone-multicsn, eval=FALSE}
+```r
 candidates <- multiCSN::prepare_candidates(
 	paired, group.by = "CellType", genome = genome,
-	rna_assay = "RNA", peak_assay = "peaks", targets = targets, verbose = FALSE
+	rna_assay = "RNA", peak_assay = "peaks",
+	pfm = pfm, motif_tfs = regulator_motifs, verbose = FALSE
 )
 b_network <- multiCSN::fit_layered_network(
-	candidates, cell_group = "B", preset = "state", store = FALSE,
+	candidates, cell_group = "B", regulators = regulators, preset = "state", store = FALSE,
 	cores = 1L, verbose = FALSE
 )
-multiCSN::write_network_endpoints(b_network, file.path(tempdir(), "pbmc-B-endpoints"))
-stopifnot(multiCSN::validate_network_endpoints(file.path(tempdir(), "pbmc-B-endpoints")))
+endpoints <- tempfile("pbmc-B-endpoints-")
+multiCSN::write_network_endpoints(b_network, endpoints)
+multiCSN::validate_network_endpoints(endpoints)
 citation("multiCSN")
 ```
 
@@ -140,24 +135,24 @@ a gene-by-cell expression matrix and optional cell-ID-named pseudotime.
 
 ## Fit Pando interaction models
 
-Prepare Pando and its reference dependencies in the current R environment.
-The following recipe uses the same normalized PBMC object and targets. The
-Pando defaults retain its native module thresholds.
+Install Pando in the current R environment with
+`scop::PrepareEnv(modules = "pando", components = "r")`. The same normalized
+PBMC object supplies the input. Pando selects variable target genes and retains
+its native module thresholds.
 
-```{r paired-pando, eval=FALSE}
-PrepareEnv(modules = "pando", components = "r")
-pando_grn <- RunGRN(
+```{r paired-pando, fig.width=10, fig.height=6}
+pando_grn <- scop::RunGRN(
 	paired, methods = "Pando", input_mode = "multiome",
 	assay = "RNA", layer = "data", atac_assay = "peaks", atac_layer = "data",
-	group.by = "CellType", groups = "B", targets = targets,
+	group.by = "CellType", groups = "B",
 	resources = list(genome = "BSgenome.Hsapiens.UCSC.hg38"),
 	return_type = "result", work_dir = file.path(tempdir(), "scop-pbmc-pando"),
 	cores = 1L, seed = 1201L, verbose = FALSE
 )
-pando_native <- GetGRN(pando_grn, group = "B", what = "native")
+pando_native <- scop::GetGRN(pando_grn, group = "B", what = "native")
 head(pando_native$coefficients)
-head(GetGRN(pando_grn, group = "B", layer = "tf_region"))
-GRNPlot(pando_grn, group = "B", type = "layered", top_n = 20L)
+head(scop::GetGRN(pando_grn, group = "B", layer = "tf_region"))
+scop::GRNPlot(pando_grn, group = "B", type = "layered", top_n = 20L)
 ```
 
 Pando's native interaction coefficients retain `estimate`, `pval`, and `padj`.
@@ -173,27 +168,25 @@ native workflow builds pseudobulks before training and needs at least 50
 pseudobulks for its SHAP sampling step. Choose a sufficiently sized input and
 label design before starting training.
 
-```{r paired-linger, eval=FALSE}
-PrepareEnv(modules = "linger", configure_runtime = FALSE)
-linger_resources <- PrepareDB(db = "LINGER", data_dir = "/path/to/LINGER/data_bulk")$LINGER
+```r
+scop::PrepareEnv(modules = "linger", configure_runtime = FALSE)
+linger_resources <- scop::PrepareDB(db = "LINGER", data_dir = "/path/to/LINGER/data_bulk")$LINGER
 reference_tfs <- scan(file.path(linger_resources$bulk_reference, "TFName.txt"), what = "character", quiet = TRUE)
 regulators_linger <- intersect(reference_tfs, rownames(paired[["RNA"]]))
-targets_linger <- targets
-linger_grn <- RunGRN(
+linger_grn <- scop::RunGRN(
 	paired, methods = "LINGER", input_mode = "multiome",
 	assay = "RNA", layer = "counts", atac_assay = "peaks", atac_layer = "counts",
-	regulators = regulators_linger, targets = targets_linger,
+	regulators = regulators_linger,
 	resources = linger_resources,
 	method_args = list(label.by = "CellType", genome = "hg38"),
 	return_type = "result", work_dir = "/path/to/new-linger-run",
 	cores = 1L, seed = 1201L
 )
-GetGRN(linger_grn, layer = "tf_region")
-GetGRN(linger_grn, what = "native")$training_coverage
+scop::GetGRN(linger_grn, layer = "tf_region")
+scop::GetGRN(linger_grn, what = "native")$training_coverage
 ```
 
-The candidate regulators come from the reference TF list, and targets use the
-prespecified RNA set. `sample.by` and `label.by` refer to existing
+The candidate regulators come from the reference TF list. `sample.by` and `label.by` refer to existing
 Seurat metadata columns. Omitting `sample.by` uses one sample. Native cell
 filters retain their selected cell IDs in the result, with requested IDs and
 exclusions recorded separately.
@@ -233,9 +226,9 @@ To supply custom paths, use `data_dir = list(SCENICPlus = list(path = ...,
 genome_annotation = ..., chromsizes = ...))`. Provide `ranking_db`, `scores_db`,
 and `motif_annotation` together to override the default reference set.
 
-```{r paired-scenicplus, eval=FALSE}
-PrepareEnv(modules = "scenicplus", configure_runtime = FALSE)
-scenicplus_references <- PrepareDB(
+```r
+scop::PrepareEnv(modules = "scenicplus", configure_runtime = FALSE)
+scenicplus_references <- scop::PrepareDB(
 	db = "SCENICPlus", data_dir = "/path/to/scenicplus-references"
 )$SCENICPlus
 scenicplus_resources <- c(scenicplus_references, list(
@@ -244,15 +237,15 @@ scenicplus_resources <- c(scenicplus_references, list(
 	region_sets = "/path/to/region_sets",
 	workflow = "/path/to/scenicplus/src/scenicplus/snakemake"
 ))
-scenicplus_grn <- RunGRN(
+scenicplus_grn <- scop::RunGRN(
 	paired, methods = "SCENIC+", input_mode = "multiome",
 	assay = "RNA", layer = "data", atac_assay = "peaks", atac_layer = "data",
 	resources = scenicplus_resources, return_type = "result",
 	work_dir = "/path/to/new-scenicplus-run", cores = 1L, seed = 1201L
 )
-GetGRN(scenicplus_grn, what = "native")$direct
-GetGRN(scenicplus_grn, what = "native")$extended
-GetGRN(scenicplus_grn, what = "native")$auc
+scop::GetGRN(scenicplus_grn, what = "native")$direct
+scop::GetGRN(scenicplus_grn, what = "native")$extended
+scop::GetGRN(scenicplus_grn, what = "native")$auc
 ```
 
 `RunGRN(..., methods = "scenicplus")` is the official execution route.

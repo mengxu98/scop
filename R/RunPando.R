@@ -1,28 +1,14 @@
 grn_run_pando <- function(input, config) {
-  if (!inherits(input$object, "Seurat")) {
-    stop("Pando requires a Seurat object with RNA and chromatin assays.", call. = FALSE)
-  }
   if (is.null(config$resources$genome)) {
     stop("Pando requires resources$genome matching the chromatin coordinates.", call. = FALSE)
   }
-  supplied <- config$method_args
-  if (length(supplied) && (is.null(names(supplied)) || any(!nzchar(names(supplied))) || anyDuplicated(names(supplied)))) {
-    stop("Pando method_args must have unique names.", call. = FALSE)
-  }
-  defaults <- grn_pando_defaults()
-  unknown <- setdiff(names(supplied), names(defaults))
-  if (length(unknown)) {
-    stop("Unknown Pando argument(s): ", paste(unknown, collapse = ", "), call. = FALSE)
-  }
-  config$method_args <- utils::modifyList(defaults, supplied)
+  config$method_args <- utils::modifyList(grn_pando_defaults(), config$method_args)
   if (!identical(config$method_args$interaction_term, ":")) {
     stop("Pando GRN layers require interaction_term=':' to identify TF-region terms.", call. = FALSE)
   }
   if (!identical(as.numeric(config$method_args$extend), 1000000)) {
     stop("Pando 1.1.1 does not forward a custom extend value; supply resources$gene_domains for explicit gene domains.", call. = FALSE)
   }
-  cleanup <- grn_pando_preserve_session()
-  on.exit(cleanup(), add = TRUE)
   native <- grn_pando_fit(input, config)
   grn_pando_group(native, input, list(
     mode = "current_session",
@@ -77,15 +63,7 @@ grn_pando_group <- function(native, input, process = list()) {
 
 grn_pando_fit <- function(input, config) {
   args <- config$method_args
-  for (package in c("Pando", "Seurat", "SeuratObject", "Signac")) {
-    if (!requireNamespace(package, quietly = TRUE)) {
-      stop("Pando requires package '", package, "' in the current R session. See PrepareEnv(modules = 'pando').", call. = FALSE)
-    }
-  }
-  suppressPackageStartupMessages({
-    library("Pando", character.only = TRUE)
-    library("GenomicRanges", character.only = TRUE)
-  })
+  pando <- grn_pando_functions(config$cores)
   genome <- config$resources$genome
   if (is.character(genome) && length(genome) == 1L) {
     if (!requireNamespace(genome, quietly = TRUE)) {
@@ -107,9 +85,6 @@ grn_pando_fit <- function(input, config) {
   if (!is.null(config$resources$annotation)) Signac::Annotation(object[[peak_assay]]) <- config$resources$annotation
   if (is.null(Signac::Annotation(object[[peak_assay]]))) {
     stop("Pando requires resources$annotation or a ChromatinAssay gene annotation.", call. = FALSE)
-  }
-  if (!identical(colnames(input$expression), input$cells)) {
-    stop("Pando RNA cells are not aligned.", call. = FALSE)
   }
   object <- SeuratObject::SetAssayData(object, assay = rna_assay, layer = "data", new.data = input$expression)
   peak_layer <- config$atac_layer
@@ -137,15 +112,14 @@ grn_pando_fit <- function(input, config) {
       stop("Pando's bundled conserved regions require hg38; supply resources$regions for another genome.", call. = FALSE)
     }
   }
-  set.seed(config$seed)
-  template <- Pando::initiate_grn(
+  template <- get_namespace_fun("Pando", "initiate_grn")(
     object,
     regions = regions,
     peak_assay = peak_assay,
     rna_assay = rna_assay,
     exclude_exons = args$exclude_exons
   )
-  template <- Pando::find_motifs(
+  template <- get_namespace_fun("Pando", "find_motifs")(
     template,
     pfm = pfm,
     motif_tfs = motif_tfs,
@@ -153,7 +127,7 @@ grn_pando_fit <- function(input, config) {
     verbose = config$verbose
   )
   motif_ids <- colnames(template@grn@regions@motifs@data)
-  tf_map <- Pando::NetworkTFs(template)
+  tf_map <- get_namespace_fun("Pando", "NetworkTFs")(template)
   if (is.null(dim(tf_map))) {
     tf_names <- intersect(rownames(object[[rna_assay]]), as.character(motif_tfs[[2L]]))
     map_ids <- unique(as.character(motif_tfs[[1L]]))
@@ -195,31 +169,8 @@ grn_pando_fit <- function(input, config) {
   if (!is.null(config$resources$gene_domains)) {
     infer_args$peak_to_gene_domains <- config$resources$gene_domains
   }
-  if (config$cores > 1L) {
-    if (!requireNamespace("doParallel", quietly = TRUE) || !requireNamespace("foreach", quietly = TRUE)) {
-      stop("Parallel Pando requires doParallel and foreach.", call. = FALSE)
-    }
-    foreach_environment <- get(".foreachGlobals", asNamespace("foreach"))
-    parallel_environment <- get(".options", asNamespace("doParallel"))
-    previous_foreach <- as.list(foreach_environment, all.names = TRUE)
-    previous_parallel <- as.list(parallel_environment, all.names = TRUE)
-    on.exit(
-      {
-        cluster <- parallel_environment[[".revoDoParCluster"]]
-        if (!is.null(cluster) && !identical(cluster, previous_parallel[[".revoDoParCluster"]])) parallel::stopCluster(cluster)
-        for (state in list(list(environment = foreach_environment, previous = previous_foreach), list(environment = parallel_environment, previous = previous_parallel))) {
-          extra <- setdiff(ls(state$environment, all.names = TRUE), names(state$previous))
-          if (length(extra)) rm(list = extra, envir = state$environment)
-          for (name in names(state$previous)) assign(name, state$previous[[name]], envir = state$environment)
-        }
-      },
-      add = TRUE
-    )
-    suppressPackageStartupMessages(library("foreach", character.only = TRUE))
-    doParallel::registerDoParallel(cores = config$cores)
-  }
   network_name <- "scop_pando"
-  fitted <- do.call(Pando::infer_grn, c(list(
+  fitted <- do.call(pando$infer_grn, c(list(
     object = template,
     genes = genes,
     network_name = network_name,
@@ -227,13 +178,13 @@ grn_pando_fit <- function(input, config) {
     parallel = config$cores > 1L,
     verbose = config$verbose
   ), infer_args))
-  coefficients <- as.data.frame(stats::coef(fitted))
-  goodness <- as.data.frame(Pando::gof(fitted))
+  coefficients <- as.data.frame(pando$coef(get_namespace_fun("Pando", "GetNetwork")(fitted)))
+  goodness <- as.data.frame(get_namespace_fun("Pando", "gof")(fitted))
   if (!all(c("tf", "region", "target", "estimate", "pval", "padj") %in% names(coefficients)) ||
     !all(c("target", "rsq", "nvariables") %in% names(goodness))) {
     stop("The native Pando coefficient or fit schema changed.", call. = FALSE)
   }
-  fitted <- Pando::find_modules(
+  fitted <- pando$find_modules(
     fitted,
     network = network_name,
     p_thresh = args$p_thresh,
@@ -241,7 +192,7 @@ grn_pando_fit <- function(input, config) {
     nvar_thresh = args$nvar_thresh,
     min_genes_per_module = args$min_genes_per_module
   )
-  native_modules <- Pando::NetworkModules(fitted)
+  native_modules <- get_namespace_fun("Pando", "NetworkModules")(fitted)
   modules <- as.data.frame(native_modules@meta)
   eligible <- as.character(goodness$target[
     is.finite(goodness$rsq) & goodness$rsq > args$rsq_thresh &
@@ -262,7 +213,7 @@ grn_pando_fit <- function(input, config) {
     stats::setNames(native_modules@features$genes_pos, paste0(names(native_modules@features$genes_pos), "(+)", recycle0 = TRUE)),
     stats::setNames(native_modules@features$genes_neg, paste0(names(native_modules@features$genes_neg), "(-)", recycle0 = TRUE))
   )
-  packages <- c("Pando", "Seurat", "SeuratObject", "Signac", if (config$cores > 1L) c("foreach", "doParallel"))
+  packages <- c("Pando", "Seurat", "SeuratObject", "Signac")
   list(
     coefficients = coefficients,
     goodness_of_fit = goodness,
@@ -300,64 +251,63 @@ grn_pando_defaults <- function() {
   )
 }
 
-grn_pando_preserve_session <- function() {
-  previous_search <- search()
-  previous_options <- options()
-  had_rng <- exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
-  if (had_rng) previous_rng <- get(".Random.seed", envir = .GlobalEnv)
-  pando_loaded <- "Pando" %in% loadedNamespaces()
-  s3_tables <- lapply(c(stats = "stats", base = "base"), function(package) {
-    get(".__S3MethodsTable__.", asNamespace(package), inherits = FALSE)
-  })
-  s3_keys <- list(
-    stats = paste0("coef.", c("GRNData", "Network", "RegulatoryNetwork")),
-    base = paste0("print.", c("Modules", "Network", "Regions", "RegulatoryNetwork"))
+grn_pando_functions <- function(cores) {
+  if (!"Pando" %in% loadedNamespaces()) {
+    classes <- list(coef = "Network", print = c("Modules", "Network", "Regions"))
+    generics <- list2env(list(coef = stats::coef, print = base::print), parent = emptyenv())
+    saved <- Map(function(generic, class) {
+      stats::setNames(lapply(class, function(name) {
+        utils::getS3method(generic, name, optional = TRUE, envir = generics)
+      }), class)
+    }, names(classes), classes)
+    on.exit({
+      for (generic in names(saved)) {
+        for (class in names(saved[[generic]])) {
+          method <- saved[[generic]][[class]]
+          if (!is.null(method)) registerS3method(generic, class, method, envir = generics)
+        }
+      }
+    }, add = TRUE)
+  }
+  package <- if (length(find.package("Pando", quiet = TRUE))) "Pando" else env_r_packages("pando")[[1L]]
+  check_r(package, verbose = FALSE)
+  namespace <- asNamespace("Pando")
+  if (getNamespaceVersion(namespace) != "1.1.1") {
+    stop("This Pando adapter requires Pando 1.1.1. See PrepareEnv(modules = 'pando').", call. = FALSE)
+  }
+
+  scope <- new.env(parent = namespace)
+  upstream <- function(name, args) {
+    fun <- get_namespace_fun("Pando", name)
+    if (!all(args %in% names(formals(fun)))) {
+      stop("Unsupported signature for Pando's ", name, ". See PrepareEnv(modules = 'pando').", call. = FALSE)
+    }
+    environment(fun) <- scope
+    fun
+  }
+  scope$GRanges <- GenomicRanges::GRanges
+  scope$check_if_available <- function(method) invisible(NULL)
+  scope$find_peaks_near_genes <- upstream("find_peaks_near_genes", c("peaks", "genes", "method"))
+  bind_data <- function(expr) {
+    if (!is.call(expr)) return(expr)
+    if (identical(expr[[1L]], quote(utils::data))) {
+      expr[["package"]] <- "Pando"
+      return(expr)
+    }
+    as.call(lapply(as.list(expr), bind_data))
+  }
+  body(scope$find_peaks_near_genes) <- bind_data(body(scope$find_peaks_near_genes))
+  scope$fit_grn_models <- upstream("fit_grn_models.GRNData", c("object", "genes", "parallel", "method", "..."))
+  scope$coef <- upstream("coef.Network", "object")
+  scope$find_modules <- upstream("find_modules.Network", c("object", "p_thresh", "rsq_thresh", "nvar_thresh", "min_genes_per_module"))
+  if (cores > 1L) {
+    scope$map_par <- function(x, fun, parallel, verbose) {
+      thisutils::parallelize_fun(x, fun, cores = cores, verbose = verbose)
+    }
+  }
+  list(
+    infer_grn = upstream("infer_grn.GRNData", c("object", "genes", "parallel", "method", "...")),
+    find_modules = upstream("find_modules.GRNData", c("object", "network", "p_thresh", "rsq_thresh", "nvar_thresh", "min_genes_per_module")),
+    coef = scope$coef
   )
-  s3_methods <- Map(function(table, keys) {
-    stats::setNames(lapply(keys, get0, envir = table, inherits = FALSE), keys)
-  }, s3_tables, s3_keys)
-  registrations <- list(foreach = NULL, doParallel = NULL)
-  for (package in names(registrations)) {
-    if (package %in% loadedNamespaces()) {
-      name <- if (package == "foreach") ".foreachGlobals" else ".options"
-      registrations[[package]] <- as.list(get(name, asNamespace(package)), all.names = TRUE)
-    }
-  }
-  function() {
-    for (name in setdiff(search(), previous_search)) detach(name, character.only = TRUE, unload = FALSE)
-    if (!pando_loaded && "Pando" %in% loadedNamespaces()) {
-      unloadNamespace("Pando")
-      for (package in names(s3_methods)) {
-        table <- s3_tables[[package]]
-        for (key in names(s3_methods[[package]])) {
-          method <- s3_methods[[package]][[key]]
-          if (is.null(method)) {
-            if (exists(key, envir = table, inherits = FALSE)) rm(list = key, envir = table)
-          } else {
-            assign(key, method, envir = table)
-          }
-        }
-      }
-    }
-    extra_options <- setdiff(names(options()), names(previous_options))
-    if (length(extra_options)) options(stats::setNames(rep(list(NULL), length(extra_options)), extra_options))
-    options(previous_options)
-    if (had_rng) assign(".Random.seed", previous_rng, envir = .GlobalEnv) else if (exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) rm(".Random.seed", envir = .GlobalEnv)
-    for (package in names(registrations)) {
-      if (!package %in% loadedNamespaces()) {
-        next
-      }
-      name <- if (package == "foreach") ".foreachGlobals" else ".options"
-      registration <- get(name, asNamespace(package))
-      previous <- registrations[[package]]
-      extra <- setdiff(ls(registration, all.names = TRUE), names(previous))
-      if (length(extra)) rm(list = extra, envir = registration)
-      for (key in names(previous)) {
-        if (!exists(key, envir = registration, inherits = FALSE) || !identical(get(key, envir = registration, inherits = FALSE), previous[[key]])) {
-          assign(key, previous[[key]], envir = registration)
-        }
-      }
-    }
-    invisible(NULL)
-  }
 }

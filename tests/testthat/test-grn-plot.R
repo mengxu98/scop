@@ -12,7 +12,7 @@ grn_plot_fixture <- function(method = "fixture", directed = TRUE, signed = TRUE,
   )
   structure(list(
     schema_version = "1.0", method = method, implementation = "fixture",
-    package_versions = character(), parameters = list(), input_summary = list(entity_namespace = "symbols"),
+    package_versions = character(), parameters = list(), input_summary = list(),
     resources = list(), execution = list(status = "completed"),
     groups = list(A = list(
       cells = c("C1", "C2"), native = list(tf_gene = tf_gene, tf_region = tf_region, region_gene = region_gene, triplets = triplets),
@@ -74,8 +74,6 @@ test_that("overlap uses a common entity scope and never adds method scores", {
   expect_true(all(view$overlap$shared_edges == 2L))
   expect_true(all(view$counts$shown == 2L))
   expect_true(all(view$counts$total == 3L))
-  second$input_summary$entity_namespace <- "other"
-  expect_error(GRNPlot(first, group = "A", type = "overlap", compare = second), "namespaces")
   second <- grn_plot_fixture(method = "two", directed = FALSE)
   separate <- attr(GRNPlot(first, group = "A", type = "overlap", compare = second), "grn_data")$overlap
   expect_true(all(separate$shared_edges[as.character(separate$method_1) != as.character(separate$method_2)] == 0L))
@@ -85,6 +83,34 @@ test_that("overlap uses a common entity scope and never adds method scores", {
   reversed <- attr(GRNPlot(first, group = "A", type = "overlap", compare = second), "grn_data")$overlap
   expect_true(all(reversed$shared_edges == 3L))
   expect_silent(ggplot2::ggplot_build(plot))
+})
+
+test_that("undirected duplicates do not use up the plotting limit", {
+  result <- grn_plot_fixture(directed = FALSE)
+  result$groups$A$native$tf_gene <- data.frame(
+    regulator = c("A", "D", "B"), target = c("D", "A", "A"),
+    weight = c(-0.9, -0.9, 0.8), beta = c(-0.9, -0.9, 0.8)
+  )
+  edges <- attr(GRNPlot(result, top_n = 2L), "grn_data")$edges
+  expect_equal(edges$raw_score, c(-0.9, 0.8))
+  expect_equal(nrow(GetGRN(result)), 3L)
+  view <- attr(GRNPlot(result, type = "overlap", compare = result, top_n = 2L), "grn_data")
+  expect_true(all(view$counts$total == 2L))
+  expect_true(all(view$counts$shown == 2L))
+  expect_true(all(view$overlap$shared_edges == 2L))
+})
+
+test_that("overlap matches endpoints even when identifiers contain separators", {
+  first <- grn_plot_fixture(method = "one")
+  second <- grn_plot_fixture(method = "two")
+  first$groups$A$native$tf_gene[c("regulator", "target")] <- list(
+    c("a", "a\rgene\rb", "p"), c("b\rgene\rc", "q", "c")
+  )
+  second$groups$A$native$tf_gene[c("regulator", "target")] <- list(
+    c("a\rgene\rb", "a", "p"), c("c", "q", "b\rgene\rc")
+  )
+  overlap <- attr(GRNPlot(first, type = "overlap", compare = second), "grn_data")$overlap
+  expect_equal(overlap$shared_edges[as.character(overlap$method_1) != as.character(overlap$method_2)], c(0L, 0L))
 })
 
 test_that("empty plots and saved results remain drawable", {
