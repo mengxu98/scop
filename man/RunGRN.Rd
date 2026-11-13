@@ -17,8 +17,7 @@ RunGRN(object, ...)
   methods = "grnboost2",
   backend = c("cpp", "python"),
   ...,
-  return_data = FALSE,
-  return_seurat = FALSE,
+  return_type = NULL,
   input_mode = NULL,
   atac_assay = NULL,
   atac_layer = NULL,
@@ -60,8 +59,7 @@ RunGRN(object, ...)
   force = FALSE,
   verbose = TRUE,
   ...,
-  return_data = FALSE,
-  return_seurat = FALSE,
+  return_type = NULL,
   input_mode = NULL,
   assay = NULL,
   layer = "counts",
@@ -97,7 +95,7 @@ GNIPLR; `"python"` is required for RegDiffusion.}
 \item{genes_in}{Matrix orientation for matrix inputs. `"rows"` means genes x
 cells; `"columns"` means cells x genes.}
 
-\item{output_file}{Optional path where the adjacency table is written.}
+\item{output_file}{Optional adjacency file for \code{return_type = "edges"}.}
 
 \item{work_dir}{Working directory used by Python backends.}
 
@@ -144,10 +142,9 @@ GRNBoost2 and RegDiffusion use the isolated `"scenic_env"` environment.}
 
 \item{verbose}{Whether to print progress messages.}
 
-\item{return_data}{Whether to return the complete \code{GRNResult}.}
-
-\item{return_seurat}{Whether to store the complete result in the input Seurat
-object's tools and return the object. Cannot be combined with \code{return_data}.}
+\item{return_type}{Output to return: \code{"seurat"}, \code{"edges"}, or
+\code{"result"}. With \code{NULL}, Seurat inputs return the updated object and
+matrix inputs return an edge table.}
 
 \item{input_mode}{\code{"rna"} or \code{"multiome"}. Multiome methods require a Seurat object.}
 
@@ -166,7 +163,9 @@ object's tools and return the object. Cannot be combined with \code{return_data}
 \item{tool_name,overwrite}{Name and replacement policy for a Seurat tools entry. Computation completes before the object is updated.}
 }
 \value{
-The original adjacency table for compatible calls, a complete \code{GRNResult}, or a Seurat object. Multi-group inference requires \code{return_data = TRUE} or \code{return_seurat = TRUE}.
+The Seurat object with the complete network in its tools, a
+\code{TF}, \code{target}, and \code{importance} edge table, or a complete
+\code{GRNResult}. For multiple groups use \code{"seurat"} or \code{"result"}.
 }
 \description{
 Run transcriptomic and multiomic network methods through one entry point. Complete results retain native scores, direction, sign evidence, groups, runtime identity, and method parameters. Use GetGRN and GRNPlot to read and display the results.

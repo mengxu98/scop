@@ -29,7 +29,7 @@ test_that("result grouping and object storage preserve native scores", {
   work <- tempfile("grn-contract-")
   result <- RunGRN(expression, regulators = rownames(expression)[1:4],
     targets = rownames(expression)[5:10], methods = "GRNBoost2", group.by = grouping,
-    method_args = list(n_rounds = 20), return_data = TRUE, work_dir = work, verbose = FALSE)
+    method_args = list(n_rounds = 20), return_type = "result", work_dir = work, verbose = FALSE)
   expect_s3_class(result, "GRNResult")
   expect_identical(names(result$groups), c("A", "B"))
   expect_identical(result$groups$A$cells, colnames(expression)[1:24])
@@ -41,9 +41,26 @@ test_that("result grouping and object storage preserve native scores", {
   object <- SeuratObject::CreateSeuratObject(methods::as(expression, "dgCMatrix"))
   object$group <- unname(grouping)
   stored <- RunGRN(object, methods = "grnboost2", group.by = "group", n_rounds = 20,
-    return_seurat = TRUE, tool_name = "net", work_dir = tempfile(), verbose = FALSE)
-  expect_s3_class(GetGRN(stored, tool_name = "net", what = "result"), "GRNResult")
-  expect_error(RunGRN(stored, methods = "grnboost2", return_seurat = TRUE, tool_name = "net", verbose = FALSE), "already exists")
+    tool_name = "net", work_dir = tempfile(), verbose = FALSE)
+  expect_s4_class(stored, "Seurat")
+  stored@tools$unrelated <- list(network = FALSE)
+  expect_identical(GetGRN(stored, what = "result"), GetGRN(stored, tool_name = "net", what = "result"))
+  expect_error(GetGRN(stored), "Select a group")
+  expect_s3_class(GRNPlot(stored, group = "A"), "ggplot")
+  expect_error(GetGRN(object), "No GRNResult")
+  expect_error(GetGRN(stored, tool_name = "unrelated"), "identify a stored GRNResult")
+  expect_error(RunGRN(stored, methods = "grnboost2", tool_name = "net", verbose = FALSE), "already exists")
+  edge_file <- tempfile()
+  edge_table <- RunGRN(object, return_type = "edges", output_file = edge_file, n_rounds = 20, verbose = FALSE)
+  expect_named(edge_table, c("TF", "target", "importance"))
+  rownames(edge_table) <- NULL
+  expect_equal(utils::read.delim(edge_file), edge_table)
+  second <- RunGRN(stored, methods = "grnboost2", tool_name = "second", n_rounds = 20, verbose = FALSE)
+  expect_error(GetGRN(second), "Specify tool_name: net, second")
+  expect_error(GRNPlot(second), "Specify tool_name")
+  expect_s3_class(GRNPlot(second, tool_name = "second"), "ggplot")
+  expect_s3_class(GRNPlot(second, tool_name = "second", compare = stored,
+    compare_group = "A", type = "overlap"), "ggplot")
   path <- tempfile(fileext = ".rds")
   saveRDS(result, path)
   expect_identical(GetGRN(readRDS(path), group = "A"), GetGRN(result, group = "A"))
@@ -59,17 +76,20 @@ test_that("method boundaries reject unknown arguments and missing time", {
   expect_error(RunGRN(expression, grn_meth = "gniplr"), "Use 'methods'")
   expect_error(RunGRN(expression, method = "grnboost2"), "Use 'methods'")
   expect_error(RunGRN(expression, methods = "grnboost2", meth = "gniplr"), "Use 'methods'")
-  expect_error(RunGRN(expression, return_dat = TRUE), "Use 'return_data'")
-  expect_error(RunGRN(object, return_seur = TRUE), "'return_seurat'")
-  expect_error(RunGRN(expression, return_type = "result"), "Use 'return_data'")
-  expect_error(RunGRN(object, return_data = TRUE, return_seurat = TRUE), "Choose only one")
-  expect_error(RunGRN(expression, return_data = NA), "TRUE or FALSE")
+  expect_error(RunGRN(expression, return_dat = TRUE), "Use 'return_type'")
+  expect_error(RunGRN(object, return_seurat = TRUE), "Use 'return_type'")
+  expect_error(RunGRN(expression, return_t = "result"), "Use 'return_type'")
+  expect_error(RunGRN(object, return_type = NA), "must be one")
+  expect_error(RunGRN(object, return_type = "r"), "must be one")
+  expect_error(RunGRN(object, output_file = tempfile()), "output_file requires")
+  expect_error(RunGRN(object, tool_name = ""), "one non-empty name")
+  expect_error(RunGRN(object, tool_name = NA_character_), "one non-empty name")
   expect_error(RunGRN(expression, methods = "ppcor", method_args = list(typo = 1)), "Unknown argument")
   expect_error(RunGRN(expression, methods = "grnboost2", n_rounds = 2,
     method_args = list(n_rounds = 3)), "repeat")
-  expect_error(RunGRN(expression, methods = "leap", return_data = TRUE), "requires named pseudotime")
+  expect_error(RunGRN(expression, methods = "leap", return_type = "result"), "requires named pseudotime")
   expect_error(RunGRN(expression, methods = "multicsn", input_mode = "multiome"), "Seurat")
-  expect_error(RunGRN(expression, methods = "ppcor", return_seurat = TRUE), "Seurat")
+  expect_error(RunGRN(expression, methods = "ppcor", return_type = "seurat"), "Seurat")
 })
 
 test_that("multiome resume rejects ambiguous groups and incomplete LINGER checkpoints", {
@@ -79,14 +99,14 @@ test_that("multiome resume rejects ambiguous groups and incomplete LINGER checkp
   rownames(atac) <- c("chr1-1-50", "chr1-60-100")
   object[["peaks"]] <- SeuratObject::CreateAssayObject(methods::as(atac, "dgCMatrix"))
   object$sample <- rep(c("A", "B"), each = 24L)
-  expect_error(RunGRN(object, methods = "scenicplus", return_data = TRUE,
+  expect_error(RunGRN(object, methods = "scenicplus", return_type = "result",
     atac_assay = "peaks", group.by = "sample", method_args = list(resume_dir = tempfile())),
     "resume_dir requires exactly one selected group")
-  expect_error(RunGRN(object, methods = "linger", return_data = TRUE,
+  expect_error(RunGRN(object, methods = "linger", return_type = "result",
     atac_assay = "peaks", group.by = "sample", method_args = list(resume_dir = tempfile())),
     "resume_dir requires exactly one selected group")
   directory <- withr::local_tempdir()
-  expect_error(RunGRN(object, methods = "linger", return_data = TRUE,
+  expect_error(RunGRN(object, methods = "linger", return_type = "result",
     atac_assay = "peaks", group.by = "sample", groups = "A",
     method_args = list(resume_dir = directory, runtime = list(python = tempfile()))),
     "resume_dir must contain a completed prepare checkpoint")
@@ -98,7 +118,7 @@ test_that("new GNIPLR views restrict candidates and record effective defaults", 
   targets <- rownames(expression)[5:10]
   result <- RunGRN(expression, regulators = regulators, targets = targets,
     methods = "gniplr", method_args = list(correlation_threshold = 0, lasso_degree = 1, max_lag = 1),
-    return_data = TRUE, work_dir = tempfile(), verbose = FALSE)
+    return_type = "result", work_dir = tempfile(), verbose = FALSE)
   expect_true(all(GetGRN(result)$source %in% regulators))
   expect_true(all(GetGRN(result)$target %in% targets))
   expect_identical(GetGRN(result, what = "parameters")$lasso_alpha, 0.1)

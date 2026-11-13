@@ -146,7 +146,11 @@ GRNPlot <- function(
     if (is.null(compare)) stop("`compare` must supply at least one GRN result for an overlap plot.", call. = FALSE)
     comparisons <- if (inherits(compare, c("GRNResult", "Seurat"))) list(compare) else compare
     if (!is.list(comparisons) || !length(comparisons)) stop("`compare` must be a GRN result or a list of results.", call. = FALSE)
-    comparison_results <- lapply(comparisons, GetGRN, what = "result", tool_name = tool_name)
+    comparison_results <- lapply(comparisons, function(comparison) {
+      comparison_tool <- if (inherits(comparison, "Seurat") &&
+          inherits(comparison@tools[[tool_name %||% ""]], "GRNResult")) tool_name else NULL
+      GetGRN(comparison, what = "result", tool_name = comparison_tool)
+    })
     results <- c(list(result), comparison_results)
     labels <- c(result$method, names(comparisons))
     if (length(labels) != length(results)) labels <- vapply(results, function(x) x$method, character(1))

@@ -2,7 +2,7 @@
 
 * **fix**: `FeatureHeatmap()` preserves numeric cell annotations when the same metadata column is also used for grouping or splitting. Numeric annotations without finite values now render in grey with a `Missing` legend instead of failing during color-scale construction; non-finite values in partially observed annotations use the existing missing-value color.
 
-* **breaking**: Select a network method with `RunGRN(methods = ...)`. The previous `grn_method` argument is no longer accepted. The default returns an edge table; use `return_data = TRUE` for the complete result or `return_seurat = TRUE` to store it in the Seurat object.
+* **breaking**: Select a network method with `RunGRN(methods = ...)`. The previous `grn_method` argument is no longer accepted. Seurat input now returns the updated Seurat object; matrix input still returns an edge table. Use `return_type = "edges"` in existing Seurat calls that need the edge table. `GetGRN()` and `GRNPlot()` select a single stored GRN automatically.
 
 * **feat**: Run transcriptomic and multiomic network methods through `RunGRN()`, with complete native results, separate group networks and isolated method runtimes. `GetGRN()` reads evidence layers and target programs, and `GRNPlot()` displays networks, layered paths and common edges.
 

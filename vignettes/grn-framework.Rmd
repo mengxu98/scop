@@ -39,17 +39,18 @@ importance regulator edges per target.
 
 ```{r pancreas-network}
 work_dir <- file.path(tempdir(), "scop-pancreas-grn")
-grn <- RunGRN(
+pancreas <- RunGRN(
 	pancreas, assay = "RNA", layer = "data",
 	methods = "GRNBoost2", backend = "cpp",
 	regulators = regulators, targets = targets,
 	method_args = list(n_rounds = 100L, max_edges_per_target = 2L),
-	return_data = TRUE, work_dir = work_dir,
+	work_dir = work_dir,
 	cores = 1L, seed = 1201L, verbose = FALSE
 )
-head(GetGRN(grn))
-grn$implementation
-grn$package_versions
+head(GetGRN(pancreas))
+result <- GetGRN(pancreas, what = "result")
+result$implementation
+result$package_versions
 ```
 
 `methods` chooses the method. `backend` chooses an available implementation.
@@ -57,15 +58,15 @@ The result records the actual `implementation`, package versions, effective
 parameters, and execution details. For example, the scop C++ GRNBoost2 route and
 the official Arboreto route have separate implementation identities.
 
-`return_data = TRUE` retains the complete `GRNResult`. The existing default
-(both return flags `FALSE`) returns the compatible `TF`, `target`, `importance` table.
-Use the complete result when you need groups, native evidence, or multiple
-network layers.
+A Seurat input returns the updated object with its complete network in
+`tools`. A matrix input returns the `TF`, `target`, `importance` edge table by
+default. Set `return_type = "result"` to obtain the complete result directly,
+or `return_type = "edges"` to obtain the edge table from a Seurat input.
 
 ```{r pancreas-inspect}
-edges <- GetGRN(grn, what = "edges", layer = "tf_gene")
-native <- GetGRN(grn, what = "native")
-parameters <- GetGRN(grn, what = "parameters")
+edges <- GetGRN(pancreas, what = "edges", layer = "tf_gene")
+native <- GetGRN(pancreas, what = "native")
+parameters <- GetGRN(pancreas, what = "parameters")
 stopifnot(identical(edges$raw_score, native$importance))
 head(edges[, c("source", "target", "raw_score", "score_type", "sign", "sign_basis")])
 parameters
@@ -76,11 +77,11 @@ unknown in the standard view. Signed methods retain their own coefficient or
 correlation evidence. Each edge also records its direction and entity types.
 
 ```{r pancreas-network-plot, fig.width=8, fig.height=6}
-GRNPlot(grn, type = "network", top_n = 50L,
+GRNPlot(pancreas, type = "network", top_n = 50L,
 	title = "Pancreas TF-gene candidates")
 ```
 
-`top_n` limits the displayed view. `GetGRN(grn, what = "native")` continues to
+`top_n` limits the displayed view. `GetGRN(pancreas, what = "native")` continues to
 return the complete native result.
 
 ## Score the predicted target programs
@@ -91,7 +92,7 @@ The `unknown` suffix preserves an unknown sign. These gene sets describe
 predicted target programs.
 
 ```{r pancreas-score}
-programs <- GetGRN(grn, what = "gene_sets")
+programs <- GetGRN(pancreas, what = "gene_sets")
 programs <- programs[lengths(programs) >= 5L]
 stopifnot(length(programs) > 0L)
 pancreas <- CellScoring(
@@ -139,12 +140,12 @@ PrepareEnv(modules = "ppcor", components = "r")
 ppcor_grn <- RunGRN(
 	pancreas, assay = "RNA", layer = "data", methods = "PPCOR",
 	regulators = regulators, targets = targets,
-	method_args = list(method = "spearman"), return_data = TRUE,
+	method_args = list(method = "spearman"), return_type = "result",
 	work_dir = file.path(tempdir(), "scop-pancreas-ppcor"), verbose = FALSE
 )
 head(GetGRN(ppcor_grn))
 GRNPlot(ppcor_grn, top_n = 50L)
-GRNPlot(grn, type = "overlap", compare = list(PPCOR = ppcor_grn), top_n = 50L)
+GRNPlot(pancreas, type = "overlap", compare = list(PPCOR = ppcor_grn), top_n = 50L)
 ```
 
 Overlap views compare edge identities within the common typed entity space.
@@ -160,7 +161,7 @@ PrepareEnv(modules = "grnboost2", configure_runtime = FALSE)
 official_grn <- RunGRN(
 	pancreas, assay = "RNA", layer = "data", methods = "grnboost2",
 	backend = "python", regulators = regulators, targets = targets,
-	return_data = TRUE,
+	return_type = "result",
 	work_dir = file.path(tempdir(), "scop-pancreas-arboreto"),
 	cores = 1L, seed = 1201L
 )
@@ -182,7 +183,7 @@ grouped <- RunGRN(
 	pancreas, assay = "RNA", layer = "data", methods = "grnboost2",
 	regulators = regulators, targets = targets,
 	group.by = "CellType", groups = c("Ductal", "Endocrine"),
-	method_args = list(n_rounds = 100L), return_data = TRUE,
+	method_args = list(n_rounds = 100L), return_type = "result",
 	work_dir = file.path(tempdir(), "scop-pancreas-groups"), verbose = FALSE
 )
 GetGRN(grouped, group = "Endocrine")
@@ -230,7 +231,7 @@ for (method in names(time_settings)) {
 	time_fits[[method]] <- RunGRN(
 		time_expression, methods = method, pseudotime = pseudotime,
 		regulators = time_regulators, targets = time_targets,
-		method_args = time_settings[[method]], return_data = TRUE,
+		method_args = time_settings[[method]], return_type = "result",
 		work_dir = file.path(tempdir(), paste0("scop-beeline-", method)),
 		cores = 1L, seed = 1201L, verbose = FALSE
 	)
@@ -246,14 +247,16 @@ branch-specific missing values for LEAP. Choose one complete trajectory with
 
 ```{r save-network}
 result_file <- file.path(tempdir(), "pancreas-grn.rds")
-saveRDS(grn, result_file)
+saveRDS(pancreas, result_file)
 reloaded <- readRDS(result_file)
-stopifnot(identical(GetGRN(grn), GetGRN(reloaded)))
+stopifnot(identical(GetGRN(pancreas), GetGRN(reloaded)))
 ```
 
-`return_seurat = TRUE` stores the complete result in a named `tools` entry.
-Choose `tool_name` and read it with `GetGRN(object, tool_name = "my_grn", ...)`.
-An existing entry requires explicit `overwrite = TRUE`.
+A single stored network is selected automatically. If the object contains
+several networks, use `tool_name` in `GetGRN()` or `GRNPlot()`. The default
+storage name is `GRN_<method>`; set `tool_name` when fitting to keep more than
+one run of the same method. Replacing an existing entry requires
+`overwrite = TRUE`.
 
 Completed cache records include input, candidate, time, parameter, runtime, and
 resource identities. Reusing the same request verifies its completed result.

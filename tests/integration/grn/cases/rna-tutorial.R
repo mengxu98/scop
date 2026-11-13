@@ -8,6 +8,6 @@ run_case <- function(output) {
   variance <- Matrix::rowMeans(expression^2) - Matrix::rowMeans(expression)^2
   genes <- names(sort(variance, decreasing = TRUE))[seq_len(24L)]
   scop::RunGRN(object, assay = assay, layer = "data", methods = "ppcor",
-    regulators = genes[1:8], targets = genes[9:24], return_data = TRUE,
+    regulators = genes[1:8], targets = genes[9:24], return_type = "result",
     work_dir = file.path(output, "work"), verbose = FALSE)
 }

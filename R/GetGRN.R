@@ -1,8 +1,19 @@
 GetGRN <- function(object, group = NULL, layer = "tf_gene", what = "edges", tool_name = NULL, all_groups = FALSE, ...) {
   if (length(list(...))) stop("Unused GetGRN arguments.", call. = FALSE)
   if (inherits(object, "Seurat")) {
-    if (is.null(tool_name) || !tool_name %in% names(object@tools)) stop("Supply a tool_name containing a GRNResult.", call. = FALSE)
-    object <- object@tools[[tool_name]]
+    tools <- object@tools
+    candidates <- names(tools)[vapply(tools, inherits, logical(1), what = "GRNResult")]
+    if (is.null(tool_name)) {
+      if (!length(candidates)) stop("No GRNResult is stored in this Seurat object.", call. = FALSE)
+      if (length(candidates) > 1L) {
+        stop("Multiple GRN results are stored. Specify tool_name: ", paste(candidates, collapse = ", "), ".", call. = FALSE)
+      }
+      tool_name <- candidates[[1L]]
+    }
+    if (!is.character(tool_name) || length(tool_name) != 1L || !tool_name %in% candidates) {
+      stop("tool_name must identify a stored GRNResult.", call. = FALSE)
+    }
+    object <- tools[[tool_name]]
   }
   if (!inherits(object, "GRNResult") || !identical(object$schema_version, "1.0")) stop("object must contain a supported GRNResult.", call. = FALSE)
   what <- match.arg(what, c("edges", "layers", "chains", "gene_sets", "native", "parameters", "result"))

@@ -26,7 +26,11 @@ GRNPlot(
 \item{label_nodes}{Whether to label displayed nodes.}
 \item{compare}{For \code{type = "overlap"}, another result or a named list of results. List names provide plot labels.}
 \item{compare_group}{Group in each comparison result. Defaults to \code{group}. A vector supplies one group per comparison result.}
-\item{tool_name}{Seurat \code{tools} entry containing the result.}
+\item{tool_name}{Name of the Seurat \code{tools} entry. If omitted, the only
+stored GRN result is used. Specify a name when several results are stored.
+An overlap comparison uses the same name if present; otherwise it selects a
+single stored result. Use \code{GetGRN(what = "result")} to select a differently
+named result from a comparison with multiple networks.}
 \item{title}{Optional plot title.}
 }
 \value{

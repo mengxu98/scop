@@ -915,6 +915,7 @@ scenic_cpp <- function(
         genes_in = "columns",
         methods = "grnboost2",
         backend = "cpp",
+        return_type = "edges",
         output_file = adj_file,
         max_edges_per_target = Inf,
         n_rounds = n_rounds,

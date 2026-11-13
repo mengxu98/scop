@@ -10,7 +10,8 @@ GetGRN(object, group = NULL, layer = "tf_gene", what = "edges",
 \item{group}{One fitted group. Required when more than one group is present.}
 \item{layer}{Native evidence layer, such as tf_gene, tf_region, region_gene, or mediated_tf_gene.}
 \item{what}{One of edges, layers, chains, gene_sets, native, parameters, or result.}
-\item{tool_name}{Seurat tools entry containing the GRNResult.}
+\item{tool_name}{Name of the Seurat \code{tools} entry. If omitted, the only
+stored GRN result is used. Specify a name when several results are stored.}
 \item{all_groups}{Return a named list for every fitted group.}
 \item{...}{Reserved for future extensions.}
 }

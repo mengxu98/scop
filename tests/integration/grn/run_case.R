@@ -14,7 +14,7 @@ result <- tryCatch({
   if (!is.null(options$request)) {
     request <- readRDS(options$request)
     if (!is.list(request) || is.null(request$object) || !is.list(request$args)) stop("A request must contain object and args.")
-    request$args$return_data <- TRUE
+    request$args$return_type <- "result"
     value <- do.call(scop::RunGRN, c(list(object = request$object), request$args))
   } else {
     case_files <- c("legacy-contract" = "legacy-contract.R", "rna-tutorial" = "rna-tutorial.R")

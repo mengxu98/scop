@@ -1747,6 +1747,7 @@ scenicplus_tf_gene <- function(
     genes_in = "columns",
     methods = grn_method,
     backend = "cpp",
+    return_type = "edges",
     output_file = tempfile(pattern = "scenicplus_tf_gene_", fileext = ".tsv"),
     max_edges_per_target = max_edges_per_target,
     n_rounds = n_rounds,

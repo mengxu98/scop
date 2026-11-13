@@ -56,21 +56,21 @@ stopifnot(length(targets) == 64L)
 ## Fit independent network layers
 
 ```{r paired-network}
-multiome_grn <- RunGRN(
+paired <- RunGRN(
 	paired, methods = "multiCSN", input_mode = "multiome",
 	assay = "RNA", layer = "data", atac_assay = "peaks", atac_layer = "data",
 	group.by = "CellType", groups = c("B", "Mono"), targets = targets,
 	resources = list(genome = genome), method_args = list(preset = "state"),
-	return_data = TRUE, work_dir = file.path(tempdir(), "scop-pbmc-multicsn"),
+	work_dir = file.path(tempdir(), "scop-pbmc-multicsn"),
 	cores = 1L, seed = 1201L, verbose = FALSE
 )
-names(multiome_grn$groups)
-GetGRN(multiome_grn, group = "B", what = "parameters")
+names(GetGRN(paired, what = "result")$groups)
+GetGRN(paired, group = "B", what = "parameters")
 ```
 
 `group.by` defines separate fits. Each group retains its actual cells, targets,
-candidate regulators, parameters, and native results. The complete input
-Seurat object stays outside the network result.
+candidate regulators, parameters, and native results. The complete network is stored in the same Seurat object.
+Choose a group when reading or plotting a group-specific network.
 
 The `state` and `timepoint` presets supply different fitting defaults. Explicit
 `method_args` override their corresponding preset values. For example,
@@ -79,11 +79,11 @@ requested detection threshold. Inspect `GetGRN(..., what = "parameters")` for
 the effective settings used in each group.
 
 ```{r inspect-layered-network}
-tf_gene <- GetGRN(multiome_grn, group = "B", layer = "tf_gene")
-tf_region <- GetGRN(multiome_grn, group = "B", layer = "tf_region")
-region_gene <- GetGRN(multiome_grn, group = "B", layer = "region_gene")
-chains <- GetGRN(multiome_grn, group = "B", what = "chains")
-native <- GetGRN(multiome_grn, group = "B", what = "native")
+tf_gene <- GetGRN(paired, group = "B", layer = "tf_gene")
+tf_region <- GetGRN(paired, group = "B", layer = "tf_region")
+region_gene <- GetGRN(paired, group = "B", layer = "region_gene")
+chains <- GetGRN(paired, group = "B", what = "chains")
+native <- GetGRN(paired, group = "B", what = "native")
 head(tf_region[, c("source", "target", "standardized_beta", "deletion_delta_bic",
 	"raw_score", "sign", "sign_basis")])
 native$summary
@@ -96,18 +96,18 @@ triplet table retains path evidence and backbone-support flags. The
 `mediated_tf_gene` layer retains its separate native definition.
 
 ```{r paired-network-plot, fig.width=8, fig.height=6}
-GRNPlot(multiome_grn, group = "B", type = "network", layer = "tf_gene", top_n = 50L)
+GRNPlot(paired, group = "B", type = "network", layer = "tf_gene", top_n = 50L)
 ```
 
 ```{r paired-layered-plot, fig.width=10, fig.height=6}
-GRNPlot(multiome_grn, group = "B", type = "layered", top_n = 20L)
+GRNPlot(paired, group = "B", type = "layered", top_n = 20L)
 ```
 
 ```{r paired-save}
 result_file <- file.path(tempdir(), "pbmc-multicsn-grn.rds")
-saveRDS(multiome_grn, result_file)
+saveRDS(paired, result_file)
 reloaded <- readRDS(result_file)
-stopifnot(identical(GetGRN(multiome_grn, group = "B"), GetGRN(reloaded, group = "B")))
+stopifnot(identical(GetGRN(paired, group = "B"), GetGRN(reloaded, group = "B")))
 ```
 
 Use `GetGRN(..., what = "gene_sets")` with `CellScoring` to score predicted
@@ -154,7 +154,7 @@ pando_grn <- RunGRN(
 	assay = "RNA", layer = "data", atac_assay = "peaks", atac_layer = "data",
 	group.by = "CellType", groups = "B", targets = targets,
 	resources = list(genome = "BSgenome.Hsapiens.UCSC.hg38"),
-	return_data = TRUE, work_dir = file.path(tempdir(), "scop-pbmc-pando"),
+	return_type = "result", work_dir = file.path(tempdir(), "scop-pbmc-pando"),
 	cores = 1L, seed = 1201L, verbose = FALSE
 )
 pando_native <- GetGRN(pando_grn, group = "B", what = "native")
@@ -193,7 +193,7 @@ linger_grn <- RunGRN(
 	regulators = regulators_linger, targets = targets_linger,
 	resources = list(bulk_reference = bulk_reference),
 	method_args = list(label.by = "CellType", genome = "hg38"),
-	return_data = TRUE, work_dir = "/path/to/new-linger-run",
+	return_type = "result", work_dir = "/path/to/new-linger-run",
 	cores = 1L, seed = 1201L
 )
 GetGRN(linger_grn, layer = "tf_region")
@@ -250,7 +250,7 @@ scenicplus_resources <- list(
 scenicplus_grn <- RunGRN(
 	paired, methods = "SCENIC+", input_mode = "multiome",
 	assay = "RNA", layer = "data", atac_assay = "peaks", atac_layer = "data",
-	resources = scenicplus_resources, return_data = TRUE,
+	resources = scenicplus_resources, return_type = "result",
 	work_dir = "/path/to/new-scenicplus-run", cores = 1L, seed = 1201L
 )
 GetGRN(scenicplus_grn, what = "native")$direct

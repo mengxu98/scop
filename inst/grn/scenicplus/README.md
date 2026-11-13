@@ -6,7 +6,7 @@ databases. The fitted cisTopic model is an explicit input. Topic modelling and
 reference database downloads are prepared separately.
 
 Use `RunGRN(..., methods = "scenicplus", input_mode = "multiome",
-return_data = TRUE)`. Supply these paths through `resources`.
+return_type = "result")`. Supply these paths through `resources`.
 
 | Resource | Input |
 | --- | --- |

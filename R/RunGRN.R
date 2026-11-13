@@ -704,12 +704,12 @@ regdiffusion_python <- function(
 #' @param genes_in Matrix orientation for matrix inputs. `"rows"` means genes x
 #' cells; `"columns"` means cells x genes.
 #' @param methods One registered GRN method name, matched without case sensitivity.
-#' @param return_data Whether to return the complete `GRNResult`.
-#' @param return_seurat Whether to store the complete result in the input Seurat
-#'   object's tools and return the object. Cannot be combined with `return_data`.
+#' @param return_type Output to return: `"seurat"`, `"edges"`, or `"result"`.
+#'   With `NULL`, Seurat inputs return the updated object and matrix inputs
+#'   return an edge table.
 #' @param backend Runtime backend. `"cpp"` is available for GRNBoost2 and
 #' GNIPLR; `"python"` is required for RegDiffusion.
-#' @param output_file Optional path where the adjacency table is written.
+#' @param output_file Optional adjacency file for `return_type = "edges"`.
 #' @param work_dir Working directory used by Python backends.
 #' @param prefix Prefix for temporary backend files.
 #' @param max_edges_per_target Maximum incoming regulator edges retained per
@@ -736,8 +736,8 @@ regdiffusion_python <- function(
 #' @param force Whether to rebuild existing `output_file`.
 #' @param verbose Whether to print progress messages.
 #' @param ... Arguments passed to other functions.
-#' @return An edge table by default, a complete `GRNResult` if `return_data = TRUE`,
-#'   or a Seurat object if `return_seurat = TRUE`.
+#' @return The Seurat object with the complete network in its tools, a
+#'   `TF`, `target`, and `importance` edge table, or a complete `GRNResult`.
 #'
 #' @export
 #' @examples
@@ -784,7 +784,7 @@ RunGRN.Seurat <- function(
   methods = "grnboost2",
   backend = c("cpp", "python"),
   ...,
-  return_data = FALSE, return_seurat = FALSE, input_mode = NULL, atac_assay = NULL, atac_layer = NULL,
+  return_type = NULL, input_mode = NULL, atac_assay = NULL, atac_layer = NULL,
   group.by = NULL, groups = NULL, pseudotime = NULL, resources = list(),
   method_args = list(), tool_name = NULL, overwrite = FALSE
 ) {
@@ -796,8 +796,7 @@ RunGRN.Seurat <- function(
     methods = methods,
     backend = if (missing(backend)) NULL else backend,
     ...,
-    assay = assay, layer = layer, return_data = return_data,
-    return_seurat = return_seurat, input_mode = input_mode,
+    assay = assay, layer = layer, return_type = return_type, input_mode = input_mode,
     atac_assay = atac_assay, atac_layer = atac_layer, group.by = group.by,
     groups = groups, pseudotime = pseudotime, resources = resources,
     method_args = method_args, tool_name = tool_name, overwrite = overwrite
@@ -814,7 +813,7 @@ RunGRN.default <- function(
   exclude_self = TRUE, correlation_threshold = 0.3, lasso_degree = 30,
   lasso_alpha = 0.1, max_lag = 3, envname = NULL, conda = "auto", cores = 1,
   seed = 1234, force = FALSE, verbose = TRUE, ...,
-  return_data = FALSE, return_seurat = FALSE, input_mode = NULL, assay = NULL, layer = "counts",
+  return_type = NULL, input_mode = NULL, assay = NULL, layer = "counts",
   atac_assay = NULL, atac_layer = NULL, group.by = NULL, groups = NULL,
   pseudotime = NULL, resources = list(), method_args = list(),
   tool_name = NULL, overwrite = FALSE
@@ -825,17 +824,19 @@ RunGRN.default <- function(
   if (any(startsWith("grn_method", prefixes))) {
     stop("Use 'methods' to select a GRN method.", call. = FALSE)
   }
-  if ("return_type" %in% argument_names ||
-      any(startsWith("return_data", prefixes) | startsWith("return_seurat", prefixes))) {
-    stop("Use 'return_data' or 'return_seurat' to select the GRN output.", call. = FALSE)
+  if (any(startsWith("return_type", prefixes) | startsWith("return_data", prefixes) |
+      startsWith("return_seurat", prefixes))) {
+    stop("Use 'return_type' to select the GRN output.", call. = FALSE)
   }
   if (length(methods) != 1L || is.na(methods)) stop("Choose exactly one GRN method.", call. = FALSE)
-  if (!is.logical(return_data) || length(return_data) != 1L || is.na(return_data) ||
-      !is.logical(return_seurat) || length(return_seurat) != 1L || is.na(return_seurat)) {
-    stop("return_data and return_seurat must each be TRUE or FALSE.", call. = FALSE)
+  is_seurat <- inherits(object, "Seurat")
+  return_type <- return_type %||% if (is_seurat) "seurat" else "edges"
+  if (!is.character(return_type) || length(return_type) != 1L ||
+      !return_type %in% c("seurat", "edges", "result")) {
+    stop("return_type must be one of 'seurat', 'edges', or 'result'.", call. = FALSE)
   }
-  if (return_data && return_seurat) stop("Choose only one of return_data and return_seurat.", call. = FALSE)
-  return_edges <- !return_data && !return_seurat
+  if (return_type == "seurat" && !is_seurat) stop("return_type = 'seurat' requires a Seurat object.", call. = FALSE)
+  if (return_type != "edges" && !is.null(output_file)) stop("output_file requires return_type = 'edges'.", call. = FALSE)
   spec <- grn_method_spec(methods, if (missing(backend) || is.null(backend)) NULL else backend)
   if (spec$method == "pando") {
     restore_pando_session <- grn_pando_preserve_session()
@@ -846,10 +847,9 @@ RunGRN.default <- function(
     subsample = subsample, early_stop_window_length = early_stop_window_length,
     exclude_self = exclude_self, correlation_threshold = correlation_threshold,
     lasso_degree = lasso_degree, lasso_alpha = lasso_alpha, max_lag = max_lag)
-  is_seurat <- inherits(object, "Seurat")
   assay <- if (is_seurat) assay %||% SeuratObject::DefaultAssay(object) else assay
   legacy <- spec$method %in% c("grnboost2", "regdiffusion", "genie3", "gniplr") &&
-    return_edges && is.null(group.by) && is.null(groups) &&
+    return_type == "edges" && is.null(group.by) && is.null(groups) &&
     is.null(pseudotime) && is.null(input_mode) && !length(resources) && !length(method_args) && spec$backend %in% c("cpp", "python")
   if (legacy) {
     expression <- if (is_seurat) GetAssayData5(object, assay = assay, layer = layer) else object
@@ -877,9 +877,15 @@ RunGRN.default <- function(
   }
   unknown <- setdiff(names(arguments), spec$allowed_args)
   if (length(unknown)) stop("Unknown argument(s) for ", spec$method, ": ", paste(unknown, collapse = ", "), call. = FALSE)
-  if (return_seurat && !is_seurat) stop("return_seurat = TRUE requires a Seurat object.", call. = FALSE)
   tool_name <- tool_name %||% paste0("GRN_", spec$method)
-  if (return_seurat && tool_name %in% names(object@tools) && !isTRUE(overwrite)) stop("The GRN tool_name already exists. Choose another name or use overwrite = TRUE.", call. = FALSE)
+  if (return_type == "seurat") {
+    if (!is.character(tool_name) || length(tool_name) != 1L || is.na(tool_name) || !nzchar(tool_name)) {
+      stop("tool_name must be one non-empty name.", call. = FALSE)
+    }
+    if (tool_name %in% names(object@tools) && !isTRUE(overwrite)) {
+      stop("The GRN tool_name already exists. Choose another name or use overwrite = TRUE.", call. = FALSE)
+    }
+  }
   input_mode <- input_mode %||% if (length(spec$input_modes) == 1L) spec$input_modes else "rna"
   if (length(input_mode) != 1L || !input_mode %in% spec$input_modes) stop("Unsupported input_mode for ", spec$method, ".", call. = FALSE)
   if (input_mode == "multiome" && !is_seurat) stop("Multiome inference requires a Seurat object.", call. = FALSE)
@@ -923,7 +929,7 @@ RunGRN.default <- function(
     if (!length(groups) || anyDuplicated(groups) || !all(groups %in% names(group_cells))) stop("groups must select existing unique group names.", call. = FALSE)
     group_cells <- group_cells[groups]
   }
-  if (return_edges && length(group_cells) != 1L) stop("Use return_data = TRUE or return_seurat = TRUE for multiple groups.", call. = FALSE)
+  if (return_type == "edges" && length(group_cells) != 1L) stop("Use return_type = 'result' or 'seurat' for multiple groups.", call. = FALSE)
   if (spec$method %in% c("scenicplus", "linger") && length(group_cells) != 1L && !is.null(arguments$resume_dir)) {
     stop(if (spec$method == "scenicplus") "SCENIC+ " else "LINGER ",
       "resume_dir requires exactly one selected group.", call. = FALSE)
@@ -1021,8 +1027,8 @@ RunGRN.default <- function(
   dir.create(work_dir, recursive = TRUE, showWarnings = FALSE)
   if (resume_linger) config$force <- TRUE
   result <- grn_cached_run(input, config, compute)
-  if (return_data) return(result)
-  if (return_seurat) {
+  if (return_type == "result") return(result)
+  if (return_type == "seurat") {
     object@tools[[tool_name]] <- result
     return(object)
   }

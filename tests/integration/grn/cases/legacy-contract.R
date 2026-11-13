@@ -11,7 +11,7 @@ run_case <- function(output) {
   stopifnot(identical(edges, direct))
   result <- scop::RunGRN(expression, regulators = regulators, targets = targets,
     methods = "grnboost2", method_args = list(n_rounds = 20),
-    return_data = TRUE, work_dir = file.path(output, "work"), verbose = FALSE)
+    return_type = "result", work_dir = file.path(output, "work"), verbose = FALSE)
   stopifnot(identical(scop::GetGRN(result, what = "native"), direct))
   result
 }
