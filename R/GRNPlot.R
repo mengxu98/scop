@@ -1,114 +1,33 @@
-grn_plot_rank <- function(table, top_n, score, rank_by = "absolute_score") {
-  if (!nrow(table) || is.infinite(top_n)) {
-    return(table)
-  }
-  values <- table[[score]]
-  if (identical(rank_by, "absolute_score")) {
-    values <- abs(values)
-  }
-  if (!identical(rank_by, "ascending_score")) values <- -values
-  table[utils::head(order(values, na.last = TRUE, method = "radix"), top_n), , drop = FALSE]
-}
-
-grn_plot_network <- function(edges, layered, layout, label_nodes, title, subtitle) {
-  if (!nrow(edges)) {
-    plot <- ggplot2::ggplot() +
-      ggplot2::annotate("text", x = 0, y = 0, label = "No edges to display", colour = "#828B91") +
-      ggplot2::theme_void() +
-      ggplot2::labs(title = title, subtitle = subtitle)
-    attr(plot, "grn_data") <- list(edges = edges, nodes = data.frame())
-    return(plot)
-  }
-  node_type <- function(x) {
-    x[tolower(x) == "tf"] <- "TF"
-    x
-  }
-  source_types <- node_type(as.character(edges$source_type))
-  target_types <- node_type(as.character(edges$target_type))
-  entity_type <- function(x) {
-    if (!layered) x[x == "TF"] <- "gene"
-    x
-  }
-  edges$from <- paste(entity_type(source_types), edges$source, sep = "\r")
-  edges$to <- paste(entity_type(target_types), edges$target, sep = "\r")
-  nodes <- rbind(
-    data.frame(name = edges$from, label = edges$source, node_type = source_types),
-    data.frame(name = edges$to, label = edges$target, node_type = target_types)
-  )
-  nodes <- nodes[order(nodes$node_type != "TF"), , drop = FALSE]
-  nodes <- nodes[!duplicated(nodes$name), , drop = FALSE]
-  rownames(nodes) <- NULL
-  graph_edges <- data.frame(from = edges$from, to = edges$to, weight = abs(edges$raw_score))
-  graph_edges$weight[!is.finite(graph_edges$weight) | graph_edges$weight <= 0] <- 1
-  graph <- igraph::graph_from_data_frame(graph_edges, directed = any(edges$directed), vertices = nodes)
-  layout <- if (identical(layout, "auto")) if (layered) "tripartite" else "kk" else layout
-  had_seed <- exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
-  if (had_seed) old_seed <- get(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
-  on.exit({
-    if (had_seed) assign(".Random.seed", old_seed, envir = .GlobalEnv) else if (exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) rm(".Random.seed", envir = .GlobalEnv)
-  }, add = TRUE)
-  set.seed(1234)
-  xy <- scenic_network_layout(graph, layout = layout, node_type = stats::setNames(nodes$node_type, nodes$name))
-  nodes$x <- xy[nodes$name, 1L]
-  nodes$y <- xy[nodes$name, 2L]
-  edges$x <- nodes$x[match(edges$from, nodes$name)]
-  edges$y <- nodes$y[match(edges$from, nodes$name)]
-  edges$xend <- nodes$x[match(edges$to, nodes$name)]
-  edges$yend <- nodes$y[match(edges$to, nodes$name)]
-  distance <- sqrt((edges$xend - edges$x)^2 + (edges$yend - edges$y)^2)
-  trim <- pmin(0.012 * max(diff(range(nodes$x)), diff(range(nodes$y))), distance / 3)
-  fraction <- ifelse(distance > 0, trim / distance, 0)
-  dx <- edges$xend - edges$x
-  dy <- edges$yend - edges$y
-  edges$xend <- edges$xend - dx * fraction
-  edges$yend <- edges$yend - dy * fraction
-  edges$x <- edges$x + dx * fraction
-  edges$y <- edges$y + dy * fraction
-  edges$evidence <- ifelse(
-    edges$score_type == "membership", "Membership",
-    ifelse(is.na(edges$sign), "Unknown", ifelse(edges$sign == 0, "Zero", ifelse(edges$sign > 0, "Positive", "Negative")))
-  )
-  edges$evidence <- factor(edges$evidence, levels = c("Positive", "Negative", "Zero", "Unknown", "Membership"))
-  edges$edge_width <- abs(edges$raw_score)
-  edges$edge_width[!is.finite(edges$edge_width)] <- 0
-  if (length(unique(edges$edge_width)) == 1L) edges$edge_width <- 1
-  plot <- ggplot2::ggplot() +
-    ggplot2::geom_segment(
-      data = edges[!edges$directed, , drop = FALSE],
-      ggplot2::aes(x = x, y = y, xend = xend, yend = yend, colour = .data$evidence, linetype = .data$layer, linewidth = .data$edge_width),
-      alpha = 0.7
-    ) +
-    ggplot2::geom_segment(
-      data = edges[edges$directed, , drop = FALSE],
-      ggplot2::aes(x = x, y = y, xend = xend, yend = yend, colour = .data$evidence, linetype = .data$layer, linewidth = .data$edge_width),
-      arrow = grid::arrow(length = grid::unit(1.6, "mm"), type = "closed"), alpha = 0.7
-    ) +
-    ggplot2::geom_point(
-      data = nodes, ggplot2::aes(x = x, y = y, fill = node_type, shape = node_type),
-      size = 3.2, colour = "#38434D", stroke = 0.4
-    ) +
-    ggplot2::scale_colour_manual(
-      values = c(Positive = "#B34740", Negative = "#2177B8", Zero = "#A7ADB1", Unknown = "#828B91", Membership = "#9570A6"),
-      name = "Sign or evidence", drop = TRUE
-    ) +
-    ggplot2::scale_fill_manual(values = c(TF = "#E7B97B", gene = "#D6E6F2", region = "#C8DDBB"), name = "Node type") +
-    ggplot2::scale_shape_manual(values = c(TF = 21, gene = 22, region = 23), name = "Node type") +
-    ggplot2::scale_linewidth_continuous(range = c(0.35, 1.1), guide = "none") +
-    ggplot2::labs(title = title, subtitle = subtitle, linetype = "Layer") +
-    ggplot2::coord_equal(clip = "off") +
-    ggplot2::theme_void() +
-    ggplot2::theme(plot.margin = grid::unit(c(8, 14, 8, 14), "mm"), legend.position = "right")
-  if (isTRUE(label_nodes)) {
-    nodes$label <- scenic_network_node_labels(nodes$label, nodes$node_type)
-    plot <- plot + ggrepel::geom_text_repel(
-      data = nodes, ggplot2::aes(x = x, y = y, label = label),
-      size = 3, seed = 1234, max.overlaps = Inf, min.segment.length = 0
-    )
-  }
-  attr(plot, "grn_data") <- list(edges = edges, nodes = nodes)
-  plot
-}
-
+#' @title Plot networks from a unified GRN result
+#'
+#' @description Read network views through \code{\link{GetGRN}} and draw nodes, edges and native chains while retaining direction, sign and membership evidence.
+#'
+#' @param object A \code{GRNResult}, or a Seurat object containing one in \code{tools}.
+#' @param group One result group. Required when the result contains multiple groups.
+#' @param layer Network layer to display or compare.
+#' @param type A network, a layered view of native chains, or a pairwise edge-overlap heatmap.
+#' @param top_n Maximum edges in a network view, native chains in a layered view, or edges per method within the shared comparison scope. Use \code{Inf} for all entries.
+#' @param layout One of \code{"auto"}, \code{"star"}, \code{"hub"}, \code{"tripartite"}, \code{"kk"} or \code{"fr"}. The automatic layout uses tripartite columns for layered views and Kamada--Kawai for other networks.
+#' @param label_nodes Whether to label displayed nodes.
+#' @param compare For \code{type = "overlap"}, another result or a named list of results. List names provide plot labels.
+#' @param compare_group Group in each comparison result. Defaults to \code{group}. A vector supplies one group per comparison result.
+#' @param tool_name Name of the Seurat \code{tools} entry. If omitted, the only
+#'   stored GRN result is used. Specify a name when several results are stored.
+#'   An overlap comparison uses the same name if present; otherwise it selects a
+#'   single stored result. Use \code{GetGRN(what = "result")} to select a differently
+#'   named result from a comparison with multiple networks.
+#' @param title Optional plot title.
+#' @return A ggplot object. Its \code{grn_data} attribute contains the displayed edges and nodes, or overlap counts and the comparison scope. The original result is unchanged.
+#'
+#' @details Signs are labelled positive, negative, zero or unknown. Nonnegative importance scores do not acquire an activation label. Membership edges have a separate evidence style. Arrowheads are drawn only for directed edges. Node shapes distinguish TFs, genes and regions.
+#'
+#'   A layered view selects existing native chains and then selects the corresponding TF--region and region--gene edges from their native layers. Each segment retains its own sign. Shared nodes can connect several selected chains; the displayed chain table is retained in the plot attribute.
+#'
+#'   Ranking and \code{top_n} apply only to the displayed view. Captions report the selected size. An overlap heatmap restricts each result to exactly matched source and target identifiers present in all compared results, then selects the top edges independently within each method. TF and gene endpoints share a gene identifier space. Directed and undirected edges remain distinct. Reversed endpoints of an undirected edge denote the same edge. Declared \code{input_summary$entity_namespace} values must agree. No identifier conversion, score aggregation or consensus inference is performed.
+#'
+#'   The network layout reuses the existing SCENIC graph-layout implementation. Layout and label placement are reproducible and preserve the caller's random-number state. Use existing \code{CellScoring}, \code{FeatureDimPlot} and \code{GroupHeatmap} functions to display extracted gene-set scores.
+#' @seealso \code{\link{RunGRN}}, \code{\link{GetGRN}}
+#' @export
 GRNPlot <- function(
   object,
   group = NULL,
@@ -124,14 +43,14 @@ GRNPlot <- function(
 ) {
   type <- match.arg(type)
   if (!is.numeric(top_n) || length(top_n) != 1L || is.na(top_n) || top_n < 1 ||
-      (!is.infinite(top_n) && (top_n != floor(top_n) || top_n > .Machine$integer.max))) {
+    (!is.infinite(top_n) && (top_n != floor(top_n) || top_n > .Machine$integer.max))) {
     stop("`top_n` must be a positive integer or Inf.", call. = FALSE)
   }
   if (!is.logical(label_nodes) || length(label_nodes) != 1L || is.na(label_nodes)) {
     stop("`label_nodes` must be TRUE or FALSE.", call. = FALSE)
   }
   if (!is.character(layout) || length(layout) != 1L ||
-      !layout %in% c("auto", "star", "hub", "tripartite", "kk", "fr")) {
+    !layout %in% c("auto", "star", "hub", "tripartite", "kk", "fr")) {
     stop("`layout` must be auto, star, hub, tripartite, kk or fr.", call. = FALSE)
   }
   result <- GetGRN(object, what = "result", tool_name = tool_name)
@@ -148,7 +67,11 @@ GRNPlot <- function(
     if (!is.list(comparisons) || !length(comparisons)) stop("`compare` must be a GRN result or a list of results.", call. = FALSE)
     comparison_results <- lapply(comparisons, function(comparison) {
       comparison_tool <- if (inherits(comparison, "Seurat") &&
-          inherits(comparison@tools[[tool_name %||% ""]], "GRNResult")) tool_name else NULL
+        inherits(comparison@tools[[tool_name %||% ""]], "GRNResult")) {
+        tool_name
+      } else {
+        NULL
+      }
       GetGRN(comparison, what = "result", tool_name = comparison_tool)
     })
     results <- c(list(result), comparison_results)
@@ -258,5 +181,119 @@ GRNPlot <- function(
   view$method <- result$method
   view$top_n <- top_n
   attr(plot, "grn_data") <- view
+  plot
+}
+
+grn_plot_rank <- function(table, top_n, score, rank_by = "absolute_score") {
+  if (!nrow(table) || is.infinite(top_n)) {
+    return(table)
+  }
+  values <- table[[score]]
+  if (identical(rank_by, "absolute_score")) {
+    values <- abs(values)
+  }
+  if (!identical(rank_by, "ascending_score")) values <- -values
+  table[utils::head(order(values, na.last = TRUE, method = "radix"), top_n), , drop = FALSE]
+}
+
+grn_plot_network <- function(edges, layered, layout, label_nodes, title, subtitle) {
+  if (!nrow(edges)) {
+    plot <- ggplot2::ggplot() +
+      ggplot2::annotate("text", x = 0, y = 0, label = "No edges to display", colour = "#828B91") +
+      ggplot2::theme_void() +
+      ggplot2::labs(title = title, subtitle = subtitle)
+    attr(plot, "grn_data") <- list(edges = edges, nodes = data.frame())
+    return(plot)
+  }
+  node_type <- function(x) {
+    x[tolower(x) == "tf"] <- "TF"
+    x
+  }
+  source_types <- node_type(as.character(edges$source_type))
+  target_types <- node_type(as.character(edges$target_type))
+  entity_type <- function(x) {
+    if (!layered) x[x == "TF"] <- "gene"
+    x
+  }
+  edges$from <- paste(entity_type(source_types), edges$source, sep = "\r")
+  edges$to <- paste(entity_type(target_types), edges$target, sep = "\r")
+  nodes <- rbind(
+    data.frame(name = edges$from, label = edges$source, node_type = source_types),
+    data.frame(name = edges$to, label = edges$target, node_type = target_types)
+  )
+  nodes <- nodes[order(nodes$node_type != "TF"), , drop = FALSE]
+  nodes <- nodes[!duplicated(nodes$name), , drop = FALSE]
+  rownames(nodes) <- NULL
+  graph_edges <- data.frame(from = edges$from, to = edges$to, weight = abs(edges$raw_score))
+  graph_edges$weight[!is.finite(graph_edges$weight) | graph_edges$weight <= 0] <- 1
+  graph <- igraph::graph_from_data_frame(graph_edges, directed = any(edges$directed), vertices = nodes)
+  layout <- if (identical(layout, "auto")) if (layered) "tripartite" else "kk" else layout
+  had_seed <- exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
+  if (had_seed) old_seed <- get(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
+  on.exit(
+    {
+      if (had_seed) assign(".Random.seed", old_seed, envir = .GlobalEnv) else if (exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) rm(".Random.seed", envir = .GlobalEnv)
+    },
+    add = TRUE
+  )
+  set.seed(1234)
+  xy <- scenic_network_layout(graph, layout = layout, node_type = stats::setNames(nodes$node_type, nodes$name))
+  nodes$x <- xy[nodes$name, 1L]
+  nodes$y <- xy[nodes$name, 2L]
+  edges$x <- nodes$x[match(edges$from, nodes$name)]
+  edges$y <- nodes$y[match(edges$from, nodes$name)]
+  edges$xend <- nodes$x[match(edges$to, nodes$name)]
+  edges$yend <- nodes$y[match(edges$to, nodes$name)]
+  distance <- sqrt((edges$xend - edges$x)^2 + (edges$yend - edges$y)^2)
+  trim <- pmin(0.012 * max(diff(range(nodes$x)), diff(range(nodes$y))), distance / 3)
+  fraction <- ifelse(distance > 0, trim / distance, 0)
+  dx <- edges$xend - edges$x
+  dy <- edges$yend - edges$y
+  edges$xend <- edges$xend - dx * fraction
+  edges$yend <- edges$yend - dy * fraction
+  edges$x <- edges$x + dx * fraction
+  edges$y <- edges$y + dy * fraction
+  edges$evidence <- ifelse(
+    edges$score_type == "membership", "Membership",
+    ifelse(is.na(edges$sign), "Unknown", ifelse(edges$sign == 0, "Zero", ifelse(edges$sign > 0, "Positive", "Negative")))
+  )
+  edges$evidence <- factor(edges$evidence, levels = c("Positive", "Negative", "Zero", "Unknown", "Membership"))
+  edges$edge_width <- abs(edges$raw_score)
+  edges$edge_width[!is.finite(edges$edge_width)] <- 0
+  if (length(unique(edges$edge_width)) == 1L) edges$edge_width <- 1
+  plot <- ggplot2::ggplot() +
+    ggplot2::geom_segment(
+      data = edges[!edges$directed, , drop = FALSE],
+      ggplot2::aes(x = x, y = y, xend = xend, yend = yend, colour = .data$evidence, linetype = .data$layer, linewidth = .data$edge_width),
+      alpha = 0.7
+    ) +
+    ggplot2::geom_segment(
+      data = edges[edges$directed, , drop = FALSE],
+      ggplot2::aes(x = x, y = y, xend = xend, yend = yend, colour = .data$evidence, linetype = .data$layer, linewidth = .data$edge_width),
+      arrow = grid::arrow(length = grid::unit(1.6, "mm"), type = "closed"), alpha = 0.7
+    ) +
+    ggplot2::geom_point(
+      data = nodes, ggplot2::aes(x = x, y = y, fill = node_type, shape = node_type),
+      size = 3.2, colour = "#38434D", stroke = 0.4
+    ) +
+    ggplot2::scale_colour_manual(
+      values = c(Positive = "#B34740", Negative = "#2177B8", Zero = "#A7ADB1", Unknown = "#828B91", Membership = "#9570A6"),
+      name = "Sign or evidence", drop = TRUE
+    ) +
+    ggplot2::scale_fill_manual(values = c(TF = "#E7B97B", gene = "#D6E6F2", region = "#C8DDBB"), name = "Node type") +
+    ggplot2::scale_shape_manual(values = c(TF = 21, gene = 22, region = 23), name = "Node type") +
+    ggplot2::scale_linewidth_continuous(range = c(0.35, 1.1), guide = "none") +
+    ggplot2::labs(title = title, subtitle = subtitle, linetype = "Layer") +
+    ggplot2::coord_equal(clip = "off") +
+    ggplot2::theme_void() +
+    ggplot2::theme(plot.margin = grid::unit(c(8, 14, 8, 14), "mm"), legend.position = "right")
+  if (isTRUE(label_nodes)) {
+    nodes$label <- scenic_network_node_labels(nodes$label, nodes$node_type)
+    plot <- plot + ggrepel::geom_text_repel(
+      data = nodes, ggplot2::aes(x = x, y = y, label = label),
+      size = 3, seed = 1234, max.overlaps = Inf, min.segment.length = 0
+    )
+  }
+  attr(plot, "grn_data") <- list(edges = edges, nodes = nodes)
   plot
 }

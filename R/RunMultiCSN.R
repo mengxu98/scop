@@ -1,108 +1,3 @@
-grn_multicsn_arguments <- function() {
-  list(
-    prepare = c("motif_backend", "exclude_exons", "align_annotation"),
-    multiome = c(
-      "preset", "min_detected", "min_peak_cells", "upstream", "downstream",
-      "tf_region_scope", "exclude_response_alias", "renormalize", "response_chunk",
-      "target_chunk", "max_support_size", "min_improvement", "sort_regulators"
-    ),
-    rna = c("method", "max_support_size", "lag_fraction", "lag_steps")
-  )
-}
-
-grn_prepare_multicsn <- function(input, config) {
-  if (!requireNamespace("multiCSN", quietly = TRUE) ||
-      utils::packageVersion("multiCSN") < "0.1.0") {
-    stop("multiCSN >= 0.1.0 is required. Install the current independent multiCSN package.", call. = FALSE)
-  }
-  mode <- input$input_mode
-  if (is.null(mode)) mode <- config$input_mode
-  if (!mode %in% c("rna", "multiome")) {
-    stop("multiCSN input_mode must be 'rna' or 'multiome'.", call. = FALSE)
-  }
-  argument_sets <- grn_multicsn_arguments()
-  allowed <- if (identical(mode, "rna")) {
-    argument_sets$rna
-  } else {
-    c(argument_sets$prepare, argument_sets$multiome)
-  }
-  unknown <- setdiff(names(config$method_args), allowed)
-  if (length(unknown)) {
-    stop("Unsupported multiCSN ", mode, " argument(s): ", paste(unknown, collapse = ", "), call. = FALSE)
-  }
-  input$input_mode <- mode
-  if (identical(mode, "rna")) return(input)
-  if (!inherits(input$object, "Seurat")) {
-    stop("multiCSN multiome input requires a Seurat object.", call. = FALSE)
-  }
-  if (!identical(config$layer, "data") || !identical(config$atac_layer, "data")) {
-    stop("multiCSN multiome inference uses the RNA and ATAC 'data' layers; select layer = 'data' and atac_layer = 'data'.", call. = FALSE)
-  }
-  if (is.null(config$resources$genome)) {
-    stop("multiCSN multiome inference requires resources$genome.", call. = FALSE)
-  }
-  object <- input$object[, input$cells]
-  groups <- input$groups
-  if (is.null(groups)) groups <- config$groups
-  grouped_cells <- unlist(groups, use.names = FALSE)
-  if (is.null(names(groups)) || anyDuplicated(grouped_cells) ||
-      !setequal(grouped_cells, input$cells)) {
-    stop("multiCSN groups must assign every selected cell exactly once.", call. = FALSE)
-  }
-  labels <- stats::setNames(rep(NA_character_, length(input$cells)), input$cells)
-  for (group in names(groups)) labels[groups[[group]]] <- group
-  if (anyNA(labels) || !identical(names(labels), input$cells)) {
-    stop("multiCSN groups must assign every selected cell exactly once.", call. = FALSE)
-  }
-  group_column <- ".scop_grn_group"
-  while (group_column %in% colnames(object[[]])) group_column <- paste0(group_column, "_")
-  object[[group_column]] <- unname(labels[colnames(object)])
-  if (!is.null(config$resources$annotation)) {
-    Signac::Annotation(object[[config$atac_assay]]) <- config$resources$annotation
-  }
-  prepare_args <- config$method_args[intersect(names(config$method_args), argument_sets$prepare)]
-  if (!is.null(prepare_args$motif_backend)) {
-    prepare_args$backend <- prepare_args$motif_backend
-    prepare_args$motif_backend <- NULL
-  }
-  object <- do.call(multiCSN::prepare_candidates, c(list(
-    object = object, group.by = group_column, genome = config$resources$genome,
-    rna_assay = config$assay, peak_assay = config$atac_assay,
-    targets = input$targets, pfm = config$resources$motif,
-    motif_tfs = config$resources$motif_tfs, verbose = config$verbose
-  ), prepare_args))
-  input$object <- object
-  candidate_regulators <- multiCSN::get_attribute(object, attribute = "tfs")
-  if (!is.null(input$regulators)) {
-    input$regulators <- intersect(input$regulators, candidate_regulators)
-    if (!length(input$regulators)) {
-      stop("No requested regulators have motif-supported TF candidates in the multiome input.", call. = FALSE)
-    }
-  }
-  input$multicsn_preparation <- list(
-    rebuilt = TRUE, group_column = group_column, cells = input$cells,
-    rna_assay = config$assay, peak_assay = config$atac_assay,
-    motif_backend = if (is.null(prepare_args$backend)) "motifmatchr" else prepare_args$backend,
-    targets = input$targets,
-    candidate_regulators = candidate_regulators
-  )
-  input
-}
-
-grn_multicsn_layer <- function(table_path, source, target,
-                               sign_column = "standardized_beta",
-                               sign_basis = "regression_coefficient") {
-  list(
-    status = "computed", table_path = table_path,
-    source = source, target = target, score = "weight",
-    source_type = if (identical(source, "region")) "region" else "TF",
-    target_type = if (identical(target, "region")) "region" else "gene",
-    score_type = "signed_ordinal_weight", directed = TRUE,
-    sign_column = sign_column, sign_basis = sign_basis,
-    rank_by = "absolute_score"
-  )
-}
-
 grn_run_multicsn <- function(input, config) {
   arguments <- grn_multicsn_arguments()
   mode <- input$input_mode
@@ -165,5 +60,112 @@ grn_run_multicsn <- function(input, config) {
     implementation = "multiCSN::fit_layered_network",
     package_versions = versions,
     execution = list(status = "completed", artifacts = list())
+  )
+}
+
+grn_multicsn_arguments <- function() {
+  list(
+    prepare = c("motif_backend", "exclude_exons", "align_annotation"),
+    multiome = c(
+      "preset", "min_detected", "min_peak_cells", "upstream", "downstream",
+      "tf_region_scope", "exclude_response_alias", "renormalize", "response_chunk",
+      "target_chunk", "max_support_size", "min_improvement", "sort_regulators"
+    ),
+    rna = c("method", "max_support_size", "lag_fraction", "lag_steps")
+  )
+}
+
+grn_prepare_multicsn <- function(input, config) {
+  if (!requireNamespace("multiCSN", quietly = TRUE) ||
+    utils::packageVersion("multiCSN") < "0.1.0") {
+    stop("multiCSN >= 0.1.0 is required. Install the current independent multiCSN package.", call. = FALSE)
+  }
+  mode <- input$input_mode
+  if (is.null(mode)) mode <- config$input_mode
+  if (!mode %in% c("rna", "multiome")) {
+    stop("multiCSN input_mode must be 'rna' or 'multiome'.", call. = FALSE)
+  }
+  argument_sets <- grn_multicsn_arguments()
+  allowed <- if (identical(mode, "rna")) {
+    argument_sets$rna
+  } else {
+    c(argument_sets$prepare, argument_sets$multiome)
+  }
+  unknown <- setdiff(names(config$method_args), allowed)
+  if (length(unknown)) {
+    stop("Unsupported multiCSN ", mode, " argument(s): ", paste(unknown, collapse = ", "), call. = FALSE)
+  }
+  input$input_mode <- mode
+  if (identical(mode, "rna")) {
+    return(input)
+  }
+  if (!inherits(input$object, "Seurat")) {
+    stop("multiCSN multiome input requires a Seurat object.", call. = FALSE)
+  }
+  if (!identical(config$layer, "data") || !identical(config$atac_layer, "data")) {
+    stop("multiCSN multiome inference uses the RNA and ATAC 'data' layers; select layer = 'data' and atac_layer = 'data'.", call. = FALSE)
+  }
+  if (is.null(config$resources$genome)) {
+    stop("multiCSN multiome inference requires resources$genome.", call. = FALSE)
+  }
+  object <- input$object[, input$cells]
+  groups <- input$groups
+  if (is.null(groups)) groups <- config$groups
+  grouped_cells <- unlist(groups, use.names = FALSE)
+  if (is.null(names(groups)) || anyDuplicated(grouped_cells) ||
+    !setequal(grouped_cells, input$cells)) {
+    stop("multiCSN groups must assign every selected cell exactly once.", call. = FALSE)
+  }
+  labels <- stats::setNames(rep(NA_character_, length(input$cells)), input$cells)
+  for (group in names(groups)) labels[groups[[group]]] <- group
+  if (anyNA(labels) || !identical(names(labels), input$cells)) {
+    stop("multiCSN groups must assign every selected cell exactly once.", call. = FALSE)
+  }
+  group_column <- ".scop_grn_group"
+  while (group_column %in% colnames(object[[]])) group_column <- paste0(group_column, "_")
+  object[[group_column]] <- unname(labels[colnames(object)])
+  if (!is.null(config$resources$annotation)) {
+    Signac::Annotation(object[[config$atac_assay]]) <- config$resources$annotation
+  }
+  prepare_args <- config$method_args[intersect(names(config$method_args), argument_sets$prepare)]
+  if (!is.null(prepare_args$motif_backend)) {
+    prepare_args$backend <- prepare_args$motif_backend
+    prepare_args$motif_backend <- NULL
+  }
+  object <- do.call(multiCSN::prepare_candidates, c(list(
+    object = object, group.by = group_column, genome = config$resources$genome,
+    rna_assay = config$assay, peak_assay = config$atac_assay,
+    targets = input$targets, pfm = config$resources$motif,
+    motif_tfs = config$resources$motif_tfs, verbose = config$verbose
+  ), prepare_args))
+  input$object <- object
+  candidate_regulators <- multiCSN::get_attribute(object, attribute = "tfs")
+  if (!is.null(input$regulators)) {
+    input$regulators <- intersect(input$regulators, candidate_regulators)
+    if (!length(input$regulators)) {
+      stop("No requested regulators have motif-supported TF candidates in the multiome input.", call. = FALSE)
+    }
+  }
+  input$multicsn_preparation <- list(
+    rebuilt = TRUE, group_column = group_column, cells = input$cells,
+    rna_assay = config$assay, peak_assay = config$atac_assay,
+    motif_backend = if (is.null(prepare_args$backend)) "motifmatchr" else prepare_args$backend,
+    targets = input$targets,
+    candidate_regulators = candidate_regulators
+  )
+  input
+}
+
+grn_multicsn_layer <- function(table_path, source, target,
+                               sign_column = "standardized_beta",
+                               sign_basis = "regression_coefficient") {
+  list(
+    status = "computed", table_path = table_path,
+    source = source, target = target, score = "weight",
+    source_type = if (identical(source, "region")) "region" else "TF",
+    target_type = if (identical(target, "region")) "region" else "gene",
+    score_type = "signed_ordinal_weight", directed = TRUE,
+    sign_column = sign_column, sign_basis = sign_basis,
+    rank_by = "absolute_score"
   )
 }

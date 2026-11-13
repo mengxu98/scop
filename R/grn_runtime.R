@@ -12,13 +12,13 @@ grn_runtime_profiles <- function() {
     multicsn = list(kind = "r", environment = NULL, packages = c("multiCSN", "inferCSN", "Seurat", "SeuratObject", "Signac", "Matrix", "GenomicRanges", "GenomeInfoDb", "motifmatchr")),
     multicsn_rna = list(kind = "r", environment = NULL, packages = c("multiCSN", "inferCSN", "Matrix")),
     pando = list(kind = "r", environment = NULL, packages = c("Pando", "Signac", "Seurat", "SeuratObject", "GenomicRanges", "motifmatchr", "glmnet", "dplyr")),
-    grnboost2 = list(kind = "python", environment = "grnboost2_env", packages = c("arboreto", "numpy", "pandas", "dask", "distributed")),
+    grnboost2 = list(kind = "python", environment = env_module_environment("grnboost2"), packages = c("arboreto", "numpy", "pandas", "dask", "distributed")),
     scenic = list(kind = "python", environment = "scenic_env", packages = c("pyscenic", "arboreto", "ctxcore")),
-    gniplr = list(kind = "python", environment = "gniplr_env", packages = c("numpy", "pandas", "scipy", "scikit-learn", "statsmodels")),
-    regdiffusion = list(kind = "python", environment = "regdiffusion_env", packages = c("regdiffusion", "torch", "numpy", "pandas")),
-    scsgl = list(kind = "python", environment = "scsgl_env", packages = c("numpy", "pandas", "scipy", "numba")),
-    linger = list(kind = "python", environment = "linger_env", packages = c("LingerGRN", "torch", "numpy", "pandas")),
-    scenicplus = list(kind = "python", environment = "scenicplus_env", packages = c("scenicplus", "pycisTopic", "pycistarget", "snakemake", "pybiomart", "gseapy"))
+    gniplr = list(kind = "python", environment = env_module_environment("gniplr"), packages = c("numpy", "pandas", "scipy", "scikit-learn", "statsmodels")),
+    regdiffusion = list(kind = "python", environment = env_module_environment("regdiffusion"), packages = c("regdiffusion", "torch", "numpy", "pandas")),
+    scsgl = list(kind = "python", environment = env_module_environment("scsgl"), packages = c("numpy", "pandas", "scipy", "numba")),
+    linger = list(kind = "python", environment = env_module_environment("linger"), packages = c("LingerGRN==1.110", "anndata", "scanpy", "h5py", "scipy", "pandas", "torch", "pybedtools")),
+    scenicplus = list(kind = "python", environment = env_module_environment("scenicplus"), packages = c("scenicplus", "pycisTopic", "pycistarget", "snakemake", "pybiomart", "gseapy"))
   )
 }
 
@@ -75,7 +75,7 @@ grn_resolve_runtime <- function(config, profile) {
   package_names <- sub("[<>=!~].*$", "", packages)
   exact_versions <- ifelse(grepl("==", packages, fixed = TRUE), sub("^.*==", "", packages), "")
   if (any(!grepl("^[A-Za-z0-9_.-]+$", package_names)) || any(!grepl("^[A-Za-z0-9.+_-]*$", exact_versions)) ||
-      any(grepl("[<>=!~]", packages) & !grepl("^[A-Za-z0-9_.-]+==[A-Za-z0-9.+_-]+$", packages))) {
+    any(grepl("[<>=!~]", packages) & !grepl("^[A-Za-z0-9_.-]+==[A-Za-z0-9.+_-]+$", packages))) {
     stop("GRN runtime package requirements must be names or exact name==version requirements.", call. = FALSE)
   }
   probe_config <- config
@@ -95,9 +95,11 @@ grn_resolve_runtime <- function(config, profile) {
   versions <- if (length(records)) stats::setNames(vapply(records, `[[`, "", 3L), vapply(records, `[[`, "", 2L)) else character()
   mismatch <- package_names[nzchar(exact_versions) & versions[package_names] != exact_versions]
   if (length(mismatch)) stop("Incompatible GRN package version(s): ", paste(mismatch, collapse = ", "), call. = FALSE)
-  resolved <- list(kind = spec$kind, executable = executable, python = if (spec$kind == "python") executable else NULL,
-       rscript = if (spec$kind == "r") executable else NULL, r_library = r_library, timeout = timeout,
-       version = version, package_versions = versions, environment = spec$environment)
+  resolved <- list(
+    kind = spec$kind, executable = executable, python = if (spec$kind == "python") executable else NULL,
+    rscript = if (spec$kind == "r") executable else NULL, r_library = r_library, timeout = timeout,
+    version = version, package_versions = versions, environment = spec$environment
+  )
   structure(resolved, class = c("GRNRuntime", "list"), profile = grn_hash(spec))
 }
 
@@ -122,40 +124,51 @@ grn_run_process <- function(command, args, config, env = character()) {
   started <- Sys.time()
   timeout <- config$runtime$timeout %||% Inf
   if (!is.numeric(timeout) || length(timeout) != 1L || is.na(timeout) || timeout <= 0) stop("GRN process timeout must be positive seconds.", call. = FALSE)
-  result <- list(command = command, args = args, stdout = stdout, stderr = stderr,
-                 started_at = started, status = "running", exit_status = NA_integer_)
-  process <- processx::process$new(command, args, stdout = stdout, stderr = stderr,
-                                   env = if (length(env)) c("current", env) else NULL,
-                                   wd = directory, cleanup = TRUE, cleanup_tree = FALSE, windows_hide_window = TRUE)
-  on.exit({
-    process$kill_tree()
-    result$finished_at <- Sys.time()
-    saveRDS(result, receipt)
-  }, add = TRUE)
-  tryCatch({
-    repeat {
-      if (!process$is_alive()) break
-      if (as.numeric(difftime(Sys.time(), started, units = "secs")) > timeout) {
-        result$status <- "timed_out"
-        process$kill_tree()
-        stop("GRN subprocess timed out. Logs: ", stdout, "; ", stderr, call. = FALSE)
+  result <- list(
+    command = command, args = args, stdout = stdout, stderr = stderr,
+    started_at = started, status = "running", exit_status = NA_integer_
+  )
+  process <- processx::process$new(command, args,
+    stdout = stdout, stderr = stderr,
+    env = if (length(env)) c("current", env) else NULL,
+    wd = directory, cleanup = TRUE, cleanup_tree = FALSE, windows_hide_window = TRUE
+  )
+  on.exit(
+    {
+      process$kill_tree()
+      result$finished_at <- Sys.time()
+      saveRDS(result, receipt)
+    },
+    add = TRUE
+  )
+  tryCatch(
+    {
+      repeat {
+        if (!process$is_alive()) break
+        if (as.numeric(difftime(Sys.time(), started, units = "secs")) > timeout) {
+          result$status <- "timed_out"
+          process$kill_tree()
+          stop("GRN subprocess timed out. Logs: ", stdout, "; ", stderr, call. = FALSE)
+        }
+        process$wait(timeout = 100)
       }
-      process$wait(timeout = 100)
+      result$exit_status <- process$get_exit_status()
+      result$status <- if (identical(result$exit_status, 0L)) "completed" else "failed"
+      if (!identical(result$exit_status, 0L)) {
+        detail <- paste(utils::tail(readLines(stderr, warn = FALSE), 10L), collapse = "\n")
+        stop("GRN subprocess failed with exit status ", result$exit_status, ". Logs: ", stdout, "; ", stderr, if (nzchar(detail)) paste0("\n", detail), call. = FALSE)
+      }
+    },
+    interrupt = function(e) {
+      result$status <<- "cancelled"
+      process$kill_tree()
+      stop(structure(list(message = paste0("GRN subprocess cancelled. Logs: ", stdout, "; ", stderr), call = NULL), class = c("interrupt", "condition")))
+    },
+    error = function(e) {
+      if (identical(result$status, "running")) result$status <<- "failed"
+      stop(e)
     }
-    result$exit_status <- process$get_exit_status()
-    result$status <- if (identical(result$exit_status, 0L)) "completed" else "failed"
-    if (!identical(result$exit_status, 0L)) {
-      detail <- paste(utils::tail(readLines(stderr, warn = FALSE), 10L), collapse = "\n")
-      stop("GRN subprocess failed with exit status ", result$exit_status, ". Logs: ", stdout, "; ", stderr, if (nzchar(detail)) paste0("\n", detail), call. = FALSE)
-    }
-  }, interrupt = function(e) {
-    result$status <<- "cancelled"
-    process$kill_tree()
-    stop(structure(list(message = paste0("GRN subprocess cancelled. Logs: ", stdout, "; ", stderr), call = NULL), class = c("interrupt", "condition")))
-  }, error = function(e) {
-    if (identical(result$status, "running")) result$status <<- "failed"
-    stop(e)
-  })
+  )
   result$finished_at <- Sys.time()
   result$receipt <- receipt
   result
@@ -171,6 +184,8 @@ grn_r_worker_args <- function(worker, request, result) {
     "if (length(libraries)) .libPaths(libraries, include.site = FALSE); ",
     "saveRDS(worker(request), args[[3L]])"
   )
-  c("--vanilla", "-e", expression, normalizePath(worker_file, mustWork = TRUE),
-    normalizePath(request, mustWork = TRUE), file.path(normalizePath(dirname(result), mustWork = TRUE), basename(result)))
+  c(
+    "--vanilla", "-e", expression, normalizePath(worker_file, mustWork = TRUE),
+    normalizePath(request, mustWork = TRUE), file.path(normalizePath(dirname(result), mustWork = TRUE), basename(result))
+  )
 }

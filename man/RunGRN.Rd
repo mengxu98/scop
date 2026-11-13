@@ -16,18 +16,7 @@ RunGRN(object, ...)
   targets = NULL,
   methods = "grnboost2",
   backend = c("cpp", "python"),
-  ...,
-  return_type = NULL,
-  input_mode = NULL,
-  atac_assay = NULL,
-  atac_layer = NULL,
-  group.by = NULL,
-  groups = NULL,
-  pseudotime = NULL,
-  resources = list(),
-  method_args = list(),
-  tool_name = NULL,
-  overwrite = FALSE
+  ...
 )
 
 \method{RunGRN}{default}(
@@ -77,7 +66,7 @@ RunGRN(object, ...)
 \arguments{
 \item{object}{A Seurat object or expression matrix.}
 
-\item{...}{Arguments passed to other functions.}
+\item{...}{Additional method arguments.}
 
 \item{assay}{Assay used when `object` is a Seurat object.}
 
@@ -87,7 +76,9 @@ RunGRN(object, ...)
 
 \item{targets}{Optional target genes. If `NULL`, all genes are considered.}
 
-\item{methods}{One registered method name, matched without case sensitivity. Supports multiCSN, GENIE3, GRNBoost2, GNIPLR, PPCOR, PIDC, SCORPION, SCSGL, LEAP, SCODE, SINCERITIES, Pando, LINGER, SCENIC+, RegDiffusion, and SCENIC.}
+\item{methods}{Method name, matched without case sensitivity: multiCSN,
+GENIE3, GRNBoost2, GNIPLR, PPCOR, PIDC, SCORPION, SCSGL, LEAP, SCODE,
+SINCERITIES, Pando, LINGER, SCENIC+, RegDiffusion, or SCENIC.}
 
 \item{backend}{Runtime backend. `"cpp"` is available for GRNBoost2 and
 GNIPLR; `"python"` is required for RegDiffusion.}
@@ -95,7 +86,7 @@ GNIPLR; `"python"` is required for RegDiffusion.}
 \item{genes_in}{Matrix orientation for matrix inputs. `"rows"` means genes x
 cells; `"columns"` means cells x genes.}
 
-\item{output_file}{Optional adjacency file for \code{return_type = "edges"}.}
+\item{output_file}{Optional adjacency file for `return_type = "edges"`.}
 
 \item{work_dir}{Working directory used by Python backends.}
 
@@ -143,36 +134,42 @@ its own `"regdiffusion_env"` environment.}
 
 \item{verbose}{Whether to print progress messages.}
 
-\item{return_type}{Output to return: \code{"seurat"}, \code{"edges"}, or
-\code{"result"}. With \code{NULL}, Seurat inputs return the updated object and
-matrix inputs return an edge table.}
+\item{return_type}{Output to return: `"seurat"`, `"edges"`, or `"result"`.
+With `NULL`, Seurat inputs return the updated object and matrix inputs
+return an edge table.}
 
 \item{input_mode}{\code{"rna"} or \code{"multiome"}. Multiome methods require a Seurat object.}
 
-\item{atac_assay,atac_layer}{Chromatin assay and exact layer. Join split layers before inference.}
+\item{atac_assay, atac_layer}{Chromatin assay and exact layer. Join split layers before inference.}
 
 \item{group.by}{Metadata column or cell-ID-named vector defining separately fitted networks.}
 
 \item{groups}{Optional existing group labels, in the requested order.}
 
-\item{pseudotime}{Seurat metadata column, named numeric vector, or cell-by-trajectory matrix. Time methods align by cell ID.}
+\item{pseudotime}{Seurat metadata column, named numeric vector, or cell-by-trajectory matrix.
+Time methods align by cell ID.}
 
 \item{resources}{Named method-specific resources. For PIDC, SCSGL, SCODE,
 SINCERITIES, and the Python GNIPLR result adapter, set \code{source_dir} to a
 trusted local checkout of the linked multiCSN analysis code. The linked
 GNIPLR implementation uses its fixed LASSO settings.}
 
-\item{method_args}{Named method-specific arguments. The reserved \code{runtime} list accepts \code{python}, \code{rscript}, \code{r_library}, and \code{timeout}. Unknown or repeated arguments fail before inference. SCENIC+ and LINGER can resume one selected group at a time using \code{resume_dir}.}
+\item{method_args}{Named method-specific arguments. The reserved \code{runtime} list accepts
+\code{python}, \code{rscript}, \code{r_library}, and \code{timeout}. SCENIC+ and LINGER
+can resume one selected group at a time using \code{resume_dir}.}
 
-\item{tool_name,overwrite}{Name and replacement policy for a Seurat tools entry. Computation completes before the object is updated.}
+\item{tool_name, overwrite}{Name and replacement policy for a Seurat tools entry.}
 }
 \value{
 The Seurat object with the complete network in its tools, a
-\code{TF}, \code{target}, and \code{importance} edge table, or a complete
-\code{GRNResult}. For multiple groups use \code{"seurat"} or \code{"result"}.
+  \code{TF}, \code{target}, and \code{importance} edge table, or a complete
+  \code{GRNResult}. For multiple groups, use \code{"seurat"} or \code{"result"}.
 }
 \description{
-Run transcriptomic and multiomic network methods through one entry point. Complete results retain native scores, direction, sign evidence, groups, runtime identity, and method parameters. Use GetGRN and GRNPlot to read and display the results.
+Run transcriptomic and multiomic network methods through one entry point.
+Complete results retain native scores, direction, sign evidence, groups,
+runtime identity, and method parameters. Use \code{\link{GetGRN}} and
+\code{\link{GRNPlot}} to read and display the results.
 }
 \examples{
 data(pancreas_sub)
