@@ -58,7 +58,7 @@ test_that("method boundaries reject unknown arguments and missing time", {
   expect_error(RunGRN(object, grn_method = "gniplr"), "Use 'methods'")
   expect_error(RunGRN(expression, method = "grnboost2"), "Use 'methods'")
   expect_error(RunGRN(expression, return_dat = TRUE), "Use 'return_data'")
-  expect_error(RunGRN(object, return_seur = TRUE), "Use 'return_seurat'")
+  expect_error(RunGRN(object, return_seur = TRUE), "'return_seurat'")
   expect_error(RunGRN(expression, return_type = "result"), "Use 'return_data'")
   expect_error(RunGRN(object, return_data = TRUE, return_seurat = TRUE), "Choose only one")
   expect_error(RunGRN(expression, return_data = NA), "TRUE or FALSE")
