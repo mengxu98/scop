@@ -147,7 +147,7 @@ grn_run_rna <- function(input, config) {
     }
     jsonlite::write_json(request, request_path, auto_unbox = TRUE, null = "null", pretty = TRUE)
     python <- config$runtime$python %||% config$runtime$executable
-    script <- system.file("grn", "rna.py", package = "scop", mustWork = TRUE)
+    script <- system.file("grn", paste0(method, ".py"), package = "scop", mustWork = TRUE)
     process <- grn_run_process(python, c(script, normalizePath(request_path)), config,
       env = c(OMP_NUM_THREADS = as.character(config$cores), OPENBLAS_NUM_THREADS = "1", PYTHONHASHSEED = as.character(config$seed), PYTHONDONTWRITEBYTECODE = "1"))
     edges <- utils::read.delim(output_path, stringsAsFactors = FALSE, check.names = FALSE,
