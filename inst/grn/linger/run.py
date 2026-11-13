@@ -15,8 +15,6 @@ import time
 from pathlib import Path
 
 
-REFERENCE_SPEC = json.loads(Path(__file__).with_name("reference-files.json").read_text())
-CHROMOSOMES = REFERENCE_SPEC["chromosomes"]
 PHASES = ("prepare", "preprocess", "train", "networks", "export")
 PREPARE_FILES = ("data/adata_RNA.h5ad", "data/adata_ATAC.h5ad", "data/TG_pseudobulk.tsv", "data/RE_pseudobulk.tsv", "data/Peaks.txt", "retained_cells.tsv", "input-summary.json")
 
@@ -46,7 +44,7 @@ def prepare_identity(root, request, input_hashes, reference_hashes, dependency):
         "packages": packages,
         "source_sha256": {path.name: file_sha256(path) for path in sorted(runtime_source.glob("*.py"))},
         "runner_sha256": file_sha256(Path(__file__)),
-        "reference_spec_sha256": file_sha256(Path(__file__).with_name("reference-files.json")),
+        "reference_spec_sha256": request["reference_selection"]["manifest_sha256"],
     }
 
 
@@ -92,22 +90,17 @@ def canonical_region(region):
     else:
         chromosome, start, end = region.rsplit("-", 2)
     start, end = int(start), int(end)
-    if chromosome not in CHROMOSOMES or start < 0 or end <= start:
+    if start < 0 or end <= start:
         raise ValueError(f"LINGER requires valid primary-chromosome regions: {region}")
     return f"{chromosome}:{start}-{end}"
 
 
-def check_reference(reference, chromosomes, genome):
-    if genome not in REFERENCE_SPEC["genome_pair"] or any(chromosome not in CHROMOSOMES for chromosome in chromosomes):
-        raise ValueError("Unsupported LINGER genome or chromosome reference selection.")
-    common = REFERENCE_SPEC["common"] + [REFERENCE_SPEC["genome_pair"][genome]]
-    per_chromosome = []
-    for chromosome in sorted(set(chromosomes)):
-        per_chromosome.extend(name.format(chromosome=chromosome, genome=genome) for name in REFERENCE_SPEC["per_chromosome"])
-    missing = [name for name in common + per_chromosome if not (reference / name).is_file()]
+def check_reference(reference, files):
+    if not files or any(Path(name).name != name or name in (".", "..") for name in files):
+        raise ValueError("LINGER requires selected bulk reference file names.")
+    missing = [name for name in files if not (reference / name).is_file()]
     if missing:
         raise ValueError("Missing LINGER bulk reference files: " + ", ".join(missing))
-    return common + per_chromosome
 
 
 def prepare_dependency(root, patch_missing_keys):
@@ -360,10 +353,11 @@ def run(request):
     request["input_dir"] = str(inputs)
     request["bulk_reference"] = str(Path(request["bulk_reference"]).resolve())
     chromosomes = sorted({canonical_region(region).split(":")[0] for region in (inputs / "regions.txt").read_text().splitlines()})
-    reference_files = check_reference(Path(request["bulk_reference"]), chromosomes, request["genome"])
-    expected_files = request.get("expected_reference_files")
-    if expected_files is not None and expected_files != reference_files:
-        raise ValueError("LINGER R and Python reference file selections differ; reference identity must cover the exact execution inputs.")
+    selection = request["reference_selection"]
+    if selection["genome"] != request["genome"] or selection["chromosomes"] != chromosomes:
+        raise ValueError("LINGER reference selection does not match the requested genome and peak chromosomes.")
+    reference_files = request["expected_reference_files"]
+    check_reference(Path(request["bulk_reference"]), reference_files)
     dependency = prepare_dependency(root, request["patch_missing_keys"])
     reference_hashes = {name: file_sha256(Path(request["bulk_reference"]) / name) for name in reference_files}
     input_hashes = {name: file_sha256(inputs / name) for name in ("rna.mtx", "atac.mtx", "genes.txt", "regions.txt", "cells.tsv")}
@@ -393,8 +387,7 @@ def run(request):
         "status": "completed", "implementation": "LingerGRN::LINGER[1.110;trans_shap-missing-key-v1;tf-re-small-batch-v1]",
         "dependency": dependency, "parameters": request, "phase_timings": timing,
         "reference_files": reference_files, "reference_sha256": reference_hashes,
-        "reference_selection": {"schema": REFERENCE_SPEC["schema"], "genome": request["genome"],
-            "chromosomes": chromosomes, "manifest_sha256": hashlib.sha256(Path(__file__).with_name("reference-files.json").read_bytes()).hexdigest()},
+        "reference_selection": selection,
         "input_sha256": input_hashes, "networks": result,
         "resume": resume,
         "versions": {name: importlib.metadata.version(name) for name in ("LingerGRN", "numpy", "pandas", "anndata", "scanpy", "torch", "shap")},

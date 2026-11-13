@@ -157,7 +157,10 @@ matrix inputs return an edge table.}
 
 \item{pseudotime}{Seurat metadata column, named numeric vector, or cell-by-trajectory matrix. Time methods align by cell ID.}
 
-\item{resources}{Named biological resources required by the selected method. See the GRN tutorial for genome, motif and reference paths.}
+\item{resources}{Named method-specific resources. For PIDC, SCSGL, SCODE,
+SINCERITIES, and the Python GNIPLR result adapter, set \code{source_dir} to a
+trusted local checkout of the linked multiCSN analysis code. The linked
+GNIPLR implementation uses its fixed LASSO settings.}
 
 \item{method_args}{Named method-specific arguments. The reserved \code{runtime} list accepts \code{python}, \code{rscript}, \code{r_library}, and \code{timeout}. Unknown or repeated arguments fail before inference. SCENIC+ and LINGER can resume one selected group at a time using \code{resume_dir}.}
 
@@ -194,4 +197,17 @@ gniplr_grn <- RunGRN(
   max_edges_per_target = 2,
   verbose = FALSE
 )
+}
+\references{
+\url{https://github.com/mengxu98/multiCSN_manuscript/tree/42ed2c50d11ba0255326fa32ce59b97c7bb4a8b8/code}
+
+\url{https://github.com/zyllluck/GNIPLR}
+
+\url{https://doi.org/10.1016/j.cels.2017.08.014}
+
+\url{https://github.com/Single-Cell-Graph-Learning/scSGL}
+
+\url{https://github.com/hmatsu1226/SCODE}
+
+\url{https://github.com/CABSEL/SINCERITIES}
 }

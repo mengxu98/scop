@@ -1,4 +1,5 @@
 import importlib.metadata
+import importlib.util
 import inspect
 import json
 import random
@@ -7,6 +8,14 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+
+
+def load_upstream(request):
+    path = Path(request["upstream_source"])
+    spec = importlib.util.spec_from_file_location(path.stem, path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 def infer(expression, request):
@@ -32,27 +41,25 @@ def infer(expression, request):
         parameters = dict(early_stop_window_length=int(parameters.get("early_stop_window_length", 25)))
         return edges.rename(columns={"TF": "regulator", "importance": "weight"}), "arboreto::grnboost2", ["arboreto", "dask", "distributed"], parameters
     if method == "gniplr":
-        from gniplr import infer_gniplr
-
         parameters = dict(lasso_degree=int(parameters.get("lasso_degree", 30)), lasso_alpha=float(parameters.get("lasso_alpha", 0.04)))
         if expression.shape[1] < 8 or parameters["lasso_degree"] < 1 or parameters["lasso_alpha"] < 0:
             raise ValueError("GNIPLR requires at least eight cells, positive lasso_degree and nonnegative lasso_alpha")
+        infer_gniplr = load_upstream(request).infer_gniplr
+        available = inspect.signature(infer_gniplr).parameters
+        for name, default in (("lasso_degree", 30), ("lasso_alpha", 0.04)):
+            if name not in available and parameters[name] != default:
+                raise ValueError(f"The selected GNIPLR implementation fixes {name} at {default}; use an upstream implementation that exposes this argument.")
         output = Path(request["work_dir"]) / "gniplr-native.csv"
-        infer_gniplr(expression, output,
-                     lasso_degree=int(parameters.get("lasso_degree", 30)),
-                     lasso_alpha=float(parameters.get("lasso_alpha", 0.04)))
+        infer_gniplr(expression, output, **{name: value for name, value in parameters.items() if name in available})
         return pd.read_csv(output, dtype={"regulator": str, "target": str}, keep_default_na=False), "multiCSN-manuscript::GNIPLR", ["statsmodels", "scipy", "scikit-learn"], parameters
     if method == "scsgl":
-        sys.path.insert(0, str(Path(__file__).parent / "vendor" / "SCSGL"))
-        import run_scSGL
-
         parameters = dict(pos_density=float(parameters.get("pos_density", 0.01)), neg_density=float(parameters.get("neg_density", 0.01)))
         if any(not np.isfinite(value) or value < 0 or value >= 1 for value in parameters.values()):
             raise ValueError("SCSGL densities must be finite, nonnegative and smaller than one")
         if not any(value > 0 for value in parameters.values()):
             raise ValueError("SCSGL requires at least one positive edge density")
         output = Path(request["work_dir"]) / "scsgl-native.tsv"
-        run_scSGL.run_inference(
+        load_upstream(request).run_inference(
             expression, output,
             pos_density=float(parameters.get("pos_density", 0.01)),
             neg_density=float(parameters.get("neg_density", 0.01)),

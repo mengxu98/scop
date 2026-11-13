@@ -190,6 +190,14 @@ GetGRN(grouped, group = "Endocrine")
 GetGRN(grouped, all_groups = TRUE)
 ```
 
+## Use external implementations
+
+For PIDC, SCSGL, SCODE, SINCERITIES, and the Python GNIPLR result adapter,
+check out the analysis implementations linked in the `RunGRN()` help page and supply its
+root as `resources = list(source_dir = ...)`. Prepare the corresponding R or
+Python dependencies with `PrepareEnv()`. Keep the checkout at a fixed revision
+while fitting.
+
 ## Supply time by cell ID
 
 LEAP, SCODE, and SINCERITIES require measured time or a supplied pseudotime.
@@ -221,6 +229,7 @@ time_targets <- time_genes[4:8]
 
 ```{r beeline-time-network, eval=FALSE}
 PrepareEnv(modules = c("leap", "scode", "sincerities"), components = "r")
+source_dir <- "/path/to/multiCSN_manuscript"
 time_fits <- list()
 time_settings <- list(
 	leap = list(max_lag_prop = 1/3),
@@ -232,6 +241,7 @@ for (method in names(time_settings)) {
 		time_expression, methods = method, pseudotime = pseudotime,
 		regulators = time_regulators, targets = time_targets,
 		method_args = time_settings[[method]], return_type = "result",
+		resources = if (method == "leap") list() else list(source_dir = source_dir),
 		work_dir = file.path(tempdir(), paste0("scop-beeline-", method)),
 		cores = 1L, seed = 1201L, verbose = FALSE
 	)

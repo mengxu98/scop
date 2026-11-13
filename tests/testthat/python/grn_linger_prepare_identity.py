@@ -26,10 +26,12 @@ with tempfile.TemporaryDirectory() as temporary:
     (unnamed / "METADATA").write_text("Metadata-Version: 2.1\nVersion: 1.0\n")
     distributions = list(importlib.metadata.distributions(path=[str(root)]))
     request = dict(min_genes=20, min_cells=3, genome="hg38", activation="ReLU",
-                   patch_missing_keys=True, seed=42, cores=1)
+                   patch_missing_keys=True, seed=42, cores=1,
+                   reference_selection={"manifest_sha256": "selected-spec-sha256"})
     with patch.object(runner.importlib.metadata, "distributions", return_value=distributions):
         valid = runner.prepare_identity(root, request, {"input": "same"}, {"reference": "same"}, {})
     assert valid["packages"] == versions
+    assert valid["reference_spec_sha256"] == "selected-spec-sha256"
     with patch.object(runner.importlib.metadata, "distributions", return_value=distributions + [SimpleNamespace(metadata=None)]):
         malformed = runner.prepare_identity(root, request, {"input": "same"}, {"reference": "same"}, {})
     assert malformed == valid

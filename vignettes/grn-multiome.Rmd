@@ -226,7 +226,7 @@ The prepared GEX values must also match the selected RNA layer.
 The runner executes the official Snakemake workflow, including motif enrichment,
 network inference, eRegulons, and AUC. Set `workflow` to the official SCENIC+
 Snakemake directory when that directory is provided by a separate source
-checkout.
+checkout. Use resource paths without whitespace or shell metacharacters.
 
 To continue an interrupted official run, select one group and set
 `method_args$resume_dir` to its existing `official` directory. Keep the

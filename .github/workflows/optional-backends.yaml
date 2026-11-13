@@ -88,11 +88,22 @@ jobs:
           library-name: scop-optional-${{ matrix.suite }}
           cache-version: scop-optional-${{ matrix.suite }}
 
+      - name: Check out the PIDC implementation
+        if: matrix.suite == 'grn-rna'
+        uses: actions/checkout@v5
+        with:
+          repository: mengxu98/multiCSN_manuscript
+          ref: 42ed2c50d11ba0255326fa32ce59b97c7bb4a8b8
+          path: tmp/upstream-grn
+          sparse-checkout: code/vendor/PIDC
+          persist-credentials: false
+
       - name: Run optional backend tests 🧪
         shell: Rscript {0}
         env:
           SCOP_OPTIONAL_TEST_FILTER: ${{ matrix.filter }}
           SCOP_OPTIONAL_SUITE: ${{ matrix.suite }}
+          SCOP_GRN_SOURCE_DIR: ${{ github.workspace }}/tmp/upstream-grn
         run: |
           results <- testthat::test_local(
             filter = Sys.getenv("SCOP_OPTIONAL_TEST_FILTER"),

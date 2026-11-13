@@ -48,6 +48,9 @@ grn_run_rna <- function(input, config) {
   if (nrow(expression) < 2L || !length(regulators) || !length(targets)) {
     stop("RNA inference needs at least two candidate genes and nonempty regulators and targets.", call. = FALSE)
   }
+  if (method %in% c("gniplr", "pidc", "scsgl")) {
+    config$external_sources <- config$external_sources %||% grn_external_sources(method, config$resources)
+  }
   dir.create(config$work_dir, recursive = TRUE, showWarnings = FALSE)
   if (method %in% c("ppcor", "pidc", "scorpion") && length(config$runtime)) {
     runtime <- config$runtime
@@ -97,7 +100,7 @@ grn_run_rna <- function(input, config) {
       if (length(regulators) < 2L || !length(targets)) stop("PIDC needs at least two nonconstant regulators and one target.", call. = FALSE)
       environment <- new.env(parent = baseenv())
       environment$is <- methods::is
-      sys.source(grn_rna_script("vendor", "PIDC.R"), envir = environment)
+      sys.source(config$external_sources[["entry"]], envir = environment)
       arguments <- list(log_scale = arguments$log_scale %||% FALSE)
       if (!is.logical(arguments$log_scale) || length(arguments$log_scale) != 1L || is.na(arguments$log_scale)) stop("PIDC log_scale must be TRUE or FALSE.", call. = FALSE)
       result <- environment$PIDC(expression, regulators = regulators, targets = targets,
@@ -147,6 +150,9 @@ grn_run_rna <- function(input, config) {
     request <- list(method = method, expression = normalizePath(expression_path), output = normalizePath(output_path, mustWork = FALSE),
       receipt = normalizePath(receipt_path, mustWork = FALSE), work_dir = normalizePath(config$work_dir),
       regulators = I(regulators), targets = I(targets), method_args = arguments, seed = config$seed, cores = config$cores, verbose = config$verbose)
+    if (method %in% c("gniplr", "scsgl")) {
+      request$upstream_source <- config$external_sources[["entry"]]
+    }
     jsonlite::write_json(request, request_path, auto_unbox = TRUE, null = "null", pretty = TRUE)
     python <- config$runtime$python %||% config$runtime$executable
     process <- grn_run_process(python, c(grn_rna_script("run.py"), normalizePath(request_path)), config,

@@ -16,7 +16,7 @@ grn_runtime_profiles <- function() {
     scenic = list(kind = "python", environment = "scenic_env", packages = c("pyscenic", "arboreto", "ctxcore")),
     gniplr = list(kind = "python", environment = "gniplr_env", packages = c("numpy", "pandas", "scipy", "scikit-learn", "statsmodels")),
     regdiffusion = list(kind = "python", environment = "regdiffusion_env", packages = c("regdiffusion", "torch", "numpy", "pandas")),
-    scsgl = list(kind = "python", environment = "scsgl_env", packages = c("numpy", "pandas", "scipy", "scikit-learn")),
+    scsgl = list(kind = "python", environment = "scsgl_env", packages = c("numpy", "pandas", "scipy", "numba")),
     linger = list(kind = "python", environment = "linger_env", packages = c("LingerGRN", "torch", "numpy", "pandas")),
     scenicplus = list(kind = "python", environment = "scenicplus_env", packages = c("scenicplus", "pycisTopic", "pycistarget", "snakemake", "pybiomart", "gseapy"))
   )

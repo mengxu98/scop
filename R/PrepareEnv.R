@@ -906,7 +906,7 @@ env_module_requirements <- function() {
     ), environment = "gniplr_env"),
     scsgl = env_python_spec(c(
       numpy = "numpy==1.26.4", pandas = "pandas==2.2.0", scipy = "scipy==1.15.3",
-      "scikit-learn" = "scikit-learn==1.7.0"
+      numba = "numba==0.66.0"
     ), environment = "scsgl_env"),
     linger = env_python_spec(c(
       LingerGRN = "LingerGRN==1.110", numpy = "numpy==1.26.4", pandas = "pandas==2.0.3",

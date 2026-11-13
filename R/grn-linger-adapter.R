@@ -1,33 +1,43 @@
+.linger_reference_spec <- list(
+  schema = "linger-1.110-reference-v1",
+  chromosomes = paste0("chr", c(seq_len(22L), "X")),
+  common = c("TFName.txt", "Match2.txt", "bulk_gene_all.txt", "all_hg19.txt",
+    "motifWeight.txt", "RE_gene_corr_hg19.bed"),
+  genome_pair = c(hg19 = "hg19_hg38_pair.bed", hg38 = "hg38_hg19_pair.bed"),
+  per_chromosome = c("MotifTarget_Matrix_{chromosome}.txt",
+    "MotifTarget_matrix_{chromosome}.bed", "{genome}_Peaks_{chromosome}.bed",
+    "{chromosome}_gene.txt", "{chromosome}_index.txt", "{chromosome}_index_all.txt",
+    "fisher_{chromosome}.pt", "all_models_{chromosome}.pt")
+)
+
 grn_linger_reference_files <- function(input, config) {
   if (!inherits(input$object, "Seurat") || is.null(config$atac_assay) ||
       !is.character(config$atac_assay) || length(config$atac_assay) != 1L ||
       !config$atac_assay %in% SeuratObject::Assays(input$object)) {
     stop("LINGER reference selection requires a paired Seurat object and the selected ATAC assay.", call. = FALSE)
   }
-  specification <- system.file("grn", "linger", "reference-files.json", package = "scop")
-  if (!nzchar(specification)) specification <- file.path("inst", "grn", "linger", "reference-files.json")
-  if (!file.exists(specification)) stop("The installed LINGER reference specification is missing.", call. = FALSE)
-  spec <- jsonlite::fromJSON(specification)
+  spec <- .linger_reference_spec
   genome <- config$method_args$genome %||% "hg38"
   if (!is.character(genome) || length(genome) != 1L || is.na(genome) || !genome %in% names(spec$genome_pair)) {
     stop("LINGER supports genome='hg19' or genome='hg38'.", call. = FALSE)
   }
   features <- rownames(input$object[[config$atac_assay]])
   if (!length(features) || anyNA(features)) stop("LINGER accessibility peaks require complete coordinates.", call. = FALSE)
-  pattern <- "^(chr(?:[1-9]|1[0-9]|2[0-2]|X))[:-]([0-9]+)-([0-9]+)$"
+  pattern <- "^([^:-]+)[:-]([0-9]+)-([0-9]+)$"
   matches <- regmatches(features, regexec(pattern, features, perl = TRUE))
   if (any(lengths(matches) != 4L)) stop("LINGER requires valid primary-chromosome peak coordinates.", call. = FALSE)
+  chromosomes <- vapply(matches, `[[`, "", 2L)
   starts <- as.numeric(vapply(matches, `[[`, "", 3L))
   ends <- as.numeric(vapply(matches, `[[`, "", 4L))
-  if (any(!is.finite(starts)) || any(!is.finite(ends)) || any(starts < 0 | ends <= starts)) {
+  if (any(!chromosomes %in% spec$chromosomes) || any(!is.finite(starts) | !is.finite(ends) | ends <= starts)) {
     stop("LINGER requires valid primary-chromosome peak coordinates.", call. = FALSE)
   }
-  chromosomes <- sort(unique(vapply(matches, `[[`, "", 2L)))
+  chromosomes <- sort(unique(chromosomes), method = "radix")
   files <- c(spec$common, spec$genome_pair[[genome]], unlist(lapply(chromosomes, function(chromosome) {
     gsub("{genome}", genome, gsub("{chromosome}", chromosome, spec$per_chromosome, fixed = TRUE), fixed = TRUE)
   }), use.names = FALSE))
   list(files = files, schema = spec$schema, genome = genome, chromosomes = chromosomes,
-    manifest_sha256 = grn_hash(file = specification))
+    manifest_sha256 = grn_hash(spec))
 }
 
 grn_linger_check_resources <- function(input, config) {
@@ -170,6 +180,7 @@ grn_run_linger <- function(input, config) {
   ))
   config$runtime <- runtime
   output_dir <- file.path(config$work_dir, "linger-output")
+  selection <- grn_linger_reference_files(input, config)
   request <- list(
     input_dir = normalizePath(input_dir, winslash = "/", mustWork = TRUE),
     output_dir = normalizePath(output_dir, winslash = "/", mustWork = FALSE),
@@ -179,7 +190,9 @@ grn_run_linger <- function(input, config) {
     patch_missing_keys = patch_missing_keys,
     seed = as.integer(config$seed), cores = as.integer(config$cores),
     regulators = as.list(input$regulators), targets = as.list(input$targets),
-    expected_reference_files = as.list(grn_linger_reference_files(input, config)$files),
+    expected_reference_files = as.list(selection$files),
+    reference_selection = list(schema = selection$schema, genome = selection$genome,
+      chromosomes = as.list(selection$chromosomes), manifest_sha256 = selection$manifest_sha256),
     resume_dir = if (is.null(resume_dir)) NULL else normalizePath(resume_dir, winslash = "/", mustWork = TRUE),
     checkpoint_prepare = !startsWith(normalizePath(config$work_dir, winslash = "/", mustWork = TRUE), paste0(normalizePath(tempdir(), winslash = "/", mustWork = TRUE), "/")) || !is.null(resume_dir)
   )

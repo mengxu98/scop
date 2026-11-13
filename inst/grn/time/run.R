@@ -19,6 +19,10 @@ if (length(unknown)) stop("Unknown time-method argument(s): ", paste(unknown, co
 settings <- utils::modifyList(defaults, method_args[intersect(names(method_args), names(defaults))])
 set.seed(request$seed)
 native <- list()
+if (request$method %in% c("scode", "sincerities")) {
+  upstream <- new.env(parent = globalenv())
+  sys.source(request$sources[["entry"]], envir = upstream)
+}
 if (request$method == "leap") {
   if (!requireNamespace("LEAP", quietly = TRUE)) stop("Install LEAP to run this method.")
   if (length(settings$max_lag_prop) != 1L || !is.finite(settings$max_lag_prop) ||
@@ -53,7 +57,6 @@ if (request$method == "leap") {
   native$implementation <- "LEAP::MAC_counter"
   native$package_versions <- c(LEAP = as.character(utils::packageVersion("LEAP")))
 } else if (request$method == "scode") {
-  source(file.path(dirname(script), "SCODE.R"), local = TRUE)
   for (field in c("latent_dim", "n_iter", "n_runs")) {
     value <- settings[[field]]
     if (length(value) != 1L || !is.finite(value) || value < 1 || value != as.integer(value)) stop("SCODE ", field, " must be a positive integer.")
@@ -72,7 +75,7 @@ if (request$method == "leap") {
   native$runs <- lapply(seq_len(settings$n_runs), function(run) {
     set.seed(request$seed + run - 1L)
     directory <- file.path(dirname(arguments[[2L]]), paste0("scode-run-", run))
-    run_scode(expression_file, time_file, directory, nrow(expression), settings$latent_dim, ncol(expression), settings$n_iter)
+    upstream$run_scode(expression_file, time_file, directory, nrow(expression), settings$latent_dim, ncol(expression), settings$n_iter)
     matrix <- as.matrix(utils::read.table(file.path(directory, "A.txt"), sep = "\t", header = FALSE))
     if (!identical(dim(matrix), rep(nrow(expression), 2L)) || any(!is.finite(matrix))) stop("SCODE returned an invalid coefficient matrix.")
     dimnames(matrix) <- list(rownames(expression), rownames(expression))
@@ -83,11 +86,9 @@ if (request$method == "leap") {
   edges <- data.frame(regulator = colnames(native$coefficient_matrix)[index[, 2L]],
                       target = rownames(native$coefficient_matrix)[index[, 1L]],
                       weight = native$coefficient_matrix[index], signed_weight = native$coefficient_matrix[index])
-  native$implementation <- "SCODE::run_scode:manuscript-vendor"
+  native$implementation <- "SCODE::run_scode:multiCSN_manuscript"
   native$package_versions <- c(MASS = as.character(utils::packageVersion("MASS")))
 } else {
-  source(file.path(dirname(script), "SINCERITIES.R"), local = TRUE)
-  if (!requireNamespace("glmnet", quietly = TRUE) || !requireNamespace("ppcor", quietly = TRUE)) stop("Install glmnet and ppcor for SINCERITIES.")
   for (field in c("method", "noDIAG", "SIGN")) {
     value <- settings[[field]]
     allowed <- if (field == "method") 1:3 else 0:1
@@ -108,8 +109,10 @@ if (request$method == "leap") {
   if (nrow(expression) < 2L) stop("SINCERITIES needs at least two nonconstant genes.")
   data <- list(time = ordered_time, singleCELLdata = lapply(ordered_time, function(timepoint) t(expression[, times == timepoint, drop = FALSE])),
                numGENES = nrow(expression), totDATA = t(expression))
-  native$fit <- sincerities_fit(data, method = settings$method, noDIAG = settings$noDIAG,
-                                 SIGN = settings$SIGN, cores = request$cores, verbose = request$verbose)
+  native$fit <- upstream$run_SINCERITIES_parallel(data, method = settings$method, noDIAG = settings$noDIAG,
+                                                 SIGN = settings$SIGN, cores = request$cores, verbose = request$verbose)
+  native$fit <- lapply(native$fit, unname)
+  if (settings$SIGN == 1L) dimnames(native$fit$adj_matrix) <- rep(list(rownames(expression)), 2L)
   scores <- native$fit$adj_matrix
   dimnames(scores) <- list(rownames(expression), rownames(expression))
   divisor <- if (isTRUE(settings$normalize)) max(abs(scores)) else 1
@@ -120,7 +123,7 @@ if (request$method == "leap") {
                       weight = abs(scores[index]) / divisor, signed_weight = scores[index] / divisor)
   settings$normalization_divisor <- divisor
   settings$time_points <- ordered_time
-  native$implementation <- "SINCERITIES:manuscript-parallel-ridge:regulator-rows"
+  native$implementation <- "SINCERITIES::run_SINCERITIES_parallel:multiCSN_manuscript"
   native$package_versions <- c(glmnet = as.character(utils::packageVersion("glmnet")), ppcor = as.character(utils::packageVersion("ppcor")))
 }
 if (!is.null(regulators)) edges <- edges[edges$regulator %in% regulators, , drop = FALSE]
@@ -131,6 +134,6 @@ native$edges <- edges
 native$parameters <- settings
 native$genes <- rownames(expression)
 native$cells <- colnames(expression)
-sources <- c(script, if (request$method == "scode") file.path(dirname(script), "SCODE.R") else if (request$method == "sincerities") file.path(dirname(script), "SINCERITIES.R"))
+sources <- c(script, request$sources)
 native$source_sha256 <- stats::setNames(vapply(sources, function(path) digest::digest(file = path, algo = "sha256"), character(1)), basename(sources))
 saveRDS(native, arguments[[2L]])

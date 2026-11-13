@@ -94,3 +94,32 @@ grn_package_code_identity <- function(package = find.package("scop")) {
   files <- files[!grepl("(^|/)(__pycache__|[.]DS_Store)(/|$)|[.](pyc|pyo)$", relative)]
   stats::setNames(vapply(files, function(path) grn_hash(file = path), ""), substring(files, nchar(package) + 2L))
 }
+
+grn_external_sources <- function(method, resources) {
+  files <- switch(method,
+    gniplr = c(entry = "code/methods/GNIPLR.py"),
+    pidc = c(entry = "code/vendor/PIDC/PIDC.R"),
+    scode = c(entry = "code/vendor/SCODE/SCODE.R"),
+    sincerities = c(entry = "code/methods/SINCERITIES.R"),
+    scsgl = c(
+      entry = "code/vendor/SCSGL/run_scSGL.py",
+      paste0("code/vendor/SCSGL/pysrc/", c(
+        "__init__.py", "associations/__init__.py", "associations/correlation.py",
+        "graphlearning/__init__.py", "graphlearning/signed.py", "graphlearning/unsigned.py",
+        "utils/__init__.py", "utils/rowsum_matrix.py"
+      ))
+    ),
+    NULL
+  )
+  if (is.null(files)) return(NULL)
+  root <- resources$source_dir
+  if (!is.character(root) || length(root) != 1L || is.na(root) || !dir.exists(root)) {
+    stop(method, " requires resources$source_dir pointing to a multiCSN_manuscript checkout. See ?RunGRN.", call. = FALSE)
+  }
+  paths <- file.path(root, files)
+  missing <- !file.exists(paths) | dir.exists(paths)
+  if (any(missing)) {
+    stop("Missing ", method, " upstream source files: ", paste(files[missing], collapse = ", "), call. = FALSE)
+  }
+  stats::setNames(normalizePath(paths, winslash = "/", mustWork = TRUE), names(files))
+}

@@ -619,6 +619,10 @@ grnboost_python <- function(
 #'   return an edge table.
 #' @param backend Runtime backend. `"cpp"` is available for GRNBoost2 and
 #' GNIPLR; `"python"` is required for RegDiffusion.
+#' @param resources Named method-specific resources. For PIDC, SCSGL, SCODE,
+#'   SINCERITIES, and the Python GNIPLR result adapter, set \code{source_dir} to a
+#'   trusted local checkout of the linked multiCSN analysis code. The linked
+#'   GNIPLR implementation uses its fixed LASSO settings.
 #' @param output_file Optional adjacency file for `return_type = "edges"`.
 #' @param work_dir Working directory used by Python backends.
 #' @param prefix Prefix for temporary backend files.
@@ -649,6 +653,18 @@ grnboost_python <- function(
 #' @param ... Arguments passed to other functions.
 #' @return The Seurat object with the complete network in its tools, a
 #'   `TF`, `target`, and `importance` edge table, or a complete `GRNResult`.
+#' @references
+#' \url{https://github.com/mengxu98/multiCSN_manuscript/tree/42ed2c50d11ba0255326fa32ce59b97c7bb4a8b8/code}
+#'
+#' \url{https://github.com/zyllluck/GNIPLR}
+#'
+#' \url{https://doi.org/10.1016/j.cels.2017.08.014}
+#'
+#' \url{https://github.com/Single-Cell-Graph-Learning/scSGL}
+#'
+#' \url{https://github.com/hmatsu1226/SCODE}
+#'
+#' \url{https://github.com/CABSEL/SINCERITIES}
 #'
 #' @export
 #' @examples
@@ -883,6 +899,9 @@ RunGRN.default <- function(
   input <- list(object = if (is_seurat) object else NULL, expression = expression,
     cells = cells, groups = group_cells, group = NULL, pseudotime = pseudotime,
     regulators = regulators, targets = if (select_pando_targets) NULL else targets, input_mode = input_mode)
+  if (spec$runner %in% c("grn_run_rna", "grn_run_time")) {
+    config$external_sources <- grn_external_sources(spec$method, resources)
+  }
   if (spec$method == "scenicplus") grn_scenicplus_check_resources(resources)
   if (spec$method == "linger") linger_reference <- grn_linger_check_resources(input, config)
   profile <- if (spec$method == "multicsn" && input_mode == "rna") "multicsn_rna" else spec$profile
@@ -891,7 +910,8 @@ RunGRN.default <- function(
   config$resource_identity <- switch(spec$method,
     linger = grn_linger_resource_identity(input, config, linger_reference),
     scenicplus = grn_scenicplus_resource_identity(config),
-    grn_resource_identity(resources))
+    grn_resource_identity(if (is.null(config$external_sources)) resources else
+      c(resources[setdiff(names(resources), "source_dir")], list(source_files = as.list(config$external_sources)))))
   if (!early_runtime) {
     config$runtime <- if (spec$method == "pando" && !runtime_isolation) grn_pando_current_runtime(config) else grn_resolve_runtime(config, profile)
   }

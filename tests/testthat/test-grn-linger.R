@@ -60,8 +60,6 @@ test_that("LINGER rejects unsupported inputs before starting a process", {
 })
 
 test_that("LINGER reference selection hashes only the complete used file set", {
-  source_root <- testthat::test_path("..", "..")
-  if (file.exists(file.path(source_root, "inst", "grn", "linger", "reference-files.json"))) withr::local_dir(source_root)
   counts <- methods::as(matrix(1L, 2L, 3L,
     dimnames = list(c("G1", "G2"), c("c1", "c2", "c3"))), "dgCMatrix")
   object <- SeuratObject::CreateSeuratObject(counts)
@@ -76,9 +74,13 @@ test_that("LINGER reference selection hashes only the complete used file set", {
   selected <- grn_linger_reference_files(input, config)
   expect_error(grn_linger_reference_files(list(object = counts), config), "paired Seurat object")
   expect_error(grn_linger_reference_files(input, modifyList(config, list(atac_assay = "missing"))), "selected ATAC assay")
-  expect_length(selected$files, 15L)
+  expect_identical(selected$files, c(
+    "TFName.txt", "Match2.txt", "bulk_gene_all.txt", "all_hg19.txt", "motifWeight.txt",
+    "RE_gene_corr_hg19.bed", "hg38_hg19_pair.bed", "MotifTarget_Matrix_chr19.txt",
+    "MotifTarget_matrix_chr19.bed", "hg38_Peaks_chr19.bed", "chr19_gene.txt",
+    "chr19_index.txt", "chr19_index_all.txt", "fisher_chr19.pt", "all_models_chr19.pt"
+  ))
   expect_identical(selected$chromosomes, "chr19")
-  expect_true("hg38_hg19_pair.bed" %in% selected$files)
   expect_false("all_models_chr1.pt" %in% selected$files)
   for (file in selected$files) writeLines("A", file.path(directory, file))
   first <- grn_linger_resource_identity(input, config)

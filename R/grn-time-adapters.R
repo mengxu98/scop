@@ -50,6 +50,9 @@ grn_time_data <- function(input, config) {
 
 grn_run_time <- function(input, config) {
   data <- grn_time_data(input, config)
+  sources <- if (config$method %in% c("scode", "sincerities")) {
+    config$external_sources %||% grn_external_sources(config$method, config$resources)
+  }
   runtime <- if (is.null(config$runtime$kind)) grn_resolve_runtime(config, "r") else config$runtime
   config$runtime <- runtime
   dir.create(config$work_dir, recursive = TRUE, showWarnings = FALSE)
@@ -57,7 +60,7 @@ grn_run_time <- function(input, config) {
   output <- file.path(config$work_dir, "time-output.rds")
   script <- system.file("grn", "time", "run.R", package = "scop")
   if (!nzchar(script)) stop("The installed scop time-method runner is missing.", call. = FALSE)
-  saveRDS(list(data = data, method = config$method,
+  saveRDS(list(data = data, method = config$method, sources = sources,
                method_args = config$method_args, seed = config$seed,
                cores = config$cores, verbose = config$verbose), request)
   command <- runtime$rscript
