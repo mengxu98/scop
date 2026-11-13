@@ -168,6 +168,7 @@ test_that("the native object workflow and its errors stay independent of Python"
   expect_equal(dim(result$auc), c(30L, 1L))
   expect_equal(nrow(result$region_auc), 30L)
   expect_false(result$parameters$exact_reference)
+  expect_identical(result$parameters$execution_status, "completed")
   expect_equal(result$parameters$grn_early_stop_window_length, 25)
   expect_equal(result$parameters$grn_n_rounds, 10)
   args$region_gene_search_space$gene <- "not_in_input"

@@ -43,6 +43,16 @@ jobs:
               bioc::preprocessCore
               Moonerss/CIBERSORT
             required: CIBERSORT
+          - suite: grn-rna
+            filter: grn-rna-backends
+            packages: |-
+              cran::pbapply
+              cran::ppcor
+              cran::purrr
+            required: |-
+              pbapply
+              ppcor
+              purrr
 
     name: optional (${{ matrix.suite }})
 
@@ -82,9 +92,14 @@ jobs:
         shell: Rscript {0}
         env:
           SCOP_OPTIONAL_TEST_FILTER: ${{ matrix.filter }}
+          SCOP_OPTIONAL_SUITE: ${{ matrix.suite }}
         run: |
-          testthat::test_local(
+          results <- testthat::test_local(
             filter = Sys.getenv("SCOP_OPTIONAL_TEST_FILTER"),
             reporter = "summary",
             load_package = "source"
           )
+          if (Sys.getenv("SCOP_OPTIONAL_SUITE") == "grn-rna") {
+            results <- as.data.frame(results)
+            stopifnot(nrow(results) > 0L, !any(results$skipped))
+          }

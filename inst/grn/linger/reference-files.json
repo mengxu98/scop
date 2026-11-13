@@ -1,0 +1,7 @@
+{
+  "schema": "linger-1.110-reference-v1",
+  "chromosomes": ["chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12", "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr19", "chr20", "chr21", "chr22", "chrX"],
+  "common": ["TFName.txt", "Match2.txt", "bulk_gene_all.txt", "all_hg19.txt", "motifWeight.txt", "RE_gene_corr_hg19.bed"],
+  "genome_pair": {"hg19": "hg19_hg38_pair.bed", "hg38": "hg38_hg19_pair.bed"},
+  "per_chromosome": ["MotifTarget_Matrix_{chromosome}.txt", "MotifTarget_matrix_{chromosome}.bed", "{genome}_Peaks_{chromosome}.bed", "{chromosome}_gene.txt", "{chromosome}_index.txt", "{chromosome}_index_all.txt", "fisher_{chromosome}.pt", "all_models_{chromosome}.pt"]
+}

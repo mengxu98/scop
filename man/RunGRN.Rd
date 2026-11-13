@@ -16,7 +16,18 @@ RunGRN(object, ...)
   targets = NULL,
   grn_method = c("grnboost2", "regdiffusion", "genie3", "gniplr"),
   backend = c("cpp", "python"),
-  ...
+  ...,
+  return_type = "edges",
+  input_mode = NULL,
+  atac_assay = NULL,
+  atac_layer = NULL,
+  group.by = NULL,
+  groups = NULL,
+  pseudotime = NULL,
+  resources = list(),
+  method_args = list(),
+  tool_name = NULL,
+  overwrite = FALSE
 )
 
 \method{RunGRN}{default}(
@@ -47,7 +58,20 @@ RunGRN(object, ...)
   seed = 1234,
   force = FALSE,
   verbose = TRUE,
-  ...
+  ...,
+  return_type = "edges",
+  input_mode = NULL,
+  assay = NULL,
+  layer = "counts",
+  atac_assay = NULL,
+  atac_layer = NULL,
+  group.by = NULL,
+  groups = NULL,
+  pseudotime = NULL,
+  resources = list(),
+  method_args = list(),
+  tool_name = NULL,
+  overwrite = FALSE
 )
 }
 \arguments{
@@ -63,7 +87,7 @@ RunGRN(object, ...)
 
 \item{targets}{Optional target genes. If `NULL`, all genes are considered.}
 
-\item{grn_method}{GRN inference method.}
+\item{grn_method}{One registered method name, matched without case sensitivity. Supports multiCSN, GENIE3, GRNBoost2, GNIPLR, PPCOR, PIDC, SCORPION, SCSGL, LEAP, SCODE, SINCERITIES, Pando, LINGER, SCENIC+, RegDiffusion, and SCENIC.}
 
 \item{backend}{Runtime backend. `"cpp"` is available for GRNBoost2 and
 GNIPLR; `"python"` is required for RegDiffusion.}
@@ -117,14 +141,30 @@ GRNBoost2 and RegDiffusion use the isolated `"scenic_env"` environment.}
 \item{force}{Whether to rebuild existing `output_file`.}
 
 \item{verbose}{Whether to print progress messages.}
+
+\item{return_type}{Return the compatible edge table, a complete \code{GRNResult}, or the input Seurat object with a named tool entry.}
+
+\item{input_mode}{\code{"rna"} or \code{"multiome"}. Multiome methods require a Seurat object.}
+
+\item{atac_assay,atac_layer}{Chromatin assay and exact layer. Join split layers before inference.}
+
+\item{group.by}{Metadata column or cell-ID-named vector defining separately fitted networks.}
+
+\item{groups}{Optional existing group labels, in the requested order.}
+
+\item{pseudotime}{Seurat metadata column, named numeric vector, or cell-by-trajectory matrix. Time methods align by cell ID.}
+
+\item{resources}{Named biological resources required by the selected method. See the GRN tutorial for genome, motif and reference paths.}
+
+\item{method_args}{Named method-specific arguments. The reserved \code{runtime} list accepts \code{python}, \code{rscript}, \code{r_library}, and \code{timeout}. Unknown or repeated arguments fail before inference. SCENIC+ and LINGER can resume one selected group at a time using \code{resume_dir}.}
+
+\item{tool_name,overwrite}{Name and replacement policy for a Seurat tools entry. Computation completes before the object is updated.}
 }
 \value{
-A data frame with standardized GRN edges.
+The original adjacency table for compatible calls, a complete \code{GRNResult}, or a Seurat object. Multi-group inference requires \code{return_type="result"} or \code{"seurat"}.
 }
 \description{
-Unified GRN inference entry point for GRNBoost2, GENIE3, RegDiffusion, and
-GNIPLR. It returns a standardized adjacency table with at least `TF`,
-`target`, and `importance` columns.
+Run transcriptomic and multiomic network methods through one entry point. Complete results retain native scores, direction, sign evidence, groups, runtime identity, and method parameters. Use GetGRN and GRNPlot to read and display the results.
 }
 \examples{
 data(pancreas_sub)

@@ -1,0 +1,7 @@
+args <- commandArgs(trailingOnly = TRUE)
+request <- readRDS(args[[1L]])
+.libPaths(request$libraries, include.site = FALSE)
+if (!requireNamespace("scop", quietly = TRUE)) stop("Install scop in the selected RNA runtime library.")
+runner <- getFromNamespace("grn_run_rna", "scop")
+result <- runner(request$input, request$config)
+saveRDS(result, args[[2L]])

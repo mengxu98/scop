@@ -246,7 +246,9 @@ retains the older approximation and its unfiltered fallback.}
 region signature AUC. If absent, rankings are computed locally from ATAC.}
 }
 \value{
-A Seurat object with SCENICPlus-style results.
+A Seurat object with SCENICPlus-style results. The result parameters record
+\code{execution_status = "imported"} for the Python reader and
+\code{execution_status = "completed"} for the C++ workflow.
 }
 \description{
 Read official SCENIC+ result tables or build an approximate eRegulon result

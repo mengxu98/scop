@@ -82,6 +82,12 @@ PrepareEnv <- function(
   components <- norm_env_components(components)
   modules <- trimws(as.character(unlist(modules, use.names = FALSE)))
   modules <- normalize_env_modules(modules = modules)
+  grn_r_modules <- c("genie3", "ppcor", "pidc", "scorpion", "leap", "scode", "sincerities", "multicsn", "pando")
+  if (length(modules) && all(modules %in% grn_r_modules) && components_missing) components <- "r"
+  if (any(modules %in% grn_r_modules) && "python" %in% components) {
+    stop("These GRN modules use R. Prepare them with components = 'r'; prepare Python modules separately.", call. = FALSE)
+  }
+  if ("grnboost2" %in% modules && version_missing) version <- "3.9-1"
   if ("python" %in% components && all(c("scvi", "moscot") %in% modules)) {
     log_message(
       "The moscot JAX profile is incompatible with scvi-tools 1.3.3 pinned to JAX 0.4.38. Prepare these modules in separate environments.",
@@ -106,10 +112,10 @@ PrepareEnv <- function(
     version <- "3.10-1"
   }
   if ("scenic" %in% modules) {
-    scenic_allowed <- c("scenic", "regdiffusion")
+    scenic_allowed <- "scenic"
     if (length(setdiff(modules, scenic_allowed)) > 0) {
       log_message(
-        "{.arg modules = 'scenic'} must be prepared as a standalone environment, optionally with {.val regdiffusion}. Run {.code PrepareEnv(envname = 'scenic_env', modules = c('scenic', 'regdiffusion'))}.",
+        "SCENIC and RegDiffusion require separate dependency profiles. Prepare {.val scenic} and {.val regdiffusion} in separate environments.",
         message_type = "error"
       )
     }
@@ -628,6 +634,19 @@ supported_env_modules <- function() {
     "multimap",
     "scomm",
     "scenic",
+    "grnboost2",
+    "gniplr",
+    "scsgl",
+    "linger",
+    "genie3",
+    "ppcor",
+    "pidc",
+    "scorpion",
+    "leap",
+    "scode",
+    "sincerities",
+    "multicsn",
+    "pando",
     "regdiffusion",
     "scenicplus",
     "scenicplus_io",
@@ -653,6 +672,7 @@ default_env_modules <- function() {
     "sccoda",
     "scomm",
     "scenic",
+    "genie3", "ppcor", "pidc", "scorpion", "leap", "scode", "sincerities", "multicsn", "pando",
     "regdiffusion",
     "scenicplus",
     "scmalignantfinder",
@@ -875,7 +895,29 @@ env_module_requirements <- function() {
       ),
       environment = "celloracle_env"
     ),
-    regdiffusion = env_python_spec(c("regdiffusion" = "regdiffusion")),
+    grnboost2 = env_python_spec(c(
+      arboreto = "arboreto==0.1.6", numpy = "numpy==1.24.3", pandas = "pandas==1.5.3",
+      dask = "dask==2023.5.0", distributed = "distributed==2023.5.0",
+      scipy = "scipy==1.10.1", "scikit-learn" = "scikit-learn==1.3.2"
+    ), environment = "grnboost2_env"),
+    gniplr = env_python_spec(c(
+      numpy = "numpy==1.26.4", pandas = "pandas==2.2.0", scipy = "scipy==1.15.3",
+      "scikit-learn" = "scikit-learn==1.7.0", statsmodels = "statsmodels==0.14.6"
+    ), environment = "gniplr_env"),
+    scsgl = env_python_spec(c(
+      numpy = "numpy==1.26.4", pandas = "pandas==2.2.0", scipy = "scipy==1.15.3",
+      "scikit-learn" = "scikit-learn==1.7.0"
+    ), environment = "scsgl_env"),
+    linger = env_python_spec(c(
+      LingerGRN = "LingerGRN==1.110", numpy = "numpy==1.26.4", pandas = "pandas==2.0.3",
+      torch = "torch==2.6.0", anndata = "anndata==0.10.5.post1", scanpy = "scanpy==1.9.8",
+      h5py = "h5py", scipy = "scipy", pybedtools = "pybedtools", bedtools = "bedtools"
+    ), methods = c(LingerGRN = "pip", numpy = "pip", pandas = "pip", torch = "pip", anndata = "pip",
+                   scanpy = "pip", h5py = "pip", scipy = "pip", pybedtools = "pip", bedtools = "conda"), environment = "linger_env"),
+    regdiffusion = env_python_spec(c(
+      regdiffusion = "regdiffusion==0.2.2", numpy = "numpy==1.26.4", pandas = "pandas==2.2.0",
+      torch = "torch==2.7.1", scanpy = "scanpy==1.11.3", scipy = "scipy==1.15.3"
+    ), environment = "regdiffusion_env"),
     scenicplus = env_python_spec(
       c(
         "scenicplus" = "scenicplus @ git+https://github.com/aertslab/scenicplus.git@840dab85de3044846234c157e327b6ea0290abfb",
@@ -883,10 +925,12 @@ env_module_requirements <- function() {
         "pycistarget" = "pycistarget @ git+https://github.com/aertslab/pycistarget@5aa517604e4842539a7531c16905825dc7cb80fb",
         "loomxpy" = "loomxpy @ git+https://github.com/aertslab/LoomXpy@61995ff10940968eac2cee8fe48300ab477a15d0",
         "pyscenic" = "pyscenic @ git+https://github.com/aertslab/pySCENIC@06bafba412792f6efa5a552a23bb221cc3bdea1b",
+        "pybiomart" = "pybiomart",
+        "gseapy" = "gseapy",
         stats::setNames(scenicplus_build, scenicplus_build)
       ),
       methods = c(
-        stats::setNames(rep("pip", 5L), c("scenicplus", "pycistopic", "pycistarget", "loomxpy", "pyscenic")),
+        stats::setNames(rep("pip", 7L), c("scenicplus", "pycistopic", "pycistarget", "loomxpy", "pyscenic", "pybiomart", "gseapy")),
         stats::setNames(rep("conda", length(scenicplus_build)), scenicplus_build)
       ),
       environment = "scenicplus_env"
@@ -1032,6 +1076,11 @@ norm_env_components <- function(components = "python") {
 
 env_r_packages <- function(modules = NULL) {
   modules <- normalize_env_modules(modules = modules)
+  grn <- list(genie3 = "GENIE3", ppcor = "ppcor", pidc = c("pbapply", "purrr", "thisutils"), scorpion = "SCORPION",
+              leap = "LEAP", scode = "MASS", sincerities = c("glmnet", "ppcor", "thisutils"),
+              multicsn = c("mengxu98/multiCSN", "mengxu98/inferCSN"),
+              pando = c("quadbiolab/Pando", "Signac", "BSgenome.Hsapiens.UCSC.hg38", "foreach", "doParallel"))
+  if (length(modules) && all(modules %in% names(grn))) return(unique(unlist(grn[modules], use.names = FALSE)))
   description_path <- if (file.exists("DESCRIPTION")) {
     "DESCRIPTION"
   } else {
@@ -1931,10 +1980,10 @@ env_requirements <- function(
     stop("SCENIC+ must be used as a standalone environment module.", call. = FALSE)
   }
   if ("scenic" %in% modules) {
-    scenic_allowed <- c("scenic", "regdiffusion")
+    scenic_allowed <- "scenic"
     if (length(setdiff(modules, scenic_allowed)) > 0) {
       log_message(
-        "{.arg modules = 'scenic'} must be used as a standalone environment module, optionally with {.val regdiffusion}.",
+        "SCENIC and RegDiffusion require separate dependency profiles. Prepare {.val scenic} and {.val regdiffusion} in separate environments.",
         message_type = "error"
       )
     }
@@ -1980,7 +2029,7 @@ env_requirements <- function(
     version <- "3.10-1"
   }
   if (identical(version, "3.9-1") &&
-    !any(c("cell2fate", "commot", "scmalignantfinder") %in% modules)) {
+    !any(c("cell2fate", "commot", "scmalignantfinder", "grnboost2") %in% modules)) {
     log_message(
       "{.arg version = '3.9-1'} is only supported for standalone Python 3.9 modules such as {.val cell2fate} and {.val commot}.",
       message_type = "error"
@@ -1993,7 +2042,7 @@ env_requirements <- function(
     spatialdm_core_python_requirements()
   } else if ("scmalignantfinder" %in% modules) {
     scmalignantfinder_core_python_requirements()
-  } else if (any(c("scenic", "scenicplus", "scenicplus_io", "cell2fate", "celloracle") %in% modules)) {{ list(
+  } else if (any(c("scenic", "scenicplus", "scenicplus_io", "cell2fate", "celloracle", "grnboost2", "gniplr", "scsgl", "linger", "regdiffusion") %in% modules)) {{ list(
     packages = c(
       "setuptools" = "setuptools<81"
     ),

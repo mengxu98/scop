@@ -584,6 +584,7 @@ RunSCENICPlus <- function(
     parameters = list(
       backend = backend,
       method = "scenicplus_approximation",
+      execution_status = "completed",
       exact_reference = FALSE,
       scope = "package eGRN approximation",
       grn_method = grn_method,
@@ -729,6 +730,7 @@ run_scenicplus_python <- function(
     parameters = list(
       backend = "python",
       method = "official_scenicplus_standardized",
+      execution_status = "imported",
       rna_assay = rna_assay,
       atac_assay = atac_assay,
       python_result_dir = normalizePath(python_result_dir, mustWork = FALSE),

@@ -1,0 +1,10 @@
+arguments <- commandArgs(trailingOnly = TRUE)
+if (length(arguments) != 2L) stop("Expected Pando request and result paths.", call. = FALSE)
+file_argument <- commandArgs(trailingOnly = FALSE)
+file_argument <- file_argument[startsWith(file_argument, "--file=")]
+script <- normalizePath(sub("^--file=", "", file_argument[[1L]]), mustWork = TRUE)
+source(file.path(dirname(script), "native.R"), local = TRUE)
+request <- readRDS(arguments[[1L]])
+if (length(request$config$runtime$r_library)) .libPaths(request$config$runtime$r_library, include.site = FALSE)
+result <- grn_pando_fit(request)
+saveRDS(result, arguments[[2L]])

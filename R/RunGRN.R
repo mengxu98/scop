@@ -773,24 +773,298 @@ RunGRN.Seurat <- function(
   targets = NULL,
   grn_method = c("grnboost2", "regdiffusion", "genie3", "gniplr"),
   backend = c("cpp", "python"),
-  ...
+  ...,
+  return_type = "edges", input_mode = NULL, atac_assay = NULL, atac_layer = NULL,
+  group.by = NULL, groups = NULL, pseudotime = NULL, resources = list(),
+  method_args = list(), tool_name = NULL, overwrite = FALSE
 ) {
-  assay <- assay %||% SeuratObject::DefaultAssay(object)
-  expr <- GetAssayData5(object, assay = assay, layer = layer)
   RunGRN.default(
-    expr,
+    object,
     regulators = regulators,
     targets = targets,
     genes_in = "rows",
-    grn_method = grn_method,
-    backend = backend,
-    ...
+    grn_method = if (missing(grn_method)) "grnboost2" else grn_method,
+    backend = if (missing(backend)) NULL else backend,
+    ...,
+    assay = assay, layer = layer, return_type = return_type, input_mode = input_mode,
+    atac_assay = atac_assay, atac_layer = atac_layer, group.by = group.by,
+    groups = groups, pseudotime = pseudotime, resources = resources,
+    method_args = method_args, tool_name = tool_name, overwrite = overwrite
   )
 }
 
-#' @rdname RunGRN
-#' @export
 RunGRN.default <- function(
+  object, regulators = NULL, targets = NULL,
+  genes_in = c("rows", "columns"),
+  grn_method = c("grnboost2", "regdiffusion", "genie3", "gniplr"),
+  backend = c("cpp", "python"), output_file = NULL, work_dir = tempdir(), prefix = "grn",
+  max_edges_per_target = Inf, n_rounds = 5000, learning_rate = 0.01,
+  max_depth = 3, max_features = 0.1, subsample = 0.9, early_stop_window_length = 25,
+  exclude_self = TRUE, correlation_threshold = 0.3, lasso_degree = 30,
+  lasso_alpha = 0.1, max_lag = 3, envname = NULL, conda = "auto", cores = 1,
+  seed = 1234, force = FALSE, verbose = TRUE, ...,
+  return_type = "edges", input_mode = NULL, assay = NULL, layer = "counts",
+  atac_assay = NULL, atac_layer = NULL, group.by = NULL, groups = NULL,
+  pseudotime = NULL, resources = list(), method_args = list(),
+  tool_name = NULL, overwrite = FALSE
+) {
+  method <- if (missing(grn_method)) "grnboost2" else grn_method
+  if (length(method) != 1L || is.na(method)) stop("Choose exactly one GRN method.", call. = FALSE)
+  return_type <- match.arg(return_type, c("edges", "result", "seurat"))
+  spec <- grn_method_spec(method, if (missing(backend) || is.null(backend)) NULL else backend)
+  if (spec$method == "pando") {
+    restore_pando_session <- grn_pando_preserve_session()
+    on.exit(restore_pando_session(), add = TRUE)
+  }
+  dots <- list(...)
+  scientific <- list(max_edges_per_target = max_edges_per_target, n_rounds = n_rounds,
+    learning_rate = learning_rate, max_depth = max_depth, max_features = max_features,
+    subsample = subsample, early_stop_window_length = early_stop_window_length,
+    exclude_self = exclude_self, correlation_threshold = correlation_threshold,
+    lasso_degree = lasso_degree, lasso_alpha = lasso_alpha, max_lag = max_lag)
+  is_seurat <- inherits(object, "Seurat")
+  assay <- if (is_seurat) assay %||% SeuratObject::DefaultAssay(object) else assay
+  legacy <- spec$method %in% c("grnboost2", "regdiffusion", "genie3", "gniplr") &&
+    return_type == "edges" && is.null(group.by) && is.null(groups) &&
+    is.null(pseudotime) && is.null(input_mode) && !length(resources) && !length(method_args) && spec$backend %in% c("cpp", "python")
+  if (legacy) {
+    expression <- if (is_seurat) GetAssayData5(object, assay = assay, layer = layer) else object
+    old_backend <- if (missing(backend) || is.null(backend)) "cpp" else backend
+    return(do.call(grn_legacy_inference, c(list(object = expression, regulators = regulators,
+      targets = targets, genes_in = genes_in, grn_method = spec$method, backend = old_backend,
+      output_file = output_file, work_dir = work_dir, prefix = prefix), scientific,
+      list(envname = envname, conda = conda, cores = cores, seed = seed, force = force, verbose = verbose), dots)))
+  }
+  if (!is.list(method_args) || !is.list(resources) || (length(method_args) && (is.null(names(method_args)) || any(!nzchar(names(method_args))) || anyDuplicated(names(method_args))))) stop("method_args and resources must be named lists.", call. = FALSE)
+  explicit <- intersect(names(match.call(expand.dots = FALSE)), names(scientific))
+  arguments <- c(scientific[explicit], dots, method_args)
+  if (anyDuplicated(names(arguments))) stop("Method arguments repeat an explicit top-level argument.", call. = FALSE)
+  runtime <- arguments$runtime %||% list()
+  arguments$runtime <- NULL
+  runtime_isolation <- FALSE
+  if (spec$method == "pando") {
+    if (!is.list(runtime) || (length(runtime) && (is.null(names(runtime)) ||
+        anyDuplicated(names(runtime)) || any(!names(runtime) %in% c("rscript", "r_library", "timeout"))))) {
+      stop("Pando runtime options must specify an R interpreter, library or timeout.", call. = FALSE)
+    }
+    if (is.null(resources$genome)) stop("Pando requires resources$genome matching the chromatin coordinates.", call. = FALSE)
+    runtime_isolation <- any(c("rscript", "r_library", "timeout") %in% names(runtime)) ||
+      "multiCSN" %in% loadedNamespaces()
+  }
+  unknown <- setdiff(names(arguments), spec$allowed_args)
+  if (length(unknown)) stop("Unknown argument(s) for ", spec$method, ": ", paste(unknown, collapse = ", "), call. = FALSE)
+  if (return_type == "seurat" && !is_seurat) stop("return_type = 'seurat' requires a Seurat object.", call. = FALSE)
+  tool_name <- tool_name %||% paste0("GRN_", spec$method)
+  if (return_type == "seurat" && tool_name %in% names(object@tools) && !isTRUE(overwrite)) stop("The GRN tool_name already exists. Choose another name or use overwrite = TRUE.", call. = FALSE)
+  input_mode <- input_mode %||% if (length(spec$input_modes) == 1L) spec$input_modes else "rna"
+  if (length(input_mode) != 1L || !input_mode %in% spec$input_modes) stop("Unsupported input_mode for ", spec$method, ".", call. = FALSE)
+  if (input_mode == "multiome" && !is_seurat) stop("Multiome inference requires a Seurat object.", call. = FALSE)
+  if (!is.null(output_file) && file.exists(output_file) && !isTRUE(force)) stop("The output_file already exists. Choose a new path or use force = TRUE.", call. = FALSE)
+  if (is_seurat) {
+    if (!assay %in% SeuratObject::Assays(object)) stop("Unknown RNA assay.", call. = FALSE)
+    rna_layers <- SeuratObject::Layers(object[[assay]], search = layer)
+    if (length(rna_layers) != 1L || !identical(rna_layers, layer)) stop("Select one exact RNA layer. Use SeuratObject::JoinLayers() to combine split layers first.", call. = FALSE)
+  }
+  if (input_mode == "multiome") {
+    candidates <- SeuratObject::Assays(object)[vapply(SeuratObject::Assays(object), function(name) inherits(object[[name]], "ChromatinAssay"), logical(1))]
+    if (is.null(atac_assay)) {
+      if (length(candidates) != 1L) stop("Specify atac_assay for multiome inference.", call. = FALSE)
+      atac_assay <- candidates[[1L]]
+    }
+    if (!atac_assay %in% SeuratObject::Assays(object)) stop("Unknown ATAC assay.", call. = FALSE)
+    atac_layer <- atac_layer %||% if (spec$method == "multicsn") "data" else "counts"
+    atac_layers <- SeuratObject::Layers(object[[atac_assay]], search = atac_layer)
+    if (length(atac_layers) != 1L || !identical(atac_layers, atac_layer)) stop("Select one exact ATAC layer. Use SeuratObject::JoinLayers() to combine split layers first.", call. = FALSE)
+  }
+  expression <- if (is_seurat) GetAssayData5(object, assay = assay, layer = layer) else object
+  expression <- Matrix::t(grn_matrix_from_object(expression, genes_in = genes_in))
+  cells <- colnames(expression)
+  genes <- rownames(expression)
+  if (anyNA(cells) || anyNA(genes) || any(!nzchar(cells)) || any(!nzchar(genes)) || anyDuplicated(cells) || anyDuplicated(genes)) stop("GRN input requires unique, complete gene and cell identifiers.", call. = FALSE)
+  values <- if (inherits(expression, "sparseMatrix")) expression@x else as.vector(expression)
+  if (!is.numeric(values) || any(!is.finite(values))) stop("GRN expression values must be finite numbers.", call. = FALSE)
+  if (is.null(group.by)) {
+    group_cells <- list(all = cells)
+  } else {
+    labels <- if (is_seurat && is.character(group.by) && length(group.by) == 1L) {
+      if (!group.by %in% colnames(object[[]])) stop("Unknown group.by metadata column.", call. = FALSE)
+      stats::setNames(as.character(object[[]][cells, group.by]), cells)
+    } else group.by
+    if (is.null(names(labels)) || anyDuplicated(names(labels)) || !all(cells %in% names(labels))) stop("Matrix group.by must be named by cell ID.", call. = FALSE)
+    labels <- as.character(labels[cells])
+    if (anyNA(labels) || any(!nzchar(labels))) stop("GRN group labels must be complete.", call. = FALSE)
+    group_cells <- stats::setNames(lapply(unique(labels), function(label) cells[labels == label]), unique(labels))
+  }
+  if (!is.null(groups)) {
+    if (!length(groups) || anyDuplicated(groups) || !all(groups %in% names(group_cells))) stop("groups must select existing unique group names.", call. = FALSE)
+    group_cells <- group_cells[groups]
+  }
+  if (return_type == "edges" && length(group_cells) != 1L) stop("Use return_type = 'result' or 'seurat' for multiple groups.", call. = FALSE)
+  if (spec$method %in% c("scenicplus", "linger") && length(group_cells) != 1L && !is.null(arguments$resume_dir)) {
+    stop(if (spec$method == "scenicplus") "SCENIC+ " else "LINGER ",
+      "resume_dir requires exactly one selected group.", call. = FALSE)
+  }
+  resume_linger <- spec$method == "linger" && !is.null(arguments$resume_dir)
+  if (resume_linger) {
+    resume_dir <- arguments$resume_dir
+    if (!is.character(resume_dir) || length(resume_dir) != 1L || is.na(resume_dir) ||
+        !dir.exists(resume_dir) || !file.exists(file.path(resume_dir, "prepare.completed.json")) ||
+        dir.exists(file.path(resume_dir, "prepare.completed.json"))) {
+      stop("LINGER resume_dir must contain a completed prepare checkpoint.", call. = FALSE)
+    }
+    arguments$resume_dir <- normalizePath(resume_dir, winslash = "/", mustWork = TRUE)
+  }
+  cells <- cells[cells %in% unlist(group_cells, use.names = FALSE)]
+  expression <- expression[, cells, drop = FALSE]
+  if (is.character(pseudotime) && length(pseudotime) == 1L && is_seurat) {
+    if (!pseudotime %in% colnames(object[[]])) stop("Unknown pseudotime metadata column.", call. = FALSE)
+    pseudotime <- stats::setNames(object[[]][cells, pseudotime], cells)
+  }
+  if (!is.null(pseudotime)) {
+    if (is.null(dim(pseudotime))) pseudotime <- matrix(pseudotime, ncol = 1L, dimnames = list(names(pseudotime), "trajectory"))
+    pseudotime <- as.matrix(pseudotime)
+    if (!is.numeric(pseudotime) || is.null(rownames(pseudotime)) || anyDuplicated(rownames(pseudotime)) || !all(cells %in% rownames(pseudotime))) stop("pseudotime must have numeric values and unique cell IDs.", call. = FALSE)
+    pseudotime <- pseudotime[cells, , drop = FALSE]
+    if (any(!is.finite(pseudotime) & !is.na(pseudotime)) || any(rowSums(is.finite(pseudotime)) == 0L)) stop("Each cell needs a finite pseudotime on at least one trajectory.", call. = FALSE)
+  } else if (isTRUE(spec$time)) stop("This method requires named pseudotime values.", call. = FALSE)
+  regulators <- unique(as.character(regulators %||% genes))
+  select_pando_targets <- spec$method == "pando" && is.null(targets)
+  targets <- unique(as.character(targets %||% genes))
+  if (!length(intersect(regulators, genes)) || !length(intersect(targets, genes))) stop("No candidate regulators or targets occur in the input.", call. = FALSE)
+  if (length(cores) != 1L || !is.finite(cores) || cores < 1 || cores != as.integer(cores)) stop("cores must be a positive integer.", call. = FALSE)
+  if (length(seed) != 1L || !is.finite(seed)) stop("seed must be a finite number.", call. = FALSE)
+  config <- list(method = spec$method, backend = spec$backend, input_mode = input_mode,
+    method_args = arguments, resources = resources, runtime = runtime, runtime_isolation = runtime_isolation, assay = assay, layer = layer,
+    atac_assay = atac_assay, atac_layer = atac_layer, group.by = group.by, groups = group_cells,
+    cores = as.integer(cores), seed = as.integer(seed), work_dir = work_dir, envname = envname,
+    conda = conda, force = force, verbose = verbose, runner = spec$runner, prepare = spec$prepare,
+    implementation = paste(spec$method, spec$backend, sep = "/"), package_versions = c(scop = as.character(utils::packageVersion("scop"))))
+  input <- list(object = if (is_seurat) object else NULL, expression = expression,
+    cells = cells, groups = group_cells, group = NULL, pseudotime = pseudotime,
+    regulators = regulators, targets = if (select_pando_targets) NULL else targets, input_mode = input_mode)
+  if (spec$method == "scenicplus") grn_scenicplus_check_resources(resources)
+  if (spec$method == "linger") linger_reference <- grn_linger_check_resources(input, config)
+  profile <- if (spec$method == "multicsn" && input_mode == "rna") "multicsn_rna" else spec$profile
+  early_runtime <- spec$method %in% c("scenicplus", "linger")
+  if (early_runtime) config$runtime <- grn_resolve_runtime(config, profile)
+  config$resource_identity <- switch(spec$method,
+    linger = grn_linger_resource_identity(input, config, linger_reference),
+    scenicplus = grn_scenicplus_resource_identity(config),
+    grn_resource_identity(resources))
+  if (!early_runtime) {
+    config$runtime <- if (spec$method == "pando" && !runtime_isolation) grn_pando_current_runtime(config) else grn_resolve_runtime(config, profile)
+  }
+  compute <- function() {
+    attempt <- tempfile(paste0(prefix, "-"), tmpdir = work_dir)
+    dir.create(attempt, recursive = TRUE, showWarnings = FALSE)
+    run_config <- config
+    run_config$work_dir <- attempt
+    prepared <- if (is.null(spec$prepare)) input else get(spec$prepare, mode = "function")(input, run_config)
+    had_rng <- exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
+    if (had_rng) old_rng <- get(".Random.seed", envir = .GlobalEnv)
+    on.exit(if (had_rng) assign(".Random.seed", old_rng, envir = .GlobalEnv) else if (exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) rm(".Random.seed", envir = .GlobalEnv), add = TRUE)
+    fitted <- lapply(seq_along(group_cells), function(index) {
+      group_input <- prepared
+      group_input$group <- names(group_cells)[[index]]
+      group_input$cells <- group_cells[[index]]
+      group_input$expression <- prepared$expression[, group_input$cells, drop = FALSE]
+      group_input$pseudotime <- if (is.null(pseudotime)) NULL else pseudotime[group_input$cells, , drop = FALSE]
+      group_config <- run_config
+      group_config$work_dir <- file.path(attempt, sprintf("group-%04d", index))
+      dir.create(group_config$work_dir, recursive = TRUE, showWarnings = FALSE)
+      set.seed(config$seed)
+      value <- get(spec$runner, mode = "function")(group_input, group_config)
+      value$chains <- value$chains %||% list(status = "not_supported")
+      value$gene_sets <- value$gene_sets %||% list(status = "not_supported")
+      if (isTRUE(spec$allow_cell_filter)) {
+        if (anyDuplicated(value$cells) || !length(value$cells) || !all(value$cells %in% group_input$cells)) stop("The GRN backend returned invalid retained cells.", call. = FALSE)
+        value$input_cells <- group_input$cells
+      } else if (!identical(as.character(value$cells), as.character(group_input$cells))) stop("The GRN backend returned cells from a different group.", call. = FALSE)
+      value
+    })
+    names(fitted) <- names(group_cells)
+    artifacts <- unname(do.call(c, lapply(fitted, function(value) value$execution$artifacts %||% list())))
+    result <- structure(list(schema_version = "1.0", method = spec$method,
+      implementation = unique(vapply(fitted, `[[`, character(1), "implementation")),
+      package_versions = lapply(fitted, `[[`, "package_versions"),
+      parameters = list(method_args = arguments, backend = spec$backend, seed = config$seed, cores = config$cores),
+      input_summary = list(cells = cells, features = genes, groups = group_cells),
+      resources = config$resource_identity, execution = list(status = "completed", artifacts = artifacts, work_dir = attempt),
+      groups = fitted), class = c("GRNResult", "list"))
+    grn_validate_result(result)
+    result
+  }
+  dir.create(work_dir, recursive = TRUE, showWarnings = FALSE)
+  if (resume_linger) config$force <- TRUE
+  result <- grn_cached_run(input, config, compute)
+  if (return_type == "result") return(result)
+  if (return_type == "seurat") {
+    object@tools[[tool_name]] <- result
+    return(object)
+  }
+  edges <- GetGRN(result)
+  adjacency <- data.frame(TF = edges$source, target = edges$target, importance = edges$raw_score, stringsAsFactors = FALSE)
+  write_grn_adjacency(adjacency, output_file = output_file, force = force)
+}
+
+grn_run_scenic <- function(input, config) {
+  if (is.null(input$object)) {
+    object <- SeuratObject::CreateSeuratObject(counts = input$expression)
+    assay <- SeuratObject::DefaultAssay(object)
+    layer <- "counts"
+  } else {
+    object <- input$object[, input$cells]
+    assay <- config$assay
+    layer <- config$layer
+  }
+  native <- do.call(RunSCENIC, c(list(object = object, assay = assay, layer = layer,
+    regulators = input$regulators, targets = input$targets,
+    ranking_dbs = config$resources$ranking_dbs, motif_annotations = config$resources$motif_annotation,
+    work_dir = config$work_dir, backend = config$backend, cores = config$cores,
+    seed = config$seed, return_seurat = FALSE, envname = config$envname,
+    conda = config$conda, verbose = config$verbose), config$method_args))
+  list(cells = input$cells, native = native,
+    layer_specs = list(tf_gene = list(status = "computed", table_path = "adjacency", source = "TF", target = "target",
+      score = "importance", source_type = "TF", target_type = "gene", score_type = "feature_importance", directed = TRUE,
+      sign_column = NULL, sign_basis = "unknown", rank_by = "score")),
+    gene_sets = list(status = "computed", table_path = "regulon_list"),
+    parameters = native$parameters, implementation = paste0("SCENIC/", config$backend),
+    package_versions = c(scop = as.character(utils::packageVersion("scop"))), execution = list(status = "completed", artifacts = list()))
+}
+
+grn_run_legacy <- function(input, config) {
+  args <- config$method_args
+  if (config$method == "genie3") {
+    native <- do.call(RunGENIE3, c(list(object = input$expression, regulators = input$regulators,
+      targets = input$targets, genes_in = "rows", cores = config$cores, verbose = config$verbose), args))
+  } else {
+    native <- do.call(grn_legacy_inference, c(list(object = input$expression,
+      regulators = input$regulators, targets = input$targets, genes_in = "rows", grn_method = config$method,
+      backend = config$backend, cores = config$cores, seed = config$seed, verbose = config$verbose), args))
+  }
+  attr(native, "grn_matrix") <- NULL
+  relevant <- switch(config$method,
+    grnboost2 = c("max_edges_per_target", "n_rounds", "learning_rate", "max_depth", "max_features", "subsample", "early_stop_window_length", "exclude_self"),
+    gniplr = c("max_edges_per_target", "correlation_threshold", "lasso_degree", "lasso_alpha", "max_lag"),
+    genie3 = "max_edges_per_target")
+  defaults <- lapply(formals(grn_legacy_inference)[relevant], eval, envir = baseenv())
+  if (config$method == "genie3") defaults <- c(defaults, lapply(formals(GENIE3::GENIE3)[c("treeMethod", "K", "nTrees")], eval, envir = baseenv()))
+  parameters <- utils::modifyList(defaults, args)
+  parameters$cores <- config$cores
+  parameters$seed <- config$seed
+  spec <- list(status = "computed", table_path = character(), source = "TF", target = "target",
+      score = "importance", source_type = "TF", target_type = "gene", score_type = "importance", directed = TRUE,
+      sign_column = NULL, sign_basis = "unknown", rank_by = "score")
+  if (config$method == "gniplr") {
+    spec$rows <- which(native$TF %in% input$regulators & native$target %in% input$targets)
+    parameters$candidate_filter <- "postfit_view"
+  }
+  list(cells = input$cells, native = native, layer_specs = list(tf_gene = spec),
+    parameters = parameters, implementation = paste0("scop::", config$method, "/", config$backend),
+    package_versions = c(scop = as.character(utils::packageVersion("scop"))), execution = list(status = "completed", artifacts = list()))
+}
+
+grn_legacy_inference <- function(
   object,
   regulators = NULL,
   targets = NULL,
