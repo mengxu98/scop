@@ -91,31 +91,31 @@ decontaminated counts in a new assay.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-11-12 05:32:25] Start standard processing workflow...
-#> ℹ [2026-11-12 05:32:25] Checking a list of <Seurat>...
-#> ! [2026-11-12 05:32:25] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-11-12 05:32:25] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-11-12 05:32:25] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-12 05:32:25] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-12 05:32:25] Number of available HVF: 2000
-#> ℹ [2026-11-12 05:32:25] Finished check
-#> ℹ [2026-11-12 05:32:25] Perform `ScaleData()`
-#> ℹ [2026-11-12 05:32:25] Perform pca linear dimension reduction
-#> ℹ [2026-11-12 05:32:26] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-11-12 05:32:26] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-12 05:32:26] Reorder clusters...
-#> ℹ [2026-11-12 05:32:26] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-12 05:32:26] Perform umap nonlinear dimension reduction
-#> ✔ [2026-11-12 05:32:35] Standard processing workflow completed
+#> ℹ [2026-11-13 06:14:16] Start standard processing workflow...
+#> ℹ [2026-11-13 06:14:16] Checking a list of <Seurat>...
+#> ! [2026-11-13 06:14:16] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-13 06:14:16] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-13 06:14:17] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-13 06:14:17] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-13 06:14:17] Number of available HVF: 2000
+#> ℹ [2026-11-13 06:14:17] Finished check
+#> ℹ [2026-11-13 06:14:17] Perform `ScaleData()`
+#> ℹ [2026-11-13 06:14:17] Perform pca linear dimension reduction
+#> ℹ [2026-11-13 06:14:17] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-11-13 06:14:17] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-13 06:14:17] Reorder clusters...
+#> ℹ [2026-11-13 06:14:18] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-13 06:14:18] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-13 06:14:28] Standard processing workflow completed
 pancreas_sub <- RunDecontX(
   pancreas_sub,
   group.by = "CellType"
 )
-#> ℹ [2026-11-12 05:32:35] Running decontX
-#> ℹ [2026-11-12 05:32:35] Data type is raw counts
-#> ℹ [2026-11-12 05:32:53] decontX contamination (median/mean/max): 0.0272 / 0.0875 / 0.6737
-#> ℹ [2026-11-12 05:32:54] decontX assay stored as decontXcounts
-#> ✔ [2026-11-12 05:32:54] decontX decontamination completed
+#> ℹ [2026-11-13 06:14:28] Running decontX
+#> ℹ [2026-11-13 06:14:28] Data type is raw counts
+#> ℹ [2026-11-13 06:14:44] decontX contamination (median/mean/max): 0.0272 / 0.0875 / 0.6737
+#> ℹ [2026-11-13 06:14:44] decontX assay stored as decontXcounts
+#> ✔ [2026-11-13 06:14:44] decontX decontamination completed
 
 FeatureStatPlot(
   pancreas_sub,

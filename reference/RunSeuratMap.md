@@ -151,22 +151,22 @@ RunSeuratMap(
 ``` r
 data(panc8_sub)
 panc8_sub <- RunStandardWorkflow(panc8_sub)
-#> ℹ [2026-11-12 06:03:37] Start standard processing workflow...
-#> ℹ [2026-11-12 06:03:37] Checking a list of <Seurat>...
-#> ! [2026-11-12 06:03:37] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-11-12 06:03:37] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-11-12 06:03:37] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-12 06:03:37] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-12 06:03:37] Number of available HVF: 2000
-#> ℹ [2026-11-12 06:03:37] Finished check
-#> ℹ [2026-11-12 06:03:37] Perform `ScaleData()`
-#> ℹ [2026-11-12 06:03:37] Perform pca linear dimension reduction
-#> ℹ [2026-11-12 06:03:38] Use stored estimated dimensions 1:26 for Standardpca
-#> ℹ [2026-11-12 06:03:38] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-12 06:03:38] Reorder clusters...
-#> ℹ [2026-11-12 06:03:39] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-12 06:03:39] Perform umap nonlinear dimension reduction
-#> ✔ [2026-11-12 06:03:49] Standard processing workflow completed
+#> ℹ [2026-11-13 06:42:24] Start standard processing workflow...
+#> ℹ [2026-11-13 06:42:24] Checking a list of <Seurat>...
+#> ! [2026-11-13 06:42:24] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-13 06:42:24] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-13 06:42:24] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-13 06:42:24] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-13 06:42:24] Number of available HVF: 2000
+#> ℹ [2026-11-13 06:42:24] Finished check
+#> ℹ [2026-11-13 06:42:24] Perform `ScaleData()`
+#> ℹ [2026-11-13 06:42:24] Perform pca linear dimension reduction
+#> ℹ [2026-11-13 06:42:25] Use stored estimated dimensions 1:26 for Standardpca
+#> ℹ [2026-11-13 06:42:25] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-13 06:42:25] Reorder clusters...
+#> ℹ [2026-11-13 06:42:25] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-13 06:42:25] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-13 06:42:36] Standard processing workflow completed
 srt_ref <- panc8_sub[, panc8_sub$tech != "fluidigmc1"]
 srt_query <- panc8_sub[, panc8_sub$tech == "fluidigmc1"]
 srt_ref <- RunIntegration(
@@ -174,31 +174,31 @@ srt_ref <- RunIntegration(
   batch = "tech",
   integration_method = "Uncorrected"
 )
-#> ◌ [2026-11-12 06:03:49] Run integration workflow...
-#> ℹ [2026-11-12 06:03:50] Split `srt_merge` into `srt_list` by "tech"
-#> ℹ [2026-11-12 06:03:51] Checking a list of <Seurat>...
-#> ℹ [2026-11-12 06:03:51] Data 1/4 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-12 06:03:51] Perform `FindVariableFeatures()` on 1/4 of `srt_list`...
-#> ℹ [2026-11-12 06:03:51] Data 2/4 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-12 06:03:51] Perform `FindVariableFeatures()` on 2/4 of `srt_list`...
-#> ℹ [2026-11-12 06:03:51] Data 3/4 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-12 06:03:51] Perform `FindVariableFeatures()` on 3/4 of `srt_list`...
-#> ℹ [2026-11-12 06:03:52] Data 4/4 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-12 06:03:52] Perform `FindVariableFeatures()` on 4/4 of `srt_list`...
-#> ℹ [2026-11-12 06:03:52] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-12 06:03:52] Number of available HVF: 2000
-#> ℹ [2026-11-12 06:03:52] Finished check
-#> ℹ [2026-11-12 06:03:52] Perform Uncorrected integration
-#> ℹ [2026-11-12 06:03:52] Perform `Seurat::ScaleData()`
-#> ℹ [2026-11-12 06:03:52] Perform "pca" linear dimension reduction
-#> ℹ [2026-11-12 06:03:53] Adjust neighbor k from 20 to 20 for small-sample clustering
-#> ℹ [2026-11-12 06:03:53] Perform `Seurat::FindClusters()` with "louvain"
-#> ℹ [2026-11-12 06:03:53] Reorder clusters...
-#> ℹ [2026-11-12 06:03:53] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-12 06:03:53] Perform umap nonlinear dimension reduction using Uncorrectedpca (1:20)
-#> ℹ [2026-11-12 06:04:00] Perform umap nonlinear dimension reduction using Uncorrectedpca (1:20)
-#> ℹ [2026-11-12 06:04:08] Perform umap nonlinear dimension reduction using Uncorrectedpca (1:20)
-#> ✔ [2026-11-12 06:04:15] Uncorrected integration completed
+#> ◌ [2026-11-13 06:42:36] Run integration workflow...
+#> ℹ [2026-11-13 06:42:37] Split `srt_merge` into `srt_list` by "tech"
+#> ℹ [2026-11-13 06:42:37] Checking a list of <Seurat>...
+#> ℹ [2026-11-13 06:42:38] Data 1/4 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-13 06:42:38] Perform `FindVariableFeatures()` on 1/4 of `srt_list`...
+#> ℹ [2026-11-13 06:42:38] Data 2/4 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-13 06:42:38] Perform `FindVariableFeatures()` on 2/4 of `srt_list`...
+#> ℹ [2026-11-13 06:42:38] Data 3/4 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-13 06:42:38] Perform `FindVariableFeatures()` on 3/4 of `srt_list`...
+#> ℹ [2026-11-13 06:42:38] Data 4/4 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-13 06:42:38] Perform `FindVariableFeatures()` on 4/4 of `srt_list`...
+#> ℹ [2026-11-13 06:42:38] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-13 06:42:38] Number of available HVF: 2000
+#> ℹ [2026-11-13 06:42:38] Finished check
+#> ℹ [2026-11-13 06:42:38] Perform Uncorrected integration
+#> ℹ [2026-11-13 06:42:38] Perform `Seurat::ScaleData()`
+#> ℹ [2026-11-13 06:42:38] Perform "pca" linear dimension reduction
+#> ℹ [2026-11-13 06:42:39] Adjust neighbor k from 20 to 20 for small-sample clustering
+#> ℹ [2026-11-13 06:42:39] Perform `Seurat::FindClusters()` with "louvain"
+#> ℹ [2026-11-13 06:42:39] Reorder clusters...
+#> ℹ [2026-11-13 06:42:39] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-13 06:42:39] Perform umap nonlinear dimension reduction using Uncorrectedpca (1:20)
+#> ℹ [2026-11-13 06:42:47] Perform umap nonlinear dimension reduction using Uncorrectedpca (1:20)
+#> ℹ [2026-11-13 06:42:55] Perform umap nonlinear dimension reduction using Uncorrectedpca (1:20)
+#> ✔ [2026-11-13 06:43:02] Uncorrected integration completed
 CellDimPlot(srt_ref, group.by = c("celltype", "tech"))
 
 
@@ -210,11 +210,11 @@ srt_query <- RunSeuratMap(
   ref_umap = "UncorrectedUMAP2D",
   k.weight = 50
 )
-#> ℹ [2026-11-12 06:04:16] Data type is log-normalized
-#> ℹ [2026-11-12 06:04:16] Detected srt_query data type: log_normalized_counts
-#> ℹ [2026-11-12 06:04:16] Data type is log-normalized
-#> ℹ [2026-11-12 06:04:16] Detected srt_ref data type: log_normalized_counts
-#> ℹ [2026-11-12 06:04:16] Run FindTransferAnchors
+#> ℹ [2026-11-13 06:43:03] Data type is log-normalized
+#> ℹ [2026-11-13 06:43:03] Detected srt_query data type: log_normalized_counts
+#> ℹ [2026-11-13 06:43:03] Data type is log-normalized
+#> ℹ [2026-11-13 06:43:03] Detected srt_ref data type: log_normalized_counts
+#> ℹ [2026-11-13 06:43:03] Run FindTransferAnchors
 #> Projecting cell embeddings
 #> Finding neighborhoods
 #> Finding anchors
@@ -227,10 +227,10 @@ srt_query <- RunSeuratMap(
 #> Finding integration vectors
 #> Finding integration vector weights
 #> Integrating data
-#> ℹ [2026-11-12 06:04:22] Run UMAP projection
-#> ℹ [2026-11-12 06:04:22] Use the reduction to calculate distance metric
-#> ℹ [2026-11-12 06:04:22] Use raw method to find neighbors
-#> ℹ [2026-11-12 06:04:22] Running UMAP projection
+#> ℹ [2026-11-13 06:43:08] Run UMAP projection
+#> ℹ [2026-11-13 06:43:08] Use the reduction to calculate distance metric
+#> ℹ [2026-11-13 06:43:08] Use raw method to find neighbors
+#> ℹ [2026-11-13 06:43:08] Running UMAP projection
 ProjectionPlot(
   srt_query = srt_query,
   srt_ref = srt_ref,

@@ -165,7 +165,7 @@ pancreas_sub <- RunStandardWorkflow(
   pancreas_sub,
   verbose = FALSE
 )
-#> ℹ [2026-11-12 05:33:10] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-13 06:15:00] Skip `log1p()` because `layer = data` is not "counts"
 
 pancreas_sub <- RunDorothea(
   pancreas_sub,
@@ -175,9 +175,9 @@ pancreas_sub <- RunDorothea(
   method = "ulm",
   minsize = 5
 )
-#> ℹ [2026-11-12 05:33:20] Run "DoRothEA"/decoupleR with 12895 regulon edges
-#> ℹ [2026-11-12 05:33:30] "DoRothEA" TF activity scores stored in assay "dorothea"
-#> ℹ [2026-11-12 05:33:31] "DoRothEA" TF activity scores stored in <Seurat> metadata
+#> ℹ [2026-11-13 06:15:09] Run "DoRothEA"/decoupleR with 12895 regulon edges
+#> ℹ [2026-11-13 06:15:19] "DoRothEA" TF activity scores stored in assay "dorothea"
+#> ℹ [2026-11-13 06:15:19] "DoRothEA" TF activity scores stored in <Seurat> metadata
 
 pancreas_sub@tools$Dorothea$regulon_summary
 #>   n_tfs n_targets n_edges confidence
@@ -217,7 +217,7 @@ DorotheaPlot(
   features = "Sox9",
   plot_type = "dim"
 )
-#> ℹ [2026-11-12 05:33:33] Draw "DoRothEA" embedding plots for 1 TFs
+#> ℹ [2026-11-13 06:15:21] Draw "DoRothEA" embedding plots for 1 TFs
 
 DorotheaPlot(
   pancreas_sub,
@@ -227,7 +227,7 @@ DorotheaPlot(
   plot_type = "bar",
   top_n = 20
 )
-#> ℹ [2026-11-12 05:33:33] Compare "DoRothEA" TF activity: "Endocrine" vs "Ductal"
+#> ℹ [2026-11-13 06:15:21] Compare "DoRothEA" TF activity: "Endocrine" vs "Ductal"
 
 GroupHeatmap(
   pancreas_sub,
@@ -247,8 +247,8 @@ DorotheaPlot(
   features = "Sox9",
   plot_type = "targets"
 )
-#> ! [2026-11-12 05:33:34] Dropping 3 "Sox9" targets missing from assay "RNA"
-#> ℹ [2026-11-12 05:33:34] Draw "DoRothEA" regulon-target volcano for "Sox9" (10 targets)
+#> ! [2026-11-13 06:15:22] Dropping 3 "Sox9" targets missing from assay "RNA"
+#> ℹ [2026-11-13 06:15:22] Draw "DoRothEA" regulon-target volcano for "Sox9" (10 targets)
 
 
 # A RunGRN-compatible unsigned network can be passed directly.
@@ -267,7 +267,7 @@ pancreas_sub <- RunDorothea(
   add_meta = FALSE,
   verbose = FALSE
 )
-#> ℹ [2026-11-12 05:33:35] The supplied network is unsigned; "importance" is used as positive edge weight. Scores represent target-program activity, not signed TF activation or repression.
+#> ℹ [2026-11-13 06:15:23] The supplied network is unsigned; "importance" is used as positive edge weight. Scores represent target-program activity, not signed TF activation or repression.
 pancreas_sub@tools$Dorothea$network_info
 #> $source
 #> [1] "custom"

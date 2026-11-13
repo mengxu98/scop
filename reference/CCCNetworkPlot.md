@@ -383,23 +383,23 @@ error.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-11-12 04:58:05] Start standard processing workflow...
-#> ℹ [2026-11-12 04:58:05] Checking a list of <Seurat>...
-#> ! [2026-11-12 04:58:06] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-13 05:44:46] Start standard processing workflow...
+#> ℹ [2026-11-13 05:44:46] Checking a list of <Seurat>...
+#> ! [2026-11-13 05:44:47] Data 1/1 of the `srt_list` is "unknown"
 #> Warning: Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-11-12 04:58:06] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-11-12 04:58:06] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-12 04:58:06] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-12 04:58:06] Number of available HVF: 2000
-#> ℹ [2026-11-12 04:58:06] Finished check
-#> ℹ [2026-11-12 04:58:06] Perform `ScaleData()`
-#> ℹ [2026-11-12 04:58:06] Perform pca linear dimension reduction
-#> ℹ [2026-11-12 04:58:07] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-11-12 04:58:07] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-12 04:58:07] Reorder clusters...
-#> ℹ [2026-11-12 04:58:07] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-12 04:58:07] Perform umap nonlinear dimension reduction
-#> ✔ [2026-11-12 04:58:13] Standard processing workflow completed
+#> ℹ [2026-11-13 05:44:47] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-13 05:44:47] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-13 05:44:47] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-13 05:44:47] Number of available HVF: 2000
+#> ℹ [2026-11-13 05:44:47] Finished check
+#> ℹ [2026-11-13 05:44:47] Perform `ScaleData()`
+#> ℹ [2026-11-13 05:44:47] Perform pca linear dimension reduction
+#> ℹ [2026-11-13 05:44:48] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-11-13 05:44:48] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-13 05:44:48] Reorder clusters...
+#> ℹ [2026-11-13 05:44:48] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-13 05:44:48] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-13 05:44:54] Standard processing workflow completed
 
 pc1 <- Seurat::Embeddings(pancreas_sub, "Standardpca")[, 1]
 ct <- as.character(pancreas_sub$CellType)
@@ -417,26 +417,26 @@ pancreas_sub <- RunCellChat(
   group_cmp = list(c("ConditionA", "ConditionB")),
   species = "Mus_musculus"
 )
-#> ℹ [2026-11-12 04:58:13] Start CellChat analysis
-#> ℹ [2026-11-12 04:58:13] Processing condition: "ConditionB"
+#> ℹ [2026-11-13 05:44:54] Start CellChat analysis
+#> ℹ [2026-11-13 05:44:54] Processing condition: "ConditionB"
 #> [1] "Create a CellChat object from a data matrix"
 #> Set cell identities for the new CellChat object 
 #> The cell groups used for CellChat analysis are  Ductal, Endocrine, Ngn3-high-EP, Ngn3-low-EP, Pre-endocrine 
 #> The number of highly variable ligand-receptor pairs used for signaling inference is 554 
 #> triMean is used for calculating the average gene expression per cell group. 
-#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-11-12 04:58:15.017277]"
-#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-11-12 04:58:23.998449]"
-#> ℹ [2026-11-12 04:58:24] Processing condition: "ConditionA"
+#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-11-13 05:44:55.382783]"
+#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-11-13 05:45:02.302723]"
+#> ℹ [2026-11-13 05:45:02] Processing condition: "ConditionA"
 #> [1] "Create a CellChat object from a data matrix"
 #> Set cell identities for the new CellChat object 
 #> The cell groups used for CellChat analysis are  Ductal, Endocrine, Ngn3-high-EP, Ngn3-low-EP, Pre-endocrine 
 #> The number of highly variable ligand-receptor pairs used for signaling inference is 598 
 #> triMean is used for calculating the average gene expression per cell group. 
-#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-11-12 04:58:25.807348]"
-#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-11-12 04:58:36.641863]"
-#> ℹ [2026-11-12 04:58:36] Merging CellChat objects for comparison "ConditionA_vs_ConditionB"
+#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-11-13 05:45:03.638498]"
+#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-11-13 05:45:11.864277]"
+#> ℹ [2026-11-13 05:45:11] Merging CellChat objects for comparison "ConditionA_vs_ConditionB"
 #> Merge the following slots: 'data.signaling','images','net', 'netP','meta', 'idents', 'var.features' , 'DB', and 'LR'.
-#> ✔ [2026-11-12 04:58:37] CellChat analysis completed
+#> ✔ [2026-11-13 05:45:12] CellChat analysis completed
 
 CCCNetworkPlot(
   pancreas_sub,

@@ -363,14 +363,14 @@ gsea_out <- RunGSEA(
   nPermSimple = 10000,
   eps = 0
 )
-#> ℹ [2026-11-12 05:19:44] Start GSEA analysis
-#> ! [2026-11-12 05:19:44] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
-#> ℹ [2026-11-12 05:19:44] Preparing custom GSEA database from `TERM2GENE`/`TERM2NAME` ...
-#> ℹ [2026-11-12 05:19:44] Prepared 10 ranked gene rows after ID mapping.
-#> ℹ [2026-11-12 05:19:44] Running GSEA for 1 group/database combination(s) ...
-#> ℹ [2026-11-12 05:19:44] Running GSEA: group "Cluster1", database "custom", genes 10 ...
-#> ℹ [2026-11-12 05:19:45] Finished GSEA: group "Cluster1", database "custom".
-#> ✔ [2026-11-12 05:19:45] GSEA analysis done
+#> ℹ [2026-11-13 06:03:04] Start GSEA analysis
+#> ! [2026-11-13 06:03:04] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
+#> ℹ [2026-11-13 06:03:04] Preparing custom GSEA database from `TERM2GENE`/`TERM2NAME` ...
+#> ℹ [2026-11-13 06:03:04] Prepared 10 ranked gene rows after ID mapping.
+#> ℹ [2026-11-13 06:03:04] Running GSEA for 1 group/database combination(s) ...
+#> ℹ [2026-11-13 06:03:04] Running GSEA: group "Cluster1", database "custom", genes 10 ...
+#> ℹ [2026-11-13 06:03:04] Finished GSEA: group "Cluster1", database "custom".
+#> ✔ [2026-11-13 06:03:04] GSEA analysis done
 GSEAPlot(res = gsea_out, db = "custom", plot_type = "comparison")
 
 GSEAPlot(res = gsea_out, db = "custom", plot_type = "bar")

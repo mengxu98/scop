@@ -1,5 +1,5 @@
 {
-  "source": "75450a5d7f3df96b41826361f14b3cc3fbc189d5",
+  "source": "0263f490736a3cba2a67349455bab3aca0f0baad",
   "R": "4.6.2",
   "packages": {
     "abind": "1.4-8:1.4-8",
@@ -552,7 +552,7 @@
     "slam": "0.1-56:0.1-56",
     "slider": "0.3.3:0.3.3",
     "slingshot": "2.20.0:2.20.0",
-    "smoothclust": "1.9.6:b06dd0c5d2b69529596ea81521a0d54a21b3a336",
+    "smoothclust": "1.9.6:44cc310997fae99ce1bbbf05cc29c345dfa7819e",
     "sna": "2.8:2.8",
     "snow": "0.4-4:0.4-4",
     "sodium": "1.4.0:1.4.0",

@@ -2,6 +2,14 @@
 
 ## scop (development version)
 
+- **fix**:
+  [`FeatureHeatmap()`](https://mengxu98.github.io/scop/reference/FeatureHeatmap.md)
+  preserves numeric cell annotations when the same metadata column is
+  also used for grouping or splitting. Numeric annotations without
+  finite values now render in grey with a `Missing` legend instead of
+  failing during color-scale construction; non-finite values in
+  partially observed annotations use the existing missing-value color.
+
 - **fix**: Pin PyNNDescent 0.6.0 in Scanpy environments to prevent
   sparse-array `getnnz` failures in large-data
   [`RunPAGA()`](https://mengxu98.github.io/scop/reference/RunPAGA.md)

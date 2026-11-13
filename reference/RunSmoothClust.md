@@ -187,7 +187,7 @@ spatial <- RunSmoothClust(
   cores = 1,
   verbose = FALSE
 )
-#> ! [2026-11-12 06:04:55] Function "smoothness_metric" not found in smoothclust namespace
+#> ! [2026-11-13 06:43:39] Function "smoothness_metric" not found in smoothclust namespace
 SpatialSpotPlot(
   spatial,
   group.by = "SmoothClust_cluster",
