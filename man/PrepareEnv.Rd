@@ -61,13 +61,9 @@ upstream stacks are more reliable when requested explicitly for
 method-specific workflows.
 CellOracle uses an explicit standalone \code{"celloracle_env"} profile with Python
 3.10 and official CellOracle 0.20.0; Windows is unsupported.
-GRN methods have explicit profiles: \code{"grnboost2"}, \code{"gniplr"},
-\code{"scsgl"}, \code{"regdiffusion"}, \code{"linger"}, and \code{"scenicplus"}
-use separate Python environments. Prepare SCENIC and RegDiffusion separately
-because their dependency profiles differ. R methods including GENIE3, PPCOR,
-PIDC, SCORPION, LEAP, SCODE, SINCERITIES, multiCSN and Pando use the R
-component. Large biological references are supplied through RunGRN resources
-and are prepared separately from package dependencies.}
+GRN Python modules (\code{"grnboost2"}, \code{"gniplr"}, \code{"scsgl"},
+\code{"regdiffusion"}, \code{"linger"}, and \code{"scenicplus"}) use separate environments.
+Use \code{components = "r"} for optional R backends.}
 
 \item{pip_options}{Additional command line arguments to be passed to \code{uv}/\code{pip} when installing pip packages.}
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/GetGRN.R
 \name{GetGRN}
 \alias{GetGRN}
-\title{Read a unified gene regulatory network result}
+\title{Read a gene regulatory network}
 \usage{
 GetGRN(
   object,
@@ -15,38 +15,29 @@ GetGRN(
 )
 }
 \arguments{
-\item{object}{A GRNResult or a Seurat object containing one.}
+\item{object}{A \code{GRNResult} or a Seurat object containing one.}
 
-\item{group}{One fitted group. Required when more than one group is present.}
+\item{group}{Network group. Required when several groups are stored.}
 
-\item{layer}{Native evidence layer, such as tf_gene, tf_region, region_gene, or mediated_tf_gene.}
+\item{layer}{Evidence layer, such as \code{"tf_gene"}, \code{"tf_region"}, or \code{"region_gene"}.}
 
-\item{what}{One of edges, layers, chains, gene_sets, native, parameters, or result.}
+\item{what}{\code{"edges"}, \code{"layers"}, \code{"chains"}, \code{"gene_sets"}, \code{"native"},
+\code{"parameters"}, or \code{"result"}. If native gene sets are absent, \code{"gene_sets"}
+groups direct targets by regulator and sign.}
 
-\item{tool_name}{Name of the Seurat \code{tools} entry. If omitted, the only
-stored GRN result is used. Specify a name when several results are stored.}
+\item{tool_name}{Seurat tools entry. Omit when only one GRN is stored.}
 
-\item{all_groups}{Return a named list for every fitted group.}
+\item{all_groups}{Return results for every group instead of selecting \code{group}.}
 
-\item{...}{Reserved for future extensions.}
+\item{...}{Additional parameters to other functions. Currently unused.}
 }
 \value{
-The selected table, native result, parameters, gene sets, or complete result.
+The selected result, or a named list with \code{all_groups = TRUE}.
+Edge tables preserve the native score and direction, with \code{NA} for unknown signs.
 }
 \description{
-Read complete GRN results without rerunning inference. Standard edge views preserve original scores, direction and sign evidence.
-}
-\details{
-Native scientific data are stored once. Edge views map native columns to source,
-  target, source_type, target_type, layer, raw_score, score_type, directed, sign,
-  and sign_basis. Additional native scientific columns remain available.
-  Unknown signs are NA. Unsupported and uncomputed layers give explicit errors;
-  a computed zero-row table is a successful empty network.
-  When native gene sets are available, gene_sets returns them. Otherwise direct
-  TF-gene targets are grouped by source and positive, negative, zero, or unknown
-  sign. These are predicted target programs and can be passed to CellScoring.
-  The native selector returns the unchanged method output.
+Read a gene regulatory network
 }
 \seealso{
-\code{\link{RunGRN}}, \code{\link{GRNPlot}}, \code{\link{CellScoring}}
+\code{\link[=RunGRN]{RunGRN()}}, \code{\link[=GRNPlot]{GRNPlot()}}, \code{\link[=CellScoring]{CellScoring()}}
 }

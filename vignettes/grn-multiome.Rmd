@@ -226,6 +226,13 @@ inputs, reference files, settings, and runner version the same. Snakemake
 reuses finished steps and reruns incomplete ones. Keep the directory for
 this scop run only. Run standalone Snakemake workflows in a separate directory.
 
+`PrepareDB()` uses the hg38 SCREEN v10 databases by default. It reuses
+local rankings, scores, and motif annotations or downloads missing files.
+Place `genome_annotation.tsv` and `chromsizes.tsv` in the reference directory.
+To supply custom paths, use `data_dir = list(SCENICPlus = list(path = ...,
+genome_annotation = ..., chromsizes = ...))`. Provide `ranking_db`, `scores_db`,
+and `motif_annotation` together to override the default reference set.
+
 ```{r paired-scenicplus, eval=FALSE}
 PrepareEnv(modules = "scenicplus", configure_runtime = FALSE)
 scenicplus_references <- PrepareDB(

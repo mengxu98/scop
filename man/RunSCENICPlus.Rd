@@ -2,7 +2,7 @@
 % Please edit documentation in R/RunSCENICPlus.R
 \name{RunSCENICPlus}
 \alias{RunSCENICPlus}
-\title{Read SCENIC+ results or run an approximate SCENICPlus-compatible eGRN analysis}
+\title{Import or approximate SCENIC+ networks}
 \usage{
 RunSCENICPlus(
   object,
@@ -61,82 +61,48 @@ RunSCENICPlus(
 )
 }
 \arguments{
-\item{object}{A Seurat object containing RNA and chromatin assays.}
+\item{object}{A \code{Seurat} object.}
 
 \item{rna_assay}{RNA assay name.}
 
-\item{atac_assay}{Chromatin assay name.}
+\item{atac_assay}{Chromatin assay.}
 
 \item{rna_layer}{RNA count layer used for TF-gene inference and AUC scoring.}
 
 \item{atac_layer}{ATAC count layer used for peak-gene correlations.}
 
-\item{backend}{Runtime backend. \code{"python"} reads or extracts official
-SCENIC+ result tables and remains the default; it does not run the SCENIC+
-pipeline itself. \code{"cpp"} runs the approximate package workflow and issues a
-warning that results may not be completely identical to the reference workflow.}
+\item{backend}{\code{"python"} imports official results. \code{"cpp"} fits an approximation
+using motif annotations or supplied priors. To run official SCENIC+,
+use \code{\link[=RunGRN]{RunGRN()}} with \code{methods = "scenicplus"}.}
 
-\item{grn_method}{GRN method used for TF-gene inference. The C++ workflow
-can call \code{RunGRNBoost2()}, \code{RunGENIE3()}, or \code{RunGNIPLR()};
-RegDiffusion and GNIPLR are supported through the Python backend.}
+\item{grn_method}{TF-gene inference method for \code{backend = "cpp"}.}
 
 \item{regulators}{Candidate transcription factors. If \code{NULL}, motif TF names
 are used when available; otherwise all RNA genes are considered.}
 
-\item{rna_expr}{Optional expression matrix used for C++ TF-gene and
-region-gene inference. Rows should be genes and columns should be cells; a
-cell-by-gene matrix is accepted and transposed when cell names make the
-orientation unambiguous.}
+\item{rna_expr, atac_expr}{RNA expression and chromatin accessibility matrices
+for the C++ workflow. Use features as rows and cells as columns.}
 
-\item{atac_expr}{Optional accessibility matrix used for C++ region-gene
-inference. Rows should be regions and columns should be cells; a cell-by-region
-matrix is accepted and transposed when cell names make the orientation
-unambiguous.}
+\item{tf_gene_prior}{Precomputed TF-gene table (\code{TF}, \code{target}, \code{importance}).}
 
-\item{tf_gene_prior}{Optional precomputed TF-gene table with columns \code{TF},
-\code{target}, and \code{importance}. When supplied with \code{backend = "cpp"}, C++
-GRN inference is skipped and the table is used as the TF-gene evidence layer.
-If a \code{rho} column is absent, correlations are computed from RNA when
-GSEA is requested.}
+\item{region_gene_prior}{Precomputed region-gene table (\code{region}, \code{gene}, \code{score}).}
 
-\item{region_gene_prior}{Optional precomputed region-gene table with columns
-\code{region}, \code{gene}, and \code{score}. When supplied with \code{backend = "cpp"}, C++
-importance fitting is skipped. If a \code{rho} column is absent, correlations are
-computed from RNA and ATAC when GSEA is requested.}
+\item{tf_region_prior}{Precomputed TF-region table (\code{TF}, \code{region}, \code{score}).}
 
-\item{tf_region_prior}{Optional precomputed TF-region table with columns
-\code{TF}, \code{region}, and \code{score}. When supplied with \code{backend = "cpp"}, existing
-motif incidence is not required.}
+\item{triplets_prior}{Precomputed TF-region-gene table (\code{TF}, \code{region}, \code{gene}, \code{score}).}
 
-\item{triplets_prior}{Optional precomputed TF-region-gene table with columns
-\code{TF}, \code{region}, \code{gene}, and \code{score}. When supplied with \code{backend = "cpp"},
-triplets are read directly instead of assembled from the three edge layers.}
+\item{eregulons_prior}{Precomputed eRegulon table (\code{regulon}, \code{target}).}
 
-\item{eregulons_prior}{Optional precomputed eRegulon table with columns
-\code{regulon} and \code{target}. When supplied with \code{backend = "cpp"}, eRegulon names
-and gene sets are taken from this table.}
+\item{auc_expr}{Gene-by-cell expression matrix for eRegulon AUC.}
 
-\item{auc_expr}{Optional expression matrix used only for eRegulon AUCell
-scoring in the C++ workflow. Rows should be genes and columns should be
-cells; a cell-by-gene matrix is accepted and transposed when cell names make
-the orientation unambiguous.}
-
-\item{auc_rankings}{Optional precomputed 0-based ranking matrix used only for
-eRegulon AUCell scoring in the C++ workflow. Rows should be cells and
-columns should be genes; a gene-by-cell matrix is accepted and transposed when
-cell names make the orientation unambiguous. This is mainly useful for
-official SCENIC+ parity tests because SCENIC+ uses seeded random tie-breaking.}
+\item{auc_rankings}{Cell-by-gene matrix of zero-based ranks for gene AUC.}
 
 \item{region_gene_window}{Maximum peak-to-gene distance in base pairs.}
 
-\item{region_gene_search_space}{Optional search-space table with columns
-\code{region}/\code{Name} and \code{gene}/\code{Gene}. When supplied, C++ region-gene scoring
-is limited to these candidate pairs.}
+\item{region_gene_search_space}{Candidate pairs as a table or file with \code{region}/\code{Name}
+and \code{gene}/\code{Gene} columns.}
 
-\item{region_gene_method}{C++ region-gene scoring method. \code{"gbm"} follows
-the official SCENIC+ region-to-gene strategy more closely by combining
-boosting feature importance with Spearman correlation; \code{"correlation"} keeps
-the older correlation-only approximation.}
+\item{region_gene_method}{\code{"gbm"} combines boosting and correlation. \code{"correlation"} uses correlation alone.}
 
 \item{region_gene_n_rounds}{Number of boosting rounds for C++
 region-gene importance scoring.}
@@ -147,35 +113,25 @@ region-gene importance scoring.}
 
 \item{min_eregulon_size}{Minimum genes per eRegulon retained for AUC scoring.}
 
-\item{egrn_rho_threshold}{Absolute Spearman correlation threshold used to
-split TF-gene and region-gene links into activating/repressing eGRN modules.}
+\item{egrn_rho_threshold}{Absolute Spearman correlation threshold for signed modules.}
 
-\item{egrn_quantiles}{Region-gene importance quantiles used to build
-candidate eModules before TF-gene leading-edge filtering.}
+\item{egrn_quantiles}{Region-gene importance quantiles for candidate modules.}
 
-\item{egrn_top_n_region_gene}{Top-N region-gene links per gene used as
-additional candidate eModules before TF-gene leading-edge filtering.}
+\item{egrn_top_n_region_gene}{Top region-gene links per gene for candidate modules.}
 
-\item{egrn_min_target_genes}{Minimum leading-edge target genes required for
-an eRegulon module. The default follows the official SCENIC+ CLI workflow.}
+\item{egrn_min_target_genes}{Minimum leading-edge genes per eRegulon.}
 
 \item{group.by}{Optional metadata column used to calculate eRegulon
 specificity scores.}
 
-\item{grn_top_targets}{Maximum TF-gene edges retained per target. The
-default \code{Inf} keeps all positive links to match arboreto GRNBoost2 output.}
+\item{grn_top_targets}{Maximum TF-gene edges per target. \code{Inf} keeps all positive edges.}
 
-\item{max_grn_targets}{Maximum genes used as TF-gene GRN targets in the
-C++ workflow. With \code{grn_target_scope = "region_gene"}, genes are ranked by
-strongest absolute peak-to-gene correlation. Set to \code{Inf} to keep the full
-selected target universe.}
+\item{max_grn_targets}{Maximum target genes. \code{Inf} keeps the full target set.}
 
-\item{grn_target_scope}{TF-gene target universe for the C++ workflow.
-\code{"all"} follows official SCENIC+ TF-to-gene inference by scoring every RNA
-gene; \code{"region_gene"} restricts TF-gene inference to genes with peak links.}
+\item{grn_target_scope}{\code{"all"} uses all RNA genes. \code{"region_gene"} uses genes with region links,
+ranked by absolute peak-gene correlation.}
 
-\item{grn_n_rounds}{Number of C++ tree boosting rounds for TF-gene
-inference. The default follows arboreto \code{SGBM_KWARGS}.}
+\item{grn_n_rounds}{Boosting rounds for TF-gene inference.}
 
 \item{grn_learning_rate}{C++ tree boosting learning rate.}
 
@@ -187,95 +143,47 @@ tree split.}
 \item{grn_subsample}{Fraction of cells sampled for each C++ boosting
 round.}
 
-\item{grn_early_stop_window_length}{Out-of-bag improvement window used for
-C++ GRNBoost2 early stopping. The default is \code{25}, matching the monitor
-explicitly used by official SCENIC+. Set \code{0} to disable early stopping.}
+\item{grn_early_stop_window_length}{Out-of-bag early stopping window. \code{0} disables it.}
 
-\item{seed}{Random seed used by the C++ stochastic boosting code. The
-default matches official SCENIC+ command-line wrappers.}
+\item{seed}{Random seed.}
 
-\item{cores}{Number of workers used by C++ TF-gene GRN inference. \code{NULL}
-(the default) uses the process OpenMP team.}
+\item{cores}{CPU cores for C++ inference. \code{NULL} uses the OpenMP team.}
 
 \item{assay_name}{Assay used to store eRegulon AUC scores.}
 
-\item{tool_name}{Name of the \code{srt@tools} result entry.}
+\item{tool_name}{Name of the \code{srt@tools} slot used to store results.}
 
-\item{python_result_dir}{Input directory containing official SCENIC+ outputs
-already exported as \code{tf_gene}, \code{region_gene}, \code{tf_region}, \code{triplets},
-\code{eregulons}, and \code{auc} tables. Tab-separated, comma-separated and plain-text
-files are accepted, optionally compressed with gzip, bzip2 or xz; a table in
-a single subdirectory is also found. Used only for \code{backend = "python"}.}
+\item{python_result_dir}{Directory of official SCENIC+ result tables. Accepts TSV, CSV,
+or TXT, optionally compressed with gzip, bzip2, or xz.}
 
-\item{scplus_object}{Optional official SCENIC+ Python object path
-(\code{.pkl}, \code{.pickle} or \code{.h5mu}) to extract into \code{work_dir} before
-standardization. Used only for \code{backend = "python"}.}
+\item{scplus_object}{Official SCENIC+ \code{.h5mu}, \code{.pkl}, or \code{.pickle} file to extract.}
 
-\item{auto_prepare}{Whether to find SCENIC+ results automatically when
-neither \code{python_result_dir} nor \code{scplus_object} is supplied, and to extract
-standardized tables from a matching \code{.pkl}, \code{.pickle} or \code{.h5mu} found in
-\code{python_result_dir} or a conventional location. The search checks
-\code{scenicplus}, \code{scplus}, \code{scenic}, \code{outs} and the current directory. Default
-is \code{TRUE}; set to \code{FALSE} to require explicit inputs. Used only for
-\code{backend = "python"}; the Python environment is prepared automatically when
-extraction is needed.}
+\item{auto_prepare}{Look for local results when paths are omitted. The search checks
+\code{scenicplus}, \code{scplus}, \code{scenic}, \code{outs}, and the current directory.}
 
-\item{work_dir}{Directory used for standardized tables extracted from
-\code{scplus_object} or an automatically discovered SCENIC+ object. Defaults to
-\code{"scenicplus_output/"}, mirroring \code{\link[=RunSCENIC]{RunSCENIC()}}. Ignored when
-\code{python_result_dir} already contains the standardized tables. Used only for
-\code{backend = "python"}.}
+\item{work_dir}{Directory for tables extracted from a SCENIC+ object.}
 
-\item{envname}{Python environment used when \code{backend = "python"}. By default, \code{.h5mu} uses \code{scenicplus_io_env}; pickle uses \code{scenicplus_env}.}
+\item{envname}{Python environment. By default, \code{.h5mu} uses \code{scenicplus_io_env}
+and pickle uses \code{scenicplus_env}.}
 
-\item{conda}{Conda-compatible executable used when \code{backend = "python"}.}
+\item{conda}{The path or command name of a conda-compatible executable.}
 
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Whether to print messages.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
 
-\item{egrn_method}{Local eModule filtering. \code{"gsea"} computes weighted
-permutation GSEA, NES and BH-adjusted p-values in compiled code. \code{"leading_edge"}
-retains the older approximation and its unfiltered fallback.}
+\item{egrn_method}{Module filter: \code{"gsea"} or \code{"leading_edge"}.}
 
 \item{egrn_n_perm}{Number of gene-set permutations per GSEA module.}
 
-\item{region_auc_rankings}{Optional cell-by-region 0-based rankings for
-region signature AUC. If absent, rankings are computed locally from ATAC.}
+\item{region_auc_rankings}{Cell-by-region matrix of zero-based ranks for region AUC.}
 }
 \value{
-A Seurat object with SCENICPlus-style results. The result parameters record
-\code{execution_status = "imported"} for the Python reader and
-\code{execution_status = "completed"} for the C++ workflow.
+A Seurat object with eRegulon activity in \code{assay_name} and the network in \code{tools}.
 }
 \description{
-Read official SCENIC+ result tables or build an approximate eRegulon result
-from paired RNA and chromatin assays. \code{backend = "python"} reads or extracts
-official SCENIC+ outputs and does not run the SCENIC+ pipeline. The C++
-workflow is not an exact re-run of the official SCENIC+ Python workflow and
-requires explicit opt-in.
-}
-\details{
-The C++ route runs locally without importing or invoking Python. GSEA
-filters modules before merging; it does not substitute unfiltered triplets
-when no module passes. The tool result includes module \code{gsea_statistics},
-\code{region_regulon_list} and \code{region_auc} alongside gene AUC. Locally computed
-gene and region rankings use PCG tie-breaking with fixed seed 123; the
-inference and GSEA seed is controlled separately by \code{seed}.
-
-\code{backend = "python"} reads the standardized tables described for
-\code{python_result_dir} instead of running SCENIC+ itself. When only a SCENIC+
-object is available, pass it with \code{scplus_object}; the standardized tables
-are extracted into \code{work_dir} before reading. \code{.h5mu} objects are read with
-the Python \code{mudata} package. Missing tables are reported together with the files found
-in \code{python_result_dir} and the required columns.
-
-Neither backend downloads SCENIC+ reference databases or result tables.
-\code{backend = "python"} only reads local files (and may prepare the Python
-environment when \code{scplus_object} is supplied); \code{backend = "cpp"} uses motif
-annotations already stored in the chromatin assay.
+Import or approximate SCENIC+ networks
 }
 \examples{
 \dontrun{
@@ -322,4 +230,7 @@ SCENICPlusPlot(
   features = example_regulons
 )
 }
+}
+\seealso{
+\code{\link[=RunGRN]{RunGRN()}}, \code{\link[=SCENICPlusPlot]{SCENICPlusPlot()}}
 }

@@ -1,71 +1,37 @@
-#' @title Infer gene regulatory networks with a selected method
+#' @title Infer gene regulatory networks
 #'
-#' @description
-#' Run transcriptomic and multiomic network methods through one entry point.
-#' Complete results retain native scores, direction, sign evidence, groups,
-#' runtime identity, and method parameters. Use \code{\link{GetGRN}} and
-#' \code{\link{GRNPlot}} to read and display the results.
-#'
-#' @param object A Seurat object or expression matrix.
-#' @param assay Assay used when `object` is a Seurat object.
-#' @param layer Assay layer used when `object` is a Seurat object.
-#' @param regulators Candidate transcription factor genes.
-#' @param targets Optional target genes. If `NULL`, all genes are considered.
-#' @param genes_in Matrix orientation for matrix inputs. `"rows"` means genes x
-#' cells; `"columns"` means cells x genes.
-#' @param methods Method name, matched without case sensitivity: multiCSN,
-#'   GENIE3, GRNBoost2, GNIPLR, PPCOR, PIDC, SCORPION, SCSGL, LEAP, SCODE,
-#'   SINCERITIES, Pando, LINGER, SCENIC+, RegDiffusion, or SCENIC.
-#' @param return_type Output to return: `"seurat"`, `"edges"`, or `"result"`.
-#'   With `NULL`, Seurat inputs return the updated object and matrix inputs
-#'   return an edge table.
-#' @param backend Runtime backend. `"cpp"` is available for GRNBoost2 and
-#' GNIPLR; `"python"` is required for RegDiffusion.
-#' @param resources Named method-specific resources. For PIDC, SCSGL, SCODE,
-#'   SINCERITIES, and the Python GNIPLR result adapter, set \code{source_dir} to a
-#'   trusted local checkout of the linked multiCSN analysis code. The linked
-#'   GNIPLR implementation uses its fixed LASSO settings.
+#' @md
+#' @inheritParams RunGRNBoost2
+#' @inheritParams RunGNIPLR
+#' @param targets Candidate target genes. `NULL` uses all genes for most methods;
+#'   Pando selects variable genes.
+#' @param methods One method name (case insensitive): `multiCSN`, `GENIE3`,
+#'   `GRNBoost2`, `GNIPLR`, `PPCOR`, `PIDC`, `SCORPION`, `SCSGL`, `LEAP`,
+#'   `SCODE`, `SINCERITIES`, `Pando`, `LINGER`, `SCENIC+`, `RegDiffusion`, or `SCENIC`.
+#' @param backend Method-specific implementation. `NULL` uses the method default.
+#' @param return_type `"seurat"`, `"edges"`, or `"result"`. The default is
+#'   `"seurat"` for Seurat input and `"edges"` for matrix input.
+#' @param resources Named backend resources. Set `source_dir` to the
+#'   analysis checkout in References for PIDC, SCSGL, SCODE, SINCERITIES,
+#'   and Python GNIPLR.
 #' @param output_file Optional adjacency file for `return_type = "edges"`.
-#' @param work_dir Working directory used by Python backends.
-#' @param prefix Prefix for temporary backend files.
-#' @param max_edges_per_target Maximum incoming regulator edges retained per
-#' target.
-#' @param n_rounds Number of boosting rounds for GRNBoost2-like inference.
-#' @param learning_rate GRNBoost2-like tree ensemble learning rate.
-#' @param max_depth Maximum depth of each regression tree.
-#' @param max_features Fraction of candidate regulators sampled at each split.
-#' @param subsample Fraction of cells sampled for each boosting round.
-#' @param early_stop_window_length Out-of-bag improvement window used for
-#' GRNBoost2 early stopping.
-#' @param exclude_self Whether GRNBoost2-like inference excludes a target gene
-#' from its own regulator feature set.
-#' @param correlation_threshold Relative correlation filter used by GNIPLR.
-#' @param lasso_degree Polynomial degree used by GNIPLR.
-#' @param lasso_alpha LASSO regularization strength used by GNIPLR.
-#' @param max_lag Maximum lag used by GNIPLR.
-#' @param envname Python environment used by Python backends. If `NULL`,
-#' GNIPLR uses the default `"scop_env"` through [RunGNIPLR()], while pySCENIC
-#' GRNBoost2 uses `"scenic_env"` on the legacy path; RegDiffusion uses
-#' its own `"regdiffusion_env"` environment.
-#' @param conda Conda-compatible executable used by Python backends.
-#' @param cores Number of workers used by supported methods.
-#' @param seed Random seed passed to supported backends.
-#' @param force Whether to overwrite an existing \code{output_file}.
-#' @param verbose Whether to print progress messages.
-#' @param input_mode \code{"rna"} or \code{"multiome"}. Multiome methods require a Seurat object.
-#' @param atac_assay,atac_layer Chromatin assay and exact layer. Join split layers before inference.
-#' @param group.by Metadata column or cell-ID-named vector defining separately fitted networks.
-#' @param groups Optional existing group labels, in the requested order.
-#' @param pseudotime Seurat metadata column, named numeric vector, or cell-by-trajectory matrix.
-#'   Time methods align by cell ID.
-#' @param method_args Named method-specific arguments. For Python subprocesses,
-#'   \code{runtime} accepts \code{python} and \code{timeout}. SCENIC+ and LINGER
-#'   can resume one selected group at a time using \code{resume_dir}.
-#' @param tool_name,overwrite Name and replacement policy for a Seurat tools entry.
-#' @param ... Additional method arguments.
-#' @return The Seurat object with the complete network in its tools, a
-#'   \code{TF}, \code{target}, and \code{importance} edge table, or a complete
-#'   \code{GRNResult}. For multiple groups, use \code{"seurat"} or \code{"result"}.
+#' @param work_dir Directory for method outputs and logs.
+#' @param prefix Prefix for run directories.
+#' @param max_edges_per_target Maximum incoming edges per target for methods that support it.
+#' @param envname Python environment. `NULL` uses the method default.
+#' @param cores Number of workers for methods that support parallel execution.
+#' @param force Overwrite an existing `output_file`.
+#' @param input_mode `"rna"` or `"multiome"`. Multiome input requires a Seurat object.
+#' @param atac_assay,atac_layer Chromatin assay and exact layer. Join split layers first.
+#' @param group.by Metadata column or cell-named vector defining separate networks.
+#' @param groups Group labels to fit, in the requested order.
+#' @param pseudotime Metadata column, cell-named numeric vector, or cell-by-trajectory matrix.
+#' @param method_args Named backend arguments. `runtime` accepts `python` and
+#'   `timeout` for subprocesses. `resume_dir` resumes one LINGER or SCENIC+ group.
+#' @param tool_name,overwrite Name and replacement policy for the Seurat tools entry.
+#' @param ... Additional parameters to other functions.
+#' @return A Seurat object with the network in `tools`, an edge table (`TF`,
+#'   `target`, `importance`), or a `GRNResult`. Multiple groups require `"seurat"` or `"result"`.
 #' @references
 #' \url{https://github.com/mengxu98/multiCSN_manuscript/tree/42ed2c50d11ba0255326fa32ce59b97c7bb4a8b8/code}
 #'
@@ -79,6 +45,7 @@
 #'
 #' \url{https://github.com/CABSEL/SINCERITIES}
 #'
+#' @seealso [GetGRN()], [GRNPlot()]
 #' @export
 #' @examples
 #' data(pancreas_sub)

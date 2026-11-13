@@ -1,32 +1,18 @@
-#' @title Plot networks from a unified GRN result
+#' @title Plot a gene regulatory network
 #'
-#' @description Read network views through \code{\link{GetGRN}} and draw nodes, edges and native chains while retaining direction, sign and membership evidence.
-#'
-#' @param object A \code{GRNResult}, or a Seurat object containing one in \code{tools}.
-#' @param group One result group. Required when the result contains multiple groups.
-#' @param layer Network layer to display or compare.
-#' @param type A network, a layered view of native chains, or a pairwise edge-overlap heatmap.
-#' @param top_n Maximum edges in a network view, native chains in a layered view, or edges per method within the shared comparison scope. Use \code{Inf} for all entries.
-#' @param layout One of \code{"auto"}, \code{"star"}, \code{"hub"}, \code{"tripartite"}, \code{"kk"} or \code{"fr"}. The automatic layout uses tripartite columns for layered views and Kamada--Kawai for other networks.
-#' @param label_nodes Whether to label displayed nodes.
-#' @param compare For \code{type = "overlap"}, another result or a named list of results. List names provide plot labels.
-#' @param compare_group Group in each comparison result. Defaults to \code{group}. A vector supplies one group per comparison result.
-#' @param tool_name Name of the Seurat \code{tools} entry. If omitted, the only
-#'   stored GRN result is used. Specify a name when several results are stored.
-#'   An overlap comparison uses the same name if present; otherwise it selects a
-#'   single stored result. Use \code{GetGRN(what = "result")} to select a differently
-#'   named result from a comparison with multiple networks.
-#' @param title Optional plot title.
-#' @return A ggplot object. Its \code{grn_data} attribute contains the displayed edges and nodes, or overlap counts and the comparison scope. The original result is unchanged.
-#'
-#' @details Signs are labelled positive, negative, zero or unknown. Nonnegative importance scores do not acquire an activation label. Membership edges have a separate evidence style. Arrowheads are drawn only for directed edges. Node shapes distinguish TFs, genes and regions.
-#'
-#'   A layered view selects existing native chains and then selects the corresponding TF--region and region--gene edges from their native layers. Each segment retains its own sign. Shared nodes can connect several selected chains; the displayed chain table is retained in the plot attribute.
-#'
-#'   Ranking and \code{top_n} apply only to the displayed view. Captions report the selected size. An overlap heatmap restricts each result to exactly matched source and target identifiers present in all compared results, then selects the top edges independently within each method. TF and gene endpoints share a gene identifier space. Directed and undirected edges remain distinct. Reversed endpoints of an undirected edge denote the same edge. Declared \code{input_summary$entity_namespace} values must agree. No identifier conversion, score aggregation or consensus inference is performed.
-#'
-#'   The network layout reuses the existing SCENIC graph-layout implementation. Layout and label placement are reproducible and preserve the caller's random-number state. Use existing \code{CellScoring}, \code{FeatureDimPlot} and \code{GroupHeatmap} functions to display extracted gene-set scores.
-#' @seealso \code{\link{RunGRN}}, \code{\link{GetGRN}}
+#' @md
+#' @inheritParams GetGRN
+#' @param type `"network"` for edges, `"layered"` for native chains, or
+#'   `"overlap"` for shared edges within the common identifier scope.
+#' @param top_n Maximum edges or chains to show per result. `Inf` shows all.
+#' @param layout `"auto"`, `"star"`, `"hub"`, `"tripartite"`, `"kk"`, or `"fr"`.
+#' @param label_nodes Show node labels.
+#' @param compare Another GRN result or a named list of results for `"overlap"`.
+#' @param compare_group One group per comparison, or a single group for all.
+#'   Defaults to `group`.
+#' @param title Plot title.
+#' @return A ggplot object.
+#' @seealso [RunGRN()], [GetGRN()]
 #' @export
 GRNPlot <- function(
   object,

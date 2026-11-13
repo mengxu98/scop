@@ -41,6 +41,9 @@
 #' method-specific workflows.
 #' CellOracle uses an explicit standalone `"celloracle_env"` profile with Python
 #' 3.10 and official CellOracle 0.20.0; Windows is unsupported.
+#' GRN Python modules (`"grnboost2"`, `"gniplr"`, `"scsgl"`,
+#' `"regdiffusion"`, `"linger"`, and `"scenicplus"`) use separate environments.
+#' Use `components = "r"` for optional R backends.
 #' @param pip_options Additional command line arguments to be passed to `uv`/`pip` when installing pip packages.
 #' @param components Components to prepare. Supported values are `"python"`,
 #' `"r"`, and `"all"`; `"all"` expands to both Python and R. The default,

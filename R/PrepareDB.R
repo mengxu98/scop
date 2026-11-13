@@ -1,9 +1,5 @@
 #' @title Prepare databases and reference resources
 #'
-#' @description
-#' Prepare species-specific databases and reference resources from annotation
-#' packages, cached downloads, or supplied files.
-#'
 #' @md
 #' @inheritParams GeneConvert
 #' @inheritParams thisutils::log_message
@@ -19,32 +15,20 @@
 #' @param db_IDtypes Gene ID types to include.
 #' @param db_version Database version to retrieve.
 #' @param db_update Force a refresh. `FALSE` loads the cache when available.
-#' @param data_dir Directory or named list of local source files. Searches
-#' `data_dir/<db>/` then `data_dir`. Named lists override a path, e.g.
-#' `list(MSigDB = "~/db/msigdb")`. For GRN reference bundles, see Details.
+#' @param data_dir Directory or named list of local sources. Searches
+#'   `data_dir/<db>/` then `data_dir`. LINGER accepts a `data_bulk` directory,
+#'   its parent, or a `.tar.gz` or `.tgz` archive. SCENICPlus requires matching genome
+#'   annotation and chromosome sizes. See `vignette("grn-multiome")` for inputs.
 #' @param convert_species Use a species-converted database when the annotation is
 #' missing for `species`.
 #' @param Ensembl_version Ensembl version. `NULL` uses the latest.
 #' @param custom_TERM2GENE,custom_TERM2NAME Custom mappings for `custom_species`.
 #' @param custom_species,custom_IDtype,custom_version Metadata for a custom database.
-#' @param ... Arguments passed to other functions.
+#' @param ... Additional parameters to other functions.
 #' @return A named list of prepared resources. Gene annotation databases are
 #' nested by species and database, with `TERM2GENE` (gene-to-term mappings),
 #' `TERM2NAME` (term names) and `version`. Additional resource fields follow the
 #' return contract of the corresponding preparation function.
-#'
-#' @details
-#' `LINGER` accepts a local `data_bulk` directory, its parent directory, or a
-#' `.tar.gz` / `.tgz` archive. Archives are extracted to the scop user data
-#' cache. `SCENICPlus` uses the hg38 SCREEN v10 region databases. It reuses
-#' local files and downloads missing rankings, scores and motif annotations.
-#' Supply the matching SCENIC+ `genome_annotation.tsv` and `chromsizes.tsv`
-#' in the same directory, or use
-#' `data_dir = list(SCENICPlus = list(path = ..., genome_annotation = ..., chromsizes = ...))`.
-#' The inner list can also override `ranking_db`, `scores_db` and
-#' `motif_annotation` together for a custom set. The top-level `LINGER` and
-#' `SCENICPlus` entries can be passed to [RunGRN()] as `resources`; add the
-#' sample-specific cisTopic model, expression file and region sets for SCENIC+.
 #'
 #' @references
 #' <https://github.com/Durenlab/LINGER/blob/main/docs/GRN_infer.md>

@@ -46,9 +46,10 @@ opt-in human reference selectors \code{"LINGER"} and \code{"SCENICPlus"}.}
 
 \item{db_update}{Force a refresh. \code{FALSE} loads the cache when available.}
 
-\item{data_dir}{Directory or named list of local source files. Searches
-\verb{data_dir/<db>/} then \code{data_dir}. Named lists override a path, e.g.
-\code{list(MSigDB = "~/db/msigdb")}. For GRN reference bundles, see Details.}
+\item{data_dir}{Directory or named list of local sources. Searches
+\verb{data_dir/<db>/} then \code{data_dir}. LINGER accepts a \code{data_bulk} directory,
+its parent, or a \code{.tar.gz} or \code{.tgz} archive. SCENICPlus requires matching genome
+annotation and chromosome sizes. See \code{vignette("grn-multiome")} for inputs.}
 
 \item{convert_species}{Use a species-converted database when the annotation is
 missing for \code{species}.}
@@ -69,7 +70,7 @@ Possible options include \code{"ensembl"}, \code{"protists_mart"}, \code{"fungi_
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{Arguments passed to other functions.}
+\item{...}{Additional parameters to other functions.}
 }
 \value{
 A named list of prepared resources. Gene annotation databases are
@@ -78,21 +79,7 @@ nested by species and database, with \code{TERM2GENE} (gene-to-term mappings),
 return contract of the corresponding preparation function.
 }
 \description{
-Prepare species-specific databases and reference resources from annotation
-packages, cached downloads, or supplied files.
-}
-\details{
-\code{LINGER} accepts a local \code{data_bulk} directory, its parent directory, or a
-\code{.tar.gz} / \code{.tgz} archive. Archives are extracted to the scop user data
-cache. \code{SCENICPlus} uses the hg38 SCREEN v10 region databases. It reuses
-local files and downloads missing rankings, scores and motif annotations.
-Supply the matching SCENIC+ \code{genome_annotation.tsv} and \code{chromsizes.tsv}
-in the same directory, or use
-\code{data_dir = list(SCENICPlus = list(path = ..., genome_annotation = ..., chromsizes = ...))}.
-The inner list can also override \code{ranking_db}, \code{scores_db} and
-\code{motif_annotation} together for a custom set. The top-level \code{LINGER} and
-\code{SCENICPlus} entries can be passed to \code{\link[=RunGRN]{RunGRN()}} as \code{resources}; add the
-sample-specific cisTopic model, expression file and region sets for SCENIC+.
+Prepare databases and reference resources
 }
 \examples{
 \dontrun{

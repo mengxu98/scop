@@ -4,7 +4,7 @@
 \alias{RunGRN}
 \alias{RunGRN.Seurat}
 \alias{RunGRN.default}
-\title{Infer gene regulatory networks with a selected method}
+\title{Infer gene regulatory networks}
 \usage{
 RunGRN(object, ...)
 
@@ -66,7 +66,7 @@ RunGRN(object, ...)
 \arguments{
 \item{object}{A Seurat object or expression matrix.}
 
-\item{...}{Additional method arguments.}
+\item{...}{Additional parameters to other functions.}
 
 \item{assay}{Assay used when `object` is a Seurat object.}
 
@@ -74,102 +74,95 @@ RunGRN(object, ...)
 
 \item{regulators}{Candidate transcription factor genes.}
 
-\item{targets}{Optional target genes. If `NULL`, all genes are considered.}
+\item{targets}{Candidate target genes. \code{NULL} uses all genes for most methods;
+Pando selects variable genes.}
 
-\item{methods}{Method name, matched without case sensitivity: multiCSN,
-GENIE3, GRNBoost2, GNIPLR, PPCOR, PIDC, SCORPION, SCSGL, LEAP, SCODE,
-SINCERITIES, Pando, LINGER, SCENIC+, RegDiffusion, or SCENIC.}
+\item{methods}{One method name (case insensitive): \code{multiCSN}, \code{GENIE3},
+\code{GRNBoost2}, \code{GNIPLR}, \code{PPCOR}, \code{PIDC}, \code{SCORPION}, \code{SCSGL}, \code{LEAP},
+\code{SCODE}, \code{SINCERITIES}, \code{Pando}, \code{LINGER}, \verb{SCENIC+}, \code{RegDiffusion}, or \code{SCENIC}.}
 
-\item{backend}{Runtime backend. `"cpp"` is available for GRNBoost2 and
-GNIPLR; `"python"` is required for RegDiffusion.}
+\item{backend}{Method-specific implementation. \code{NULL} uses the method default.}
 
 \item{genes_in}{Matrix orientation for matrix inputs. `"rows"` means genes x
 cells; `"columns"` means cells x genes.}
 
-\item{output_file}{Optional adjacency file for `return_type = "edges"`.}
+\item{output_file}{Optional adjacency file for \code{return_type = "edges"}.}
 
-\item{work_dir}{Working directory used by Python backends.}
+\item{work_dir}{Directory for method outputs and logs.}
 
-\item{prefix}{Prefix for temporary backend files.}
+\item{prefix}{Prefix for run directories.}
 
-\item{max_edges_per_target}{Maximum incoming regulator edges retained per
-target.}
+\item{max_edges_per_target}{Maximum incoming edges per target for methods that support it.}
 
-\item{n_rounds}{Number of boosting rounds for GRNBoost2-like inference.}
+\item{n_rounds}{Number of boosting rounds for GRNBoost2-like tree ensemble
+inference. The default follows arboreto `SGBM_KWARGS`.}
 
 \item{learning_rate}{GRNBoost2-like tree ensemble learning rate.}
 
 \item{max_depth}{Maximum depth of each regression tree.}
 
-\item{max_features}{Fraction of candidate regulators sampled at each split.}
+\item{max_features}{Fraction of candidate regulators sampled at each tree
+split.}
 
 \item{subsample}{Fraction of cells sampled for each boosting round.}
 
 \item{early_stop_window_length}{Out-of-bag improvement window used for
 GRNBoost2 early stopping.}
 
-\item{exclude_self}{Whether GRNBoost2-like inference excludes a target gene
-from its own regulator feature set.}
+\item{exclude_self}{Whether GRNBoost2-like inference excludes a target
+gene from its own regulator feature set.}
 
-\item{correlation_threshold}{Relative correlation filter used by GNIPLR.}
+\item{correlation_threshold}{Relative correlation filter used before lagged
+regression. A gene pair is tested when its absolute correlation is at least
+this fraction of the maximum absolute correlation for the regulator.}
 
-\item{lasso_degree}{Polynomial degree used by GNIPLR.}
+\item{lasso_degree}{Polynomial degree used by the LASSO projection step.}
 
-\item{lasso_alpha}{LASSO regularization strength used by GNIPLR.}
+\item{lasso_alpha}{LASSO regularization strength used by the projection step.}
 
-\item{max_lag}{Maximum lag used by GNIPLR.}
+\item{max_lag}{Maximum lag used by Granger-style lagged regression. Values
+above `3` are capped at `3` to match the GNIPLR reference implementation.}
 
-\item{envname}{Python environment used by Python backends. If `NULL`,
-GNIPLR uses the default `"scop_env"` through [RunGNIPLR()], while pySCENIC
-GRNBoost2 uses `"scenic_env"` on the legacy path; RegDiffusion uses
-its own `"regdiffusion_env"` environment.}
+\item{envname}{Python environment. \code{NULL} uses the method default.}
 
 \item{conda}{Conda-compatible executable used by Python backends.}
 
-\item{cores}{Number of workers used by supported methods.}
+\item{cores}{Number of workers for methods that support parallel execution.}
 
 \item{seed}{Random seed passed to supported backends.}
 
-\item{force}{Whether to overwrite an existing \code{output_file}.}
+\item{force}{Overwrite an existing \code{output_file}.}
 
 \item{verbose}{Whether to print progress messages.}
 
-\item{return_type}{Output to return: `"seurat"`, `"edges"`, or `"result"`.
-With `NULL`, Seurat inputs return the updated object and matrix inputs
-return an edge table.}
+\item{return_type}{\code{"seurat"}, \code{"edges"}, or \code{"result"}. The default is
+\code{"seurat"} for Seurat input and \code{"edges"} for matrix input.}
 
-\item{input_mode}{\code{"rna"} or \code{"multiome"}. Multiome methods require a Seurat object.}
+\item{input_mode}{\code{"rna"} or \code{"multiome"}. Multiome input requires a Seurat object.}
 
-\item{atac_assay, atac_layer}{Chromatin assay and exact layer. Join split layers before inference.}
+\item{atac_assay, atac_layer}{Chromatin assay and exact layer. Join split layers first.}
 
-\item{group.by}{Metadata column or cell-ID-named vector defining separately fitted networks.}
+\item{group.by}{Metadata column or cell-named vector defining separate networks.}
 
-\item{groups}{Optional existing group labels, in the requested order.}
+\item{groups}{Group labels to fit, in the requested order.}
 
-\item{pseudotime}{Seurat metadata column, named numeric vector, or cell-by-trajectory matrix.
-Time methods align by cell ID.}
+\item{pseudotime}{Metadata column, cell-named numeric vector, or cell-by-trajectory matrix.}
 
-\item{resources}{Named method-specific resources. For PIDC, SCSGL, SCODE,
-SINCERITIES, and the Python GNIPLR result adapter, set \code{source_dir} to a
-trusted local checkout of the linked multiCSN analysis code. The linked
-GNIPLR implementation uses its fixed LASSO settings.}
+\item{resources}{Named backend resources. Set \code{source_dir} to the
+analysis checkout in References for PIDC, SCSGL, SCODE, SINCERITIES,
+and Python GNIPLR.}
 
-\item{method_args}{Named method-specific arguments. For Python subprocesses,
-\code{runtime} accepts \code{python} and \code{timeout}. SCENIC+ and LINGER
-can resume one selected group at a time using \code{resume_dir}.}
+\item{method_args}{Named backend arguments. \code{runtime} accepts \code{python} and
+\code{timeout} for subprocesses. \code{resume_dir} resumes one LINGER or SCENIC+ group.}
 
-\item{tool_name, overwrite}{Name and replacement policy for a Seurat tools entry.}
+\item{tool_name, overwrite}{Name and replacement policy for the Seurat tools entry.}
 }
 \value{
-The Seurat object with the complete network in its tools, a
-  \code{TF}, \code{target}, and \code{importance} edge table, or a complete
-  \code{GRNResult}. For multiple groups, use \code{"seurat"} or \code{"result"}.
+A Seurat object with the network in \code{tools}, an edge table (\code{TF},
+\code{target}, \code{importance}), or a \code{GRNResult}. Multiple groups require \code{"seurat"} or \code{"result"}.
 }
 \description{
-Run transcriptomic and multiomic network methods through one entry point.
-Complete results retain native scores, direction, sign evidence, groups,
-runtime identity, and method parameters. Use \code{\link{GetGRN}} and
-\code{\link{GRNPlot}} to read and display the results.
+Infer gene regulatory networks
 }
 \examples{
 data(pancreas_sub)
@@ -207,4 +200,7 @@ gniplr_grn <- RunGRN(
 \url{https://github.com/hmatsu1226/SCODE}
 
 \url{https://github.com/CABSEL/SINCERITIES}
+}
+\seealso{
+\code{\link[=GetGRN]{GetGRN()}}, \code{\link[=GRNPlot]{GRNPlot()}}
 }

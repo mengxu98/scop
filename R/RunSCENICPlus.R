@@ -1,165 +1,70 @@
-#' @title Read SCENIC+ results or run an approximate SCENICPlus-compatible eGRN analysis
-#'
-#' @description
-#' Read official SCENIC+ result tables or build an approximate eRegulon result
-#' from paired RNA and chromatin assays. `backend = "python"` reads or extracts
-#' official SCENIC+ outputs and does not run the SCENIC+ pipeline. The C++
-#' workflow is not an exact re-run of the official SCENIC+ Python workflow and
-#' requires explicit opt-in.
+#' @title Import or approximate SCENIC+ networks
 #'
 #' @md
-#' @inheritParams RunStandardWorkflow
-#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
-#' will be removed in scop 1.0.0.
-#' @param object A Seurat object containing RNA and chromatin assays.
+#' @inheritParams scop-params
+#' @inheritParams RunSCENIC
+#' @param atac_assay Chromatin assay.
 #' @param rna_assay RNA assay name.
-#' @param atac_assay Chromatin assay name.
 #' @param rna_layer RNA count layer used for TF-gene inference and AUC scoring.
 #' @param atac_layer ATAC count layer used for peak-gene correlations.
-#' @param backend Runtime backend. `"python"` reads or extracts official
-#' SCENIC+ result tables and remains the default; it does not run the SCENIC+
-#' pipeline itself. `"cpp"` runs the approximate package workflow and issues a
-#' warning that results may not be completely identical to the reference workflow.
-#' @param grn_method GRN method used for TF-gene inference. The C++ workflow
-#' can call `RunGRNBoost2()`, `RunGENIE3()`, or `RunGNIPLR()`;
-#' RegDiffusion and GNIPLR are supported through the Python backend.
+#' @param backend `"python"` imports official results. `"cpp"` fits an approximation
+#'   using motif annotations or supplied priors. To run official SCENIC+,
+#'   use [RunGRN()] with `methods = "scenicplus"`.
+#' @param grn_method TF-gene inference method for `backend = "cpp"`.
 #' @param regulators Candidate transcription factors. If `NULL`, motif TF names
 #' are used when available; otherwise all RNA genes are considered.
-#' @param rna_expr Optional expression matrix used for C++ TF-gene and
-#' region-gene inference. Rows should be genes and columns should be cells; a
-#' cell-by-gene matrix is accepted and transposed when cell names make the
-#' orientation unambiguous.
-#' @param atac_expr Optional accessibility matrix used for C++ region-gene
-#' inference. Rows should be regions and columns should be cells; a cell-by-region
-#' matrix is accepted and transposed when cell names make the orientation
-#' unambiguous.
-#' @param tf_gene_prior Optional precomputed TF-gene table with columns `TF`,
-#' `target`, and `importance`. When supplied with `backend = "cpp"`, C++
-#' GRN inference is skipped and the table is used as the TF-gene evidence layer.
-#' If a `rho` column is absent, correlations are computed from RNA when
-#' GSEA is requested.
-#' @param region_gene_prior Optional precomputed region-gene table with columns
-#' `region`, `gene`, and `score`. When supplied with `backend = "cpp"`, C++
-#' importance fitting is skipped. If a `rho` column is absent, correlations are
-#' computed from RNA and ATAC when GSEA is requested.
-#' @param tf_region_prior Optional precomputed TF-region table with columns
-#' `TF`, `region`, and `score`. When supplied with `backend = "cpp"`, existing
-#' motif incidence is not required.
-#' @param triplets_prior Optional precomputed TF-region-gene table with columns
-#' `TF`, `region`, `gene`, and `score`. When supplied with `backend = "cpp"`,
-#' triplets are read directly instead of assembled from the three edge layers.
-#' @param eregulons_prior Optional precomputed eRegulon table with columns
-#' `regulon` and `target`. When supplied with `backend = "cpp"`, eRegulon names
-#' and gene sets are taken from this table.
-#' @param auc_expr Optional expression matrix used only for eRegulon AUCell
-#' scoring in the C++ workflow. Rows should be genes and columns should be
-#' cells; a cell-by-gene matrix is accepted and transposed when cell names make
-#' the orientation unambiguous.
-#' @param auc_rankings Optional precomputed 0-based ranking matrix used only for
-#' eRegulon AUCell scoring in the C++ workflow. Rows should be cells and
-#' columns should be genes; a gene-by-cell matrix is accepted and transposed when
-#' cell names make the orientation unambiguous. This is mainly useful for
-#' official SCENIC+ parity tests because SCENIC+ uses seeded random tie-breaking.
-#' @param region_auc_rankings Optional cell-by-region 0-based rankings for
-#' region signature AUC. If absent, rankings are computed locally from ATAC.
+#' @param rna_expr,atac_expr RNA expression and chromatin accessibility matrices
+#'   for the C++ workflow. Use features as rows and cells as columns.
+#' @param tf_gene_prior Precomputed TF-gene table (`TF`, `target`, `importance`).
+#' @param region_gene_prior Precomputed region-gene table (`region`, `gene`, `score`).
+#' @param tf_region_prior Precomputed TF-region table (`TF`, `region`, `score`).
+#' @param triplets_prior Precomputed TF-region-gene table (`TF`, `region`, `gene`, `score`).
+#' @param eregulons_prior Precomputed eRegulon table (`regulon`, `target`).
+#' @param auc_expr Gene-by-cell expression matrix for eRegulon AUC.
+#' @param auc_rankings Cell-by-gene matrix of zero-based ranks for gene AUC.
+#' @param region_auc_rankings Cell-by-region matrix of zero-based ranks for region AUC.
 #' @param region_gene_window Maximum peak-to-gene distance in base pairs.
-#' @param region_gene_search_space Optional search-space table with columns
-#' `region`/`Name` and `gene`/`Gene`. When supplied, C++ region-gene scoring
-#' is limited to these candidate pairs.
-#' @param region_gene_method C++ region-gene scoring method. `"gbm"` follows
-#' the official SCENIC+ region-to-gene strategy more closely by combining
-#' boosting feature importance with Spearman correlation; `"correlation"` keeps
-#' the older correlation-only approximation.
+#' @param region_gene_search_space Candidate pairs as a table or file with `region`/`Name`
+#'   and `gene`/`Gene` columns.
+#' @param region_gene_method `"gbm"` combines boosting and correlation. `"correlation"` uses correlation alone.
 #' @param region_gene_n_rounds Number of boosting rounds for C++
 #' region-gene importance scoring.
 #' @param max_region_gene Maximum region-gene links retained per gene.
 #' @param max_tf_region Maximum motif-supported regions retained per TF.
 #' @param min_eregulon_size Minimum genes per eRegulon retained for AUC scoring.
-#' @param egrn_rho_threshold Absolute Spearman correlation threshold used to
-#' split TF-gene and region-gene links into activating/repressing eGRN modules.
-#' @param egrn_quantiles Region-gene importance quantiles used to build
-#' candidate eModules before TF-gene leading-edge filtering.
-#' @param egrn_top_n_region_gene Top-N region-gene links per gene used as
-#' additional candidate eModules before TF-gene leading-edge filtering.
-#' @param egrn_min_target_genes Minimum leading-edge target genes required for
-#' an eRegulon module. The default follows the official SCENIC+ CLI workflow.
-#' @param egrn_method Local eModule filtering. `"gsea"` computes weighted
-#' permutation GSEA, NES and BH-adjusted p-values in compiled code. `"leading_edge"`
-#' retains the older approximation and its unfiltered fallback.
+#' @param egrn_rho_threshold Absolute Spearman correlation threshold for signed modules.
+#' @param egrn_quantiles Region-gene importance quantiles for candidate modules.
+#' @param egrn_top_n_region_gene Top region-gene links per gene for candidate modules.
+#' @param egrn_min_target_genes Minimum leading-edge genes per eRegulon.
+#' @param egrn_method Module filter: `"gsea"` or `"leading_edge"`.
 #' @param egrn_n_perm Number of gene-set permutations per GSEA module.
 #' @param group.by Optional metadata column used to calculate eRegulon
 #' specificity scores.
-#' @param grn_top_targets Maximum TF-gene edges retained per target. The
-#' default `Inf` keeps all positive links to match arboreto GRNBoost2 output.
-#' @param max_grn_targets Maximum genes used as TF-gene GRN targets in the
-#' C++ workflow. With `grn_target_scope = "region_gene"`, genes are ranked by
-#' strongest absolute peak-to-gene correlation. Set to `Inf` to keep the full
-#' selected target universe.
-#' @param grn_target_scope TF-gene target universe for the C++ workflow.
-#' `"all"` follows official SCENIC+ TF-to-gene inference by scoring every RNA
-#' gene; `"region_gene"` restricts TF-gene inference to genes with peak links.
-#' @param grn_n_rounds Number of C++ tree boosting rounds for TF-gene
-#' inference. The default follows arboreto `SGBM_KWARGS`.
+#' @param grn_top_targets Maximum TF-gene edges per target. `Inf` keeps all positive edges.
+#' @param max_grn_targets Maximum target genes. `Inf` keeps the full target set.
+#' @param grn_target_scope `"all"` uses all RNA genes. `"region_gene"` uses genes with region links,
+#'   ranked by absolute peak-gene correlation.
+#' @param grn_n_rounds Boosting rounds for TF-gene inference.
 #' @param grn_learning_rate C++ tree boosting learning rate.
 #' @param grn_max_depth Maximum depth of each C++ TF-gene regression tree.
 #' @param grn_max_features Fraction of candidate TFs sampled at each C++
 #' tree split.
 #' @param grn_subsample Fraction of cells sampled for each C++ boosting
 #' round.
-#' @param grn_early_stop_window_length Out-of-bag improvement window used for
-#' C++ GRNBoost2 early stopping. The default is `25`, matching the monitor
-#' explicitly used by official SCENIC+. Set `0` to disable early stopping.
-#' @param seed Random seed used by the C++ stochastic boosting code. The
-#' default matches official SCENIC+ command-line wrappers.
-#' @param cores Number of workers used by C++ TF-gene GRN inference. `NULL`
-#' (the default) uses the process OpenMP team.
+#' @param grn_early_stop_window_length Out-of-bag early stopping window. `0` disables it.
+#' @param cores CPU cores for C++ inference. `NULL` uses the OpenMP team.
 #' @param assay_name Assay used to store eRegulon AUC scores.
-#' @param tool_name Name of the `srt@tools` result entry.
-#' @param python_result_dir Input directory containing official SCENIC+ outputs
-#' already exported as `tf_gene`, `region_gene`, `tf_region`, `triplets`,
-#' `eregulons`, and `auc` tables. Tab-separated, comma-separated and plain-text
-#' files are accepted, optionally compressed with gzip, bzip2 or xz; a table in
-#' a single subdirectory is also found. Used only for `backend = "python"`.
-#' @param scplus_object Optional official SCENIC+ Python object path
-#' (`.pkl`, `.pickle` or `.h5mu`) to extract into `work_dir` before
-#' standardization. Used only for `backend = "python"`.
-#' @param auto_prepare Whether to find SCENIC+ results automatically when
-#' neither `python_result_dir` nor `scplus_object` is supplied, and to extract
-#' standardized tables from a matching `.pkl`, `.pickle` or `.h5mu` found in
-#' `python_result_dir` or a conventional location. The search checks
-#' `scenicplus`, `scplus`, `scenic`, `outs` and the current directory. Default
-#' is `TRUE`; set to `FALSE` to require explicit inputs. Used only for
-#' `backend = "python"`; the Python environment is prepared automatically when
-#' extraction is needed.
-#' @param work_dir Directory used for standardized tables extracted from
-#' `scplus_object` or an automatically discovered SCENIC+ object. Defaults to
-#' `"scenicplus_output/"`, mirroring [RunSCENIC()]. Ignored when
-#' `python_result_dir` already contains the standardized tables. Used only for
-#' `backend = "python"`.
-#' @param envname Python environment used when `backend = "python"`. By default, `.h5mu` uses `scenicplus_io_env`; pickle uses `scenicplus_env`.
-#' @param conda Conda-compatible executable used when `backend = "python"`.
+#' @param python_result_dir Directory of official SCENIC+ result tables. Accepts TSV, CSV,
+#'   or TXT, optionally compressed with gzip, bzip2, or xz.
+#' @param scplus_object Official SCENIC+ `.h5mu`, `.pkl`, or `.pickle` file to extract.
+#' @param auto_prepare Look for local results when paths are omitted. The search checks
+#'   `scenicplus`, `scplus`, `scenic`, `outs`, and the current directory.
+#' @param work_dir Directory for tables extracted from a SCENIC+ object.
+#' @param envname Python environment. By default, `.h5mu` uses `scenicplus_io_env`
+#'   and pickle uses `scenicplus_env`.
 #'
-#' @details
-#' The C++ route runs locally without importing or invoking Python. GSEA
-#' filters modules before merging; it does not substitute unfiltered triplets
-#' when no module passes. The tool result includes module `gsea_statistics`,
-#' `region_regulon_list` and `region_auc` alongside gene AUC. Locally computed
-#' gene and region rankings use PCG tie-breaking with fixed seed 123; the
-#' inference and GSEA seed is controlled separately by `seed`.
-#'
-#' `backend = "python"` reads the standardized tables described for
-#' `python_result_dir` instead of running SCENIC+ itself. When only a SCENIC+
-#' object is available, pass it with `scplus_object`; the standardized tables
-#' are extracted into `work_dir` before reading. `.h5mu` objects are read with
-#' the Python `mudata` package. Missing tables are reported together with the files found
-#' in `python_result_dir` and the required columns.
-#'
-#' Neither backend downloads SCENIC+ reference databases or result tables.
-#' `backend = "python"` only reads local files (and may prepare the Python
-#' environment when `scplus_object` is supplied); `backend = "cpp"` uses motif
-#' annotations already stored in the chromatin assay.
-#'
-#' @return A Seurat object with SCENICPlus-style results.
+#' @return A Seurat object with eRegulon activity in `assay_name` and the network in `tools`.
+#' @seealso [RunGRN()], [SCENICPlusPlot()]
 #' @export
 #'
 #' @examples

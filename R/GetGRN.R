@@ -1,27 +1,18 @@
-#' @title Read a unified gene regulatory network result
+#' @title Read a gene regulatory network
 #'
-#' @description Read complete GRN results without rerunning inference. Standard edge views preserve original scores, direction and sign evidence.
-#'
-#' @param object A GRNResult or a Seurat object containing one.
-#' @param group One fitted group. Required when more than one group is present.
-#' @param layer Native evidence layer, such as tf_gene, tf_region, region_gene, or mediated_tf_gene.
-#' @param what One of edges, layers, chains, gene_sets, native, parameters, or result.
-#' @param tool_name Name of the Seurat \code{tools} entry. If omitted, the only
-#'   stored GRN result is used. Specify a name when several results are stored.
-#' @param all_groups Return a named list for every fitted group.
-#' @param ... Reserved for future extensions.
-#' @return The selected table, native result, parameters, gene sets, or complete result.
-#'
-#' @details Native scientific data are stored once. Edge views map native columns to source,
-#'   target, source_type, target_type, layer, raw_score, score_type, directed, sign,
-#'   and sign_basis. Additional native scientific columns remain available.
-#'   Unknown signs are NA. Unsupported and uncomputed layers give explicit errors;
-#'   a computed zero-row table is a successful empty network.
-#'   When native gene sets are available, gene_sets returns them. Otherwise direct
-#'   TF-gene targets are grouped by source and positive, negative, zero, or unknown
-#'   sign. These are predicted target programs and can be passed to CellScoring.
-#'   The native selector returns the unchanged method output.
-#' @seealso \code{\link{RunGRN}}, \code{\link{GRNPlot}}, \code{\link{CellScoring}}
+#' @md
+#' @param object A `GRNResult` or a Seurat object containing one.
+#' @param group Network group. Required when several groups are stored.
+#' @param layer Evidence layer, such as `"tf_gene"`, `"tf_region"`, or `"region_gene"`.
+#' @param what `"edges"`, `"layers"`, `"chains"`, `"gene_sets"`, `"native"`,
+#'   `"parameters"`, or `"result"`. If native gene sets are absent, `"gene_sets"`
+#'   groups direct targets by regulator and sign.
+#' @param tool_name Seurat tools entry. Omit when only one GRN is stored.
+#' @param all_groups Return results for every group instead of selecting `group`.
+#' @param ... Additional parameters to other functions. Currently unused.
+#' @return The selected result, or a named list with `all_groups = TRUE`.
+#'   Edge tables preserve the native score and direction, with `NA` for unknown signs.
+#' @seealso [RunGRN()], [GRNPlot()], [CellScoring()]
 #' @export
 GetGRN <- function(
   object,
