@@ -12,8 +12,8 @@ grn_multicsn_arguments <- function() {
 
 grn_prepare_multicsn <- function(input, config) {
   if (!requireNamespace("multiCSN", quietly = TRUE) ||
-      utils::packageVersion("multiCSN") < "0.0.2") {
-    stop("multiCSN >= 0.0.2 is required. Install the current independent multiCSN package.", call. = FALSE)
+      utils::packageVersion("multiCSN") < "0.1.0") {
+    stop("multiCSN >= 0.1.0 is required. Install the current independent multiCSN package.", call. = FALSE)
   }
   mode <- input$input_mode
   if (is.null(mode)) mode <- config$input_mode

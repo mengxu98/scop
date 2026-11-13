@@ -187,7 +187,7 @@ pancreas_sub <- RunDorothea(
 )
 pancreas_sub@tools$Dorothea$network_info
 # A real RunGRN result can be connected in the same way:
-# grn <- RunGRN(pancreas_sub, grn_method = "genie3")
+# grn <- RunGRN(pancreas_sub, methods = "genie3")
 # pancreas_sub <- RunDorothea(pancreas_sub, regulons = grn)
 \dontrun{
 pancreas_sub <- RunDorothea(

@@ -913,7 +913,7 @@ scenic_cpp <- function(
         regulators = regulators,
         targets = targets,
         genes_in = "columns",
-        grn_method = "grnboost2",
+        methods = "grnboost2",
         backend = "cpp",
         output_file = adj_file,
         max_edges_per_target = Inf,

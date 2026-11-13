@@ -14,10 +14,11 @@ RunGRN(object, ...)
   layer = "counts",
   regulators = NULL,
   targets = NULL,
-  grn_method = c("grnboost2", "regdiffusion", "genie3", "gniplr"),
+  methods = "grnboost2",
   backend = c("cpp", "python"),
   ...,
-  return_type = "edges",
+  return_data = FALSE,
+  return_seurat = FALSE,
   input_mode = NULL,
   atac_assay = NULL,
   atac_layer = NULL,
@@ -35,7 +36,7 @@ RunGRN(object, ...)
   regulators = NULL,
   targets = NULL,
   genes_in = c("rows", "columns"),
-  grn_method = c("grnboost2", "regdiffusion", "genie3", "gniplr"),
+  methods = "grnboost2",
   backend = c("cpp", "python"),
   output_file = NULL,
   work_dir = tempdir(),
@@ -59,7 +60,8 @@ RunGRN(object, ...)
   force = FALSE,
   verbose = TRUE,
   ...,
-  return_type = "edges",
+  return_data = FALSE,
+  return_seurat = FALSE,
   input_mode = NULL,
   assay = NULL,
   layer = "counts",
@@ -87,7 +89,7 @@ RunGRN(object, ...)
 
 \item{targets}{Optional target genes. If `NULL`, all genes are considered.}
 
-\item{grn_method}{One registered method name, matched without case sensitivity. Supports multiCSN, GENIE3, GRNBoost2, GNIPLR, PPCOR, PIDC, SCORPION, SCSGL, LEAP, SCODE, SINCERITIES, Pando, LINGER, SCENIC+, RegDiffusion, and SCENIC.}
+\item{methods}{One registered method name, matched without case sensitivity. Supports multiCSN, GENIE3, GRNBoost2, GNIPLR, PPCOR, PIDC, SCORPION, SCSGL, LEAP, SCODE, SINCERITIES, Pando, LINGER, SCENIC+, RegDiffusion, and SCENIC.}
 
 \item{backend}{Runtime backend. `"cpp"` is available for GRNBoost2 and
 GNIPLR; `"python"` is required for RegDiffusion.}
@@ -142,7 +144,10 @@ GRNBoost2 and RegDiffusion use the isolated `"scenic_env"` environment.}
 
 \item{verbose}{Whether to print progress messages.}
 
-\item{return_type}{Return the compatible edge table, a complete \code{GRNResult}, or the input Seurat object with a named tool entry.}
+\item{return_data}{Whether to return the complete \code{GRNResult}.}
+
+\item{return_seurat}{Whether to store the complete result in the input Seurat
+object's tools and return the object. Cannot be combined with \code{return_data}.}
 
 \item{input_mode}{\code{"rna"} or \code{"multiome"}. Multiome methods require a Seurat object.}
 
@@ -161,7 +166,7 @@ GRNBoost2 and RegDiffusion use the isolated `"scenic_env"` environment.}
 \item{tool_name,overwrite}{Name and replacement policy for a Seurat tools entry. Computation completes before the object is updated.}
 }
 \value{
-The original adjacency table for compatible calls, a complete \code{GRNResult}, or a Seurat object. Multi-group inference requires \code{return_type="result"} or \code{"seurat"}.
+The original adjacency table for compatible calls, a complete \code{GRNResult}, or a Seurat object. Multi-group inference requires \code{return_data = TRUE} or \code{return_seurat = TRUE}.
 }
 \description{
 Run transcriptomic and multiomic network methods through one entry point. Complete results retain native scores, direction, sign evidence, groups, runtime identity, and method parameters. Use GetGRN and GRNPlot to read and display the results.
@@ -181,7 +186,7 @@ expr <- expr[
 gniplr_grn <- RunGRN(
   expr,
   genes_in = "rows",
-  grn_method = "gniplr",
+  methods = "gniplr",
   backend = "cpp",
   correlation_threshold = 0,
   lasso_degree = 1,

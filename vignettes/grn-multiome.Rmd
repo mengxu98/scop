@@ -15,7 +15,7 @@ monocyte networks through the same `RunGRN` entry point.
 
 Install the independent [multiCSN package](https://github.com/mengxu98/multiCSN)
 and a matching hg38 BSgenome before running the main example. This interface
-requires multiCSN 0.0.2 or later. The selected genome must match your peak
+requires multiCSN 0.1.0 or later. The selected genome must match your peak
 coordinates and gene annotation. Run the chunks interactively, or set
 `options(scop.grn.multiome = TRUE)` when rendering the main example.
 
@@ -57,11 +57,11 @@ stopifnot(length(targets) == 64L)
 
 ```{r paired-network}
 multiome_grn <- RunGRN(
-	paired, grn_method = "multiCSN", input_mode = "multiome",
+	paired, methods = "multiCSN", input_mode = "multiome",
 	assay = "RNA", layer = "data", atac_assay = "peaks", atac_layer = "data",
 	group.by = "CellType", groups = c("B", "Mono"), targets = targets,
 	resources = list(genome = genome), method_args = list(preset = "state"),
-	return_type = "result", work_dir = file.path(tempdir(), "scop-pbmc-multicsn"),
+	return_data = TRUE, work_dir = file.path(tempdir(), "scop-pbmc-multicsn"),
 	cores = 1L, seed = 1201L, verbose = FALSE
 )
 names(multiome_grn$groups)
@@ -150,11 +150,11 @@ Pando defaults retain its native module thresholds.
 ```{r paired-pando, eval=FALSE}
 PrepareEnv(modules = "pando", components = "r")
 pando_grn <- RunGRN(
-	paired, grn_method = "Pando", input_mode = "multiome",
+	paired, methods = "Pando", input_mode = "multiome",
 	assay = "RNA", layer = "data", atac_assay = "peaks", atac_layer = "data",
 	group.by = "CellType", groups = "B", targets = targets,
 	resources = list(genome = "BSgenome.Hsapiens.UCSC.hg38"),
-	return_type = "result", work_dir = file.path(tempdir(), "scop-pbmc-pando"),
+	return_data = TRUE, work_dir = file.path(tempdir(), "scop-pbmc-pando"),
 	cores = 1L, seed = 1201L, verbose = FALSE
 )
 pando_native <- GetGRN(pando_grn, group = "B", what = "native")
@@ -188,12 +188,12 @@ reference_tfs <- scan(file.path(bulk_reference, "TFName.txt"), what = "character
 regulators_linger <- intersect(reference_tfs, rownames(paired[["RNA"]]))
 targets_linger <- targets
 linger_grn <- RunGRN(
-	paired, grn_method = "LINGER", input_mode = "multiome",
+	paired, methods = "LINGER", input_mode = "multiome",
 	assay = "RNA", layer = "counts", atac_assay = "peaks", atac_layer = "counts",
 	regulators = regulators_linger, targets = targets_linger,
 	resources = list(bulk_reference = bulk_reference),
 	method_args = list(label.by = "CellType", genome = "hg38"),
-	return_type = "result", work_dir = "/path/to/new-linger-run",
+	return_data = TRUE, work_dir = "/path/to/new-linger-run",
 	cores = 1L, seed = 1201L
 )
 GetGRN(linger_grn, layer = "tf_region")
@@ -248,9 +248,9 @@ scenicplus_resources <- list(
 	workflow = "/path/to/scenicplus/src/scenicplus/snakemake"
 )
 scenicplus_grn <- RunGRN(
-	paired, grn_method = "SCENIC+", input_mode = "multiome",
+	paired, methods = "SCENIC+", input_mode = "multiome",
 	assay = "RNA", layer = "data", atac_assay = "peaks", atac_layer = "data",
-	resources = scenicplus_resources, return_type = "result",
+	resources = scenicplus_resources, return_data = TRUE,
 	work_dir = "/path/to/new-scenicplus-run", cores = 1L, seed = 1201L
 )
 GetGRN(scenicplus_grn, what = "native")$direct
@@ -258,7 +258,7 @@ GetGRN(scenicplus_grn, what = "native")$extended
 GetGRN(scenicplus_grn, what = "native")$auc
 ```
 
-`RunGRN(..., grn_method = "scenicplus")` is the official execution route.
+`RunGRN(..., methods = "scenicplus")` is the official execution route.
 The existing `RunSCENICPlus(..., backend = "python")` reads official outputs.
 Its result records `execution_status = "imported"`.
 The existing C++ SCENICPlus-compatible workflow has its own implementation

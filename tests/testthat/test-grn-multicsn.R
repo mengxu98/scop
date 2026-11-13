@@ -93,7 +93,7 @@ grn_multicsn_test_data <- local({
 })
 
 test_that("multiCSN RNA adapter preserves the independent public result", {
-  skip_if_not_installed("multiCSN", minimum_version = "0.0.2")
+  skip_if_not_installed("multiCSN", minimum_version = "0.1.0")
   input <- grn_multicsn_rna_input()
   config <- grn_multicsn_test_config(method_args = list(max_support_size = 3L))
   input <- grn_prepare_multicsn(input, config)
@@ -131,7 +131,7 @@ test_that("multiCSN RNA adapter preserves the independent public result", {
 
 test_that("multiCSN multiome groups preserve complete native endpoints", {
   skip_on_cran()
-  skip_if_not_installed("multiCSN", minimum_version = "0.0.2")
+  skip_if_not_installed("multiCSN", minimum_version = "0.1.0")
   skip_if_not_installed("BSgenome.Hsapiens.UCSC.hg38")
   skip_if_not_installed("motifmatchr")
   data <- grn_multicsn_test_data()
@@ -158,7 +158,7 @@ test_that("multiCSN multiome groups preserve complete native endpoints", {
 
 test_that("multiCSN presets retain explicit overrides without stale candidates", {
   skip_on_cran()
-  skip_if_not_installed("multiCSN", minimum_version = "0.0.2")
+  skip_if_not_installed("multiCSN", minimum_version = "0.1.0")
   skip_if_not_installed("BSgenome.Hsapiens.UCSC.hg38")
   skip_if_not_installed("motifmatchr")
   data <- grn_multicsn_test_data()
@@ -198,7 +198,7 @@ test_that("multiCSN presets retain explicit overrides without stale candidates",
 
 test_that("multiCSN layer views preserve independent signs and chain evidence", {
   skip_on_cran()
-  skip_if_not_installed("multiCSN", minimum_version = "0.0.2")
+  skip_if_not_installed("multiCSN", minimum_version = "0.1.0")
   skip_if_not_installed("BSgenome.Hsapiens.UCSC.hg38")
   skip_if_not_installed("motifmatchr")
   data <- grn_multicsn_test_data()

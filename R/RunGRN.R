@@ -692,9 +692,9 @@ regdiffusion_python <- function(
 #' @title Infer gene regulatory networks with a selected method
 #'
 #' @description
-#' Unified GRN inference entry point for GRNBoost2, GENIE3, RegDiffusion, and
-#' GNIPLR. It returns a standardized adjacency table with at least `TF`,
-#' `target`, and `importance` columns.
+#' Run transcriptomic and multiomic network methods through one entry point.
+#' Complete results retain native scores, direction, sign evidence, groups,
+#' runtime identity, and method parameters.
 #'
 #' @param object A Seurat object or expression matrix.
 #' @param assay Assay used when `object` is a Seurat object.
@@ -703,7 +703,10 @@ regdiffusion_python <- function(
 #' @param targets Optional target genes. If `NULL`, all genes are considered.
 #' @param genes_in Matrix orientation for matrix inputs. `"rows"` means genes x
 #' cells; `"columns"` means cells x genes.
-#' @param grn_method GRN inference method.
+#' @param methods One registered GRN method name, matched without case sensitivity.
+#' @param return_data Whether to return the complete `GRNResult`.
+#' @param return_seurat Whether to store the complete result in the input Seurat
+#'   object's tools and return the object. Cannot be combined with `return_data`.
 #' @param backend Runtime backend. `"cpp"` is available for GRNBoost2 and
 #' GNIPLR; `"python"` is required for RegDiffusion.
 #' @param output_file Optional path where the adjacency table is written.
@@ -733,7 +736,8 @@ regdiffusion_python <- function(
 #' @param force Whether to rebuild existing `output_file`.
 #' @param verbose Whether to print progress messages.
 #' @param ... Arguments passed to other functions.
-#' @return A data frame with standardized GRN edges.
+#' @return An edge table by default, a complete `GRNResult` if `return_data = TRUE`,
+#'   or a Seurat object if `return_seurat = TRUE`.
 #'
 #' @export
 #' @examples
@@ -751,7 +755,7 @@ regdiffusion_python <- function(
 #' gniplr_grn <- RunGRN(
 #'   expr,
 #'   genes_in = "rows",
-#'   grn_method = "gniplr",
+#'   methods = "gniplr",
 #'   backend = "cpp",
 #'   correlation_threshold = 0,
 #'   lasso_degree = 1,
@@ -771,10 +775,10 @@ RunGRN.Seurat <- function(
   layer = "counts",
   regulators = NULL,
   targets = NULL,
-  grn_method = c("grnboost2", "regdiffusion", "genie3", "gniplr"),
+  methods = "grnboost2",
   backend = c("cpp", "python"),
   ...,
-  return_type = "edges", input_mode = NULL, atac_assay = NULL, atac_layer = NULL,
+  return_data = FALSE, return_seurat = FALSE, input_mode = NULL, atac_assay = NULL, atac_layer = NULL,
   group.by = NULL, groups = NULL, pseudotime = NULL, resources = list(),
   method_args = list(), tool_name = NULL, overwrite = FALSE
 ) {
@@ -783,10 +787,11 @@ RunGRN.Seurat <- function(
     regulators = regulators,
     targets = targets,
     genes_in = "rows",
-    grn_method = if (missing(grn_method)) "grnboost2" else grn_method,
+    methods = methods,
     backend = if (missing(backend)) NULL else backend,
     ...,
-    assay = assay, layer = layer, return_type = return_type, input_mode = input_mode,
+    assay = assay, layer = layer, return_data = return_data,
+    return_seurat = return_seurat, input_mode = input_mode,
     atac_assay = atac_assay, atac_layer = atac_layer, group.by = group.by,
     groups = groups, pseudotime = pseudotime, resources = resources,
     method_args = method_args, tool_name = tool_name, overwrite = overwrite
@@ -796,27 +801,37 @@ RunGRN.Seurat <- function(
 RunGRN.default <- function(
   object, regulators = NULL, targets = NULL,
   genes_in = c("rows", "columns"),
-  grn_method = c("grnboost2", "regdiffusion", "genie3", "gniplr"),
+  methods = "grnboost2",
   backend = c("cpp", "python"), output_file = NULL, work_dir = tempdir(), prefix = "grn",
   max_edges_per_target = Inf, n_rounds = 5000, learning_rate = 0.01,
   max_depth = 3, max_features = 0.1, subsample = 0.9, early_stop_window_length = 25,
   exclude_self = TRUE, correlation_threshold = 0.3, lasso_degree = 30,
   lasso_alpha = 0.1, max_lag = 3, envname = NULL, conda = "auto", cores = 1,
   seed = 1234, force = FALSE, verbose = TRUE, ...,
-  return_type = "edges", input_mode = NULL, assay = NULL, layer = "counts",
+  return_data = FALSE, return_seurat = FALSE, input_mode = NULL, assay = NULL, layer = "counts",
   atac_assay = NULL, atac_layer = NULL, group.by = NULL, groups = NULL,
   pseudotime = NULL, resources = list(), method_args = list(),
   tool_name = NULL, overwrite = FALSE
 ) {
-  method <- if (missing(grn_method)) "grnboost2" else grn_method
-  if (length(method) != 1L || is.na(method)) stop("Choose exactly one GRN method.", call. = FALSE)
-  return_type <- match.arg(return_type, c("edges", "result", "seurat"))
-  spec <- grn_method_spec(method, if (missing(backend) || is.null(backend)) NULL else backend)
+  dots <- list(...)
+  if ("grn_method" %in% names(dots)) {
+    stop("Use 'methods' to select a GRN method.", call. = FALSE)
+  }
+  if ("return_type" %in% names(dots)) {
+    stop("Use 'return_data' or 'return_seurat' to select the GRN output.", call. = FALSE)
+  }
+  if (length(methods) != 1L || is.na(methods)) stop("Choose exactly one GRN method.", call. = FALSE)
+  if (!is.logical(return_data) || length(return_data) != 1L || is.na(return_data) ||
+      !is.logical(return_seurat) || length(return_seurat) != 1L || is.na(return_seurat)) {
+    stop("return_data and return_seurat must each be TRUE or FALSE.", call. = FALSE)
+  }
+  if (return_data && return_seurat) stop("Choose only one of return_data and return_seurat.", call. = FALSE)
+  return_edges <- !return_data && !return_seurat
+  spec <- grn_method_spec(methods, if (missing(backend) || is.null(backend)) NULL else backend)
   if (spec$method == "pando") {
     restore_pando_session <- grn_pando_preserve_session()
     on.exit(restore_pando_session(), add = TRUE)
   }
-  dots <- list(...)
   scientific <- list(max_edges_per_target = max_edges_per_target, n_rounds = n_rounds,
     learning_rate = learning_rate, max_depth = max_depth, max_features = max_features,
     subsample = subsample, early_stop_window_length = early_stop_window_length,
@@ -825,7 +840,7 @@ RunGRN.default <- function(
   is_seurat <- inherits(object, "Seurat")
   assay <- if (is_seurat) assay %||% SeuratObject::DefaultAssay(object) else assay
   legacy <- spec$method %in% c("grnboost2", "regdiffusion", "genie3", "gniplr") &&
-    return_type == "edges" && is.null(group.by) && is.null(groups) &&
+    return_edges && is.null(group.by) && is.null(groups) &&
     is.null(pseudotime) && is.null(input_mode) && !length(resources) && !length(method_args) && spec$backend %in% c("cpp", "python")
   if (legacy) {
     expression <- if (is_seurat) GetAssayData5(object, assay = assay, layer = layer) else object
@@ -853,9 +868,9 @@ RunGRN.default <- function(
   }
   unknown <- setdiff(names(arguments), spec$allowed_args)
   if (length(unknown)) stop("Unknown argument(s) for ", spec$method, ": ", paste(unknown, collapse = ", "), call. = FALSE)
-  if (return_type == "seurat" && !is_seurat) stop("return_type = 'seurat' requires a Seurat object.", call. = FALSE)
+  if (return_seurat && !is_seurat) stop("return_seurat = TRUE requires a Seurat object.", call. = FALSE)
   tool_name <- tool_name %||% paste0("GRN_", spec$method)
-  if (return_type == "seurat" && tool_name %in% names(object@tools) && !isTRUE(overwrite)) stop("The GRN tool_name already exists. Choose another name or use overwrite = TRUE.", call. = FALSE)
+  if (return_seurat && tool_name %in% names(object@tools) && !isTRUE(overwrite)) stop("The GRN tool_name already exists. Choose another name or use overwrite = TRUE.", call. = FALSE)
   input_mode <- input_mode %||% if (length(spec$input_modes) == 1L) spec$input_modes else "rna"
   if (length(input_mode) != 1L || !input_mode %in% spec$input_modes) stop("Unsupported input_mode for ", spec$method, ".", call. = FALSE)
   if (input_mode == "multiome" && !is_seurat) stop("Multiome inference requires a Seurat object.", call. = FALSE)
@@ -899,7 +914,7 @@ RunGRN.default <- function(
     if (!length(groups) || anyDuplicated(groups) || !all(groups %in% names(group_cells))) stop("groups must select existing unique group names.", call. = FALSE)
     group_cells <- group_cells[groups]
   }
-  if (return_type == "edges" && length(group_cells) != 1L) stop("Use return_type = 'result' or 'seurat' for multiple groups.", call. = FALSE)
+  if (return_edges && length(group_cells) != 1L) stop("Use return_data = TRUE or return_seurat = TRUE for multiple groups.", call. = FALSE)
   if (spec$method %in% c("scenicplus", "linger") && length(group_cells) != 1L && !is.null(arguments$resume_dir)) {
     stop(if (spec$method == "scenicplus") "SCENIC+ " else "LINGER ",
       "resume_dir requires exactly one selected group.", call. = FALSE)
@@ -997,8 +1012,8 @@ RunGRN.default <- function(
   dir.create(work_dir, recursive = TRUE, showWarnings = FALSE)
   if (resume_linger) config$force <- TRUE
   result <- grn_cached_run(input, config, compute)
-  if (return_type == "result") return(result)
-  if (return_type == "seurat") {
+  if (return_data) return(result)
+  if (return_seurat) {
     object@tools[[tool_name]] <- result
     return(object)
   }
@@ -1134,7 +1149,7 @@ grn_legacy_inference <- function(
   if (identical(grn_method, "regdiffusion")) {
     if (!identical(backend, "python")) {
       log_message(
-        "{.arg grn_method = 'regdiffusion'} is only available with {.arg backend = 'python'}.",
+        "{.arg methods = 'regdiffusion'} is only available with {.arg backend = 'python'}.",
         message_type = "error"
       )
     }

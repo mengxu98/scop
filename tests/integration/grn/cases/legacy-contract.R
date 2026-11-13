@@ -7,11 +7,11 @@ run_case <- function(output) {
   direct <- scop::RunGRNBoost2(expression, regulators = regulators, targets = targets,
     genes_in = "rows", n_rounds = 20, verbose = FALSE)
   edges <- scop::RunGRN(expression, regulators = regulators, targets = targets,
-    grn_method = "grnboost2", n_rounds = 20, verbose = FALSE)
+    methods = "grnboost2", n_rounds = 20, verbose = FALSE)
   stopifnot(identical(edges, direct))
   result <- scop::RunGRN(expression, regulators = regulators, targets = targets,
-    grn_method = "grnboost2", method_args = list(n_rounds = 20),
-    return_type = "result", work_dir = file.path(output, "work"), verbose = FALSE)
+    methods = "grnboost2", method_args = list(n_rounds = 20),
+    return_data = TRUE, work_dir = file.path(output, "work"), verbose = FALSE)
   stopifnot(identical(scop::GetGRN(result, what = "native"), direct))
   result
 }

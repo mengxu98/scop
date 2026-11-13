@@ -5,8 +5,8 @@ cisTopic object, paired gene expression, candidate region sets and reference
 databases. The fitted cisTopic model is an explicit input. Topic modelling and
 reference database downloads are prepared separately.
 
-Use `RunGRN(..., grn_method = "scenicplus", input_mode = "multiome",
-return_type = "result")`. Supply these paths through `resources`.
+Use `RunGRN(..., methods = "scenicplus", input_mode = "multiome",
+return_data = TRUE)`. Supply these paths through `resources`.
 
 | Resource | Input |
 | --- | --- |

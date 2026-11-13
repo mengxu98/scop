@@ -46,7 +46,7 @@ Imports:
     utils,
     uwot
 Suggests:
-    multiCSN (>= 0.0.2),
+    multiCSN (>= 0.1.0),
     ppcor,
     pbapply,
     SCORPION,

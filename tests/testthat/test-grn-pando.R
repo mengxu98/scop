@@ -117,7 +117,7 @@ test_that("Pando result execution keeps the selected R mode", {
 test_that("a first Pando call does not replace multiCSN coefficient dispatch", {
   skip_if_not_installed("callr")
   skip_if(!length(find.package("Pando", quiet = TRUE)), "Pando is not installed")
-  skip_if_not_installed("multiCSN", minimum_version = "0.0.2")
+  skip_if_not_installed("multiCSN", minimum_version = "0.1.0")
   result <- callr::r(function() {
     restore_session <- getFromNamespace("grn_pando_preserve_session", "scop")
     before <- getS3method("coef", "Network", optional = TRUE)

@@ -41,10 +41,10 @@ importance regulator edges per target.
 work_dir <- file.path(tempdir(), "scop-pancreas-grn")
 grn <- RunGRN(
 	pancreas, assay = "RNA", layer = "data",
-	grn_method = "GRNBoost2", backend = "cpp",
+	methods = "GRNBoost2", backend = "cpp",
 	regulators = regulators, targets = targets,
 	method_args = list(n_rounds = 100L, max_edges_per_target = 2L),
-	return_type = "result", work_dir = work_dir,
+	return_data = TRUE, work_dir = work_dir,
 	cores = 1L, seed = 1201L, verbose = FALSE
 )
 head(GetGRN(grn))
@@ -52,13 +52,13 @@ grn$implementation
 grn$package_versions
 ```
 
-`grn_method` chooses the method. `backend` chooses an available implementation.
+`methods` chooses the method. `backend` chooses an available implementation.
 The result records the actual `implementation`, package versions, effective
 parameters, and execution details. For example, the scop C++ GRNBoost2 route and
 the official Arboreto route have separate implementation identities.
 
-`return_type = "result"` retains the complete `GRNResult`. The existing default
-`return_type = "edges"` returns the compatible `TF`, `target`, `importance` table.
+`return_data = TRUE` retains the complete `GRNResult`. The existing default
+(both return flags `FALSE`) returns the compatible `TF`, `target`, `importance` table.
 Use the complete result when you need groups, native evidence, or multiple
 network layers.
 
@@ -137,9 +137,9 @@ association network.
 ```{r pancreas-ppcor, eval=FALSE}
 PrepareEnv(modules = "ppcor", components = "r")
 ppcor_grn <- RunGRN(
-	pancreas, assay = "RNA", layer = "data", grn_method = "PPCOR",
+	pancreas, assay = "RNA", layer = "data", methods = "PPCOR",
 	regulators = regulators, targets = targets,
-	method_args = list(method = "spearman"), return_type = "result",
+	method_args = list(method = "spearman"), return_data = TRUE,
 	work_dir = file.path(tempdir(), "scop-pancreas-ppcor"), verbose = FALSE
 )
 head(GetGRN(ppcor_grn))
@@ -158,9 +158,9 @@ existing interpreter without changing the Python interpreter of your R session.
 ```{r official-python, eval=FALSE}
 PrepareEnv(modules = "grnboost2", configure_runtime = FALSE)
 official_grn <- RunGRN(
-	pancreas, assay = "RNA", layer = "data", grn_method = "grnboost2",
+	pancreas, assay = "RNA", layer = "data", methods = "grnboost2",
 	backend = "python", regulators = regulators, targets = targets,
-	return_type = "result",
+	return_data = TRUE,
 	work_dir = file.path(tempdir(), "scop-pancreas-arboreto"),
 	cores = 1L, seed = 1201L
 )
@@ -179,10 +179,10 @@ for more than one group.
 
 ```{r pancreas-grouped, eval=FALSE}
 grouped <- RunGRN(
-	pancreas, assay = "RNA", layer = "data", grn_method = "grnboost2",
+	pancreas, assay = "RNA", layer = "data", methods = "grnboost2",
 	regulators = regulators, targets = targets,
 	group.by = "CellType", groups = c("Ductal", "Endocrine"),
-	method_args = list(n_rounds = 100L), return_type = "result",
+	method_args = list(n_rounds = 100L), return_data = TRUE,
 	work_dir = file.path(tempdir(), "scop-pancreas-groups"), verbose = FALSE
 )
 GetGRN(grouped, group = "Endocrine")
@@ -228,9 +228,9 @@ time_settings <- list(
 )
 for (method in names(time_settings)) {
 	time_fits[[method]] <- RunGRN(
-		time_expression, grn_method = method, pseudotime = pseudotime,
+		time_expression, methods = method, pseudotime = pseudotime,
 		regulators = time_regulators, targets = time_targets,
-		method_args = time_settings[[method]], return_type = "result",
+		method_args = time_settings[[method]], return_data = TRUE,
 		work_dir = file.path(tempdir(), paste0("scop-beeline-", method)),
 		cores = 1L, seed = 1201L, verbose = FALSE
 	)
@@ -251,7 +251,7 @@ reloaded <- readRDS(result_file)
 stopifnot(identical(GetGRN(grn), GetGRN(reloaded)))
 ```
 
-`return_type = "seurat"` stores the complete result in a named `tools` entry.
+`return_seurat = TRUE` stores the complete result in a named `tools` entry.
 Choose `tool_name` and read it with `GetGRN(object, tool_name = "my_grn", ...)`.
 An existing entry requires explicit `overwrite = TRUE`.
 

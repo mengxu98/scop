@@ -2,6 +2,8 @@
 
 * **fix**: `FeatureHeatmap()` preserves numeric cell annotations when the same metadata column is also used for grouping or splitting. Numeric annotations without finite values now render in grey with a `Missing` legend instead of failing during color-scale construction; non-finite values in partially observed annotations use the existing missing-value color.
 
+* **breaking**: Select a network method with `RunGRN(methods = ...)`. The previous `grn_method` argument is no longer accepted. The default returns an edge table; use `return_data = TRUE` for the complete result or `return_seurat = TRUE` to store it in the Seurat object.
+
 * **feat**: Run transcriptomic and multiomic network methods through `RunGRN()`, with complete native results, separate group networks and isolated method runtimes. `GetGRN()` reads evidence layers and target programs, and `GRNPlot()` displays networks, layered paths and common edges.
 
 * **fix**: Preserve gene-by-cell orientation in GENIE3 inference. Complete GNIPLR result views respect requested regulators while the default edge-table path retains its existing behavior.
