@@ -140,7 +140,7 @@ RunSpatialGradientFeatures <- function(
   backend <- match.arg(backend, "cpp")
   coordinate_space <- match.arg(coordinate_space)
   requested_image <- image
-  assay <- assay %||% SeuratObject::DefaultAssay(srt)
+  assay <- spatial_input_info(srt, assay = assay, image = image, coord.cols = coord.cols)$assay
   if (!assay %in% SeuratObject::Assays(srt)) {
     log_message(
       "{.arg assay} {.val {assay}} is not present in {.cls Seurat}",
@@ -431,7 +431,7 @@ sgf_run_cpp_gradient <- function(
     image_policy = "strict",
     coordinate_space = coordinate_space
   )
-  spots <- intersect(colnames(srt), rownames(coords))
+  spots <- intersect(colnames(srt[[assay]]), rownames(coords))
   if (length(spots) == 0L) {
     log_message("No spatial coordinates match spots in {.arg srt}", message_type = "error")
   }
@@ -443,8 +443,8 @@ sgf_run_cpp_gradient <- function(
     log_message("At least three spots with finite coordinates are required", message_type = "error")
   }
 
-  expr <- GetAssayData5(srt, assay = assay, layer = layer)
-  expr <- expr[variables, spots, drop = FALSE]
+  expr <- GetAssayData5(srt, assay = assay, layer = layer, features = variables, cells = spots)
+  if (inherits(expr, "IterableMatrix")) expr <- methods::as(expr, "dgCMatrix")
   if (!methods::is(expr, "dgCMatrix")) {
     expr <- methods::as(Matrix::Matrix(expr, sparse = TRUE), "dgCMatrix")
   }

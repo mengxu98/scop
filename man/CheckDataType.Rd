@@ -28,6 +28,9 @@ Default is \code{TRUE}.}
 A string indicating the type of data.
 Possible values are:
 \code{"raw_counts"}, \code{"log_normalized_counts"}, \code{"raw_normalized_counts"}, or \code{"unknown"}.
+Disk-backed iterable matrices return \code{"unknown"} without materializing their
+values. Set \code{do_normalization} explicitly in preprocessing workflows when
+retaining externally normalized disk layers.
 }
 \description{
 Checks and returns a string indicating the type of data.

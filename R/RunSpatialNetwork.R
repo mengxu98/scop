@@ -368,6 +368,7 @@ GetSpatialGraph <- function(
 #' @param graph.name Stored graph name. The active graph is used when `NULL`.
 #' @param group.by Node column or Seurat metadata column used for coloring.
 #' @param image.scale Image scale factor matching the raster in `object`.
+#' @inheritParams SpatialSpotPlot
 #' @param edge.color,edge.linewidth Edge appearance.
 #' @param pt.size,pt.alpha Node appearance.
 #' @param palette,palcolor Palette name or explicit colors.
@@ -408,7 +409,8 @@ SpatialNetworkPlot <- function(
   raster.dpi = 300,
   theme_use = "theme_spatial",
   theme_args = list(),
-  image.scale = c("lowres", "hires")
+  image.scale = c("lowres", "hires"),
+  flip.y = NULL
 ) {
   image.scale <- match.arg(image.scale)
   if (!is.null(object) && !inherits(object, "Seurat")) {
@@ -434,6 +436,10 @@ SpatialNetworkPlot <- function(
     log_message("Spatial graph {.val {graph.name}} was not found", message_type = "error")
   }
   graph <- res$graphs[[graph.name]]
+  if (is.null(flip.y)) {
+    image_class <- graph$source$image_class %||% graph$source$transform$image_class
+    flip.y <- "FOV" %in% image_class && !"VisiumV2" %in% image_class
+  }
   spatial_require_coordinate_contract(graph, "RunSpatialNetwork()")
   nodes <- as.data.frame(graph$nodes, stringsAsFactors = FALSE)
   edges <- as.data.frame(graph$edges, stringsAsFactors = FALSE)
@@ -511,9 +517,9 @@ SpatialNetworkPlot <- function(
   if (!is.null(image_info)) {
     p <- p + ggplot2::annotation_raster(
       spatial_dim_raster(image_info$image, 1),
-      xmin = 0,
+      xmin = image_info$xmin %||% 0,
       xmax = image_info$width,
-      ymin = 0,
+      ymin = image_info$ymin %||% 0,
       ymax = image_info$height
     )
   }
@@ -572,6 +578,7 @@ SpatialNetworkPlot <- function(
       na.value = "grey80"
     ) + ggplot2::labs(fill = group.by)
   }
+  if (isTRUE(flip.y)) p <- p + ggplot2::scale_y_reverse()
   x_range <- range(nodes$x, na.rm = TRUE)
   y_range <- range(nodes$y, na.rm = TRUE)
   x_pad <- max(diff(x_range) * 0.04, .Machine$double.eps)

@@ -106,6 +106,9 @@ NormalizeData.Seurat <- function(
       return(seurat_fallback())
     }
     counts <- methods::slot(assay_obj, "counts")
+    if (!inherits(counts, c("matrix", "sparseMatrix"))) {
+      return(seurat_fallback())
+    }
     if (!inherits(counts, "dgCMatrix")) {
       counts <- tryCatch(
         methods::as(counts, "dgCMatrix"),
@@ -144,6 +147,9 @@ NormalizeData.Seurat <- function(
     ))
   }
   layers <- methods::slot(assay_obj, "layers")
+  if (any(!vapply(layers[source_layers], inherits, logical(1), what = c("matrix", "sparseMatrix")))) {
+    return(seurat_fallback())
+  }
   for (i in seq_along(source_layers)) {
     source_layer <- source_layers[[i]]
     save_layer <- save_layers[[i]]

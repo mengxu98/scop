@@ -499,9 +499,9 @@ spatial_neighborhood_input <- function(
   }
   rownames(out) <- out$cell
 
-  assay <- assay %||% SeuratObject::DefaultAssay(srt)
+  assay <- spatial_input_info(srt, assay = assay, image = image, coord.cols = coord.cols)$assay
   if (!is.null(features)) {
-    expr <- GetAssayData5(srt, assay = assay, layer = layer)
+    expr <- GetAssayData5(srt, assay = assay, layer = layer, features = features, cells = out$cell)
     missing_features <- setdiff(features, rownames(expr))
     if (length(missing_features) > 0L) {
       log_message(

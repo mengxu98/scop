@@ -21,7 +21,7 @@ SpatialSpotPlot(
   image.alpha = 1,
   crop = TRUE,
   coord.cols = c("col", "row"),
-  flip.y = FALSE,
+  flip.y = NULL,
   show_axes = FALSE,
   split.by = NULL,
   cells = NULL,
@@ -51,7 +51,13 @@ SpatialSpotPlot(
   byrow = TRUE,
   verbose = TRUE,
   srt = NULL,
-  image.scale = c("lowres", "hires")
+  image.scale = c("lowres", "hires"),
+  xlim = NULL,
+  ylim = NULL,
+  molecules = NULL,
+  mols.size = 0.1,
+  mols.alpha = 1,
+  mols.colors = NULL
 )
 }
 \arguments{
@@ -85,9 +91,10 @@ a single image is selected automatically when \code{NULL}.}
 
 \item{coord.cols}{Metadata coordinate columns used when no image is available.}
 
-\item{flip.y}{Reverse the y axis for metadata or FOV coordinates without a
-raster image. The default \code{FALSE} agrees with spatial networks and cell
-boundaries. Raster-backed display coordinates already include their flip.}
+\item{flip.y}{Reverse the y axis for coordinates without a Visium raster.
+\code{NULL} follows official FOV display orientation (y increasing downward),
+while metadata coordinates retain their orientation. Use \code{FALSE} for the
+historical FOV layout. Visium display coordinates already include a flip.}
 
 \item{show_axes}{Keep axis text, ticks, and grid when \code{theme_use} is
 \code{"theme_spatial"}.}
@@ -125,7 +132,7 @@ quantiles.}
 
 \item{theme_args}{Theme name or function, plus extra theme arguments.}
 
-\item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE}
+\item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork-package]{patchwork::patchwork}. \code{combine = FALSE}
 returns a list of ggplots.}
 
 \item{verbose}{Whether to print messages.}
@@ -136,6 +143,15 @@ will be removed in scop 1.0.0.}
 \item{image.scale}{Image scale factor matching the raster stored in the
 selected image. Use \code{"hires"} for a hires raster; do not modify Seurat
 scale-factor slots.}
+
+\item{xlim, ylim}{Optional increasing ROI limits in raw coordinates. Cells
+are selected by centroid; limits clip the display without modifying object.}
+
+\item{molecules}{Optional names of already loaded molecules to overlay.
+No files are read. Molecules are filtered by ROI, not assigned to cells.}
+
+\item{mols.size, mols.alpha, mols.colors}{Molecule size, opacity, and optional
+named colors matched to molecule names.}
 }
 \value{
 A \code{ggplot}, \code{patchwork}, or list of \code{ggplot} objects.

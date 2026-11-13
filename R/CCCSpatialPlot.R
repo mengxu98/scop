@@ -601,5 +601,9 @@ ccc_spatial_network_plot <- function(
       inherit.aes = FALSE, show.legend = FALSE
     )
   }
+  image_class <- stored$payload$source$image_class
+  if ("FOV" %in% image_class && !"VisiumV2" %in% image_class) {
+    p <- p + ggplot2::scale_y_reverse()
+  }
   p
 }

@@ -70,6 +70,20 @@ GetAssayData5.Assay5 <- function(
   ...
 ) {
   matching_layers <- SeuratObject::Layers(object, search = layer)
+  if (length(matching_layers) > 1L) {
+    features_use <- SeuratObject::Features(object, layer = matching_layers, simplify = TRUE)
+    cells_use <- SeuratObject::Cells(object, layer = matching_layers, simplify = TRUE)
+    if (!is.null(features)) features_use <- features[features %in% features_use]
+    if (!is.null(cells)) cells_use <- cells[cells %in% cells_use]
+    if (!length(features_use) || !length(cells_use)) {
+      return(Matrix::sparseMatrix(
+        i = integer(), j = integer(),
+        dims = c(length(features_use), length(cells_use)), dimnames = list(features_use, cells_use)
+      ))
+    }
+    object <- subset(object, features = features_use, cells = cells_use)
+    object <- SeuratObject::JoinLayers(object, layers = layer, new = layer)
+  }
   data <- if (length(matching_layers) == 1L && identical(matching_layers, layer)) {
     SeuratObject::GetAssayData(
       object,
@@ -77,7 +91,6 @@ GetAssayData5.Assay5 <- function(
       ...
     )
   } else {
-    object <- SeuratObject::JoinLayers(object)
     SeuratObject::GetAssayData(
       object,
       layer = layer,

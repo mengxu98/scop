@@ -34,7 +34,7 @@ RunPCA.default <- function(
   cell.names = colnames(object),
   ...
 ) {
-  if (!is.matrix(object) && !inherits(object, "Matrix")) {
+  if (!is.matrix(object) && !inherits(object, c("Matrix", "IterableMatrix"))) {
     log_message("RunPCA supports Seurat, assay, matrix, and Matrix objects.", message_type = "error")
   }
   dots <- list(...)
@@ -65,6 +65,10 @@ RunPCA.default <- function(
         dots
       )
     )
+  }
+  if (inherits(object, "IterableMatrix")) {
+    if (identical(backend, "cpp")) log_message("The cpp PCA backend requires an in-memory matrix; use backend = 'auto' for disk layers", message_type = "error")
+    return(run_seurat())
   }
   logical_flags <- list(rev.pca, weight.by.var, approx)
   if (

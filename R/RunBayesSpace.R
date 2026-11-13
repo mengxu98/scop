@@ -96,7 +96,11 @@ RunBayesSpace <- function(
   }
   validate_scalar_flag(store_sce, "store_sce")
   platform <- match.arg(platform)
-  assay <- assay %||% SeuratObject::DefaultAssay(srt)
+  input_info <- spatial_input_info(srt, assay = assay, image = image, coord.cols = coord.cols)
+  assay <- input_info$assay
+  if (input_info$data_type == "cell") {
+    log_message("BayesSpace requires a spot/bin array, not segmented cells", message_type = "error")
+  }
 
   check_r(
     c("BayesSpace", "SingleCellExperiment", "SummarizedExperiment", "S4Vectors"),

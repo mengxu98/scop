@@ -20,9 +20,16 @@
 #'   selected image. Use `"hires"` for a hires raster; do not modify Seurat
 #'   scale-factor slots.
 #' @param crop Crop the panel to plotted spots.
-#' @param flip.y Reverse the y axis for metadata or FOV coordinates without a
-#'   raster image. The default `FALSE` agrees with spatial networks and cell
-#'   boundaries. Raster-backed display coordinates already include their flip.
+#' @param xlim,ylim Optional increasing ROI limits in raw coordinates. Cells
+#' are selected by centroid; limits clip the display without modifying object.
+#' @param molecules Optional names of already loaded molecules to overlay.
+#' No files are read. Molecules are filtered by ROI, not assigned to cells.
+#' @param mols.size,mols.alpha,mols.colors Molecule size, opacity, and optional
+#' named colors matched to molecule names.
+#' @param flip.y Reverse the y axis for coordinates without a Visium raster.
+#'   `NULL` follows official FOV display orientation (y increasing downward),
+#'   while metadata coordinates retain their orientation. Use `FALSE` for the
+#'   historical FOV layout. Visium display coordinates already include a flip.
 #' @param show_axes Keep axis text, ticks, and grid when `theme_use` is
 #' `"theme_spatial"`.
 #' @param theme_use Theme name or function.
@@ -75,7 +82,7 @@ SpatialSpotPlot <- function(
   image.alpha = 1,
   crop = TRUE,
   coord.cols = c("col", "row"),
-  flip.y = FALSE,
+  flip.y = NULL,
   show_axes = FALSE,
   split.by = NULL,
   cells = NULL,
@@ -105,7 +112,13 @@ SpatialSpotPlot <- function(
   byrow = TRUE,
   verbose = TRUE,
   srt = NULL,
-  image.scale = c("lowres", "hires")
+  image.scale = c("lowres", "hires"),
+  xlim = NULL,
+  ylim = NULL,
+  molecules = NULL,
+  mols.size = 0.1,
+  mols.alpha = 1,
+  mols.colors = NULL
 ) {
   srt <- spatial_resolve_object(
     object = object,
@@ -115,6 +128,54 @@ SpatialSpotPlot <- function(
   plot_type <- match.arg(plot_type)
   geom <- match.arg(geom)
   image.scale <- match.arg(image.scale)
+  if (length(molecules)) {
+    layers <- spatial_molecule_layers(
+      srt, image, molecules, xlim, ylim, image.scale,
+      mols.size, mols.alpha, mols.colors
+    )
+    args <- mget(names(formals(SpatialSpotPlot)), envir = environment(), inherits = FALSE)
+    args$object <- srt
+    args$srt <- NULL
+    args$molecules <- NULL
+    if (!is.null(plot.data) && missing(upper_quantile)) args$upper_quantile <- 1
+    if (is.null(group.by) && is.null(features) && is.null(values) && is.null(plot.data)) {
+      ids <- SpatialCoordinates(srt, image = image, coord.cols = coord.cols)$data$cell_id
+      args$values <- stats::setNames(rep("cell", length(ids)), ids)
+    }
+    return(spatial_plot_add_layers(do.call(SpatialSpotPlot, args), layers))
+  }
+  if (is.null(flip.y)) {
+    selected_image <- spatial_image_resolve(srt, image = image)$image
+    flip.y <- !is.null(selected_image) && inherits(srt[[selected_image]], "FOV") &&
+      !inherits(srt[[selected_image]], "VisiumV2")
+  }
+  if (!is.null(xlim) || !is.null(ylim)) {
+    raw <- SpatialCoordinates(srt, image = image, coord.cols = coord.cols, image.scale = image.scale)
+    cells <- spatial_roi_cells(raw$data, cells, xlim, ylim)
+    limits <- spatial_coords_to_display(data.frame(
+      x = xlim %||% range(raw$data$x), y = ylim %||% range(raw$data$y)
+    ), raw$transform)
+    args <- mget(names(formals(SpatialSpotPlot)), envir = environment(), inherits = FALSE)
+    args$object <- srt
+    args$srt <- NULL
+    args$xlim <- args$ylim <- NULL
+    if (!is.null(plot.data) && missing(upper_quantile)) args$upper_quantile <- 1
+    result <- do.call(SpatialSpotPlot, args)
+    clip <- ggplot2::coord_equal(
+      xlim = if (!is.null(xlim)) range(limits$x) else NULL,
+      ylim = if (!is.null(ylim)) range(limits$y) else NULL
+    )
+    if (inherits(result, "patchwork")) {
+      return(result & clip)
+    }
+    if (inherits(result, "ggplot")) {
+      return(suppressMessages(result + clip))
+    }
+    return(lapply(result, function(p) suppressMessages(p + clip)))
+  }
+  if (length(features)) {
+    assay <- spatial_input_info(srt, assay = assay, image = image, coord.cols = coord.cols)$assay
+  }
   if (!is.null(plot.data)) {
     if (!identical(plot_type, "point")) {
       log_message(
@@ -663,9 +724,9 @@ spatial_dim_pie_plot <- function(
     p <- p +
       ggplot2::annotation_raster(
         spatial_dim_raster(coords$image$image, image.alpha),
-        xmin = 0,
+        xmin = coords$image$xmin %||% 0,
         xmax = coords$image$width,
-        ymin = 0,
+        ymin = coords$image$ymin %||% 0,
         ymax = coords$image$height
       )
   }
@@ -893,7 +954,7 @@ spatial_dim_coords <- function(
       image_info <- list(
         image = image_array,
         width = image_width,
-        height = image_height
+        height = image_height, xmin = 0, ymin = 0
       )
       return(list(
         data = out,
@@ -903,6 +964,24 @@ spatial_dim_coords <- function(
         transform = raw$transform
       ))
     }
+  }
+  morphology <- srt@misc$atera.morphology
+  if (!is.null(selected_image) && isTRUE(overlay_image) && !is.null(morphology$image)) {
+    pixel_size <- morphology$pixel.size
+    origin <- morphology$origin
+    if (length(pixel_size) != 1L || !is.finite(pixel_size) || pixel_size <= 0 ||
+      length(origin) != 2L || any(!is.finite(origin))) {
+      log_message("Atera morphology requires finite origin and positive pixel.size for overlay", message_type = "error")
+    }
+    raster <- t(morphology$image)
+    intensity <- range(raster, finite = TRUE)
+    raster <- if (diff(intensity) > 0) (raster - intensity[1L]) / diff(intensity) else raster * 0
+    image_info <- list(
+      image = raster,
+      xmin = unname(origin[1L]), ymin = unname(origin[2L]),
+      width = unname(origin[1L]) + ncol(raster) * pixel_size,
+      height = unname(origin[2L]) + nrow(raster) * pixel_size
+    )
   }
   list(
     data = out,
@@ -1066,9 +1145,9 @@ spatial_dim_single_plot <- function(
     p <- p +
       ggplot2::annotation_raster(
         spatial_dim_raster(image_info$image, image.alpha),
-        xmin = 0,
+        xmin = image_info$xmin %||% 0,
         xmax = image_info$width,
-        ymin = 0,
+        ymin = image_info$ymin %||% 0,
         ymax = image_info$height
       )
   }
@@ -1118,7 +1197,8 @@ spatial_dim_single_plot <- function(
       ggplot2::scale_fill_manual(
         values = cols,
         na.value = "grey80",
-        drop = drop
+        drop = drop,
+        guide = ggplot2::guide_legend(override.aes = list(size = 3, alpha = 1))
       )
   }
 

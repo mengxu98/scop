@@ -89,8 +89,8 @@ test_that("FOV point pie and network final axes agree", {
   pie_built <- ggplot2::ggplot_build(pie)
   network_built <- ggplot2::ggplot_build(network)
   expect_equal(point_built$data[[1]]$y, network_built$data[[2]]$y)
-  expect_identical(pie_built$layout$panel_scales_y[[1]]$get_transformation()$name, "identity")
-  manual <- SpatialSpotPlot(srt, image = "slice1", group.by = "type", flip.y = TRUE)
+  expect_identical(pie_built$layout$panel_scales_y[[1]]$get_transformation()$name, "reverse")
+  manual <- SpatialSpotPlot(srt, image = "slice1", group.by = "type", flip.y = FALSE)
   expect_equal(ggplot2::ggplot_build(manual)$data[[1]]$y, -point_built$data[[1]]$y)
 })
 

@@ -14,6 +14,7 @@ make_spatialcellchat_test_object <- function(samples = "s1") {
   srt
 }
 
+
 mock_spatialcellchat_table <- function(sample, analysis.level) {
   data.frame(
     sender = c("A", "B"),
@@ -677,4 +678,34 @@ test_that("unified CCC plots reject old SpatialCellChat coordinate results", {
     ),
     "rerun\\s+RunSpatialCellChat"
   )
+})
+
+test_that("SpatialCellChat selects image assay cells without inspecting unrelated labels", {
+  object <- make_spatialcellchat_test_object()
+  selected <- colnames(object)[c(1, 2, 5, 6)]
+  object[["Spatial"]] <- SeuratObject::CreateAssay5Object(
+    counts = GetAssayData5(object, cells = selected),
+    data = GetAssayData5(object, layer = "data", cells = selected)
+  )
+  object[["roi"]] <- SeuratObject::CreateFOV(object[[]][selected, c("col", "row")],
+    type = "centroids", assay = "Spatial", key = "roi_"
+  )
+  object$celltype[!colnames(object) %in% selected] <- NA_character_
+  testthat::local_mocked_bindings(
+    check_r = function(...) invisible(TRUE),
+    get_namespace_fun = function(...) function(...) NULL,
+    spatialcellchat_database = function(...) list(mock = TRUE),
+    spatialcellchat_run_one = function(...) list(mock = TRUE),
+    spatialcellchat_extract_table = function(chat, sample, analysis.level, do.permutation) {
+      mock_spatialcellchat_table(sample, analysis.level)
+    }
+  )
+  result <- RunSpatialCellChat(object,
+    image = "roi", group.by = "celltype",
+    technology = "atera", tol = 5, min.cells = 1, min.links = 1,
+    do.permutation = FALSE, verbose = FALSE
+  )
+  expect_setequal(result@tools$SpatialCellChat$cells, selected)
+  expect_identical(result@tools$SpatialCellChat$parameters$assay, "Spatial")
+  expect_identical(colnames(result), colnames(object))
 })
