@@ -764,6 +764,11 @@ regdiffusion_python <- function(
 #'   verbose = FALSE
 #' )
 RunGRN <- function(object, ...) {
+  argument_names <- as.character(names(as.list(match.call(expand.dots = FALSE)$...)))
+  if (!"methods" %in% argument_names &&
+      any(startsWith("methods", argument_names[nzchar(argument_names)]))) {
+    stop("Use 'methods' to select a GRN method.", call. = FALSE)
+  }
   UseMethod("RunGRN", object)
 }
 
@@ -817,7 +822,10 @@ RunGRN.default <- function(
   if ("grn_method" %in% names(dots)) {
     stop("Use 'methods' to select a GRN method.", call. = FALSE)
   }
-  if ("return_type" %in% names(dots)) {
+  argument_names <- as.character(names(dots))
+  return_prefixes <- argument_names[nzchar(argument_names)]
+  if ("return_type" %in% argument_names ||
+      any(startsWith("return_data", return_prefixes) | startsWith("return_seurat", return_prefixes))) {
     stop("Use 'return_data' or 'return_seurat' to select the GRN output.", call. = FALSE)
   }
   if (length(methods) != 1L || is.na(methods)) stop("Choose exactly one GRN method.", call. = FALSE)
