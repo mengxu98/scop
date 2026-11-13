@@ -1,4 +1,4 @@
-# Load and validate Visium, Visium HD, or Xenium data
+# Load and validate Visium, Visium HD, Xenium, or Atera data
 
 Delegate file parsing to Seurat, validate each image against its assay,
 and record observation type, resolution and coordinate units. This
@@ -10,7 +10,7 @@ install packages.
 ``` r
 ReadSpatialData(
   data.dir,
-  technology = c("visium", "visium_hd", "xenium"),
+  technology = c("visium", "visium_hd", "xenium", "atera"),
   bin.size = c(8L, 16L),
   sample_id = "sample1",
   ...
@@ -25,12 +25,13 @@ ReadSpatialData(
 
 - technology:
 
-  One of visium, visium_hd, or xenium.
+  One of visium, visium_hd, xenium, or atera.
 
 - bin.size:
 
-  Positive integer HD bin sizes in microns. Ignored for other
-  technologies; Seurat stores each resolution in a separate assay/image.
+  Positive integer HD bin sizes in microns, \`"polygons"\`, or a mixture
+  such as \`c(8, "polygons")\`. Ignored for other technologies; Seurat
+  stores each resolution in a separate assay/image.
 
 - sample_id:
 
@@ -38,7 +39,13 @@ ReadSpatialData(
 
 - ...:
 
-  Arguments passed to other functions.
+  Arguments to the official Seurat loader. For HD, use
+  \`segmentation.type = "cell"\` or \`"nucleus"\` and \`compact =
+  TRUE\`. Atera retains official defaults, including deferred
+  segmentations and molecules; use \`bpcells.dir\` for its counts cache.
+  \`genes\` selects molecules, not expression-matrix rows. Additional
+  Atera data can be loaded later with Seurat's molecule, segmentation,
+  and codeword loaders.
 
 ## Value
 

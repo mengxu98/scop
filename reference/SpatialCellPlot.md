@@ -31,6 +31,18 @@ SpatialCellPlot(
   legend.position = "right",
   legend.direction = "vertical",
   legend.title = NULL,
+  boundary = NULL,
+  xlim = NULL,
+  ylim = NULL,
+  image.scale = c("lowres", "hires"),
+  overlay_image = TRUE,
+  image.alpha = 1,
+  flip.y = NULL,
+  pt.size = 1,
+  molecules = NULL,
+  mols.size = 0.1,
+  mols.alpha = 1,
+  mols.colors = NULL,
   ...
 )
 ```
@@ -107,6 +119,40 @@ SpatialCellPlot(
 
   Legend controls.
 
+- boundary:
+
+  Boundary name in the image. \`NULL\` selects segmentation when
+  available and otherwise plots centroids. Explicit names must exist.
+
+- xlim, ylim:
+
+  Optional increasing ROI limits in raw coordinate units. Cells are
+  selected by centroids; boundary vertices are clipped at the limits.
+
+- image.scale, overlay_image, image.alpha:
+
+  Raster scale, visibility, and opacity.
+
+- flip.y:
+
+  Reverse the y axis. \`NULL\` uses the official FOV orientation; use
+  \`FALSE\` for the historical FOV layout. Visium rasters include the
+  flip.
+
+- pt.size:
+
+  Centroid point size.
+
+- molecules:
+
+  Optional names of already loaded molecules to overlay. No files are
+  read. Molecules are filtered by ROI, not assigned to cells.
+
+- mols.size, mols.alpha, mols.colors:
+
+  Molecule size, opacity, and optional named colors matched to molecule
+  names.
+
 - ...:
 
   Arguments passed to other functions.
@@ -118,7 +164,10 @@ A \`ggplot\`, patchwork, or named list of plots.
 ## Details
 
 Boundary tables require \`cell_id\`, \`x\`, and \`y\` columns in polygon
-vertex order. Seurat images must contain segmentation boundaries.
+vertex order, with optional \`polygon_id\` and \`ring_id\` columns for
+multipart cells and holes. Object-derived boundaries use the same
+display transform as \[SpatialSpotPlot()\]. ROI filtering does not
+subset the input object.
 
 ## Examples
 

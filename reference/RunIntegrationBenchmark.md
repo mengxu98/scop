@@ -138,80 +138,80 @@ panc8_sub <- RunIntegrationBenchmark(
   linear_reduction_dims_use = 1:10,
   perplexity = 10
 )
-#> ℹ [2026-11-13 06:34:40] Benchmark integration method "Uncorrected"
-#> ◌ [2026-11-13 06:34:40] Run integration workflow...
-#> ℹ [2026-11-13 06:34:40] Split `srt_merge` into `srt_list` by "tech"
-#> ℹ [2026-11-13 06:34:41] Checking a list of <Seurat>...
-#> ! [2026-11-13 06:34:41] Data 1/5 of the `srt_list` is "unknown"
-#> ℹ [2026-11-13 06:34:41] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/5 of `srt_list`...
-#> ℹ [2026-11-13 06:34:41] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
-#> ! [2026-11-13 06:34:41] Data 2/5 of the `srt_list` is "unknown"
-#> ℹ [2026-11-13 06:34:41] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 2/5 of `srt_list`...
-#> ℹ [2026-11-13 06:34:41] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
-#> ! [2026-11-13 06:34:41] Data 3/5 of the `srt_list` is "unknown"
-#> ℹ [2026-11-13 06:34:41] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 3/5 of `srt_list`...
-#> ℹ [2026-11-13 06:34:41] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
-#> ! [2026-11-13 06:34:41] Data 4/5 of the `srt_list` is "unknown"
-#> ℹ [2026-11-13 06:34:41] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 4/5 of `srt_list`...
-#> ℹ [2026-11-13 06:34:41] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
-#> ! [2026-11-13 06:34:42] Data 5/5 of the `srt_list` is "unknown"
-#> ℹ [2026-11-13 06:34:42] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 5/5 of `srt_list`...
-#> ℹ [2026-11-13 06:34:42] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
-#> ℹ [2026-11-13 06:34:42] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-13 06:34:42] Number of available HVF: 500
-#> ℹ [2026-11-13 06:34:42] Finished check
-#> ℹ [2026-11-13 06:34:43] Perform Uncorrected integration
-#> ℹ [2026-11-13 06:34:44] Perform `Seurat::ScaleData()`
-#> ℹ [2026-11-13 06:34:45] Perform "pca" linear dimension reduction
-#> ℹ [2026-11-13 06:34:45] Adjust neighbor k from 20 to 20 for small-sample clustering
-#> ℹ [2026-11-13 06:34:45] Perform `Seurat::FindClusters()` with "louvain"
-#> ℹ [2026-11-13 06:34:46] Reorder clusters...
-#> ℹ [2026-11-13 06:34:46] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-13 06:34:46] Perform umap nonlinear dimension reduction using Uncorrectedpca (1:10)
-#> ℹ [2026-11-13 06:34:53] Perform umap nonlinear dimension reduction using Uncorrectedpca (1:10)
-#> ℹ [2026-11-13 06:35:01] Perform umap nonlinear dimension reduction using Uncorrectedpca (1:10)
-#> ✔ [2026-11-13 06:35:09] Uncorrected integration completed
-#> ℹ [2026-11-13 06:35:09] Compute LISI scores from reduction "Uncorrectedpca"
-#> ✔ [2026-11-13 06:35:09] Stored LISI scores in metadata: "Uncorrected_tech_LISI" and "Uncorrected_celltype_LISI"
-#> ℹ [2026-11-13 06:35:09] Benchmark integration method "Harmony"
-#> ◌ [2026-11-13 06:35:09] Run integration workflow...
-#> ℹ [2026-11-13 06:35:10] Split `srt_merge` into `srt_list` by "tech"
-#> ℹ [2026-11-13 06:35:10] Checking a list of <Seurat>...
-#> ℹ [2026-11-13 06:35:10] Data 1/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-13 06:35:10] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
-#> ℹ [2026-11-13 06:35:11] Data 2/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-13 06:35:11] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
-#> ℹ [2026-11-13 06:35:11] Data 3/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-13 06:35:11] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
-#> ℹ [2026-11-13 06:35:11] Data 4/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-13 06:35:11] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
-#> ℹ [2026-11-13 06:35:11] Data 5/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-11-13 06:35:11] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
-#> ℹ [2026-11-13 06:35:11] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-13 06:35:11] Number of available HVF: 500
-#> ℹ [2026-11-13 06:35:11] Finished check
-#> ℹ [2026-11-13 06:35:12] Perform `Seurat::ScaleData()`
-#> ℹ [2026-11-13 06:35:12] Perform linear dimension reduction("pca")
-#> ℹ [2026-11-13 06:35:12] Perform Harmony integration
-#> ℹ [2026-11-13 06:35:12] Using "Harmonypca" (1:10) as input
-#> ℹ [2026-11-13 06:35:12] Adjust neighbor k from 20 to 20 for small-sample clustering
-#> ℹ [2026-11-13 06:35:12] Perform `Seurat::FindClusters()` with "louvain"
-#> ℹ [2026-11-13 06:35:12] Reorder clusters...
-#> ℹ [2026-11-13 06:35:12] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-13 06:35:12] Perform umap nonlinear dimension reduction using Harmony (1:10)
-#> ℹ [2026-11-13 06:35:20] Perform umap nonlinear dimension reduction using Harmony (1:10)
-#> ℹ [2026-11-13 06:35:28] Perform umap nonlinear dimension reduction using Harmonypca (1:10)
-#> ✔ [2026-11-13 06:35:36] Harmony integration completed
-#> ℹ [2026-11-13 06:35:36] Compute LISI scores from reduction "Harmony"
-#> ✔ [2026-11-13 06:35:36] Stored LISI scores in metadata: "Harmony_tech_LISI" and "Harmony_celltype_LISI"
+#> ℹ [2026-11-13 10:46:13] Benchmark integration method "Uncorrected"
+#> ◌ [2026-11-13 10:46:13] Run integration workflow...
+#> ℹ [2026-11-13 10:46:13] Split `srt_merge` into `srt_list` by "tech"
+#> ℹ [2026-11-13 10:46:14] Checking a list of <Seurat>...
+#> ! [2026-11-13 10:46:14] Data 1/5 of the `srt_list` is "unknown"
+#> ℹ [2026-11-13 10:46:14] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/5 of `srt_list`...
+#> ℹ [2026-11-13 10:46:14] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
+#> ! [2026-11-13 10:46:14] Data 2/5 of the `srt_list` is "unknown"
+#> ℹ [2026-11-13 10:46:14] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 2/5 of `srt_list`...
+#> ℹ [2026-11-13 10:46:14] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
+#> ! [2026-11-13 10:46:14] Data 3/5 of the `srt_list` is "unknown"
+#> ℹ [2026-11-13 10:46:14] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 3/5 of `srt_list`...
+#> ℹ [2026-11-13 10:46:14] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
+#> ! [2026-11-13 10:46:14] Data 4/5 of the `srt_list` is "unknown"
+#> ℹ [2026-11-13 10:46:14] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 4/5 of `srt_list`...
+#> ℹ [2026-11-13 10:46:14] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
+#> ! [2026-11-13 10:46:14] Data 5/5 of the `srt_list` is "unknown"
+#> ℹ [2026-11-13 10:46:14] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 5/5 of `srt_list`...
+#> ℹ [2026-11-13 10:46:14] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
+#> ℹ [2026-11-13 10:46:14] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-13 10:46:14] Number of available HVF: 500
+#> ℹ [2026-11-13 10:46:14] Finished check
+#> ℹ [2026-11-13 10:46:16] Perform Uncorrected integration
+#> ℹ [2026-11-13 10:46:16] Perform `Seurat::ScaleData()`
+#> ℹ [2026-11-13 10:46:17] Perform "pca" linear dimension reduction
+#> ℹ [2026-11-13 10:46:17] Adjust neighbor k from 20 to 20 for small-sample clustering
+#> ℹ [2026-11-13 10:46:17] Perform `Seurat::FindClusters()` with "louvain"
+#> ℹ [2026-11-13 10:46:17] Reorder clusters...
+#> ℹ [2026-11-13 10:46:17] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-13 10:46:17] Perform umap nonlinear dimension reduction using Uncorrectedpca (1:10)
+#> ℹ [2026-11-13 10:46:25] Perform umap nonlinear dimension reduction using Uncorrectedpca (1:10)
+#> ℹ [2026-11-13 10:46:31] Perform umap nonlinear dimension reduction using Uncorrectedpca (1:10)
+#> ✔ [2026-11-13 10:46:39] Uncorrected integration completed
+#> ℹ [2026-11-13 10:46:39] Compute LISI scores from reduction "Uncorrectedpca"
+#> ✔ [2026-11-13 10:46:39] Stored LISI scores in metadata: "Uncorrected_tech_LISI" and "Uncorrected_celltype_LISI"
+#> ℹ [2026-11-13 10:46:39] Benchmark integration method "Harmony"
+#> ◌ [2026-11-13 10:46:39] Run integration workflow...
+#> ℹ [2026-11-13 10:46:40] Split `srt_merge` into `srt_list` by "tech"
+#> ℹ [2026-11-13 10:46:40] Checking a list of <Seurat>...
+#> ℹ [2026-11-13 10:46:40] Data 1/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-13 10:46:40] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
+#> ℹ [2026-11-13 10:46:41] Data 2/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-13 10:46:41] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
+#> ℹ [2026-11-13 10:46:41] Data 3/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-13 10:46:41] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
+#> ℹ [2026-11-13 10:46:41] Data 4/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-13 10:46:41] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
+#> ℹ [2026-11-13 10:46:41] Data 5/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-11-13 10:46:41] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
+#> ℹ [2026-11-13 10:46:41] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-13 10:46:41] Number of available HVF: 500
+#> ℹ [2026-11-13 10:46:41] Finished check
+#> ℹ [2026-11-13 10:46:41] Perform `Seurat::ScaleData()`
+#> ℹ [2026-11-13 10:46:42] Perform linear dimension reduction("pca")
+#> ℹ [2026-11-13 10:46:42] Perform Harmony integration
+#> ℹ [2026-11-13 10:46:42] Using "Harmonypca" (1:10) as input
+#> ℹ [2026-11-13 10:46:42] Adjust neighbor k from 20 to 20 for small-sample clustering
+#> ℹ [2026-11-13 10:46:42] Perform `Seurat::FindClusters()` with "louvain"
+#> ℹ [2026-11-13 10:46:42] Reorder clusters...
+#> ℹ [2026-11-13 10:46:42] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-13 10:46:42] Perform umap nonlinear dimension reduction using Harmony (1:10)
+#> ℹ [2026-11-13 10:46:49] Perform umap nonlinear dimension reduction using Harmony (1:10)
+#> ℹ [2026-11-13 10:46:56] Perform umap nonlinear dimension reduction using Harmonypca (1:10)
+#> ✔ [2026-11-13 10:47:03] Harmony integration completed
+#> ℹ [2026-11-13 10:47:03] Compute LISI scores from reduction "Harmony"
+#> ✔ [2026-11-13 10:47:03] Stored LISI scores in metadata: "Harmony_tech_LISI" and "Harmony_celltype_LISI"
 thisplot::print_colored_table(
   panc8_sub@tools$IntegrationBenchmark$summary,
   by = "row",
   palette = "Chinese"
 )
 #> method       status   overall    bio        batch      iLISI       cLISI      celltype_ASW  batch_ASW_mixing  celltype_graph_connectivity  celltype_ARI  celltype_NMI  runtime_s  latent          umap             
-#> Uncorrected  success  0.6619507  0.7635502  0.5095514  0.06465419  0.9940998  0.5987165     0.9544486         0.9724301                    0.4879958     0.6786843     28.578     Uncorrectedpca  UncorrectedUMAP2D
-#> Harmony      success  0.7467326  0.8481556  0.5945979  0.31237002  0.9864901  0.6264387     0.8768259         0.9628357                    0.8281797     0.8149896     27.140     Harmony         HarmonyUMAP2D    
+#> Uncorrected  success  0.6619507  0.7635502  0.5095514  0.06465419  0.9940998  0.5987165     0.9544486         0.9724301                    0.4879958     0.6786843     25.794     Uncorrectedpca  UncorrectedUMAP2D
+#> Harmony      success  0.7467326  0.8481556  0.5945979  0.31237002  0.9864901  0.6264387     0.8768259         0.9628357                    0.8281797     0.8149896     24.424     Harmony         HarmonyUMAP2D    
 thisplot::print_colored_table(
   panc8_sub@tools$IntegrationBenchmark$metrics,
   by = "col",

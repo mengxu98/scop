@@ -104,8 +104,8 @@
 First run the complete bundled Visium example: validate IDs and
 coordinates, calculate limited-assay QC, normalize without changing
 counts, inspect a real expression map, and save/reload the result. Then
-adapt the import section to an existing Visium, Visium HD, or Xenium
-vendor output directory.</p>
+adapt the import section to an existing Visium, Visium HD, Xenium, or
+Atera vendor output directory.</p>
 <p>The <a href="spatial-main-workflow.html">main spatial workflow</a>
 provides the analysis path. The <a href="spatial-framework-bridges.html">framework bridges</a> page
 verifies conversion to SpatialExperiment and checks the optional Giotto
@@ -426,28 +426,27 @@ and does not turn pixels into microns.</p>
 <div class="section level2">
 <h2 id="import-existing-vendor-output">Import existing vendor output<a class="anchor" aria-label="anchor" href="#import-existing-vendor-output"></a>
 </h2>
-<p>Set one or more of <code>SCOP_VISIUM_DIR</code>,
-<code>SCOP_VISIUM_HD_DIR</code>, and <code>SCOP_XENIUM_DIR</code> to
-existing, unpacked vendor output directories before running this
-section. Visium needs the expression matrix plus the
-<code>spatial/</code> outputs; HD needs the selected binned outputs and
-matching images; Xenium needs expression and existing cell segmentation.
-Do not point at an archive. This section is not evaluated during
-rendering; run the calls for the datasets you have downloaded.</p>
+<p>Replace the example paths with existing, unpacked vendor output
+directories before running this section. Visium needs the expression
+matrix plus the <code>spatial/</code> outputs; HD needs the selected
+binned outputs and matching images; Xenium needs expression and existing
+cell segmentation. Do not point at an archive. This section is not
+evaluated during rendering; run the calls for the datasets you have
+downloaded.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">visium_imported</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ReadSpatialData.html">ReadSpatialData</a></span><span class="op">(</span></span>
-<span>  data.dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"SCOP_VISIUM_DIR"</span><span class="op">)</span>,</span>
+<span>  data.dir <span class="op">=</span> <span class="st">"path/to/visium/outs"</span>,</span>
 <span>  technology <span class="op">=</span> <span class="st">"visium"</span>,</span>
 <span>  sample_id <span class="op">=</span> <span class="st">"visium_sample1"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">visium_hd_imported</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ReadSpatialData.html">ReadSpatialData</a></span><span class="op">(</span></span>
-<span>  data.dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"SCOP_VISIUM_HD_DIR"</span><span class="op">)</span>,</span>
+<span>  data.dir <span class="op">=</span> <span class="st">"path/to/visium_hd/outs"</span>,</span>
 <span>  technology <span class="op">=</span> <span class="st">"visium_hd"</span>,</span>
 <span>  bin.size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">8</span>, <span class="fl">16</span><span class="op">)</span>,</span>
 <span>  sample_id <span class="op">=</span> <span class="st">"visium_hd_sample1"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">xenium_imported</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ReadSpatialData.html">ReadSpatialData</a></span><span class="op">(</span></span>
-<span>  data.dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"SCOP_XENIUM_DIR"</span><span class="op">)</span>,</span>
+<span>  data.dir <span class="op">=</span> <span class="st">"path/to/xenium/outs"</span>,</span>
 <span>  technology <span class="op">=</span> <span class="st">"xenium"</span>,</span>
 <span>  sample_id <span class="op">=</span> <span class="st">"xenium_sample1"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -802,10 +801,175 @@ ran.</li>
 <span><span class="co">#&gt; Matrix             Matrix   1.7.6</span></span></code></pre></div>
 </div>
 <div class="section level2">
+<h2 id="visium-hd-bins-and-segmented-cells-in-one-object">Visium HD: bins and segmented cells in one object<a class="anchor" aria-label="anchor" href="#visium-hd-bins-and-segmented-cells-in-one-object"></a>
+</h2>
+<p>Use Seurat’s segmented-output directory together with its binned
+outputs. <code>bin.size</code> accepts <code>"polygons"</code> alone or
+together with numeric bin sizes. Cell and nucleus boundaries describe
+geometry; choosing nucleus boundaries does not replace the cell
+expression matrix with nuclear counts.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">hd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ReadSpatialData.html">ReadSpatialData</a></span><span class="op">(</span></span>
+<span>  <span class="st">"path/to/visium_hd/outs"</span>, technology <span class="op">=</span> <span class="st">"visium_hd"</span>,</span>
+<span>  bin.size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">8</span>, <span class="st">"polygons"</span><span class="op">)</span>, segmentation.type <span class="op">=</span> <span class="st">"cell"</span>,</span>
+<span>  compact <span class="op">=</span> <span class="cn">TRUE</span>, sample_id <span class="op">=</span> <span class="st">"hd1"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/ObjectAccess.html" class="external-link">Assays</a></span><span class="op">(</span><span class="va">hd</span><span class="op">)</span></span>
+<span><span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/Images.html" class="external-link">Images</a></span><span class="op">(</span><span class="va">hd</span><span class="op">)</span></span>
+<span><span class="va">hd</span><span class="op">@</span><span class="va">misc</span><span class="op">$</span><span class="va">scop_spatial_input</span></span>
+<span></span>
+<span><span class="va">cell_image</span> <span class="op">&lt;-</span> <span class="st">"slice1.polygons"</span></span>
+<span><span class="va">bin_image</span> <span class="op">&lt;-</span> <span class="st">"slice1.008um"</span></span>
+<span><span class="va">cell_assay</span> <span class="op">&lt;-</span> <span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/DefaultAssay.html" class="external-link">DefaultAssay</a></span><span class="op">(</span><span class="va">hd</span><span class="op">[[</span><span class="va">cell_image</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">bin_assay</span> <span class="op">&lt;-</span> <span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/DefaultAssay.html" class="external-link">DefaultAssay</a></span><span class="op">(</span><span class="va">hd</span><span class="op">[[</span><span class="va">bin_image</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/DefaultAssay.html" class="external-link">DefaultAssay</a></span><span class="op">(</span><span class="va">hd</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">cell_assay</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">setequal</a></span><span class="op">(</span></span>
+<span>  <span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/Cells.html" class="external-link">Cells</a></span><span class="op">(</span><span class="va">hd</span><span class="op">[[</span><span class="va">cell_image</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">hd</span><span class="op">[[</span><span class="va">cell_assay</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">hd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NormalizeData.html">NormalizeData</a></span><span class="op">(</span><span class="va">hd</span>, assay <span class="op">=</span> <span class="va">cell_assay</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">hd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/FindVariableFeatures.html">FindVariableFeatures</a></span><span class="op">(</span><span class="va">hd</span>, assay <span class="op">=</span> <span class="va">cell_assay</span>, nfeatures <span class="op">=</span> <span class="fl">2000</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">hd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ScaleData.html">ScaleData</a></span><span class="op">(</span><span class="va">hd</span>, assay <span class="op">=</span> <span class="va">cell_assay</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">hd</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/RunPCA.html" class="external-link">RunPCA</a></span><span class="op">(</span><span class="va">hd</span>, assay <span class="op">=</span> <span class="va">cell_assay</span>, npcs <span class="op">=</span> <span class="fl">30</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">hd</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/FindNeighbors.html" class="external-link">FindNeighbors</a></span><span class="op">(</span><span class="va">hd</span>, reduction <span class="op">=</span> <span class="st">"pca"</span>, dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">20</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">hd</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/FindClusters.html" class="external-link">FindClusters</a></span><span class="op">(</span><span class="va">hd</span>, resolution <span class="op">=</span> <span class="fl">0.5</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">hd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunSpatialNetwork.html">RunSpatialNetwork</a></span><span class="op">(</span><span class="va">hd</span>, image <span class="op">=</span> <span class="va">cell_image</span>, k <span class="op">=</span> <span class="fl">6</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/SpatialCellPlot.html">SpatialCellPlot</a></span><span class="op">(</span><span class="va">hd</span>, image <span class="op">=</span> <span class="va">cell_image</span>, boundary <span class="op">=</span> <span class="st">"segmentations"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"seurat_clusters"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/SpatialNetworkPlot.html">SpatialNetworkPlot</a></span><span class="op">(</span><span class="va">hd</span>, group.by <span class="op">=</span> <span class="st">"seurat_clusters"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/SpatialSpotPlot.html">SpatialSpotPlot</a></span><span class="op">(</span><span class="va">hd</span>, image <span class="op">=</span> <span class="va">bin_image</span>,</span>
+<span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">hd</span><span class="op">[[</span><span class="va">bin_assay</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, layer <span class="op">=</span> <span class="st">"counts"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># The same object remains usable through the official interface.</span></span>
+<span><span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/ImageDimPlot.html" class="external-link">ImageDimPlot</a></span><span class="op">(</span><span class="va">hd</span>, fov <span class="op">=</span> <span class="va">cell_image</span>, group.by <span class="op">=</span> <span class="st">"seurat_clusters"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">saveRDS</a></span><span class="op">(</span><span class="va">hd</span>, <span class="st">"hd-analysis.rds"</span><span class="op">)</span></span>
+<span><span class="va">hd_reloaded</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">"hd-analysis.rds"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu"><a href="../reference/SpatialCoordinates.html">SpatialCoordinates</a></span><span class="op">(</span><span class="va">hd</span>, image <span class="op">=</span> <span class="va">cell_image</span><span class="op">)</span><span class="op">$</span><span class="va">data</span>,</span>
+<span>  <span class="fu"><a href="../reference/SpatialCoordinates.html">SpatialCoordinates</a></span><span class="op">(</span><span class="va">hd_reloaded</span>, image <span class="op">=</span> <span class="va">cell_image</span><span class="op">)</span><span class="op">$</span><span class="va">data</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>Inspect counts and detected-gene distributions before setting QC
+thresholds. Select the cell assay explicitly for expression
+preprocessing. The plotting and spatial context interfaces select the
+image-associated assay when omitted. Different resolutions can have
+different IDs and observation counts; never join their metadata or
+results by row position. BayesSpace requires an array and rejects
+segmented cells before loading its backend. BANKSY and other
+cell-capable methods still require their own parameter and coordinate
+checks.</p>
+<p>For a local view, pass increasing <code>xlim</code> and
+<code>ylim</code> in the raw pixel coordinate system returned by
+<code>SpatialCoordinates(hd, image = cell_image)</code>. Both plotting
+functions select cells by centroid before extracting values or
+boundaries. Polygons crossing the window are clipped visually. This does
+not subset <code>hd</code>.</p>
+</div>
+<div class="section level2">
+<h2 id="atera-disk-counts-local-boundaries-and-official-interoperability">Atera: disk counts, local boundaries, and official
+interoperability<a class="anchor" aria-label="anchor" href="#atera-disk-counts-local-boundaries-and-official-interoperability"></a>
+</h2>
+<p>The <a href="https://satijalab.org/seurat/articles/atera_tutorial" class="external-link">official
+Seurat Atera tutorial</a> uses the <a href="https://www.10xgenomics.com/datasets/atera-wta-ffpe-human-nd-kidney" class="external-link">10x
+FFPE human kidney dataset</a>. Keep expression, control features,
+annotations, and spatial files together. <code>genes</code> in the
+loader selects molecules, not expression-matrix rows. This recipe
+requires Seurat 6 with its Atera dependencies already installed. The
+current official reader requires
+<code>csc_cell_feature_matrix.zarr.zip</code> for counts,
+<code>cell_feature_matrix.zarr.zip</code> for annotations, and
+<code>cells.zarr.zip</code> for centroids/boundaries. Retain
+<code>experiment.spatial</code> for run metadata. Molecule and
+morphology views additionally require their corresponding
+archives/images.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">data_dir</span> <span class="op">&lt;-</span> <span class="st">"path/to/atera/outs"</span></span>
+<span><span class="va">cache_dir</span> <span class="op">&lt;-</span> <span class="st">"path/to/persistent/atera-counts-cache"</span></span>
+<span><span class="va">atera</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ReadSpatialData.html">ReadSpatialData</a></span><span class="op">(</span><span class="va">data_dir</span>, technology <span class="op">=</span> <span class="st">"atera"</span>, sample_id <span class="op">=</span> <span class="st">"kidney1"</span>,</span>
+<span>  bpcells.dir <span class="op">=</span> <span class="va">cache_dir</span>, segmentations <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  molecule.coordinates <span class="op">=</span> <span class="cn">TRUE</span>, morphology.image <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/ObjectAccess.html" class="external-link">Assays</a></span><span class="op">(</span><span class="va">atera</span><span class="op">)</span></span>
+<span><span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/Layers.html" class="external-link">Layers</a></span><span class="op">(</span><span class="va">atera</span><span class="op">[[</span><span class="st">"Atera"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="fu"><a href="../reference/GetAssayData5.html">GetAssayData5</a></span><span class="op">(</span><span class="va">atera</span>, assay <span class="op">=</span> <span class="st">"Atera"</span>, layer <span class="op">=</span> <span class="st">"counts"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/SpatialCellPlot.html">SpatialCellPlot</a></span><span class="op">(</span><span class="va">atera</span>, image <span class="op">=</span> <span class="st">"fov"</span>, group.by <span class="op">=</span> <span class="st">"nCount_Atera"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/SpatialCellPlot.html">SpatialCellPlot</a></span><span class="op">(</span><span class="va">atera</span>, image <span class="op">=</span> <span class="st">"fov"</span>, group.by <span class="op">=</span> <span class="st">"nFeature_Atera"</span><span class="op">)</span></span></code></pre></div>
+<p>Counts and detected genes are QC evidence, not automatic exclusion
+rules. Control assays and available <code>azimuth_*</code> metadata are
+retained; choose the gene-expression assay for normalization. The
+default plot uses centroids until segmentations are loaded. FOV plots
+follow Seurat’s downward y axis; <code>flip.y = FALSE</code> reproduces
+the older SCOP view without changing stored coordinates.</p>
+<p>Choose an ROI from the centroid map, using physical micron
+coordinates. The limits below are an explicit example; replace them with
+your tissue region. Crop the FOV before asking the official loader for
+its boundaries.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">roi_x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3000</span>, <span class="fl">3500</span><span class="op">)</span></span>
+<span><span class="va">roi_y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3000</span>, <span class="fl">3500</span><span class="op">)</span></span>
+<span><span class="va">atera</span><span class="op">[[</span><span class="st">"roi"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/Crop.html" class="external-link">Crop</a></span><span class="op">(</span><span class="va">atera</span><span class="op">[[</span><span class="st">"fov"</span><span class="op">]</span><span class="op">]</span>,</span>
+<span>  x <span class="op">=</span> <span class="va">roi_x</span>, y <span class="op">=</span> <span class="va">roi_y</span>, coords <span class="op">=</span> <span class="st">"tissue"</span><span class="op">)</span></span>
+<span><span class="va">atera</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/LoadAteraSegmentations.html" class="external-link">LoadAteraSegmentations</a></span><span class="op">(</span><span class="va">atera</span>, data.dir <span class="op">=</span> <span class="va">data_dir</span>,</span>
+<span>  fov <span class="op">=</span> <span class="st">"roi"</span>, segmentations <span class="op">=</span> <span class="st">"cell"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/SpatialCellPlot.html">SpatialCellPlot</a></span><span class="op">(</span><span class="va">atera</span>, image <span class="op">=</span> <span class="st">"roi"</span>, boundary <span class="op">=</span> <span class="st">"segmentations"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"azimuth_broad"</span>, xlim <span class="op">=</span> <span class="va">roi_x</span>, ylim <span class="op">=</span> <span class="va">roi_y</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">atera</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/LoadAteraMolecules.html" class="external-link">LoadAteraMolecules</a></span><span class="op">(</span><span class="va">atera</span>, genes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PDK1"</span>, <span class="st">"COL4A5"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/SpatialSpotPlot.html">SpatialSpotPlot</a></span><span class="op">(</span><span class="va">atera</span>, image <span class="op">=</span> <span class="st">"fov"</span>, group.by <span class="op">=</span> <span class="st">"azimuth_broad"</span>,</span>
+<span>  molecules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PDK1"</span>, <span class="st">"COL4A5"</span><span class="op">)</span>, xlim <span class="op">=</span> <span class="va">roi_x</span>, ylim <span class="op">=</span> <span class="va">roi_y</span><span class="op">)</span></span>
+<span><span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/ImageDimPlot.html" class="external-link">ImageDimPlot</a></span><span class="op">(</span><span class="va">atera</span>, fov <span class="op">=</span> <span class="st">"fov"</span>, molecules <span class="op">=</span> <span class="st">"PDK1"</span><span class="op">)</span></span></code></pre></div>
+<p>Molecule overlays use already loaded coordinates and never initiate a
+file read. Gene-level molecules and codewords use different official
+filtering semantics; use <code><a href="https://satijalab.org/seurat/reference/LoadAteraCodewords.html" class="external-link">Seurat::LoadAteraCodewords()</a></code>
+explicitly when inspecting probes. For a combined ROI boundary/molecule
+plot, crop the molecule-bearing FOV after loading the genes, then load
+its local segmentations.</p>
+<p>For morphology, request <code>morphology.image = TRUE</code> when
+loading, with explicit <code>morphology.channel</code>,
+<code>morphology.resolution</code>, and <code>morphology.region</code>
+as needed. The official reader requires RBioFormats. SCOP uses the
+loaded image’s pixel size and origin; it does not reread morphology
+during plotting. Turn off <code>overlay_image</code> to inspect
+boundaries alone. A missing physical calibration is an error rather than
+an inferred image scale.</p>
+<div class="section level3">
+<h3 id="choose-full-data-or-explicit-sketch-preprocessing">Choose full-data or explicit sketch preprocessing<a class="anchor" aria-label="anchor" href="#choose-full-data-or-explicit-sketch-preprocessing"></a>
+</h3>
+<p><code><a href="../reference/NormalizeData.html">NormalizeData()</a></code>, <code><a href="../reference/FindVariableFeatures.html">FindVariableFeatures()</a></code>,
+and <code><a href="../reference/ScaleData.html">ScaleData()</a></code> delegate disk layers to supported Seurat
+methods. Scaling can still require a substantial features-by-cells
+matrix. For large datasets, explicitly choose sketch analysis and
+project its results to the full assay using the official workflow:</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">atera</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NormalizeData.html">NormalizeData</a></span><span class="op">(</span><span class="va">atera</span>, assay <span class="op">=</span> <span class="st">"Atera"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">atera</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/FindVariableFeatures.html">FindVariableFeatures</a></span><span class="op">(</span><span class="va">atera</span>, assay <span class="op">=</span> <span class="st">"Atera"</span>, nfeatures <span class="op">=</span> <span class="fl">2000</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">atera</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/SketchData.html" class="external-link">SketchData</a></span><span class="op">(</span><span class="va">atera</span>, assay <span class="op">=</span> <span class="st">"Atera"</span>, ncells <span class="op">=</span> <span class="fl">5000</span>,</span>
+<span>  method <span class="op">=</span> <span class="st">"LeverageScore"</span>, sketched.assay <span class="op">=</span> <span class="st">"sketch"</span><span class="op">)</span></span>
+<span><span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/DefaultAssay.html" class="external-link">DefaultAssay</a></span><span class="op">(</span><span class="va">atera</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">"sketch"</span></span>
+<span><span class="va">atera</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/FindVariableFeatures.html">FindVariableFeatures</a></span><span class="op">(</span><span class="va">atera</span>, assay <span class="op">=</span> <span class="st">"sketch"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">atera</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ScaleData.html">ScaleData</a></span><span class="op">(</span><span class="va">atera</span>, assay <span class="op">=</span> <span class="st">"sketch"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">atera</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/RunPCA.html" class="external-link">RunPCA</a></span><span class="op">(</span><span class="va">atera</span>, assay <span class="op">=</span> <span class="st">"sketch"</span>, npcs <span class="op">=</span> <span class="fl">30</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">atera</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/FindNeighbors.html" class="external-link">FindNeighbors</a></span><span class="op">(</span><span class="va">atera</span>, reduction <span class="op">=</span> <span class="st">"pca"</span>, dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">20</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">atera</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/FindClusters.html" class="external-link">FindClusters</a></span><span class="op">(</span><span class="va">atera</span>, resolution <span class="op">=</span> <span class="fl">0.5</span>, cluster.name <span class="op">=</span> <span class="st">"sketch_cluster"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">atera</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/RunUMAP.html" class="external-link">RunUMAP</a></span><span class="op">(</span><span class="va">atera</span>, reduction <span class="op">=</span> <span class="st">"pca"</span>, dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">20</span>, return.model <span class="op">=</span> <span class="cn">TRUE</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">atera</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/ProjectData.html" class="external-link">ProjectData</a></span><span class="op">(</span><span class="va">atera</span>, assay <span class="op">=</span> <span class="st">"Atera"</span>, sketched.assay <span class="op">=</span> <span class="st">"sketch"</span>,</span>
+<span>  sketched.reduction <span class="op">=</span> <span class="st">"pca"</span>, full.reduction <span class="op">=</span> <span class="st">"full.pca"</span>, dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">20</span>,</span>
+<span>  umap.model <span class="op">=</span> <span class="st">"umap"</span>, refdata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>projected_cluster <span class="op">=</span> <span class="st">"sketch_cluster"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/SpatialCellPlot.html">SpatialCellPlot</a></span><span class="op">(</span><span class="va">atera</span>, image <span class="op">=</span> <span class="st">"fov"</span>, group.by <span class="op">=</span> <span class="st">"projected_cluster"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">saveRDS</a></span><span class="op">(</span><span class="va">atera</span>, <span class="st">"atera-analysis.rds"</span><span class="op">)</span></span></code></pre></div>
+<p>Keep the BPCells directory and original Atera output bundle at stable
+paths. An RDS file alone does not contain disk counts or transcript
+archives. In a fresh R session, load the same package versions, read the
+RDS, and verify a small feature/cell slice and a spatial plot before
+continuing. If paths have changed, restore them or reload the source
+using the new persistent cache; do not silently replace the analysis
+object with an unrelated dataset. Record original paths, ROI bounds,
+actual cell counts, selected genes, software versions, and whether
+analysis used all observations or a sketch.</p>
+</div>
+</div>
+<div class="section level2">
 <h2 id="analysis-provenance">Analysis provenance<a class="anchor" aria-label="anchor" href="#analysis-provenance"></a>
 </h2>
 <p>Save the analysis provenance beside the exported object.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">source_revision</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"GITHUB_SHA"</span><span class="op">)</span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nzchar</a></span><span class="op">(</span><span class="va">source_revision</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nzchar</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.which.html" class="external-link">Sys.which</a></span><span class="op">(</span><span class="st">"git"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">source_revision</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system2.html" class="external-link">system2</a></span><span class="op">(</span><span class="st">"git"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rev-parse"</span>, <span class="st">"HEAD"</span><span class="op">)</span>,</span>
@@ -830,11 +994,11 @@ ran.</li>
 <span><span class="op">)</span></span>
 <span><span class="va">build_receipt</span></span>
 <span><span class="co">#&gt;                      article               built_utc</span></span>
-<span><span class="co">#&gt; 1 spatial-platform-workflows 2026-11-13 07:00:35 UTC</span></span>
+<span><span class="co">#&gt; 1 spatial-platform-workflows 2026-11-13 11:10:09 UTC</span></span>
 <span><span class="co">#&gt;                            source_revision source_has_local_changes</span></span>
-<span><span class="co">#&gt; 1 0263f490736a3cba2a67349455bab3aca0f0baad                    FALSE</span></span>
+<span><span class="co">#&gt; 1 b733a483d3faae8fe4e819f244d4a961b33c4191                    FALSE</span></span>
 <span><span class="co">#&gt;                        article_md5     R  scop retained_observations genes</span></span>
-<span><span class="co">#&gt; 1 eac3a9d4491ccb8b103d855602ed0f7e 4.6.2 0.9.2                  1986  5000</span></span>
+<span><span class="co">#&gt; 1 d47353e953c7c15202e47b4535556ede 4.6.2 0.9.2                  1986  5000</span></span>
 <span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">build_receipt</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">output_dir</span>, <span class="st">"build-receipt.csv"</span><span class="op">)</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/writeLines.html" class="external-link">writeLines</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/capture.output.html" class="external-link">capture.output</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">output_dir</span>, <span class="st">"session-info.txt"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>

@@ -94,7 +94,8 @@ Seurat object or supplied directly as `srt@tools$SpatialNetwork`.</p>
 <span>  raster.dpi <span class="op">=</span> <span class="fl">300</span>,</span>
 <span>  theme_use <span class="op">=</span> <span class="st">"theme_spatial"</span>,</span>
 <span>  theme_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  image.scale <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lowres"</span>, <span class="st">"hires"</span><span class="op">)</span></span>
+<span>  image.scale <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lowres"</span>, <span class="st">"hires"</span><span class="op">)</span>,</span>
+<span>  flip.y <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -145,6 +146,13 @@ Seurat object or supplied directly as `srt@tools$SpatialNetwork`.</p>
 
 <dt id="arg-image-scale">image.scale<a class="anchor" aria-label="anchor" href="#arg-image-scale"></a></dt>
 <dd><p>Image scale factor matching the raster in `object`.</p></dd>
+
+
+<dt id="arg-flip-y">flip.y<a class="anchor" aria-label="anchor" href="#arg-flip-y"></a></dt>
+<dd><p>Reverse the y axis for coordinates without a Visium raster.
+<code>NULL</code> follows official FOV display orientation (y increasing downward),
+while metadata coordinates retain their orientation. Use <code>FALSE</code> for the
+historical FOV layout. Visium display coordinates already include a flip.</p></dd>
 
 </dl></div>
     <div class="section level2">

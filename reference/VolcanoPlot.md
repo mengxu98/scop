@@ -275,30 +275,30 @@ VolcanoPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-11-13 06:50:09] Start standard processing workflow...
-#> ℹ [2026-11-13 06:50:09] Checking a list of <Seurat>...
-#> ! [2026-11-13 06:50:09] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-11-13 06:50:09] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-11-13 06:50:09] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-13 06:50:09] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-13 06:50:09] Number of available HVF: 2000
-#> ℹ [2026-11-13 06:50:09] Finished check
-#> ℹ [2026-11-13 06:50:09] Perform `ScaleData()`
-#> ℹ [2026-11-13 06:50:09] Perform pca linear dimension reduction
-#> ℹ [2026-11-13 06:50:09] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-11-13 06:50:10] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-13 06:50:10] Reorder clusters...
-#> ℹ [2026-11-13 06:50:10] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-13 06:50:10] Perform umap nonlinear dimension reduction
-#> ✔ [2026-11-13 06:50:20] Standard processing workflow completed
+#> ℹ [2026-11-13 11:00:28] Start standard processing workflow...
+#> ℹ [2026-11-13 11:00:28] Checking a list of <Seurat>...
+#> ! [2026-11-13 11:00:28] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-13 11:00:28] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-13 11:00:28] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-13 11:00:28] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-13 11:00:28] Number of available HVF: 2000
+#> ℹ [2026-11-13 11:00:28] Finished check
+#> ℹ [2026-11-13 11:00:28] Perform `ScaleData()`
+#> ℹ [2026-11-13 11:00:29] Perform pca linear dimension reduction
+#> ℹ [2026-11-13 11:00:29] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-11-13 11:00:29] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-13 11:00:29] Reorder clusters...
+#> ℹ [2026-11-13 11:00:29] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-13 11:00:29] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-13 11:00:38] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"
 )
-#> ℹ [2026-11-13 06:50:20] Data type is log-normalized
-#> ℹ [2026-11-13 06:50:20] Start differential expression test
-#> ℹ [2026-11-13 06:50:20] Find all markers(wilcox) among [1] 5 groups...
-#> ✔ [2026-11-13 06:50:20] Differential expression test completed
+#> ℹ [2026-11-13 11:00:39] Data type is log-normalized
+#> ℹ [2026-11-13 11:00:39] Start differential expression test
+#> ℹ [2026-11-13 11:00:39] Find all markers(wilcox) among [1] 5 groups...
+#> ✔ [2026-11-13 11:00:39] Differential expression test completed
 VolcanoPlot(
   pancreas_sub,
   group.by = "CellType",
@@ -347,11 +347,11 @@ pancreas_sub <- RunEnrichment(
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> ℹ [2026-11-13 06:50:27] Start Enrichment analysis
-#> ℹ [2026-11-13 06:50:27] Species: "Mus_musculus"
-#> ℹ [2026-11-13 06:50:27] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-11-13 05:58:18
-#> ℹ [2026-11-13 06:50:27] Permform enrichment...
-#> ✔ [2026-11-13 06:50:28] Enrichment analysis done
+#> ℹ [2026-11-13 11:00:45] Start Enrichment analysis
+#> ℹ [2026-11-13 11:00:45] Species: "Mus_musculus"
+#> ℹ [2026-11-13 11:00:45] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-11-13 10:11:36
+#> ℹ [2026-11-13 11:00:46] Permform enrichment...
+#> ✔ [2026-11-13 11:00:47] Enrichment analysis done
 VolcanoPlot(
   pancreas_sub,
   group.by = "CellType",

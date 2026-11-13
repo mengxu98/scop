@@ -22,7 +22,8 @@ SpatialNetworkPlot(
   raster.dpi = 300,
   theme_use = "theme_spatial",
   theme_args = list(),
-  image.scale = c("lowres", "hires")
+  image.scale = c("lowres", "hires"),
+  flip.y = NULL
 )
 ```
 
@@ -71,6 +72,14 @@ SpatialNetworkPlot(
 - image.scale:
 
   Image scale factor matching the raster in \`object\`.
+
+- flip.y:
+
+  Reverse the y axis for coordinates without a Visium raster. `NULL`
+  follows official FOV display orientation (y increasing downward),
+  while metadata coordinates retain their orientation. Use `FALSE` for
+  the historical FOV layout. Visium display coordinates already include
+  a flip.
 
 ## Value
 

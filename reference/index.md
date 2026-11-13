@@ -808,7 +808,7 @@
   : Read paired 10x RNA and ATAC counts
 
 - [`ReadSpatialData()`](https://mengxu98.github.io/scop/reference/ReadSpatialData.md)
-  : Load and validate Visium, Visium HD, or Xenium data
+  : Load and validate Visium, Visium HD, Xenium, or Atera data
 
 - [`CheckATACData()`](https://mengxu98.github.io/scop/reference/CheckATACData.md)
   : Check an ATAC object without changing it

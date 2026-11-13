@@ -120,14 +120,17 @@ Default is <code>TRUE</code>.</p></dd>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A string indicating the type of data.
 Possible values are:
-<code>"raw_counts"</code>, <code>"log_normalized_counts"</code>, <code>"raw_normalized_counts"</code>, or <code>"unknown"</code>.</p>
+<code>"raw_counts"</code>, <code>"log_normalized_counts"</code>, <code>"raw_normalized_counts"</code>, or <code>"unknown"</code>.
+Disk-backed iterable matrices return <code>"unknown"</code> without materializing their
+values. Set <code>do_normalization</code> explicitly in preprocessing workflows when
+retaining externally normalized disk layers.</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">CheckDataType</span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-11-13 05:53:40] Infinite values detected</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-11-13 10:07:02] Infinite values detected</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "unknown"</span>
 </code></pre></div>
     </div>

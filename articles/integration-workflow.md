@@ -269,7 +269,7 @@ data.frame(
   bytes = file.info(list.files(output_dir, full.names = TRUE))$size
 )
 #>                file    bytes
-#> 1      analysis.rds 48008447
+#> 1      analysis.rds 48008779
 #> 2 cell-metadata.csv   186170
 ```
 
@@ -327,9 +327,9 @@ build_receipt <- data.frame(
 )
 build_receipt
 #>                article               built_utc  scop     R
-#> 1 integration-workflow 2026-11-13 06:57:25 UTC 0.9.2 4.6.2
+#> 1 integration-workflow 2026-11-13 11:07:10 UTC 0.9.2 4.6.2
 #>                            source_revision source_has_local_changes
-#> 1 0263f490736a3cba2a67349455bab3aca0f0baad                    FALSE
+#> 1 b733a483d3faae8fe4e819f244d4a961b33c4191                    FALSE
 #>                        article_md5 R_seed cells_retained genes_in_active_assay
 #> 1 258fa719de827f5739c0606e0dfd1e7c     11           1600                 12932
 utils::write.csv(build_receipt, file.path(output_dir, "build-receipt.csv"),
@@ -381,7 +381,7 @@ sessionInfo()
 #> [34] ggplot2_4.0.3       globals_0.20.0      scales_1.4.0       
 #> [37] MASS_7.3-66         ggridges_0.5.7      dichromat_2.0-1    
 #> [40] cli_3.6.6           rmarkdown_2.32      ragg_1.5.2         
-#> [43] thisutils_0.5.3     generics_0.1.4      Seurat_6.0.0       
+#> [43] thisutils_0.5.4     generics_0.1.4      Seurat_6.0.0       
 #> [46] otel_0.3.0          ica_1.0-3           future.apply_1.21.0
 #> [49] RSpectra_0.16-2     sctransform_0.4.3   httr_1.4.9         
 #> [52] reshape2_1.4.5      pbapply_1.7-5       cachem_1.1.0       

@@ -22,7 +22,7 @@ SpatialSpotPlot(
   image.alpha = 1,
   crop = TRUE,
   coord.cols = c("col", "row"),
-  flip.y = FALSE,
+  flip.y = NULL,
   show_axes = FALSE,
   split.by = NULL,
   cells = NULL,
@@ -52,7 +52,13 @@ SpatialSpotPlot(
   byrow = TRUE,
   verbose = TRUE,
   srt = NULL,
-  image.scale = c("lowres", "hires")
+  image.scale = c("lowres", "hires"),
+  xlim = NULL,
+  ylim = NULL,
+  molecules = NULL,
+  mols.size = 0.1,
+  mols.alpha = 1,
+  mols.colors = NULL
 )
 ```
 
@@ -116,10 +122,11 @@ SpatialSpotPlot(
 
 - flip.y:
 
-  Reverse the y axis for metadata or FOV coordinates without a raster
-  image. The default `FALSE` agrees with spatial networks and cell
-  boundaries. Raster-backed display coordinates already include their
-  flip.
+  Reverse the y axis for coordinates without a Visium raster. `NULL`
+  follows official FOV display orientation (y increasing downward),
+  while metadata coordinates retain their orientation. Use `FALSE` for
+  the historical FOV layout. Visium display coordinates already include
+  a flip.
 
 - show_axes:
 
@@ -187,7 +194,7 @@ SpatialSpotPlot(
 - combine, nrow, ncol, byrow:
 
   Combine plots with
-  [patchwork](https://patchwork.data-imaginist.com/reference/patchwork-package.html).
+  [patchwork::patchwork](https://patchwork.data-imaginist.com/reference/patchwork-package.html).
   `combine = FALSE` returns a list of ggplots.
 
 - verbose:
@@ -204,6 +211,21 @@ SpatialSpotPlot(
   Image scale factor matching the raster stored in the selected image.
   Use `"hires"` for a hires raster; do not modify Seurat scale-factor
   slots.
+
+- xlim, ylim:
+
+  Optional increasing ROI limits in raw coordinates. Cells are selected
+  by centroid; limits clip the display without modifying object.
+
+- molecules:
+
+  Optional names of already loaded molecules to overlay. No files are
+  read. Molecules are filtered by ROI, not assigned to cells.
+
+- mols.size, mols.alpha, mols.colors:
+
+  Molecule size, opacity, and optional named colors matched to molecule
+  names.
 
 ## Value
 

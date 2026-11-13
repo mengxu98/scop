@@ -263,6 +263,13 @@ display_provenance
 #> 
 #> $transform$coordinate_contract_version
 #> [1] 3
+#> 
+#> 
+#> $coordinate_units
+#> [1] "pixel"
+#> 
+#> $data_type
+#> [1] "spot"
 from_display <- spe_to_srt(spe_display, assay = assay_name, layer = "scop_input")
 display_error <- max(abs(
   as.matrix(from_display@meta.data[, c("x", "y")]) - raw_xy
@@ -452,9 +459,9 @@ build_receipt <- data.frame(
 )
 build_receipt
 #>                     article               built_utc
-#> 1 spatial-framework-bridges 2026-11-13 06:59:56 UTC
+#> 1 spatial-framework-bridges 2026-11-13 11:09:34 UTC
 #>                            source_revision source_has_local_changes
-#> 1 0263f490736a3cba2a67349455bab3aca0f0baad                    FALSE
+#> 1 b733a483d3faae8fe4e819f244d4a961b33c4191                    FALSE
 #>                        article_md5     R  scop retained_observations genes
 #> 1 f32a1d03fe7aebfd50780d0c15703cba 4.6.2 0.9.2                  1986  5000
 utils::write.csv(build_receipt, file.path(output_dir, "build-receipt.csv"), row.names = FALSE)

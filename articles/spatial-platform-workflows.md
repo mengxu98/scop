@@ -4,7 +4,7 @@ This page helps you choose the right input for a spatial method. First
 run the complete bundled Visium example: validate IDs and coordinates,
 calculate limited-assay QC, normalize without changing counts, inspect a
 real expression map, and save/reload the result. Then adapt the import
-section to an existing Visium, Visium HD, or Xenium vendor output
+section to an existing Visium, Visium HD, Xenium, or Atera vendor output
 directory.
 
 The [main spatial
@@ -304,29 +304,28 @@ pixels into microns.
 
 ## Import existing vendor output
 
-Set one or more of `SCOP_VISIUM_DIR`, `SCOP_VISIUM_HD_DIR`, and
-`SCOP_XENIUM_DIR` to existing, unpacked vendor output directories before
-running this section. Visium needs the expression matrix plus the
-`spatial/` outputs; HD needs the selected binned outputs and matching
-images; Xenium needs expression and existing cell segmentation. Do not
-point at an archive. This section is not evaluated during rendering; run
-the calls for the datasets you have downloaded.
+Replace the example paths with existing, unpacked vendor output
+directories before running this section. Visium needs the expression
+matrix plus the `spatial/` outputs; HD needs the selected binned outputs
+and matching images; Xenium needs expression and existing cell
+segmentation. Do not point at an archive. This section is not evaluated
+during rendering; run the calls for the datasets you have downloaded.
 
 ``` r
 
 visium_imported <- ReadSpatialData(
-  data.dir = Sys.getenv("SCOP_VISIUM_DIR"),
+  data.dir = "path/to/visium/outs",
   technology = "visium",
   sample_id = "visium_sample1"
 )
 visium_hd_imported <- ReadSpatialData(
-  data.dir = Sys.getenv("SCOP_VISIUM_HD_DIR"),
+  data.dir = "path/to/visium_hd/outs",
   technology = "visium_hd",
   bin.size = c(8, 16),
   sample_id = "visium_hd_sample1"
 )
 xenium_imported <- ReadSpatialData(
-  data.dir = Sys.getenv("SCOP_XENIUM_DIR"),
+  data.dir = "path/to/xenium/outs",
   technology = "xenium",
   sample_id = "xenium_sample1"
 )
@@ -636,6 +635,189 @@ data.frame(
 #> Matrix             Matrix   1.7.6
 ```
 
+## Visium HD: bins and segmented cells in one object
+
+Use Seurat’s segmented-output directory together with its binned
+outputs. `bin.size` accepts `"polygons"` alone or together with numeric
+bin sizes. Cell and nucleus boundaries describe geometry; choosing
+nucleus boundaries does not replace the cell expression matrix with
+nuclear counts.
+
+``` r
+
+hd <- ReadSpatialData(
+  "path/to/visium_hd/outs", technology = "visium_hd",
+  bin.size = c(8, "polygons"), segmentation.type = "cell",
+  compact = TRUE, sample_id = "hd1"
+)
+SeuratObject::Assays(hd)
+SeuratObject::Images(hd)
+hd@misc$scop_spatial_input
+
+cell_image <- "slice1.polygons"
+bin_image <- "slice1.008um"
+cell_assay <- SeuratObject::DefaultAssay(hd[[cell_image]])
+bin_assay <- SeuratObject::DefaultAssay(hd[[bin_image]])
+SeuratObject::DefaultAssay(hd) <- cell_assay
+stopifnot(setequal(
+  SeuratObject::Cells(hd[[cell_image]]), colnames(hd[[cell_assay]])
+))
+
+hd <- NormalizeData(hd, assay = cell_assay, verbose = FALSE)
+hd <- FindVariableFeatures(hd, assay = cell_assay, nfeatures = 2000, verbose = FALSE)
+hd <- ScaleData(hd, assay = cell_assay, verbose = FALSE)
+hd <- Seurat::RunPCA(hd, assay = cell_assay, npcs = 30, verbose = FALSE)
+hd <- Seurat::FindNeighbors(hd, reduction = "pca", dims = 1:20, verbose = FALSE)
+hd <- Seurat::FindClusters(hd, resolution = 0.5, verbose = FALSE)
+hd <- RunSpatialNetwork(hd, image = cell_image, k = 6, verbose = FALSE)
+
+SpatialCellPlot(hd, image = cell_image, boundary = "segmentations",
+  group.by = "seurat_clusters")
+SpatialNetworkPlot(hd, group.by = "seurat_clusters")
+SpatialSpotPlot(hd, image = bin_image,
+  features = rownames(hd[[bin_assay]])[1], layer = "counts")
+
+# The same object remains usable through the official interface.
+Seurat::ImageDimPlot(hd, fov = cell_image, group.by = "seurat_clusters")
+saveRDS(hd, "hd-analysis.rds")
+hd_reloaded <- readRDS("hd-analysis.rds")
+stopifnot(identical(SpatialCoordinates(hd, image = cell_image)$data,
+  SpatialCoordinates(hd_reloaded, image = cell_image)$data))
+```
+
+Inspect counts and detected-gene distributions before setting QC
+thresholds. Select the cell assay explicitly for expression
+preprocessing. The plotting and spatial context interfaces select the
+image-associated assay when omitted. Different resolutions can have
+different IDs and observation counts; never join their metadata or
+results by row position. BayesSpace requires an array and rejects
+segmented cells before loading its backend. BANKSY and other
+cell-capable methods still require their own parameter and coordinate
+checks.
+
+For a local view, pass increasing `xlim` and `ylim` in the raw pixel
+coordinate system returned by
+`SpatialCoordinates(hd, image = cell_image)`. Both plotting functions
+select cells by centroid before extracting values or boundaries.
+Polygons crossing the window are clipped visually. This does not subset
+`hd`.
+
+## Atera: disk counts, local boundaries, and official interoperability
+
+The [official Seurat Atera
+tutorial](https://satijalab.org/seurat/articles/atera_tutorial) uses the
+[10x FFPE human kidney
+dataset](https://www.10xgenomics.com/datasets/atera-wta-ffpe-human-nd-kidney).
+Keep expression, control features, annotations, and spatial files
+together. `genes` in the loader selects molecules, not expression-matrix
+rows. This recipe requires Seurat 6 with its Atera dependencies already
+installed. The current official reader requires
+`csc_cell_feature_matrix.zarr.zip` for counts,
+`cell_feature_matrix.zarr.zip` for annotations, and `cells.zarr.zip` for
+centroids/boundaries. Retain `experiment.spatial` for run metadata.
+Molecule and morphology views additionally require their corresponding
+archives/images.
+
+``` r
+
+data_dir <- "path/to/atera/outs"
+cache_dir <- "path/to/persistent/atera-counts-cache"
+atera <- ReadSpatialData(data_dir, technology = "atera", sample_id = "kidney1",
+  bpcells.dir = cache_dir, segmentations = NULL,
+  molecule.coordinates = TRUE, morphology.image = FALSE)
+SeuratObject::Assays(atera)
+SeuratObject::Layers(atera[["Atera"]])
+class(GetAssayData5(atera, assay = "Atera", layer = "counts"))
+SpatialCellPlot(atera, image = "fov", group.by = "nCount_Atera")
+SpatialCellPlot(atera, image = "fov", group.by = "nFeature_Atera")
+```
+
+Counts and detected genes are QC evidence, not automatic exclusion
+rules. Control assays and available `azimuth_*` metadata are retained;
+choose the gene-expression assay for normalization. The default plot
+uses centroids until segmentations are loaded. FOV plots follow Seurat’s
+downward y axis; `flip.y = FALSE` reproduces the older SCOP view without
+changing stored coordinates.
+
+Choose an ROI from the centroid map, using physical micron coordinates.
+The limits below are an explicit example; replace them with your tissue
+region. Crop the FOV before asking the official loader for its
+boundaries.
+
+``` r
+
+roi_x <- c(3000, 3500)
+roi_y <- c(3000, 3500)
+atera[["roi"]] <- SeuratObject::Crop(atera[["fov"]],
+  x = roi_x, y = roi_y, coords = "tissue")
+atera <- Seurat::LoadAteraSegmentations(atera, data.dir = data_dir,
+  fov = "roi", segmentations = "cell")
+SpatialCellPlot(atera, image = "roi", boundary = "segmentations",
+  group.by = "azimuth_broad", xlim = roi_x, ylim = roi_y)
+
+atera <- Seurat::LoadAteraMolecules(atera, genes = c("PDK1", "COL4A5"))
+SpatialSpotPlot(atera, image = "fov", group.by = "azimuth_broad",
+  molecules = c("PDK1", "COL4A5"), xlim = roi_x, ylim = roi_y)
+Seurat::ImageDimPlot(atera, fov = "fov", molecules = "PDK1")
+```
+
+Molecule overlays use already loaded coordinates and never initiate a
+file read. Gene-level molecules and codewords use different official
+filtering semantics; use
+[`Seurat::LoadAteraCodewords()`](https://satijalab.org/seurat/reference/LoadAteraCodewords.html)
+explicitly when inspecting probes. For a combined ROI boundary/molecule
+plot, crop the molecule-bearing FOV after loading the genes, then load
+its local segmentations.
+
+For morphology, request `morphology.image = TRUE` when loading, with
+explicit `morphology.channel`, `morphology.resolution`, and
+`morphology.region` as needed. The official reader requires RBioFormats.
+SCOP uses the loaded image’s pixel size and origin; it does not reread
+morphology during plotting. Turn off `overlay_image` to inspect
+boundaries alone. A missing physical calibration is an error rather than
+an inferred image scale.
+
+### Choose full-data or explicit sketch preprocessing
+
+[`NormalizeData()`](https://mengxu98.github.io/scop/reference/NormalizeData.md),
+[`FindVariableFeatures()`](https://mengxu98.github.io/scop/reference/FindVariableFeatures.md),
+and
+[`ScaleData()`](https://mengxu98.github.io/scop/reference/ScaleData.md)
+delegate disk layers to supported Seurat methods. Scaling can still
+require a substantial features-by-cells matrix. For large datasets,
+explicitly choose sketch analysis and project its results to the full
+assay using the official workflow:
+
+``` r
+
+atera <- NormalizeData(atera, assay = "Atera", verbose = FALSE)
+atera <- FindVariableFeatures(atera, assay = "Atera", nfeatures = 2000, verbose = FALSE)
+atera <- Seurat::SketchData(atera, assay = "Atera", ncells = 5000,
+  method = "LeverageScore", sketched.assay = "sketch")
+SeuratObject::DefaultAssay(atera) <- "sketch"
+atera <- FindVariableFeatures(atera, assay = "sketch", verbose = FALSE)
+atera <- ScaleData(atera, assay = "sketch", verbose = FALSE)
+atera <- Seurat::RunPCA(atera, assay = "sketch", npcs = 30, verbose = FALSE)
+atera <- Seurat::FindNeighbors(atera, reduction = "pca", dims = 1:20, verbose = FALSE)
+atera <- Seurat::FindClusters(atera, resolution = 0.5, cluster.name = "sketch_cluster", verbose = FALSE)
+atera <- Seurat::RunUMAP(atera, reduction = "pca", dims = 1:20, return.model = TRUE, verbose = FALSE)
+atera <- Seurat::ProjectData(atera, assay = "Atera", sketched.assay = "sketch",
+  sketched.reduction = "pca", full.reduction = "full.pca", dims = 1:20,
+  umap.model = "umap", refdata = list(projected_cluster = "sketch_cluster"))
+SpatialCellPlot(atera, image = "fov", group.by = "projected_cluster")
+saveRDS(atera, "atera-analysis.rds")
+```
+
+Keep the BPCells directory and original Atera output bundle at stable
+paths. An RDS file alone does not contain disk counts or transcript
+archives. In a fresh R session, load the same package versions, read the
+RDS, and verify a small feature/cell slice and a spatial plot before
+continuing. If paths have changed, restore them or reload the source
+using the new persistent cache; do not silently replace the analysis
+object with an unrelated dataset. Record original paths, ROI bounds,
+actual cell counts, selected genes, software versions, and whether
+analysis used all observations or a sketch.
+
 ## Analysis provenance
 
 Save the analysis provenance beside the exported object.
@@ -666,11 +848,11 @@ build_receipt <- data.frame(
 )
 build_receipt
 #>                      article               built_utc
-#> 1 spatial-platform-workflows 2026-11-13 07:00:35 UTC
+#> 1 spatial-platform-workflows 2026-11-13 11:10:09 UTC
 #>                            source_revision source_has_local_changes
-#> 1 0263f490736a3cba2a67349455bab3aca0f0baad                    FALSE
+#> 1 b733a483d3faae8fe4e819f244d4a961b33c4191                    FALSE
 #>                        article_md5     R  scop retained_observations genes
-#> 1 eac3a9d4491ccb8b103d855602ed0f7e 4.6.2 0.9.2                  1986  5000
+#> 1 d47353e953c7c15202e47b4535556ede 4.6.2 0.9.2                  1986  5000
 utils::write.csv(build_receipt, file.path(output_dir, "build-receipt.csv"), row.names = FALSE)
 writeLines(capture.output(sessionInfo()), file.path(output_dir, "session-info.txt"))
 ```

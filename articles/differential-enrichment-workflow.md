@@ -583,7 +583,7 @@ data.frame(
 )
 #>                            file    bytes
 #> 1               all-markers.csv  5268635
-#> 2                  analysis.rds 50899604
+#> 2                  analysis.rds 50900573
 #> 3             cell-metadata.csv   146525
 #> 4    GO-BP-GSEA-memberships.csv 12612015
 #> 5 GO-BP-measured-background.csv 10159062
@@ -650,9 +650,9 @@ build_receipt <- data.frame(
 )
 build_receipt
 #>                            article               built_utc  scop     R
-#> 1 differential-enrichment-workflow 2026-11-13 06:56:08 UTC 0.9.2 4.6.2
+#> 1 differential-enrichment-workflow 2026-11-13 11:05:59 UTC 0.9.2 4.6.2
 #>                            source_revision source_has_local_changes
-#> 1 0263f490736a3cba2a67349455bab3aca0f0baad                    FALSE
+#> 1 b733a483d3faae8fe4e819f244d4a961b33c4191                    FALSE
 #>                        article_md5 R_seed cells_retained genes_in_active_assay
 #> 1 1c730bbafc9f5f0c6783a90f73de724d     11           1000                 15998
 utils::write.csv(build_receipt, file.path(output_dir, "build-receipt.csv"),
@@ -696,7 +696,7 @@ sessionInfo()
 #>  [10] thisplot_0.4.7          doParallel_1.0.17       globals_0.20.0         
 #>  [13] processx_3.9.0          lattice_0.23-1          MASS_7.3-66            
 #>  [16] magrittr_2.0.5          sass_0.4.10             rmarkdown_2.32         
-#>  [19] jquerylib_0.1.4         yaml_2.3.12             thisutils_0.5.3        
+#>  [19] jquerylib_0.1.4         yaml_2.3.12             thisutils_0.5.4        
 #>  [22] otel_0.3.0              Seurat_6.0.0            ggtangle_0.1.5         
 #>  [25] sctransform_0.4.3       spam_2.11-4             sp_2.2-4               
 #>  [28] cowplot_1.2.0           pbapply_1.7-5           DBI_1.3.0              

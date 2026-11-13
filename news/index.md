@@ -18,6 +18,28 @@
   now requests an R-session restart if an older PyNNDescent module
   remains loaded after the environment is updated.
 
+- **feat**:
+  [`ReadSpatialData()`](https://mengxu98.github.io/scop/reference/ReadSpatialData.md)
+  supports Atera and Visium HD bins mixed with segmented cells. Spatial
+  input resolution selects the image-associated assay and respects the
+  official Visium orientation slot.
+
+- **feat**:
+  [`SpatialCellPlot()`](https://mengxu98.github.io/scop/reference/SpatialCellPlot.md)
+  supports named boundaries, centroid-only images, compact
+  segmentations, holes, and ROI selection before boundary expansion.
+  Cell and spot plots can overlay loaded molecules and Atera morphology
+  with its physical pixel size and origin. FOV point, boundary, and
+  network plots now display y downward by default; `flip.y = FALSE`
+  restores the older layout. Stored coordinates and spatial distances
+  are unchanged.
+
+- **fix**: Disk-backed normalization, variable-feature selection,
+  scaling, and PCA use Seurat’s supported implementation without forcing
+  counts into memory. Split-layer extraction selects features and cells
+  before joining requested layers, and spatial expression consumers
+  fetch their selected observation set.
+
 - **docs**: Dataset and
   [`RunMonocle3()`](https://mengxu98.github.io/scop/reference/RunMonocle3.md)
   examples load SeuratData archives directly and select a Monocle 3

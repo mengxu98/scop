@@ -42,13 +42,16 @@ CheckDataType(object, verbose = TRUE, ...)
 
 A string indicating the type of data. Possible values are:
 `"raw_counts"`, `"log_normalized_counts"`, `"raw_normalized_counts"`, or
-`"unknown"`.
+`"unknown"`. Disk-backed iterable matrices return `"unknown"` without
+materializing their values. Set `do_normalization` explicitly in
+preprocessing workflows when retaining externally normalized disk
+layers.
 
 ## Examples
 
 ``` r
 data(pancreas_sub)
 CheckDataType(pancreas_sub)
-#> ! [2026-11-13 05:53:40] Infinite values detected
+#> ! [2026-11-13 10:07:02] Infinite values detected
 #> [1] "unknown"
 ```

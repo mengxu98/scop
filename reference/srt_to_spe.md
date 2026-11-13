@@ -26,7 +26,8 @@ srt_to_spe(
 
 - assay:
 
-  Assay to export. If `NULL`, the default assay is used.
+  Assay to export. If `NULL`, use the selected image's assay, or the
+  object's default assay when coordinates come from metadata.
 
 - layer:
 

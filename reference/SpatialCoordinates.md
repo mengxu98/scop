@@ -2,17 +2,19 @@
 
 Return raw analysis coordinates or display coordinates together with
 their source and reversible transform. Image-backed coordinates are
-normalized to horizontal `x` and vertical `y`. Seurat's standard
-`VisiumV2` loader stores source `imagerow`/`imagecol` values
-positionally as centroid `x`/`y`; SCOP restores horizontal image-column
-and vertical image-row order. Generic FOV centroid tables with explicit
-`x`/`y` retain their order. SCOP then applies only the selected scale
-and display-axis flip. Custom VisiumV2 loaders storing horizontal
-centroid `x` must call
+normalized to horizontal `x` and vertical `y`. Legacy binned `VisiumV2`
+loaders store source `imagerow`/`imagecol` values positionally as
+centroid `x`/`y`; SCOP restores horizontal image-column and vertical
+image-row order. Generic FOV centroid tables with explicit `x`/`y`
+retain their order. SCOP then applies only the selected scale and
+display-axis flip. Official VisiumV2 orientation slots are respected.
+Unmarked legacy segmented images use horizontal x, while unmarked binned
+images use vertical x. Custom loaders with a different convention must
+call
 [`SetSpatialImageAxes()`](https://mengxu98.github.io/scop/reference/SetSpatialImageAxes.md)
 with `x_orientation = "horizontal"` once. This persists the convention
 in the Seurat misc slot through subsetting and renaming; `"vertical"`
-(or no marker) uses the standard Seurat loader convention. Legacy
+explicitly selects the historical binned convention. Legacy
 `coords_x_orientation` image attributes are readable but should be
 migrated with
 [`SetSpatialImageAxes()`](https://mengxu98.github.io/scop/reference/SetSpatialImageAxes.md)

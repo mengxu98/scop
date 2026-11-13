@@ -18,7 +18,8 @@ RunSpatialCellChat(
   species = c("Homo_sapiens", "Mus_musculus"),
   database = c("protein", "all", "custom"),
   custom.db = NULL,
-  technology = c("auto", "visium", "visium_hd", "xenium", "cosmx", "merfish", "generic"),
+  technology = c("auto", "visium", "visium_hd", "xenium", "atera", "cosmx", "merfish",
+    "generic"),
   analysis.level = c("auto", "cell", "spot", "composition"),
   composition = NULL,
   composition.normalize = TRUE,
@@ -55,7 +56,7 @@ RunSpatialCellChat(
 
   One metadata column defining cell types for cell-level runs, or
   spot/domain labels for spot- and composition-level runs. Values must
-  be complete and non-empty.
+  be complete and non-empty for the selected assay/image observations.
 
 - sample.by:
 
@@ -66,7 +67,9 @@ RunSpatialCellChat(
 - assay, layer:
 
   Assay and normalized expression layer. \`assay = NULL\` uses the
-  default assay.
+  selected image's assay when one image is selected, otherwise the
+  object's default assay. Only selected assay/image observations are
+  analyzed.
 
 - image:
 
