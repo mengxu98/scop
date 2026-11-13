@@ -110,9 +110,14 @@ grn_layer_edges <- function(group, layer) {
   if (!all(required %in% names(native))) stop("The native table is missing mapped GRN columns.", call. = FALSE)
   score <- native[[spec$score]]
   if (!is.numeric(score)) stop("Native GRN scores must be numeric.", call. = FALSE)
+  source <- as.character(native[[spec$source]])
+  target <- as.character(native[[spec$target]])
+  if (anyNA(source) || anyNA(target) || any(!nzchar(source)) || any(!nzchar(target))) {
+    stop("GRN endpoints must have complete identifiers.", call. = FALSE)
+  }
   direction <- if (is.null(spec$sign_column)) rep(NA_integer_, nrow(native)) else as.integer(sign(native[[spec$sign_column]]))
   edges <- data.frame(
-    source = as.character(native[[spec$source]]), target = as.character(native[[spec$target]]),
+    source = source, target = target,
     source_type = rep(spec$source_type, nrow(native)), target_type = rep(spec$target_type, nrow(native)),
     layer = rep(layer, nrow(native)), raw_score = score, score_type = rep(spec$score_type, nrow(native)),
     directed = rep(isTRUE(spec$directed), nrow(native)), sign = direction,

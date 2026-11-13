@@ -112,15 +112,12 @@ grn_prepare_multicsn <- function(input, config) {
   groups <- input$groups
   if (is.null(groups)) groups <- config$groups
   grouped_cells <- unlist(groups, use.names = FALSE)
-  if (is.null(names(groups)) || anyDuplicated(grouped_cells) ||
-    !setequal(grouped_cells, input$cells)) {
+  group_names <- names(groups)
+  if (is.null(group_names) || anyNA(group_names) || any(!nzchar(group_names)) ||
+    anyDuplicated(group_names) || anyDuplicated(grouped_cells) || !setequal(grouped_cells, input$cells)) {
     stop("multiCSN groups must assign every selected cell exactly once.", call. = FALSE)
   }
-  labels <- stats::setNames(rep(NA_character_, length(input$cells)), input$cells)
-  for (group in names(groups)) labels[groups[[group]]] <- group
-  if (anyNA(labels) || !identical(names(labels), input$cells)) {
-    stop("multiCSN groups must assign every selected cell exactly once.", call. = FALSE)
-  }
+  labels <- stats::setNames(rep(group_names, lengths(groups)), grouped_cells)
   group_column <- ".scop_grn_group"
   while (group_column %in% colnames(object[[]])) group_column <- paste0(group_column, "_")
   object[[group_column]] <- unname(labels[colnames(object)])

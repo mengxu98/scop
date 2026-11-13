@@ -1,6 +1,8 @@
 test_that("LINGER metadata follows selected cell identities", {
-  counts <- matrix(c(2L, 3L, 4L, 5L, 6L, 7L), nrow = 2L,
-    dimnames = list(c("G1", "G2"), c("c1", "c2", "c3")))
+  counts <- matrix(c(2L, 3L, 4L, 5L, 6L, 7L),
+    nrow = 2L,
+    dimnames = list(c("G1", "G2"), c("c1", "c2", "c3"))
+  )
   object <- SeuratObject::CreateSeuratObject(methods::as(counts, "dgCMatrix"))
   object$sample <- c("s1", "s1", "s2")
   object$label <- c("B", "T", "Mono")
@@ -21,8 +23,10 @@ test_that("LINGER metadata follows selected cell identities", {
 })
 
 test_that("LINGER checks counts at the modality boundary", {
-  counts <- matrix(1:6, nrow = 2L,
-    dimnames = list(c("01", "1"), c("c1", "c2", "c3")))
+  counts <- matrix(1:6,
+    nrow = 2L,
+    dimnames = list(c("01", "1"), c("c1", "c2", "c3"))
+  )
   object <- SeuratObject::CreateSeuratObject(methods::as(counts, "dgCMatrix"))
   actual <- grn_linger_counts(object, "RNA", "counts", c("c3", "c1"))
   expect_identical(rownames(actual), c("01", "1"))
@@ -43,15 +47,10 @@ test_that("LINGER rejects unsupported inputs before starting a process", {
   input <- list(object = matrix(1, 2L, 2L), input_mode = "rna")
   expect_error(grn_run_linger(input, list()), "paired multiome Seurat")
   object <- SeuratObject::CreateSeuratObject(methods::as(matrix(1L, 2L, 3L,
-    dimnames = list(c("G1", "G2"), c("c1", "c2", "c3"))), "dgCMatrix"))
+    dimnames = list(c("G1", "G2"), c("c1", "c2", "c3"))
+  ), "dgCMatrix"))
   input <- list(object = object, input_mode = "multiome", cells = colnames(object))
-  expect_error(grn_run_linger(input, list(method_args = list(resume_dir = tempfile()))), "completed prepare checkpoint directory")
-  resume <- tempfile("resume-test-")
-  dir.create(resume)
-  on.exit(unlink(resume, recursive = TRUE), add = TRUE)
-  expect_error(grn_run_linger(input, list(method_args = list(resume_dir = resume), groups = list(A = "c1", B = "c2"))), "exactly one selected group")
-  expect_error(grn_run_linger(input, list(method_args = list(genome = "mm10"))), "hg19.*hg38")
-  expect_error(grn_run_linger(input, list(method_args = list(genome = c("hg19", "hg38")))), "hg19.*hg38")
+  expect_error(grn_run_linger(input, list(method_args = list(resume_dir = tempfile()))), "completed prepare checkpoint")
   expect_error(grn_run_linger(input, list(method_args = list(activation = "bad"))), "activation")
   expect_error(grn_run_linger(input, list(method_args = list(activation = NA_character_))), "activation")
   expect_error(grn_run_linger(input, list(method_args = list(patch_missing_keys = "yes"))), "TRUE or FALSE")
@@ -61,7 +60,8 @@ test_that("LINGER rejects unsupported inputs before starting a process", {
 
 test_that("LINGER preflight checks only the required reference files", {
   counts <- methods::as(matrix(1L, 2L, 3L,
-    dimnames = list(c("G1", "G2"), c("c1", "c2", "c3"))), "dgCMatrix")
+    dimnames = list(c("G1", "G2"), c("c1", "c2", "c3"))
+  ), "dgCMatrix")
   object <- SeuratObject::CreateSeuratObject(counts)
   peaks <- counts
   rownames(peaks) <- c("chr19-10-20", "chr19:30-40")
@@ -83,6 +83,12 @@ test_that("LINGER preflight checks only the required reference files", {
   expect_identical(selected$chromosomes, "chr19")
   expect_false("all_models_chr1.pt" %in% selected$files)
   for (file in selected$files) writeLines("A", file.path(directory, file))
+  for (genome in list("mm10", c("hg19", "hg38"))) {
+    expect_error(grn_linger_reference_files(input, utils::modifyList(
+      config,
+      list(method_args = list(genome = genome))
+    )), "hg19.*hg38")
+  }
   checked <- grn_linger_check_resources(input, config)
   expect_identical(checked$selection, selected)
   used <- file.path(directory, "all_models_chr19.pt")

@@ -266,16 +266,6 @@ RunGRN.default <- function(
       call. = FALSE
     )
   }
-  resume_linger <- spec$method == "linger" && !is.null(arguments$resume_dir)
-  if (resume_linger) {
-    resume_dir <- arguments$resume_dir
-    if (!is.character(resume_dir) || length(resume_dir) != 1L || is.na(resume_dir) ||
-      !dir.exists(resume_dir) || !file.exists(file.path(resume_dir, "prepare.completed.json")) ||
-      dir.exists(file.path(resume_dir, "prepare.completed.json"))) {
-      stop("LINGER resume_dir must contain a completed prepare checkpoint.", call. = FALSE)
-    }
-    arguments$resume_dir <- normalizePath(resume_dir, winslash = "/", mustWork = TRUE)
-  }
   cells <- cells[cells %in% unlist(group_cells, use.names = FALSE)]
   expression <- expression[, cells, drop = FALSE]
   if (is.character(pseudotime) && length(pseudotime) == 1L && is_seurat) {
@@ -300,7 +290,7 @@ RunGRN.default <- function(
     method_args = arguments, resources = resources, runtime = runtime, assay = assay, layer = layer,
     atac_assay = atac_assay, atac_layer = atac_layer, group.by = group.by, groups = group_cells,
     cores = as.integer(cores), seed = as.integer(seed), work_dir = work_dir, envname = envname,
-    conda = conda, force = force, verbose = verbose
+    conda = conda, verbose = verbose
   )
   input <- list(
     object = if (is_seurat) object else NULL, expression = expression,
@@ -310,9 +300,6 @@ RunGRN.default <- function(
   config$external_sources <- if (spec$backend != "cpp") grn_external_sources(spec$method, resources)
   if (spec$method == "scenicplus") {
     config$scenicplus_resources <- grn_scenicplus_check_resources(resources)
-  }
-  if (spec$method == "linger") {
-    config$linger_reference <- grn_linger_check_resources(input, config)
   }
   dir.create(work_dir, recursive = TRUE, showWarnings = FALSE)
   attempt <- tempfile(paste0(prefix, "-"), tmpdir = work_dir)
@@ -361,7 +348,6 @@ RunGRN.default <- function(
     execution = list(status = "completed", artifacts = artifacts, work_dir = attempt),
     groups = fitted
   ), class = c("GRNResult", "list"))
-  grn_validate_result(result)
   if (return_type == "result") {
     return(result)
   }
@@ -730,22 +716,6 @@ grn_method_spec <- function(method, backend = NULL) {
   spec
 }
 
-grn_validate_result <- function(result) {
-  if (!inherits(result, "GRNResult") || !identical(result$schema_version, "1.0") || !length(result$groups) || is.null(names(result$groups)) || anyDuplicated(names(result$groups))) stop("Invalid GRNResult schema or groups.", call. = FALSE)
-  for (group in result$groups) {
-    if (!identical(group$execution$status, "completed") || is.null(group$cells) || anyDuplicated(group$cells)) stop("A GRN group is incomplete or has invalid cells.", call. = FALSE)
-    for (layer in names(group$layer_specs)) {
-      spec <- group$layer_specs[[layer]]
-      if (!spec$status %in% c("computed", "not_supported", "not_computed")) stop("Invalid GRN layer status.", call. = FALSE)
-      if (identical(spec$status, "computed")) {
-        edges <- grn_layer_edges(group, layer)
-        if (anyNA(edges$source) || anyNA(edges$target) || any(!nzchar(edges$source)) || any(!nzchar(edges$target))) stop("GRN endpoints must have complete identifiers.", call. = FALSE)
-      }
-    }
-  }
-  invisible(result)
-}
-
 grn_external_sources <- function(method, resources) {
   files <- switch(method,
     gniplr = c(entry = "code/methods/GNIPLR.py"),
@@ -777,11 +747,11 @@ grn_external_sources <- function(method, resources) {
   stats::setNames(normalizePath(paths, winslash = "/", mustWork = TRUE), names(files))
 }
 
-grn_rna_matrix_edges <- function(matrix, source_names = rownames(matrix), target_names = colnames(matrix)) {
+grn_rna_matrix_edges <- function(matrix) {
   index <- which(!is.na(matrix), arr.ind = TRUE)
   data.frame(
-    regulator = as.character(source_names[index[, 1L]]),
-    target = as.character(target_names[index[, 2L]]),
+    regulator = rownames(matrix)[index[, 1L]],
+    target = colnames(matrix)[index[, 2L]],
     weight = as.numeric(matrix[index]), stringsAsFactors = FALSE
   )
 }
@@ -791,23 +761,16 @@ grn_run_rna <- function(input, config) {
   arguments <- config$method_args
   expression <- input$expression
   genes <- rownames(expression)
-  if (is.null(genes) || is.null(colnames(expression)) || anyDuplicated(genes) || anyDuplicated(colnames(expression))) {
-    stop("RNA inference requires unique gene and cell identifiers.", call. = FALSE)
-  }
   regulators <- intersect(as.character(input$regulators), genes)
   targets <- intersect(as.character(input$targets), genes)
   keep <- union(regulators, targets)
   expression <- as.matrix(expression[genes %in% keep, , drop = FALSE])
-  if (!is.numeric(expression) || any(!is.finite(expression))) {
-    stop("RNA expression must contain finite numeric values.", call. = FALSE)
-  }
   if (nrow(expression) < 2L || !length(regulators) || !length(targets)) {
     stop("RNA inference needs at least two candidate genes and nonempty regulators and targets.", call. = FALSE)
   }
   if (method %in% c("gniplr", "pidc", "scsgl")) {
     config$external_sources <- config$external_sources %||% grn_external_sources(method, config$resources)
   }
-  dir.create(config$work_dir, recursive = TRUE, showWarnings = FALSE)
   execution <- list(status = "completed", artifacts = list(), fit_genes = rownames(expression), candidate_policy = "fit_union_then_filter")
   if (method %in% c("ppcor", "pidc", "scorpion")) {
     fit <- switch(method,
@@ -824,8 +787,11 @@ grn_run_rna <- function(input, config) {
     edges <- edges[order(if (method == "ppcor") -abs(edges$weight) else -edges$weight, method = "radix"), , drop = FALSE]
     rownames(edges) <- NULL
   } else {
-    if (!requireNamespace("jsonlite", quietly = TRUE)) stop("Install jsonlite before running a Python RNA backend.", call. = FALSE)
-    python <- grn_python(config, method)
+    python <- config$runtime$python %||% conda_python(
+      envname = config$envname %||% env_module_environment(method),
+      conda = config$conda %||% "auto"
+    )
+    dir.create(config$work_dir, recursive = TRUE, showWarnings = FALSE)
     expression_path <- file.path(config$work_dir, "expression.tsv")
     output_path <- file.path(config$work_dir, "edges.tsv")
     receipt_path <- file.path(config$work_dir, "native-receipt.json")
@@ -843,7 +809,8 @@ grn_run_rna <- function(input, config) {
     }
     jsonlite::write_json(request, request_path, auto_unbox = TRUE, null = "null", pretty = TRUE)
     script <- system.file("grn", paste0(method, ".py"), package = "scop", mustWork = TRUE)
-    process <- grn_run_process(python, c(script, normalizePath(request_path)), config,
+    process <- runner_run_process(python, c(script, normalizePath(request_path)),
+      work_dir = config$work_dir, timeout = config$runtime$timeout %||% Inf,
       env = c(OMP_NUM_THREADS = as.character(config$cores), OPENBLAS_NUM_THREADS = "1", PYTHONHASHSEED = as.character(config$seed), PYTHONDONTWRITEBYTECODE = "1")
     )
     edges <- utils::read.delim(output_path,
@@ -895,10 +862,6 @@ grn_time_data <- function(input, config) {
   time <- time[colnames(expression), , drop = FALSE]
   if (!ncol(time) || any(rowSums(is.finite(time)) == 0L) || any(is.infinite(time))) {
     stop("Every cell must have a finite pseudotime in at least one trajectory.", call. = FALSE)
-  }
-  if (anyDuplicated(rownames(expression)) || anyDuplicated(colnames(expression)) ||
-    anyNA(expression) || any(!is.finite(expression))) {
-    stop("Time methods require finite expression and unique gene and cell IDs.", call. = FALSE)
   }
   genes <- rownames(expression)
   regulators <- input$regulators

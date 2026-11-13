@@ -23,14 +23,7 @@ grn_run_pando <- function(input, config) {
   }
   cleanup <- grn_pando_preserve_session()
   on.exit(cleanup(), add = TRUE)
-  native <- grn_pando_fit(list(
-    object = subset(input$object, cells = input$cells),
-    expression = input$expression,
-    cells = input$cells,
-    regulators = input$regulators,
-    targets = input$targets,
-    config = config
-  ))
+  native <- grn_pando_fit(input, config)
   grn_pando_group(native, input, list(
     mode = "current_session",
     r_version = as.character(getRversion()),
@@ -82,12 +75,8 @@ grn_pando_group <- function(native, input, process = list()) {
   )
 }
 
-grn_pando_fit <- function(request) {
-  config <- request$config
+grn_pando_fit <- function(input, config) {
   args <- config$method_args
-  if (is.null(config$resources$genome)) {
-    stop("Pando requires resources$genome.", call. = FALSE)
-  }
   for (package in c("Pando", "Seurat", "SeuratObject", "Signac")) {
     if (!requireNamespace(package, quietly = TRUE)) {
       stop("Pando requires package '", package, "' in the current R session. See PrepareEnv(modules = 'pando').", call. = FALSE)
@@ -109,16 +98,9 @@ grn_pando_fit <- function(request) {
   if (identical(args$peak_to_gene_method, "GREAT") && is.null(config$resources$gene_domains) && !human_hg38) {
     stop("Pando's native GREAT domains use hg38; select peak_to_gene_method='Signac' or supply resources$gene_domains for another genome.", call. = FALSE)
   }
-  object <- request$object
-  if (!setequal(colnames(object), request$cells)) {
-    stop("Pando input cells do not match the selected group.", call. = FALSE)
-  }
-  object <- object[, request$cells]
+  object <- input$object[, input$cells]
   rna_assay <- config$assay
   peak_assay <- config$atac_assay
-  if (!all(c(rna_assay, peak_assay) %in% SeuratObject::Assays(object))) {
-    stop("Pando requires both selected assays.", call. = FALSE)
-  }
   if (!methods::is(object[[peak_assay]], "ChromatinAssay")) {
     stop("Pando requires a ChromatinAssay with gene annotations.", call. = FALSE)
   }
@@ -126,17 +108,12 @@ grn_pando_fit <- function(request) {
   if (is.null(Signac::Annotation(object[[peak_assay]]))) {
     stop("Pando requires resources$annotation or a ChromatinAssay gene annotation.", call. = FALSE)
   }
-  if (!identical(colnames(request$expression), request$cells)) {
+  if (!identical(colnames(input$expression), input$cells)) {
     stop("Pando RNA cells are not aligned.", call. = FALSE)
   }
-  object <- SeuratObject::SetAssayData(object, assay = rna_assay, layer = "data", new.data = request$expression)
+  object <- SeuratObject::SetAssayData(object, assay = rna_assay, layer = "data", new.data = input$expression)
   peak_layer <- config$atac_layer
-  available <- SeuratObject::Layers(object[[peak_assay]], search = NA)
-  available <- available[available == peak_layer]
-  if (length(available) != 1L) {
-    stop("Pando needs one selected chromatin layer; join split layers first.", call. = FALSE)
-  }
-  peak_expression <- SeuratObject::LayerData(object, assay = peak_assay, layer = available[[1L]])
+  peak_expression <- SeuratObject::LayerData(object, assay = peak_assay, layer = peak_layer)
   object <- SeuratObject::SetAssayData(object, assay = peak_assay, layer = "data", new.data = peak_expression)
   SeuratObject::DefaultAssay(object) <- rna_assay
   datasets <- new.env(parent = emptyenv())
@@ -146,8 +123,8 @@ grn_pando_fit <- function(request) {
   if (is.null(pfm)) pfm <- datasets$motifs
   motif_tfs <- config$resources$motif_tfs
   if (is.null(motif_tfs)) motif_tfs <- datasets$motif2tf
-  if (!is.null(request$regulators)) {
-    motif_tfs <- motif_tfs[as.character(motif_tfs[[2L]]) %in% request$regulators, , drop = FALSE]
+  if (!is.null(input$regulators)) {
+    motif_tfs <- motif_tfs[as.character(motif_tfs[[2L]]) %in% input$regulators, , drop = FALSE]
     if (!nrow(motif_tfs)) {
       stop("No Pando motif TFs match the selected regulators.", call. = FALSE)
     }
@@ -196,7 +173,7 @@ grn_pando_fit <- function(request) {
     rownames(tf_map) <- motif_ids
   }
   template@grn@regions@tfs <- tf_map
-  genes <- request$targets
+  genes <- input$targets
   if (is.null(genes)) {
     template@data <- Seurat::FindVariableFeatures(
       template@data,
@@ -295,14 +272,14 @@ grn_pando_fit <- function(request) {
     region_gene = region_gene,
     gene_sets = gene_sets,
     module_features = native_modules@features,
-    cells = request$cells,
+    cells = input$cells,
     selected_genes = genes,
     parameters = c(args, list(
       rna_assay = rna_assay,
       peak_assay = peak_assay,
       rna_layer = config$layer,
       peak_layer = peak_layer,
-      regulators = request$regulators,
+      regulators = input$regulators,
       targets = genes,
       method = "glm",
       cores = config$cores,

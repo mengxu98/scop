@@ -1,10 +1,9 @@
-test_that("GRN processes preserve argument boundaries and interpreter state", {
+test_that("Python runner processes preserve argument boundaries and interpreter state", {
   directory <- withr::local_tempdir()
-  config <- list(work_dir = directory, runtime = list(timeout = 10))
   path <- file.path(directory, "a file with spaces.txt")
   code <- "x<-commandArgs(TRUE);writeLines(x[[2]],x[[1]]);cat('stdout-marker\\n');message('stderr-marker')"
   before <- Sys.getenv(c("RETICULATE_PYTHON", "R_LIBS_USER"))
-  result <- grn_run_process(file.path(R.home("bin"), "Rscript"), c("--vanilla", "-e", code, path, "literal $x; `command`"), config)
+  result <- runner_run_process(file.path(R.home("bin"), "Rscript"), c("--vanilla", "-e", code, path, "literal $x; `command`"), work_dir = directory, timeout = 10)
   expect_identical(result$status, "completed")
   expect_identical(result$exit_status, 0L)
   expect_identical(readLines(path), "literal $x; `command`")
@@ -14,19 +13,17 @@ test_that("GRN processes preserve argument boundaries and interpreter state", {
   expect_identical(readRDS(result$receipt)$status, "completed")
 })
 
-test_that("GRN process failures and timeouts keep diagnostic receipts", {
+test_that("Python runner failures and timeouts keep diagnostic receipts", {
   directory <- withr::local_tempdir()
-  config <- list(work_dir = directory, runtime = list(timeout = 5))
-  expect_error(grn_run_process(file.path(R.home("bin"), "Rscript"), c("--vanilla", "-e", "message('failure-sentinel');quit(status=7L)"), config), "exit status 7.*Logs", fixed = FALSE)
+  expect_error(runner_run_process(file.path(R.home("bin"), "Rscript"), c("--vanilla", "-e", "message('failure-sentinel');quit(status=7L)"), work_dir = directory, timeout = 5), "exit status 7.*Logs", fixed = FALSE)
   receipts <- lapply(list.files(directory, pattern = "[.]rds$", full.names = TRUE), readRDS)
   expect_true(any(vapply(receipts, function(x) identical(x$status, "failed") && identical(x$exit_status, 7L), logical(1))))
-  config$runtime$timeout <- 0.3
-  expect_error(grn_run_process(file.path(R.home("bin"), "Rscript"), c("--vanilla", "-e", "Sys.sleep(30)"), config), "timed out")
+  expect_error(runner_run_process(file.path(R.home("bin"), "Rscript"), c("--vanilla", "-e", "Sys.sleep(30)"), work_dir = directory, timeout = 0.3), "timed out")
   receipts <- lapply(list.files(directory, pattern = "[.]rds$", full.names = TRUE), readRDS)
   expect_true(any(vapply(receipts, function(x) identical(x$status, "timed_out"), logical(1))))
 })
 
-test_that("GRN process cleanup removes descendants after parent exit or timeout", {
+test_that("Python runner cleanup removes descendants after parent exit or timeout", {
   directory <- withr::local_tempdir()
   parent_script <- file.path(directory, "parent.R")
   child_script <- file.path(directory, "child.R")
@@ -44,11 +41,12 @@ test_that("GRN process cleanup removes descendants after parent exit or timeout"
       "--vanilla", parent_script, child_script, pid_file,
       file.path(directory, paste0(kind, "-child.stdout")), file.path(directory, paste0(kind, "-child.stderr")), kind
     )
-    config <- list(work_dir = file.path(directory, kind), runtime = list(timeout = if (kind == "timeout") 2 else 10))
+    work_dir <- file.path(directory, kind)
+    timeout <- if (kind == "timeout") 2 else 10
     if (kind == "success") {
-      expect_identical(grn_run_process(file.path(R.home("bin"), "Rscript"), arguments, config)$status, "completed")
+      expect_identical(runner_run_process(file.path(R.home("bin"), "Rscript"), arguments, work_dir, timeout)$status, "completed")
     } else {
-      expect_error(grn_run_process(file.path(R.home("bin"), "Rscript"), arguments, config), if (kind == "failure") "exit status 7" else "timed out")
+      expect_error(runner_run_process(file.path(R.home("bin"), "Rscript"), arguments, work_dir, timeout), if (kind == "failure") "exit status 7" else "timed out")
     }
     pid <- as.integer(readLines(pid_file))
     handle <- tryCatch(ps::ps_handle(pid), error = function(e) NULL)

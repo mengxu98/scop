@@ -62,8 +62,10 @@ GRNPlot <- function(
     })
     results <- c(list(result), comparison_results)
     labels <- c(result$method, names(comparisons))
-    if (length(labels) != length(results)) labels <- vapply(results, function(x) x$method, character(1))
-    labels[is.na(labels) | !nzchar(labels)] <- vapply(results, function(x) x$method, character(1))[is.na(labels) | !nzchar(labels)]
+    method_names <- vapply(results, `[[`, character(1), "method")
+    if (length(labels) != length(results)) labels <- method_names
+    missing <- is.na(labels) | !nzchar(labels)
+    labels[missing] <- method_names[missing]
     labels <- make.unique(labels)
     if (!is.null(compare_group) && (!is.character(compare_group) || !length(compare_group) %in% c(1L, length(comparisons)))) {
       stop("`compare_group` must name one group or one group per comparison result.", call. = FALSE)

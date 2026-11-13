@@ -2778,10 +2778,7 @@ grn_run_scenicplus <- function(input, config) {
       stop("This SCENIC+ run is complete. Read scplusmdata.h5mu with RunSCENICPlus(scplus_object = ...) or select a new work_dir.", call. = FALSE)
     }
   }
-  script <- system.file("grn", "scenicplus.py", package = "scop")
-  if (!nzchar(script)) {
-    stop("The installed official SCENIC+ runner is missing; reinstall scop.", call. = FALSE)
-  }
+  script <- system.file("grn", "scenicplus.py", package = "scop", mustWork = TRUE)
   dir.create(config$work_dir, recursive = TRUE, showWarnings = FALSE)
   directory <- normalizePath(config$work_dir, winslash = "/", mustWork = TRUE)
   expression_path <- file.path(directory, "scenicplus-expression.mtx")
@@ -2809,8 +2806,12 @@ grn_run_scenicplus <- function(input, config) {
     auto_unbox = TRUE, pretty = TRUE, null = "null", digits = NA
   )
   launcher <- "import runpy,sys; sys.path.pop(0) if sys.path[:1] == [''] else None; sys.argv = sys.argv[1:]; runpy.run_path(sys.argv[0], run_name='__main__')"
-  python <- grn_python(config, "scenicplus")
-  process <- grn_run_process(python, c("-c", launcher, script, request_path), config,
+  python <- config$runtime$python %||% conda_python(
+    envname = config$envname %||% env_module_environment("scenicplus"),
+    conda = config$conda %||% "auto"
+  )
+  process <- runner_run_process(python, c("-c", launcher, script, request_path),
+    work_dir = config$work_dir, timeout = config$runtime$timeout %||% Inf,
     env = c(PYTHONHASHSEED = as.character(config$seed), OMP_NUM_THREADS = "1", OPENBLAS_NUM_THREADS = "1")
   )
   grn_scenicplus_group(output, input, process)
@@ -2841,10 +2842,8 @@ grn_scenicplus_check_resources <- function(resources) {
     stop("Missing SCENIC+ resources: ", paste(absent, collapse = ", "), call. = FALSE)
   }
   files <- setdiff(required, "region_sets")
-  invalid <- files[vapply(files, function(name) {
-    path <- resources[[name]]
-    dir.exists(path) || is.na(file.info(path)$size) || file.info(path)$size < 1
-  }, logical(1))]
+  info <- file.info(unlist(resources[files], use.names = FALSE))
+  invalid <- files[is.na(info$size) | info$isdir | info$size < 1]
   if (length(invalid)) {
     stop("SCENIC+ resources must be nonempty files: ", paste(invalid, collapse = ", "), call. = FALSE)
   }

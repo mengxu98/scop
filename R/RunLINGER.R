@@ -4,15 +4,13 @@ grn_run_linger <- function(input, config) {
   }
   arguments <- config$method_args
   resume_dir <- arguments$resume_dir
-  if (!is.null(resume_dir) && (!is.character(resume_dir) || length(resume_dir) != 1L || is.na(resume_dir) || !dir.exists(resume_dir))) {
-    stop("LINGER resume_dir must name an existing completed prepare checkpoint directory.", call. = FALSE)
-  }
-  if (!is.null(resume_dir) && length(config$groups %||% input$groups) > 1L) {
-    stop("LINGER resume_dir supports exactly one selected group per call.", call. = FALSE)
-  }
-  genome <- arguments$genome %||% "hg38"
-  if (!is.character(genome) || length(genome) != 1L || is.na(genome) || !genome %in% c("hg19", "hg38")) {
-    stop("LINGER supports genome='hg19' or genome='hg38'.", call. = FALSE)
+  if (!is.null(resume_dir)) {
+    if (!is.character(resume_dir) || length(resume_dir) != 1L || is.na(resume_dir) ||
+      !file.exists(file.path(resume_dir, "prepare.completed.json")) ||
+      dir.exists(file.path(resume_dir, "prepare.completed.json"))) {
+      stop("LINGER resume_dir must contain a completed prepare checkpoint.", call. = FALSE)
+    }
+    resume_dir <- normalizePath(resume_dir, winslash = "/", mustWork = TRUE)
   }
   activation <- arguments$activation %||% "ReLU"
   if (!is.character(activation) || length(activation) != 1L || is.na(activation) || !activation %in% c("ReLU", "sigmoid", "tanh")) {
@@ -29,7 +27,7 @@ grn_run_linger <- function(input, config) {
       stop("LINGER min_genes and min_cells must be nonnegative integers.", call. = FALSE)
     }
   }
-  reference <- config$linger_reference %||% grn_linger_check_resources(input, config)
+  reference <- grn_linger_check_resources(input, config)
   selection <- reference$selection
   rna <- grn_linger_counts(input$object, config$assay, config$layer, input$cells)
   atac <- grn_linger_counts(input$object, config$atac_assay, config$atac_layer, input$cells)
@@ -50,7 +48,7 @@ grn_run_linger <- function(input, config) {
     output_dir = normalizePath(output_dir, winslash = "/", mustWork = FALSE),
     bulk_reference = reference$reference,
     min_genes = as.integer(min_genes), min_cells = as.integer(min_cells),
-    genome = genome, activation = activation,
+    genome = selection$genome, activation = activation,
     patch_missing_keys = patch_missing_keys,
     seed = as.integer(config$seed), cores = as.integer(config$cores),
     regulators = as.list(input$regulators), targets = as.list(input$targets),
@@ -59,20 +57,18 @@ grn_run_linger <- function(input, config) {
       schema = selection$schema, genome = selection$genome,
       chromosomes = as.list(selection$chromosomes), manifest_sha256 = selection$manifest_sha256
     ),
-    resume_dir = if (is.null(resume_dir)) NULL else normalizePath(resume_dir, winslash = "/", mustWork = TRUE),
+    resume_dir = resume_dir,
     checkpoint_prepare = !startsWith(normalizePath(config$work_dir, winslash = "/", mustWork = TRUE), paste0(normalizePath(tempdir(), winslash = "/", mustWork = TRUE), "/")) || !is.null(resume_dir)
   )
   request_path <- file.path(input_dir, "request.json")
   runner_write_json(request, request_path)
-  script <- system.file("grn", "linger.py", package = "scop")
-  if (!nzchar(script)) {
-    script <- file.path("inst", "grn", "linger.py")
-  }
-  if (!file.exists(script)) {
-    stop("The installed LINGER runner is missing; reinstall scop.", call. = FALSE)
-  }
-  python <- grn_python(config, "linger")
-  process <- grn_run_process(python, c(normalizePath(script), request_path), config,
+  script <- system.file("grn", "linger.py", package = "scop", mustWork = TRUE)
+  python <- config$runtime$python %||% conda_python(
+    envname = config$envname %||% env_module_environment("linger"),
+    conda = config$conda %||% "auto"
+  )
+  process <- runner_run_process(python, c(normalizePath(script), request_path),
+    work_dir = config$work_dir, timeout = config$runtime$timeout %||% Inf,
     env = c(
       PYTHONHASHSEED = as.character(config$seed), OMP_NUM_THREADS = as.character(config$cores),
       OPENBLAS_NUM_THREADS = as.character(config$cores), CUDA_VISIBLE_DEVICES = ""
