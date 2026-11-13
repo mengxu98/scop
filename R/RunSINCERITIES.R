@@ -40,7 +40,12 @@ run_sincerities <- function(
     stop("SINCERITIES needs at least two nonconstant genes.", call. = FALSE)
   }
 
-  upstream <- new.env(parent = globalenv())
+  upstream <- new.env(parent = baseenv())
+  upstream$library <- function(package) invisible(loadNamespace(as.character(substitute(package))))
+  upstream$cv.glmnet <- glmnet::cv.glmnet
+  upstream$pcor <- ppcor::pcor
+  upstream$ks.test <- stats::ks.test
+  upstream$coef <- stats::coef
   sys.source(source, envir = upstream)
   data <- list(
     time = ordered_time,

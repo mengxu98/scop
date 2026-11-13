@@ -40,8 +40,10 @@ test_that("GRN process cleanup removes descendants after parent exit or timeout"
   ), parent_script)
   for (kind in c("success", "failure", "timeout")) {
     pid_file <- file.path(directory, paste0(kind, ".pid"))
-    arguments <- c("--vanilla", parent_script, child_script, pid_file,
-                   file.path(directory, paste0(kind, "-child.stdout")), file.path(directory, paste0(kind, "-child.stderr")), kind)
+    arguments <- c(
+      "--vanilla", parent_script, child_script, pid_file,
+      file.path(directory, paste0(kind, "-child.stdout")), file.path(directory, paste0(kind, "-child.stderr")), kind
+    )
     config <- list(work_dir = file.path(directory, kind), runtime = list(timeout = if (kind == "timeout") 2 else 10))
     if (kind == "success") {
       expect_identical(grn_run_process(file.path(R.home("bin"), "Rscript"), arguments, config)$status, "completed")
@@ -50,33 +52,18 @@ test_that("GRN process cleanup removes descendants after parent exit or timeout"
     }
     pid <- as.integer(readLines(pid_file))
     handle <- tryCatch(ps::ps_handle(pid), error = function(e) NULL)
-    active <- function() tryCatch(
-      !is.null(handle) && ps::ps_is_running(handle) && !ps::ps_status(handle) %in% c("zombie", "dead"),
-      error = function(e) FALSE
-    )
+    active <- function() {
+      tryCatch(
+        !is.null(handle) && ps::ps_is_running(handle) && !ps::ps_status(handle) %in% c("zombie", "dead"),
+        error = function(e) FALSE
+      )
+    }
     deadline <- Sys.time() + 2
     while (active() && Sys.time() < deadline) Sys.sleep(0.02)
     alive <- active()
     if (alive) ps::ps_kill(handle)
     expect_false(alive)
   }
-})
-
-test_that("runtime resolution is explicit and idempotent", {
-  directory <- withr::local_tempdir()
-  config <- list(work_dir = directory, runtime = list(rscript = file.path(R.home("bin"), "Rscript"), timeout = 10))
-  runtime <- grn_resolve_runtime(config, "r")
-  expect_s3_class(runtime, "GRNRuntime")
-  expect_identical(runtime$kind, "r")
-  expect_identical(runtime$version, as.character(getRversion()))
-  config$runtime <- runtime
-  expect_identical(grn_resolve_runtime(config, "r"), runtime)
-  config$runtime <- list(rscript = file.path(directory, "missing"))
-  expect_error(grn_resolve_runtime(config, "r"), "runtime was not found")
-  config$runtime <- list(typo = "python")
-  expect_error(grn_resolve_runtime(config, "r"), "Unknown GRN runtime option")
-  config$runtime <- list()
-  expect_error(grn_resolve_runtime(config, list(kind = "r", packages = "scop_nonexistent_runtime_package")), "Missing GRN packages")
 })
 
 test_that("GRN dependency profiles remain isolated from the default environment", {

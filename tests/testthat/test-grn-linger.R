@@ -59,7 +59,7 @@ test_that("LINGER rejects unsupported inputs before starting a process", {
   expect_error(grn_run_linger(input, list(method_args = list(), resources = list())), "bulk_reference")
 })
 
-test_that("LINGER reference selection hashes only the complete used file set", {
+test_that("LINGER preflight checks only the required reference files", {
   counts <- methods::as(matrix(1L, 2L, 3L,
     dimnames = list(c("G1", "G2"), c("c1", "c2", "c3"))), "dgCMatrix")
   object <- SeuratObject::CreateSeuratObject(counts)
@@ -83,22 +83,11 @@ test_that("LINGER reference selection hashes only the complete used file set", {
   expect_identical(selected$chromosomes, "chr19")
   expect_false("all_models_chr1.pt" %in% selected$files)
   for (file in selected$files) writeLines("A", file.path(directory, file))
-  first <- grn_linger_resource_identity(input, config)
-  expect_identical(names(first$bulk_reference[[1L]]$files), selected$files)
+  checked <- grn_linger_check_resources(input, config)
+  expect_identical(checked$selection, selected)
   used <- file.path(directory, "all_models_chr19.pt")
-  original_time <- file.info(used)$mtime
-  writeLines("B", used)
-  Sys.setFileTime(used, original_time)
-  expect_identical(file.info(used)$mtime, original_time)
-  changed <- grn_linger_resource_identity(input, config)
-  expect_false(identical(first, changed))
-  unused <- file.path(directory, "all_models_chr1.pt")
-  writeLines("unused", unused)
-  expect_identical(grn_linger_resource_identity(input, config), changed)
-  writeLines("changed unused", unused)
-  expect_identical(grn_linger_resource_identity(input, config), changed)
   unlink(used)
-  expect_error(grn_linger_resource_identity(input, config), "all_models_chr19.pt")
+  expect_error(grn_linger_check_resources(input, config), "all_models_chr19.pt")
   config$method_args$genome <- "hg19"
   expect_true("hg19_hg38_pair.bed" %in% grn_linger_reference_files(input, config)$files)
 })

@@ -168,8 +168,8 @@ official_grn <- RunGRN(
 ```
 
 Method-specific parameters belong in `method_args`. Unknown names and repeated
-top-level arguments are reported before inference. Put interpreter selection in
-the reserved `method_args$runtime` list, for example
+top-level arguments are reported before inference. R methods run in the
+current session. For a Python subprocess, `method_args$runtime` can specify
 `list(python = "/path/to/environment/bin/python", timeout = 3600)`.
 
 ## Fit groups separately
@@ -268,10 +268,8 @@ storage name is `GRN_<method>`; set `tool_name` when fitting to keep more than
 one run of the same method. Replacing an existing entry requires
 `overwrite = TRUE`.
 
-Completed cache records include input, candidate, time, parameter, runtime, and
-resource identities. Reusing the same request verifies its completed result.
-Changing a scientific input creates a different request. `force = TRUE`
-requests another computation while retaining execution evidence.
+`RunGRN()` fits a new network on each call. LINGER and SCENIC+ support
+resuming their own runs with `method_args$resume_dir`.
 
 ## Choose a network method
 

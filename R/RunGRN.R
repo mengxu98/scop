@@ -50,7 +50,7 @@
 #' @param conda Conda-compatible executable used by Python backends.
 #' @param cores Number of workers used by supported methods.
 #' @param seed Random seed passed to supported backends.
-#' @param force Whether to rebuild existing `output_file`.
+#' @param force Whether to overwrite an existing \code{output_file}.
 #' @param verbose Whether to print progress messages.
 #' @param input_mode \code{"rna"} or \code{"multiome"}. Multiome methods require a Seurat object.
 #' @param atac_assay,atac_layer Chromatin assay and exact layer. Join split layers before inference.
@@ -58,8 +58,8 @@
 #' @param groups Optional existing group labels, in the requested order.
 #' @param pseudotime Seurat metadata column, named numeric vector, or cell-by-trajectory matrix.
 #'   Time methods align by cell ID.
-#' @param method_args Named method-specific arguments. The reserved \code{runtime} list accepts
-#'   \code{python}, \code{rscript}, \code{r_library}, and \code{timeout}. SCENIC+ and LINGER
+#' @param method_args Named method-specific arguments. For Python subprocesses,
+#'   \code{runtime} accepts \code{python} and \code{timeout}. SCENIC+ and LINGER
 #'   can resume one selected group at a time using \code{resume_dir}.
 #' @param tool_name,overwrite Name and replacement policy for a Seurat tools entry.
 #' @param ... Additional method arguments.
@@ -199,10 +199,6 @@ RunGRN.default <- function(
   if (return_type == "seurat" && !is_seurat) stop("return_type = 'seurat' requires a Seurat object.", call. = FALSE)
   if (return_type != "edges" && !is.null(output_file)) stop("output_file requires return_type = 'edges'.", call. = FALSE)
   spec <- grn_method_spec(methods, if (missing(backend) || is.null(backend)) NULL else backend)
-  if (spec$method == "pando") {
-    restore_pando_session <- grn_pando_preserve_session()
-    on.exit(restore_pando_session(), add = TRUE)
-  }
   scientific <- list(
     max_edges_per_target = max_edges_per_target, n_rounds = n_rounds,
     learning_rate = learning_rate, max_depth = max_depth, max_features = max_features,
@@ -232,15 +228,13 @@ RunGRN.default <- function(
   if (anyDuplicated(names(arguments))) stop("Method arguments repeat an explicit top-level argument.", call. = FALSE)
   runtime <- arguments$runtime %||% list()
   arguments$runtime <- NULL
-  runtime_isolation <- FALSE
-  if (spec$method == "pando") {
-    if (!is.list(runtime) || (length(runtime) && (is.null(names(runtime)) ||
-      anyDuplicated(names(runtime)) || any(!names(runtime) %in% c("rscript", "r_library", "timeout"))))) {
-      stop("Pando runtime options must specify an R interpreter, library or timeout.", call. = FALSE)
-    }
-    if (is.null(resources$genome)) stop("Pando requires resources$genome matching the chromatin coordinates.", call. = FALSE)
-    runtime_isolation <- any(c("rscript", "r_library", "timeout") %in% names(runtime)) ||
-      "multiCSN" %in% loadedNamespaces()
+  if (length(runtime) && (!is.list(runtime) || is.null(names(runtime)) ||
+    anyDuplicated(names(runtime)) || any(!names(runtime) %in% c("python", "timeout")))) {
+    stop("method_args$runtime accepts only python and timeout for Python subprocesses.", call. = FALSE)
+  }
+  python_methods <- c("grnboost2", "gniplr", "scsgl", "regdiffusion", "linger", "scenicplus")
+  if (length(runtime) && (!spec$method %in% python_methods || spec$backend == "cpp")) {
+    stop("method_args$runtime is only used by Python subprocesses.", call. = FALSE)
   }
   unknown <- setdiff(names(arguments), spec$args)
   if (length(unknown)) stop("Unknown argument(s) for ", spec$method, ": ", paste(unknown, collapse = ", "), call. = FALSE)
@@ -336,11 +330,10 @@ RunGRN.default <- function(
   if (length(seed) != 1L || !is.finite(seed)) stop("seed must be a finite number.", call. = FALSE)
   config <- list(
     method = spec$method, backend = spec$backend, input_mode = input_mode,
-    method_args = arguments, resources = resources, runtime = runtime, runtime_isolation = runtime_isolation, assay = assay, layer = layer,
+    method_args = arguments, resources = resources, runtime = runtime, assay = assay, layer = layer,
     atac_assay = atac_assay, atac_layer = atac_layer, group.by = group.by, groups = group_cells,
     cores = as.integer(cores), seed = as.integer(seed), work_dir = work_dir, envname = envname,
-    conda = conda, force = force, verbose = verbose,
-    implementation = paste(spec$method, spec$backend, sep = "/"), package_versions = c(scop = as.character(utils::packageVersion("scop")))
+    conda = conda, force = force, verbose = verbose
   )
   input <- list(
     object = if (is_seurat) object else NULL, expression = expression,
@@ -354,72 +347,54 @@ RunGRN.default <- function(
   if (spec$method == "linger") {
     config$linger_reference <- grn_linger_check_resources(input, config)
   }
-  profile <- if (spec$backend == "cpp" && spec$method != "genie3") {
-    "r"
-  } else if (spec$method == "multicsn" && input_mode == "rna") {
-    "multicsn_rna"
-  } else {
-    spec$method
-  }
-  config$resource_identity <- if (spec$method == "linger") {
-    grn_linger_resource_identity(input, config, config$linger_reference)
-  } else {
-    grn_resource_identity(if (is.null(config$external_sources)) {
-      resources
-    } else {
-      c(resources[setdiff(names(resources), "source_dir")], list(source_files = as.list(config$external_sources)))
-    })
-  }
-  config$runtime <- if (spec$method == "pando" && !runtime_isolation) grn_pando_current_runtime(config) else grn_resolve_runtime(config, profile)
-  compute <- function() {
-    attempt <- tempfile(paste0(prefix, "-"), tmpdir = work_dir)
-    dir.create(attempt, recursive = TRUE, showWarnings = FALSE)
-    run_config <- config
-    run_config$work_dir <- attempt
-    prepared <- if (spec$method == "multicsn") {
-      grn_prepare_multicsn(input, run_config)
-    } else {
-      input
-    }
-    had_rng <- exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
-    if (had_rng) old_rng <- get(".Random.seed", envir = .GlobalEnv)
-    on.exit(if (had_rng) assign(".Random.seed", old_rng, envir = .GlobalEnv) else if (exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) rm(".Random.seed", envir = .GlobalEnv), add = TRUE)
-    fitted <- lapply(seq_along(group_cells), function(index) {
-      group_input <- prepared
-      group_input$group <- names(group_cells)[[index]]
-      group_input$cells <- group_cells[[index]]
-      group_input$expression <- prepared$expression[, group_input$cells, drop = FALSE]
-      group_input$pseudotime <- if (is.null(pseudotime)) NULL else pseudotime[group_input$cells, , drop = FALSE]
-      group_config <- run_config
-      group_config$work_dir <- file.path(attempt, sprintf("group-%04d", index))
-      dir.create(group_config$work_dir, recursive = TRUE, showWarnings = FALSE)
-      set.seed(config$seed)
-      value <- spec$runner(group_input, group_config)
-      value$chains <- value$chains %||% list(status = "not_supported")
-      value$gene_sets <- value$gene_sets %||% list(status = "not_supported")
-      if (spec$method == "linger") {
-        if (anyDuplicated(value$cells) || !length(value$cells) || !all(value$cells %in% group_input$cells)) stop("The GRN backend returned invalid retained cells.", call. = FALSE)
-        value$input_cells <- group_input$cells
-      } else if (!identical(as.character(value$cells), as.character(group_input$cells))) stop("The GRN backend returned cells from a different group.", call. = FALSE)
-      value
-    })
-    names(fitted) <- names(group_cells)
-    artifacts <- unname(do.call(c, lapply(fitted, function(value) value$execution$artifacts %||% list())))
-    result <- structure(list(
-      schema_version = "1.0", method = spec$method,
-      implementation = unique(vapply(fitted, `[[`, character(1), "implementation")),
-      package_versions = lapply(fitted, `[[`, "package_versions"),
-      parameters = list(method_args = arguments, backend = spec$backend, seed = config$seed, cores = config$cores),
-      input_summary = list(cells = cells, features = genes, groups = group_cells),
-      resources = config$resource_identity, execution = list(status = "completed", artifacts = artifacts, work_dir = attempt),
-      groups = fitted
-    ), class = c("GRNResult", "list"))
-    grn_validate_result(result)
-    result
-  }
   dir.create(work_dir, recursive = TRUE, showWarnings = FALSE)
-  if (resume_linger) config$force <- TRUE
-  result <- grn_cached_run(input, config, compute)
+  attempt <- tempfile(paste0(prefix, "-"), tmpdir = work_dir)
+  dir.create(attempt, recursive = TRUE, showWarnings = FALSE)
+  run_config <- config
+  run_config$work_dir <- attempt
+  prepared <- if (spec$method == "multicsn") {
+    grn_prepare_multicsn(input, run_config)
+  } else {
+    input
+  }
+  had_rng <- exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
+  if (had_rng) old_rng <- get(".Random.seed", envir = .GlobalEnv)
+  on.exit(if (had_rng) assign(".Random.seed", old_rng, envir = .GlobalEnv) else if (exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) rm(".Random.seed", envir = .GlobalEnv), add = TRUE)
+  fitted <- lapply(seq_along(group_cells), function(index) {
+    group_input <- prepared
+    group_input$group <- names(group_cells)[[index]]
+    group_input$cells <- group_cells[[index]]
+    group_input$expression <- prepared$expression[, group_input$cells, drop = FALSE]
+    group_input$pseudotime <- if (is.null(pseudotime)) NULL else pseudotime[group_input$cells, , drop = FALSE]
+    group_config <- run_config
+    group_config$work_dir <- file.path(attempt, sprintf("group-%04d", index))
+    dir.create(group_config$work_dir, recursive = TRUE, showWarnings = FALSE)
+    set.seed(config$seed)
+    value <- spec$runner(group_input, group_config)
+    value$chains <- value$chains %||% list(status = "not_supported")
+    value$gene_sets <- value$gene_sets %||% list(status = "not_supported")
+    if (spec$method == "linger") {
+      if (anyDuplicated(value$cells) || !length(value$cells) || !all(value$cells %in% group_input$cells)) stop("The GRN backend returned invalid retained cells.", call. = FALSE)
+      value$input_cells <- group_input$cells
+    } else if (!identical(as.character(value$cells), as.character(group_input$cells))) stop("The GRN backend returned cells from a different group.", call. = FALSE)
+    value
+  })
+  names(fitted) <- names(group_cells)
+  artifacts <- unname(do.call(c, lapply(fitted, function(value) value$execution$artifacts %||% list())))
+  result <- structure(list(
+    schema_version = "1.0", method = spec$method,
+    implementation = unique(vapply(fitted, `[[`, character(1), "implementation")),
+    package_versions = lapply(fitted, `[[`, "package_versions"),
+    parameters = list(method_args = arguments, backend = spec$backend, seed = config$seed, cores = config$cores),
+    input_summary = list(cells = cells, features = genes, groups = group_cells),
+    resources = c(
+      resources[setdiff(names(resources), "genome")],
+      if (is.character(resources[["genome"]])) list(genome = resources[["genome"]])
+    ),
+    execution = list(status = "completed", artifacts = artifacts, work_dir = attempt),
+    groups = fitted
+  ), class = c("GRNResult", "list"))
+  grn_validate_result(result)
   if (return_type == "result") {
     return(result)
   }
@@ -866,27 +841,6 @@ grn_run_rna <- function(input, config) {
     config$external_sources <- config$external_sources %||% grn_external_sources(method, config$resources)
   }
   dir.create(config$work_dir, recursive = TRUE, showWarnings = FALSE)
-  if (method %in% c("ppcor", "pidc", "scorpion") && length(config$runtime)) {
-    runtime <- config$runtime
-    rscript <- runtime$rscript %||% runtime$executable
-    libraries <- runtime$r_library %||% .libPaths()
-    alternate <- (!is.null(rscript) && !identical(normalizePath(rscript), normalizePath(file.path(R.home("bin"), "Rscript")))) ||
-      !identical(normalizePath(libraries), normalizePath(.libPaths()))
-    if (alternate) {
-      if (is.null(runtime$executable)) runtime <- grn_resolve_runtime(config, method)
-      request_path <- file.path(config$work_dir, "r-request.rds")
-      output_path <- file.path(config$work_dir, "r-result.rds")
-      payload <- list(input = input[c("expression", "regulators", "targets", "cells")], config = config, libraries = runtime$r_library)
-      payload$input$expression <- expression
-      payload$config$runtime <- list()
-      saveRDS(payload, request_path)
-      config$runtime <- runtime
-      process <- grn_run_process(runtime$rscript, grn_r_worker_args(grn_fit_rna, request_path, output_path), config)
-      result <- readRDS(output_path)
-      result$execution$process <- process
-      return(result)
-    }
-  }
   execution <- list(status = "completed", artifacts = list(), fit_genes = rownames(expression), candidate_policy = "fit_union_then_filter")
   if (method %in% c("ppcor", "pidc", "scorpion")) {
     fit <- switch(method,
@@ -904,9 +858,7 @@ grn_run_rna <- function(input, config) {
     rownames(edges) <- NULL
   } else {
     if (!requireNamespace("jsonlite", quietly = TRUE)) stop("Install jsonlite before running a Python RNA backend.", call. = FALSE)
-    if (is.null(config$runtime$executable)) {
-      config$runtime <- grn_resolve_runtime(config, method)
-    }
+    python <- grn_python(config, method)
     expression_path <- file.path(config$work_dir, "expression.tsv")
     output_path <- file.path(config$work_dir, "edges.tsv")
     receipt_path <- file.path(config$work_dir, "native-receipt.json")
@@ -923,7 +875,6 @@ grn_run_rna <- function(input, config) {
       request$upstream_source <- config$external_sources[["entry"]]
     }
     jsonlite::write_json(request, request_path, auto_unbox = TRUE, null = "null", pretty = TRUE)
-    python <- config$runtime$python %||% config$runtime$executable
     script <- system.file("grn", paste0(method, ".py"), package = "scop", mustWork = TRUE)
     process <- grn_run_process(python, c(script, normalizePath(request_path)), config,
       env = c(OMP_NUM_THREADS = as.character(config$cores), OPENBLAS_NUM_THREADS = "1", PYTHONHASHSEED = as.character(config$seed), PYTHONDONTWRITEBYTECODE = "1")
@@ -965,13 +916,6 @@ grn_run_rna <- function(input, config) {
     chains = list(status = "not_supported"), gene_sets = list(status = "not_computed"),
     parameters = arguments, implementation = implementation, package_versions = versions, execution = execution
   )
-}
-
-grn_fit_rna <- function(request) {
-  .libPaths(request$libraries, include.site = FALSE)
-  if (!requireNamespace("scop", quietly = TRUE)) stop("Install scop in the selected RNA runtime library.")
-  runner <- utils::getFromNamespace("grn_run_rna", "scop")
-  runner(request$input, request$config)
 }
 
 grn_time_data <- function(input, config) {
@@ -1031,31 +975,46 @@ grn_run_time <- function(input, config) {
   sources <- if (config$method %in% c("scode", "sincerities")) {
     config$external_sources %||% grn_external_sources(config$method, config$resources)
   }
-  runtime <- if (is.null(config$runtime$kind)) grn_resolve_runtime(config, "r") else config$runtime
-  config$runtime <- runtime
-  dir.create(config$work_dir, recursive = TRUE, showWarnings = FALSE)
-  request <- file.path(config$work_dir, "time-input.rds")
-  output <- file.path(config$work_dir, "time-output.rds")
   fit <- switch(config$method,
     leap = run_leap,
     scode = run_scode,
-    sincerities = run_sincerities,
-    stop("Unknown time method.", call. = FALSE)
+    sincerities = run_sincerities
   )
-  environment(fit) <- globalenv()
-  saveRDS(list(
-    data = data, method = config$method, fit = fit, sources = sources,
-    method_args = config$method_args, seed = config$seed,
-    work_dir = normalizePath(config$work_dir, mustWork = TRUE),
-    cores = config$cores, verbose = config$verbose
-  ), request)
-  command <- runtime$rscript
-  if (is.null(command)) command <- runtime$executable
-  environment <- character()
-  if (length(runtime$r_library)) environment <- c(R_LIBS_USER = paste(runtime$r_library, collapse = .Platform$path.sep))
-  execution <- grn_run_process(command, grn_r_worker_args(grn_fit_time, request, output), config, env = environment)
-  if (!file.exists(output)) stop("The time-method runner did not produce its result.", call. = FALSE)
-  native <- readRDS(output)
+  inputs <- list(expression = data$expression, pseudotime = data$pseudotime)
+  inputs <- c(inputs, switch(config$method,
+    scode = list(source = sources[["entry"]], work_dir = config$work_dir, seed = config$seed),
+    sincerities = list(source = sources[["entry"]], cores = config$cores, verbose = config$verbose)
+  ))
+  arguments <- config$method_args
+  arguments$trajectory <- NULL
+  rng_kind <- RNGkind()
+  had_rng <- exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
+  if (had_rng) {
+    rng_state <- get(".Random.seed", envir = .GlobalEnv)
+  }
+  on.exit(
+    {
+      do.call(RNGkind, as.list(rng_kind))
+      if (had_rng) {
+        assign(".Random.seed", rng_state, envir = .GlobalEnv)
+      } else {
+        rm(".Random.seed", envir = .GlobalEnv)
+      }
+    },
+    add = TRUE
+  )
+  set.seed(config$seed, kind = "Mersenne-Twister", normal.kind = "Inversion", sample.kind = "Rejection")
+  native <- do.call(fit, c(inputs, arguments))
+  edges <- native$edges
+  if (!is.null(data$regulators)) {
+    edges <- edges[edges$regulator %in% data$regulators, , drop = FALSE]
+  }
+  if (!is.null(data$targets)) {
+    edges <- edges[edges$target %in% data$targets, , drop = FALSE]
+  }
+  edges <- edges[order(-abs(edges$weight), edges$regulator, edges$target, method = "radix"), , drop = FALSE]
+  rownames(edges) <- NULL
+  native$edges <- edges
   sign_column <- if (config$method == "sincerities" && native$parameters$SIGN == 0L) NULL else "signed_weight"
   score_type <- switch(config$method,
     leap = "lagged_correlation",
@@ -1081,47 +1040,6 @@ grn_run_time <- function(input, config) {
     parameters = native$parameters,
     implementation = native$implementation,
     package_versions = native$package_versions,
-    execution = list(status = "completed", artifacts = list(input = request, output = output), process = execution)
+    execution = list(status = "completed", artifacts = list())
   )
-}
-
-grn_fit_time <- function(request) {
-  data <- request$data
-  inputs <- list(expression = data$expression, pseudotime = data$pseudotime)
-  inputs <- c(inputs, switch(request$method,
-    scode = list(source = request$sources[["entry"]], work_dir = request$work_dir, seed = request$seed),
-    sincerities = list(source = request$sources[["entry"]], cores = request$cores, verbose = request$verbose)
-  ))
-  method_args <- request$method_args
-  method_args$trajectory <- NULL
-  allowed <- setdiff(names(formals(request$fit)), names(inputs))
-  unknown <- setdiff(names(method_args), allowed)
-  if (length(unknown)) {
-    stop("Unknown time-method argument(s): ", paste(unknown, collapse = ", "), call. = FALSE)
-  }
-
-  set.seed(request$seed)
-  native <- do.call(request$fit, c(inputs, method_args))
-  edges <- native$edges
-  if (!is.null(data$regulators)) {
-    edges <- edges[edges$regulator %in% data$regulators, , drop = FALSE]
-  }
-  if (!is.null(data$targets)) {
-    edges <- edges[edges$target %in% data$targets, , drop = FALSE]
-  }
-  edges <- edges[order(-abs(edges$weight), edges$regulator, edges$target, method = "radix"), , drop = FALSE]
-  rownames(edges) <- NULL
-  native$edges <- edges
-  native$source_sha256 <- c(
-    grn_fit_time = digest::digest(body(sys.function()), algo = "sha256"),
-    stats::setNames(
-      digest::digest(list(formals(request$fit), body(request$fit)), algo = "sha256"),
-      paste0("run_", request$method)
-    ),
-    stats::setNames(
-      vapply(request$sources, function(path) digest::digest(file = path, algo = "sha256"), character(1)),
-      basename(as.character(request$sources))
-    )
-  )
-  native
 }

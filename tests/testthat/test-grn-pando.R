@@ -99,22 +99,7 @@ test_that("Pando session cleanup preserves a registered foreach backend", {
   expect_equal(foreach::getDoParWorkers(), 2L)
 })
 
-test_that("Pando result execution keeps the selected R mode", {
-  native <- list(
-    coefficients = data.frame(), goodness_of_fit = data.frame(),
-    modules = data.frame(tf = character(), target = character(), estimate = numeric()),
-    triplets = data.frame(), tf_region = data.frame(tf = character(), region = character(), membership = numeric()),
-    region_gene = data.frame(region = character(), target = character(), membership = numeric()),
-    gene_sets = list(), parameters = list(), package_versions = c(Pando = "1.1.1")
-  )
-  for (mode in c("current_session", "subprocess")) {
-    value <- grn_pando_group(native, list(cells = "cell1"), list(mode = mode, r_version = as.character(getRversion())))
-    expect_identical(value$execution$mode, mode)
-    expect_identical(value$execution$r_version, as.character(getRversion()))
-  }
-})
-
-test_that("a first Pando call does not replace multiCSN coefficient dispatch", {
+test_that("Pando cleanup preserves multiCSN coefficient dispatch in the current session", {
   skip_if_not_installed("callr")
   skip_if(!length(find.package("Pando", quiet = TRUE)), "Pando is not installed")
   skip_if_not_installed("multiCSN", minimum_version = "0.1.0")
@@ -125,12 +110,40 @@ test_that("a first Pando call does not replace multiCSN coefficient dispatch", {
       cleanup <- restore_session()
       stopifnot(requireNamespace("Pando", quietly = TRUE))
       cleanup()
-      stopifnot(!"Pando" %in% loadedNamespaces(),
-        identical(getS3method("coef", "Network", optional = TRUE), before))
+      stopifnot(
+        !"Pando" %in% loadedNamespaces(),
+        identical(getS3method("coef", "Network", optional = TRUE), before)
+      )
     }
-    stopifnot(requireNamespace("multiCSN", quietly = TRUE))
+    stopifnot(requireNamespace("Pando", quietly = TRUE), requireNamespace("multiCSN", quietly = TRUE))
+    pando <- methods::new(methods::getClassDef("Network", where = asNamespace("Pando")),
+      fit = data.frame(target = "gene", rsq = 1, nvariables = 20L),
+      coefs = data.frame(target = "gene", tf = "tf", region = "peak", estimate = 2, pval = 0, padj = 0),
+      params = list(method = "glm")
+    )
     network <- methods::new(methods::getClassDef("Network", where = asNamespace("multiCSN")))
-    is.data.frame(stats::coef(network))
+    before <- stats::coef(network)
+    method <- getS3method("coef", "Network")
+    fit <- function() {
+      cleanup <- restore_session()
+      on.exit(cleanup(), add = TRUE)
+      suppressPackageStartupMessages(library("Pando", character.only = TRUE))
+      Pando::find_modules(pando, verbose = FALSE)
+    }
+    fitted <- fit()
+    stopifnot(
+      identical(Pando::NetworkModules(fitted)@meta$estimate, 2),
+      identical(getS3method("coef", "Network"), method),
+      !"package:Pando" %in% search()
+    )
+    pando@params$method <- "invalid"
+    stopifnot(
+      inherits(tryCatch(fit(), error = identity), "error"),
+      identical(getS3method("coef", "Network"), method),
+      !"package:Pando" %in% search()
+    )
+    "Pando" %in% loadedNamespaces() && is.data.frame(before) &&
+      identical(stats::coef(network), before)
   }, libpath = .libPaths())
   expect_true(result)
 })

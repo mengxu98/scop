@@ -140,10 +140,7 @@ a gene-by-cell expression matrix and optional cell-ID-named pseudotime.
 
 ## Fit Pando interaction models
 
-Pando uses the current R session unless multiCSN is already loaded. In that
-case it runs in a separate R process to keep both packages' network methods
-available. Prepare Pando and its
-reference dependencies once, or provide an existing Rscript and library paths.
+Prepare Pando and its reference dependencies in the current R environment.
 The following recipe uses the same normalized PBMC object and targets. The
 Pando defaults retain its native module thresholds.
 
@@ -167,11 +164,6 @@ Pando's native interaction coefficients retain `estimate`, `pval`, and `padj`.
 Its TF-region and region-gene projections describe membership in retained
 interactions. Those projected edges have `score_type = "membership"` and
 unknown sign. The native module and interaction tables remain available.
-
-To run Pando in a separate R process, set an interpreter, a library, or a
-timeout. For an existing isolated installation, set
-`method_args = list(runtime = list(rscript = "/path/to/Rscript",
-r_library = c("/path/to/pando-library", "/path/to/other-library")))`.
 
 ## Prepare LINGER counts and reference resources
 

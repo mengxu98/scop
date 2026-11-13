@@ -21,54 +21,21 @@ grn_run_pando <- function(input, config) {
   if (!identical(as.numeric(config$method_args$extend), 1000000)) {
     stop("Pando 1.1.1 does not forward a custom extend value; supply resources$gene_domains for explicit gene domains.", call. = FALSE)
   }
-  isolated <- config$runtime_isolation
-  if (is.null(isolated)) {
-    isolated <- !inherits(config$runtime, "GRNRuntime") &&
-      any(c("rscript", "r_library", "timeout") %in% names(config$runtime))
-  }
-  dir.create(config$work_dir, recursive = TRUE, showWarnings = FALSE)
-  object <- subset(input$object, cells = input$cells)
-  request <- list(
-    object = object,
+  cleanup <- grn_pando_preserve_session()
+  on.exit(cleanup(), add = TRUE)
+  native <- grn_pando_fit(list(
+    object = subset(input$object, cells = input$cells),
     expression = input$expression,
     cells = input$cells,
     regulators = input$regulators,
     targets = input$targets,
     config = config
-  )
-  if (!isTRUE(isolated)) {
-    if (is.null(config$runtime_isolation)) {
-      cleanup <- grn_pando_preserve_session()
-      on.exit(cleanup(), add = TRUE)
-    }
-    native <- grn_pando_fit(request)
-    process <- list(
-      mode = "current_session",
-      r_version = as.character(getRversion()),
-      r_library = .libPaths()
-    )
-    return(grn_pando_group(native, input, process))
-  }
-  runtime <- grn_resolve_runtime(config, profile = "pando")
-  config$runtime <- runtime
-  request$config <- config
-  request_path <- tempfile("pando-request-", tmpdir = config$work_dir, fileext = ".rds")
-  result_path <- tempfile("pando-result-", tmpdir = config$work_dir, fileext = ".rds")
-  saveRDS(request, request_path)
-  process <- grn_run_process(
-    runtime$rscript,
-    grn_r_worker_args(grn_pando_fit, request_path, result_path),
-    config,
-    env = if (length(runtime$r_library)) c(R_LIBS_USER = paste(runtime$r_library, collapse = .Platform$path.sep)) else character()
-  )
-  if (!file.exists(result_path)) {
-    stop("Pando completed without writing its result.", call. = FALSE)
-  }
-  native <- readRDS(result_path)
-  process$mode <- "subprocess"
-  process$r_version <- runtime$version
-  process$r_library <- runtime$r_library
-  grn_pando_group(native, input, process)
+  ))
+  grn_pando_group(native, input, list(
+    mode = "current_session",
+    r_version = as.character(getRversion()),
+    r_library = .libPaths()
+  ))
 }
 
 grn_pando_group <- function(native, input, process = list()) {
@@ -123,7 +90,7 @@ grn_pando_fit <- function(request) {
   }
   for (package in c("Pando", "Seurat", "SeuratObject", "Signac")) {
     if (!requireNamespace(package, quietly = TRUE)) {
-      stop("Pando requires package '", package, "' in the selected R runtime.", call. = FALSE)
+      stop("Pando requires package '", package, "' in the current R session. See PrepareEnv(modules = 'pando').", call. = FALSE)
     }
   }
   suppressPackageStartupMessages({
@@ -416,25 +383,4 @@ grn_pando_preserve_session <- function() {
     }
     invisible(NULL)
   }
-}
-
-grn_pando_current_runtime <- function(config) {
-  spec <- grn_runtime_profiles()[["pando"]]
-  packages <- unique(c(spec$packages, grn_pando_runtime_packages(config)))
-  genome <- config$resources$genome
-  if (isS4(genome) && identical(attr(class(genome), "package"), "BSgenome")) genome <- attr(genome, "pkgname")
-  if (is.character(genome) && length(genome) == 1L && startsWith(genome, "BSgenome.")) packages <- unique(c(packages, genome))
-  spec$packages <- packages
-  missing <- packages[!vapply(packages, requireNamespace, logical(1), quietly = TRUE)]
-  if (length(missing)) {
-    stop("Pando requires package(s) in the current R session: ", paste(missing, collapse = ", "), ". Install them or select method_args$runtime$rscript and r_library.", call. = FALSE)
-  }
-  executable <- file.path(R.home("bin"), "Rscript")
-  resolved <- list(
-    kind = "r", executable = executable, python = NULL, rscript = executable,
-    r_library = .libPaths(), timeout = Inf, version = as.character(getRversion()),
-    package_versions = stats::setNames(vapply(packages, function(package) as.character(getNamespaceVersion(package)), character(1)), packages),
-    environment = NULL
-  )
-  structure(resolved, class = c("GRNRuntime", "list"), profile = grn_hash(spec))
 }

@@ -130,7 +130,7 @@ its own `"regdiffusion_env"` environment.}
 
 \item{seed}{Random seed passed to supported backends.}
 
-\item{force}{Whether to rebuild existing `output_file`.}
+\item{force}{Whether to overwrite an existing \code{output_file}.}
 
 \item{verbose}{Whether to print progress messages.}
 
@@ -154,8 +154,8 @@ SINCERITIES, and the Python GNIPLR result adapter, set \code{source_dir} to a
 trusted local checkout of the linked multiCSN analysis code. The linked
 GNIPLR implementation uses its fixed LASSO settings.}
 
-\item{method_args}{Named method-specific arguments. The reserved \code{runtime} list accepts
-\code{python}, \code{rscript}, \code{r_library}, and \code{timeout}. SCENIC+ and LINGER
+\item{method_args}{Named method-specific arguments. For Python subprocesses,
+\code{runtime} accepts \code{python} and \code{timeout}. SCENIC+ and LINGER
 can resume one selected group at a time using \code{resume_dir}.}
 
 \item{tool_name, overwrite}{Name and replacement policy for a Seurat tools entry.}

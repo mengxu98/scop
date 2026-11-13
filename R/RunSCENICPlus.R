@@ -2863,8 +2863,16 @@ scenicplus_tf_gene_rho <- function(pairs, rna_counts) {
 
 grn_run_scenicplus <- function(input, config) {
   required <- config$scenicplus_resources %||% grn_scenicplus_check_resources(config$resources)
-  runtime <- if (!is.null(config$runtime$executable)) config$runtime else grn_resolve_runtime(config, "scenicplus")
-  config$runtime <- runtime
+  resume_dir <- config$method_args$resume_dir
+  if (!is.null(resume_dir)) {
+    if (!is.character(resume_dir) || length(resume_dir) != 1L || is.na(resume_dir) || !nzchar(resume_dir)) {
+      stop("SCENIC+ resume_dir must be one directory path.", call. = FALSE)
+    }
+    manifest <- file.path(resume_dir, "execution.json")
+    if (file.exists(manifest) && identical(runner_read_json(manifest)$status, "completed")) {
+      stop("This SCENIC+ run is complete. Read scplusmdata.h5mu with RunSCENICPlus(scplus_object = ...) or select a new work_dir.", call. = FALSE)
+    }
+  }
   script <- system.file("grn", "scenicplus.py", package = "scop")
   if (!nzchar(script)) {
     stop("The installed official SCENIC+ runner is missing; reinstall scop.", call. = FALSE)
@@ -2882,27 +2890,40 @@ grn_run_scenicplus <- function(input, config) {
   Matrix::writeMM(Matrix::Matrix(input$expression, sparse = TRUE), expression_path)
   writeLines(rownames(input$expression), feature_path, useBytes = TRUE)
   request_path <- file.path(directory, "scenicplus-request.json")
-  output <- config$method_args$resume_dir %||% file.path(directory, "official")
-  if (!is.character(output) || length(output) != 1L || is.na(output) || !nzchar(output)) {
-    stop("SCENIC+ resume_dir must be one directory path.", call. = FALSE)
-  }
+  output <- resume_dir %||% file.path(directory, "official")
   resources <- config$resources[intersect(c(required, "workflow"), names(config$resources))]
   resources <- lapply(resources, normalizePath, winslash = "/", mustWork = TRUE)
   jsonlite::write_json(
     list(
       resources = resources, cells = unname(input$cells), group = input$group,
       cores = config$cores, seed = config$seed, method_args = config$method_args,
-      resource_identity = config$resource_identity,
+      resource_identity = lapply(resources, scenicplus_resource_identity),
       expression = expression_path, features = feature_path, output_dir = output
     ),
     request_path,
     auto_unbox = TRUE, pretty = TRUE, null = "null", digits = NA
   )
   launcher <- "import runpy,sys; sys.path.pop(0) if sys.path[:1] == [''] else None; sys.argv = sys.argv[1:]; runpy.run_path(sys.argv[0], run_name='__main__')"
-  process <- grn_run_process(runtime$python, c("-c", launcher, script, request_path), config,
+  python <- grn_python(config, "scenicplus")
+  process <- grn_run_process(python, c("-c", launcher, script, request_path), config,
     env = c(PYTHONHASHSEED = as.character(config$seed), OMP_NUM_THREADS = "1", OPENBLAS_NUM_THREADS = "1")
   )
-  grn_scenicplus_group(output, input, config, process)
+  grn_scenicplus_group(output, input, process)
+}
+
+scenicplus_resource_identity <- function(path) {
+  directory <- dir.exists(path)
+  files <- if (directory) {
+    sort(list.files(path, recursive = TRUE, full.names = TRUE, all.files = TRUE, no.. = TRUE))
+  } else {
+    path
+  }
+  files <- files[!dir.exists(files)]
+  names <- if (directory) substring(files, nchar(path) + 2L) else basename(files)
+  list(list(
+    path = path,
+    files = stats::setNames(vapply(files, function(file) digest::digest(file = file, algo = "sha256"), ""), names)
+  ))
 }
 
 grn_scenicplus_check_resources <- function(resources) {
@@ -2938,7 +2959,7 @@ grn_scenicplus_check_resources <- function(resources) {
   invisible(required)
 }
 
-grn_scenicplus_group <- function(directory, input, config, process = list()) {
+grn_scenicplus_group <- function(directory, input, process = list()) {
   manifest <- file.path(directory, "execution.json")
   if (!file.exists(manifest)) {
     stop("Official SCENIC+ did not produce its execution receipt.", call. = FALSE)

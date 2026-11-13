@@ -44,8 +44,6 @@ grn_run_linger <- function(input, config) {
   writeLines(rownames(rna), file.path(input_dir, "genes.txt"))
   writeLines(rownames(atac), file.path(input_dir, "regions.txt"))
   utils::write.table(metadata, file.path(input_dir, "cells.tsv"), sep = "\t", quote = TRUE, row.names = FALSE)
-  runtime <- grn_resolve_runtime(config, "linger")
-  config$runtime <- runtime
   output_dir <- file.path(config$work_dir, "linger-output")
   request <- list(
     input_dir = normalizePath(input_dir, winslash = "/", mustWork = TRUE),
@@ -73,7 +71,8 @@ grn_run_linger <- function(input, config) {
   if (!file.exists(script)) {
     stop("The installed LINGER runner is missing; reinstall scop.", call. = FALSE)
   }
-  process <- grn_run_process(runtime$executable, c(normalizePath(script), request_path), config,
+  python <- grn_python(config, "linger")
+  process <- grn_run_process(python, c(normalizePath(script), request_path), config,
     env = c(
       PYTHONHASHSEED = as.character(config$seed), OMP_NUM_THREADS = as.character(config$cores),
       OPENBLAS_NUM_THREADS = as.character(config$cores), CUDA_VISIBLE_DEVICES = ""
@@ -82,10 +81,6 @@ grn_run_linger <- function(input, config) {
   receipt <- runner_read_json(file.path(output_dir, "receipt.json"))
   if (!identical(receipt$status, "completed")) {
     stop("LINGER did not produce a completed execution receipt.", call. = FALSE)
-  }
-  expected <- config$resource_identity$bulk_reference[[1L]]$files
-  if (!is.null(expected) && !identical(expected, unlist(receipt$reference_sha256, use.names = TRUE))) {
-    stop("LINGER bulk reference contents changed between preflight and execution.", call. = FALSE)
   }
   read_edges <- function(layer) {
     table <- utils::read.delim(gzfile(file.path(output_dir, "networks", paste0(layer, ".tsv.gz"))),
@@ -126,7 +121,7 @@ grn_run_linger <- function(input, config) {
     package_versions = unlist(receipt$versions, use.names = TRUE),
     execution = list(
       status = "completed", artifacts = list(output_dir = output_dir),
-      stdout = process$stdout, stderr = process$stderr, runtime = runtime
+      stdout = process$stdout, stderr = process$stderr, runtime = list(python = python)
     )
   )
 }
@@ -179,7 +174,7 @@ grn_linger_reference_files <- function(input, config) {
   }), use.names = FALSE))
   list(
     files = files, schema = spec$schema, genome = genome, chromosomes = chromosomes,
-    manifest_sha256 = grn_hash(spec)
+    manifest_sha256 = digest::digest(serialize(spec, NULL, xdr = FALSE, version = 3L), algo = "sha256", serialize = FALSE)
   )
 }
 
@@ -195,20 +190,7 @@ grn_linger_check_resources <- function(input, config) {
   if (length(missing)) {
     stop("Missing LINGER bulk reference files: ", paste(missing, collapse = ", "), call. = FALSE)
   }
-  list(reference = reference, paths = paths, selection = selection)
-}
-
-grn_linger_resource_identity <- function(input, config, checked = grn_linger_check_resources(input, config)) {
-  selection <- checked$selection
-  hashes <- vapply(checked$paths, function(path) grn_hash(file = path), "")
-  other <- config$resources[setdiff(names(config$resources), "bulk_reference")]
-  identity <- lapply(other, grn_resource_identity)
-  identity$bulk_reference <- list(list(
-    path = checked$reference,
-    files = stats::setNames(hashes, selection$files),
-    selection = selection[setdiff(names(selection), "files")]
-  ))
-  identity
+  list(reference = reference, selection = selection)
 }
 
 grn_linger_metadata <- function(input, config) {

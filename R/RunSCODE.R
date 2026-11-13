@@ -19,13 +19,20 @@ run_scode <- function(
     stop("SCODE latent_dim exceeds the available dimensions.", call. = FALSE)
   }
 
-  upstream <- new.env(parent = globalenv())
+  upstream <- new.env(parent = baseenv())
+  upstream$library <- function(package) invisible(loadNamespace(as.character(substitute(package))))
+  upstream$ginv <- MASS::ginv
+  upstream$lm <- stats::lm
+  upstream$runif <- stats::runif
+  upstream$read.table <- utils::read.table
+  upstream$write.table <- utils::write.table
   sys.source(source, envir = upstream)
   times <- as.numeric(pseudotime[, 1L])
   normalized <- (times - min(times)) / diff(range(times))
   settings$time_origin <- min(times)
   settings$time_range <- diff(range(times))
   settings$normalized_time <- stats::setNames(normalized, colnames(expression))
+  dir.create(work_dir, recursive = TRUE, showWarnings = FALSE)
   expression_file <- file.path(work_dir, "scode-expression.tsv")
   time_file <- file.path(work_dir, "scode-time.tsv")
   utils::write.table(
