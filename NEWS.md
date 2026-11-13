@@ -1,5 +1,7 @@
 # scop (development version)
 
+* **fix**: `FeatureHeatmap()` preserves numeric cell annotations when the same metadata column is also used for grouping or splitting. Numeric annotations without finite values now render in grey with a `Missing` legend instead of failing during color-scale construction; non-finite values in partially observed annotations use the existing missing-value color.
+
 * **fix**: Pin PyNNDescent 0.6.0 in Scanpy environments to prevent sparse-array `getnnz` failures in large-data `RunPAGA()` neighbor searches. `RunPAGA()` now requests an R-session restart if an older PyNNDescent module remains loaded after the environment is updated.
 
 * **docs**: Dataset and `RunMonocle3()` examples load SeuratData archives directly and select a Monocle 3 lineage with igraph, so examples no longer require SeuratData or interactive Monocle 3 selection. The `pbmcmultiome_sub` example maps `seurat_annotations` to six cell types before sampling.

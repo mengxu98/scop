@@ -305,6 +305,9 @@ FeatureHeatmap <- function(
       message_type = "error"
     )
   }
+  cell_annotation_metadata <- srt@meta.data[
+    , intersect(cell_annotation, colnames(srt@meta.data)), drop = FALSE
+  ]
   if (is.null(group.by)) {
     srt@meta.data[["All.groups"]] <- factor("")
     group.by <- "All.groups"
@@ -804,10 +807,7 @@ FeatureHeatmap <- function(
     cbind.data.frame(
       srt@meta.data[
         colnames(mat_raw),
-        c(
-          group.by,
-          intersect(cell_annotation, colnames(srt@meta.data))
-        ),
+        unique(c(group.by, intersect(cell_annotation, colnames(srt@meta.data)))),
         drop = FALSE
       ],
       Matrix::t(
@@ -830,6 +830,10 @@ FeatureHeatmap <- function(
       )
     )
   )
+
+  for (cellan in colnames(cell_annotation_metadata)) {
+    cell_metadata[[cellan]] <- cell_annotation_metadata[rownames(cell_metadata), cellan]
+  }
 
   feature_metadata <- cbind.data.frame(
     data.frame(
@@ -1051,21 +1055,24 @@ FeatureHeatmap <- function(
           border = cell_annotation_border
         )
       } else {
-        col_fun <- circlize::colorRamp2(
-          breaks = seq(
-            min(cell_anno, na.rm = TRUE),
-            max(cell_anno, na.rm = TRUE),
-            length = 100
-          ),
-          colors = palette_colors(palette = palette, palcolor = palcolor)
-        )
+        cell_anno[!is.finite(cell_anno)] <- NA_real_
+        finite_values <- cell_anno[!is.na(cell_anno)]
+        all_missing <- length(finite_values) == 0L
+        if (all_missing) {
+          col_fun <- c(Missing = "grey90")
+        } else {
+          col_fun <- circlize::colorRamp2(
+            breaks = seq(min(finite_values), max(finite_values), length = 100),
+            colors = palette_colors(palette = palette, palcolor = palcolor)
+          )
+        }
         for (cell_group in group.by) {
           ha_cell <- list()
           ha_cell[[cellan]] <- get_namespace_fun("ComplexHeatmap", "anno_simple")(
             x = cell_anno[names(cell_groups[[cell_group]])],
             col = col_fun,
             which = ifelse(flip, "row", "column"),
-            na_col = "transparent",
+            na_col = if (all_missing) "grey90" else "transparent",
             border = TRUE
           )
           ha_top <- build_heatmap_annotation(
@@ -1081,9 +1088,8 @@ FeatureHeatmap <- function(
             ha_top_list[[cell_group]] <- c(ha_top_list[[cell_group]], ha_top)
           }
         }
-        lgd[[cellan]] <- get_namespace_fun("ComplexHeatmap", "Legend")(
+        legend_args <- list(
           title = cellan,
-          col_fun = col_fun,
           legend_gp = heatmap_border_gp(
             cell_annotation_border,
             cell_annotation_border_color,
@@ -1094,6 +1100,13 @@ FeatureHeatmap <- function(
             cell_annotation_border_color
           )
         )
+        if (all_missing) {
+          legend_args$labels <- "Missing"
+          legend_args$legend_gp$fill <- "grey90"
+        } else {
+          legend_args$col_fun <- col_fun
+        }
+        lgd[[cellan]] <- do.call(get_namespace_fun("ComplexHeatmap", "Legend"), legend_args)
       }
     }
   }
