@@ -184,6 +184,8 @@ Suggests:
     spicyR,
     SpaNorm,
     withr
+Enhances:
+    Pando
 Remotes:
     mengxu98/multiCSN,
     mengxu98/thisplot,

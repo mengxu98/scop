@@ -21,9 +21,7 @@ test_that("GRN directory resource identities include nested filenames and bytes"
   expect_false(identical(grn_resource_identity(list(motif = c(a = 1, b = 2))), grn_resource_identity(list(motif = c(a = 2, b = 1)))))
 })
 
-test_that("SCENIC+ fingerprints include the final block of large references", {
-  python <- Sys.which("python3")
-  skip_if(!nzchar(python))
+test_that("GRN fingerprints include the final bytes of large references", {
   directory <- withr::local_tempdir()
   ranking <- file.path(directory, "rankings.feather")
   scores <- file.path(directory, "scores.feather")
@@ -35,16 +33,14 @@ test_that("SCENIC+ fingerprints include the final block of large references", {
     writeBin(as.raw(byte), handle)
   }
   change_byte(1L)
-  config <- list(method = "scenicplus", work_dir = directory,
-    resources = list(ranking_db = ranking, scores_db = scores), runtime = list(python = unname(python), timeout = 30))
-  before <- grn_scenicplus_resource_identity(config)
-  expect_identical(before, grn_scenicplus_resource_identity(config))
-  expect_identical(before$ranking_db[[1L]]$algorithm, "sha256-tree-64m-v1")
+  resources <- list(ranking_db = ranking, scores_db = scores)
+  before <- grn_resource_identity(resources)
+  expect_identical(before, grn_resource_identity(resources))
   expect_identical(before$scores_db, grn_resource_identity(scores))
   original_time <- file.info(ranking)$mtime
   change_byte(2L)
   Sys.setFileTime(ranking, original_time)
-  after <- grn_scenicplus_resource_identity(config)
+  after <- grn_resource_identity(resources)
   expect_false(identical(before$ranking_db, after$ranking_db))
   expect_identical(before$scores_db, after$scores_db)
 })

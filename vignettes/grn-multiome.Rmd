@@ -183,15 +183,15 @@ label design before starting training.
 
 ```{r paired-linger, eval=FALSE}
 PrepareEnv(modules = "linger", configure_runtime = FALSE)
-bulk_reference <- "/path/to/LINGER/data_bulk"
-reference_tfs <- scan(file.path(bulk_reference, "TFName.txt"), what = "character", quiet = TRUE)
+linger_resources <- PrepareDB(db = "LINGER", data_dir = "/path/to/LINGER/data_bulk")$LINGER
+reference_tfs <- scan(file.path(linger_resources$bulk_reference, "TFName.txt"), what = "character", quiet = TRUE)
 regulators_linger <- intersect(reference_tfs, rownames(paired[["RNA"]]))
 targets_linger <- targets
 linger_grn <- RunGRN(
 	paired, methods = "LINGER", input_mode = "multiome",
 	assay = "RNA", layer = "counts", atac_assay = "peaks", atac_layer = "counts",
 	regulators = regulators_linger, targets = targets_linger,
-	resources = list(bulk_reference = bulk_reference),
+	resources = linger_resources,
 	method_args = list(label.by = "CellType", genome = "hg38"),
 	return_type = "result", work_dir = "/path/to/new-linger-run",
 	cores = 1L, seed = 1201L
@@ -236,17 +236,15 @@ this scop run only. Run standalone Snakemake workflows in a separate directory.
 
 ```{r paired-scenicplus, eval=FALSE}
 PrepareEnv(modules = "scenicplus", configure_runtime = FALSE)
-scenicplus_resources <- list(
+scenicplus_references <- PrepareDB(
+	db = "SCENICPlus", data_dir = "/path/to/scenicplus-references"
+)$SCENICPlus
+scenicplus_resources <- c(scenicplus_references, list(
 	cistopic = "/path/to/selected_cistopic_model.pkl",
 	gex = "/path/to/matching_gex.h5ad",
 	region_sets = "/path/to/region_sets",
-	ranking_db = "/path/to/motif_rankings.feather",
-	scores_db = "/path/to/motif_scores.feather",
-	motif_annotation = "/path/to/motif_annotations.tbl",
-	genome_annotation = "/path/to/genome_annotation.tsv",
-	chromsizes = "/path/to/chromsizes.tsv",
 	workflow = "/path/to/scenicplus/src/scenicplus/snakemake"
-)
+))
 scenicplus_grn <- RunGRN(
 	paired, methods = "SCENIC+", input_mode = "multiome",
 	assay = "RNA", layer = "data", atac_assay = "peaks", atac_layer = "data",

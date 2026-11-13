@@ -37,8 +37,8 @@ PrepareDB(
 \code{"Enzyme"}, \code{"TF"}, \code{"CSPA"}, \code{"Surfaceome"}, \code{"SPRomeDB"}, \code{"VerSeDa"},
 \code{"TFLink"}, \code{"hTFtarget"}, \code{"TRRUST"}, \code{"JASPAR"}, \code{"ENCODE"}, \code{"MSigDB"},
 \code{"CellTalk"}, \code{"CellChat"}, \code{"CytoTRACE2"} or
-\code{"MSigDB_<collection>"}. A vector may combine sources. See the corresponding
-preparation function for source-specific settings.}
+\code{"MSigDB_<collection>"}. A vector may combine sources. Also accepts the
+opt-in human reference selectors \code{"LINGER"} and \code{"SCENICPlus"}.}
 
 \item{db_IDtypes}{Gene ID types to include.}
 
@@ -48,7 +48,7 @@ preparation function for source-specific settings.}
 
 \item{data_dir}{Directory or named list of local source files. Searches
 \verb{data_dir/<db>/} then \code{data_dir}. Named lists override a path, e.g.
-\code{list(MSigDB = "~/db/msigdb")}.}
+\code{list(MSigDB = "~/db/msigdb")}. For GRN reference bundles, see Details.}
 
 \item{convert_species}{Use a species-converted database when the annotation is
 missing for \code{species}.}
@@ -81,12 +81,30 @@ return contract of the corresponding preparation function.
 Prepare species-specific databases and reference resources from annotation
 packages, cached downloads, or supplied files.
 }
+\details{
+\code{LINGER} accepts a local \code{data_bulk} directory, its parent directory, or a
+\code{.tar.gz} / \code{.tgz} archive. Archives are extracted to the scop user data
+cache. \code{SCENICPlus} uses the hg38 SCREEN v10 region databases. It reuses
+local files and downloads missing rankings, scores and motif annotations.
+Supply the matching SCENIC+ \code{genome_annotation.tsv} and \code{chromsizes.tsv}
+in the same directory, or use
+\code{data_dir = list(SCENICPlus = list(path = ..., genome_annotation = ..., chromsizes = ...))}.
+The inner list can also override \code{ranking_db}, \code{scores_db} and
+\code{motif_annotation} together for a custom set. The top-level \code{LINGER} and
+\code{SCENICPlus} entries can be passed to \code{\link[=RunGRN]{RunGRN()}} as \code{resources}; add the
+sample-specific cisTopic model, expression file and region sets for SCENIC+.
+}
 \examples{
 \dontrun{
 databases <- PrepareDB(species = "Homo_sapiens", db = c("GO_BP", "KEGG"))
 names(databases[["Homo_sapiens"]])
 ListDB(species = "Homo_sapiens", db = c("GO_BP", "KEGG"))
 }
+}
+\references{
+\url{https://github.com/Durenlab/LINGER/blob/main/docs/GRN_infer.md}
+
+\url{https://scenicplus.readthedocs.io/en/latest/human_cerebellum.html}
 }
 \seealso{
 \link{ListDB}, \link{PrepareGO}, \link{PrepareKEGG}, \link{PrepareMSigDB}, \link{PrepareIREA}

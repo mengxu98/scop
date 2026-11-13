@@ -31,7 +31,7 @@ grn_run_scenicplus <- function(input, config) {
   required <- grn_scenicplus_check_resources(config$resources)
   runtime <- if (!is.null(config$runtime$executable)) config$runtime else grn_resolve_runtime(config, "scenicplus")
   config$runtime <- runtime
-  script <- system.file("grn", "scenicplus", "run.py", package = "scop")
+  script <- system.file("grn", "scenicplus.py", package = "scop")
   if (!nzchar(script)) stop("The installed official SCENIC+ runner is missing; reinstall scop.", call. = FALSE)
   dir.create(config$work_dir, recursive = TRUE, showWarnings = FALSE)
   directory <- normalizePath(config$work_dir, winslash = "/", mustWork = TRUE)
@@ -57,7 +57,8 @@ grn_run_scenicplus <- function(input, config) {
     resource_identity = config$resource_identity,
     expression = expression_path, features = feature_path, output_dir = output),
     request_path, auto_unbox = TRUE, pretty = TRUE, null = "null", digits = NA)
-  process <- grn_run_process(runtime$python, c(script, request_path), config,
+  launcher <- "import runpy,sys; sys.path.pop(0) if sys.path[:1] == [''] else None; sys.argv = sys.argv[1:]; runpy.run_path(sys.argv[0], run_name='__main__')"
+  process <- grn_run_process(runtime$python, c("-c", launcher, script, request_path), config,
     env = c(PYTHONHASHSEED = as.character(config$seed), OMP_NUM_THREADS = "1", OPENBLAS_NUM_THREADS = "1"))
   grn_scenicplus_group(output, input, config, process)
 }

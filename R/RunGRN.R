@@ -905,16 +905,13 @@ RunGRN.default <- function(
   if (spec$method == "scenicplus") grn_scenicplus_check_resources(resources)
   if (spec$method == "linger") linger_reference <- grn_linger_check_resources(input, config)
   profile <- if (spec$method == "multicsn" && input_mode == "rna") "multicsn_rna" else spec$profile
-  early_runtime <- spec$method %in% c("scenicplus", "linger")
-  if (early_runtime) config$runtime <- grn_resolve_runtime(config, profile)
-  config$resource_identity <- switch(spec$method,
-    linger = grn_linger_resource_identity(input, config, linger_reference),
-    scenicplus = grn_scenicplus_resource_identity(config),
+  config$resource_identity <- if (spec$method == "linger") {
+    grn_linger_resource_identity(input, config, linger_reference)
+  } else {
     grn_resource_identity(if (is.null(config$external_sources)) resources else
-      c(resources[setdiff(names(resources), "source_dir")], list(source_files = as.list(config$external_sources)))))
-  if (!early_runtime) {
-    config$runtime <- if (spec$method == "pando" && !runtime_isolation) grn_pando_current_runtime(config) else grn_resolve_runtime(config, profile)
+      c(resources[setdiff(names(resources), "source_dir")], list(source_files = as.list(config$external_sources))))
   }
+  config$runtime <- if (spec$method == "pando" && !runtime_isolation) grn_pando_current_runtime(config) else grn_resolve_runtime(config, profile)
   compute <- function() {
     attempt <- tempfile(paste0(prefix, "-"), tmpdir = work_dir)
     dir.create(attempt, recursive = TRUE, showWarnings = FALSE)

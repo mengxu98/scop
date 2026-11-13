@@ -55,12 +55,7 @@ grn_linger_check_resources <- function(input, config) {
 
 grn_linger_resource_identity <- function(input, config, checked = grn_linger_check_resources(input, config)) {
   selection <- checked$selection
-  paths <- checked$paths
-  hashes <- if (is.null(config$runtime$python)) {
-    vapply(paths, function(path) grn_hash(file = path), "")
-  } else {
-    grn_hash_reference_files(paths, config, "sha256")
-  }
+  hashes <- vapply(checked$paths, function(path) grn_hash(file = path), "")
   other <- config$resources[setdiff(names(config$resources), "bulk_reference")]
   identity <- lapply(other, grn_resource_identity)
   identity$bulk_reference <- list(list(path = checked$reference,
@@ -198,9 +193,9 @@ grn_run_linger <- function(input, config) {
   )
   request_path <- file.path(input_dir, "request.json")
   runner_write_json(request, request_path)
-  script <- system.file("grn", "linger", "run.py", package = "scop")
+  script <- system.file("grn", "linger.py", package = "scop")
   if (!nzchar(script)) {
-    script <- file.path("inst", "grn", "linger", "run.py")
+    script <- file.path("inst", "grn", "linger.py")
   }
   if (!file.exists(script)) {
     stop("The installed LINGER runner is missing; reinstall scop.", call. = FALSE)

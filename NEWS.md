@@ -8,6 +8,8 @@
 
 * **deps**: PIDC, SCSGL, SCODE, SINCERITIES, and the Python GNIPLR result adapter use an external source checkout specified with `resources$source_dir`.
 
+* **feat**: Prepare LINGER and SCENIC+ reference files through opt-in `PrepareDB()` selectors.
+
 * **fix**: RegDiffusion uses its separate Python runtime for all output types, and SCENIC with `backend = "cpp"` no longer looks for a Python environment. RegDiffusion accepts its supported trainer options through `method_args`; the old `cell_types` passthrough is unavailable. Use `force = TRUE` to replace an existing edge output file.
 
 * **fix**: Preserve gene-by-cell orientation in GENIE3 inference. Complete GNIPLR result views respect requested regulators while the default edge-table path retains its existing behavior.

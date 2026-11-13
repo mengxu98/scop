@@ -11,14 +11,6 @@ grn_rna_method_args <- function(method) {
   )
 }
 
-grn_rna_script <- function(...) {
-  path <- system.file("grn", "rna", ..., package = "scop")
-  if (!nzchar(path) || !file.exists(path)) {
-    stop("The installed scop package is missing its RNA runner files.", call. = FALSE)
-  }
-  path
-}
-
 grn_rna_matrix_edges <- function(matrix, source_names = rownames(matrix), target_names = colnames(matrix)) {
   index <- which(!is.na(matrix), arr.ind = TRUE)
   data.frame(
@@ -67,7 +59,7 @@ grn_run_rna <- function(input, config) {
       payload$config$runtime <- list()
       saveRDS(payload, request_path)
       config$runtime <- runtime
-      process <- grn_run_process(runtime$rscript, c("--vanilla", grn_rna_script("run.R"), normalizePath(request_path), normalizePath(output_path, mustWork = FALSE)), config)
+      process <- grn_run_process(runtime$rscript, grn_r_worker_args(grn_fit_rna, request_path, output_path), config)
       result <- readRDS(output_path)
       result$execution$process <- process
       return(result)
@@ -155,7 +147,8 @@ grn_run_rna <- function(input, config) {
     }
     jsonlite::write_json(request, request_path, auto_unbox = TRUE, null = "null", pretty = TRUE)
     python <- config$runtime$python %||% config$runtime$executable
-    process <- grn_run_process(python, c(grn_rna_script("run.py"), normalizePath(request_path)), config,
+    script <- system.file("grn", "rna.py", package = "scop", mustWork = TRUE)
+    process <- grn_run_process(python, c(script, normalizePath(request_path)), config,
       env = c(OMP_NUM_THREADS = as.character(config$cores), OPENBLAS_NUM_THREADS = "1", PYTHONHASHSEED = as.character(config$seed), PYTHONDONTWRITEBYTECODE = "1"))
     edges <- utils::read.delim(output_path, stringsAsFactors = FALSE, check.names = FALSE,
       colClasses = c(regulator = "character", target = "character"), na.strings = character())
@@ -177,4 +170,11 @@ grn_run_rna <- function(input, config) {
   list(cells = input$cells, native = c(list(edges = edges), extra), layer_specs = list(tf_gene = specification),
     chains = list(status = "not_supported"), gene_sets = list(status = "not_computed"),
     parameters = arguments, implementation = implementation, package_versions = versions, execution = execution)
+}
+
+grn_fit_rna <- function(request) {
+  .libPaths(request$libraries, include.site = FALSE)
+  if (!requireNamespace("scop", quietly = TRUE)) stop("Install scop in the selected RNA runtime library.")
+  runner <- utils::getFromNamespace("grn_run_rna", "scop")
+  runner(request$input, request$config)
 }

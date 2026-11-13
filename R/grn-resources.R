@@ -27,34 +27,6 @@ grn_resource_identity <- function(resource) {
   list(class = type, sha256 = grn_hash(resource))
 }
 
-grn_hash_reference_files <- function(paths, config, algorithm) {
-  script <- system.file("grn", "hash_references.py", package = "scop")
-  if (!nzchar(script)) stop("The installed GRN resource checker is missing; reinstall scop.", call. = FALSE)
-  process <- grn_run_process(config$runtime$python, c(script, algorithm, unname(paths)), config)
-  hashes <- jsonlite::read_json(process$stdout, simplifyVector = TRUE)
-  if (!is.character(hashes) || length(hashes) != length(paths) || anyNA(hashes) ||
-      any(!grepl("^[0-9a-f]{64}$", hashes))) {
-    stop("GRN resource verification returned invalid fingerprints.", call. = FALSE)
-  }
-  hashes
-}
-
-grn_scenicplus_resource_identity <- function(config) {
-  resources <- config$resources
-  paths <- vapply(resources[c("ranking_db", "scores_db")], normalizePath, "", winslash = "/", mustWork = TRUE)
-  large <- file.info(paths)$size >= 64 * 1024^2
-  if (!any(large)) return(grn_resource_identity(resources))
-  paths <- paths[large]
-  algorithm <- "sha256-tree-64m-v1"
-  hashes <- grn_hash_reference_files(paths, config, algorithm)
-  result <- lapply(resources[setdiff(names(resources), names(paths))], grn_resource_identity)
-  for (i in seq_along(paths)) {
-    result[[names(paths)[[i]]]] <- list(list(path = paths[[i]], algorithm = algorithm,
-      files = stats::setNames(hashes[[i]], basename(paths[[i]]))))
-  }
-  result[names(resources)]
-}
-
 grn_input_identity <- function(input, config) {
   object <- input$object
   chromatin <- NULL

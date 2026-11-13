@@ -2219,13 +2219,13 @@ scenic_download_reference_file <- function(url, dest, verbose = TRUE) {
   on.exit(options(timeout = old_timeout), add = TRUE)
   download_ok <- tryCatch(
     {
-      utils::download.file(
+      status <- utils::download.file(
         url = url,
         destfile = temp_dest,
         mode = "wb",
         quiet = !isTRUE(verbose)
       )
-      TRUE
+      isTRUE(status == 0L)
     },
     error = function(err) {
       log_message(

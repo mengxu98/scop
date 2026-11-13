@@ -160,3 +160,17 @@ grn_run_process <- function(command, args, config, env = character()) {
   result$receipt <- receipt
   result
 }
+
+grn_r_worker_args <- function(worker, request, result) {
+  environment(worker) <- globalenv()
+  worker_file <- file.path(dirname(request), paste0(basename(request), ".worker"))
+  saveRDS(worker, worker_file, version = 2L)
+  expression <- paste0(
+    "args <- commandArgs(TRUE); worker <- readRDS(args[[1L]]); ",
+    "request <- readRDS(args[[2L]]); libraries <- request$config$runtime$r_library; ",
+    "if (length(libraries)) .libPaths(libraries, include.site = FALSE); ",
+    "saveRDS(worker(request), args[[3L]])"
+  )
+  c("--vanilla", "-e", expression, normalizePath(worker_file, mustWork = TRUE),
+    normalizePath(request, mustWork = TRUE), file.path(normalizePath(dirname(result), mustWork = TRUE), basename(result)))
+}
