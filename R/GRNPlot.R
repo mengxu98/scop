@@ -2,8 +2,8 @@
 #'
 #' @md
 #' @inheritParams GetGRN
-#' @param type `"network"` for edges, `"layered"` for native chains, or
-#'   `"overlap"` for shared edges within the common identifier scope.
+#' @param type `"network"` for edges, `"layered"` for native chains,
+#'   `"overlap"` for shared edges, or `"locus"` for multiCSN chains along a chromosome.
 #' @param top_n Maximum edges or chains to show per result. `Inf` shows all.
 #' @param layout `"auto"`, `"star"`, `"hub"`, `"tripartite"`, `"kk"`, or `"fr"`.
 #' @param label_nodes Show node labels.
@@ -11,6 +11,15 @@
 #' @param compare_group One group per comparison, or a single group for all.
 #'   Defaults to `group`.
 #' @param title Plot title.
+#' @param object A `GRNResult` or a Seurat object containing one. For a locus
+#'   plot, use an annotated multiome Seurat object with a multiCSN result,
+#'   or a list with `chains` (columns `target`, `region`, `chain_direction`
+#'   and `chain_delta_bic`),
+#'   a peak-by-group `accessibility` matrix with genomic peak row names,
+#'   and an `annotation` data frame with `seqnames`, `start`, `end`,
+#'   `gene_name`, `strand`, and optionally `type` for exons.
+#' @param target Target gene for a locus plot.
+#' @param group.by Seurat metadata column for mean ATAC tracks. `NULL` pools all cells.
 #' @return A ggplot object.
 #' @seealso [RunGRN()], [GetGRN()]
 #' @export
@@ -18,14 +27,16 @@ GRNPlot <- function(
   object,
   group = NULL,
   layer = "tf_gene",
-  type = c("network", "layered", "overlap"),
+  type = c("network", "layered", "overlap", "locus"),
   top_n = 100,
   layout = "auto",
   label_nodes = TRUE,
   compare = NULL,
   compare_group = NULL,
   tool_name = NULL,
-  title = NULL
+  title = NULL,
+  target = NULL,
+  group.by = NULL
 ) {
   type <- match.arg(type)
   if (!is.numeric(top_n) || length(top_n) != 1L || is.na(top_n) || top_n < 1 ||
@@ -38,6 +49,9 @@ GRNPlot <- function(
   if (!is.character(layout) || length(layout) != 1L ||
     !layout %in% c("auto", "star", "hub", "tripartite", "kk", "fr")) {
     stop("`layout` must be auto, star, hub, tripartite, kk or fr.", call. = FALSE)
+  }
+  if (identical(type, "locus")) {
+    return(grn_plot_locus(object, group, tool_name, target, group.by, top_n, label_nodes, title))
   }
   result <- GetGRN(object, what = "result", tool_name = tool_name)
   group <- grn_select_group(names(result$groups), group)
@@ -67,8 +81,10 @@ GRNPlot <- function(
     groups <- c(group, rep_len(compare_group %||% group, length(comparisons)))
     tables <- lapply(seq_along(results), function(i) GetGRN(results[[i]], group = groups[[i]], layer = layer, what = "edges"))
     endpoints <- lapply(tables, function(table) {
-      list(source = grn_plot_node_key(table$source, table$source_type),
-        target = grn_plot_node_key(table$target, table$target_type))
+      list(
+        source = grn_plot_node_key(table$source, table$source_type),
+        target = grn_plot_node_key(table$target, table$target_type)
+      )
     })
     source_universe <- Reduce(intersect, Map(function(table, ids) {
       unique(c(ids$source, ids$target[!table$directed]))
@@ -186,11 +202,15 @@ grn_plot_node_key <- function(ids, types, layered = FALSE) {
 }
 
 grn_plot_edge_key <- function(source, target, directed) {
-  if (!length(source)) return(character())
+  if (!length(source)) {
+    return(character())
+  }
   ids <- sort(unique(c(source, target)), method = "radix")
   swap <- !directed & match(source, ids) > match(target, ids)
-  paste0(ifelse(directed, "d", "u"),
-    grn_plot_pair_key(ifelse(swap, target, source), ifelse(swap, source, target)))
+  paste0(
+    ifelse(directed, "d", "u"),
+    grn_plot_pair_key(ifelse(swap, target, source), ifelse(swap, source, target))
+  )
 }
 
 grn_plot_order <- function(table, top_n, score, rank_by, keys = NULL) {
@@ -300,5 +320,144 @@ grn_plot_network <- function(edges, layered, layout, label_nodes, title, subtitl
     )
   }
   attr(plot, "grn_data") <- list(edges = edges, nodes = nodes)
+  plot
+}
+
+grn_plot_locus <- function(object, group, tool_name, target, group.by, top_n, label_nodes, title) {
+  if (!is.character(target) || length(target) != 1L || is.na(target) || !nzchar(target)) {
+    stop("Supply one target gene for a locus plot.", call. = FALSE)
+  }
+  if (inherits(object, "Seurat")) {
+    result <- GetGRN(object, what = "result", tool_name = tool_name)
+    group <- grn_select_group(names(result$groups), group)
+    peak_assay <- result$groups[[group]]$parameters$preparation$peak_assay
+    if (!identical(result$method, "multicsn") || is.null(peak_assay) ||
+      !inherits(object[[peak_assay]], "ChromatinAssay")) {
+      stop("The locus plot needs a multiome multiCSN result and its chromatin assay.", call. = FALSE)
+    }
+    chains <- GetGRN(result, group = group, what = "chains")
+    annotation <- as.data.frame(Signac::Annotation(object[[peak_assay]]))
+    atac <- GetAssayData5(object, assay = peak_assay, layer = "data")
+    metadata <- object[[]][colnames(atac), , drop = FALSE]
+    if (!is.null(group.by) && (length(group.by) != 1L || !group.by %in% names(metadata))) {
+      stop("group.by must name a cell metadata column.", call. = FALSE)
+    }
+    labels <- if (is.null(group.by)) rep("All cells", ncol(atac)) else metadata[[group.by]]
+    cells <- split(seq_len(ncol(atac)), labels, drop = TRUE)
+    if (!length(cells)) {
+      stop("No ATAC cells have a group label.", call. = FALSE)
+    }
+  } else {
+    if (!is.list(object) || !all(c("chains", "accessibility", "annotation") %in% names(object))) {
+      stop("Supply an annotated multiome Seurat object or a list with chains, accessibility and annotation.", call. = FALSE)
+    }
+    chains <- object$chains
+    annotation <- object$annotation
+    atac <- object$accessibility
+  }
+  chains <- chains[which(chains$target == target), , drop = FALSE]
+  if (!nrow(chains)) {
+    stop("No multiCSN chains for target: ", target, ".", call. = FALSE)
+  }
+  chains <- chains[grn_plot_order(chains, top_n, "chain_delta_bic", "score"), , drop = FALSE]
+  gene <- annotation[which(annotation$gene_name == target), , drop = FALSE]
+  strand <- unique(as.character(gene$strand[gene$strand %in% c("+", "-")]))
+  chromosome <- unique(as.character(gene$seqnames))
+  if (length(chromosome) != 1L || length(strand) != 1L) {
+    stop("The target needs an unambiguous chromosome and strand in the annotation.", call. = FALSE)
+  }
+  span <- range(gene$start, gene$end) / 1e6
+  endpoints <- if (strand == "+") span else rev(span)
+  tss <- endpoints[1L]
+
+  peaks <- as.data.frame(getExportedValue("multiCSN", "parse_peak_ranges")(rownames(atac)))
+  index <- match(chains$region, rownames(atac))
+  if (anyNA(index) || any(as.character(peaks$seqnames[index]) != chromosome)) {
+    stop("The selected chain peaks must be in the accessibility data and on the target chromosome.", call. = FALSE)
+  }
+  positions <- (peaks$start + peaks$end) / 2e6
+  chains$mid <- positions[index]
+  window <- range(span, peaks$start[index] / 1e6, peaks$end[index] / 1e6)
+  in_locus <- as.character(peaks$seqnames) == chromosome &
+    peaks$start / 1e6 <= window[2L] & peaks$end / 1e6 >= window[1L]
+  signal <- if (inherits(object, "Seurat")) {
+    do.call(cbind, lapply(cells, function(i) {
+      Matrix::rowMeans(atac[in_locus, i, drop = FALSE])
+    }))
+  } else {
+    atac[in_locus, , drop = FALSE]
+  }
+  rows <- -seq_len(ncol(signal))
+  tracks <- data.frame(
+    x = positions[in_locus], row = rep(rows, each = sum(in_locus)),
+    signal = as.numeric(signal), group = rep(colnames(signal), each = sum(in_locus))
+  )
+  tracks$height <- tracks$row + 0.7 * tracks$signal / max(tracks$signal, .Machine$double.eps)
+  tracks$group <- factor(tracks$group, levels = colnames(signal))
+  track_width <- diff(window) / 700
+  gene_row <- min(rows) - 1.3
+  regions <- unique(peaks[index, c("start", "end"), drop = FALSE])
+  exons <- unique(gene[which(gene$type == "exon"), c("start", "end"), drop = FALSE])
+
+  t <- seq(0, 1, length.out = 100)
+  heights <- 0.4 + 4 * rank(chains$chain_delta_bic, ties.method = "first") / nrow(chains)
+  arcs <- do.call(rbind, lapply(seq_len(nrow(chains)), function(i) {
+    direction <- chains$chain_direction[i]
+    data.frame(
+      x = (1 - t) * chains$mid[i] + t * tss,
+      y = 4 * t * (1 - t) * heights[i],
+      chain = i, delta = chains$chain_delta_bic[i],
+      direction = if (is.na(direction) || direction == 0) "Unknown" else if (direction > 0) "Positive" else "Negative"
+    )
+  }))
+  plot <- ggplot2::ggplot() +
+    ggplot2::geom_path(
+      data = arcs, ggplot2::aes(x = .data$x, y = .data$y, group = .data$chain, colour = .data$direction, linewidth = .data$delta),
+      alpha = 0.75, lineend = "round"
+    ) +
+    ggplot2::geom_point(
+      data = unique(chains["mid"]), ggplot2::aes(x = .data$mid, y = 0),
+      shape = 23, size = 2.3, fill = "#7BAB62", colour = "#3E6742"
+    ) +
+    ggplot2::annotate("point", x = tss, y = 0, size = 2.5, colour = "#C87934") +
+    ggplot2::geom_hline(yintercept = rows, colour = "#D2D8DF", linewidth = 0.3) +
+    ggplot2::geom_rect(
+      data = tracks,
+      ggplot2::aes(
+        xmin = .data$x - track_width, xmax = .data$x + track_width,
+        ymin = .data$row, ymax = .data$height, fill = .data$group
+      ),
+      show.legend = FALSE
+    ) +
+    ggplot2::geom_rect(
+      data = regions,
+      ggplot2::aes(xmin = .data$start / 1e6, xmax = .data$end / 1e6, ymin = gene_row + 0.55, ymax = gene_row + 1),
+      fill = "#89929D"
+    ) +
+    ggplot2::annotate(
+      "segment",
+      x = endpoints[1L], xend = endpoints[2L], y = gene_row, yend = gene_row,
+      colour = "#273D67", arrow = grid::arrow(length = grid::unit(1.6, "mm"), type = "closed")
+    ) +
+    ggplot2::geom_rect(
+      data = exons,
+      ggplot2::aes(xmin = .data$start / 1e6, xmax = .data$end / 1e6, ymin = gene_row - 0.18, ymax = gene_row + 0.18),
+      fill = "#3C62A6"
+    ) +
+    ggplot2::scale_colour_manual(NULL, values = c(Negative = "#3B86B6", Positive = "#D70440", Unknown = "#828B91")) +
+    ggplot2::scale_fill_manual(values = rep_len(c("#C4474D", "#4AA684", "#D98A2B", "#8A5BA7", "#3B6FB6"), ncol(signal))) +
+    ggplot2::scale_linewidth_continuous(expression(Delta * BIC), range = c(0.25, 0.9), transform = "log1p") +
+    ggplot2::scale_y_continuous(NULL, breaks = rows, labels = colnames(signal)) +
+    ggplot2::labs(x = paste(chromosome, "position (Mb)"), title = title) +
+    ggplot2::theme_classic(base_size = 11) +
+    ggplot2::theme(axis.line.y = ggplot2::element_blank(), axis.ticks.y = ggplot2::element_blank())
+  if (label_nodes) {
+    plot <- plot + ggplot2::annotate(
+      "text",
+      x = mean(span), y = gene_row - 0.53, label = paste0(target, " (", strand, ")"),
+      fontface = "italic", colour = "#273D67", size = 3.4
+    )
+  }
+  attr(plot, "grn_data") <- list(chains = chains, tracks = tracks, chromosome = chromosome, tss = tss, group = group)
   plot
 }

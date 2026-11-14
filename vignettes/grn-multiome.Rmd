@@ -97,6 +97,17 @@ scop::GRNPlot(paired, group = "B", type = "network", layer = "tf_gene", top_n = 
 scop::GRNPlot(paired, group = "B", type = "layered", top_n = 20L)
 ```
 
+### View the NFASC locus
+
+This precomputed [GSE162170](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE162170)
+example shows 52 multiCSN chains through 11 peaks, mean normalized ATAC signal in five
+cell classes, and the annotated NFASC exons. Arc color shows chain sign and
+width shows ΔBIC.
+
+```{r nfasc-locus, fig.width=7.2, fig.height=4.8, fig.alt="52 signed multiCSN chains through 11 peaks at the NFASC locus, with five accessibility tracks and gene exons."}
+scop::GRNPlot(readRDS(system.file("extdata/nfasc-locus.rds", package = "scop")), type = "locus", target = "NFASC")
+```
+
 ```{r paired-save}
 result_file <- file.path(tempdir(), "pbmc-multicsn-grn.rds")
 saveRDS(paired, result_file)

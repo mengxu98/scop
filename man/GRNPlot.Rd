@@ -8,25 +8,33 @@ GRNPlot(
   object,
   group = NULL,
   layer = "tf_gene",
-  type = c("network", "layered", "overlap"),
+  type = c("network", "layered", "overlap", "locus"),
   top_n = 100,
   layout = "auto",
   label_nodes = TRUE,
   compare = NULL,
   compare_group = NULL,
   tool_name = NULL,
-  title = NULL
+  title = NULL,
+  target = NULL,
+  group.by = NULL
 )
 }
 \arguments{
-\item{object}{A \code{GRNResult} or a Seurat object containing one.}
+\item{object}{A \code{GRNResult} or a Seurat object containing one. For a locus
+plot, use an annotated multiome Seurat object with a multiCSN result,
+or a list with \code{chains} (columns \code{target}, \code{region}, \code{chain_direction}
+and \code{chain_delta_bic}),
+a peak-by-group \code{accessibility} matrix with genomic peak row names,
+and an \code{annotation} data frame with \code{seqnames}, \code{start}, \code{end},
+\code{gene_name}, \code{strand}, and optionally \code{type} for exons.}
 
 \item{group}{Network group. Required when several groups are stored.}
 
 \item{layer}{Evidence layer, such as \code{"tf_gene"}, \code{"tf_region"}, or \code{"region_gene"}.}
 
-\item{type}{\code{"network"} for edges, \code{"layered"} for native chains, or
-\code{"overlap"} for shared edges within the common identifier scope.}
+\item{type}{\code{"network"} for edges, \code{"layered"} for native chains,
+\code{"overlap"} for shared edges, or \code{"locus"} for multiCSN chains along a chromosome.}
 
 \item{top_n}{Maximum edges or chains to show per result. \code{Inf} shows all.}
 
@@ -42,6 +50,10 @@ Defaults to \code{group}.}
 \item{tool_name}{Seurat tools entry. Omit when only one GRN is stored.}
 
 \item{title}{Plot title.}
+
+\item{target}{Target gene for a locus plot.}
+
+\item{group.by}{Seurat metadata column for mean ATAC tracks. \code{NULL} pools all cells.}
 }
 \value{
 A ggplot object.
