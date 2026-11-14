@@ -97,15 +97,13 @@ scop::GRNPlot(paired, group = "B", type = "network", layer = "tf_gene", top_n = 
 scop::GRNPlot(paired, group = "B", type = "layered", top_n = 20L)
 ```
 
-### View the NFASC locus
+### View the NLRP3 locus
 
-This precomputed [GSE162170](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE162170)
-example shows 52 multiCSN chains through 11 peaks, mean normalized ATAC signal in five
-cell classes, and the annotated NFASC exons. Arc color shows chain sign and
-width shows ΔBIC.
+Arc color shows the sign of the B-cell chains; width shows ΔBIC. The tracks
+show mean normalized ATAC signal by cell type.
 
-```{r nfasc-locus, fig.width=7.2, fig.height=4.8, fig.alt="52 signed multiCSN chains through 11 peaks at the NFASC locus, with five accessibility tracks and gene exons."}
-scop::GRNPlot(readRDS(system.file("extdata/nfasc-locus.rds", package = "scop")), type = "locus", target = "NFASC")
+```{r nlrp3-locus, fig.width=7.2, fig.height=4.2, fig.alt="Signed B-cell multiCSN chains at NLRP3, with ATAC signal across six PBMC cell types."}
+scop::GRNPlot(paired, group = "B", type = "locus", target = "NLRP3", group.by = "CellType")
 ```
 
 ```{r paired-save}
