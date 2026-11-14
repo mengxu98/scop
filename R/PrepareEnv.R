@@ -1080,7 +1080,8 @@ norm_env_components <- function(components = "python") {
 env_r_packages <- function(modules = NULL) {
   modules <- normalize_env_modules(modules = modules)
   grn <- list(genie3 = "GENIE3", ppcor = "ppcor", pidc = c("pbapply", "purrr", "thisutils"), scorpion = "SCORPION",
-              leap = "LEAP", scode = "MASS", sincerities = c("glmnet", "ppcor", "thisutils"),
+              leap = "mengxu98/LEAP@f18632462be4bdcb521ed9c8e0deac5f9fc50824",
+              scode = "MASS", sincerities = c("glmnet", "ppcor", "thisutils"),
               multicsn = c("mengxu98/multiCSN", "mengxu98/inferCSN"),
               pando = c("quadbiolab/Pando@3ffbc21bd827646476357acdc3a3a6ec9048052f", "Signac", "BSgenome.Hsapiens.UCSC.hg38"))
   if (length(modules) && all(modules %in% names(grn))) return(unique(unlist(grn[modules], use.names = FALSE)))

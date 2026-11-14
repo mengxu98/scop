@@ -1,4 +1,4 @@
-grn_run_multicsn <- function(input, config) {
+RunMultiCSN <- function(input, config) {
   arguments <- grn_multicsn_arguments()
   mode <- input$input_mode
   versions <- vapply(c("multiCSN", "inferCSN"), function(package) {

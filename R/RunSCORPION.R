@@ -1,4 +1,4 @@
-run_scorpion <- function(expression, arguments, cores) {
+RunSCORPION <- function(expression, arguments, cores) {
   if (!requireNamespace("SCORPION", quietly = TRUE)) {
     stop("Install the SCORPION package before running scorpion.", call. = FALSE)
   }

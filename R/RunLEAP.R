@@ -1,7 +1,6 @@
-run_leap <- function(expression, pseudotime, max_lag_prop = 1 / 3, MAC_cutoff = 0) {
-  if (!requireNamespace("LEAP", quietly = TRUE)) {
-    stop("Install LEAP to run this method.", call. = FALSE)
-  }
+RunLEAP <- function(expression, pseudotime, max_lag_prop = 1 / 3, MAC_cutoff = 0) {
+  check_r("mengxu98/LEAP@f18632462be4bdcb521ed9c8e0deac5f9fc50824", strict = TRUE, verbose = FALSE)
+  mac_counter <- get_namespace_fun("LEAP", "MAC_counter")
   if (length(max_lag_prop) != 1L || !is.finite(max_lag_prop) ||
     max_lag_prop <= 0 || max_lag_prop >= 1 ||
     length(MAC_cutoff) != 1L || !is.finite(MAC_cutoff) || MAC_cutoff < 0) {
@@ -18,7 +17,7 @@ run_leap <- function(expression, pseudotime, max_lag_prop = 1 / 3, MAC_cutoff = 
   }
 
   fits <- lapply(branches, function(cells) {
-    LEAP::MAC_counter(
+    mac_counter(
       expression[, cells, drop = FALSE],
       max_lag_prop = max_lag_prop,
       MAC_cutoff = MAC_cutoff,

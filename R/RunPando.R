@@ -1,4 +1,4 @@
-grn_run_pando <- function(input, config) {
+RunPando <- function(input, config) {
   if (is.null(config$resources$genome)) {
     stop("Pando requires resources$genome matching the chromatin coordinates.", call. = FALSE)
   }

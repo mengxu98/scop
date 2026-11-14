@@ -1,4 +1,4 @@
-run_sincerities <- function(
+RunSINCERITIES <- function(
   expression,
   pseudotime,
   source,

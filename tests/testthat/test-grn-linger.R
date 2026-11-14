@@ -54,12 +54,12 @@ test_that("LINGER rejects unsupported inputs before starting a process", {
     dimnames = list(c("G1", "G2"), c("c1", "c2", "c3"))
   ), "dgCMatrix"))
   input <- list(object = object, input_mode = "multiome", cells = colnames(object))
-  expect_error(grn_run_linger(input, list(method_args = list(resume_dir = tempfile()))), "completed prepare checkpoint")
-  expect_error(grn_run_linger(input, list(method_args = list(activation = "bad"))), "activation")
-  expect_error(grn_run_linger(input, list(method_args = list(activation = NA_character_))), "activation")
-  expect_error(grn_run_linger(input, list(method_args = list(patch_missing_keys = "yes"))), "TRUE or FALSE")
-  expect_error(grn_run_linger(input, list(method_args = list(min_cells = -1))), "nonnegative integers")
-  expect_error(grn_run_linger(input, list(method_args = list(), resources = list())), "bulk_reference")
+  expect_error(RunLinger(input, list(method_args = list(resume_dir = tempfile()))), "completed prepare checkpoint")
+  expect_error(RunLinger(input, list(method_args = list(activation = "bad"))), "activation")
+  expect_error(RunLinger(input, list(method_args = list(activation = NA_character_))), "activation")
+  expect_error(RunLinger(input, list(method_args = list(patch_missing_keys = "yes"))), "TRUE or FALSE")
+  expect_error(RunLinger(input, list(method_args = list(min_cells = -1))), "nonnegative integers")
+  expect_error(RunLinger(input, list(method_args = list(), resources = list())), "bulk_reference")
 })
 
 test_that("LINGER preflight checks only the required reference files", {

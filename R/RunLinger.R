@@ -1,4 +1,4 @@
-grn_run_linger <- function(input, config) {
+RunLinger <- function(input, config) {
   arguments <- config$method_args
   resume_dir <- arguments$resume_dir
   if (!is.null(resume_dir)) {
