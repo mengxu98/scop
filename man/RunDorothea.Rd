@@ -94,11 +94,10 @@ is stored in \code{srt@tools[["Dorothea"]]$homolog_conversion}.
 Run transcription factor activity inference
 }
 \details{
-\code{RunGRN()} returns a \code{TF}, \code{target}, and \code{importance} table that can be
-supplied directly through \code{regulons}. Such a network is unsigned: its
-scores describe target-program activity and do not distinguish activation
-from repression. For signed TF activity, supply a network with a \code{mor}
-column instead.
+Pass directed \code{RunGRN(return_type = "edges")} networks with positive
+\code{importance} directly to \code{regulons}. For signed activity, use directed
+TF-to-gene edges from \code{\link[=GetGRN]{GetGRN()}} with known signs and set
+\code{mor = sign * abs(raw_score)}, omitting zero weights.
 }
 \examples{
 data(pancreas_sub)
@@ -187,7 +186,7 @@ pancreas_sub <- RunDorothea(
 )
 pancreas_sub@tools$Dorothea$network_info
 # A real RunGRN result can be connected in the same way:
-# grn <- RunGRN(pancreas_sub, grn_method = "genie3")
+# grn <- RunGRN(pancreas_sub, methods = "genie3", return_type = "edges")
 # pancreas_sub <- RunDorothea(pancreas_sub, regulons = grn)
 \dontrun{
 pancreas_sub <- RunDorothea(

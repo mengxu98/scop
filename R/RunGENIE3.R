@@ -69,12 +69,8 @@ RunGENIE3.default <- function(
   verbose = TRUE,
   ...
 ) {
-  genes_in <- match.arg(genes_in)
-  if (identical(genes_in, "columns")) {
-    object <- Matrix::t(object)
-  }
   check_r("GENIE3", verbose = FALSE)
-  grn_matrix <- object
+  grn_matrix <- grn_matrix_from_object(object, genes_in = genes_in)
   inputs <- normalize_grn_inputs(
     grn_matrix,
     regulators = regulators,

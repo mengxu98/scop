@@ -52,6 +52,8 @@ articles:
   - trajectory-dynamic-workflow
   - cellrank-palantir-fate-workflow
   - reproduce-pancreatic-endocrinogenesis
+  - grn-framework
+  - grn-multiome
 - title: Import and extend spatial analyses
   navbar: Spatial methods
   contents:
@@ -403,6 +405,9 @@ reference:
 - subtitle: "Network Inference"
   contents:
   - RunGRN
+  - RunSINCERITIES
+  - GetGRN
+  - GRNPlot
   - RunGRNBoost2
   - RunGENIE3
   - RunGNIPLR

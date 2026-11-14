@@ -38,6 +38,7 @@ test_that("SCENIC+ reads supported tables without preparing Python", {
     root <- withr::local_tempdir()
     write_scenicplus_tables(root, suffix)
     out <- suppressWarnings(RunSCENICPlus(srt, backend = "python", python_result_dir = root, verbose = FALSE))
+    expect_identical(out@tools$SCENICPlus$parameters$execution_status, "imported")
     expect_equal(out@tools$SCENICPlus$auc[[1L]], c(0.2, 0.1))
     expect_identical(colnames(out[["scenicplus"]]), c("c2", "c1"))
   }

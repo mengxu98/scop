@@ -913,8 +913,9 @@ scenic_cpp <- function(
         regulators = regulators,
         targets = targets,
         genes_in = "columns",
-        grn_method = "grnboost2",
+        methods = "grnboost2",
         backend = "cpp",
+        return_type = "edges",
         output_file = adj_file,
         max_edges_per_target = Inf,
         n_rounds = n_rounds,
@@ -924,7 +925,7 @@ scenic_cpp <- function(
         subsample = subsample,
         early_stop_window_length = early_stop_window_length,
         seed = seed,
-        cores = cores,
+        cores = max(1L, scop_n_threads(cores)),
         force = TRUE,
         verbose = verbose
       )
@@ -2218,13 +2219,13 @@ scenic_download_reference_file <- function(url, dest, verbose = TRUE) {
   on.exit(options(timeout = old_timeout), add = TRUE)
   download_ok <- tryCatch(
     {
-      utils::download.file(
+      status <- utils::download.file(
         url = url,
         destfile = temp_dest,
         mode = "wb",
         quiet = !isTRUE(verbose)
       )
-      TRUE
+      isTRUE(status == 0L)
     },
     error = function(err) {
       log_message(

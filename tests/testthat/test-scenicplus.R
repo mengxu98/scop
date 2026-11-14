@@ -18,6 +18,31 @@ test_that("SCENICPlus fits TF targets without self predictors", {
   expect_false(anyDuplicated(observed[c("TF", "target")]) > 0L)
 })
 
+test_that("SCENICPlus dispatches GNIPLR independently of GRNBoost2 settings", {
+  set.seed(1)
+  expr <- matrix(rnorm(120), 4L, dimnames = list(LETTERS[1:4], paste0("c", 1:30)))
+  edges <- scenicplus_tf_gene(
+    expr,
+    regulators = c("C", "D"), targets = "B", grn_method = "gniplr",
+    n_rounds = 20, max_edges_per_target = 1L, verbose = FALSE
+  )
+  expect_identical(edges$TF, "D")
+  expect_identical(edges$target, "B")
+})
+
+test_that("SCENICPlus can use the GENIE3 R backend", {
+  skip_if_not_installed("GENIE3")
+  set.seed(5)
+  expr <- matrix(rnorm(180), 3L, dimnames = list(c("TF1", "TF2", "G1"), paste0("c", 1:60)))
+  edges <- scenicplus_tf_gene(
+    expr,
+    regulators = c("TF1", "TF2"), targets = "G1", grn_method = "genie3",
+    n_rounds = 20, max_edges_per_target = 1L, verbose = FALSE
+  )
+  expect_equal(nrow(edges), 1L)
+  expect_identical(as.character(edges$target), "G1")
+})
+
 test_that("native GSEA reproduces frozen independent reference statistics", {
   # SCENIC+ 840dab85 / gseapy 0.10.8, 1000 permutations, seed 666.
   observed <- scenicplus_gsea_cpp(list(10:1, 10:1), list(c(1L, 2L, 4L), c(7L, 8L, 10L)), cores = 2)
@@ -161,13 +186,14 @@ test_that("the native object workflow and its errors stay independent of Python"
     tf_region_prior = data.frame(TF = "TF", region = regions[1:2], score = 1),
     region_gene_search_space = expand.grid(region = regions[1:2], gene = genes[2:5]),
     eregulons_prior = data.frame(regulon = "TF_direct_+/+_(4g)", target = genes[2:5]),
-    min_eregulon_size = 2, grn_n_rounds = 10, region_gene_n_rounds = 10, cores = 2, verbose = FALSE
+    min_eregulon_size = 2, grn_n_rounds = 10, region_gene_n_rounds = 10, verbose = FALSE
   )
   fitted <- suppressWarnings(do.call(RunSCENICPlus, args))
   result <- fitted@tools$SCENICPlus
   expect_equal(dim(result$auc), c(30L, 1L))
   expect_equal(nrow(result$region_auc), 30L)
   expect_false(result$parameters$exact_reference)
+  expect_identical(result$parameters$execution_status, "completed")
   expect_equal(result$parameters$grn_early_stop_window_length, 25)
   expect_equal(result$parameters$grn_n_rounds, 10)
   args$region_gene_search_space$gene <- "not_in_input"

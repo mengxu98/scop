@@ -60,7 +60,10 @@ default also excludes \code{"scvi"}, \code{"glue"}, and \code{"multimap"} becaus
 upstream stacks are more reliable when requested explicitly for
 method-specific workflows.
 CellOracle uses an explicit standalone \code{"celloracle_env"} profile with Python
-3.10 and official CellOracle 0.20.0; Windows is unsupported.}
+3.10 and official CellOracle 0.20.0; Windows is unsupported.
+GRN Python modules (\code{"grnboost2"}, \code{"gniplr"}, \code{"scsgl"},
+\code{"regdiffusion"}, \code{"linger"}, and \code{"scenicplus"}) use separate environments.
+Use \code{components = "r"} for optional R backends.}
 
 \item{pip_options}{Additional command line arguments to be passed to \code{uv}/\code{pip} when installing pip packages.}
 

@@ -162,6 +162,73 @@ runner_system2 <- function(command, args, env, stdout, stderr) {
   )
 }
 
+runner_run_process <- function(command, args, work_dir, timeout = Inf, env = character()) {
+  if (!is.character(command) || length(command) != 1L || is.na(command) || !nzchar(command)) {
+    stop("Subprocess executable is unavailable. For Python, check the environment prepared with PrepareEnv().", call. = FALSE)
+  }
+  if (grepl("[/\\\\]", command)) {
+    if (!file.exists(command) || dir.exists(command)) {
+      stop("Subprocess executable does not exist: ", command, call. = FALSE)
+    }
+    executable_directory <- normalizePath(dirname(command), winslash = "/", mustWork = TRUE)
+    command <- file.path(executable_directory, basename(command))
+  } else {
+    executable_directory <- dirname(Sys.which(command))
+  }
+  if (nzchar(executable_directory) && dir.exists(executable_directory)) {
+    path <- if ("PATH" %in% names(env)) env[["PATH"]] else Sys.getenv("PATH")
+    paths <- unique(c(executable_directory, strsplit(path, .Platform$path.sep, fixed = TRUE)[[1L]]))
+    env <- c(env[names(env) != "PATH"], PATH = paste(paths[nzchar(paths)], collapse = .Platform$path.sep))
+  }
+  dir.create(work_dir, recursive = TRUE, showWarnings = FALSE)
+  directory <- normalizePath(work_dir, winslash = "/", mustWork = TRUE)
+  token <- basename(tempfile("process-"))
+  stdout <- file.path(directory, paste0(token, ".stdout.log"))
+  stderr <- file.path(directory, paste0(token, ".stderr.log"))
+  receipt <- file.path(directory, paste0(token, ".rds"))
+  started <- Sys.time()
+  if (!is.numeric(timeout) || length(timeout) != 1L || is.na(timeout) || timeout <= 0) stop("Subprocess timeout must be positive seconds.", call. = FALSE)
+  result <- list(
+    command = command, args = args, stdout = stdout, stderr = stderr,
+    started_at = started, status = "failed", exit_status = NA_integer_
+  )
+  process <- processx::process$new(command, args,
+    stdout = stdout, stderr = stderr,
+    env = if (length(env)) c("current", env) else NULL,
+    wd = directory, cleanup = TRUE, cleanup_tree = FALSE, windows_hide_window = TRUE
+  )
+  on.exit(
+    {
+      process$kill_tree()
+      result$finished_at <- Sys.time()
+      saveRDS(result, receipt)
+    },
+    add = TRUE
+  )
+  withCallingHandlers(
+    while (process$is_alive()) {
+      if (as.numeric(difftime(Sys.time(), started, units = "secs")) > timeout) {
+        result$status <- "timed_out"
+        stop("Subprocess timed out. Logs: ", stdout, "; ", stderr, call. = FALSE)
+      }
+      process$wait(timeout = 100)
+    },
+    interrupt = function(e) result$status <<- "cancelled"
+  )
+  result$exit_status <- process$get_exit_status()
+  if (!identical(result$exit_status, 0L)) {
+    detail <- paste(runner_tail_lines(stderr, max_lines = 10L), collapse = "\n")
+    stop("Subprocess failed with exit status ", result$exit_status, ". Logs: ", stdout, "; ", stderr,
+      if (nzchar(detail)) paste0("\n", detail),
+      call. = FALSE
+    )
+  }
+  result$status <- "completed"
+  result$finished_at <- Sys.time()
+  result$receipt <- receipt
+  result
+}
+
 runner_request_id <- function() {
   paste0(
     Sys.getpid(),
