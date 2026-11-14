@@ -149,7 +149,7 @@ above `3` are capped at `3` to match the GNIPLR reference implementation.}
 \item{pseudotime}{Metadata column, cell-named numeric vector, or cell-by-trajectory matrix.}
 
 \item{resources}{Named backend resources. Set \code{source_dir} to the
-analysis checkout in References for PIDC, SCSGL, SCODE, SINCERITIES,
+analysis checkout in References for PIDC, SCSGL, SCODE,
 and Python GNIPLR.}
 
 \item{method_args}{Named backend arguments. \code{runtime} accepts \code{python} and

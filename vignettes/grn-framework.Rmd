@@ -186,7 +186,7 @@ vapply(scop::GetGRN(grouped, all_groups = TRUE), nrow, integer(1))
 
 ## Use external implementations
 
-For PIDC, SCSGL, SCODE, SINCERITIES, and the Python GNIPLR result adapter,
+For PIDC, SCSGL, SCODE, and the Python GNIPLR result adapter,
 check out the analysis implementations linked in the `RunGRN()` help page and supply its
 root as `resources = list(source_dir = ...)`. Prepare the corresponding R or
 Python dependencies with `PrepareEnv()`. Keep the checkout at a fixed revision
@@ -227,7 +227,7 @@ for (method in names(time_settings)) {
 	time_fits[[method]] <- scop::RunGRN(
 		time_expression, methods = method, pseudotime = pseudotime,
 		method_args = time_settings[[method]], return_type = "result",
-		resources = if (method == "leap") list() else list(source_dir = source_dir),
+		resources = if (method == "scode") list(source_dir = source_dir) else list(),
 		work_dir = file.path(tempdir(), paste0("scop-beeline-", method)),
 		cores = 1L, seed = 1201L, verbose = FALSE
 	)

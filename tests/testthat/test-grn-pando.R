@@ -48,10 +48,10 @@ test_that("Pando rejects incomplete native outputs and missing multiome input", 
   expect_error(RunGRN(matrix(1, 2, 2), methods = "pando"), "requires a Seurat object")
   counts <- Matrix::sparseMatrix(i = c(1L, 1L, 2L), j = c(1L, 2L, 2L), x = c(1, 2, 3), dims = c(2L, 2L), dimnames = list(c("a", "b"), c("c1", "c2")))
   object <- SeuratObject::CreateSeuratObject(counts)
-  expect_error(RunPando(list(object = object), list(resources = list())), "resources\\$genome")
+  expect_error(infer_pando(list(object = object), list(resources = list())), "resources\\$genome")
   expect_error(RunGRN(object, methods = "pando", method_args = list(typo = 1)), "Unknown argument")
-  expect_error(RunPando(list(object = object), list(resources = list(genome = TRUE), method_args = list(interaction_term = "*"))), "interaction_term")
-  expect_error(RunPando(list(object = object), list(resources = list(genome = TRUE), method_args = list(extend = 5000))), "custom extend")
+  expect_error(infer_pando(list(object = object), list(resources = list(genome = TRUE), method_args = list(interaction_term = "*"))), "interaction_term")
+  expect_error(infer_pando(list(object = object), list(resources = list(genome = TRUE), method_args = list(extend = 5000))), "custom extend")
   expect_identical(grn_pando_defaults()$p_thresh, 0.05)
 })
 

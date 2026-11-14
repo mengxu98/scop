@@ -1,4 +1,4 @@
-RunLinger <- function(input, config) {
+infer_linger <- function(input, config) {
   arguments <- config$method_args
   resume_dir <- arguments$resume_dir
   if (!is.null(resume_dir)) {

@@ -1,4 +1,4 @@
-RunPIDC <- function(expression, regulators, targets, arguments, config) {
+infer_pidc <- function(expression, regulators, targets, arguments, config) {
   if (!requireNamespace("pbapply", quietly = TRUE)) {
     stop("Install the pbapply package before running pidc.", call. = FALSE)
   }

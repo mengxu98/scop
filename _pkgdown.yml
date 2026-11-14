@@ -405,6 +405,7 @@ reference:
 - subtitle: "Network Inference"
   contents:
   - RunGRN
+  - RunSINCERITIES
   - GetGRN
   - GRNPlot
   - RunGRNBoost2

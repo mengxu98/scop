@@ -1,4 +1,4 @@
-RunPPCOR <- function(expression, arguments) {
+infer_ppcor <- function(expression, arguments) {
   if (!requireNamespace("ppcor", quietly = TRUE)) {
     stop("Install the ppcor package before running ppcor.", call. = FALSE)
   }

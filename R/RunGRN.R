@@ -12,7 +12,7 @@
 #' @param return_type `"seurat"`, `"edges"`, or `"result"`. The default is
 #'   `"seurat"` for Seurat input and `"edges"` for matrix input.
 #' @param resources Named backend resources. Set `source_dir` to the
-#'   analysis checkout in References for PIDC, SCSGL, SCODE, SINCERITIES,
+#'   analysis checkout in References for PIDC, SCSGL, SCODE,
 #'   and Python GNIPLR.
 #' @param output_file Optional adjacency file for `return_type = "edges"`.
 #' @param work_dir Directory for method outputs and logs.
@@ -618,9 +618,9 @@ grn_method_spec <- function(method, backend = NULL) {
     leap = list(backends = c("r", "native"), runner = grn_run_time, args = c("max_lag_prop", "MAC_cutoff")),
     scode = list(backends = c("r", "native"), runner = grn_run_time, args = c("trajectory", "latent_dim", "n_iter", "n_runs")),
     sincerities = list(backends = c("r", "native"), runner = grn_run_time, args = c("trajectory", "max_time_points", "method", "noDIAG", "SIGN", "normalize")),
-    multicsn = list(backends = "r", runner = RunMultiCSN, modes = c("rna", "multiome"), args = unique(unlist(grn_multicsn_arguments(), use.names = FALSE))),
-    pando = list(backends = c("r", "native"), runner = RunPando, modes = "multiome", args = names(grn_pando_defaults())),
-    linger = list(backends = c("python", "native"), runner = RunLinger, modes = "multiome", args = c("sample.by", "label.by", "min_genes", "min_cells", "genome", "activation", "patch_missing_keys", "resume_dir")),
+    multicsn = list(backends = "r", runner = infer_multicsn, modes = c("rna", "multiome"), args = unique(unlist(grn_multicsn_arguments(), use.names = FALSE))),
+    pando = list(backends = c("r", "native"), runner = infer_pando, modes = "multiome", args = names(grn_pando_defaults())),
+    linger = list(backends = c("python", "native"), runner = infer_linger, modes = "multiome", args = c("sample.by", "label.by", "min_genes", "min_cells", "genome", "activation", "patch_missing_keys", "resume_dir")),
     scenicplus = list(backends = c("python", "official", "native"), runner = grn_run_scenicplus, modes = "multiome", args = c("gsea_n_perm", "min_target_genes", "data_preparation", "motif_enrichment", "inference", "resume_dir")),
     scenic = list(backends = c("python", "cpp"), runner = grn_run_scenic, args = setdiff(names(formals(RunSCENIC)), c("object", "srt", "assay", "layer", "regulators", "targets", "work_dir", "backend", "cores", "seed", "return_seurat", "envname", "conda", "verbose", "ranking_dbs", "motif_annotations")))
   )
@@ -644,7 +644,6 @@ grn_external_sources <- function(method, resources) {
     gniplr = c(entry = "code/methods/GNIPLR.py"),
     pidc = c(entry = "code/vendor/PIDC/PIDC.R"),
     scode = c(entry = "code/vendor/SCODE/SCODE.R"),
-    sincerities = c(entry = "code/methods/SINCERITIES.R"),
     scsgl = c(
       entry = "code/vendor/SCSGL/run_scSGL.py",
       paste0("code/vendor/SCSGL/pysrc/", c(
@@ -692,9 +691,9 @@ grn_run_rna <- function(input, config) {
   execution <- list(status = "completed", artifacts = list(), fit_genes = rownames(expression), candidate_policy = "fit_union_then_filter")
   if (method %in% c("ppcor", "pidc", "scorpion")) {
     fit <- switch(method,
-      ppcor = RunPPCOR(expression, arguments),
-      pidc = RunPIDC(expression, regulators, targets, arguments, config),
-      scorpion = RunSCORPION(expression, arguments, config$cores)
+      ppcor = infer_ppcor(expression, arguments),
+      pidc = infer_pidc(expression, regulators, targets, arguments, config),
+      scorpion = infer_scorpion(expression, arguments, config$cores)
     )
     edges <- fit$edges
     extra <- fit$extra %||% list()
@@ -822,16 +821,15 @@ grn_time_data <- function(input, config) {
 
 grn_run_time <- function(input, config) {
   data <- grn_time_data(input, config)
-  source <- config$external_sources[["entry"]]
   fit <- switch(config$method,
-    leap = RunLEAP,
-    scode = RunSCODE,
-    sincerities = RunSINCERITIES
+    leap = infer_leap,
+    scode = infer_scode,
+    sincerities = infer_sincerities
   )
   inputs <- list(expression = data$expression, pseudotime = data$pseudotime)
   inputs <- c(inputs, switch(config$method,
-    scode = list(source = source, work_dir = config$work_dir, seed = config$seed),
-    sincerities = list(source = source, cores = config$cores, verbose = config$verbose)
+    scode = list(source = config$external_sources[["entry"]], work_dir = config$work_dir, seed = config$seed),
+    sincerities = list(cores = config$cores, verbose = config$verbose)
   ))
   arguments <- config$method_args
   arguments$trajectory <- NULL

@@ -1,7 +1,6 @@
-RunSINCERITIES <- function(
+infer_sincerities <- function(
   expression,
   pseudotime,
-  source,
   cores,
   verbose,
   max_time_points = NA_integer_,
@@ -40,28 +39,8 @@ RunSINCERITIES <- function(
     stop("SINCERITIES needs at least two nonconstant genes.", call. = FALSE)
   }
 
-  upstream <- new.env(parent = baseenv())
-  upstream$library <- function(package) invisible(loadNamespace(as.character(substitute(package))))
-  upstream$cv.glmnet <- glmnet::cv.glmnet
-  upstream$pcor <- ppcor::pcor
-  upstream$ks.test <- stats::ks.test
-  upstream$coef <- stats::coef
-  sys.source(source, envir = upstream)
-  data <- list(
-    time = ordered_time,
-    singleCELLdata = lapply(ordered_time, function(point) t(expression[, times == point, drop = FALSE])),
-    numGENES = nrow(expression),
-    totDATA = t(expression)
-  )
-  fit <- upstream$run_SINCERITIES_parallel(
-    data,
-    method = method, noDIAG = noDIAG, SIGN = SIGN,
-    cores = cores, verbose = verbose
-  )
-  fit <- lapply(fit, unname)
-  if (SIGN == 1L) {
-    dimnames(fit$adj_matrix) <- rep(list(rownames(expression)), 2L)
-  }
+  check_r(c("glmnet", "ppcor"), strict = TRUE, verbose = FALSE)
+  fit <- sincerities_fit(expression, times, ordered_time, method, noDIAG, SIGN, cores, verbose)
   scores <- fit$adj_matrix
   dimnames(scores) <- list(rownames(expression), rownames(expression))
   divisor <- if (isTRUE(normalize)) max(abs(scores)) else 1
@@ -79,7 +58,7 @@ RunSINCERITIES <- function(
   list(
     fit = fit,
     binned_time = stats::setNames(times, colnames(expression)),
-    implementation = "SINCERITIES::run_SINCERITIES_parallel:multiCSN_manuscript",
+    implementation = "scop::RunSINCERITIES",
     package_versions = c(
       glmnet = as.character(utils::packageVersion("glmnet")),
       ppcor = as.character(utils::packageVersion("ppcor"))
@@ -92,5 +71,81 @@ RunSINCERITIES <- function(
     ),
     genes = rownames(expression),
     cells = colnames(expression)
+  )
+}
+
+sincerities_fit <- function(expression, times, time_points, method, noDIAG, SIGN, cores, verbose) {
+  groups <- lapply(time_points, function(point) expression[, times == point, drop = FALSE])
+  genes <- seq_len(nrow(expression))
+  intervals <- seq_len(length(time_points) - 1L)
+  map <- function(fun) {
+    if (cores == 1L) {
+      return(lapply(genes, fun))
+    }
+    thisutils::parallelize_fun(
+      x = genes, fun = fun, cores = cores, throw_error = TRUE,
+      clean_result = FALSE, verbose = verbose
+    )
+  }
+  distances <- map(function(gene) {
+    vapply(intervals, function(i) {
+      stats::ks.test(groups[[i]][gene, ], groups[[i + 1L]][gene, ])$statistic
+    }, numeric(1))
+  })
+  distances <- do.call(cbind, distances) / diff(time_points)
+  predictors <- distances[-length(intervals), , drop = FALSE]
+  responses <- distances[-1L, , drop = FALSE]
+  variable <- apply(predictors, 2L, stats::sd) > 0
+  folds <- seq_len(nrow(predictors))
+  alphas <- switch(as.integer(method), 0, seq(0, 1, 0.1), 1)
+
+  results <- map(function(gene) {
+    y <- responses[, gene]
+    beta <- numeric(length(genes))
+    keep <- variable
+    if (noDIAG == 1L) {
+      keep[gene] <- FALSE
+    }
+    columns <- which(keep)
+    if (!length(columns) || stats::sd(y) == 0) {
+      return(list(lambda = NA_real_, alpha = NA_real_, beta = beta))
+    }
+    x <- predictors[, columns, drop = FALSE]
+    errors <- rep(Inf, length(alphas))
+    fits <- vector("list", length(alphas))
+    for (i in seq_along(alphas)) {
+      cv <- tryCatch(
+        glmnet::cv.glmnet(
+          x, y, alpha = alphas[i], nfolds = length(folds), foldid = folds, keep = TRUE,
+          lower.limits = 0, upper.limits = Inf, grouped = FALSE
+        ),
+        error = function(e) NULL
+      )
+      if (!is.null(cv)) {
+        errors[i] <- cv$cvm[cv$lambda == cv$lambda.min][1L]
+        fits[[i]] <- cv
+      }
+    }
+    if (!any(is.finite(errors))) {
+      return(list(lambda = NA_real_, alpha = NA_real_, beta = beta))
+    }
+    best <- max(which(errors == min(errors)))
+    cv <- fits[[best]]
+    coefficients <- stats::coef(cv, s = "lambda.min")
+    if (length(coefficients@i) > 1L) {
+      beta[columns[coefficients@i[-1L]]] <- coefficients@x[-1L]
+    }
+    list(lambda = cv$lambda.min, alpha = alphas[best], beta = beta)
+  })
+
+  adjacency <- do.call(cbind, lapply(results, `[[`, "beta"))
+  if (SIGN == 1L) {
+    adjacency <- adjacency * sign(ppcor::pcor(t(expression), method = "spearman")$estimate)
+    dimnames(adjacency) <- rep(list(rownames(expression)), 2L)
+  }
+  list(
+    DISTANCE_matrix = unname(distances), adj_matrix = adjacency,
+    lambda = unname(vapply(results, `[[`, numeric(1), "lambda")),
+    alpha = unname(vapply(results, `[[`, numeric(1), "alpha"))
   )
 }

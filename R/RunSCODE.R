@@ -1,4 +1,4 @@
-RunSCODE <- function(
+infer_scode <- function(
   expression,
   pseudotime,
   source,

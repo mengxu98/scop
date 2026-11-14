@@ -6,7 +6,9 @@
 
 * **feat**: Run transcriptomic and multiomic network methods through `RunGRN()`, with complete native results and separate group networks. R methods run in the current session, and Python subprocesses use the environments prepared by `PrepareEnv()`. LINGER and SCENIC+ support resuming their own runs. `GetGRN()` reads evidence layers and target programs, and `GRNPlot()` displays networks, layered paths and common edges.
 
-* **deps**: PIDC, SCSGL, SCODE, SINCERITIES, and the Python GNIPLR result adapter use an external source checkout specified with `resources$source_dir`.
+* **feat**: Call individual GRN methods through their exported `Run*()` functions. SINCERITIES runs directly in scop.
+
+* **deps**: PIDC, SCSGL, SCODE, and the Python GNIPLR result adapter use an external source checkout specified with `resources$source_dir`.
 
 * **feat**: Prepare LINGER and SCENIC+ reference files through opt-in `PrepareDB()` selectors.
 

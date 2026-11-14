@@ -97,7 +97,7 @@ test_that("multiCSN RNA adapter preserves the independent public result", {
   input <- grn_multicsn_rna_input()
   config <- grn_multicsn_test_config(method_args = list(max_support_size = 3L))
   input <- grn_prepare_multicsn(input, config)
-  fit <- RunMultiCSN(input, config)
+  fit <- infer_multicsn(input, config)
   direct <- multiCSN::inferCSN(
     t(input$expression), regulators = input$regulators, targets = input$targets,
     max_support_size = 3L, cores = 1L, verbose = FALSE
@@ -111,7 +111,7 @@ test_that("multiCSN RNA adapter preserves the independent public result", {
     dimnames = list(input$cells, "trajectory")
   )
   config$method_args$lag_steps <- 1L
-  timed <- RunMultiCSN(input, config)
+  timed <- infer_multicsn(input, config)
   direct_timed <- multiCSN::inferCSN(
     t(input$expression), pseudotime = input$pseudotime,
     regulators = input$regulators, targets = input$targets,
@@ -124,7 +124,7 @@ test_that("multiCSN RNA adapter preserves the independent public result", {
   input$expression[,] <- 0
   input$pseudotime <- NULL
   config$method_args <- list()
-  empty <- RunMultiCSN(input, config)
+  empty <- infer_multicsn(input, config)
   expect_identical(empty$native, data.frame(regulator = character(), target = character(), weight = numeric()))
   expect_identical(empty$layer_specs$tf_gene$status, "computed")
 })
@@ -140,7 +140,7 @@ test_that("multiCSN multiome groups preserve complete native endpoints", {
     input$group <- group
     input$cells <- input$groups[[group]]
     input$expression <- input$expression[, input$cells, drop = FALSE]
-    fit <- RunMultiCSN(input, data$config)
+    fit <- infer_multicsn(input, data$config)
     direct <- multiCSN::fit_layered_network(
       data$prepared$object, cell_group = group, cells = input$cells,
       targets = input$targets, preset = "state", cores = 1L, store = FALSE, verbose = FALSE
@@ -153,7 +153,7 @@ test_that("multiCSN multiome groups preserve complete native endpoints", {
     expect_identical(fit$chains$table_path, "triplets")
   }
   input$group <- "A"
-  expect_error(RunMultiCSN(input, data$config), "not part of")
+  expect_error(infer_multicsn(input, data$config), "not part of")
 })
 
 test_that("multiCSN presets retain explicit overrides without stale candidates", {
@@ -168,7 +168,7 @@ test_that("multiCSN presets retain explicit overrides without stale candidates",
   input$expression <- input$expression[, input$cells, drop = FALSE]
   config <- data$config
   config$method_args <- list(preset = "timepoint", min_detected = 5L)
-  fit <- RunMultiCSN(input, config)
+  fit <- infer_multicsn(input, config)
   direct <- multiCSN::fit_layered_network(
     data$prepared$object, cell_group = "B", cells = input$cells,
     targets = input$targets, preset = "timepoint", min_detected = 5L,
@@ -206,7 +206,7 @@ test_that("multiCSN layer views preserve independent signs and chain evidence", 
   input$group <- "A"
   input$cells <- input$groups$A
   input$expression <- input$expression[, input$cells, drop = FALSE]
-  fit <- RunMultiCSN(input, data$config)
+  fit <- infer_multicsn(input, data$config)
   result <- structure(list(schema_version = "1.0", groups = list(A = fit)), class = c("GRNResult", "list"))
   for (layer in c("tf_gene", "tf_region", "region_gene")) {
     edges <- GetGRN(result, group = "A", layer = layer)

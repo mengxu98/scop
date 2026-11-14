@@ -5,9 +5,11 @@ time_methods <- list(
 
 for (method in names(time_methods)) {
   test_that(paste(method, "preserves native score and sign contracts"), {
-    skip_if(Sys.getenv("SCOP_TEST_GRN_TIME") != "true", "Set SCOP_TEST_GRN_TIME=true for real R time backends")
+    if (method != "sincerities") {
+      skip_if(Sys.getenv("SCOP_TEST_GRN_TIME") != "true", "Set SCOP_TEST_GRN_TIME=true for external R time backends")
+    }
     source_dir <- Sys.getenv("SCOP_GRN_SOURCE_DIR")
-    if (method != "leap") {
+    if (method == "scode") {
       skip_if(!nzchar(source_dir), "Set SCOP_GRN_SOURCE_DIR to the external method sources")
     }
     for (package in switch(method,
@@ -31,7 +33,7 @@ for (method in names(time_methods)) {
       cells = colnames(expression), group = "all", regulators = rownames(expression)[1:4],
       targets = rownames(expression)[5:8]
     )
-    resources <- if (method == "leap") list() else list(source_dir = source_dir)
+    resources <- if (method == "scode") list(source_dir = source_dir) else list()
     result <- RunGRN(expression, methods = method, pseudotime = time,
       regulators = input$regulators, targets = input$targets, resources = resources,
       method_args = time_methods[[method]], return_type = "result", seed = 42L, verbose = FALSE
@@ -42,6 +44,13 @@ for (method in names(time_methods)) {
       method_args = time_methods[[method]], return_type = "result", seed = 42L, verbose = FALSE
     )
     expect_identical(GetGRN(shuffled), GetGRN(result))
+    if (method == "sincerities") {
+      direct <- getExportedValue("scop", "RunSINCERITIES")(expression, time,
+        regulators = input$regulators, targets = input$targets,
+        method_args = time_methods[[method]], return_type = "result", seed = 42L, verbose = FALSE
+      )
+      expect_identical(GetGRN(direct), GetGRN(result))
+    }
     fit <- result$groups$all
     expect_identical(fit$cells, input$cells)
     expect_identical(fit$execution$status, "completed")
