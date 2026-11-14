@@ -25,7 +25,7 @@ GRNPlot(
 plot, use an annotated multiome Seurat object with a multiCSN result,
 or a list with \code{chains} (columns \code{target}, \code{region}, \code{chain_direction}
 and \code{chain_delta_bic}),
-a peak-by-group \code{accessibility} matrix with genomic peak row names,
+a peak-by-group \code{accessibility} matrix with genomic peak row names and group column names,
 and an \code{annotation} data frame with \code{seqnames}, \code{start}, \code{end},
 \code{gene_name}, \code{strand}, and optionally \code{type} for exons.}
 

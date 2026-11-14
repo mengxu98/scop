@@ -909,14 +909,16 @@ env_module_requirements <- function() {
     ), environment = "gniplr_env"),
     scsgl = env_python_spec(c(
       numpy = "numpy==1.26.4", pandas = "pandas==2.2.0", scipy = "scipy==1.15.3",
-      numba = "numba==0.66.0"
+      numba = "numba==0.66.0", rpy2 = "rpy2==3.5.11"
     ), environment = "scsgl_env"),
-    linger = env_python_spec(c(
-      LingerGRN = "LingerGRN==1.110", numpy = "numpy==1.26.4", pandas = "pandas==2.0.3",
-      torch = "torch==2.6.0", anndata = "anndata==0.10.5.post1", scanpy = "scanpy==1.9.8",
-      h5py = "h5py", scipy = "scipy", pybedtools = "pybedtools", bedtools = "bedtools"
-    ), methods = c(LingerGRN = "pip", numpy = "pip", pandas = "pip", torch = "pip", anndata = "pip",
-                   scanpy = "pip", h5py = "pip", scipy = "pip", pybedtools = "pip", bedtools = "conda"), environment = "linger_env"),
+    linger = env_python_spec(
+      c(
+        LingerGRN = "LingerGRN==1.110", numpy = "numpy==1.26.4",
+        torch = "torch==2.6.0", psutil = "psutil", bedtools = "bedtools"
+      ),
+      methods = c(LingerGRN = "pip", numpy = "pip", torch = "pip", psutil = "pip", bedtools = "conda"),
+      environment = "linger_env"
+    ),
     regdiffusion = env_python_spec(c(
       regdiffusion = "regdiffusion==0.2.2", numpy = "numpy==1.26.4", pandas = "pandas==2.2.0",
       torch = "torch==2.7.1", scanpy = "scanpy==1.11.3", scipy = "scipy==1.15.3"
@@ -1079,12 +1081,16 @@ norm_env_components <- function(components = "python") {
 
 env_r_packages <- function(modules = NULL) {
   modules <- normalize_env_modules(modules = modules)
-  grn <- list(genie3 = "GENIE3", ppcor = "ppcor", pidc = c("pbapply", "purrr", "thisutils"), scorpion = "SCORPION",
-              leap = "mengxu98/LEAP@f18632462be4bdcb521ed9c8e0deac5f9fc50824",
-              scode = "MASS", sincerities = c("glmnet", "ppcor", "thisutils"),
-              multicsn = c("mengxu98/multiCSN", "mengxu98/inferCSN"),
-              pando = c("quadbiolab/Pando@3ffbc21bd827646476357acdc3a3a6ec9048052f", "Signac", "BSgenome.Hsapiens.UCSC.hg38"))
-  if (length(modules) && all(modules %in% names(grn))) return(unique(unlist(grn[modules], use.names = FALSE)))
+  grn <- list(
+    genie3 = "GENIE3", ppcor = "ppcor", pidc = c("infotheo", "minet", "pbapply", "purrr", "reshape2"), scorpion = "SCORPION",
+    leap = "mengxu98/LEAP@f18632462be4bdcb521ed9c8e0deac5f9fc50824",
+    scsgl = "pcaPP", scode = "MASS", sincerities = c("glmnet", "ppcor", "thisutils"),
+    multicsn = c("mengxu98/multiCSN", "mengxu98/inferCSN"),
+    pando = c("quadbiolab/Pando@3ffbc21bd827646476357acdc3a3a6ec9048052f", "Signac", "BSgenome.Hsapiens.UCSC.hg38")
+  )
+  if (length(modules) && all(modules %in% names(grn))) {
+    return(unique(unlist(grn[modules], use.names = FALSE)))
+  }
   description_path <- if (file.exists("DESCRIPTION")) {
     "DESCRIPTION"
   } else {

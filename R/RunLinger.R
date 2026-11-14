@@ -1,3 +1,9 @@
+#' @rdname RunGRN-methods
+#' @export
+RunLinger <- function(object, ...) {
+  RunGRN(object, methods = "linger", ...)
+}
+
 infer_linger <- function(input, config) {
   arguments <- config$method_args
   resume_dir <- arguments$resume_dir

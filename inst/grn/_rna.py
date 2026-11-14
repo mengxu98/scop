@@ -1,5 +1,4 @@
 import importlib.metadata
-import importlib.util
 import json
 import random
 import sys
@@ -7,14 +6,6 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-
-
-def load_upstream(request):
-    path = Path(request["upstream_source"])
-    spec = importlib.util.spec_from_file_location(path.stem, path)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
 
 
 def main(infer, request_path):

@@ -22,7 +22,7 @@ GetGRN(
 
 \item{what}{\code{"edges"}, \code{"layers"}, \code{"chains"}, \code{"gene_sets"}, \code{"native"},
 \code{"parameters"}, or \code{"result"}. If native gene sets are absent, \code{"gene_sets"}
-groups direct targets by regulator and sign.}
+groups directed TF-to-gene edges by regulator and sign.}
 
 \item{tool_name}{Seurat tools entry. Omit when only one GRN is stored.}
 

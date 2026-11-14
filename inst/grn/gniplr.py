@@ -1,25 +1,37 @@
-import inspect
+import ast
 import sys
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 
-from _rna import load_upstream, main
+from _rna import main
 
 
 def infer(expression, request):
-    parameters = request["method_args"] or {}
-    parameters = dict(lasso_degree=int(parameters.get("lasso_degree", 30)), lasso_alpha=float(parameters.get("lasso_alpha", 0.04)))
-    if expression.shape[1] < 8 or parameters["lasso_degree"] < 1 or parameters["lasso_alpha"] < 0:
+    args = request["method_args"] or {}
+    degree = int(args.get("lasso_degree", 30))
+    alpha = float(args.get("lasso_alpha", 0.04))
+    if expression.shape[1] < 8 or degree < 1 or alpha < 0:
         raise ValueError("GNIPLR requires at least eight cells, positive lasso_degree and nonnegative lasso_alpha")
-    infer_gniplr = load_upstream(request).infer_gniplr
-    available = inspect.signature(infer_gniplr).parameters
-    for name, default in (("lasso_degree", 30), ("lasso_alpha", 0.04)):
-        if name not in available and parameters[name] != default:
-            raise ValueError(f"The selected GNIPLR implementation fixes {name} at {default}; use an upstream implementation that exposes this argument.")
-    output = Path(request["work_dir"]) / "gniplr-native.csv"
-    infer_gniplr(expression, output, **{name: value for name, value in parameters.items() if name in available})
-    return pd.read_csv(output, dtype={"regulator": str, "target": str}, keep_default_na=False), "multiCSN-manuscript::GNIPLR", ["statsmodels", "scipy", "scikit-learn"], parameters
+    path = Path(request["upstream_source"])
+    tree = ast.parse(path.read_text())
+    tree.body = [node for node in tree.body if isinstance(node, ast.FunctionDef) or
+                 isinstance(node, ast.ImportFrom) or
+                 (isinstance(node, ast.Import) and all(alias.name != "matplotlib.pyplot" for alias in node.names))]
+    upstream = {"samples1": expression.columns.to_list()}
+    exec(compile(tree, str(path), "exec"), upstream)
+    vectors = {gene: row.to_list() for gene, row in expression.iterrows()}
+    rows = []
+    for regulator in request["regulators"]:
+        for target in request["targets"]:
+            if regulator == target:
+                continue
+            left, right = upstream["lasso_regress"](vectors[regulator], vectors[target], degree, alpha)
+            p = upstream["granger"](left, right)
+            rows.append((regulator, target, -np.log10(max(p, 1e-300))))
+    edges = pd.DataFrame(rows, columns=["regulator", "target", "weight"])
+    return edges.sort_values("weight", ascending=False, kind="stable"), "GNIPLR::gniplr.py", ["statsmodels", "scipy", "scikit-learn"], dict(lasso_degree=degree, lasso_alpha=alpha)
 
 
 if __name__ == "__main__":

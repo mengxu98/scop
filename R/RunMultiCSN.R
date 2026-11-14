@@ -1,3 +1,9 @@
+#' @rdname RunGRN-methods
+#' @export
+RunMultiCSN <- function(object, ...) {
+  RunGRN(object, methods = "multicsn", ...)
+}
+
 infer_multicsn <- function(input, config) {
   arguments <- grn_multicsn_arguments()
   mode <- input$input_mode
@@ -127,6 +133,7 @@ grn_prepare_multicsn <- function(input, config) {
   input$multicsn_preparation <- list(
     rebuilt = TRUE, group_column = group_column, cells = input$cells,
     rna_assay = config$assay, peak_assay = config$atac_assay,
+    annotation = Signac::Annotation(object[[config$atac_assay]]),
     motif_backend = if (is.null(prepare_args$backend)) "motifmatchr" else prepare_args$backend,
     targets = input$targets,
     candidate_regulators = candidate_regulators

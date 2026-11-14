@@ -15,7 +15,7 @@
 #'   plot, use an annotated multiome Seurat object with a multiCSN result,
 #'   or a list with `chains` (columns `target`, `region`, `chain_direction`
 #'   and `chain_delta_bic`),
-#'   a peak-by-group `accessibility` matrix with genomic peak row names,
+#'   a peak-by-group `accessibility` matrix with genomic peak row names and group column names,
 #'   and an `annotation` data frame with `seqnames`, `start`, `end`,
 #'   `gene_name`, `strand`, and optionally `type` for exons.
 #' @param target Target gene for a locus plot.
@@ -336,7 +336,8 @@ grn_plot_locus <- function(object, group, tool_name, target, group.by, top_n, la
       stop("The locus plot needs a multiome multiCSN result and its chromatin assay.", call. = FALSE)
     }
     chains <- GetGRN(result, group = group, what = "chains")
-    annotation <- as.data.frame(Signac::Annotation(object[[peak_assay]]))
+    annotation <- result$groups[[group]]$parameters$preparation$annotation %||%
+      Signac::Annotation(object[[peak_assay]])
     atac <- GetAssayData5(object, assay = peak_assay, layer = "data")
     metadata <- object[[]][colnames(atac), , drop = FALSE]
     if (!is.null(group.by) && (length(group.by) != 1L || !group.by %in% names(metadata))) {
@@ -354,7 +355,12 @@ grn_plot_locus <- function(object, group, tool_name, target, group.by, top_n, la
     chains <- object$chains
     annotation <- object$annotation
     atac <- object$accessibility
+    if (!length(colnames(atac)) || anyNA(colnames(atac)) ||
+      any(!nzchar(colnames(atac))) || anyDuplicated(colnames(atac))) {
+      stop("The accessibility matrix needs at least one named group column.", call. = FALSE)
+    }
   }
+  annotation <- as.data.frame(annotation)
   chains <- chains[which(chains$target == target), , drop = FALSE]
   if (!nrow(chains)) {
     stop("No multiCSN chains for target: ", target, ".", call. = FALSE)
@@ -370,15 +376,15 @@ grn_plot_locus <- function(object, group, tool_name, target, group.by, top_n, la
   endpoints <- if (strand == "+") span else rev(span)
   tss <- endpoints[1L]
 
-  peaks <- as.data.frame(getExportedValue("multiCSN", "parse_peak_ranges")(rownames(atac)))
+  peaks <- scenic_parse_genomic_region(rownames(atac))
   index <- match(chains$region, rownames(atac))
-  if (anyNA(index) || any(as.character(peaks$seqnames[index]) != chromosome)) {
+  if (anyNA(index) || anyNA(peaks$seqnames[index]) || any(peaks$seqnames[index] != chromosome)) {
     stop("The selected chain peaks must be in the accessibility data and on the target chromosome.", call. = FALSE)
   }
   positions <- (peaks$start + peaks$end) / 2e6
   chains$mid <- positions[index]
   window <- range(span, peaks$start[index] / 1e6, peaks$end[index] / 1e6)
-  in_locus <- as.character(peaks$seqnames) == chromosome &
+  in_locus <- !is.na(peaks$seqnames) & peaks$seqnames == chromosome &
     peaks$start / 1e6 <= window[2L] & peaks$end / 1e6 >= window[1L]
   signal <- if (inherits(object, "Seurat")) {
     do.call(cbind, lapply(cells, function(i) {

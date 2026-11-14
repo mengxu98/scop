@@ -1,7 +1,11 @@
+#' @rdname RunGRN-methods
+#' @export
+RunSCORPION <- function(object, ...) {
+  RunGRN(object, methods = "scorpion", ...)
+}
+
 infer_scorpion <- function(expression, arguments, cores) {
-  if (!requireNamespace("SCORPION", quietly = TRUE)) {
-    stop("Install the SCORPION package before running scorpion.", call. = FALSE)
-  }
+  check_r("SCORPION", strict = TRUE, verbose = FALSE)
   original_genes <- rownames(expression)
   pad_small <- arguments$pad_small_input %||% TRUE
   if (nrow(expression) < 10L && isTRUE(pad_small)) {
@@ -40,7 +44,7 @@ infer_scorpion <- function(expression, arguments, cores) {
     !is.finite(gamma_value) || gamma_value <= 0) {
     stop("SCORPION gamma_value must be positive and finite.", call. = FALSE)
   }
-  fit <- SCORPION::scorpion(
+  fit <- get_namespace_fun("SCORPION", "scorpion")(
     tfMotifs = arguments$tf_motifs,
     gexMatrix = expression,
     ppiNet = arguments$ppi_network,

@@ -45,11 +45,9 @@ Imports:
     utils,
     uwot
 Suggests:
-    multiCSN (>= 0.1.0),
     ppcor,
     pbapply,
     SCORPION,
-    LEAP,
     glmnet,
     cicero,
     ggseqlogo,
@@ -181,8 +179,6 @@ Suggests:
     spicyR,
     SpaNorm,
     withr
-Enhances:
-    Pando
 Remotes:
     mengxu98/thisplot,
     mengxu98/thisutils

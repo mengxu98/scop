@@ -41,8 +41,10 @@ test_that("official SCENIC+ requests preserve defaults and relative resume direc
   cells <- c("01", "1")
   expression <- Matrix::Matrix(matrix(1:4, 2L, dimnames = list(c("G1", "G2"), cells)))
   input <- list(cells = cells, expression = expression, group = "all")
-  config <- list(resources = resources, work_dir = "new", cores = 1L, seed = 42L,
-    runtime = list(python = "python"), method_args = list())
+  config <- list(
+    resources = resources, work_dir = "new", cores = 1L, seed = 42L,
+    runtime = list(python = "python"), method_args = list()
+  )
   dir.create("checkpoint")
   testthat::local_mocked_bindings(runner_run_process = function(command, args, work_dir, ...) {
     request_path <- tail(args, 1L)
@@ -77,7 +79,7 @@ test_that("official SCENIC+ retains separate evidence, identifiers and native mo
   auc <- data.frame(`01` = c(0.2, 0.5), check.names = FALSE, row.names = c("01", "1"))
   utils::write.table(auc, file.path(directory, "direct_gene_based_AUC.tsv"), sep = "\t", col.names = NA, quote = FALSE)
   jsonlite::write_json(list(`01` = c("1", "01")), file.path(directory, "gene_sets.json"), auto_unbox = FALSE)
-  receipt <- list(status = "completed", cells = c("01", "1"), auc_files = "direct_gene_based_AUC.tsv", parameters = list(seed = 123), package_versions = list(scenicplus = "1.0a2"))
+  receipt <- list(status = "completed", cells = c("01", "1"), auc_files = "direct_gene_based_AUC.tsv", parameters = list(params_inference = list(region_to_gene_correlation_method = "SR")), package_versions = list(scenicplus = "1.0a2"))
   jsonlite::write_json(receipt, file.path(directory, "execution.json"), auto_unbox = TRUE)
   result <- grn_scenicplus_group(directory, list(cells = c("01", "1")))
   expect_identical(result$native$tf_gene$TF, c("01", "1"))
@@ -86,6 +88,8 @@ test_that("official SCENIC+ retains separate evidence, identifiers and native mo
   expect_identical(result$native$region_gene$rho, 0.6)
   expect_identical(result$layer_specs$tf_gene$sign_column, "rho")
   expect_identical(result$layer_specs$region_gene$sign_column, "rho")
+  expect_identical(result$layer_specs$tf_gene$sign_basis, "pearson_correlation")
+  expect_identical(result$layer_specs$region_gene$sign_basis, "spearman_correlation")
   expect_null(result$layer_specs$tf_region$sign_column)
   expect_identical(result$layer_specs$tf_region$sign_basis, "unknown")
   expect_identical(result$native$direct$is_extended, FALSE)
@@ -93,7 +97,10 @@ test_that("official SCENIC+ retains separate evidence, identifiers and native mo
   expect_identical(rownames(result$native$auc[[1L]]), c("01", "1"))
   expect_identical(result$implementation, "SCENIC+::official_snakemake")
   expect_identical(result$execution$status, "completed")
+  receipt$parameters$params_inference$region_to_gene_correlation_method <- "PR"
+  jsonlite::write_json(receipt, file.path(directory, "execution.json"), auto_unbox = TRUE)
   selected <- grn_scenicplus_group(directory, list(cells = c("01", "1"), regulators = "01", targets = "1"))
+  expect_identical(selected$layer_specs$region_gene$sign_basis, "pearson_correlation")
   expect_identical(selected$layer_specs$tf_gene$rows, 1L)
   expect_equal(nrow(selected$native$tf_gene), 2L)
   expect_identical(selected$native$candidate_scope$selection, "postfit_view")

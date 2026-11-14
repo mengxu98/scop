@@ -4,15 +4,15 @@
 
 * **breaking**: Select a network method with `RunGRN(methods = ...)`. The previous `grn_method` argument is no longer accepted. Seurat input now returns the updated Seurat object; matrix input still returns an edge table. Use `return_type = "edges"` in existing Seurat calls that need the edge table. `GetGRN()` and `GRNPlot()` select a single stored GRN automatically.
 
-* **feat**: Run transcriptomic and multiomic network methods through `RunGRN()`, with complete native results and separate group networks. R methods run in the current session, and Python subprocesses use the environments prepared by `PrepareEnv()`. LINGER and SCENIC+ support resuming their own runs. `GetGRN()` reads evidence layers and target programs, and `GRNPlot()` displays networks, layered paths and common edges.
+* **feat**: Run transcriptomic and multiomic network methods through `RunGRN()`, with complete native results and separate group networks. R methods run in the current session, and Python subprocesses use the environments prepared by `PrepareEnv()`. LINGER and SCENIC+ support resuming their own runs. `GetGRN()` reads evidence layers and target programs, and `GRNPlot()` displays networks, layered paths, locus tracks, and common edges.
 
 * **feat**: Call individual GRN methods through their exported `Run*()` functions. SINCERITIES runs directly in scop.
 
-* **deps**: PIDC, SCSGL, SCODE, and the Python GNIPLR result adapter use an external source checkout specified with `resources$source_dir`.
+* **deps**: PIDC uses the external R package. SCSGL, SCODE, and Python GNIPLR call their upstream implementations from `resources$source_dir`.
 
 * **feat**: Prepare LINGER and SCENIC+ reference files through opt-in `PrepareDB()` selectors.
 
-* **fix**: RegDiffusion uses its separate Python runtime for all output types, and SCENIC with `backend = "cpp"` no longer looks for a Python environment. RegDiffusion accepts its supported trainer options through `method_args`; the old `cell_types` passthrough is unavailable. Use `force = TRUE` to replace an existing edge output file.
+* **fix**: RegDiffusion uses its separate Python runtime for all output types, and SCENIC with `backend = "cpp"` no longer looks for a Python environment. RegDiffusion accepts its supported trainer options through `method_args`; the old `cell_types` passthrough is unavailable.
 
 * **fix**: Preserve gene-by-cell orientation in GENIE3 and filter GNIPLR regulators before limiting edges. Returning edges or a complete result uses the same inference.
 

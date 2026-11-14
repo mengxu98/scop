@@ -1,3 +1,32 @@
+#' @title Run a named gene regulatory network method
+#' @md
+#' @description
+#' Each function fixes the method in [RunGRN()]. Pass other options through `...`.
+#' @inheritParams RunGRN
+#' @param object A Seurat object or expression matrix. Pando, LINGER, and
+#'   multiome multiCSN require a Seurat object with paired RNA and ATAC assays.
+#' @inherit RunGRN return
+#' @details
+#' See [RunGRN()] for backend resources and output defaults. For SCODE or
+#' SINCERITIES, select one of several trajectories with `method_args$trajectory`.
+#' SINCERITIES requires five or more time points and two variable predictors
+#' per fitted target. Use `method_args$max_time_points` to bin time, `method` for
+#' ridge (1), elastic net (2), or lasso (3), and `SIGN = 1L` for signed edges.
+#' @references
+#' \url{https://github.com/CABSEL/SINCERITIES}
+#' @seealso [RunGRN()], [PrepareEnv()], [GetGRN()], [GRNPlot()]
+#' @rdname RunGRN-methods
+#' @export
+#' @examples
+#' set.seed(41)
+#' cells <- paste0("c", seq_len(80))
+#' expression <- matrix(stats::runif(640), 8, dimnames = list(letters[1:8], cells))
+#' pseudotime <- stats::setNames(rep(seq_len(8), each = 10), cells)
+#' head(RunSINCERITIES(expression, pseudotime, verbose = FALSE))
+RunSINCERITIES <- function(object, pseudotime, ...) {
+  RunGRN(object, methods = "sincerities", pseudotime = pseudotime, ...)
+}
+
 infer_sincerities <- function(
   expression,
   pseudotime,

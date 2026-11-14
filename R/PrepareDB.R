@@ -1586,15 +1586,21 @@ preparedb_linger <- function(data_source, db_update, verbose) {
     stop("Use a .tar.gz or .tgz archive for LINGER references.", call. = FALSE)
   }
 
-  cache <- file.path(cache_root, "archives", basename(source), "data_bulk")
-  origin <- file.path(cache, ".source")
-  if (!db_update && file.exists(origin) && identical(readLines(origin), source) && complete_dir(cache)) {
+  archive_dir <- file.path(cache_root, "archives", basename(source))
+  entries <- list.dirs(archive_dir, full.names = TRUE, recursive = FALSE)
+  entries <- file.path(c(archive_dir, entries[startsWith(basename(entries), "reference-")]), "data_bulk")
+  matches <- vapply(entries, function(directory) {
+    origin <- file.path(directory, ".source")
+    file.exists(origin) && identical(readLines(origin), source)
+  }, logical(1L))
+  cache <- if (any(matches)) entries[which(matches)[1L]] else NULL
+  if (!db_update && !is.null(cache) && complete_dir(cache)) {
     return(list(bulk_reference = cache))
   }
   tar <- Sys.which("tar")
   if (!nzchar(tar)) stop("Install tar to extract a LINGER archive, or supply an extracted data_bulk directory.", call. = FALSE)
-  dir.create(dirname(cache), recursive = TRUE, showWarnings = FALSE)
-  stage <- tempfile("extract-", tmpdir = dirname(cache))
+  dir.create(archive_dir, recursive = TRUE, showWarnings = FALSE)
+  stage <- tempfile("extract-", tmpdir = archive_dir)
   if (!dir.create(stage)) stop("Could not create a staging directory for the LINGER archive.", call. = FALSE)
   on.exit(unlink(stage, recursive = TRUE), add = TRUE)
   log_message("Preparing LINGER references from {.path {source}}", verbose = verbose)
@@ -1629,15 +1635,20 @@ preparedb_linger <- function(data_source, db_update, verbose) {
   }
   writeLines(source, file.path(extracted, ".source"))
   previous <- NULL
-  if (dir.exists(cache)) {
-    if (!db_update && file.exists(origin) && identical(readLines(origin), source) && complete_dir(cache)) {
-      return(list(bulk_reference = cache))
-    }
-    previous <- tempfile("previous-", tmpdir = cache_root)
+  if (is.null(cache)) {
+    entry <- tempfile("reference-", tmpdir = archive_dir)
+    if (!dir.create(entry)) stop("Could not create a LINGER reference directory.", call. = FALSE)
+    cache <- file.path(entry, "data_bulk")
+  } else {
+    previous <- tempfile("previous-", tmpdir = archive_dir)
     if (!file.rename(cache, previous)) stop("Could not refresh the cached LINGER reference.", call. = FALSE)
   }
   if (!file.rename(extracted, cache)) {
-    if (!is.null(previous)) file.rename(previous, cache)
+    if (is.null(previous)) {
+      unlink(dirname(cache), recursive = TRUE)
+    } else {
+      file.rename(previous, cache)
+    }
     stop("Could not save the prepared LINGER reference.", call. = FALSE)
   }
   if (!is.null(previous)) unlink(previous, recursive = TRUE)

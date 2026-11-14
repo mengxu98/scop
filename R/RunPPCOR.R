@@ -1,7 +1,11 @@
+#' @rdname RunGRN-methods
+#' @export
+RunPPCOR <- function(object, ...) {
+  RunGRN(object, methods = "ppcor", ...)
+}
+
 infer_ppcor <- function(expression, arguments) {
-  if (!requireNamespace("ppcor", quietly = TRUE)) {
-    stop("Install the ppcor package before running ppcor.", call. = FALSE)
-  }
+  check_r("ppcor", strict = TRUE, verbose = FALSE)
   method <- arguments$method %||% "spearman"
   if (!method %in% c("spearman", "pearson", "kendall")) {
     stop("Invalid ppcor method.", call. = FALSE)
@@ -10,7 +14,7 @@ infer_ppcor <- function(expression, arguments) {
   if (nrow(expression) < 2L) {
     stop("PPCOR needs at least two nonconstant genes.", call. = FALSE)
   }
-  fit <- ppcor::pcor(t(expression), method = method)
+  fit <- get_namespace_fun("ppcor", "pcor")(t(expression), method = method)
   dimnames(fit$estimate) <- list(rownames(expression), rownames(expression))
   edges <- grn_rna_matrix_edges(fit$estimate)
   index <- cbind(

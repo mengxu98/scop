@@ -1,3 +1,9 @@
+#' @rdname RunGRN-methods
+#' @export
+RunLEAP <- function(object, pseudotime, ...) {
+  RunGRN(object, methods = "leap", pseudotime = pseudotime, ...)
+}
+
 infer_leap <- function(expression, pseudotime, max_lag_prop = 1 / 3, MAC_cutoff = 0) {
   check_r("mengxu98/LEAP@f18632462be4bdcb521ed9c8e0deac5f9fc50824", strict = TRUE, verbose = FALSE)
   mac_counter <- get_namespace_fun("LEAP", "MAC_counter")

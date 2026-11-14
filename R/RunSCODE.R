@@ -1,3 +1,9 @@
+#' @rdname RunGRN-methods
+#' @export
+RunSCODE <- function(object, pseudotime, ...) {
+  RunGRN(object, methods = "scode", pseudotime = pseudotime, ...)
+}
+
 infer_scode <- function(
   expression,
   pseudotime,
@@ -26,7 +32,6 @@ infer_scode <- function(
   upstream$runif <- stats::runif
   upstream$read.table <- utils::read.table
   upstream$write.table <- utils::write.table
-  sys.source(source, envir = upstream)
   times <- as.numeric(pseudotime[, 1L])
   normalized <- (times - min(times)) / diff(range(times))
   settings$time_origin <- min(times)
@@ -50,10 +55,10 @@ infer_scode <- function(
     run_seed <- seed + run - 1L
     set.seed(run_seed)
     directory <- file.path(work_dir, paste0("scode-run-", run))
-    upstream$run_scode(
-      expression_file, time_file, directory, nrow(expression), latent_dim,
-      ncol(expression), n_iter
-    )
+    arguments <- c(expression_file, time_file, directory, nrow(expression), latent_dim, ncol(expression), n_iter)
+    upstream$commandArgs <- function(trailingOnly) arguments
+    upstream$system <- function(command) dir.create(directory)
+    sys.source(source, envir = upstream)
     coefficients <- as.matrix(utils::read.table(file.path(directory, "A.txt"), sep = "\t", header = FALSE))
     if (!identical(dim(coefficients), rep(nrow(expression), 2L)) || any(!is.finite(coefficients))) {
       stop("SCODE returned an invalid coefficient matrix.", call. = FALSE)
@@ -73,7 +78,7 @@ infer_scode <- function(
   list(
     runs = runs,
     coefficient_matrix = coefficients,
-    implementation = "SCODE::run_scode:multiCSN_manuscript",
+    implementation = "SCODE::SCODE.R",
     package_versions = c(MASS = as.character(utils::packageVersion("MASS"))),
     edges = edges,
     parameters = settings,

@@ -925,7 +925,7 @@ scenic_cpp <- function(
         subsample = subsample,
         early_stop_window_length = early_stop_window_length,
         seed = seed,
-        cores = cores,
+        cores = max(1L, scop_n_threads(cores)),
         force = TRUE,
         verbose = verbose
       )

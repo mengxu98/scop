@@ -1645,28 +1645,28 @@ scenicplus_tf_gene <- function(
   grn_method <- match.arg(grn_method)
   # Feature sampling depends on matrix order, not on the order of the TF filter.
   regulators <- intersect(rownames(rna_counts), regulators)
+  method_args <- if (identical(grn_method, "grnboost2")) {
+    list(
+      n_rounds = n_rounds, learning_rate = learning_rate, max_depth = max_depth,
+      max_features = max_features, subsample = subsample,
+      early_stop_window_length = early_stop_window_length, exclude_self = TRUE
+    )
+  } else {
+    list()
+  }
   adjacency <- RunGRN(
-    object = Matrix::t(rna_counts),
+    object = rna_counts,
     regulators = regulators,
     targets = targets,
-    genes_in = "columns",
     methods = grn_method,
-    backend = "cpp",
+    backend = if (identical(grn_method, "genie3")) "r" else "cpp",
     return_type = "edges",
-    output_file = tempfile(pattern = "scenicplus_tf_gene_", fileext = ".tsv"),
     max_edges_per_target = max_edges_per_target,
-    n_rounds = n_rounds,
-    learning_rate = learning_rate,
-    max_depth = max_depth,
-    max_features = max_features,
-    subsample = subsample,
-    early_stop_window_length = early_stop_window_length,
+    method_args = method_args,
     seed = seed,
-    exclude_self = TRUE,
-    cores = cores,
+    cores = max(1L, scop_n_threads(cores)),
     envname = envname,
     conda = conda,
-    force = TRUE,
     verbose = verbose
   )
   if (!identical(grn_method, "grnboost2")) {
@@ -2903,6 +2903,16 @@ grn_scenicplus_group <- function(directory, input, process = list()) {
   )
   native$parameters <- receipt$parameters
   native$execution <- receipt
+  correlation <- receipt$parameters$params_inference$region_to_gene_correlation_method
+  sign_basis <- c(
+    tf_gene = "pearson_correlation",
+    tf_region = "unknown",
+    region_gene = switch(correlation %||% "",
+      SR = "spearman_correlation",
+      PR = "pearson_correlation",
+      "correlation"
+    )
+  )
   columns <- list(
     tf_gene = c("TF", "target", "importance", "TF", "gene", "rho", "feature_importance"),
     tf_region = c("TF", "Region", "membership", "TF", "region", "", "membership"),
@@ -2917,7 +2927,7 @@ grn_scenicplus_group <- function(directory, input, process = list()) {
     list(
       status = "computed", table_path = layer, rows = selected_rows[[layer]], source = fields[[1L]], target = fields[[2L]], score = fields[[3L]],
       source_type = fields[[4L]], target_type = fields[[5L]], score_type = fields[[7L]], directed = TRUE,
-      sign_column = if (membership) NULL else fields[[6L]], sign_basis = if (membership) "unknown" else "spearman_correlation",
+      sign_column = if (membership) NULL else fields[[6L]], sign_basis = sign_basis[[layer]],
       rank_by = "score"
     )
   })

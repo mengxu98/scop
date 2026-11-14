@@ -30,15 +30,19 @@ test_that("PPCOR retains negative associations and numeric-like gene identifiers
   object <- SeuratObject::CreateSeuratObject(methods::as(abs(expression), "dgCMatrix"))
   stored <- RunGRN(object, methods = "ppcor", method = "pearson", verbose = FALSE)
   expect_identical(GetGRN(stored, what = "parameters")$method, "pearson")
-  expect_error(RunGRN(expression, methods = "ppcor", method = "pearson",
-    method_args = list(method = "kendall")), "named lists")
+  expect_error(RunGRN(expression,
+    methods = "ppcor", method = "pearson",
+    method_args = list(method = "kendall")
+  ), "named lists")
   expect_setequal(result$native$edges$regulator, c("01", "1"))
   expect_identical(result$native$edges$target, rep("target", 2L))
   expect_true(any(result$native$edges$weight < 0))
   expect_false(result$layer_specs$tf_gene$directed)
   expect_identical(result$layer_specs$tf_gene$sign_basis, "association")
-  constant <- RunPPCOR(rbind(expression, constant = 0), method = "pearson",
-    return_type = "result", verbose = FALSE)
+  constant <- RunPPCOR(rbind(expression, constant = 0),
+    method = "pearson",
+    return_type = "result", verbose = FALSE
+  )
   regular <- RunPPCOR(expression, method = "pearson", return_type = "result", verbose = FALSE)
   expect_identical(GetGRN(constant), GetGRN(regular))
   expected <- ppcor::pcor(t(expression[c("01", "1", "target"), ]), method = "spearman")
@@ -48,28 +52,25 @@ test_that("PPCOR retains negative associations and numeric-like gene identifiers
 })
 
 test_that("PIDC maps rectangular native regulator rows to target columns", {
-  skip_if_not_installed("pbapply")
-  skip_if_not_installed("purrr")
-  source_dir <- Sys.getenv("SCOP_GRN_SOURCE_DIR")
-  skip_if(!nzchar(source_dir), "Set SCOP_GRN_SOURCE_DIR to a multiCSN manuscript checkout")
+  skip_if_not_installed("PIDC")
   set.seed(402)
   expression <- matrix(stats::runif(300),
     nrow = 5L,
     dimnames = list(c("01", "1", "TF-A", "target-a", "target-b"), paste0("cell", seq_len(60L)))
   )
   input <- list(expression = expression, regulators = c("01", "1", "TF-A"), targets = c("target-a", "target-b"), cells = colnames(expression))
-  result <- RunGRN(expression, methods = "pidc", regulators = input$regulators, targets = input$targets,
-    resources = list(source_dir = source_dir), return_type = "result", verbose = FALSE
+  result <- RunGRN(expression,
+    methods = "pidc", regulators = input$regulators, targets = input$targets,
+    return_type = "result", verbose = FALSE
   )$groups$all
   expect_setequal(result$native$edges$regulator, input$regulators)
   expect_setequal(result$native$edges$target, input$targets)
   expect_equal(nrow(result$native$edges), 6L)
   expect_false(result$layer_specs$tf_gene$directed)
   expect_null(result$layer_specs$tf_gene$sign_column)
-  upstream <- new.env(parent = baseenv())
-  upstream$is <- methods::is
-  sys.source(file.path(source_dir, "code", "vendor", "PIDC", "PIDC.R"), envir = upstream)
-  expected <- upstream$PIDC(expression, regulators = input$regulators, targets = input$targets, diag = "zero", verbose = FALSE)
+  expected <- getExportedValue("PIDC", "PIDC")(
+    expression, regulators = input$regulators, targets = input$targets, diag = "zero", verbose = FALSE
+  )
   indices <- cbind(match(result$native$edges$regulator, rownames(expected)), match(result$native$edges$target, colnames(expected)))
   expect_identical(result$native$edges$weight, as.numeric(expected[indices]))
 })

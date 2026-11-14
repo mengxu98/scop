@@ -186,11 +186,11 @@ vapply(scop::GetGRN(grouped, all_groups = TRUE), nrow, integer(1))
 
 ## Use external implementations
 
-For PIDC, SCSGL, SCODE, and the Python GNIPLR result adapter,
-check out the analysis implementations linked in the `RunGRN()` help page and supply its
-root as `resources = list(source_dir = ...)`. Prepare the corresponding R or
-Python dependencies with `PrepareEnv()`. Keep the checkout at a fixed revision
-while fitting.
+For SCSGL, SCODE, and Python GNIPLR, supply the corresponding upstream checkout
+from the `RunGRN()` references as `resources = list(source_dir = ...)`. Use
+`PrepareEnv()` for the corresponding R or Python dependencies. For scSGL, use
+`PrepareEnv(modules = "scsgl", components = "all")`. For PIDC, install the R
+package linked in References.
 
 ## Supply time by cell ID
 
@@ -216,7 +216,7 @@ pseudotime <- stats::setNames(time_table[time_cells, 1L], time_cells)
 
 ```r
 scop::PrepareEnv(modules = c("leap", "scode", "sincerities"), components = "r")
-source_dir <- "/path/to/multiCSN_manuscript"
+source_dir <- "/path/to/SCODE"
 time_fits <- list()
 time_settings <- list(
 	leap = list(max_lag_prop = 1/3),

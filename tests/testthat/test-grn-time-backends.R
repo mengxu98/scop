@@ -8,9 +8,9 @@ for (method in names(time_methods)) {
     if (method != "sincerities") {
       skip_if(Sys.getenv("SCOP_TEST_GRN_TIME") != "true", "Set SCOP_TEST_GRN_TIME=true for external R time backends")
     }
-    source_dir <- Sys.getenv("SCOP_GRN_SOURCE_DIR")
+    source_dir <- Sys.getenv("SCOP_TEST_SCODE_DIR")
     if (method == "scode") {
-      skip_if(!nzchar(source_dir), "Set SCOP_GRN_SOURCE_DIR to the external method sources")
+      skip_if(!nzchar(source_dir), "Set SCOP_TEST_SCODE_DIR to the external method sources")
     }
     for (package in switch(method,
       leap = "LEAP",

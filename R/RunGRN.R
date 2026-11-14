@@ -11,16 +11,15 @@
 #' @param backend Method-specific implementation. `NULL` uses the method default.
 #' @param return_type `"seurat"`, `"edges"`, or `"result"`. The default is
 #'   `"seurat"` for Seurat input and `"edges"` for matrix input.
-#' @param resources Named backend resources. Set `source_dir` to the
-#'   analysis checkout in References for PIDC, SCSGL, SCODE,
-#'   and Python GNIPLR.
+#' @param resources Named backend resources. For SCSGL, SCODE, and Python
+#'   GNIPLR, set `source_dir` to the corresponding upstream checkout.
 #' @param output_file Optional adjacency file for `return_type = "edges"`.
 #' @param work_dir Directory for method outputs and logs.
 #' @param prefix Prefix for run directories.
 #' @param max_edges_per_target Maximum incoming edges per target for methods that support it.
 #' @param envname Python environment. `NULL` uses the method default.
 #' @param cores Number of workers for methods that support parallel execution.
-#' @param force Overwrite an existing `output_file`.
+#' @param force Overwrite an existing `output_file`. Otherwise read it back.
 #' @param input_mode `"rna"` or `"multiome"`. Multiome input requires a Seurat object.
 #' @param atac_assay,atac_layer Chromatin assay and exact layer. Join split layers first.
 #' @param group.by Metadata column or cell-named vector defining separate networks.
@@ -33,11 +32,9 @@
 #' @return A Seurat object with the network in `tools`, an edge table (`TF`,
 #'   `target`, `importance`), or a `GRNResult`. Multiple groups require `"seurat"` or `"result"`.
 #' @references
-#' \url{https://github.com/mengxu98/multiCSN_manuscript/tree/42ed2c50d11ba0255326fa32ce59b97c7bb4a8b8/code}
-#'
 #' \url{https://github.com/zyllluck/GNIPLR}
 #'
-#' \url{https://doi.org/10.1016/j.cels.2017.08.014}
+#' \url{https://github.com/Wanglabsmu/metaTF/releases/tag/v0.1.9}
 #'
 #' \url{https://github.com/Single-Cell-Graph-Learning/scSGL}
 #'
@@ -212,7 +209,6 @@ RunGRN.default <- function(
   input_mode <- input_mode %||% if (length(spec$modes) == 1L) spec$modes else "rna"
   if (length(input_mode) != 1L || !input_mode %in% spec$modes) stop("Unsupported input_mode for ", spec$method, ".", call. = FALSE)
   if (input_mode == "multiome" && !is_seurat) stop("Multiome inference requires a Seurat object.", call. = FALSE)
-  if (!is.null(output_file) && file.exists(output_file) && !isTRUE(force)) stop("The output_file already exists. Choose a new path or use force = TRUE.", call. = FALSE)
   if (is_seurat) {
     if (!assay %in% SeuratObject::Assays(object)) stop("Unknown RNA assay.", call. = FALSE)
     rna_layers <- SeuratObject::Layers(object[[assay]], search = layer)
@@ -255,6 +251,9 @@ RunGRN.default <- function(
     group_cells <- group_cells[groups]
   }
   if (return_type == "edges" && length(group_cells) != 1L) stop("Use return_type = 'result' or 'seurat' for multiple groups.", call. = FALSE)
+  if (!is.null(output_file) && file.exists(output_file) && isFALSE(force)) {
+    return(write_grn_adjacency(NULL, output_file))
+  }
   if (spec$method %in% c("scenicplus", "linger") && length(group_cells) != 1L && !is.null(arguments$resume_dir)) {
     stop(if (spec$method == "scenicplus") "SCENIC+ " else "LINGER ",
       "resume_dir requires exactly one selected group.",
@@ -430,9 +429,11 @@ grn_run_direct <- function(input, config) {
     }
     native <- do.call(fit, c(common, args))
     defaults <- if (method == "grnboost2") {
-      formals(RunGRNBoost2.default)[c("max_edges_per_target", "n_rounds", "learning_rate", "max_depth",
+      formals(RunGRNBoost2.default)[c(
+        "max_edges_per_target", "n_rounds", "learning_rate", "max_depth",
         "max_features", "subsample", "early_stop_window_length", "exclude_self", "importance_norm_power",
-        "correlation_fill", "boost_weight", "correlation_weight", "covariance_weight", "correlation_method")]
+        "correlation_fill", "boost_weight", "correlation_weight", "covariance_weight", "correlation_method"
+      )]
     } else {
       c(formals(RunGENIE3.default)["max_edges_per_target"], formals(GENIE3::GENIE3)[c("treeMethod", "K", "nTrees")])
     }
@@ -449,8 +450,11 @@ grn_run_direct <- function(input, config) {
     cells = input$cells, native = native, layer_specs = list(tf_gene = spec),
     parameters = parameters,
     implementation = if (method == "genie3") "GENIE3::GENIE3" else paste0("scop::", method, "/", config$backend),
-    package_versions = if (method == "genie3") c(GENIE3 = as.character(utils::packageVersion("GENIE3"))) else
-      c(scop = as.character(utils::packageVersion("scop"))),
+    package_versions = if (method == "genie3") {
+      c(GENIE3 = as.character(utils::packageVersion("GENIE3")))
+    } else {
+      c(scop = as.character(utils::packageVersion("scop")))
+    },
     execution = list(status = "completed", artifacts = list())
   )
 }
@@ -600,10 +604,14 @@ grn_method_spec <- function(method, backend = NULL) {
   if (!method %in% methods) {
     stop("Unknown GRN method. Choose one of: ", paste(methods, collapse = ", "), call. = FALSE)
   }
-  boost_cpp_args <- c("exclude_self", "importance_norm_power", "correlation_fill", "boost_weight",
-    "correlation_weight", "covariance_weight", "correlation_method")
-  boost_args <- c("max_edges_per_target", "n_rounds", "learning_rate", "max_depth",
-    "max_features", "subsample", "early_stop_window_length")
+  boost_cpp_args <- c(
+    "exclude_self", "importance_norm_power", "correlation_fill", "boost_weight",
+    "correlation_weight", "covariance_weight", "correlation_method"
+  )
+  boost_args <- c(
+    "max_edges_per_target", "n_rounds", "learning_rate", "max_depth",
+    "max_features", "subsample", "early_stop_window_length"
+  )
   spec <- switch(method,
     grnboost2 = list(backends = c("cpp", "python", "native", "official"), runner = grn_run_rna, args = boost_args),
     regdiffusion = list(backends = c("python", "native"), runner = grn_run_rna, args = c(
@@ -633,8 +641,11 @@ grn_method_spec <- function(method, backend = NULL) {
   }
   if (backend == "cpp" && method %in% c("grnboost2", "gniplr")) {
     spec$runner <- grn_run_direct
-    spec$args <- if (method == "grnboost2") c(boost_args, boost_cpp_args) else
+    spec$args <- if (method == "grnboost2") {
+      c(boost_args, boost_cpp_args)
+    } else {
       c(spec$args, "correlation_threshold", "max_lag")
+    }
   }
   spec$method <- method
   spec$backend <- backend
@@ -643,33 +654,23 @@ grn_method_spec <- function(method, backend = NULL) {
 }
 
 grn_external_sources <- function(method, resources) {
-  files <- switch(method,
-    gniplr = c(entry = "code/methods/GNIPLR.py"),
-    pidc = c(entry = "code/vendor/PIDC/PIDC.R"),
-    scode = c(entry = "code/vendor/SCODE/SCODE.R"),
-    scsgl = c(
-      entry = "code/vendor/SCSGL/run_scSGL.py",
-      paste0("code/vendor/SCSGL/pysrc/", c(
-        "__init__.py", "associations/__init__.py", "associations/correlation.py",
-        "graphlearning/__init__.py", "graphlearning/signed.py", "graphlearning/unsigned.py",
-        "utils/__init__.py", "utils/rowsum_matrix.py"
-      ))
-    ),
-    NULL
+  entry <- switch(method,
+    gniplr = "gniplr.py",
+    scode = "SCODE.R",
+    scsgl = "pysrc/graphlearning/__init__.py"
   )
-  if (is.null(files)) {
+  if (is.null(entry)) {
     return(NULL)
   }
-  root <- resources$source_dir
-  if (!is.character(root) || length(root) != 1L || is.na(root) || !dir.exists(root)) {
-    stop(method, " requires resources$source_dir pointing to a multiCSN_manuscript checkout. See ?RunGRN.", call. = FALSE)
+  source_dir <- resources$source_dir
+  if (!is.character(source_dir) || length(source_dir) != 1L || is.na(source_dir)) {
+    stop("Set resources$source_dir to the ", method, " upstream checkout. See ?RunGRN.", call. = FALSE)
   }
-  paths <- file.path(root, files)
-  missing <- !file.exists(paths) | dir.exists(paths)
-  if (any(missing)) {
-    stop("Missing ", method, " upstream source files: ", paste(files[missing], collapse = ", "), call. = FALSE)
+  path <- file.path(source_dir, entry)
+  if (!file_test("-f", path)) {
+    stop("Missing ", method, " source: ", path, call. = FALSE)
   }
-  stats::setNames(normalizePath(paths, winslash = "/", mustWork = TRUE), names(files))
+  c(entry = normalizePath(path, winslash = "/", mustWork = TRUE))
 }
 
 grn_rna_matrix_edges <- function(matrix) {
@@ -737,7 +738,7 @@ grn_run_rna <- function(input, config) {
     )
     edges <- utils::read.delim(output_path,
       stringsAsFactors = FALSE, check.names = FALSE,
-      colClasses = c(regulator = "character", target = "character"), na.strings = character()
+      colClasses = c(regulator = "character", target = "character", weight = "numeric"), na.strings = character()
     )
     receipt <- jsonlite::read_json(receipt_path, simplifyVector = TRUE)
     extra <- list()

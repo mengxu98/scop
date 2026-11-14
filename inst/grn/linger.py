@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import filecmp
 import gzip
 import importlib.metadata
 import importlib.util
@@ -19,11 +20,18 @@ PREPARE_INPUTS = ("rna.mtx", "atac.mtx", "genes.txt", "regions.txt", "cells.tsv"
 PREPARE_SETTINGS = ("min_genes", "min_cells", "seed")
 
 
+def input_file_state(path):
+    stat = path.stat()
+    return [stat.st_size, stat.st_mtime_ns, stat.st_ctime_ns]
+
+
 def write_prepare_checkpoint(root, request):
+    inputs = Path(request["input_dir"])
     candidate = root / ".prepare.completed.json"
     candidate.write_text(json.dumps({
         "status": "completed",
-        "input_dir": request["input_dir"],
+        "input_dir": str(inputs),
+        "files": {name: input_file_state(inputs / name) for name in PREPARE_INPUTS},
         "settings": {name: request[name] for name in PREPARE_SETTINGS},
     }) + "\n")
     candidate.replace(root / "prepare.completed.json")
@@ -36,24 +44,25 @@ def restore_prepare_checkpoint(source, root, request):
         raise ValueError("LINGER resume_dir must contain a completed prepare checkpoint.")
     original = manifest.get("input_dir")
     settings = manifest.get("settings")
-    if not original or not isinstance(settings, dict) or not all(name in settings for name in PREPARE_SETTINGS):
+    files = manifest.get("files")
+    if not original or not settings or not files:
         raise ValueError("LINGER checkpoint lacks original preparation inputs or settings. Run again without resume_dir.")
     original = Path(original)
     inputs = Path(request["input_dir"])
     if original.resolve() == inputs:
         raise ValueError("LINGER resume requires separate current and original input directories. Run again without resume_dir.")
     for name in PREPARE_SETTINGS:
-        if settings[name] != request[name]:
+        if settings.get(name) != request[name]:
             raise ValueError(f"LINGER checkpoint preparation setting changed: {name}. Run again without resume_dir.")
     for name in PREPARE_INPUTS:
+        previous = original / name
+        current = inputs / name
         try:
-            with (original / name).open("rb") as previous, (inputs / name).open("rb") as current:
-                blocks = iter(lambda: (previous.read(1024 * 1024), current.read(1024 * 1024)), (b"", b""))
-                if all(left == right for left, right in blocks):
-                    continue
+            matches = files.get(name) == input_file_state(previous) and filecmp.cmp(previous, current, shallow=False)
         except OSError as error:
             raise ValueError(f"Cannot read LINGER checkpoint input {name}. Keep the original input directory or run again without resume_dir.") from error
-        raise ValueError(f"LINGER checkpoint preparation input changed: {name}. Run again without resume_dir.")
+        if not matches:
+            raise ValueError(f"LINGER checkpoint preparation input changed: {name}. Run again without resume_dir.")
     for name in PREPARE_FILES:
         destination = root / name
         destination.parent.mkdir(parents=True, exist_ok=True)

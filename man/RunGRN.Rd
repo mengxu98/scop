@@ -131,7 +131,7 @@ above `3` are capped at `3` to match the GNIPLR reference implementation.}
 
 \item{seed}{Random seed passed to supported backends.}
 
-\item{force}{Overwrite an existing \code{output_file}.}
+\item{force}{Overwrite an existing \code{output_file}. Otherwise read it back.}
 
 \item{verbose}{Whether to print progress messages.}
 
@@ -148,9 +148,8 @@ above `3` are capped at `3` to match the GNIPLR reference implementation.}
 
 \item{pseudotime}{Metadata column, cell-named numeric vector, or cell-by-trajectory matrix.}
 
-\item{resources}{Named backend resources. Set \code{source_dir} to the
-analysis checkout in References for PIDC, SCSGL, SCODE,
-and Python GNIPLR.}
+\item{resources}{Named backend resources. For SCSGL, SCODE, and Python
+GNIPLR, set \code{source_dir} to the corresponding upstream checkout.}
 
 \item{method_args}{Named backend arguments. \code{runtime} accepts \code{python} and
 \code{timeout} for subprocesses. \code{resume_dir} resumes one LINGER or SCENIC+ group.}
@@ -189,11 +188,9 @@ gniplr_grn <- RunGRN(
 )
 }
 \references{
-\url{https://github.com/mengxu98/multiCSN_manuscript/tree/42ed2c50d11ba0255326fa32ce59b97c7bb4a8b8/code}
-
 \url{https://github.com/zyllluck/GNIPLR}
 
-\url{https://doi.org/10.1016/j.cels.2017.08.014}
+\url{https://github.com/Wanglabsmu/metaTF/releases/tag/v0.1.9}
 
 \url{https://github.com/Single-Cell-Graph-Learning/scSGL}
 

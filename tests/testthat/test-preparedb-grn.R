@@ -76,6 +76,24 @@ test_that("PrepareDB extracts and reuses a local LINGER archive", {
   extracted <- PrepareDB(db = "LINGER", data_dir = archive, verbose = FALSE)$LINGER
   expect_setequal(list.files(extracted$bulk_reference), files)
   expect_identical(PrepareDB(db = "LINGER", data_dir = archive, verbose = FALSE)$LINGER, extracted)
+  other <- file.path(directory, "other")
+  other_bulk <- file.path(other, "data_bulk")
+  dir.create(other_bulk, recursive = TRUE)
+  for (name in files) writeLines(paste("other", name), file.path(other_bulk, name))
+  other_archive <- file.path(other, basename(archive))
+  processx::run(tar, c("-czf", other_archive, "-C", other, "data_bulk"))
+  other_result <- PrepareDB(db = "LINGER", data_dir = other_archive, verbose = FALSE)$LINGER
+  expect_false(identical(extracted$bulk_reference, other_result$bulk_reference))
+  expect_identical(readLines(file.path(extracted$bulk_reference, "TFName.txt")), "TFName.txt")
+  expect_identical(readLines(file.path(other_result$bulk_reference, "TFName.txt")), "other TFName.txt")
+
+  writeLines("updated TF list", file.path(bulk, "TFName.txt"))
+  processx::run(tar, c("-czf", archive, "-C", directory, "data_bulk"))
+  refreshed <- PrepareDB(db = "LINGER", data_dir = archive, db_update = TRUE, verbose = FALSE)$LINGER
+  expect_identical(refreshed, extracted)
+  expect_identical(readLines(file.path(refreshed$bulk_reference, "TFName.txt")), "updated TF list")
+  expect_identical(readLines(file.path(other_result$bulk_reference, "TFName.txt")), "other TFName.txt")
+
   broken <- file.path(directory, "broken.tgz")
   writeLines("<html>not an archive</html>", broken)
   expect_error(PrepareDB(db = "LINGER", data_dir = broken, verbose = FALSE), "Could not list")

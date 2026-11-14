@@ -1,3 +1,9 @@
+#' @rdname RunGRN-methods
+#' @export
+RunPando <- function(object, ...) {
+  RunGRN(object, methods = "pando", ...)
+}
+
 infer_pando <- function(input, config) {
   if (is.null(config$resources$genome)) {
     stop("Pando requires resources$genome matching the chromatin coordinates.", call. = FALSE)
@@ -269,8 +275,8 @@ grn_pando_functions <- function(cores) {
       }
     }, add = TRUE)
   }
-  package <- if (length(find.package("Pando", quiet = TRUE))) "Pando" else env_r_packages("pando")[[1L]]
-  check_r(package, verbose = FALSE)
+  lib <- if ("Pando" %in% loadedNamespaces()) dirname(getNamespaceInfo("Pando", "path")) else .libPaths()[1L]
+  check_r(env_r_packages("pando")[[1L]], lib = lib, install = FALSE, strict = TRUE, verbose = FALSE)
   namespace <- asNamespace("Pando")
   if (getNamespaceVersion(namespace) != "1.1.1") {
     stop("This Pando adapter requires Pando 1.1.1. See PrepareEnv(modules = 'pando').", call. = FALSE)

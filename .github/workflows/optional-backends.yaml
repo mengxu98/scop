@@ -46,9 +46,12 @@ jobs:
           - suite: grn-rna
             filter: grn-rna-backends
             packages: |-
+              bioc::minet
+              cran::infotheo
               cran::pbapply
               cran::ppcor
               cran::purrr
+              cran::reshape2
             required: |-
               pbapply
               ppcor
@@ -88,22 +91,20 @@ jobs:
           library-name: scop-optional-${{ matrix.suite }}
           cache-version: scop-optional-${{ matrix.suite }}
 
-      - name: Check out the PIDC implementation
+      - name: Install PIDC
         if: matrix.suite == 'grn-rna'
-        uses: actions/checkout@v5
-        with:
-          repository: mengxu98/multiCSN_manuscript
-          ref: 42ed2c50d11ba0255326fa32ce59b97c7bb4a8b8
-          path: tmp/upstream-grn
-          sparse-checkout: code/vendor/PIDC
-          persist-credentials: false
+        shell: Rscript {0}
+        run: |
+          archive <- tempfile(fileext = ".tar.gz")
+          download.file("https://github.com/Wanglabsmu/metaTF/releases/download/v0.1.9/PIDC.tar.gz", archive, mode = "wb")
+          install.packages(archive, repos = NULL, type = "source")
+          stopifnot(requireNamespace("PIDC", quietly = TRUE))
 
       - name: Run optional backend tests 🧪
         shell: Rscript {0}
         env:
           SCOP_OPTIONAL_TEST_FILTER: ${{ matrix.filter }}
           SCOP_OPTIONAL_SUITE: ${{ matrix.suite }}
-          SCOP_GRN_SOURCE_DIR: ${{ github.workspace }}/tmp/upstream-grn
         run: |
           results <- testthat::test_local(
             filter = Sys.getenv("SCOP_OPTIONAL_TEST_FILTER"),

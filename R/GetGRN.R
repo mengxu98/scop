@@ -6,7 +6,7 @@
 #' @param layer Evidence layer, such as `"tf_gene"`, `"tf_region"`, or `"region_gene"`.
 #' @param what `"edges"`, `"layers"`, `"chains"`, `"gene_sets"`, `"native"`,
 #'   `"parameters"`, or `"result"`. If native gene sets are absent, `"gene_sets"`
-#'   groups direct targets by regulator and sign.
+#'   groups directed TF-to-gene edges by regulator and sign.
 #' @param tool_name Seurat tools entry. Omit when only one GRN is stored.
 #' @param all_groups Return results for every group instead of selecting `group`.
 #' @return The selected result, or a named list with `all_groups = TRUE`.
@@ -138,6 +138,7 @@ grn_layer_edges <- function(group, layer) {
 
 grn_direct_gene_sets <- function(group) {
   edges <- grn_layer_edges(group, "tf_gene")
+  edges <- edges[edges$directed & edges$source_type == "TF" & edges$target_type == "gene", , drop = FALSE]
   if (!nrow(edges)) {
     return(list())
   }

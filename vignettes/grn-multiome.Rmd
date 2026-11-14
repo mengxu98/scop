@@ -217,13 +217,13 @@ records its LingerGRN version, training settings, and the requested seed.
 The official SCENIC+ runner starts from a prepared cisTopic model, matching GEX
 AnnData, and at least two region sets. Prepare these inputs and the motif
 rankings, motif scores, motif annotations, gene annotation, and chromosome sizes
-for the selected genome. The cell IDs must match the selected paired input.
-The prepared GEX values must also match the selected RNA layer.
+for the selected genome. Both objects must contain the selected cell IDs.
+The selected Seurat RNA layer supplies expression; the GEX file supplies metadata.
 
 The runner executes the official Snakemake workflow, including motif enrichment,
-network inference, eRegulons, and AUC. Set `workflow` to the official SCENIC+
-Snakemake directory when that directory is provided by a separate source
-checkout. Use resource paths without whitespace or shell metacharacters.
+network inference, eRegulons, and AUC. If the installed SCENIC+ package lacks
+the workflow files, set `resources$workflow` to the official Snakemake directory
+containing `Snakefile` and `config.yaml`. Use paths without spaces or shell metacharacters.
 
 To continue an interrupted official run, start with a persistent `work_dir`.
 Select one group and set `method_args$resume_dir` to its `official` directory.
