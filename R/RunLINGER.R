@@ -40,6 +40,7 @@ grn_run_linger <- function(input, config) {
   writeLines(rownames(atac), file.path(input_dir, "regions.txt"))
   utils::write.table(metadata, file.path(input_dir, "cells.tsv"), sep = "\t", quote = TRUE, row.names = FALSE)
   output_dir <- file.path(config$work_dir, "linger-output")
+  checkpoint <- !startsWith(config$work_dir, paste0(normalizePath(tempdir(), winslash = "/"), "/"))
   request <- list(
     input_dir = normalizePath(input_dir, winslash = "/", mustWork = TRUE),
     output_dir = normalizePath(output_dir, winslash = "/", mustWork = FALSE),
@@ -52,10 +53,10 @@ grn_run_linger <- function(input, config) {
     expected_reference_files = as.list(selection$files),
     reference_selection = list(
       schema = selection$schema, genome = selection$genome,
-      chromosomes = as.list(selection$chromosomes), manifest_sha256 = selection$manifest_sha256
+      chromosomes = as.list(selection$chromosomes)
     ),
     resume_dir = resume_dir,
-    checkpoint_prepare = !startsWith(normalizePath(config$work_dir, winslash = "/", mustWork = TRUE), paste0(normalizePath(tempdir(), winslash = "/", mustWork = TRUE), "/")) || !is.null(resume_dir)
+    checkpoint_prepare = checkpoint
   )
   request_path <- file.path(input_dir, "request.json")
   runner_write_json(request, request_path)
@@ -161,8 +162,7 @@ grn_linger_reference_files <- function(input, config) {
     gsub("{genome}", genome, gsub("{chromosome}", chromosome, spec$per_chromosome, fixed = TRUE), fixed = TRUE)
   }), use.names = FALSE))
   list(
-    files = files, schema = spec$schema, genome = genome, chromosomes = chromosomes,
-    manifest_sha256 = digest::digest(serialize(spec, NULL, xdr = FALSE, version = 3L), algo = "sha256", serialize = FALSE)
+    files = files, schema = spec$schema, genome = genome, chromosomes = chromosomes
   )
 }
 

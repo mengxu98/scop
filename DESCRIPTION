@@ -19,7 +19,6 @@ Depends:
     R (>= 4.1.0)
 Imports:
     cli,
-    digest,
     jsonlite,
     processx,
     graphics,

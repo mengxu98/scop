@@ -20,10 +20,6 @@ def load_upstream(request):
 def main(infer, request_path):
     request = json.loads(Path(request_path).read_text())
     expression = pd.read_csv(request["expression"], sep="\t", dtype={"gene": str}, keep_default_na=False).set_index("gene")
-    if expression.index.has_duplicates or expression.columns.has_duplicates:
-        raise ValueError("Expression gene and cell identifiers must be unique")
-    if not np.isfinite(expression.to_numpy(dtype=float)).all():
-        raise ValueError("Expression values must be finite")
     seed = int(request["seed"])
     np.random.seed(seed)
     random.seed(seed)

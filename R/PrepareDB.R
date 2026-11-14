@@ -1524,7 +1524,6 @@ preparedb_scenicplus <- function(data_source, db_update, verbose) {
   base <- "https://resources.aertslab.org/cistarget"
   region_base <- paste0(base, "/databases/homo_sapiens/hg38/screen/mc_v10_clust/region_based")
   urls <- stats::setNames(paste0(c(region_base, region_base, paste0(base, "/motif2tf")), "/", files[names_static]), names_static)
-  checksums <- c(ranking_db = "1688a925f22d312769798258d990f13866bb4924", scores_db = "07b5e527d2ed082e081e439e68dffa77b5f6129c")
   for (name in names_static) {
     path <- paths[[name]]
     if (!name %in% names(data_source) && (db_update || !file.exists(path))) {
@@ -1534,10 +1533,6 @@ preparedb_scenicplus <- function(data_source, db_update, verbose) {
       on.exit(unlink(c(stage, paste0(stage, ".download"))), add = TRUE)
       scenic_download_reference_file(urls[[name]], stage, verbose = verbose)
       validate(stage, name)
-      if (name %in% names(checksums) &&
-        !identical(digest::digest(file = stage, algo = "sha1"), checksums[[name]])) {
-        stop("SCENICPlus download checksum mismatch: ", files[[name]], call. = FALSE)
-      }
       if (!file.rename(stage, path)) stop("Could not save SCENICPlus reference: ", path, call. = FALSE)
     } else {
       validate(path, name)
@@ -1591,15 +1586,15 @@ preparedb_linger <- function(data_source, db_update, verbose) {
     stop("Use a .tar.gz or .tgz archive for LINGER references.", call. = FALSE)
   }
 
-  identity <- file.info(source)[c("size", "mtime", "ctime")]
-  cache <- file.path(cache_root, digest::digest(list(source, identity), algo = "sha256"))
-  if (!db_update && complete_dir(cache)) {
+  cache <- file.path(cache_root, "archives", basename(source), "data_bulk")
+  origin <- file.path(cache, ".source")
+  if (!db_update && file.exists(origin) && identical(readLines(origin), source) && complete_dir(cache)) {
     return(list(bulk_reference = cache))
   }
   tar <- Sys.which("tar")
   if (!nzchar(tar)) stop("Install tar to extract a LINGER archive, or supply an extracted data_bulk directory.", call. = FALSE)
-  dir.create(cache_root, recursive = TRUE, showWarnings = FALSE)
-  stage <- tempfile("extract-", tmpdir = cache_root)
+  dir.create(dirname(cache), recursive = TRUE, showWarnings = FALSE)
+  stage <- tempfile("extract-", tmpdir = dirname(cache))
   if (!dir.create(stage)) stop("Could not create a staging directory for the LINGER archive.", call. = FALSE)
   on.exit(unlink(stage, recursive = TRUE), add = TRUE)
   log_message("Preparing LINGER references from {.path {source}}", verbose = verbose)
@@ -1629,13 +1624,13 @@ preparedb_linger <- function(data_source, db_update, verbose) {
     "--no-same-owner", "--no-same-permissions", "--", member[index]
   ), error_on_status = FALSE)
   extracted <- file.path(stage, directory)
-  if (result$status != 0L || !complete_dir(extracted) ||
-    !identical(identity, file.info(source)[c("size", "mtime", "ctime")])) {
-    stop("Could not extract a complete and stable LINGER reference: ", trimws(result$stderr), call. = FALSE)
+  if (result$status != 0L || !complete_dir(extracted)) {
+    stop("Could not extract a complete LINGER reference: ", trimws(result$stderr), call. = FALSE)
   }
+  writeLines(source, file.path(extracted, ".source"))
   previous <- NULL
   if (dir.exists(cache)) {
-    if (!db_update && complete_dir(cache)) {
+    if (!db_update && file.exists(origin) && identical(readLines(origin), source) && complete_dir(cache)) {
       return(list(bulk_reference = cache))
     }
     previous <- tempfile("previous-", tmpdir = cache_root)

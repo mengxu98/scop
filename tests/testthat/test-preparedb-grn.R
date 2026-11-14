@@ -41,13 +41,13 @@ test_that("PrepareDB checks a SCENICPlus download before replacing a cached file
   download <- character()
   testthat::local_mocked_bindings(download.file = function(url, destfile, mode, quiet) {
     download <<- c(download, url)
-    writeBin(charToRaw("ARROW1newARROW1"), destfile)
+    writeBin(charToRaw("partial download"), destfile)
     0L
   }, .package = "utils")
   expect_error(PrepareDB(
     db = "SCENICPlus", data_dir = directory, db_update = TRUE,
     verbose = FALSE
-  ), "checksum mismatch")
+  ), "Invalid SCENICPlus Feather file")
   expect_length(download, 1L)
   expect_match(download[[1L]], "/region_based/.*rankings.feather$")
   expect_identical(readBin(ranking, "raw", n = 64L), charToRaw("ARROW1oldARROW1"))

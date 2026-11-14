@@ -194,7 +194,7 @@ exclusions recorded separately.
 To resume an interrupted run, use a persistent `work_dir` for the first call.
 Find the `linger-output` directory containing `prepare.completed.json` and
 pass its path as `method_args$resume_dir` with the same inputs and settings.
-LINGER verifies and copies the prepared inputs to a new run. It starts again
+LINGER copies the prepared inputs to a new run. It starts again
 at preprocessing and leaves the earlier directory in place.
 
 The three LINGER layers retain native scores and unknown sign. The result
@@ -215,8 +215,9 @@ checkout. Use resource paths without whitespace or shell metacharacters.
 
 To continue an interrupted official run, select one group and set
 `method_args$resume_dir` to its existing `official` directory. Keep the
-inputs, reference files, settings, and runner version the same. Snakemake
-reuses finished steps and reruns incomplete ones. Keep the directory for
+inputs, reference files, and settings the same. Snakemake reuses finished
+steps and reruns incomplete ones. If an abrupt stop leaves a Snakemake lock,
+use its standard unlock command after the original process has stopped. Keep the directory for
 this scop run only. Run standalone Snakemake workflows in a separate directory.
 
 `PrepareDB()` uses the hg38 SCREEN v10 databases by default. It reuses

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import csv
 import gzip
-import hashlib
 import importlib.metadata
 import importlib.util
 import json
@@ -15,70 +14,25 @@ import time
 from pathlib import Path
 
 
-PHASES = ("prepare", "preprocess", "train", "networks", "export")
 PREPARE_FILES = ("data/adata_RNA.h5ad", "data/adata_ATAC.h5ad", "data/TG_pseudobulk.tsv", "data/RE_pseudobulk.tsv", "data/Peaks.txt", "retained_cells.tsv", "input-summary.json")
-PREPARE_PACKAGES = ("anndata", "h5py", "LingerGRN", "llvmlite", "numba", "numpy", "pandas", "pynndescent", "scanpy", "scikit-learn", "scipy", "threadpoolctl", "umap-learn")
 
 
-def file_sha256(path):
-    digest = hashlib.sha256()
-    with Path(path).open("rb") as handle:
-        for block in iter(lambda: handle.read(8 * 1024 * 1024), b""):
-            digest.update(block)
-    return digest.hexdigest()
-
-
-def prepare_identity(root, request, input_hashes, reference_hashes, dependency):
-    parameters = {name: request[name] for name in ("min_genes", "min_cells", "genome", "activation", "patch_missing_keys", "seed", "cores")}
-    parameters.update({name: request.get(name, []) for name in ("regulators", "targets")})
-    runtime_source = root / "runtime-source" / "LingerGRN"
-    return {
-        "schema": "linger-prepare-v2", "input_sha256": input_hashes, "reference_sha256": reference_hashes,
-        "parameters": parameters, "dependency": dependency,
-        "python": {"executable": str(Path(sys.executable).resolve()), "version": sys.version},
-        "packages": {name: importlib.metadata.version(name) for name in PREPARE_PACKAGES},
-        "source_sha256": {path.name: file_sha256(path) for path in sorted(runtime_source.glob("*.py"))},
-        "runner_sha256": file_sha256(Path(__file__)),
-        "reference_spec_sha256": request["reference_selection"]["manifest_sha256"],
-    }
-
-
-def write_prepare_checkpoint(root, identity, files=None):
-    if files is None:
-        files = {name: file_sha256(root / name) for name in PREPARE_FILES}
-    manifest = {"status": "completed", "identity": identity, "files": files}
+def write_prepare_checkpoint(root):
     candidate = root / ".prepare.completed.json"
-    candidate.write_text(json.dumps(manifest, indent=2, sort_keys=True))
+    candidate.write_text('{"status": "completed"}\n')
     candidate.replace(root / "prepare.completed.json")
 
 
-def restore_prepare_checkpoint(source, root, identity):
+def restore_prepare_checkpoint(source, root):
     source = Path(source).resolve()
-    manifest_path = source / "prepare.completed.json"
-    if not manifest_path.is_file():
-        raise ValueError(f"LINGER resume_dir has no completed prepare checkpoint: {source}")
-    try:
-        manifest_bytes = manifest_path.read_bytes()
-        manifest = json.loads(manifest_bytes)
-    except (ValueError, OSError) as error:
-        raise ValueError("LINGER resume_dir contains an unreadable prepare checkpoint manifest.") from error
-    if manifest.get("status") != "completed" or manifest.get("identity") != identity:
-        raise ValueError("LINGER prepare checkpoint belongs to different inputs, reference contents, parameters or runtime/source identity.")
-    files = manifest.get("files", {})
-    if set(files) != set(PREPARE_FILES):
-        raise ValueError("LINGER prepare checkpoint has an incomplete artifact manifest.")
-    for name in PREPARE_FILES:
-        path = source / name
-        if not path.is_file() or file_sha256(path) != files[name]:
-            raise ValueError(f"LINGER prepare checkpoint artifact is missing or changed: {name}")
+    if json.loads((source / "prepare.completed.json").read_text()).get("status") != "completed":
+        raise ValueError("LINGER resume_dir must contain a completed prepare checkpoint.")
     for name in PREPARE_FILES:
         destination = root / name
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(source / name, destination)
-        if file_sha256(destination) != files[name]:
-            raise ValueError(f"LINGER prepare checkpoint artifact changed while copying: {name}")
-    write_prepare_checkpoint(root, identity, files)
-    return {"stage": "prepare", "source": str(source), "manifest_sha256": hashlib.sha256(manifest_bytes).hexdigest(), "verified_files": len(files)}
+    write_prepare_checkpoint(root)
+    return {"stage": "prepare", "source": str(source)}
 
 
 def canonical_region(region):
@@ -142,11 +96,6 @@ def prepare_dependency(root, patch_missing_keys):
         "package_version": version, "missing_key_patch": "trans_shap-missing-key-v1",
         "patch_applied": needed, "worker_limit": int(os.environ["SLURM_CPUS_PER_TASK"]),
         "small_batch_patch": "tf-re-small-batch-v1", "small_batch_patch_applied": small_needed,
-        "small_batch_patch_sha256": hashlib.sha256((small_before + "\n" + small_after).encode()).hexdigest(),
-        "source_sha256": hashlib.sha256(network_source.encode()).hexdigest(),
-        "runtime_source_sha256": hashlib.sha256((destination / "LL_net.py").read_bytes()).hexdigest(),
-        "preprocess_source_sha256": hashlib.sha256(preprocessing_source.encode()).hexdigest(),
-        "runtime_preprocess_sha256": hashlib.sha256(preprocessing.encode()).hexdigest(),
     }
 
 
@@ -346,27 +295,25 @@ def run(request):
     reference_files = request["expected_reference_files"]
     if not reference_files or any(Path(name).name != name or name in (".", "..") for name in reference_files):
         raise ValueError("LINGER requires selected bulk reference file names.")
+    resume_dir = request.get("resume_dir")
+    checkpoint = request.get("checkpoint_prepare", True) or bool(resume_dir)
     dependency = prepare_dependency(root, request["patch_missing_keys"])
-    reference_hashes = {name: file_sha256(Path(request["bulk_reference"]) / name) for name in reference_files}
-    input_hashes = {name: file_sha256(inputs / name) for name in ("rna.mtx", "atac.mtx", "genes.txt", "regions.txt", "cells.tsv")}
-    identity = prepare_identity(root, request, input_hashes, reference_hashes, dependency) if request.get("checkpoint_prepare", True) or request.get("resume_dir") else None
-    resume = None
-    if request.get("resume_dir"):
-        resume = restore_prepare_checkpoint(request["resume_dir"], root, identity)
+    resume = restore_prepare_checkpoint(resume_dir, root) if resume_dir else None
     before = Path.cwd()
     timing = []
     os.chdir(root)
     try:
-        for phase in PHASES:
-            if phase == "prepare" and resume is not None:
+        for step in (prepare, preprocess, train, networks, export):
+            phase = step.__name__
+            if step is prepare and resume is not None:
                 timing.append({"phase": phase, "seconds": 0.0, "reused": True})
                 print("phase_reused\tprepare", flush=True)
                 continue
             print(f"phase_started\t{phase}", flush=True)
             started = time.perf_counter()
-            result = globals()[phase](root, request)
-            if phase == "prepare" and request.get("checkpoint_prepare", True):
-                write_prepare_checkpoint(root, identity)
+            result = step(root, request)
+            if step is prepare and checkpoint:
+                write_prepare_checkpoint(root)
             timing.append({"phase": phase, "seconds": time.perf_counter() - started})
             print(f"phase_finished\t{phase}", flush=True)
     finally:
@@ -374,9 +321,8 @@ def run(request):
     receipt = {
         "status": "completed", "implementation": "LingerGRN::LINGER[1.110;trans_shap-missing-key-v1;tf-re-small-batch-v1]",
         "dependency": dependency, "parameters": request, "phase_timings": timing,
-        "reference_files": reference_files, "reference_sha256": reference_hashes,
-        "reference_selection": selection,
-        "input_sha256": input_hashes, "networks": result,
+        "reference_files": reference_files, "reference_selection": selection,
+        "networks": result,
         "resume": resume,
         "versions": {name: importlib.metadata.version(name) for name in ("LingerGRN", "numpy", "pandas", "anndata", "scanpy", "torch", "shap")},
     }

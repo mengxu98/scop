@@ -1,9 +1,7 @@
-import hashlib
 import importlib.metadata
 import json
 import os
 import pickle
-import re
 import signal
 import subprocess
 import sys
@@ -61,57 +59,7 @@ def atomic_json(path, value):
             temporary.unlink()
 
 
-def snakemake_lock_snapshot(output):
-    result = {}
-    for path in sorted((output / ".snakemake" / "locks").glob("*")):
-        if not path.is_file() or path.is_symlink():
-            raise ValueError("Unverified Snakemake lock entry; inspect the directory before an official manual unlock")
-        before = path.stat()
-        digest = hashlib.sha256(path.read_bytes()).hexdigest()
-        after = path.stat()
-        fields = ("st_dev", "st_ino", "st_size", "st_mtime_ns", "st_ctime_ns")
-        if any(getattr(before, name) != getattr(after, name) for name in fields):
-            raise ValueError("Snakemake locks changed during verification; inspect the active workflow")
-        result[path.name] = dict(sha256=digest, **{name: getattr(after, name) for name in fields})
-    return result
-
-
-def verify_resume_locks(output, identity_sha256, explicit_resume):
-    locks = snakemake_lock_snapshot(output)
-    if not locks:
-        return locks
-    path = output / "snakemake_lock_owner.json"
-    message = "Unverified or active Snakemake locks; inspect the directory and use the official manual unlock only after its workflow has stopped"
-    if not explicit_resume or not path.is_file():
-        raise ValueError(message)
-    try:
-        owner = json.loads(path.read_text())
-    except (OSError, ValueError) as error:
-        raise ValueError(message) from error
-    if not isinstance(owner, dict) or not isinstance(owner.get("pgid"), int) or owner["pgid"] <= 1:
-        raise ValueError(message)
-    if owner.get("identity_sha256") != identity_sha256 or owner.get("native_locks") != locks:
-        raise ValueError(message)
-    try:
-        os.killpg(owner["pgid"], 0)
-    except ProcessLookupError:
-        return locks
-    except PermissionError as error:
-        raise ValueError(message) from error
-    raise ValueError(message)
-
-
-def clear_owned_snakemake_locks(output, identity_sha256, expected):
-    if verify_resume_locks(output, identity_sha256, True) != expected:
-        raise ValueError("Snakemake locks changed before recovery; inspect the active workflow")
-    for name, recorded in expected.items():
-        observed = snakemake_lock_snapshot(output)
-        if observed.get(name) != recorded:
-            raise ValueError("An owned Snakemake lock was replaced before recovery; inspect the active workflow")
-        (output / ".snakemake" / "locks" / name).unlink()
-
-
-def run_workflow(command, output, environment, lock_fd, identity_sha256=None, log_prefix="snakemake"):
+def run_workflow(command, output, environment, lock_fd):
     process = None
     cancelled = None
     previous = {}
@@ -123,21 +71,12 @@ def run_workflow(command, output, environment, lock_fd, identity_sha256=None, lo
     try:
         for signum in (signal.SIGINT, signal.SIGTERM):
             previous[signum] = signal.signal(signum, cancel)
-        stderr_path = output / (log_prefix + ".stderr.log")
-        with (output / (log_prefix + ".stdout.log")).open("w") as stdout, stderr_path.open("w") as stderr:
+        with (output / "snakemake.stdout.log").open("w") as stdout, (output / "snakemake.stderr.log").open("w") as stderr:
             process = subprocess.Popen(command, cwd=output, env=environment, stdout=stdout, stderr=stderr,
                 start_new_session=True, pass_fds=(lock_fd,))
-            captured = False
             while True:
                 if cancelled is not None:
                     raise WorkflowCancelled(cancelled)
-                if identity_sha256 is not None and not captured and "\nlocalrule " in stderr_path.read_text(errors="replace"):
-                    locks = snakemake_lock_snapshot(output)
-                    matches = [re.fullmatch(r"(\d+)\.(input|output)\.lock", name) for name in locks]
-                    if len(matches) == 2 and all(matches) and len({match.group(1) for match in matches}) == 1:
-                        atomic_json(output / "snakemake_lock_owner.json", dict(identity_sha256=identity_sha256,
-                            pgid=process.pid, native_locks=locks, evidence="own_snakemake_stderr_localrule_after_native_lock_acquisition"))
-                    captured = True
                 try:
                     returncode = process.wait(timeout=0.2)
                     if cancelled is not None:
@@ -162,14 +101,6 @@ def run_workflow(command, output, environment, lock_fd, identity_sha256=None, lo
             process.wait()
         for signum, handler in previous.items():
             signal.signal(signum, handler)
-
-
-def sha256_file(path):
-    digest = hashlib.sha256()
-    with open(path, "rb") as handle:
-        for block in iter(lambda: handle.read(8 * 1024 * 1024), b""):
-            digest.update(block)
-    return digest.hexdigest()
 
 
 def validate_request(request):
@@ -294,7 +225,7 @@ def export_result(output, cells):
     native["tf_region"] = len(memberships)
     native["chains"] = len(chains)
     gene_sets = {}
-    for name, table in (("direct", direct), ("extended", extended)):
+    for table in (direct, extended):
         if {"Gene_signature_name", "Gene"}.issubset(table):
             for signature, block in table.groupby("Gene_signature_name", sort=False):
                 gene_sets[str(signature)] = block["Gene"].drop_duplicates().astype(str).tolist()
@@ -325,58 +256,23 @@ def main(request_path):
         run_locked(request, resources, workflow, output, lock_fd)
 
 
-def request_identity(request, resources, workflow):
-    identity = {key: value for key, value in request.items() if key != "output_dir"}
-    identity["method_args"] = {key: value for key, value in request["method_args"].items() if key != "resume_dir"}
-    for name in ("expression", "features"):
-        identity[name] = sha256_file(identity[name])
-    fingerprints = {}
-    resource_identity = {}
-    for name, value in resources.items():
-        path = Path(value)
-        paths = sorted(child for child in path.rglob("*") if child.is_file()) if path.is_dir() else [path]
-        hashes = []
-        for child in paths:
-            if child not in fingerprints:
-                fingerprints[child] = sha256_file(child)
-            hashes.append(fingerprints[child])
-        resource_identity[name] = [{"path": value, "files": hashes[0] if len(hashes) == 1 else hashes}]
-    identity["resource_identity"] = identity["verified_resource_identity"] = resource_identity
-    regions = Path(resources["region_sets"])
-    identity["region_sets"] = {str(path.relative_to(regions)): fingerprints[path] for path in sorted(regions.glob("*/*.bed"))}
-    snakefile = workflow / "Snakefile"
-    identity["workflow_sha256"] = fingerprints[snakefile] if snakefile in fingerprints else sha256_file(snakefile)
-    identity["runner_sha256"] = sha256_file(__file__)
-    return identity
-
-
 def run_locked(request, resources, workflow, output, lock_fd):
     manifest = output / "execution.json"
-    identity_path = output / "request_identity.json"
-    if not identity_path.is_file() and any(path.name != ".scop-execution.lock" for path in output.iterdir()):
-        raise ValueError("The official SCENIC+ directory must be empty or contain a verified scop request identity")
+    resume = bool(request["method_args"].get("resume_dir"))
+    if not resume and any(path.name != ".scop-execution.lock" for path in output.iterdir()):
+        raise ValueError("Choose an empty SCENIC+ directory for a new run.")
     if manifest.exists() and json.loads(manifest.read_text())["status"] == "completed":
         raise ValueError("This SCENIC+ run is complete. Read scplusmdata.h5mu with RunSCENICPlus(scplus_object = ...) or select a new work_dir.")
-    identity = request_identity(request, resources, workflow)
-    if identity_path.exists():
-        previous = json.loads(identity_path.read_text())
-        if previous != identity:
-            predecessor = "486b8d7b6d0b30a6d9802f7c7d06b26e5f4328bf51bf25fcbd1fe19ff54e5bcb"
-            if previous != dict(identity, runner_sha256=predecessor):
-                raise ValueError("SCENIC+ resume inputs or parameters differ from the existing execution")
-            identity = previous
-    identity_sha256 = hashlib.sha256(json.dumps(identity, sort_keys=True).encode()).hexdigest()
-    stale_locks = verify_resume_locks(output, identity_sha256, bool(request["method_args"].get("resume_dir")))
     prepared = (str(output / "input_cistopic.pkl"), str(output / "input_GEX.h5ad"))
+    marker = output / "prepare.completed"
+    legacy_marker = output / "prepared_identity.json"
+    if not (resume and (marker.is_file() or legacy_marker.is_file()) and
+            all(Path(path).is_file() for path in prepared)):
+        marker.unlink(missing_ok=True)
+        legacy_marker.unlink(missing_ok=True)
+        prepare_inputs(request, resources, output)
+        marker.touch()
     config, config_path = configure(request, resources, workflow, output, prepared)
-    atomic_json(identity_path, identity)
-    prepared_identity_path = output / "prepared_identity.json"
-    reusable = prepared_identity_path.is_file() and all(Path(path).is_file() for path in prepared)
-    if reusable:
-        reusable = json.loads(prepared_identity_path.read_text()) == [sha256_file(path) for path in prepared]
-    if not reusable:
-        prepared = prepare_inputs(request, resources, output)
-        atomic_json(prepared_identity_path, [sha256_file(path) for path in prepared])
     (output / "tmp").mkdir(exist_ok=True)
     command = [str(Path(sys.executable).parent / "snakemake"), "--snakefile", str(workflow / "Snakefile"),
         "--configfile", str(config_path), "--cores", str(request["cores"]), "--rerun-incomplete", "--keep-going", "--latency-wait", "120", "--printshellcmds"]
@@ -389,18 +285,11 @@ def run_locked(request, resources, workflow, output, lock_fd):
         package_versions={name: importlib.metadata.version(name) for name in ("scenicplus", "pycisTopic", "pycistarget", "snakemake")})
     atomic_json(manifest, status)
     try:
-        if stale_locks:
-            clear_owned_snakemake_locks(output, identity_sha256, stale_locks)
-            status["stale_lock_recovery"] = dict(implementation="scop::verified_owned_native_locks", removed=stale_locks)
-        returncode = run_workflow(command, output, environment, lock_fd, identity_sha256=identity_sha256)
+        returncode = run_workflow(command, output, environment, lock_fd)
         if returncode:
             raise RuntimeError(f"Official SCENIC+ exited {returncode}; see {output / 'snakemake.stderr.log'}")
         rows, auc_files = export_result(output, request["cells"])
-        artifacts = {}
-        for path in sorted(output.glob("*.tsv")):
-            artifacts[path.name] = hashlib.sha256(path.read_bytes()).hexdigest()
-        status.update(status="completed", elapsed_seconds=time.time() - started, rows=rows, auc_files=auc_files,
-            artifacts=artifacts, workflow_sha256=identity["workflow_sha256"])
+        status.update(status="completed", elapsed_seconds=time.time() - started, rows=rows, auc_files=auc_files)
     except BaseException as error:
         status.update(status="cancelled" if isinstance(error, (WorkflowCancelled, KeyboardInterrupt)) else "failed",
             elapsed_seconds=time.time() - started, error=str(error))

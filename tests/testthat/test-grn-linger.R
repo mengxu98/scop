@@ -99,34 +99,3 @@ test_that("LINGER preflight checks only the required reference files", {
   config$method_args$genome <- "hg19"
   expect_true("hg19_hg38_pair.bed" %in% grn_linger_reference_files(input, config)$files)
 })
-
-test_that("LINGER prepare identity ignores unrelated packages", {
-  python <- Sys.which("python3")
-  skip_if(!nzchar(python), "Python 3 is unavailable")
-  source_root <- testthat::test_path("..", "..")
-  runner <- file.path(source_root, "inst", "grn", "linger.py")
-  if (!file.exists(runner)) runner <- system.file("grn", "linger.py", package = "scop", mustWork = TRUE)
-  probe <- withr::local_tempfile(fileext = ".py")
-  writeLines(c(
-    "import importlib.util, sys, tempfile",
-    "from pathlib import Path",
-    "from unittest.mock import patch",
-    "sys.dont_write_bytecode = True",
-    "spec = importlib.util.spec_from_file_location('linger', sys.argv[1])",
-    "runner = importlib.util.module_from_spec(spec)",
-    "spec.loader.exec_module(runner)",
-    "request = dict(min_genes=20, min_cells=3, genome='hg38', activation='ReLU',",
-    "    patch_missing_keys=True, seed=42, cores=1, reference_selection={'manifest_sha256': 'reference'})",
-    "with tempfile.TemporaryDirectory() as temporary:",
-    "    root = Path(temporary)",
-    "    versions = dict.fromkeys(runner.PREPARE_PACKAGES, '1.0')",
-    "    with patch.object(runner.importlib.metadata, 'version', side_effect=versions.__getitem__):",
-    "        first = runner.prepare_identity(root, request, {}, {}, {})",
-    "        versions['unrelated-package'] = '2.0'",
-    "        assert runner.prepare_identity(root, request, {}, {}, {}) == first",
-    "        versions['scanpy'] = '2.0'",
-    "        assert runner.prepare_identity(root, request, {}, {}, {}) != first"
-  ), probe)
-  output <- suppressWarnings(system2(python, c(shQuote(probe), shQuote(runner)), stdout = TRUE, stderr = TRUE))
-  expect_null(attr(output, "status"), info = paste(output, collapse = "\n"))
-})
