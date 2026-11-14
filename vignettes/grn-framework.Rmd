@@ -149,7 +149,7 @@ For the official Arboreto GRNBoost2 implementation, prepare its Python profile
 once and select that implementation explicitly. You can also point to an
 existing interpreter without changing the Python interpreter of your R session.
 
-```r
+```{r arboreto-grn}
 scop::PrepareEnv(modules = "grnboost2", configure_runtime = FALSE)
 official_grn <- scop::RunGRN(
 	pancreas, assay = "RNA", layer = "data", methods = "grnboost2",

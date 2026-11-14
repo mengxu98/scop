@@ -6,7 +6,12 @@ infer_ppcor <- function(expression, arguments) {
   if (!method %in% c("spearman", "pearson", "kendall")) {
     stop("Invalid ppcor method.", call. = FALSE)
   }
+  expression <- expression[apply(expression, 1L, stats::sd) > 0, , drop = FALSE]
+  if (nrow(expression) < 2L) {
+    stop("PPCOR needs at least two nonconstant genes.", call. = FALSE)
+  }
   fit <- ppcor::pcor(t(expression), method = method)
+  dimnames(fit$estimate) <- list(rownames(expression), rownames(expression))
   edges <- grn_rna_matrix_edges(fit$estimate)
   index <- cbind(
     match(edges$regulator, rownames(fit$estimate)),

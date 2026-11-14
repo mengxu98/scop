@@ -107,29 +107,29 @@ sincerities_fit <- function(expression, times, time_points, method, noDIAG, SIGN
       keep[gene] <- FALSE
     }
     columns <- which(keep)
-    if (!length(columns) || stats::sd(y) == 0) {
+    if (!length(columns) || max(tabulate(match(y, unique(y)))) >= length(y) - 1L) {
       return(list(lambda = NA_real_, alpha = NA_real_, beta = beta))
+    }
+    if (length(columns) == 1L) {
+      stop(
+        "SINCERITIES needs at least two variable predictors per fitted target; only one remains for ",
+        rownames(expression)[gene], ".",
+        call. = FALSE
+      )
     }
     x <- predictors[, columns, drop = FALSE]
-    errors <- rep(Inf, length(alphas))
-    fits <- vector("list", length(alphas))
-    for (i in seq_along(alphas)) {
-      cv <- tryCatch(
-        glmnet::cv.glmnet(
-          x, y, alpha = alphas[i], nfolds = length(folds), foldid = folds, keep = TRUE,
-          lower.limits = 0, upper.limits = Inf, grouped = FALSE
-        ),
-        error = function(e) NULL
+    fits <- lapply(alphas, function(alpha) {
+      glmnet::cv.glmnet(
+        x, y, alpha = alpha, nfolds = length(folds), foldid = folds, keep = TRUE,
+        lower.limits = 0, upper.limits = Inf, grouped = FALSE
       )
-      if (!is.null(cv)) {
-        errors[i] <- cv$cvm[cv$lambda == cv$lambda.min][1L]
-        fits[[i]] <- cv
-      }
+    })
+    errors <- vapply(fits, function(fit) fit$cvm[match(fit$lambda.min, fit$lambda)], numeric(1))
+    best <- which(is.finite(errors))
+    if (!length(best)) {
+      stop("SINCERITIES cross-validation produced no finite error for ", rownames(expression)[gene], ".", call. = FALSE)
     }
-    if (!any(is.finite(errors))) {
-      return(list(lambda = NA_real_, alpha = NA_real_, beta = beta))
-    }
-    best <- max(which(errors == min(errors)))
+    best <- max(best[errors[best] == min(errors[best])])
     cv <- fits[[best]]
     coefficients <- stats::coef(cv, s = "lambda.min")
     if (length(coefficients@i) > 1L) {

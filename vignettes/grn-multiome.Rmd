@@ -194,6 +194,7 @@ exclusions recorded separately.
 To resume an interrupted run, use a persistent `work_dir` for the first call.
 Find the `linger-output` directory containing `prepare.completed.json` and
 pass its path as `method_args$resume_dir` with the same inputs and settings.
+Keep the original run directory, including `linger-input`.
 LINGER copies the prepared inputs to a new run. It starts again
 at preprocessing and leaves the earlier directory in place.
 
@@ -213,9 +214,9 @@ network inference, eRegulons, and AUC. Set `workflow` to the official SCENIC+
 Snakemake directory when that directory is provided by a separate source
 checkout. Use resource paths without whitespace or shell metacharacters.
 
-To continue an interrupted official run, select one group and set
-`method_args$resume_dir` to its existing `official` directory. Keep the
-inputs, reference files, and settings the same. Snakemake reuses finished
+To continue an interrupted official run, start with a persistent `work_dir`.
+Select one group and set `method_args$resume_dir` to its `official` directory.
+Keep the original run directory, inputs, reference files, and settings. Snakemake reuses finished
 steps and reruns incomplete ones. If an abrupt stop leaves a Snakemake lock,
 use its standard unlock command after the original process has stopped. Keep the directory for
 this scop run only. Run standalone Snakemake workflows in a separate directory.

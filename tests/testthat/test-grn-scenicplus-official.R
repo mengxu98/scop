@@ -16,12 +16,6 @@ test_that("official SCENIC+ validates all resources before starting a process", 
   expect_error(grn_scenicplus_check_resources(resources), "at least two region sets")
   writeLines("chr1\t11\t20", file.path(resources$region_sets, "topics", "two.bed"))
   expect_setequal(grn_scenicplus_check_resources(resources), c(required, "region_sets"))
-  config$resources <- resources
-  config$work_dir <- file.path(directory, "next")
-  config$method_args <- list(resume_dir = directory)
-  writeLines('{"status":"completed"}', file.path(directory, "execution.json"))
-  expect_error(grn_run_scenicplus(input, config), "run is complete.*scplusmdata[.]h5mu")
-  expect_false(dir.exists(config$work_dir))
   unlink(resources$genome_annotation)
   expect_error(grn_scenicplus_check_resources(resources), "Missing SCENIC[+] resources: genome_annotation")
   writeLines("", resources$genome_annotation)

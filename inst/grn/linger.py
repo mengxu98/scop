@@ -15,23 +15,50 @@ from pathlib import Path
 
 
 PREPARE_FILES = ("data/adata_RNA.h5ad", "data/adata_ATAC.h5ad", "data/TG_pseudobulk.tsv", "data/RE_pseudobulk.tsv", "data/Peaks.txt", "retained_cells.tsv", "input-summary.json")
+PREPARE_INPUTS = ("rna.mtx", "atac.mtx", "genes.txt", "regions.txt", "cells.tsv")
+PREPARE_SETTINGS = ("min_genes", "min_cells", "seed")
 
 
-def write_prepare_checkpoint(root):
+def write_prepare_checkpoint(root, request):
     candidate = root / ".prepare.completed.json"
-    candidate.write_text('{"status": "completed"}\n')
+    candidate.write_text(json.dumps({
+        "status": "completed",
+        "input_dir": request["input_dir"],
+        "settings": {name: request[name] for name in PREPARE_SETTINGS},
+    }) + "\n")
     candidate.replace(root / "prepare.completed.json")
 
 
-def restore_prepare_checkpoint(source, root):
+def restore_prepare_checkpoint(source, root, request):
     source = Path(source).resolve()
-    if json.loads((source / "prepare.completed.json").read_text()).get("status") != "completed":
+    manifest = json.loads((source / "prepare.completed.json").read_text())
+    if manifest.get("status") != "completed":
         raise ValueError("LINGER resume_dir must contain a completed prepare checkpoint.")
+    original = manifest.get("input_dir")
+    settings = manifest.get("settings")
+    if not original or not isinstance(settings, dict) or not all(name in settings for name in PREPARE_SETTINGS):
+        raise ValueError("LINGER checkpoint lacks original preparation inputs or settings. Run again without resume_dir.")
+    original = Path(original)
+    inputs = Path(request["input_dir"])
+    if original.resolve() == inputs:
+        raise ValueError("LINGER resume requires separate current and original input directories. Run again without resume_dir.")
+    for name in PREPARE_SETTINGS:
+        if settings[name] != request[name]:
+            raise ValueError(f"LINGER checkpoint preparation setting changed: {name}. Run again without resume_dir.")
+    for name in PREPARE_INPUTS:
+        try:
+            with (original / name).open("rb") as previous, (inputs / name).open("rb") as current:
+                blocks = iter(lambda: (previous.read(1024 * 1024), current.read(1024 * 1024)), (b"", b""))
+                if all(left == right for left, right in blocks):
+                    continue
+        except OSError as error:
+            raise ValueError(f"Cannot read LINGER checkpoint input {name}. Keep the original input directory or run again without resume_dir.") from error
+        raise ValueError(f"LINGER checkpoint preparation input changed: {name}. Run again without resume_dir.")
     for name in PREPARE_FILES:
         destination = root / name
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(source / name, destination)
-    write_prepare_checkpoint(root)
+    write_prepare_checkpoint(root, request)
     return {"stage": "prepare", "source": str(source)}
 
 
@@ -297,8 +324,8 @@ def run(request):
         raise ValueError("LINGER requires selected bulk reference file names.")
     resume_dir = request.get("resume_dir")
     checkpoint = request.get("checkpoint_prepare", True) or bool(resume_dir)
+    resume = restore_prepare_checkpoint(resume_dir, root, request) if resume_dir else None
     dependency = prepare_dependency(root, request["patch_missing_keys"])
-    resume = restore_prepare_checkpoint(resume_dir, root) if resume_dir else None
     before = Path.cwd()
     timing = []
     os.chdir(root)
@@ -313,7 +340,7 @@ def run(request):
             started = time.perf_counter()
             result = step(root, request)
             if step is prepare and checkpoint:
-                write_prepare_checkpoint(root)
+                write_prepare_checkpoint(root, request)
             timing.append({"phase": phase, "seconds": time.perf_counter() - started})
             print(f"phase_finished\t{phase}", flush=True)
     finally:

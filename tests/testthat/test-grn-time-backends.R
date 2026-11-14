@@ -62,3 +62,13 @@ for (method in names(time_methods)) {
     expect_true(is.data.frame(fit$native$edges))
   })
 }
+
+test_that("SINCERITIES reports a target with only one variable predictor", {
+  skip_if_not_installed("glmnet")
+  skip_if_not_installed("ppcor")
+  set.seed(41)
+  cells <- paste0("c", seq_len(80L))
+  expression <- matrix(stats::runif(160), 2L, dimnames = list(c("A", "B"), cells))
+  time <- stats::setNames(rep(seq_len(8L), each = 10L), cells)
+  expect_error(RunSINCERITIES(expression, time, verbose = FALSE), "only one remains for A")
+})

@@ -4,16 +4,20 @@
 #' Each function selects its method in [RunGRN()]. Pass the remaining arguments
 #' as you would to [RunGRN()].
 #' @inheritParams RunGRN
+#' @param object A Seurat object or expression matrix. Pando, LINGER, and
+#'   multiome multiCSN require a Seurat object with paired RNA and ATAC assays.
 #' @inherit RunGRN return
 #' @details
-#' PIDC and SCODE require `resources$source_dir`. For SCODE or SINCERITIES
-#' with several trajectories, select one with `method_args$trajectory`.
-#' SINCERITIES needs at least five distinct time points.
+#' PIDC and SCODE require `resources$source_dir`. To select one of several
+#' trajectories for SCODE or SINCERITIES, use `method_args$trajectory`.
+#' SINCERITIES needs at least five time points or bins and two variable
+#' predictors per fitted target. In `method_args`, `max_time_points` limits
+#' bins (default `NA`, no binning), `method` selects ridge (1, default), elastic
+#' net (2), or lasso (3), and `SIGN = 1L` adds signs (default 0, unsigned).
 #'
-#' Pando and multiome multiCSN need paired RNA and ATAC data and
-#' `resources$genome`. LINGER needs paired count layers and a bulk reference
-#' directory in `resources$bulk_reference`. Prepare the reference with
-#' [PrepareDB()] before running LINGER.
+#' For multiome multiCSN, set `input_mode = "multiome"` and use `"data"` for
+#' both layers. Pando and multiome multiCSN require `resources$genome`.
+#' LINGER requires two count layers and `resources$bulk_reference` from [PrepareDB()].
 #' @references
 #' \url{https://github.com/CABSEL/SINCERITIES}
 #' @seealso [RunGRN()], [PrepareEnv()], [GetGRN()], [GRNPlot()]

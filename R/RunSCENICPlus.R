@@ -2774,10 +2774,6 @@ grn_run_scenicplus <- function(input, config) {
       stop("SCENIC+ resume_dir must be an existing directory.", call. = FALSE)
     }
     resume_dir <- normalizePath(resume_dir, winslash = "/", mustWork = TRUE)
-    manifest <- file.path(resume_dir, "execution.json")
-    if (file.exists(manifest) && identical(runner_read_json(manifest)$status, "completed")) {
-      stop("This SCENIC+ run is complete. Read scplusmdata.h5mu with RunSCENICPlus(scplus_object = ...) or select a new work_dir.", call. = FALSE)
-    }
   }
   script <- system.file("grn", "scenicplus.py", package = "scop", mustWork = TRUE)
   dir.create(config$work_dir, recursive = TRUE, showWarnings = FALSE)

@@ -142,6 +142,10 @@ test_that("GENIE3 accepts gene-by-cell input and preserves orientation", {
   columns <- RunGRN(t(expression), genes_in = "columns", regulators = regulators,
     targets = targets, methods = "genie3", nTrees = 20, seed = 7, verbose = FALSE)
   expect_identical(actual, columns)
+  result <- RunGRN(expression, regulators = regulators, targets = targets,
+    methods = "genie3", nTrees = 20, seed = 7, return_type = "result", verbose = FALSE)
+  expect_identical(result$implementation, "GENIE3::GENIE3")
+  expect_identical(result$package_versions$all, c(GENIE3 = as.character(utils::packageVersion("GENIE3"))))
 })
 
 test_that("return format does not change inference or the GNIPLR candidate limit", {

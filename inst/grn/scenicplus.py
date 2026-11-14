@@ -1,3 +1,4 @@
+import filecmp
 import importlib.metadata
 import json
 import os
@@ -256,6 +257,28 @@ def main(request_path):
         run_locked(request, resources, workflow, output, lock_fd)
 
 
+def checkpoint_file(path):
+    path = Path(path).resolve(strict=True)
+    stat = path.stat()
+    return {"path": str(path), "size": stat.st_size, "mtime_ns": stat.st_mtime_ns, "ctime_ns": stat.st_ctime_ns}
+
+
+def checkpoint_request(request, resources, workflow):
+    region_sets = Path(resources["region_sets"]).resolve(strict=True)
+    return {
+        "cells": request["cells"],
+        "seed": request["seed"],
+        "method_args": {name: value for name, value in request["method_args"].items() if name != "resume_dir"},
+        "references": {name: checkpoint_file(resources[name]) for name in RESOURCE_NAMES if name != "region_sets"},
+        "region_sets": str(region_sets),
+        "region_beds": {
+            str(path.relative_to(region_sets)): checkpoint_file(path)
+            for path in region_sets.glob("*/*.bed") if path.is_file()
+        },
+        "workflow": [checkpoint_file(workflow / name) for name in ("Snakefile", "config.yaml")],
+    }
+
+
 def run_locked(request, resources, workflow, output, lock_fd):
     manifest = output / "execution.json"
     resume = bool(request["method_args"].get("resume_dir"))
@@ -264,14 +287,37 @@ def run_locked(request, resources, workflow, output, lock_fd):
     if manifest.exists() and json.loads(manifest.read_text())["status"] == "completed":
         raise ValueError("This SCENIC+ run is complete. Read scplusmdata.h5mu with RunSCENICPlus(scplus_object = ...) or select a new work_dir.")
     prepared = (str(output / "input_cistopic.pkl"), str(output / "input_GEX.h5ad"))
-    marker = output / "prepare.completed"
-    legacy_marker = output / "prepared_identity.json"
-    if not (resume and (marker.is_file() or legacy_marker.is_file()) and
-            all(Path(path).is_file() for path in prepared)):
-        marker.unlink(missing_ok=True)
-        legacy_marker.unlink(missing_ok=True)
+    marker = output / "prepare.completed.json"
+    inputs = {name: request[name] for name in ("expression", "features") if request.get(name)}
+    settings = checkpoint_request(request, resources, workflow)
+    fresh = "Choose a new work_dir instead of resuming this SCENIC+ directory."
+    if marker.is_file():
+        try:
+            checkpoint = json.loads(marker.read_text())
+            originals = checkpoint["inputs"]
+            matches = (
+                checkpoint["settings"] == settings
+                and originals.keys() == inputs.keys()
+                and checkpoint["prepared"] == [checkpoint_file(path) for path in prepared]
+                and all(
+                    originals[name] == checkpoint_file(originals[name]["path"])
+                    and filecmp.cmp(path, originals[name]["path"], shallow=False)
+                    for name, path in inputs.items()
+                )
+            )
+        except (OSError, ValueError, KeyError, TypeError, AttributeError) as error:
+            raise ValueError(f"SCENIC+ checkpoint cannot be verified. {fresh}") from error
+        if not matches:
+            raise ValueError(f"SCENIC+ checkpoint inputs, settings, or prepared files differ. {fresh}")
+    else:
+        preparation_files = {".scop-execution.lock", "input_cistopic.pkl", "input_GEX.h5ad"}
+        if any(path.name not in preparation_files for path in output.iterdir()):
+            raise ValueError(f"SCENIC+ directory has no verifiable preparation checkpoint. {fresh}")
         prepare_inputs(request, resources, output)
-        marker.touch()
+        atomic_json(marker, dict(
+            settings=settings, inputs={name: checkpoint_file(path) for name, path in inputs.items()},
+            prepared=[checkpoint_file(path) for path in prepared],
+        ))
     config, config_path = configure(request, resources, workflow, output, prepared)
     (output / "tmp").mkdir(exist_ok=True)
     command = [str(Path(sys.executable).parent / "snakemake"), "--snakefile", str(workflow / "Snakefile"),

@@ -37,6 +37,10 @@ test_that("PPCOR retains negative associations and numeric-like gene identifiers
   expect_true(any(result$native$edges$weight < 0))
   expect_false(result$layer_specs$tf_gene$directed)
   expect_identical(result$layer_specs$tf_gene$sign_basis, "association")
+  constant <- RunPPCOR(rbind(expression, constant = 0), method = "pearson",
+    return_type = "result", verbose = FALSE)
+  regular <- RunPPCOR(expression, method = "pearson", return_type = "result", verbose = FALSE)
+  expect_identical(GetGRN(constant), GetGRN(regular))
   expected <- ppcor::pcor(t(expression[c("01", "1", "target"), ]), method = "spearman")
   indices <- cbind(match(result$native$edges$regulator, rownames(expected$estimate)), match(result$native$edges$target, colnames(expected$estimate)))
   expect_identical(result$native$edges$weight, as.numeric(expected$estimate[indices]))

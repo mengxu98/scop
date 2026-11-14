@@ -447,8 +447,11 @@ grn_run_direct <- function(input, config) {
   )
   list(
     cells = input$cells, native = native, layer_specs = list(tf_gene = spec),
-    parameters = parameters, implementation = paste0("scop::", method, "/", config$backend),
-    package_versions = c(scop = as.character(utils::packageVersion("scop"))), execution = list(status = "completed", artifacts = list())
+    parameters = parameters,
+    implementation = if (method == "genie3") "GENIE3::GENIE3" else paste0("scop::", method, "/", config$backend),
+    package_versions = if (method == "genie3") c(GENIE3 = as.character(utils::packageVersion("GENIE3"))) else
+      c(scop = as.character(utils::packageVersion("scop"))),
+    execution = list(status = "completed", artifacts = list())
   )
 }
 
@@ -609,7 +612,7 @@ grn_method_spec <- function(method, backend = NULL) {
       "train_split_seed", "device", "compile", "eval_on_n_steps", "gradient_accumulation", "use_amp",
       "memory_efficient", "top_gene_percentile", "workers"
     )),
-    genie3 = list(backends = c("cpp", "r", "native"), runner = grn_run_direct, args = c("nTrees", "treeMethod", "K", "max_edges_per_target")),
+    genie3 = list(backends = c("r", "native"), runner = grn_run_direct, args = c("nTrees", "treeMethod", "K", "max_edges_per_target")),
     gniplr = list(backends = c("cpp", "python", "native", "official"), runner = grn_run_rna, args = c("lasso_degree", "lasso_alpha", "max_edges_per_target")),
     ppcor = list(backends = c("r", "native"), runner = grn_run_rna, args = "method"),
     pidc = list(backends = c("r", "native"), runner = grn_run_rna, args = "log_scale"),

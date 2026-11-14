@@ -31,7 +31,8 @@ RunPando(object, ...)
 RunLinger(object, ...)
 }
 \arguments{
-\item{object}{A Seurat object or expression matrix.}
+\item{object}{A Seurat object or expression matrix. Pando, LINGER, and
+multiome multiCSN require a Seurat object with paired RNA and ATAC assays.}
 
 \item{pseudotime}{Metadata column, cell-named numeric vector, or cell-by-trajectory matrix.}
 
@@ -46,14 +47,16 @@ Each function selects its method in \code{\link[=RunGRN]{RunGRN()}}. Pass the re
 as you would to \code{\link[=RunGRN]{RunGRN()}}.
 }
 \details{
-PIDC and SCODE require \code{resources$source_dir}. For SCODE or SINCERITIES
-with several trajectories, select one with \code{method_args$trajectory}.
-SINCERITIES needs at least five distinct time points.
+PIDC and SCODE require \code{resources$source_dir}. To select one of several
+trajectories for SCODE or SINCERITIES, use \code{method_args$trajectory}.
+SINCERITIES needs at least five time points or bins and two variable
+predictors per fitted target. In \code{method_args}, \code{max_time_points} limits
+bins (default \code{NA}, no binning), \code{method} selects ridge (1, default), elastic
+net (2), or lasso (3), and \code{SIGN = 1L} adds signs (default 0, unsigned).
 
-Pando and multiome multiCSN need paired RNA and ATAC data and
-\code{resources$genome}. LINGER needs paired count layers and a bulk reference
-directory in \code{resources$bulk_reference}. Prepare the reference with
-\code{\link[=PrepareDB]{PrepareDB()}} before running LINGER.
+For multiome multiCSN, set \code{input_mode = "multiome"} and use \code{"data"} for
+both layers. Pando and multiome multiCSN require \code{resources$genome}.
+LINGER requires two count layers and \code{resources$bulk_reference} from \code{\link[=PrepareDB]{PrepareDB()}}.
 }
 \examples{
 set.seed(41)
