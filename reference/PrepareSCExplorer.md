@@ -87,48 +87,48 @@ PrepareSCExplorer(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-11-13 10:19:00] Start standard processing workflow...
-#> ℹ [2026-11-13 10:19:00] Checking a list of <Seurat>...
-#> ! [2026-11-13 10:19:00] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-11-13 10:19:00] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-11-13 10:19:00] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-13 10:19:00] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-13 10:19:00] Number of available HVF: 2000
-#> ℹ [2026-11-13 10:19:01] Finished check
-#> ℹ [2026-11-13 10:19:01] Perform `ScaleData()`
-#> ℹ [2026-11-13 10:19:01] Perform pca linear dimension reduction
-#> ℹ [2026-11-13 10:19:01] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-11-13 10:19:01] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-13 10:19:01] Reorder clusters...
-#> ℹ [2026-11-13 10:19:01] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-13 10:19:01] Perform umap nonlinear dimension reduction
-#> ✔ [2026-11-13 10:19:10] Standard processing workflow completed
+#> ℹ [2026-11-15 23:04:35] Start standard processing workflow...
+#> ℹ [2026-11-15 23:04:35] Checking a list of <Seurat>...
+#> ! [2026-11-15 23:04:35] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-15 23:04:35] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-15 23:04:35] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-15 23:04:35] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-15 23:04:35] Number of available HVF: 2000
+#> ℹ [2026-11-15 23:04:35] Finished check
+#> ℹ [2026-11-15 23:04:35] Perform `ScaleData()`
+#> ℹ [2026-11-15 23:04:35] Perform pca linear dimension reduction
+#> ℹ [2026-11-15 23:04:35] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-11-15 23:04:36] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-15 23:04:36] Reorder clusters...
+#> ℹ [2026-11-15 23:04:36] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-15 23:04:36] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-15 23:04:44] Standard processing workflow completed
 PrepareSCExplorer(pancreas_sub, base_dir = tempdir())
-#> ℹ [2026-11-13 10:19:10] Set the project name of each <Seurat> to their dataset name
-#> ℹ [2026-11-13 10:19:10] Prepare data for object: "SeuratProject"
-#> ℹ [2026-11-13 10:19:10] Write the expression matrix to: /tmp/RtmpihyaLS/data.hdf5
-#> ℹ [2026-11-13 10:19:10] Group "/SeuratProject/RNA/counts" already exists in /tmp/RtmpihyaLS/data.hdf5
-#> ℹ [2026-11-13 10:19:10] Group "/SeuratProject/RNA/data" already exists in /tmp/RtmpihyaLS/data.hdf5
-#> ℹ [2026-11-13 10:19:10] Write the meta information to: /tmp/RtmpihyaLS/meta.hdf5
-#> ℹ [2026-11-13 10:19:10] Group "/SeuratProject/metadata/orig.ident" already exists in /tmp/RtmpihyaLS/meta.hdf5
-#> ℹ [2026-11-13 10:19:10] Group "/SeuratProject/metadata/nCount_RNA" already exists in /tmp/RtmpihyaLS/meta.hdf5
-#> ℹ [2026-11-13 10:19:10] Group "/SeuratProject/metadata/nFeature_RNA" already exists in /tmp/RtmpihyaLS/meta.hdf5
-#> ℹ [2026-11-13 10:19:10] Group "/SeuratProject/metadata/S_score" already exists in /tmp/RtmpihyaLS/meta.hdf5
-#> ℹ [2026-11-13 10:19:10] Group "/SeuratProject/metadata/G2M_score" already exists in /tmp/RtmpihyaLS/meta.hdf5
-#> ℹ [2026-11-13 10:19:10] Group "/SeuratProject/metadata/nCount_spliced" already exists in /tmp/RtmpihyaLS/meta.hdf5
-#> ℹ [2026-11-13 10:19:10] Group "/SeuratProject/metadata/nFeature_spliced" already exists in /tmp/RtmpihyaLS/meta.hdf5
-#> ℹ [2026-11-13 10:19:10] Group "/SeuratProject/metadata/nCount_unspliced" already exists in /tmp/RtmpihyaLS/meta.hdf5
-#> ℹ [2026-11-13 10:19:10] Group "/SeuratProject/metadata/nFeature_unspliced" already exists in /tmp/RtmpihyaLS/meta.hdf5
-#> ℹ [2026-11-13 10:19:10] Group "/SeuratProject/metadata/CellType" already exists in /tmp/RtmpihyaLS/meta.hdf5
-#> ℹ [2026-11-13 10:19:10] Group "/SeuratProject/metadata/SubCellType" already exists in /tmp/RtmpihyaLS/meta.hdf5
-#> ℹ [2026-11-13 10:19:10] Group "/SeuratProject/metadata/Phase" already exists in /tmp/RtmpihyaLS/meta.hdf5
-#> ℹ [2026-11-13 10:19:10] Group "/SeuratProject/metadata/Standardpca_SNN_res.0.6" already exists in /tmp/RtmpihyaLS/meta.hdf5
-#> ℹ [2026-11-13 10:19:10] Group "/SeuratProject/metadata/ident" already exists in /tmp/RtmpihyaLS/meta.hdf5
-#> ℹ [2026-11-13 10:19:10] Group "/SeuratProject/metadata/Standardpcaclusters" already exists in /tmp/RtmpihyaLS/meta.hdf5
-#> ℹ [2026-11-13 10:19:10] Group "/SeuratProject/metadata/Standardclusters" already exists in /tmp/RtmpihyaLS/meta.hdf5
-#> ℹ [2026-11-13 10:19:10] Group "/SeuratProject/metadata.stat" already exists in /tmp/RtmpihyaLS/meta.hdf5
-#> ℹ [2026-11-13 10:19:10] Group "/SeuratProject/reductions/Standardpca" already exists in /tmp/RtmpihyaLS/meta.hdf5
-#> ℹ [2026-11-13 10:19:10] Group "/SeuratProject/reductions/StandardpcaUMAP2D" already exists in /tmp/RtmpihyaLS/meta.hdf5
-#> ℹ [2026-11-13 10:19:10] Group "/SeuratProject/reductions/StandardUMAP2D" already exists in /tmp/RtmpihyaLS/meta.hdf5
-#> ℹ [2026-11-13 10:19:10] Group /SeuratProject/reductions.stat already exists in the /tmp/RtmpihyaLS/meta.hdf5
+#> ℹ [2026-11-15 23:04:44] Set the project name of each <Seurat> to their dataset name
+#> ℹ [2026-11-15 23:04:44] Prepare data for object: "SeuratProject"
+#> ℹ [2026-11-15 23:04:44] Write the expression matrix to: /tmp/Rtmp2MryFz/data.hdf5
+#> ℹ [2026-11-15 23:04:44] Group "/SeuratProject/RNA/counts" already exists in /tmp/Rtmp2MryFz/data.hdf5
+#> ℹ [2026-11-15 23:04:44] Group "/SeuratProject/RNA/data" already exists in /tmp/Rtmp2MryFz/data.hdf5
+#> ℹ [2026-11-15 23:04:44] Write the meta information to: /tmp/Rtmp2MryFz/meta.hdf5
+#> ℹ [2026-11-15 23:04:44] Group "/SeuratProject/metadata/orig.ident" already exists in /tmp/Rtmp2MryFz/meta.hdf5
+#> ℹ [2026-11-15 23:04:44] Group "/SeuratProject/metadata/nCount_RNA" already exists in /tmp/Rtmp2MryFz/meta.hdf5
+#> ℹ [2026-11-15 23:04:44] Group "/SeuratProject/metadata/nFeature_RNA" already exists in /tmp/Rtmp2MryFz/meta.hdf5
+#> ℹ [2026-11-15 23:04:44] Group "/SeuratProject/metadata/S_score" already exists in /tmp/Rtmp2MryFz/meta.hdf5
+#> ℹ [2026-11-15 23:04:44] Group "/SeuratProject/metadata/G2M_score" already exists in /tmp/Rtmp2MryFz/meta.hdf5
+#> ℹ [2026-11-15 23:04:44] Group "/SeuratProject/metadata/nCount_spliced" already exists in /tmp/Rtmp2MryFz/meta.hdf5
+#> ℹ [2026-11-15 23:04:44] Group "/SeuratProject/metadata/nFeature_spliced" already exists in /tmp/Rtmp2MryFz/meta.hdf5
+#> ℹ [2026-11-15 23:04:44] Group "/SeuratProject/metadata/nCount_unspliced" already exists in /tmp/Rtmp2MryFz/meta.hdf5
+#> ℹ [2026-11-15 23:04:44] Group "/SeuratProject/metadata/nFeature_unspliced" already exists in /tmp/Rtmp2MryFz/meta.hdf5
+#> ℹ [2026-11-15 23:04:44] Group "/SeuratProject/metadata/CellType" already exists in /tmp/Rtmp2MryFz/meta.hdf5
+#> ℹ [2026-11-15 23:04:44] Group "/SeuratProject/metadata/SubCellType" already exists in /tmp/Rtmp2MryFz/meta.hdf5
+#> ℹ [2026-11-15 23:04:44] Group "/SeuratProject/metadata/Phase" already exists in /tmp/Rtmp2MryFz/meta.hdf5
+#> ℹ [2026-11-15 23:04:44] Group "/SeuratProject/metadata/Standardpca_SNN_res.0.6" already exists in /tmp/Rtmp2MryFz/meta.hdf5
+#> ℹ [2026-11-15 23:04:44] Group "/SeuratProject/metadata/ident" already exists in /tmp/Rtmp2MryFz/meta.hdf5
+#> ℹ [2026-11-15 23:04:44] Group "/SeuratProject/metadata/Standardpcaclusters" already exists in /tmp/Rtmp2MryFz/meta.hdf5
+#> ℹ [2026-11-15 23:04:44] Group "/SeuratProject/metadata/Standardclusters" already exists in /tmp/Rtmp2MryFz/meta.hdf5
+#> ℹ [2026-11-15 23:04:44] Group "/SeuratProject/metadata.stat" already exists in /tmp/Rtmp2MryFz/meta.hdf5
+#> ℹ [2026-11-15 23:04:44] Group "/SeuratProject/reductions/Standardpca" already exists in /tmp/Rtmp2MryFz/meta.hdf5
+#> ℹ [2026-11-15 23:04:44] Group "/SeuratProject/reductions/StandardpcaUMAP2D" already exists in /tmp/Rtmp2MryFz/meta.hdf5
+#> ℹ [2026-11-15 23:04:44] Group "/SeuratProject/reductions/StandardUMAP2D" already exists in /tmp/Rtmp2MryFz/meta.hdf5
+#> ℹ [2026-11-15 23:04:44] Group /SeuratProject/reductions.stat already exists in the /tmp/Rtmp2MryFz/meta.hdf5
 ```

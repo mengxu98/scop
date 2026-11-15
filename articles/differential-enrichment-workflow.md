@@ -583,7 +583,7 @@ data.frame(
 )
 #>                            file    bytes
 #> 1               all-markers.csv  5268635
-#> 2                  analysis.rds 50900573
+#> 2                  analysis.rds 50900572
 #> 3             cell-metadata.csv   146525
 #> 4    GO-BP-GSEA-memberships.csv 12612015
 #> 5 GO-BP-measured-background.csv 10159062
@@ -650,7 +650,7 @@ build_receipt <- data.frame(
 )
 build_receipt
 #>                            article               built_utc  scop     R
-#> 1 differential-enrichment-workflow 2026-11-13 11:05:59 UTC 0.9.2 4.6.2
+#> 1 differential-enrichment-workflow 2026-11-15 23:51:41 UTC 0.9.2 4.6.2
 #>                            source_revision source_has_local_changes
 #> 1 b733a483d3faae8fe4e819f244d4a961b33c4191                    FALSE
 #>                        article_md5 R_seed cells_retained genes_in_active_assay
@@ -744,7 +744,7 @@ sessionInfo()
 #> [154] Biostrings_2.80.2       lazyeval_0.2.3          GOSemSim_2.38.3        
 #> [157] fontquiver_0.2.1        Matrix_1.7-6            RcppHNSW_0.7.0         
 #> [160] patchwork_1.3.2         bit64_4.8.6             future_1.82.0          
-#> [163] ggplot2_4.0.3           KEGGREST_1.52.2         igraph_2.3.4           
+#> [163] ggplot2_4.0.4           KEGGREST_1.52.2         igraph_2.3.4           
 #> [166] memoise_2.0.1           bslib_0.12.0            ggtree_4.2.1           
 #> [169] fastmatch_1.1-8         bit_4.6.0               gson_0.2.2             
 #> [172] ape_5.8-1

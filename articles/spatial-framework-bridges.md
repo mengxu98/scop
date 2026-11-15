@@ -459,7 +459,7 @@ build_receipt <- data.frame(
 )
 build_receipt
 #>                     article               built_utc
-#> 1 spatial-framework-bridges 2026-11-13 11:09:34 UTC
+#> 1 spatial-framework-bridges 2026-11-15 23:55:23 UTC
 #>                            source_revision source_has_local_changes
 #> 1 b733a483d3faae8fe4e819f244d4a961b33c4191                    FALSE
 #>                        article_md5     R  scop retained_observations genes

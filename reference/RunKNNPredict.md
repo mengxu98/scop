@@ -199,33 +199,33 @@ RunKNNPredict(
 data(pancreas_sub)
 data(ref_scMCA)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-11-13 10:47:18] Start standard processing workflow...
-#> ℹ [2026-11-13 10:47:18] Checking a list of <Seurat>...
-#> ! [2026-11-13 10:47:18] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-11-13 10:47:18] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-11-13 10:47:18] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-13 10:47:18] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-13 10:47:18] Number of available HVF: 2000
-#> ℹ [2026-11-13 10:47:18] Finished check
-#> ℹ [2026-11-13 10:47:18] Perform `ScaleData()`
-#> ℹ [2026-11-13 10:47:18] Perform pca linear dimension reduction
-#> ℹ [2026-11-13 10:47:19] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-11-13 10:47:19] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-13 10:47:19] Reorder clusters...
-#> ℹ [2026-11-13 10:47:19] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-13 10:47:19] Perform umap nonlinear dimension reduction
-#> ✔ [2026-11-13 10:47:28] Standard processing workflow completed
+#> ℹ [2026-11-15 23:32:58] Start standard processing workflow...
+#> ℹ [2026-11-15 23:32:58] Checking a list of <Seurat>...
+#> ! [2026-11-15 23:32:58] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-15 23:32:58] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-15 23:32:58] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-15 23:32:58] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-15 23:32:58] Number of available HVF: 2000
+#> ℹ [2026-11-15 23:32:58] Finished check
+#> ℹ [2026-11-15 23:32:58] Perform `ScaleData()`
+#> ℹ [2026-11-15 23:32:58] Perform pca linear dimension reduction
+#> ℹ [2026-11-15 23:32:58] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-11-15 23:32:59] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-15 23:32:59] Reorder clusters...
+#> ℹ [2026-11-15 23:32:59] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-15 23:32:59] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-15 23:33:08] Standard processing workflow completed
 
 pancreas_sub <- RunKNNPredict(
   srt_query = pancreas_sub,
   bulk_ref = ref_scMCA
 )
-#> ℹ [2026-11-13 10:47:28] Use [1] 549 features to calculate distance.
-#> ℹ [2026-11-13 10:47:28] Detected query data type: "log_normalized_counts"
-#> ℹ [2026-11-13 10:47:28] Detected reference data type: "log_normalized_counts"
-#> ℹ [2026-11-13 10:47:28] Calculate similarity...
-#> ℹ [2026-11-13 10:47:28] Use raw method to find neighbors
-#> ℹ [2026-11-13 10:47:28] Predict cell type...
+#> ℹ [2026-11-15 23:33:08] Use [1] 549 features to calculate distance.
+#> ℹ [2026-11-15 23:33:08] Detected query data type: "log_normalized_counts"
+#> ℹ [2026-11-15 23:33:08] Detected reference data type: "log_normalized_counts"
+#> ℹ [2026-11-15 23:33:08] Calculate similarity...
+#> ℹ [2026-11-15 23:33:08] Use raw method to find neighbors
+#> ℹ [2026-11-15 23:33:08] Predict cell type...
 CellDimPlot(
   pancreas_sub,
   group.by = "KNNPredict_classification",
@@ -238,12 +238,12 @@ pancreas_sub <- RunKNNPredict(
   bulk_ref = ref_scMCA,
   filter_lowfreq = 30
 )
-#> ℹ [2026-11-13 10:47:28] Use [1] 549 features to calculate distance.
-#> ℹ [2026-11-13 10:47:29] Detected query data type: "log_normalized_counts"
-#> ℹ [2026-11-13 10:47:29] Detected reference data type: "log_normalized_counts"
-#> ℹ [2026-11-13 10:47:29] Calculate similarity...
-#> ℹ [2026-11-13 10:47:29] Use raw method to find neighbors
-#> ℹ [2026-11-13 10:47:29] Predict cell type...
+#> ℹ [2026-11-15 23:33:08] Use [1] 549 features to calculate distance.
+#> ℹ [2026-11-15 23:33:08] Detected query data type: "log_normalized_counts"
+#> ℹ [2026-11-15 23:33:08] Detected reference data type: "log_normalized_counts"
+#> ℹ [2026-11-15 23:33:08] Calculate similarity...
+#> ℹ [2026-11-15 23:33:08] Use raw method to find neighbors
+#> ℹ [2026-11-15 23:33:08] Predict cell type...
 CellDimPlot(
   pancreas_sub,
   group.by = "KNNPredict_classification",
@@ -256,12 +256,12 @@ pancreas_sub <- RunKNNPredict(
   query_group = "SubCellType",
   bulk_ref = ref_scMCA
 )
-#> ℹ [2026-11-13 10:47:29] Use [1] 549 features to calculate distance.
-#> ℹ [2026-11-13 10:47:29] Detected query data type: "log_normalized_counts"
-#> ℹ [2026-11-13 10:47:29] Detected reference data type: "log_normalized_counts"
-#> ℹ [2026-11-13 10:47:29] Calculate similarity...
-#> ℹ [2026-11-13 10:47:29] Use raw method to find neighbors
-#> ℹ [2026-11-13 10:47:29] Predict cell type...
+#> ℹ [2026-11-15 23:33:09] Use [1] 549 features to calculate distance.
+#> ℹ [2026-11-15 23:33:09] Detected query data type: "log_normalized_counts"
+#> ℹ [2026-11-15 23:33:09] Detected reference data type: "log_normalized_counts"
+#> ℹ [2026-11-15 23:33:09] Calculate similarity...
+#> ℹ [2026-11-15 23:33:09] Use raw method to find neighbors
+#> ℹ [2026-11-15 23:33:09] Predict cell type...
 CellDimPlot(
   pancreas_sub,
   group.by = "KNNPredict_classification",
@@ -287,7 +287,7 @@ query <- RunKNNPredict(
   ref_collapsing = FALSE, k = 10, verbose = FALSE
 )
 query <- RunStandardWorkflow(query, verbose = FALSE, linear_reduction_dims = 10)
-#> ℹ [2026-11-13 10:47:30] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-15 23:33:10] Skip `log1p()` because `layer = data` is not "counts"
 CellDimPlot(
   query,
   group.by = "KNNPredict_classification",

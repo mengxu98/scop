@@ -188,22 +188,22 @@ DynamicPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-11-13 10:10:23] Start standard processing workflow...
-#> ℹ [2026-11-13 10:10:23] Checking a list of <Seurat>...
-#> ! [2026-11-13 10:10:23] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-11-13 10:10:23] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-11-13 10:10:23] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-13 10:10:23] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-13 10:10:23] Number of available HVF: 2000
-#> ℹ [2026-11-13 10:10:23] Finished check
-#> ℹ [2026-11-13 10:10:23] Perform `ScaleData()`
-#> ℹ [2026-11-13 10:10:23] Perform pca linear dimension reduction
-#> ℹ [2026-11-13 10:10:24] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-11-13 10:10:24] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-13 10:10:24] Reorder clusters...
-#> ℹ [2026-11-13 10:10:24] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-13 10:10:24] Perform umap nonlinear dimension reduction
-#> ✔ [2026-11-13 10:10:32] Standard processing workflow completed
+#> ℹ [2026-11-15 22:55:53] Start standard processing workflow...
+#> ℹ [2026-11-15 22:55:53] Checking a list of <Seurat>...
+#> ! [2026-11-15 22:55:53] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-15 22:55:53] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-15 22:55:53] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-15 22:55:54] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-15 22:55:54] Number of available HVF: 2000
+#> ℹ [2026-11-15 22:55:54] Finished check
+#> ℹ [2026-11-15 22:55:54] Perform `ScaleData()`
+#> ℹ [2026-11-15 22:55:54] Perform pca linear dimension reduction
+#> ℹ [2026-11-15 22:55:54] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-11-15 22:55:54] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-15 22:55:55] Reorder clusters...
+#> ℹ [2026-11-15 22:55:55] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-15 22:55:55] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-15 22:56:02] Standard processing workflow completed
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
   group.by = "SubCellType",
@@ -228,18 +228,18 @@ DynamicPlot(
   group_use = c("Ductal", "Beta"),
   compare_features = TRUE
 )
-#> ℹ [2026-11-13 10:10:34] Start find dynamic features
-#> ℹ [2026-11-13 10:10:34] Data type is raw counts
-#> ℹ [2026-11-13 10:10:34] Number of candidate features (union): 3
-#> ℹ [2026-11-13 10:10:35] Data type is raw counts
-#> ! [2026-11-13 10:10:35] Negative values detected
-#> ℹ [2026-11-13 10:10:35] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-11-13 10:10:35] Using 1 core
-#> ⠙ [2026-11-13 10:10:35] Running for 1 [1/3] ■■■         33% | ETA:  0s
-#> ✔ [2026-11-13 10:10:35] Completed 3 tasks in 94ms
+#> ℹ [2026-11-15 22:56:04] Start find dynamic features
+#> ℹ [2026-11-15 22:56:04] Data type is raw counts
+#> ℹ [2026-11-15 22:56:05] Number of candidate features (union): 3
+#> ℹ [2026-11-15 22:56:05] Data type is raw counts
+#> ! [2026-11-15 22:56:05] Negative values detected
+#> ℹ [2026-11-15 22:56:05] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-11-15 22:56:05] Using 1 core
+#> ⠙ [2026-11-15 22:56:05] Running for 1 [1/3] ■■■         33% | ETA:  0s
+#> ✔ [2026-11-15 22:56:05] Completed 3 tasks in 93ms
 #> 
-#> ℹ [2026-11-13 10:10:35] Building results
-#> ✔ [2026-11-13 10:10:35] Find dynamic features done
+#> ℹ [2026-11-15 22:56:05] Building results
+#> ✔ [2026-11-15 22:56:05] Find dynamic features done
 
 
 # Demonstration only: create two conditions spanning the same pseudotime.
@@ -258,22 +258,22 @@ DynamicPlot(
   group.by = "condition",
   fit.by = "condition"
 )
-#> ℹ [2026-11-13 10:10:35] Start find dynamic features
-#> ℹ [2026-11-13 10:10:36] Data type is raw counts
-#> ℹ [2026-11-13 10:10:36] Number of candidate features (union): 1
-#> ℹ [2026-11-13 10:10:36] Data type is raw counts
-#> ℹ [2026-11-13 10:10:36] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-11-13 10:10:36] Using 1 core
-#> ℹ [2026-11-13 10:10:36] Building results
-#> ✔ [2026-11-13 10:10:36] Find dynamic features done
-#> ℹ [2026-11-13 10:10:36] Start find dynamic features
-#> ℹ [2026-11-13 10:10:36] Data type is raw counts
-#> ℹ [2026-11-13 10:10:37] Number of candidate features (union): 1
-#> ℹ [2026-11-13 10:10:37] Data type is raw counts
-#> ℹ [2026-11-13 10:10:37] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-11-13 10:10:37] Using 1 core
-#> ℹ [2026-11-13 10:10:37] Building results
-#> ✔ [2026-11-13 10:10:37] Find dynamic features done
+#> ℹ [2026-11-15 22:56:06] Start find dynamic features
+#> ℹ [2026-11-15 22:56:06] Data type is raw counts
+#> ℹ [2026-11-15 22:56:06] Number of candidate features (union): 1
+#> ℹ [2026-11-15 22:56:07] Data type is raw counts
+#> ℹ [2026-11-15 22:56:07] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-11-15 22:56:07] Using 1 core
+#> ℹ [2026-11-15 22:56:07] Building results
+#> ✔ [2026-11-15 22:56:07] Find dynamic features done
+#> ℹ [2026-11-15 22:56:07] Start find dynamic features
+#> ℹ [2026-11-15 22:56:07] Data type is raw counts
+#> ℹ [2026-11-15 22:56:07] Number of candidate features (union): 1
+#> ℹ [2026-11-15 22:56:07] Data type is raw counts
+#> ℹ [2026-11-15 22:56:07] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-11-15 22:56:07] Using 1 core
+#> ℹ [2026-11-15 22:56:07] Building results
+#> ✔ [2026-11-15 22:56:07] Find dynamic features done
 
 
 DynamicPlot(
@@ -284,30 +284,27 @@ DynamicPlot(
   compare_lineages = TRUE,
   compare_features = FALSE
 )
-#> ℹ [2026-11-13 10:10:37] Start find dynamic features
-#> ℹ [2026-11-13 10:10:38] Data type is raw counts
-#> ℹ [2026-11-13 10:10:38] Number of candidate features (union): 3
-#> ℹ [2026-11-13 10:10:38] Data type is raw counts
-#> ! [2026-11-13 10:10:38] Negative values detected
-#> ℹ [2026-11-13 10:10:38] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-11-13 10:10:38] Using 1 core
-#> ⠙ [2026-11-13 10:10:38] Running for 1 [1/3] ■■■         33% | ETA:  0s
-#> ✔ [2026-11-13 10:10:38] Completed 3 tasks in 101ms
+#> ℹ [2026-11-15 22:56:08] Start find dynamic features
+#> ℹ [2026-11-15 22:56:08] Data type is raw counts
+#> ℹ [2026-11-15 22:56:08] Number of candidate features (union): 3
+#> ℹ [2026-11-15 22:56:09] Data type is raw counts
+#> ! [2026-11-15 22:56:09] Negative values detected
+#> ℹ [2026-11-15 22:56:09] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-11-15 22:56:09] Using 1 core
+#> ⠙ [2026-11-15 22:56:09] Running for 1 [1/3] ■■■         33% | ETA:  0s
+#> ✔ [2026-11-15 22:56:09] Completed 3 tasks in 97ms
 #> 
-#> ℹ [2026-11-13 10:10:38] Building results
-#> ✔ [2026-11-13 10:10:38] Find dynamic features done
-#> ℹ [2026-11-13 10:10:38] Start find dynamic features
-#> ℹ [2026-11-13 10:10:39] Data type is raw counts
-#> ℹ [2026-11-13 10:10:39] Number of candidate features (union): 3
-#> ℹ [2026-11-13 10:10:39] Data type is raw counts
-#> ! [2026-11-13 10:10:39] Negative values detected
-#> ℹ [2026-11-13 10:10:39] Calculating dynamic features for "Lineage2"...
-#> ℹ [2026-11-13 10:10:39] Using 1 core
-#> ⠙ [2026-11-13 10:10:39] Running for 1 [1/3] ■■■         33% | ETA:  0s
-#> ✔ [2026-11-13 10:10:39] Completed 3 tasks in 93ms
-#> 
-#> ℹ [2026-11-13 10:10:39] Building results
-#> ✔ [2026-11-13 10:10:39] Find dynamic features done
+#> ℹ [2026-11-15 22:56:09] Building results
+#> ✔ [2026-11-15 22:56:09] Find dynamic features done
+#> ℹ [2026-11-15 22:56:09] Start find dynamic features
+#> ℹ [2026-11-15 22:56:09] Data type is raw counts
+#> ℹ [2026-11-15 22:56:09] Number of candidate features (union): 3
+#> ℹ [2026-11-15 22:56:10] Data type is raw counts
+#> ! [2026-11-15 22:56:10] Negative values detected
+#> ℹ [2026-11-15 22:56:10] Calculating dynamic features for "Lineage2"...
+#> ℹ [2026-11-15 22:56:10] Using 1 core
+#> ℹ [2026-11-15 22:56:10] Building results
+#> ✔ [2026-11-15 22:56:10] Find dynamic features done
 
 
 DynamicPlot(
@@ -318,25 +315,25 @@ DynamicPlot(
   compare_lineages = FALSE,
   compare_features = FALSE
 )
-#> ℹ [2026-11-13 10:10:40] Start find dynamic features
-#> ℹ [2026-11-13 10:10:41] Data type is raw counts
-#> ℹ [2026-11-13 10:10:41] Number of candidate features (union): 3
-#> ℹ [2026-11-13 10:10:41] Data type is raw counts
-#> ! [2026-11-13 10:10:41] Negative values detected
-#> ℹ [2026-11-13 10:10:41] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-11-13 10:10:41] Using 1 core
-#> ℹ [2026-11-13 10:10:41] Building results
-#> ✔ [2026-11-13 10:10:41] Find dynamic features done
-#> ℹ [2026-11-13 10:10:41] Start find dynamic features
-#> ℹ [2026-11-13 10:10:42] Data type is raw counts
-#> ℹ [2026-11-13 10:10:42] Number of candidate features (union): 3
-#> ℹ [2026-11-13 10:10:42] Data type is raw counts
-#> ! [2026-11-13 10:10:42] Negative values detected
-#> ℹ [2026-11-13 10:10:42] Calculating dynamic features for "Lineage2"...
-#> ℹ [2026-11-13 10:10:42] Using 1 core
-#> ⠙ [2026-11-13 10:10:42] Running for 1 [1/3] ■■■         33% | ETA:  0s
-#> ✔ [2026-11-13 10:10:42] Completed 3 tasks in 96ms
+#> ℹ [2026-11-15 22:56:11] Start find dynamic features
+#> ℹ [2026-11-15 22:56:11] Data type is raw counts
+#> ℹ [2026-11-15 22:56:11] Number of candidate features (union): 3
+#> ℹ [2026-11-15 22:56:12] Data type is raw counts
+#> ! [2026-11-15 22:56:12] Negative values detected
+#> ℹ [2026-11-15 22:56:12] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-11-15 22:56:12] Using 1 core
+#> ⠙ [2026-11-15 22:56:12] Running for 1 [1/3] ■■■         33% | ETA:  0s
+#> ✔ [2026-11-15 22:56:12] Completed 3 tasks in 193ms
 #> 
-#> ℹ [2026-11-13 10:10:42] Building results
-#> ✔ [2026-11-13 10:10:42] Find dynamic features done
+#> ℹ [2026-11-15 22:56:12] Building results
+#> ✔ [2026-11-15 22:56:12] Find dynamic features done
+#> ℹ [2026-11-15 22:56:12] Start find dynamic features
+#> ℹ [2026-11-15 22:56:12] Data type is raw counts
+#> ℹ [2026-11-15 22:56:12] Number of candidate features (union): 3
+#> ℹ [2026-11-15 22:56:13] Data type is raw counts
+#> ! [2026-11-15 22:56:13] Negative values detected
+#> ℹ [2026-11-15 22:56:13] Calculating dynamic features for "Lineage2"...
+#> ℹ [2026-11-15 22:56:13] Using 1 core
+#> ℹ [2026-11-15 22:56:13] Building results
+#> ✔ [2026-11-15 22:56:13] Find dynamic features done
 ```

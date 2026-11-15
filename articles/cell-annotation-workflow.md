@@ -325,7 +325,7 @@ data.frame(
   bytes = file.info(list.files(output_dir, full.names = TRUE))$size
 )
 #>                               file    bytes
-#> 1                     analysis.rds  8030150
+#> 1                     analysis.rds  8030149
 #> 2                cell-metadata.csv    30269
 #> 3 log-scale-reference-profiles.csv  2562291
 #> 4         prediction-agreement.csv      134
@@ -387,7 +387,7 @@ build_receipt <- data.frame(
 )
 build_receipt
 #>                    article               built_utc  scop     R
-#> 1 cell-annotation-workflow 2026-11-13 11:02:43 UTC 0.9.2 4.6.2
+#> 1 cell-annotation-workflow 2026-11-15 23:48:29 UTC 0.9.2 4.6.2
 #>                            source_revision source_has_local_changes
 #> 1 b733a483d3faae8fe4e819f244d4a961b33c4191                    FALSE
 #>                        article_md5 R_seed cells_retained genes_in_active_assay
@@ -451,7 +451,7 @@ sessionInfo()
 #>  [64] pillar_1.11.1         Seurat_6.0.0          KernSmooth_2.23-27   
 #>  [67] stats4_4.6.2          foreach_1.5.2         generics_0.1.4       
 #>  [70] thisutils_0.5.4       RcppHNSW_0.7.0        sp_2.2-4             
-#>  [73] S4Vectors_0.50.3      ggplot2_4.0.3         scales_1.4.0         
+#>  [73] S4Vectors_0.50.3      ggplot2_4.0.4         scales_1.4.0         
 #>  [76] globals_0.20.0        glue_1.8.1            proxyC_0.6.0         
 #>  [79] tools_4.6.2           ggnewscale_0.5.2      RSpectra_0.16-2      
 #>  [82] RANN_2.6.3            fs_2.1.0              dotCall64_1.2        

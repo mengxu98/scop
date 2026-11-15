@@ -327,7 +327,7 @@ build_receipt <- data.frame(
 )
 build_receipt
 #>                article               built_utc  scop     R
-#> 1 integration-workflow 2026-11-13 11:07:10 UTC 0.9.2 4.6.2
+#> 1 integration-workflow 2026-11-15 23:52:52 UTC 0.9.2 4.6.2
 #>                            source_revision source_has_local_changes
 #> 1 b733a483d3faae8fe4e819f244d4a961b33c4191                    FALSE
 #>                        article_md5 R_seed cells_retained genes_in_active_assay
@@ -378,7 +378,7 @@ sessionInfo()
 #> [25] KernSmooth_2.23-27  Rtsne_0.17          withr_3.0.3        
 #> [28] desc_1.4.3          grid_4.6.2          RcppHNSW_0.7.0     
 #> [31] fastDummies_1.7.6   future_1.82.0       progressr_1.1.0    
-#> [34] ggplot2_4.0.3       globals_0.20.0      scales_1.4.0       
+#> [34] ggplot2_4.0.4       globals_0.20.0      scales_1.4.0       
 #> [37] MASS_7.3-66         ggridges_0.5.7      dichromat_2.0-1    
 #> [40] cli_3.6.6           rmarkdown_2.32      ragg_1.5.2         
 #> [43] thisutils_0.5.4     generics_0.1.4      Seurat_6.0.0       
