@@ -647,7 +647,7 @@ run_scanpy_cpp <- function(
       use_rep = linear_reduction,
       n_pcs = length(dims_use),
       n_neighbors = as.integer(n_neighbors),
-      knn_k = ncol(knn[["idx"]]),
+      knn_k = knn_k,
       filter_genes = filter_genes,
       normalize_per_cell = normalize_per_cell,
       log_transform = log_transform,

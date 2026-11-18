@@ -990,7 +990,6 @@ run_cellrank_cpp <- function(
   nonlinear_embedding <- as.matrix(srt@reductions[[nonlinear_reduction]]@cell.embeddings[cells, , drop = FALSE])
   storage.mode(nonlinear_embedding) <- "double"
   n_cells <- nrow(nonlinear_embedding)
-  n_dims <- ncol(nonlinear_embedding)
   dense_estimate_gib <- assert_cpp_dense_budget(
     n_rows = n_cells,
     n_cols = n_cells,

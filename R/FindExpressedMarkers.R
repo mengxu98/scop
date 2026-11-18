@@ -695,7 +695,6 @@ FindConservedMarkers2 <- function(
 }
 
 find_conserved_marker_sign_keep <- function(logfc, only.pos = FALSE) {
-  n_groups <- ncol(logfc)
   row_all <- function(x) {
     has_false <- rowSums(!x, na.rm = TRUE) > 0L
     out <- !has_false

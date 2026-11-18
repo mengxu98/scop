@@ -739,7 +739,6 @@ build_metabolism_gene_sets_from_preparedb <- function(
 
   gene_sets <- list()
   term_names <- character(0)
-  expr_set <- stats::setNames(rep(TRUE, length(expr_gene_names)), expr_gene_names)
 
   for (term_db in db_terms) {
     db_entry <- db_list[[species]][[term_db]]
