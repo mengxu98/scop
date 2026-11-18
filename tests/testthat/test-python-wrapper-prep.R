@@ -63,13 +63,18 @@ test_that("GNIPLR C++ preserves Python stable-order Granger semantics", {
   )
 })
 
-test_that("GRN Python wrappers bootstrap their isolated SCENIC environments", {
+test_that("GRN Python methods use their configured environments", {
   modules <- NULL
+  environment <- NULL
   testthat::local_mocked_bindings(
     .package = "scop",
     PrepareEnv = function(modules, ...) {
       modules <<- modules
       stop("prepared")
+    },
+    conda_python = function(envname, ...) {
+      environment <<- envname
+      stop("interpreter selected")
     }
   )
   expr <- matrix(
@@ -85,10 +90,10 @@ test_that("GRN Python wrappers bootstrap their isolated SCENIC environments", {
   expect_identical(modules, "scenic")
 
   expect_error(
-    regdiffusion_python(expr, regulators = "g1", work_dir = tempdir()),
-    "prepared"
+    RunGRN(t(expr), methods = "regdiffusion", verbose = FALSE),
+    "interpreter selected"
   )
-  expect_identical(modules, c("scenic", "regdiffusion"))
+  expect_identical(environment, "regdiffusion_env")
 })
 
 test_that("MDIC3 Python backend selects the prepared Python runtime", {

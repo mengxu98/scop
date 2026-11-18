@@ -19,6 +19,8 @@ Depends:
     R (>= 4.1.0)
 Imports:
     cli,
+    jsonlite,
+    processx,
     graphics,
     grid,
     dplyr,
@@ -39,10 +41,14 @@ Imports:
     stats,
     thisplot (>= 0.4.7),
     tools,
-    thisutils (>= 0.5.3),
+    thisutils (>= 0.5.4),
     utils,
     uwot
 Suggests:
+    ppcor,
+    pbapply,
+    SCORPION,
+    glmnet,
     cicero,
     ggseqlogo,
     IRanges,

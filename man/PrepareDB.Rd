@@ -37,8 +37,8 @@ PrepareDB(
 \code{"Enzyme"}, \code{"TF"}, \code{"CSPA"}, \code{"Surfaceome"}, \code{"SPRomeDB"}, \code{"VerSeDa"},
 \code{"TFLink"}, \code{"hTFtarget"}, \code{"TRRUST"}, \code{"JASPAR"}, \code{"ENCODE"}, \code{"MSigDB"},
 \code{"CellTalk"}, \code{"CellChat"}, \code{"CytoTRACE2"} or
-\code{"MSigDB_<collection>"}. A vector may combine sources. See the corresponding
-preparation function for source-specific settings.}
+\code{"MSigDB_<collection>"}. A vector may combine sources. Also accepts the
+opt-in human reference selectors \code{"LINGER"} and \code{"SCENICPlus"}.}
 
 \item{db_IDtypes}{Gene ID types to include.}
 
@@ -46,9 +46,10 @@ preparation function for source-specific settings.}
 
 \item{db_update}{Force a refresh. \code{FALSE} loads the cache when available.}
 
-\item{data_dir}{Directory or named list of local source files. Searches
-\verb{data_dir/<db>/} then \code{data_dir}. Named lists override a path, e.g.
-\code{list(MSigDB = "~/db/msigdb")}.}
+\item{data_dir}{Directory or named list of local sources. Searches
+\verb{data_dir/<db>/} then \code{data_dir}. LINGER accepts a \code{data_bulk} directory,
+its parent, or a \code{.tar.gz} or \code{.tgz} archive. SCENICPlus requires matching genome
+annotation and chromosome sizes. See \code{vignette("grn-multiome")} for inputs.}
 
 \item{convert_species}{Use a species-converted database when the annotation is
 missing for \code{species}.}
@@ -69,7 +70,7 @@ Possible options include \code{"ensembl"}, \code{"protists_mart"}, \code{"fungi_
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{Arguments passed to other functions.}
+\item{...}{Additional parameters to other functions.}
 }
 \value{
 A named list of prepared resources. Gene annotation databases are
@@ -78,8 +79,7 @@ nested by species and database, with \code{TERM2GENE} (gene-to-term mappings),
 return contract of the corresponding preparation function.
 }
 \description{
-Prepare species-specific databases and reference resources from annotation
-packages, cached downloads, or supplied files.
+Prepare databases and reference resources
 }
 \examples{
 \dontrun{
@@ -87,6 +87,11 @@ databases <- PrepareDB(species = "Homo_sapiens", db = c("GO_BP", "KEGG"))
 names(databases[["Homo_sapiens"]])
 ListDB(species = "Homo_sapiens", db = c("GO_BP", "KEGG"))
 }
+}
+\references{
+\url{https://github.com/Durenlab/LINGER/blob/main/docs/GRN_infer.md}
+
+\url{https://scenicplus.readthedocs.io/en/latest/human_cerebellum.html}
 }
 \seealso{
 \link{ListDB}, \link{PrepareGO}, \link{PrepareKEGG}, \link{PrepareMSigDB}, \link{PrepareIREA}

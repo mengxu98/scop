@@ -1,9 +1,5 @@
 #' @title Prepare databases and reference resources
 #'
-#' @description
-#' Prepare species-specific databases and reference resources from annotation
-#' packages, cached downloads, or supplied files.
-#'
 #' @md
 #' @inheritParams GeneConvert
 #' @inheritParams thisutils::log_message
@@ -14,24 +10,30 @@
 #' `"Enzyme"`, `"TF"`, `"CSPA"`, `"Surfaceome"`, `"SPRomeDB"`, `"VerSeDa"`,
 #' `"TFLink"`, `"hTFtarget"`, `"TRRUST"`, `"JASPAR"`, `"ENCODE"`, `"MSigDB"`,
 #' `"CellTalk"`, `"CellChat"`, `"CytoTRACE2"` or
-#' `"MSigDB_<collection>"`. A vector may combine sources. See the corresponding
-#' preparation function for source-specific settings.
+#' `"MSigDB_<collection>"`. A vector may combine sources. Also accepts the
+#' opt-in human reference selectors `"LINGER"` and `"SCENICPlus"`.
 #' @param db_IDtypes Gene ID types to include.
 #' @param db_version Database version to retrieve.
 #' @param db_update Force a refresh. `FALSE` loads the cache when available.
-#' @param data_dir Directory or named list of local source files. Searches
-#' `data_dir/<db>/` then `data_dir`. Named lists override a path, e.g.
-#' `list(MSigDB = "~/db/msigdb")`.
+#' @param data_dir Directory or named list of local sources. Searches
+#'   `data_dir/<db>/` then `data_dir`. LINGER accepts a `data_bulk` directory,
+#'   its parent, or a `.tar.gz` or `.tgz` archive. SCENICPlus requires matching genome
+#'   annotation and chromosome sizes. See `vignette("grn-multiome")` for inputs.
 #' @param convert_species Use a species-converted database when the annotation is
 #' missing for `species`.
 #' @param Ensembl_version Ensembl version. `NULL` uses the latest.
 #' @param custom_TERM2GENE,custom_TERM2NAME Custom mappings for `custom_species`.
 #' @param custom_species,custom_IDtype,custom_version Metadata for a custom database.
-#' @param ... Arguments passed to other functions.
+#' @param ... Additional parameters to other functions.
 #' @return A named list of prepared resources. Gene annotation databases are
 #' nested by species and database, with `TERM2GENE` (gene-to-term mappings),
 #' `TERM2NAME` (term names) and `version`. Additional resource fields follow the
 #' return contract of the corresponding preparation function.
+#'
+#' @references
+#' <https://github.com/Durenlab/LINGER/blob/main/docs/GRN_infer.md>
+#'
+#' <https://scenicplus.readthedocs.io/en/latest/human_cerebellum.html>
 #'
 #' @seealso [ListDB], [PrepareGO], [PrepareKEGG], [PrepareMSigDB], [PrepareIREA]
 #'
@@ -93,6 +95,7 @@ PrepareDB <- function(
   verbose = TRUE,
   ...
 ) {
+  species_default <- missing(species)
   species <- normalize_species_name(species)
   if (!is.null(db)) {
     db <- as.character(db)
@@ -102,6 +105,23 @@ PrepareDB <- function(
   if ("CytoTRACE2" %in% db) {
     db_list <- PrepareCytoTRACE2(db_update = db_update, verbose = verbose)
     db <- setdiff(db, "CytoTRACE2")
+  }
+  grn_db <- intersect(db, c("LINGER", "SCENICPlus"))
+  if (length(grn_db)) {
+    if (!species_default && !identical(species, "Homo_sapiens")) {
+      stop("LINGER and SCENICPlus references require species = 'Homo_sapiens'.", call. = FALSE)
+    }
+    if (!is.logical(db_update) || length(db_update) != 1L || is.na(db_update)) {
+      stop("db_update must be TRUE or FALSE.", call. = FALSE)
+    }
+    for (term in grn_db) {
+      source <- if (is.list(data_dir)) data_dir[[term]] else data_dir
+      db_list[[term]] <- switch(term,
+        LINGER = preparedb_linger(source, db_update, verbose),
+        SCENICPlus = preparedb_scenicplus(source, db_update, verbose)
+      )
+    }
+    db <- setdiff(db, grn_db)
   }
   if (!is.null(custom_TERM2GENE)) {
     return(c(db_list, PrepareCustomDB(
@@ -1440,4 +1460,197 @@ preparedb_irea_reference <- function(directory, db, species, update, verbose = T
   reference <- preparedb_read_irea(directory, db, species)
   utils::write.csv(manifest, manifest_path, row.names = FALSE)
   reference
+}
+
+preparedb_scenicplus <- function(data_source, db_update, verbose) {
+  names_static <- c("ranking_db", "scores_db", "motif_annotation")
+  files <- c(
+    ranking_db = "hg38_screen_v10_clust.regions_vs_motifs.rankings.feather",
+    scores_db = "hg38_screen_v10_clust.regions_vs_motifs.scores.feather",
+    motif_annotation = "motifs-v10nr_clust-nr.hgnc-m0.001-o0.0.tbl",
+    genome_annotation = "genome_annotation.tsv",
+    chromsizes = "chromsizes.tsv"
+  )
+  if (!is.list(data_source)) data_source <- list(path = data_source)
+  if (length(setdiff(names(data_source), c("path", names(files)))) ||
+    (length(data_source) && (is.null(names(data_source)) || anyDuplicated(names(data_source))))) {
+    stop("SCENICPlus data_dir accepts path and named reference files.", call. = FALSE)
+  }
+  if (any(names_static %in% names(data_source)) && !all(names_static %in% names(data_source))) {
+    stop("Supply custom SCENICPlus ranking_db, scores_db and motif_annotation together.", call. = FALSE)
+  }
+  directory <- data_source$path %||% file.path(tools::R_user_dir("scop", "data"), "SCENICPlus", "hg38-screen-v10")
+  if (!is.character(directory) || length(directory) != 1L || is.na(directory) || !nzchar(directory) ||
+    (file.exists(directory) && !dir.exists(directory))) {
+    stop("SCENICPlus path must name a reference directory.", call. = FALSE)
+  }
+  directory <- path.expand(directory)
+  if (dir.exists(file.path(directory, "SCENICPlus"))) directory <- file.path(directory, "SCENICPlus")
+  paths <- as.list(stats::setNames(file.path(directory, files), names(files)))
+  for (name in intersect(names(files), names(data_source))) {
+    path <- data_source[[name]]
+    if (!is.character(path) || length(path) != 1L || is.na(path) || !nzchar(path)) {
+      stop("SCENICPlus ", name, " must name one local file.", call. = FALSE)
+    }
+    paths[[name]] <- path.expand(path)
+  }
+  columns <- list(
+    genome_annotation = c("Chromosome", "Start", "End", "Strand", "Gene", "Transcription_Start_Site"),
+    chromsizes = c("Chromosome", "Start", "End"),
+    motif_annotation = c("#motif_id", "gene_name")
+  )
+  validate <- function(path, name) {
+    size <- file.info(path)$size
+    if (is.na(size) || size == 0 || dir.exists(path)) {
+      stop("Missing or empty SCENICPlus ", name, ": ", path, call. = FALSE)
+    }
+    if (name %in% names(columns)) {
+      header <- strsplit(readLines(path, n = 1L, warn = FALSE), "\t", fixed = TRUE)[[1L]]
+      if (!all(columns[[name]] %in% header)) {
+        stop("Invalid SCENICPlus ", name, " columns: ", path, call. = FALSE)
+      }
+    } else {
+      handle <- file(path, "rb")
+      on.exit(close(handle), add = TRUE)
+      magic <- charToRaw("ARROW1")
+      first <- readBin(handle, "raw", n = length(magic))
+      if (size >= 12) seek(handle, where = size - length(magic))
+      if (!identical(first, magic) || !identical(readBin(handle, "raw", n = length(magic)), magic)) {
+        stop("Invalid SCENICPlus Feather file: ", path, call. = FALSE)
+      }
+    }
+  }
+  for (name in c("genome_annotation", "chromsizes")) validate(paths[[name]], name)
+  base <- "https://resources.aertslab.org/cistarget"
+  region_base <- paste0(base, "/databases/homo_sapiens/hg38/screen/mc_v10_clust/region_based")
+  urls <- stats::setNames(paste0(c(region_base, region_base, paste0(base, "/motif2tf")), "/", files[names_static]), names_static)
+  for (name in names_static) {
+    path <- paths[[name]]
+    if (!name %in% names(data_source) && (db_update || !file.exists(path))) {
+      dir.create(dirname(path), recursive = TRUE, showWarnings = FALSE)
+      if (dir.exists(path)) stop("SCENICPlus target is a directory: ", path, call. = FALSE)
+      stage <- tempfile(tmpdir = dirname(path))
+      on.exit(unlink(c(stage, paste0(stage, ".download"))), add = TRUE)
+      scenic_download_reference_file(urls[[name]], stage, verbose = verbose)
+      validate(stage, name)
+      if (!file.rename(stage, path)) stop("Could not save SCENICPlus reference: ", path, call. = FALSE)
+    } else {
+      validate(path, name)
+    }
+  }
+  lapply(paths, normalizePath, winslash = "/", mustWork = TRUE)
+}
+
+preparedb_linger <- function(data_source, db_update, verbose) {
+  cache_root <- file.path(tools::R_user_dir("scop", "data"), "LINGER")
+  spec <- .linger_reference_spec
+  sets <- unlist(lapply(names(spec$genome_pair), function(genome) {
+    lapply(spec$chromosomes, function(chromosome) {
+      c(spec$genome_pair[[genome]], gsub("{genome}", genome,
+        gsub("{chromosome}", chromosome, spec$per_chromosome, fixed = TRUE),
+        fixed = TRUE
+      ))
+    })
+  }), recursive = FALSE)
+  expected <- unique(c(spec$common, unlist(sets, use.names = FALSE)))
+  complete <- function(files) {
+    all(spec$common %in% files) && any(vapply(sets, function(x) all(x %in% files), logical(1)))
+  }
+  complete_dir <- function(directory) {
+    paths <- file.path(directory, expected)
+    size <- file.size(paths)
+    present <- file_test("-f", paths) & !is.na(size) & size > 0
+    complete(expected[present])
+  }
+  if (is.null(data_source)) {
+    data_source <- if (complete_dir(file.path(cache_root, "data_bulk"))) {
+      file.path(cache_root, "data_bulk")
+    } else {
+      file.path(cache_root, "data_bulk.tar.gz")
+    }
+  }
+  if (!is.character(data_source) || length(data_source) != 1L || is.na(data_source) ||
+    !nzchar(data_source) || !file.exists(path.expand(data_source))) {
+    stop("Supply a local LINGER data_bulk directory or .tar.gz/.tgz archive in data_dir.", call. = FALSE)
+  }
+  source <- normalizePath(path.expand(data_source), winslash = "/", mustWork = TRUE)
+  if (dir.exists(source)) {
+    for (directory in c(file.path(source, "data_bulk"), source)) {
+      if (complete_dir(directory)) {
+        return(list(bulk_reference = directory))
+      }
+    }
+    stop("LINGER data_bulk must contain the shared files and a complete chromosome set for hg19 or hg38.", call. = FALSE)
+  }
+  if (!grepl("[.](tar[.]gz|tgz)$", source, ignore.case = TRUE)) {
+    stop("Use a .tar.gz or .tgz archive for LINGER references.", call. = FALSE)
+  }
+
+  archive_dir <- file.path(cache_root, "archives", basename(source))
+  entries <- list.dirs(archive_dir, full.names = TRUE, recursive = FALSE)
+  entries <- file.path(c(archive_dir, entries[startsWith(basename(entries), "reference-")]), "data_bulk")
+  matches <- vapply(entries, function(directory) {
+    origin <- file.path(directory, ".source")
+    file.exists(origin) && identical(readLines(origin), source)
+  }, logical(1L))
+  cache <- if (any(matches)) entries[which(matches)[1L]] else NULL
+  if (!db_update && !is.null(cache) && complete_dir(cache)) {
+    return(list(bulk_reference = cache))
+  }
+  tar <- Sys.which("tar")
+  if (!nzchar(tar)) stop("Install tar to extract a LINGER archive, or supply an extracted data_bulk directory.", call. = FALSE)
+  dir.create(archive_dir, recursive = TRUE, showWarnings = FALSE)
+  stage <- tempfile("extract-", tmpdir = archive_dir)
+  if (!dir.create(stage)) stop("Could not create a staging directory for the LINGER archive.", call. = FALSE)
+  on.exit(unlink(stage, recursive = TRUE), add = TRUE)
+  log_message("Preparing LINGER references from {.path {source}}", verbose = verbose)
+  result <- processx::run(tar, c("-tvzf", source), env = c("current", LC_ALL = "C"), error_on_status = FALSE)
+  if (result$status != 0L) stop("Could not list the LINGER archive: ", trimws(result$stderr), call. = FALSE)
+  rows <- strsplit(result$stdout, "\n", fixed = TRUE)[[1L]]
+  rows <- rows[nzchar(rows)]
+  gnu <- "^[d-]\\S* +\\S+ +[0-9]+ +[0-9]{4}-[0-9]{2}-[0-9]{2} +[0-9]{2}:[0-9]{2}(:[0-9]{2})? +"
+  bsd <- "^[d-]\\S* +[0-9]+ +\\S+ +\\S+ +[0-9]+ +[A-Za-z]{3} +[0-9]{1,2} +([0-9]{4}|[0-9]{2}:[0-9]{2}) +"
+  member <- sub(gnu, "", rows, perl = TRUE)
+  member <- sub(bsd, "", member, perl = TRUE)
+  clean <- sub("^([.]/)+", "", member)
+  if (any(member == rows | grepl("^/|(^|/)[.][.](/|$)|[[:cntrl:]]|\\\\", clean))) {
+    stop("LINGER archive contains unsupported entries, links, or unsafe paths.", call. = FALSE)
+  }
+  keep <- startsWith(rows, "-") & basename(clean) %in% expected
+  members <- split(which(keep), dirname(clean[keep]))
+  valid <- vapply(members, function(index) {
+    !anyDuplicated(basename(clean[index])) && complete(basename(clean[index]))
+  }, logical(1))
+  if (sum(valid) != 1L) stop("LINGER archive must contain one complete reference directory.", call. = FALSE)
+  index <- members[[which(valid)]]
+  directory <- names(members)[which(valid)]
+  if (!grepl("^[A-Za-z0-9 ._/-]+$", directory)) stop("LINGER archive contains an unsupported directory path.", call. = FALSE)
+  result <- processx::run(tar, c(
+    "-xzf", source, "-C", stage,
+    "--no-same-owner", "--no-same-permissions", "--", member[index]
+  ), error_on_status = FALSE)
+  extracted <- file.path(stage, directory)
+  if (result$status != 0L || !complete_dir(extracted)) {
+    stop("Could not extract a complete LINGER reference: ", trimws(result$stderr), call. = FALSE)
+  }
+  writeLines(source, file.path(extracted, ".source"))
+  previous <- NULL
+  if (is.null(cache)) {
+    entry <- tempfile("reference-", tmpdir = archive_dir)
+    if (!dir.create(entry)) stop("Could not create a LINGER reference directory.", call. = FALSE)
+    cache <- file.path(entry, "data_bulk")
+  } else {
+    previous <- tempfile("previous-", tmpdir = archive_dir)
+    if (!file.rename(cache, previous)) stop("Could not refresh the cached LINGER reference.", call. = FALSE)
+  }
+  if (!file.rename(extracted, cache)) {
+    if (is.null(previous)) {
+      unlink(dirname(cache), recursive = TRUE)
+    } else {
+      file.rename(previous, cache)
+    }
+    stop("Could not save the prepared LINGER reference.", call. = FALSE)
+  }
+  if (!is.null(previous)) unlink(previous, recursive = TRUE)
+  list(bulk_reference = cache)
 }

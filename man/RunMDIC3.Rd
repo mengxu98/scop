@@ -46,7 +46,8 @@ RunMDIC3(object, ...)
 object.}
 
 \item{grn}{Gene-by-gene GRN matrix aligned to expression genes, or a data
-frame with columns `TF`, `target`, and `importance`.}
+frame with columns `TF`, `target`, and `importance`.
+`RunGRN(return_type = "edges")` supplies this table.}
 
 \item{grn_method}{GRN inference method used when `grn = NULL`.
 `"grnboost2"` calls [RunGRNBoost2()]; `"gniplr"` calls [RunGNIPLR()];

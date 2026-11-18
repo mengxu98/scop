@@ -1,0 +1,284 @@
+---
+title: "Infer and compare gene regulatory networks"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(error = FALSE, collapse = TRUE, comment = "#>")
+```
+
+## Run the pancreas example
+
+This tutorial uses the 1,000 mouse pancreas cells packaged with scop. It fits
+direct TF-gene links, reads the native result, draws a network, and scores its
+predicted target programs with existing scop functions.
+
+The package-data examples run when this article is built. Install `ppcor` to
+run the partial-correlation comparison. The external-data recipes below use
+separately prepared inputs or environments.
+
+```{r pancreas-input}
+data(pancreas_sub, package = "scop")
+pancreas <- Seurat::NormalizeData(pancreas_sub, assay = "RNA", verbose = FALSE)
+expression <- SeuratObject::LayerData(pancreas, assay = "RNA", layer = "data")
+regulators <- intersect(
+	c("Pdx1", "Nkx6-1", "Neurod1", "Pax6", "Isl1", "Arx", "Rfx6"),
+	rownames(expression)
+)
+```
+
+Use known pancreas transcription factors as candidate regulators and every
+expressed gene as a candidate target. The example retains the two highest
+importance regulator edges per target.
+
+```{r pancreas-network}
+work_dir <- file.path(tempdir(), "scop-pancreas-grn")
+pancreas <- scop::RunGRN(
+	pancreas, assay = "RNA", layer = "data",
+	methods = "GRNBoost2", backend = "cpp",
+	regulators = regulators,
+	method_args = list(n_rounds = 20L, max_edges_per_target = 2L),
+	work_dir = work_dir,
+	cores = 1L, seed = 1201L, verbose = FALSE
+)
+head(scop::GetGRN(pancreas))
+result <- scop::GetGRN(pancreas, what = "result")
+result$implementation
+result$package_versions
+```
+
+`methods` chooses the method. `backend` chooses an available implementation.
+The result records the actual `implementation`, package versions, effective
+parameters, and execution details. For example, the scop C++ GRNBoost2 route and
+the official Arboreto route have separate implementation identities.
+
+A Seurat input returns the updated object with its complete network in
+`tools`. A matrix input returns the `TF`, `target`, `importance` edge table by
+default. Set `return_type = "result"` to obtain the complete result directly,
+or `return_type = "edges"` to obtain the edge table from a Seurat input.
+
+```{r pancreas-inspect}
+edges <- scop::GetGRN(pancreas, what = "edges", layer = "tf_gene")
+parameters <- scop::GetGRN(pancreas, what = "parameters")
+head(edges[, c("source", "target", "raw_score", "score_type", "sign", "sign_basis")])
+parameters
+```
+
+GRNBoost2 importance is a nonnegative feature-importance score. Its sign is
+unknown in the standard view. Signed methods retain their own coefficient or
+correlation evidence. Each edge also records its direction and entity types.
+
+```{r pancreas-network-plot, fig.width=8, fig.height=6}
+scop::GRNPlot(pancreas, type = "network", top_n = 50L,
+	title = "Pancreas TF-gene candidates")
+```
+
+`top_n` limits the displayed view. `GetGRN(pancreas, what = "native")` continues to
+return the complete native result.
+
+## Score the predicted target programs
+
+`GetGRN(..., what = "gene_sets")` returns native gene sets when the method
+provides them. Otherwise, it groups direct TF-gene targets by source and sign.
+The `unknown` suffix preserves an unknown sign. These gene sets describe
+predicted target programs.
+
+```{r pancreas-score}
+programs <- scop::GetGRN(pancreas, what = "gene_sets")
+programs <- programs[lengths(programs) >= 5L]
+pancreas <- scop::CellScoring(
+	pancreas, features = programs, assay = "RNA", layer = "data",
+	method = "UCell", backend = "cpp", name = "GRN",
+	minGSSize = 5L, classification = FALSE, store_metadata = TRUE,
+	maxRank = max(1500L, lengths(programs)), cores = 1L, verbose = FALSE
+)
+score_columns <- make.names(paste("GRN", names(programs), sep = "_"))
+score_columns <- intersect(score_columns, colnames(pancreas[[]]))
+```
+
+The packaged input contains counts and cell labels. Compute an embedding before
+using `FeatureDimPlot`.
+
+```{r pancreas-embedding}
+pancreas <- Seurat::FindVariableFeatures(pancreas, assay = "RNA", verbose = FALSE)
+embedding_genes <- SeuratObject::VariableFeatures(pancreas[["RNA"]])
+pancreas <- Seurat::ScaleData(pancreas, assay = "RNA", features = embedding_genes,
+	verbose = FALSE)
+pancreas <- Seurat::RunPCA(pancreas, assay = "RNA", features = embedding_genes,
+	npcs = 10L, verbose = FALSE)
+pancreas <- Seurat::RunUMAP(pancreas, reduction = "pca", dims = 1:10,
+	seed.use = 1201L, verbose = FALSE)
+```
+
+```{r pancreas-program-map, fig.width=8, fig.height=5}
+scop::FeatureDimPlot(pancreas, features = head(score_columns, 2L), reduction = "umap")
+```
+
+```{r pancreas-program-heatmap, fig.width=8, fig.height=5}
+scop::GroupHeatmap(pancreas, features = score_columns, group.by = "CellType",
+	layer = "data", exp_method = "raw")
+```
+
+## Switch the inference method
+
+PPCOR estimates partial correlations within a specified gene panel. This
+example uses the pancreas TFs and a panel of endocrine hormones, processing
+enzymes, and secretion markers across all 1,000 cells. PPCOR reports
+`directed = FALSE` for these associations.
+
+```{r pancreas-ppcor}
+endocrine_markers <- c(
+	"Ins1", "Ins2", "Gcg", "Sst", "Ppy", "Ghrl", "Iapp", "Mafb", "Slc2a2",
+	"Pcsk1", "Pcsk2", "Chga", "Chgb", "Abcc8", "Kcnj11", "Ucn3"
+)
+ppcor_grn <- scop::RunGRN(
+	pancreas, assay = "RNA", layer = "data", methods = "PPCOR",
+	regulators = regulators, targets = endocrine_markers,
+	method_args = list(method = "spearman"), return_type = "result",
+	work_dir = file.path(tempdir(), "scop-pancreas-ppcor"), verbose = FALSE
+)
+head(scop::GetGRN(ppcor_grn))
+scop::GRNPlot(ppcor_grn, top_n = 50L)
+scop::GRNPlot(pancreas, type = "overlap", compare = list(PPCOR = ppcor_grn), top_n = 50L)
+```
+
+Overlap views compare edge identities within the common typed entity space.
+Each method keeps its own scores and ranking. The view also retains edge
+direction, so an undirected association differs from a directed TF-gene link.
+
+For the official Arboreto GRNBoost2 implementation, prepare its Python profile
+once and select that implementation explicitly. You can also point to an
+existing interpreter without changing the Python interpreter of your R session.
+
+```{r arboreto-grn}
+scop::PrepareEnv(modules = "grnboost2", configure_runtime = FALSE)
+official_grn <- scop::RunGRN(
+	pancreas, assay = "RNA", layer = "data", methods = "grnboost2",
+	backend = "python", regulators = regulators,
+	method_args = list(n_rounds = 20L),
+	return_type = "result",
+	work_dir = file.path(tempdir(), "scop-pancreas-arboreto"),
+	cores = 1L, seed = 1201L
+)
+```
+
+Method-specific parameters belong in `method_args`. Unknown names and repeated
+top-level arguments are reported before inference. R methods run in the
+current session. For a Python subprocess, `method_args$runtime` can specify
+`list(python = "/path/to/environment/bin/python", timeout = 3600)`.
+
+## Fit groups separately
+
+`group.by` defines separate network fits. It is independent of downstream
+program-score summaries. Select `groups` explicitly and use a complete result
+for more than one group.
+
+```{r pancreas-grouped}
+grouped <- scop::RunGRN(
+	pancreas, assay = "RNA", layer = "data", methods = "grnboost2",
+	regulators = regulators,
+	group.by = "CellType", groups = c("Ductal", "Endocrine"),
+	method_args = list(n_rounds = 20L), return_type = "result",
+	work_dir = file.path(tempdir(), "scop-pancreas-groups"), verbose = FALSE
+)
+head(scop::GetGRN(grouped, group = "Endocrine"))
+vapply(scop::GetGRN(grouped, all_groups = TRUE), nrow, integer(1))
+```
+
+## Use external implementations
+
+For SCSGL, SCODE, and Python GNIPLR, supply the corresponding upstream checkout
+from the `RunGRN()` references as `resources = list(source_dir = ...)`. Use
+`PrepareEnv()` for the corresponding R or Python dependencies. For scSGL, use
+`PrepareEnv(modules = "scsgl", components = "all")`. For PIDC, install the R
+package linked in References.
+
+## Supply time by cell ID
+
+LEAP, SCODE, and SINCERITIES require measured time or a supplied pseudotime.
+This example reads a BEELINE `VSC-2000-3-50` case. The expression CSV has genes
+in rows and cell IDs in columns. The time CSV has cell IDs in rows and named
+trajectories in columns. Set `beeline_dir` to your downloaded case directory.
+
+The example uses every gene and every cell assigned to the first trajectory.
+
+```r
+beeline_dir <- "/path/to/VSC-2000-3-50"
+time_expression <- as.matrix(utils::read.csv(
+	file.path(beeline_dir, "ExpressionData.csv"), row.names = 1L, check.names = FALSE
+))
+time_table <- as.matrix(utils::read.csv(
+	file.path(beeline_dir, "PseudoTime.csv"), row.names = 1L, check.names = FALSE
+))
+time_cells <- rownames(time_table)[is.finite(time_table[, 1L])]
+time_expression <- time_expression[, time_cells, drop = FALSE]
+pseudotime <- stats::setNames(time_table[time_cells, 1L], time_cells)
+```
+
+```r
+scop::PrepareEnv(modules = c("leap", "scode", "sincerities"), components = "r")
+source_dir <- "/path/to/SCODE"
+time_fits <- list()
+time_settings <- list(
+	leap = list(max_lag_prop = 1/3),
+	scode = list(latent_dim = 3L, n_iter = 25L, n_runs = 2L),
+	sincerities = list(max_time_points = 6L, SIGN = 1L)
+)
+for (method in names(time_settings)) {
+	time_fits[[method]] <- scop::RunGRN(
+		time_expression, methods = method, pseudotime = pseudotime,
+		method_args = time_settings[[method]], return_type = "result",
+		resources = if (method == "scode") list(source_dir = source_dir) else list(),
+		work_dir = file.path(tempdir(), paste0("scop-beeline-", method)),
+		cores = 1L, seed = 1201L, verbose = FALSE
+	)
+}
+scop::GRNPlot(time_fits$leap, top_n = 15L)
+```
+
+Pseudotime vectors must have cell-ID names. A trajectory matrix may contain
+branch-specific missing values for LEAP. Choose one complete trajectory with
+`method_args$trajectory` for SCODE or SINCERITIES when supplying several columns.
+
+## Keep a reusable result
+
+```{r save-network}
+result_file <- file.path(tempdir(), "pancreas-grn.rds")
+saveRDS(pancreas, result_file)
+reloaded <- readRDS(result_file)
+head(scop::GetGRN(reloaded))
+```
+
+A single stored network is selected automatically. If the object contains
+several networks, use `tool_name` in `GetGRN()` or `GRNPlot()`. The default
+storage name is `GRN_<method>`; set `tool_name` when fitting to keep more than
+one run of the same method. Replacing an existing entry requires
+`overwrite = TRUE`.
+
+`RunGRN()` fits a new network on each call. LINGER and SCENIC+ support
+resuming their own runs with `method_args$resume_dir`.
+
+## Choose a network method
+
+The 14 methods below are the manuscript comparison methods. RegDiffusion and
+SCENIC remain available as additional scop methods.
+
+| Method name | Input | Evidence retained by the complete result |
+| --- | --- | --- |
+| `multicsn` | RNA, or paired RNA and ATAC | Independent endpoint coefficients, deletion evidence, ordinal weights, and supported chains |
+| `genie3` | RNA | Tree-based TF-gene importance |
+| `grnboost2` | RNA | Boosting importance with explicit C++ or official Arboreto identity |
+| `gniplr` | RNA | Native polynomial-regression scores and implementation identity |
+| `ppcor` | RNA | Undirected partial correlation and its statistics |
+| `pidc` | RNA | Undirected information-theoretic association |
+| `scorpion` | RNA, with optional priors | Native network scores and supplied prior configuration |
+| `scsgl` | RNA | Undirected signed graph scores |
+| `leap` | RNA and time | Lagged correlations after cell-ID alignment |
+| `scode` | RNA and time | Native dynamical coefficients and repeated-fit aggregation |
+| `sincerities` | RNA and time | Native distribution-regression scores and explicit `SIGN` setting |
+| `pando` | Paired RNA and ATAC | Native interaction coefficients, modules, and membership projections |
+| `linger` | Paired counts and bulk reference | Native TF-gene, TF-region, and region-gene scores |
+| `scenicplus` or `SCENIC+` | Prepared paired multiome inputs and motif resources | Official SCENIC+ layers, direct and extended eRegulons, and AUC |
+
+See [the paired multiome tutorial](grn-multiome.html) for multiCSN, Pando,
+LINGER, and official SCENIC+. Runtime and package versions are retained in each
+computed result, so execution evidence stays attached to the selected method.

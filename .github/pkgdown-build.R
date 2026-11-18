@@ -134,7 +134,13 @@ if (mode == "dependencies") {
   writeLines(unlist(lapply(code, deparse), use.names = FALSE), path)
   dependencies <- renv::dependencies(path, root = dirname(path), progress = FALSE, errors = "fatal")
   unlink(path)
-  packages <- unique(c(dependencies$Package, optional))
+  article_packages <- list(
+    `grn-framework` = "ppcor",
+    `grn-multiome` = "Pando"
+  )
+  reference_packages <- if ("RunGRN-methods" %in% plan$topics) c("glmnet", "ppcor")
+  packages <- unique(c(dependencies$Package, optional, reference_packages,
+    unlist(article_packages[as.character(plan$articles)], use.names = FALSE)))
   packages <- packages[order(!grepl("/", packages, fixed = TRUE))]
   package_names <- sub("@.*$", "", sub("^.*/", "", packages))
   packages <- packages[!duplicated(package_names)]
@@ -142,9 +148,13 @@ if (mode == "dependencies") {
   packages <- setdiff(packages, c(description[1L, "Package"], rownames(installed.packages(priority = "base"))))
   locked <- if (file.exists("renv.lock")) jsonlite::read_json("renv.lock")$Packages else list()
   packages <- vapply(sort(packages), function(package) {
-    record <- locked[[package]]
-    if (identical(record$Source, "GitHub")) {
-      return(paste0("github::", paste(c(record$RemoteUsername, record$RemoteRepo, record$RemoteSubdir), collapse = "/")))
+    parts <- strsplit(package, "@", fixed = TRUE)[[1L]]
+    record <- locked[[parts[[1L]]]]
+    if (identical(record$Source, "GitHub") &&
+        (length(parts) == 1L || identical(parts[[2L]], record$Version))) {
+      repo <- paste(c(record$RemoteUsername, record$RemoteRepo, record$RemoteSubdir), collapse = "/")
+      ref <- record$RemoteSha
+      return(paste0("github::", repo, if (length(ref) && nzchar(ref)) paste0("@", ref)))
     }
     package
   }, "", USE.NAMES = FALSE)

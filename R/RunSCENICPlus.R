@@ -1,165 +1,70 @@
-#' @title Read SCENIC+ results or run an approximate SCENICPlus-compatible eGRN analysis
-#'
-#' @description
-#' Read official SCENIC+ result tables or build an approximate eRegulon result
-#' from paired RNA and chromatin assays. `backend = "python"` reads or extracts
-#' official SCENIC+ outputs and does not run the SCENIC+ pipeline. The C++
-#' workflow is not an exact re-run of the official SCENIC+ Python workflow and
-#' requires explicit opt-in.
+#' @title Import or approximate SCENIC+ networks
 #'
 #' @md
-#' @inheritParams RunStandardWorkflow
-#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
-#' will be removed in scop 1.0.0.
-#' @param object A Seurat object containing RNA and chromatin assays.
+#' @inheritParams scop-params
+#' @inheritParams RunSCENIC
+#' @param atac_assay Chromatin assay.
 #' @param rna_assay RNA assay name.
-#' @param atac_assay Chromatin assay name.
 #' @param rna_layer RNA count layer used for TF-gene inference and AUC scoring.
 #' @param atac_layer ATAC count layer used for peak-gene correlations.
-#' @param backend Runtime backend. `"python"` reads or extracts official
-#' SCENIC+ result tables and remains the default; it does not run the SCENIC+
-#' pipeline itself. `"cpp"` runs the approximate package workflow and issues a
-#' warning that results may not be completely identical to the reference workflow.
-#' @param grn_method GRN method used for TF-gene inference. The C++ workflow
-#' can call `RunGRNBoost2()`, `RunGENIE3()`, or `RunGNIPLR()`;
-#' RegDiffusion and GNIPLR are supported through the Python backend.
+#' @param backend `"python"` imports official results. `"cpp"` fits an approximation
+#'   using motif annotations or supplied priors. To run official SCENIC+,
+#'   use [RunGRN()] with `methods = "scenicplus"`.
+#' @param grn_method TF-gene inference method for `backend = "cpp"`.
 #' @param regulators Candidate transcription factors. If `NULL`, motif TF names
 #' are used when available; otherwise all RNA genes are considered.
-#' @param rna_expr Optional expression matrix used for C++ TF-gene and
-#' region-gene inference. Rows should be genes and columns should be cells; a
-#' cell-by-gene matrix is accepted and transposed when cell names make the
-#' orientation unambiguous.
-#' @param atac_expr Optional accessibility matrix used for C++ region-gene
-#' inference. Rows should be regions and columns should be cells; a cell-by-region
-#' matrix is accepted and transposed when cell names make the orientation
-#' unambiguous.
-#' @param tf_gene_prior Optional precomputed TF-gene table with columns `TF`,
-#' `target`, and `importance`. When supplied with `backend = "cpp"`, C++
-#' GRN inference is skipped and the table is used as the TF-gene evidence layer.
-#' If a `rho` column is absent, correlations are computed from RNA when
-#' GSEA is requested.
-#' @param region_gene_prior Optional precomputed region-gene table with columns
-#' `region`, `gene`, and `score`. When supplied with `backend = "cpp"`, C++
-#' importance fitting is skipped. If a `rho` column is absent, correlations are
-#' computed from RNA and ATAC when GSEA is requested.
-#' @param tf_region_prior Optional precomputed TF-region table with columns
-#' `TF`, `region`, and `score`. When supplied with `backend = "cpp"`, existing
-#' motif incidence is not required.
-#' @param triplets_prior Optional precomputed TF-region-gene table with columns
-#' `TF`, `region`, `gene`, and `score`. When supplied with `backend = "cpp"`,
-#' triplets are read directly instead of assembled from the three edge layers.
-#' @param eregulons_prior Optional precomputed eRegulon table with columns
-#' `regulon` and `target`. When supplied with `backend = "cpp"`, eRegulon names
-#' and gene sets are taken from this table.
-#' @param auc_expr Optional expression matrix used only for eRegulon AUCell
-#' scoring in the C++ workflow. Rows should be genes and columns should be
-#' cells; a cell-by-gene matrix is accepted and transposed when cell names make
-#' the orientation unambiguous.
-#' @param auc_rankings Optional precomputed 0-based ranking matrix used only for
-#' eRegulon AUCell scoring in the C++ workflow. Rows should be cells and
-#' columns should be genes; a gene-by-cell matrix is accepted and transposed when
-#' cell names make the orientation unambiguous. This is mainly useful for
-#' official SCENIC+ parity tests because SCENIC+ uses seeded random tie-breaking.
-#' @param region_auc_rankings Optional cell-by-region 0-based rankings for
-#' region signature AUC. If absent, rankings are computed locally from ATAC.
+#' @param rna_expr,atac_expr RNA expression and chromatin accessibility matrices
+#'   for the C++ workflow. Use features as rows and cells as columns.
+#' @param tf_gene_prior Precomputed TF-gene table (`TF`, `target`, `importance`).
+#' @param region_gene_prior Precomputed region-gene table (`region`, `gene`, `score`).
+#' @param tf_region_prior Precomputed TF-region table (`TF`, `region`, `score`).
+#' @param triplets_prior Precomputed TF-region-gene table (`TF`, `region`, `gene`, `score`).
+#' @param eregulons_prior Precomputed eRegulon table (`regulon`, `target`).
+#' @param auc_expr Gene-by-cell expression matrix for eRegulon AUC.
+#' @param auc_rankings Cell-by-gene matrix of zero-based ranks for gene AUC.
+#' @param region_auc_rankings Cell-by-region matrix of zero-based ranks for region AUC.
 #' @param region_gene_window Maximum peak-to-gene distance in base pairs.
-#' @param region_gene_search_space Optional search-space table with columns
-#' `region`/`Name` and `gene`/`Gene`. When supplied, C++ region-gene scoring
-#' is limited to these candidate pairs.
-#' @param region_gene_method C++ region-gene scoring method. `"gbm"` follows
-#' the official SCENIC+ region-to-gene strategy more closely by combining
-#' boosting feature importance with Spearman correlation; `"correlation"` keeps
-#' the older correlation-only approximation.
+#' @param region_gene_search_space Candidate pairs as a table or file with `region`/`Name`
+#'   and `gene`/`Gene` columns.
+#' @param region_gene_method `"gbm"` combines boosting and correlation. `"correlation"` uses correlation alone.
 #' @param region_gene_n_rounds Number of boosting rounds for C++
 #' region-gene importance scoring.
 #' @param max_region_gene Maximum region-gene links retained per gene.
 #' @param max_tf_region Maximum motif-supported regions retained per TF.
 #' @param min_eregulon_size Minimum genes per eRegulon retained for AUC scoring.
-#' @param egrn_rho_threshold Absolute Spearman correlation threshold used to
-#' split TF-gene and region-gene links into activating/repressing eGRN modules.
-#' @param egrn_quantiles Region-gene importance quantiles used to build
-#' candidate eModules before TF-gene leading-edge filtering.
-#' @param egrn_top_n_region_gene Top-N region-gene links per gene used as
-#' additional candidate eModules before TF-gene leading-edge filtering.
-#' @param egrn_min_target_genes Minimum leading-edge target genes required for
-#' an eRegulon module. The default follows the official SCENIC+ CLI workflow.
-#' @param egrn_method Local eModule filtering. `"gsea"` computes weighted
-#' permutation GSEA, NES and BH-adjusted p-values in compiled code. `"leading_edge"`
-#' retains the older approximation and its unfiltered fallback.
+#' @param egrn_rho_threshold Absolute Spearman correlation threshold for signed modules.
+#' @param egrn_quantiles Region-gene importance quantiles for candidate modules.
+#' @param egrn_top_n_region_gene Top region-gene links per gene for candidate modules.
+#' @param egrn_min_target_genes Minimum leading-edge genes per eRegulon.
+#' @param egrn_method Module filter: `"gsea"` or `"leading_edge"`.
 #' @param egrn_n_perm Number of gene-set permutations per GSEA module.
 #' @param group.by Optional metadata column used to calculate eRegulon
 #' specificity scores.
-#' @param grn_top_targets Maximum TF-gene edges retained per target. The
-#' default `Inf` keeps all positive links to match arboreto GRNBoost2 output.
-#' @param max_grn_targets Maximum genes used as TF-gene GRN targets in the
-#' C++ workflow. With `grn_target_scope = "region_gene"`, genes are ranked by
-#' strongest absolute peak-to-gene correlation. Set to `Inf` to keep the full
-#' selected target universe.
-#' @param grn_target_scope TF-gene target universe for the C++ workflow.
-#' `"all"` follows official SCENIC+ TF-to-gene inference by scoring every RNA
-#' gene; `"region_gene"` restricts TF-gene inference to genes with peak links.
-#' @param grn_n_rounds Number of C++ tree boosting rounds for TF-gene
-#' inference. The default follows arboreto `SGBM_KWARGS`.
+#' @param grn_top_targets Maximum TF-gene edges per target. `Inf` keeps all positive edges.
+#' @param max_grn_targets Maximum target genes. `Inf` keeps the full target set.
+#' @param grn_target_scope `"all"` uses all RNA genes. `"region_gene"` uses genes with region links,
+#'   ranked by absolute peak-gene correlation.
+#' @param grn_n_rounds Boosting rounds for TF-gene inference.
 #' @param grn_learning_rate C++ tree boosting learning rate.
 #' @param grn_max_depth Maximum depth of each C++ TF-gene regression tree.
 #' @param grn_max_features Fraction of candidate TFs sampled at each C++
 #' tree split.
 #' @param grn_subsample Fraction of cells sampled for each C++ boosting
 #' round.
-#' @param grn_early_stop_window_length Out-of-bag improvement window used for
-#' C++ GRNBoost2 early stopping. The default is `25`, matching the monitor
-#' explicitly used by official SCENIC+. Set `0` to disable early stopping.
-#' @param seed Random seed used by the C++ stochastic boosting code. The
-#' default matches official SCENIC+ command-line wrappers.
-#' @param cores Number of workers used by C++ TF-gene GRN inference. `NULL`
-#' (the default) uses the process OpenMP team.
+#' @param grn_early_stop_window_length Out-of-bag early stopping window. `0` disables it.
+#' @param cores CPU cores for C++ inference. `NULL` uses the OpenMP team.
 #' @param assay_name Assay used to store eRegulon AUC scores.
-#' @param tool_name Name of the `srt@tools` result entry.
-#' @param python_result_dir Input directory containing official SCENIC+ outputs
-#' already exported as `tf_gene`, `region_gene`, `tf_region`, `triplets`,
-#' `eregulons`, and `auc` tables. Tab-separated, comma-separated and plain-text
-#' files are accepted, optionally compressed with gzip, bzip2 or xz; a table in
-#' a single subdirectory is also found. Used only for `backend = "python"`.
-#' @param scplus_object Optional official SCENIC+ Python object path
-#' (`.pkl`, `.pickle` or `.h5mu`) to extract into `work_dir` before
-#' standardization. Used only for `backend = "python"`.
-#' @param auto_prepare Whether to find SCENIC+ results automatically when
-#' neither `python_result_dir` nor `scplus_object` is supplied, and to extract
-#' standardized tables from a matching `.pkl`, `.pickle` or `.h5mu` found in
-#' `python_result_dir` or a conventional location. The search checks
-#' `scenicplus`, `scplus`, `scenic`, `outs` and the current directory. Default
-#' is `TRUE`; set to `FALSE` to require explicit inputs. Used only for
-#' `backend = "python"`; the Python environment is prepared automatically when
-#' extraction is needed.
-#' @param work_dir Directory used for standardized tables extracted from
-#' `scplus_object` or an automatically discovered SCENIC+ object. Defaults to
-#' `"scenicplus_output/"`, mirroring [RunSCENIC()]. Ignored when
-#' `python_result_dir` already contains the standardized tables. Used only for
-#' `backend = "python"`.
-#' @param envname Python environment used when `backend = "python"`. By default, `.h5mu` uses `scenicplus_io_env`; pickle uses `scenicplus_env`.
-#' @param conda Conda-compatible executable used when `backend = "python"`.
+#' @param python_result_dir Directory of official SCENIC+ result tables. Accepts TSV, CSV,
+#'   or TXT, optionally compressed with gzip, bzip2, or xz.
+#' @param scplus_object Official SCENIC+ `.h5mu`, `.pkl`, or `.pickle` file to extract.
+#' @param auto_prepare Look for local results when paths are omitted. The search checks
+#'   `scenicplus`, `scplus`, `scenic`, `outs`, and the current directory.
+#' @param work_dir Directory for tables extracted from a SCENIC+ object.
+#' @param envname Python environment. By default, `.h5mu` uses `scenicplus_io_env`
+#'   and pickle uses `scenicplus_env`.
 #'
-#' @details
-#' The C++ route runs locally without importing or invoking Python. GSEA
-#' filters modules before merging; it does not substitute unfiltered triplets
-#' when no module passes. The tool result includes module `gsea_statistics`,
-#' `region_regulon_list` and `region_auc` alongside gene AUC. Locally computed
-#' gene and region rankings use PCG tie-breaking with fixed seed 123; the
-#' inference and GSEA seed is controlled separately by `seed`.
-#'
-#' `backend = "python"` reads the standardized tables described for
-#' `python_result_dir` instead of running SCENIC+ itself. When only a SCENIC+
-#' object is available, pass it with `scplus_object`; the standardized tables
-#' are extracted into `work_dir` before reading. `.h5mu` objects are read with
-#' the Python `mudata` package. Missing tables are reported together with the files found
-#' in `python_result_dir` and the required columns.
-#'
-#' Neither backend downloads SCENIC+ reference databases or result tables.
-#' `backend = "python"` only reads local files (and may prepare the Python
-#' environment when `scplus_object` is supplied); `backend = "cpp"` uses motif
-#' annotations already stored in the chromatin assay.
-#'
-#' @return A Seurat object with SCENICPlus-style results.
+#' @return A Seurat object with eRegulon activity in `assay_name` and the network in `tools`.
+#' @seealso [RunGRN()], [SCENICPlusPlot()]
 #' @export
 #'
 #' @examples
@@ -584,6 +489,7 @@ RunSCENICPlus <- function(
     parameters = list(
       backend = backend,
       method = "scenicplus_approximation",
+      execution_status = "completed",
       exact_reference = FALSE,
       scope = "package eGRN approximation",
       grn_method = grn_method,
@@ -729,6 +635,7 @@ run_scenicplus_python <- function(
     parameters = list(
       backend = "python",
       method = "official_scenicplus_standardized",
+      execution_status = "imported",
       rna_assay = rna_assay,
       atac_assay = atac_assay,
       python_result_dir = normalizePath(python_result_dir, mustWork = FALSE),
@@ -1738,27 +1645,28 @@ scenicplus_tf_gene <- function(
   grn_method <- match.arg(grn_method)
   # Feature sampling depends on matrix order, not on the order of the TF filter.
   regulators <- intersect(rownames(rna_counts), regulators)
+  method_args <- if (identical(grn_method, "grnboost2")) {
+    list(
+      n_rounds = n_rounds, learning_rate = learning_rate, max_depth = max_depth,
+      max_features = max_features, subsample = subsample,
+      early_stop_window_length = early_stop_window_length, exclude_self = TRUE
+    )
+  } else {
+    list()
+  }
   adjacency <- RunGRN(
-    object = Matrix::t(rna_counts),
+    object = rna_counts,
     regulators = regulators,
     targets = targets,
-    genes_in = "columns",
-    grn_method = grn_method,
-    backend = "cpp",
-    output_file = tempfile(pattern = "scenicplus_tf_gene_", fileext = ".tsv"),
+    methods = grn_method,
+    backend = if (identical(grn_method, "genie3")) "r" else "cpp",
+    return_type = "edges",
     max_edges_per_target = max_edges_per_target,
-    n_rounds = n_rounds,
-    learning_rate = learning_rate,
-    max_depth = max_depth,
-    max_features = max_features,
-    subsample = subsample,
-    early_stop_window_length = early_stop_window_length,
+    method_args = method_args,
     seed = seed,
-    exclude_self = TRUE,
-    cores = cores,
+    cores = max(1L, scop_n_threads(cores)),
     envname = envname,
     conda = conda,
-    force = TRUE,
     verbose = verbose
   )
   if (!identical(grn_method, "grnboost2")) {
@@ -2856,4 +2764,186 @@ scenicplus_tf_gene_rho <- function(pairs, rna_counts) {
     numeric(1)
   )
   stats::setNames(out, paste(pairs[["TF"]], pairs[["gene"]], sep = "\r"))
+}
+
+grn_run_scenicplus <- function(input, config) {
+  required <- grn_scenicplus_check_resources(config$resources)
+  resume_dir <- config$method_args$resume_dir
+  if (!is.null(resume_dir)) {
+    if (!is.character(resume_dir) || length(resume_dir) != 1L || is.na(resume_dir) || !dir.exists(resume_dir)) {
+      stop("SCENIC+ resume_dir must be an existing directory.", call. = FALSE)
+    }
+    resume_dir <- normalizePath(resume_dir, winslash = "/", mustWork = TRUE)
+  }
+  script <- system.file("grn", "scenicplus.py", package = "scop", mustWork = TRUE)
+  dir.create(config$work_dir, recursive = TRUE, showWarnings = FALSE)
+  directory <- normalizePath(config$work_dir, winslash = "/", mustWork = TRUE)
+  expression_path <- file.path(directory, "scenicplus-expression.mtx")
+  feature_path <- file.path(directory, "scenicplus-features.tsv")
+  if (any(grepl("[\r\n]", rownames(input$expression)))) {
+    stop("SCENIC+ feature identifiers cannot contain line breaks.", call. = FALSE)
+  }
+  Matrix::writeMM(Matrix::Matrix(input$expression, sparse = TRUE), expression_path)
+  writeLines(rownames(input$expression), feature_path, useBytes = TRUE)
+  request_path <- file.path(directory, "scenicplus-request.json")
+  output <- resume_dir %||% file.path(directory, "official")
+  resources <- config$resources[intersect(c(required, "workflow"), names(config$resources))]
+  resources <- lapply(resources, normalizePath, winslash = "/", mustWork = TRUE)
+  method_args <- config$method_args
+  if (!length(method_args)) method_args <- stats::setNames(list(), character())
+  jsonlite::write_json(
+    list(
+      resources = resources, cells = I(unname(input$cells)), group = input$group,
+      cores = config$cores, seed = config$seed, method_args = method_args,
+      expression = expression_path, features = feature_path, output_dir = output
+    ),
+    request_path,
+    auto_unbox = TRUE, pretty = TRUE, null = "null", digits = NA
+  )
+  launcher <- "import runpy,sys; sys.path.pop(0) if sys.path[:1] == [''] else None; sys.argv = sys.argv[1:]; runpy.run_path(sys.argv[0], run_name='__main__')"
+  python <- config$runtime$python %||% conda_python(
+    envname = config$envname %||% env_module_environment("scenicplus"),
+    conda = config$conda %||% "auto"
+  )
+  process <- runner_run_process(python, c("-c", launcher, script, request_path),
+    work_dir = config$work_dir, timeout = config$runtime$timeout %||% Inf,
+    env = c(PYTHONHASHSEED = as.character(config$seed), OMP_NUM_THREADS = "1", OPENBLAS_NUM_THREADS = "1")
+  )
+  grn_scenicplus_group(output, input, process)
+}
+
+grn_scenicplus_check_resources <- function(resources) {
+  required <- c("cistopic", "gex", "region_sets", "ranking_db", "scores_db", "motif_annotation", "genome_annotation", "chromsizes")
+  absent <- required[!vapply(required, function(name) {
+    path <- resources[[name]]
+    is.character(path) && length(path) == 1L && !is.na(path) && file.exists(path)
+  }, logical(1))]
+  if (length(absent)) {
+    stop("Missing SCENIC+ resources: ", paste(absent, collapse = ", "), call. = FALSE)
+  }
+  files <- setdiff(required, "region_sets")
+  info <- file.info(unlist(resources[files], use.names = FALSE))
+  invalid <- files[is.na(info$size) | info$isdir | info$size < 1]
+  if (length(invalid)) {
+    stop("SCENIC+ resources must be nonempty files: ", paste(invalid, collapse = ", "), call. = FALSE)
+  }
+  if (!dir.exists(resources$region_sets)) {
+    stop("SCENIC+ region_sets must be a directory.", call. = FALSE)
+  }
+  beds <- Sys.glob(file.path(resources$region_sets, "*", "*.bed"))
+  if (sum(!dir.exists(beds)) < 2L) {
+    stop("Official SCENIC+ DEM requires at least two region sets to define foreground and background.", call. = FALSE)
+  }
+  if (!is.null(resources$workflow)) {
+    workflow <- resources$workflow
+    files <- if (is.character(workflow) && length(workflow) == 1L && !is.na(workflow)) {
+      file.info(file.path(workflow, c("Snakefile", "config.yaml")))
+    }
+    if (is.null(files) || anyNA(files$isdir) || any(files$isdir)) {
+      stop("SCENIC+ workflow must contain the official Snakefile and config.yaml.", call. = FALSE)
+    }
+  }
+  invisible(required)
+}
+
+grn_scenicplus_group <- function(directory, input, process = list()) {
+  manifest <- file.path(directory, "execution.json")
+  if (!file.exists(manifest)) {
+    stop("Official SCENIC+ did not produce its execution receipt.", call. = FALSE)
+  }
+  receipt <- jsonlite::read_json(manifest, simplifyVector = TRUE)
+  if (!identical(receipt$status, "completed") || !setequal(receipt$cells, input$cells)) {
+    stop("Official SCENIC+ execution is incomplete or has different cells.", call. = FALSE)
+  }
+  filenames <- c(
+    tf_gene = "tf_gene.tsv", tf_region = "tf_region.tsv", region_gene = "region_gene.tsv",
+    direct = "direct.tsv", extended = "extended.tsv", chains = "chains.tsv"
+  )
+  native <- lapply(filenames, function(filename) {
+    path <- file.path(directory, filename)
+    if (!file.exists(path)) {
+      stop("Missing official SCENIC+ result: ", filename, call. = FALSE)
+    }
+    header <- names(utils::read.delim(path, nrows = 0L, check.names = FALSE))
+    identifiers <- intersect(header, c("TF", "target", "region", "Region", "Gene", "eRegulon_name", "Gene_signature_name", "Region_signature_name", "annotation_type"))
+    classes <- rep(NA_character_, length(header))
+    classes[header %in% identifiers] <- "character"
+    utils::read.delim(path, check.names = FALSE, colClasses = classes, na.strings = NULL)
+  })
+  native$gene_sets <- jsonlite::read_json(file.path(directory, "gene_sets.json"), simplifyVector = TRUE)
+  native$auc <- lapply(receipt$auc_files, function(filename) {
+    path <- file.path(directory, filename)
+    header <- names(utils::read.delim(path, nrows = 0L, check.names = FALSE))
+    classes <- c("character", rep(NA_character_, length(header) - 1L))
+    table <- utils::read.delim(path, colClasses = classes, check.names = FALSE, na.strings = NULL)
+    rownames(table) <- table[[1L]]
+    table <- table[-1L]
+    if (!setequal(rownames(table), input$cells)) {
+      stop("Official SCENIC+ AUC cells differ from the requested cells.", call. = FALSE)
+    }
+    table[input$cells, , drop = FALSE]
+  })
+  names(native$auc) <- tools::file_path_sans_ext(receipt$auc_files)
+  regulators <- input$regulators %||% unique(native$tf_gene$TF)
+  targets <- input$targets %||% unique(native$tf_gene$target)
+  selected_rows <- list(
+    tf_gene = which(native$tf_gene$TF %in% regulators & native$tf_gene$target %in% targets),
+    tf_region = which(native$tf_region$TF %in% regulators),
+    region_gene = which(native$region_gene$target %in% targets)
+  )
+  chain_rows <- which(native$chains$TF %in% regulators & native$chains$Gene %in% targets)
+  native$gene_sets_view <- if ("Gene_signature_name" %in% names(native$chains)) {
+    lapply(split(native$chains$Gene[chain_rows], native$chains$Gene_signature_name[chain_rows]), unique)
+  } else {
+    lapply(native$gene_sets, intersect, targets)
+  }
+  native$candidate_scope <- list(
+    selection = "postfit_view", requested_regulators = regulators, requested_targets = targets,
+    fitted_regulators = unique(native$tf_gene$TF), fitted_targets = unique(native$tf_gene$target)
+  )
+  native$parameters <- receipt$parameters
+  native$execution <- receipt
+  correlation <- receipt$parameters$params_inference$region_to_gene_correlation_method
+  sign_basis <- c(
+    tf_gene = "pearson_correlation",
+    tf_region = "unknown",
+    region_gene = switch(correlation %||% "",
+      SR = "spearman_correlation",
+      PR = "pearson_correlation",
+      "correlation"
+    )
+  )
+  columns <- list(
+    tf_gene = c("TF", "target", "importance", "TF", "gene", "rho", "feature_importance"),
+    tf_region = c("TF", "Region", "membership", "TF", "region", "", "membership"),
+    region_gene = c("region", "target", "importance", "region", "gene", "rho", "feature_importance")
+  )
+  specs <- lapply(names(columns), function(layer) {
+    fields <- columns[[layer]]
+    if (!all(fields[1:3] %in% names(native[[layer]]))) {
+      stop("Invalid official SCENIC+ ", layer, " schema.", call. = FALSE)
+    }
+    membership <- identical(layer, "tf_region")
+    list(
+      status = "computed", table_path = layer, rows = selected_rows[[layer]], source = fields[[1L]], target = fields[[2L]], score = fields[[3L]],
+      source_type = fields[[4L]], target_type = fields[[5L]], score_type = fields[[7L]], directed = TRUE,
+      sign_column = if (membership) NULL else fields[[6L]], sign_basis = sign_basis[[layer]],
+      rank_by = "score"
+    )
+  })
+  names(specs) <- names(columns)
+  list(
+    cells = input$cells, native = native, layer_specs = specs,
+    chains = list(status = "computed", table_path = "chains", rows = chain_rows, source = "TF", region = "Region", target = "Gene", score = "triplet_rank", rank_by = "ascending_score"),
+    gene_sets = list(status = "computed", table_path = "gene_sets_view"),
+    parameters = receipt$parameters, implementation = "SCENIC+::official_snakemake",
+    package_versions = unlist(receipt$package_versions, use.names = TRUE),
+    execution = c(
+      list(status = "completed", artifacts = list(
+        object = file.path(directory, "scplusmdata.h5mu"),
+        manifest = manifest, stdout = file.path(directory, "snakemake.stdout.log"), stderr = file.path(directory, "snakemake.stderr.log")
+      )),
+      process[setdiff(names(process), "status")]
+    )
+  )
 }
