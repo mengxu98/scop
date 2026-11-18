@@ -128,53 +128,62 @@ SpatialSpotPlot <- function(
   plot_type <- match.arg(plot_type)
   geom <- match.arg(geom)
   image.scale <- match.arg(image.scale)
+  delayedAssign("raw", SpatialCoordinates(
+    srt, image = image, coord.cols = coord.cols, image.scale = image.scale
+  ))
+  layers <- NULL
   if (length(molecules)) {
     layers <- spatial_molecule_layers(
       srt, image, molecules, xlim, ylim, image.scale,
-      mols.size, mols.alpha, mols.colors
+      mols.size, mols.alpha, mols.colors, transform = raw$transform
     )
-    args <- mget(names(formals(SpatialSpotPlot)), envir = environment(), inherits = FALSE)
-    args$object <- srt
-    args$srt <- NULL
-    args$molecules <- NULL
-    if (!is.null(plot.data) && missing(upper_quantile)) args$upper_quantile <- 1
     if (is.null(group.by) && is.null(features) && is.null(values) && is.null(plot.data)) {
-      ids <- SpatialCoordinates(srt, image = image, coord.cols = coord.cols)$data$cell_id
-      args$values <- stats::setNames(rep("cell", length(ids)), ids)
+      ids <- raw$data$cell_id
+      values <- stats::setNames(rep("cell", length(ids)), ids)
     }
-    return(spatial_plot_add_layers(do.call(SpatialSpotPlot, args), layers))
   }
   if (is.null(flip.y)) {
     selected_image <- spatial_image_resolve(srt, image = image)$image
     flip.y <- !is.null(selected_image) && inherits(srt[[selected_image]], "FOV") &&
       !inherits(srt[[selected_image]], "VisiumV2")
   }
+  limits <- NULL
   if (!is.null(xlim) || !is.null(ylim)) {
-    raw <- SpatialCoordinates(srt, image = image, coord.cols = coord.cols, image.scale = image.scale)
     cells <- spatial_roi_cells(raw$data, cells, xlim, ylim)
     limits <- spatial_coords_to_display(data.frame(
       x = xlim %||% range(raw$data$x), y = ylim %||% range(raw$data$y)
     ), raw$transform)
-    args <- mget(names(formals(SpatialSpotPlot)), envir = environment(), inherits = FALSE)
-    args$object <- srt
-    args$srt <- NULL
-    args$xlim <- args$ylim <- NULL
-    if (!is.null(plot.data) && missing(upper_quantile)) args$upper_quantile <- 1
-    result <- do.call(SpatialSpotPlot, args)
-    clip <- ggplot2::coord_equal(
-      xlim = if (!is.null(xlim)) range(limits$x) else NULL,
-      ylim = if (!is.null(ylim)) range(limits$y) else NULL
-    )
-    if (inherits(result, "patchwork")) {
-      return(result & clip)
-    }
-    if (inherits(result, "ggplot")) {
-      return(suppressMessages(result + clip))
-    }
-    return(lapply(result, function(p) suppressMessages(p + clip)))
   }
   if (length(features)) {
-    assay <- spatial_input_info(srt, assay = assay, image = image, coord.cols = coord.cols)$assay
+    assay <- spatial_input_info(
+      srt, assay = assay, image = image, coord.cols = coord.cols, coordinates = raw
+    )$assay
+  }
+  delayedAssign("coords", spatial_dim_coords(
+    srt = srt,
+    image = image,
+    image.scale = image.scale,
+    coord.cols = coord.cols,
+    overlay_image = overlay_image,
+    raw = if (length(molecules) || !is.null(limits) || length(features)) raw else NULL
+  ))
+  finish <- function(plot) {
+    force(plot)
+    if (!is.null(limits)) {
+      clip <- ggplot2::coord_equal(
+        xlim = if (!is.null(xlim)) range(limits$x) else NULL,
+        ylim = if (!is.null(ylim)) range(limits$y) else NULL
+      )
+      plot <- if (inherits(plot, "patchwork")) {
+        plot & clip
+      } else {
+        suppressMessages(spatial_plot_add_layers(plot, clip))
+      }
+    }
+    if (length(layers)) {
+      plot <- spatial_plot_add_layers(plot, layers)
+    }
+    plot
   }
   if (!is.null(plot.data)) {
     if (!identical(plot_type, "point")) {
@@ -183,18 +192,16 @@ SpatialSpotPlot <- function(
         message_type = "error"
       )
     }
-    return(spatial_dim_long_plot(
+    return(finish(spatial_dim_long_plot(
       srt = srt,
+      coords = coords,
       plot.data = plot.data,
       spot.by = spot.by,
       color.by = color.by,
       geom = geom,
-      image = image,
-      image.scale = image.scale,
       overlay_image = overlay_image,
       image.alpha = image.alpha,
       crop = crop,
-      coord.cols = coord.cols,
       flip.y = flip.y,
       show_axes = show_axes,
       split.by = split.by,
@@ -220,19 +227,17 @@ SpatialSpotPlot <- function(
       nrow = nrow,
       ncol = ncol,
       byrow = byrow
-    ))
+    )))
   }
   if (identical(plot_type, "pie")) {
-    return(spatial_dim_pie_plot(
+    return(finish(spatial_dim_pie_plot(
       srt = srt,
+      coords = coords,
       group.by = group.by,
       values = values,
-      image = image,
-      image.scale = image.scale,
       overlay_image = overlay_image,
       image.alpha = image.alpha,
       crop = crop,
-      coord.cols = coord.cols,
       flip.y = flip.y,
       show_axes = show_axes,
       split.by = split.by,
@@ -248,7 +253,7 @@ SpatialSpotPlot <- function(
       legend.title = legend.title,
       theme_use = theme_use,
       theme_args = theme_args
-    ))
+    )))
   }
   if (is.null(group.by) && is.null(features) && is.null(values)) {
     log_message(
@@ -257,13 +262,6 @@ SpatialSpotPlot <- function(
     )
   }
 
-  coords <- spatial_dim_coords(
-    srt = srt,
-    image = image,
-    image.scale = image.scale,
-    coord.cols = coord.cols,
-    overlay_image = overlay_image
-  )
   dat <- coords$data
   if (!is.null(cells)) {
     dat <- dat[intersect(rownames(dat), cells), , drop = FALSE]
@@ -355,13 +353,14 @@ SpatialSpotPlot <- function(
   })
   names(plots) <- plot_items
 
-  if (isFALSE(combine)) {
-    return(plots)
+  plot <- if (isFALSE(combine)) {
+    plots
+  } else if (length(plots) == 1L) {
+    plots[[1L]]
+  } else {
+    patchwork::wrap_plots(plots, nrow = nrow, ncol = ncol, byrow = byrow)
   }
-  if (length(plots) == 1L) {
-    return(plots[[1L]])
-  }
-  patchwork::wrap_plots(plots, nrow = nrow, ncol = ncol, byrow = byrow)
+  finish(plot)
 }
 
 spatial_matrix_point_plot <- function(
@@ -519,16 +518,14 @@ spatial_matrix_plot_limits <- function(values, kind) {
 
 spatial_dim_long_plot <- function(
   srt,
+  coords,
   plot.data,
   spot.by,
   color.by,
   geom = c("point", "jitter"),
-  image = NULL,
-  image.scale = c("lowres", "hires"),
   overlay_image = TRUE,
   image.alpha = 1,
   crop = TRUE,
-  coord.cols = c("col", "row"),
   flip.y = FALSE,
   show_axes = FALSE,
   split.by = NULL,
@@ -556,7 +553,6 @@ spatial_dim_long_plot <- function(
   upper_cutoff = NULL
 ) {
   geom <- match.arg(geom)
-  image.scale <- match.arg(image.scale)
   df <- as.data.frame(plot.data, check.names = FALSE)
   if (is.null(spot.by) || !spot.by %in% colnames(df)) {
     log_message(
@@ -573,13 +569,6 @@ spatial_dim_long_plot <- function(
   if (!is.null(cells)) {
     df <- df[df[[spot.by]] %in% cells, , drop = FALSE]
   }
-  coords <- spatial_dim_coords(
-    srt = srt,
-    image = image,
-    image.scale = image.scale,
-    coord.cols = coord.cols,
-    overlay_image = overlay_image
-  )
   keep <- df[[spot.by]] %in% rownames(coords$data)
   df <- df[keep, , drop = FALSE]
   if (nrow(df) == 0L) {
@@ -627,14 +616,12 @@ spatial_dim_long_plot <- function(
 
 spatial_dim_pie_plot <- function(
   srt,
+  coords,
   group.by = NULL,
   values = NULL,
-  image = NULL,
-  image.scale = c("lowres", "hires"),
   overlay_image = TRUE,
   image.alpha = 1,
   crop = TRUE,
-  coord.cols = c("col", "row"),
   flip.y = FALSE,
   show_axes = FALSE,
   split.by = NULL,
@@ -651,14 +638,6 @@ spatial_dim_pie_plot <- function(
   theme_use = "theme_spatial",
   theme_args = list()
 ) {
-  image.scale <- match.arg(image.scale)
-  coords <- spatial_dim_coords(
-    srt = srt,
-    image = image,
-    image.scale = image.scale,
-    coord.cols = coord.cols,
-    overlay_image = overlay_image
-  )
   dat <- coords$data
   if (!is.null(cells)) {
     dat <- dat[intersect(rownames(dat), cells), , drop = FALSE]
@@ -926,17 +905,22 @@ spatial_dim_coords <- function(
   coord.cols = c("col", "row"),
   image.scale = c("lowres", "hires"),
   overlay_image = TRUE,
-  image_policy = "strict"
+  image_policy = "strict",
+  raw = NULL
 ) {
   image.scale <- match.arg(image.scale)
-  raw <- spatial_coords_raw(
-    srt = srt,
-    image = image,
-    coord.cols = coord.cols,
-    image.scale = image.scale,
-    require_scale = TRUE,
-    image_policy = image_policy
-  )
+  if (is.null(raw)) {
+    raw <- spatial_coords_raw(
+      srt = srt,
+      image = image,
+      coord.cols = coord.cols,
+      image.scale = image.scale,
+      require_scale = TRUE,
+      image_policy = image_policy
+    )
+  } else if (!is.finite(raw$transform$scale)) {
+    spatial_image_scale_info(srt[[raw$source$image]], image.scale)
+  }
   selected_image <- raw$source$image
   out <- spatial_coords_to_display(raw$data, raw$transform)
   out <- out[, c("x", "y"), drop = FALSE]

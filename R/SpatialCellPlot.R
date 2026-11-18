@@ -320,7 +320,8 @@ spatial_plot_add_layers <- function(plots, layers) {
 }
 
 spatial_molecule_layers <- function(object, image, molecules, xlim, ylim, image.scale,
-                                    size, alpha, colors) {
+                                    size, alpha, colors,
+                                    transform = SpatialCoordinates(object, image = image, image.scale = image.scale)$transform) {
   image <- spatial_image_resolve(object, image = image)$image
   if (is.null(image)) log_message("Molecule overlays require a spatial image", message_type = "error")
   fov <- object[[image]]
@@ -341,7 +342,6 @@ spatial_molecule_layers <- function(object, image, molecules, xlim, ylim, image.
   }
   if (!is.null(xlim)) dat <- dat[dat$x >= xlim[1L] & dat$x <= xlim[2L], , drop = FALSE]
   if (!is.null(ylim)) dat <- dat[dat$y >= ylim[1L] & dat$y <= ylim[2L], , drop = FALSE]
-  transform <- SpatialCoordinates(object, image = image, image.scale = image.scale)$transform
   dat <- spatial_coords_to_display(dat, transform)
   list(
     ggnewscale::new_scale_color(),

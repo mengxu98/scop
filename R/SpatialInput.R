@@ -1,13 +1,14 @@
 spatial_input_info <- function(object, assay = NULL, image = NULL,
                                coord.cols = c("col", "row"), data_type = "auto",
-                               coordinate_units = NULL) {
+                               coordinate_units = NULL,
+                               coordinates = NULL) {
   if (!inherits(object, "Seurat")) log_message("{.emph object} must be a Seurat object", message_type = "error")
   image <- spatial_image_resolve(object, image = image)$image
   assay <- assay %||% if (is.null(image)) SeuratObject::DefaultAssay(object) else SeuratObject::DefaultAssay(object[[image]])
   validate_scalar_string(assay, "assay")
   if (!assay %in% SeuratObject::Assays(object)) log_message("{.emph assay} is not present", message_type = "error")
   data_type <- match.arg(data_type, c("auto", "spot", "bin", "cell"))
-  resolved <- SpatialCoordinates(object, image = image, coord.cols = coord.cols, space = "raw")
+  resolved <- coordinates %||% SpatialCoordinates(object, image = image, coord.cols = coord.cols, space = "raw")
   image <- resolved$source$image %||% image
   ids <- resolved$data$cell_id
   if (!length(ids) || anyNA(ids) || anyDuplicated(ids) || any(!nzchar(ids))) {
