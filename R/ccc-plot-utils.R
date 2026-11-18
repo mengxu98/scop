@@ -1121,6 +1121,89 @@ ccc_matrix_heatmap_plot <- function(
     NULL
   }
 
+  ccc_draw_heatmap(
+    mat = mat,
+    value_label = value_label,
+    row_title = row_title,
+    column_title = column_title,
+    row_annotation_name = row_annotation_name,
+    column_annotation_name = column_annotation_name,
+    add_text = add_text,
+    symmetric = symmetric,
+    top_bar_vec = top_bar_vec,
+    top_box_vec = top_box_vec,
+    top_summary_vec = top_summary_vec,
+    right_bar_vec = right_bar_vec,
+    right_box_vec = right_box_vec,
+    right_summary_vec = right_summary_vec,
+    top_anno = top_anno,
+    right_anno = right_anno,
+    left_anno = left_anno,
+    bottom_anno = bottom_anno,
+    cluster_rows = cluster_rows,
+    cluster_columns = cluster_columns,
+    show_row_names = show_row_names,
+    show_column_names = show_column_names,
+    x_text_angle = x_text_angle,
+    border = border,
+    width = width,
+    height = height,
+    units = units,
+    title = title,
+    subtitle = subtitle,
+    value_palette = value_palette,
+    value_palcolor = value_palcolor,
+    cell_palette = cell_palette,
+    cell_palcolor = cell_palcolor,
+    legend.position = legend.position,
+    legend.direction = legend.direction,
+    font.size = font.size,
+    theme_use = theme_use,
+    theme_args = theme_args
+  )
+}
+
+ccc_draw_heatmap <- function(
+  mat,
+  value_label,
+  row_title,
+  column_title,
+  row_annotation_name,
+  column_annotation_name,
+  top_bar_vec,
+  top_box_vec,
+  top_summary_vec,
+  right_bar_vec,
+  right_box_vec,
+  right_summary_vec,
+  add_text,
+  top_anno,
+  right_anno,
+  left_anno,
+  bottom_anno,
+  cluster_rows,
+  cluster_columns,
+  show_row_names,
+  show_column_names,
+  x_text_angle,
+  border,
+  width,
+  height,
+  units,
+  title,
+  subtitle,
+  value_palette,
+  value_palcolor,
+  cell_palette,
+  cell_palcolor,
+  legend.position,
+  legend.direction,
+  font.size,
+  theme_use,
+  theme_args,
+  symmetric = FALSE,
+  add_dot = FALSE
+) {
   mat_vals <- mat[is.finite(mat)]
   if (length(mat_vals) == 0L) {
     mat_vals <- c(0, 1)
@@ -1147,7 +1230,7 @@ ccc_matrix_heatmap_plot <- function(
     colors = fill_cols
   )
 
-  cell_fun <- if (isTRUE(add_text)) {
+  cell_fun <- if (isTRUE(add_text) && !isTRUE(add_dot)) {
     mat_local <- mat
     function(j, i, x, y, width, height, fill) {
       v <- mat_local[i, j]
@@ -1169,6 +1252,44 @@ ccc_matrix_heatmap_plot <- function(
     }
   } else {
     NULL
+  }
+
+  if (isTRUE(add_dot)) {
+    mat_local <- mat
+    mat_finite <- mat_local[is.finite(mat_local)]
+    dot_max <- if (length(mat_finite) > 0) max(mat_finite) else 1
+    if (dot_max == 0) {
+      dot_max <- 1
+    }
+    layer_fun <- function(j, i, x, y, width, height, fill) {
+      v <- get_namespace_fun("ComplexHeatmap", "pindex")(mat_local, i, j)
+      sz <- grid::unit(
+        ifelse(is.finite(v), pmax(v / dot_max, 0.05), 0) * 8,
+        "mm"
+      )
+      grid::grid.points(
+        x,
+        y,
+        pch = 21,
+        size = sz,
+        gp = grid::gpar(
+          fill = fill,
+          col = if (isTRUE(border)) "grey20" else NA,
+          lwd = 0.5
+        )
+      )
+    }
+    rect_gp <- grid::gpar(
+      col = if (isTRUE(border)) "grey85" else NA,
+      fill = NA,
+      lwd = 0.6
+    )
+  } else {
+    layer_fun <- NULL
+    rect_gp <- grid::gpar(
+      col = if (isTRUE(border)) "white" else NA,
+      lwd = 1
+    )
   }
 
   body_size <- ccc_heatmap_body_size(
@@ -1494,6 +1615,7 @@ ccc_matrix_heatmap_plot <- function(
     col = col_fun,
     name = value_label,
     cell_fun = cell_fun,
+    layer_fun = layer_fun,
     top_annotation = top_combined,
     bottom_annotation = bottom_combined,
     left_annotation = left_combined,
@@ -1510,10 +1632,7 @@ ccc_matrix_heatmap_plot <- function(
     column_names_gp = grid::gpar(fontsize = font.size),
     column_names_rot = x_text_angle,
     border = border,
-    rect_gp = grid::gpar(
-      col = if (isTRUE(border)) "white" else NA,
-      lwd = 1
-    ),
+    rect_gp = rect_gp,
     use_raster = FALSE,
     width = body_size$width,
     height = body_size$height,

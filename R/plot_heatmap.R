@@ -18,6 +18,27 @@ heatmap_color_mapping <- function(col_fun, values) {
   fun
 }
 
+heatmap_append_panel <- function(ht_list, ht_args, ht_params, flip) {
+  duplicated <- intersect(names(ht_params), names(ht_args))
+  if (length(duplicated) > 0L) {
+    log_message(
+      "ht_params: ",
+      paste0(duplicated, collapse = ","),
+      " were duplicated and will not be used.",
+      message_type = "warning"
+    )
+  }
+  panel_args <- c(ht_args, ht_params[setdiff(names(ht_params), names(ht_args))])
+  panel <- do.call(get_namespace_fun("ComplexHeatmap", "Heatmap"), args = panel_args)
+  if (!isTRUE(flip)) {
+    return(ht_list + panel)
+  }
+  if (is.null(ht_list)) {
+    return(panel)
+  }
+  get_namespace_fun("ComplexHeatmap", "%v%")(ht_list, panel)
+}
+
 prepare_heatmap_borders <- function(
   border,
   heatmap_border,

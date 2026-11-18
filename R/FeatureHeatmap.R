@@ -1615,26 +1615,7 @@ FeatureHeatmap <- function(
         ht_args[["column_gap"]] <- gaps
       }
     }
-    if (any(names(ht_params) %in% names(ht_args))) {
-      log_message(
-        "ht_params: ",
-        paste0(intersect(names(ht_params), names(ht_args)), collapse = ","),
-        " were duplicated and will not be used.",
-        message_type = "warning"
-      )
-    }
-    ht_args <- c(ht_args, ht_params[setdiff(names(ht_params), names(ht_args))])
-    if (isTRUE(flip)) {
-      if (is.null(ht_list)) {
-        ht_list <- do.call(get_namespace_fun("ComplexHeatmap", "Heatmap"), args = ht_args)
-      } else {
-        ht_list <- get_namespace_fun("ComplexHeatmap", "%v%")(
-          ht_list, do.call(get_namespace_fun("ComplexHeatmap", "Heatmap"), args = ht_args)
-        )
-      }
-    } else {
-      ht_list <- ht_list + do.call(get_namespace_fun("ComplexHeatmap", "Heatmap"), args = ht_args)
-    }
+    ht_list <- heatmap_append_panel(ht_list, ht_args, ht_params, flip)
   }
 
   if (

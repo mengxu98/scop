@@ -503,12 +503,9 @@ compute_pseudotime_on_knn <- function(
         topk[i, !is.na(topk[i, ])]
       })
     } else {
-      d <- proxyC::dist(
-        x = SeuratObject::as.sparse(x_emb),
-        y = SeuratObject::as.sparse(x_emb),
-        method = "euclidean",
-        use_nan = TRUE
-      )
+      if (nrow(x_emb) == 0L) {
+        stop("rank must be great than or equal to 1")
+      }
       neighbors_list <- vector("list", nrow(x_emb))
     }
   }
