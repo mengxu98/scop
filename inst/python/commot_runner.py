@@ -6,10 +6,8 @@ would shadow the installed official package when Python resolves imports.
 
 from __future__ import annotations
 
-import argparse
 import hashlib
 import importlib.metadata
-import json
 from pathlib import Path
 
 import anndata
@@ -18,6 +16,8 @@ import pandas as pd
 import scanpy as sc
 from scipy import sparse
 from scipy.io import mmread
+
+from scop_runner_io import configuration_path, read_ids as _read_single_column, read_json, write_manifest as _write_json
 
 
 COMMUNICATION_COLUMNS = [
@@ -32,28 +32,7 @@ DIRECTION_COLUMNS = [
 
 
 def _read_json(path: Path) -> dict:
-    with path.open("r", encoding="utf-8") as handle:
-        value = json.load(handle)
-    if not isinstance(value, dict):
-        raise ValueError("COMMOT configuration must be a JSON object")
-    return value
-
-
-def _write_json(value: dict, path: Path) -> None:
-    temporary = path.with_name(f".{path.name}.tmp")
-    with temporary.open("w", encoding="utf-8") as handle:
-        json.dump(value, handle, indent=2, ensure_ascii=False, allow_nan=False)
-    temporary.replace(path)
-
-
-def _read_single_column(path: Path, label: str) -> list[str]:
-    frame = pd.read_csv(path, sep="\t", dtype=str)
-    if frame.shape[1] != 1:
-        raise ValueError(f"{label} must contain exactly one column")
-    values = frame.iloc[:, 0].astype(str).tolist()
-    if not values or len(values) != len(set(values)) or any(not value for value in values):
-        raise ValueError(f"{label} must contain unique non-empty IDs")
-    return values
+    return read_json(path, object_label="COMMOT")
 
 
 def _sha256_ids(values: list[str]) -> str:
@@ -332,10 +311,7 @@ def run(config: dict) -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--config", required=True)
-    args = parser.parse_args()
-    run(_read_json(Path(args.config)))
+    run(_read_json(configuration_path()))
 
 
 if __name__ == "__main__":

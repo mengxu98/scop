@@ -1087,10 +1087,6 @@ PrepareTRRUST <- function(
           "Homo_sapiens" = "https://raw.githubusercontent.com/bioinfonerd/Transcription-Factor-Databases/master/Ttrust_v2/trrust_rawdata.human.tsv",
           "Mus_musculus" = "https://raw.githubusercontent.com/bioinfonerd/Transcription-Factor-Databases/master/Ttrust_v2/trrust_rawdata.mouse.tsv.gz"
         )
-        trrust_file <- switch(db_species["TRRUST"],
-          "Homo_sapiens" = "trrust_rawdata.human.tsv",
-          "Mus_musculus" = "trrust_rawdata.mouse.tsv.gz"
-        )
         source_file <- preparedb_local_source_file(
           data_dir = data_dir,
           db = "TRRUST",

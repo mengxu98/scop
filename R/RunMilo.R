@@ -316,33 +316,7 @@ run_milo_da_r <- function(
 
         output[[comparison_name]] <- da
 
-        node_df <- data.frame(
-          neighborhood = as.character(da$neighborhood),
-          clusters = as.character(da$clusters),
-          stringsAsFactors = FALSE
-        )
-        if (nrow(node_df) > 0) {
-          theta <- seq(0, 2 * pi, length.out = nrow(node_df) + 1)[seq_len(nrow(
-            node_df
-          ))]
-          node_df$x <- cos(theta)
-          node_df$y <- sin(theta)
-
-          edge_df <- data.frame(
-            from = node_df$neighborhood,
-            to = c(node_df$neighborhood[-1], node_df$neighborhood[1]),
-            stringsAsFactors = FALSE
-          )
-        } else {
-          node_df$x <- numeric(0)
-          node_df$y <- numeric(0)
-          edge_df <- data.frame(
-            from = character(0),
-            to = character(0),
-            stringsAsFactors = FALSE
-          )
-        }
-        graph_data[[comparison_name]] <- list(nodes = node_df, edges = edge_df)
+        graph_data[[comparison_name]] <- milo_neighborhood_graph(da)
       }
       graph_data[[".metadata"]] <- nhood_metadata
       list(results = output, graph_data = graph_data)
@@ -511,30 +485,7 @@ run_milo_da_cpp <- function(
         da$clusters <- da$neighborhood
         output[[comparison_name]] <- da
 
-        node_df <- data.frame(
-          neighborhood = as.character(da$neighborhood),
-          clusters = as.character(da$clusters),
-          stringsAsFactors = FALSE
-        )
-        if (nrow(node_df) > 0) {
-          theta <- seq(0, 2 * pi, length.out = nrow(node_df) + 1)[seq_len(nrow(node_df))]
-          node_df$x <- cos(theta)
-          node_df$y <- sin(theta)
-          edge_df <- data.frame(
-            from = node_df$neighborhood,
-            to = c(node_df$neighborhood[-1], node_df$neighborhood[1]),
-            stringsAsFactors = FALSE
-          )
-        } else {
-          node_df$x <- numeric(0)
-          node_df$y <- numeric(0)
-          edge_df <- data.frame(
-            from = character(0),
-            to = character(0),
-            stringsAsFactors = FALSE
-          )
-        }
-        graph_data[[comparison_name]] <- list(nodes = node_df, edges = edge_df)
+        graph_data[[comparison_name]] <- milo_neighborhood_graph(da)
       }
       graph_data[[".metadata"]] <- nhood_metadata
       list(results = output, graph_data = graph_data)
@@ -546,6 +497,33 @@ run_milo_da_cpp <- function(
       )
     }
   )
+}
+
+milo_neighborhood_graph <- function(da) {
+  node_df <- data.frame(
+    neighborhood = as.character(da$neighborhood),
+    clusters = as.character(da$clusters),
+    stringsAsFactors = FALSE
+  )
+  if (nrow(node_df) > 0) {
+    theta <- seq(0, 2 * pi, length.out = nrow(node_df) + 1)[seq_len(nrow(node_df))]
+    node_df$x <- cos(theta)
+    node_df$y <- sin(theta)
+    edge_df <- data.frame(
+      from = node_df$neighborhood,
+      to = c(node_df$neighborhood[-1], node_df$neighborhood[1]),
+      stringsAsFactors = FALSE
+    )
+  } else {
+    node_df$x <- numeric(0)
+    node_df$y <- numeric(0)
+    edge_df <- data.frame(
+      from = character(0),
+      to = character(0),
+      stringsAsFactors = FALSE
+    )
+  }
+  list(nodes = node_df, edges = edge_df)
 }
 
 extract_milo_r_neighborhood_metadata <- function(milo_obj) {

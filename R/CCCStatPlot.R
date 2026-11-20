@@ -1346,50 +1346,9 @@ ccc_standardize_generic_ligand_target <- function(df) {
   if (is.null(df) || nrow(df) == 0L) {
     return(data.frame())
   }
-  df <- rename_by_candidates(
-    df,
-    "ligand",
-    c("ligand", "from", "test_ligand", "ligand_oi", "ligand_source")
-  )
-  df <- rename_by_candidates(
-    df,
-    "target",
-    c("target", "to", "gene", "target_gene", "target_genes", "gene_oi")
-  )
-  df <- rename_by_candidates(
-    df,
-    "sender",
-    c("sender", "sender_celltype", "celltype_sender", "source_celltype")
-  )
-  df <- rename_by_candidates(
-    df,
-    "receiver",
-    c("receiver", "receiver_celltype", "celltype_receiver", "target_celltype")
-  )
-  df <- rename_by_candidates(
-    df,
-    "weight",
-    c(
-      "weight",
-      "score",
-      "regulatory_potential",
-      "pearson",
-      "aupr_corrected",
-      "aupr",
-      "activity",
-      "prioritization_score"
-    )
-  )
+  df <- ccc_ligand_target_columns(df)
   if (!"weight" %in% colnames(df)) {
-    numeric_cols <- setdiff(
-      colnames(df)[vapply(df, is.numeric, logical(1))],
-      c("ligand", "target")
-    )
-    if (length(numeric_cols) > 0L) {
-      colnames(df)[match(numeric_cols[1], colnames(df))] <- "weight"
-    } else {
-      df$weight <- 1
-    }
+    df$weight <- 1
   }
   if (!"ligand" %in% colnames(df)) {
     df$ligand <- NA_character_

@@ -620,51 +620,11 @@ FeatureDimPlot <- function(
     features_meta <- c(features_meta, "CoExp")
   }
 
-  if (length(features_gene) > 0) {
-    assay_data <- assay_data %||% GetAssayData5(
-      srt,
-      assay = assay,
-      layer = layer,
-      features = features_gene
-    )
-    if (all(rownames(srt@assays[[assay]]) %in% features_gene)) {
-      dat_gene <- Matrix::t(
-        as_matrix(
-          assay_data
-        )
-      )
-    } else {
-      dat_gene <- Matrix::t(
-        as_matrix(
-          assay_data[features_gene, , drop = FALSE]
-        )
-      )
-    }
-  } else {
-    dat_gene <- matrix(nrow = ncol(srt@assays[[1]]), ncol = 0)
-  }
-  if (length(features_meta) > 0) {
-    dat_meta <- as_matrix(srt@meta.data[, features_meta, drop = FALSE])
-  } else {
-    dat_meta <- matrix(nrow = ncol(srt@assays[[1]]), ncol = 0)
-  }
-  if (length(features_embedding) > 0) {
-    dat_embedding <- as_matrix(
-      SeuratObject::FetchData(
-        srt,
-        vars = features_embedding
-      )
-    )
-  } else {
-    dat_embedding <- matrix(nrow = ncol(srt@assays[[1]]), ncol = 0)
-  }
-  dat_exp <- as_matrix(do.call(
-    cbind,
-    list(dat_gene, dat_meta, dat_embedding)
-  ))
-  features <- unique(features[
-    features %in% c(features_gene, features_meta, features_embedding)
-  ])
+  prepared <- feature_dim_values(
+    srt, assay, layer, assay_data, features, features_gene, features_meta, features_embedding
+  )
+  dat_exp <- prepared$values
+  features <- prepared$features
   if (expression_density && isTRUE(compare_features) && length(features) > 1L) {
     expression_density <- FALSE
   }
@@ -2043,51 +2003,11 @@ FeatureDimPlot3D <- function(
     features_meta <- c(features_meta, "CoExp")
   }
 
-  if (length(features_gene) > 0) {
-    assay_data <- assay_data %||% GetAssayData5(
-      srt,
-      assay = assay,
-      layer = layer,
-      features = features_gene
-    )
-    if (all(rownames(srt@assays[[assay]]) %in% features_gene)) {
-      dat_gene <- Matrix::t(
-        as_matrix(
-          assay_data
-        )
-      )
-    } else {
-      dat_gene <- Matrix::t(
-        as_matrix(
-          assay_data[features_gene, , drop = FALSE]
-        )
-      )
-    }
-  } else {
-    dat_gene <- matrix(nrow = ncol(srt@assays[[1]]), ncol = 0)
-  }
-  if (length(features_meta) > 0) {
-    dat_meta <- as_matrix(srt@meta.data[, features_meta, drop = FALSE])
-  } else {
-    dat_meta <- matrix(nrow = ncol(srt@assays[[1]]), ncol = 0)
-  }
-  if (length(features_embedding) > 0) {
-    dat_embedding <- as_matrix(
-      SeuratObject::FetchData(
-        srt,
-        vars = features_embedding
-      )
-    )
-  } else {
-    dat_embedding <- matrix(nrow = ncol(srt@assays[[1]]), ncol = 0)
-  }
-  dat_exp <- as_matrix(do.call(
-    cbind,
-    list(dat_gene, dat_meta, dat_embedding)
-  ))
-  features <- unique(features[
-    features %in% c(features_gene, features_meta, features_embedding)
-  ])
+  prepared <- feature_dim_values(
+    srt, assay, layer, assay_data, features, features_gene, features_meta, features_embedding
+  )
+  dat_exp <- prepared$values
+  features <- prepared$features
 
   if (!is.numeric(dat_exp) && !inherits(dat_exp, "Matrix")) {
     log_message(
@@ -2258,4 +2178,54 @@ FeatureDimPlot3D <- function(
   }
 
   return(p)
+}
+
+feature_dim_values <- function(srt, assay, layer, assay_data, features, features_gene,
+                               features_meta, features_embedding) {
+  if (length(features_gene) > 0) {
+    assay_data <- assay_data %||% GetAssayData5(
+      srt,
+      assay = assay,
+      layer = layer,
+      features = features_gene
+    )
+    if (all(rownames(srt@assays[[assay]]) %in% features_gene)) {
+      dat_gene <- Matrix::t(
+        as_matrix(
+          assay_data
+        )
+      )
+    } else {
+      dat_gene <- Matrix::t(
+        as_matrix(
+          assay_data[features_gene, , drop = FALSE]
+        )
+      )
+    }
+  } else {
+    dat_gene <- matrix(nrow = ncol(srt@assays[[1]]), ncol = 0)
+  }
+  if (length(features_meta) > 0) {
+    dat_meta <- as_matrix(srt@meta.data[, features_meta, drop = FALSE])
+  } else {
+    dat_meta <- matrix(nrow = ncol(srt@assays[[1]]), ncol = 0)
+  }
+  if (length(features_embedding) > 0) {
+    dat_embedding <- as_matrix(
+      SeuratObject::FetchData(
+        srt,
+        vars = features_embedding
+      )
+    )
+  } else {
+    dat_embedding <- matrix(nrow = ncol(srt@assays[[1]]), ncol = 0)
+  }
+  dat_exp <- as_matrix(do.call(
+    cbind,
+    list(dat_gene, dat_meta, dat_embedding)
+  ))
+  features <- unique(features[
+    features %in% c(features_gene, features_meta, features_embedding)
+  ])
+  list(values = dat_exp, features = features)
 }

@@ -42,30 +42,11 @@ Harmony_integrate <- function(
   verbose = TRUE,
   seed = 11
 ) {
-  if (length(linear_reduction) > 1) {
-    log_message(
-      "Only the first of {.val {linear_reduction}} will be used",
-      message_type = "warning",
-      verbose = verbose
-    )
-    linear_reduction <- linear_reduction[1]
-  }
-  reduc_test <- c("pca", "svd", "ica", "nmf", "mds", "glmpca")
-  if (!is.null(srt_merge)) {
-    reduc_test <- c(reduc_test, SeuratObject::Reductions(srt_merge))
-  }
-  if (any(!linear_reduction %in% reduc_test)) {
-    log_message(
-      "{.arg linear_reduction} must be one of {.val {reduc_test}}",
-      message_type = "error"
-    )
-  }
-  if (
-    !is.null(linear_reduction_dims_use) &&
-      max(linear_reduction_dims_use) > linear_reduction_dims
-  ) {
-    linear_reduction_dims <- max(linear_reduction_dims_use)
-  }
+  linear_reduction <- resolve_integration_linear_reduction(
+    linear_reduction, srt_merge, verbose = verbose,
+    warning_message = "Only the first of {.val {linear_reduction}} will be used"
+  )
+  linear_reduction_dims <- extend_integration_dims(linear_reduction_dims, linear_reduction_dims_use)
   validate_nonlinear_reductions(nonlinear_reduction)
   cluster_algorithm_index <- resolve_cluster_algorithm_index(cluster_algorithm)
 
@@ -96,51 +77,26 @@ Harmony_integrate <- function(
     }
   }
   srt_merge_raw <- srt_merge
-  if (!is.null(srt_list)) {
-    checked <- CheckDataList(
-      srt_list = srt_list,
-      batch = batch,
-      assay = assay,
-      do_normalization = do_normalization,
-      do_HVF_finding = do_HVF_finding,
-      normalization_method = normalization_method,
-      HVF_source = HVF_source,
-      HVF_method = HVF_method,
-      nHVF = nHVF,
-      HVF_min_intersection = HVF_min_intersection,
-      HVF = HVF,
-      vars_to_regress = vars_to_regress,
-      seed = seed
-    )
-    srt_list <- checked[["srt_list"]]
-    HVF <- checked[["HVF"]]
-    assay <- checked[["assay"]]
-    type <- checked[["type"]]
-    srt_merge <- Reduce(merge, srt_list)
-    SeuratObject::VariableFeatures(srt_merge) <- HVF
-  }
-  if (is.null(srt_list) && !is.null(srt_merge)) {
-    checked <- CheckDataMerge(
-      srt_merge = srt_merge,
-      batch = batch,
-      assay = assay,
-      do_normalization = do_normalization,
-      do_HVF_finding = do_HVF_finding,
-      normalization_method = normalization_method,
-      HVF_source = HVF_source,
-      HVF_method = HVF_method,
-      nHVF = nHVF,
-      HVF_min_intersection = HVF_min_intersection,
-      HVF = HVF,
-      vars_to_regress = vars_to_regress,
-      verbose = verbose,
-      seed = seed
-    )
-    srt_merge <- checked[["srt_merge"]]
-    HVF <- checked[["HVF"]]
-    assay <- checked[["assay"]]
-    type <- checked[["type"]]
-  }
+  checked <- prepare_integration_data(
+    srt_list, srt_merge,
+    batch = batch,
+    assay = assay,
+    do_normalization = do_normalization,
+    do_HVF_finding = do_HVF_finding,
+    normalization_method = normalization_method,
+    HVF_source = HVF_source,
+    HVF_method = HVF_method,
+    nHVF = nHVF,
+    HVF_min_intersection = HVF_min_intersection,
+    HVF = HVF,
+    vars_to_regress = vars_to_regress,
+    verbose = verbose,
+    seed = seed,
+    list_verbose = TRUE
+  )
+  srt_merge <- checked[["srt_merge"]]
+  HVF <- checked[["HVF"]]
+  assay <- checked[["assay"]]
 
   if (normalization_method == "TFIDF") {
     log_message(
@@ -149,16 +105,7 @@ Harmony_integrate <- function(
     do_scaling <- FALSE
     linear_reduction <- "svd"
   }
-  scale_features <- rownames(
-    GetAssayData5(
-      srt_merge,
-      layer = "scale.data",
-      assay = SeuratObject::DefaultAssay(srt_merge)
-    )
-  )
-  if (
-    isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))
-  ) {
+  if (should_scale_integration_data(srt_merge, HVF, do_scaling)) {
     log_message("Perform {.fn Seurat::ScaleData}")
     assay_merge <- SeuratObject::DefaultAssay(srt_merge)
     if (inherits(srt_merge[[assay_merge]], "Assay5")) {

@@ -335,3 +335,20 @@ runner_tail_lines <- function(path, max_lines = 20L, chunk_size = 1000L) {
   }
   output
 }
+
+runner_python_arguments <- function(args, caller) {
+  args <- lapply(args, function(value) {
+    if (is.numeric(value)) {
+      ifelse(grepl("\\.", as.character(value)), as.double(value), as.integer(value))
+    } else {
+      value
+    }
+  })
+  lapply(args, function(value) {
+    if (is.symbol(value) || is.call(value)) {
+      eval(value, envir = caller)
+    } else {
+      value
+    }
+  })
+}

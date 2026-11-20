@@ -72,49 +72,27 @@ Scanorama_integrate <- function(
 
   validate_integration_input_cells(srt_list, srt_merge)
   srt_merge_raw <- srt_merge
-  if (!is.null(srt_list)) {
-    checked <- CheckDataList(
-      srt_list = srt_list,
-      batch = batch,
-      assay = assay,
-      do_normalization = do_normalization,
-      do_HVF_finding = do_HVF_finding,
-      normalization_method = normalization_method,
-      HVF_source = HVF_source,
-      HVF_method = HVF_method,
-      nHVF = nHVF,
-      HVF_min_intersection = HVF_min_intersection,
-      HVF = HVF,
-      vars_to_regress = vars_to_regress,
-      seed = seed
-    )
-    srt_list <- checked[["srt_list"]]
-    HVF <- checked[["HVF"]]
-    assay <- checked[["assay"]]
-    type <- checked[["type"]]
-  }
-  if (is.null(srt_list) && !is.null(srt_merge)) {
+  if (is.null(srt_list)) {
     srt_list <- Seurat::SplitObject(object = srt_merge, split.by = batch)
-    checked <- CheckDataList(
-      srt_list = srt_list,
-      batch = batch,
-      assay = assay,
-      do_normalization = do_normalization,
-      do_HVF_finding = do_HVF_finding,
-      normalization_method = normalization_method,
-      HVF_source = HVF_source,
-      HVF_method = HVF_method,
-      nHVF = nHVF,
-      HVF_min_intersection = HVF_min_intersection,
-      HVF = HVF,
-      vars_to_regress = vars_to_regress,
-      seed = seed
-    )
-    srt_list <- checked[["srt_list"]]
-    HVF <- checked[["HVF"]]
-    assay <- checked[["assay"]]
-    type <- checked[["type"]]
   }
+  checked <- CheckDataList(
+    srt_list = srt_list,
+    batch = batch,
+    assay = assay,
+    do_normalization = do_normalization,
+    do_HVF_finding = do_HVF_finding,
+    normalization_method = normalization_method,
+    HVF_source = HVF_source,
+    HVF_method = HVF_method,
+    nHVF = nHVF,
+    HVF_min_intersection = HVF_min_intersection,
+    HVF = HVF,
+    vars_to_regress = vars_to_regress,
+    seed = seed
+  )
+  srt_list <- checked[["srt_list"]]
+  HVF <- checked[["HVF"]]
+  assay <- checked[["assay"]]
   srt_integrated <- Reduce(merge, srt_list)
 
   log_message("Perform {.pkg Scanorama} integration")

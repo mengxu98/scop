@@ -250,24 +250,7 @@ RunPalantir <- function(
     )
   }
   args <- mget(names(formals()))
-  args <- lapply(args, function(x) {
-    if (is.numeric(x)) {
-      y <- ifelse(grepl("\\.", as.character(x)), as.double(x), as.integer(x))
-    } else {
-      y <- x
-    }
-    return(y)
-  })
-  call_envir <- parent.frame(1)
-  args <- lapply(args, function(arg) {
-    if (is.symbol(arg)) {
-      eval(arg, envir = call_envir)
-    } else if (is.call(arg)) {
-      eval(arg, envir = call_envir)
-    } else {
-      arg
-    }
-  })
+  args <- runner_python_arguments(args, parent.frame())
 
   args[["legend_loc"]] <- legend.position
   args[["n_jobs"]] <- as.integer(cores)
@@ -296,32 +279,9 @@ RunPalantir <- function(
   args <- args[!names(args) %in% params]
 
   if (!is.null(srt)) {
-    if (is.null(linear_reduction)) {
-      linear_reduction <- DefaultReduction(srt)
-    } else {
-      linear_reduction <- DefaultReduction(srt, pattern = linear_reduction)
-    }
-    if (!linear_reduction %in% names(srt@reductions)) {
-      log_message(
-        "{.val {linear_reduction}} is not in the srt reduction names",
-        message_type = "error"
-      )
-    }
+    linear_reduction <- resolve_trajectory_reduction(srt, linear_reduction)
 
-    if (is.null(nonlinear_reduction)) {
-      nonlinear_reduction <- DefaultReduction(srt)
-    } else {
-      nonlinear_reduction <- DefaultReduction(
-        srt,
-        pattern = nonlinear_reduction
-      )
-    }
-    if (!nonlinear_reduction %in% names(srt@reductions)) {
-      log_message(
-        "{.val {nonlinear_reduction}} is not in the srt reduction names",
-        message_type = "error"
-      )
-    }
+    nonlinear_reduction <- resolve_trajectory_reduction(srt, nonlinear_reduction)
 
     args[["adata"]] <- srt_to_adata(
       object = srt,

@@ -814,22 +814,7 @@ ccc_clean_identifier <- function(x, drop_receptor_suffix = FALSE) {
   x
 }
 
-ccc_standardize_ligand_target_df <- function(
-  df,
-  top_n = 20,
-  sender.use = NULL,
-  receiver.use = NULL,
-  context_df = NULL,
-  sender_default = NULL,
-  receiver_default = NULL
-) {
-  df <- standardize_df(df)
-  if (is.null(df) || nrow(df) == 0L) {
-    log_message(
-      "No ligand-target table is available for plotting",
-      message_type = "error"
-    )
-  }
+ccc_ligand_target_columns <- function(df) {
   df <- rename_by_candidates(
     df,
     "ligand",
@@ -874,6 +859,26 @@ ccc_standardize_ligand_target_df <- function(
       colnames(df)[match(numeric_cols[1], colnames(df))] <- "weight"
     }
   }
+  df
+}
+
+ccc_standardize_ligand_target_df <- function(
+  df,
+  top_n = 20,
+  sender.use = NULL,
+  receiver.use = NULL,
+  context_df = NULL,
+  sender_default = NULL,
+  receiver_default = NULL
+) {
+  df <- standardize_df(df)
+  if (is.null(df) || nrow(df) == 0L) {
+    log_message(
+      "No ligand-target table is available for plotting",
+      message_type = "error"
+    )
+  }
+  df <- ccc_ligand_target_columns(df)
 
   if (!all(c("ligand", "target", "weight") %in% colnames(df))) {
     log_message(

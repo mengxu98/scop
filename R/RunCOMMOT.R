@@ -22,42 +22,13 @@ commot_validate_matrix <- function(x) {
 }
 
 commot_input <- function(srt, group.by, assay, layer, image, coord.cols) {
-  if (!inherits(srt, "Seurat")) {
-    log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
-  }
-  if (!is.character(group.by) || length(group.by) != 1L || !group.by %in% colnames(srt[[]])) {
-    log_message("{.arg group.by} must be one metadata column", message_type = "error")
-  }
-  assay <- assay %||% SeuratObject::DefaultAssay(srt)
-  if (!assay %in% SeuratObject::Assays(srt)) {
-    log_message("Assay {.val {assay}} is absent from {.arg srt}", message_type = "error")
-  }
-  coords <- SpatialCoordinates(
-    object = srt, image = image, coord.cols = coord.cols,
-    space = "raw", image_policy = "strict"
+  input <- spatial_communication_input(
+    srt, group.by, assay, layer, image, coord.cols, "COMMOT", commot_validate_matrix
   )
-  cells <- as.character(coords$data$cell_id)
-  if (length(cells) == 0L || anyDuplicated(cells) || any(!cells %in% colnames(srt))) {
-    log_message("Spatial coordinates do not identify a valid unique subset of {.arg srt}", message_type = "error")
-  }
-  coords$data <- coords$data[match(cells, coords$data$cell_id), , drop = FALSE]
-  if (any(!is.finite(coords$data$x)) || any(!is.finite(coords$data$y))) {
-    log_message("COMMOT requires finite raw x and y coordinates", message_type = "error")
-  }
-  plot_coordinates <- ccc_spatial_payload_from_raw(
-    coords$data, coords$source,
-    transform = coords$transform
-  )
-  expression <- GetAssayData5(srt, assay = assay, layer = layer)[, cells, drop = FALSE]
-  commot_validate_matrix(expression)
-  groups <- as.character(srt[[]][cells, group.by])
-  if (anyNA(groups) || any(!nzchar(groups))) {
-    log_message("{.arg group.by} contains missing or empty labels", message_type = "error")
-  }
   list(
-    expression = expression, coordinates = coords$data, cells = cells,
-    groups = groups, source = plot_coordinates$source, assay = assay,
-    plot_coordinates = plot_coordinates$coordinates
+    expression = input$expression, coordinates = input$coords$data, cells = input$cells,
+    groups = input$groups, source = input$plot_coordinates$source, assay = input$assay,
+    plot_coordinates = input$plot_coordinates$coordinates
   )
 }
 

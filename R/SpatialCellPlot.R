@@ -114,9 +114,8 @@ SpatialCellPlot <- function(
     if (is.null(image)) {
       log_message("No Seurat spatial image is available for boundary extraction", message_type = "error")
     }
-    info <- spatial_input_info(object, assay = assay, image = image)
-    assay <- info$assay
-    raw <- SpatialCoordinates(object, image = image)
+    delayedAssign("raw", SpatialCoordinates(object, image = image))
+    assay <- spatial_input_info(object, assay = assay, image = image, coordinates = raw)$assay
     cells <- spatial_roi_cells(raw$data, cells, xlim, ylim)
     boundary_name <- boundary %||% spatial_segmentation_name(object[[image]])
     if (!is.null(boundary_name) && !boundary_name %in% SeuratObject::Boundaries(object[[image]])) {
@@ -141,7 +140,9 @@ SpatialCellPlot <- function(
     if (inherits(object[[image]], "VisiumV2") && spatial_image_x_orientation(object, image) == "vertical") {
       boundaries[c("x", "y")] <- boundaries[c("y", "x")]
     }
-    display <- spatial_dim_coords(object, image = image, image.scale = image.scale, overlay_image = overlay_image)
+    display <- spatial_dim_coords(
+      object, image = image, image.scale = image.scale, overlay_image = overlay_image, raw = raw
+    )
     if (is.null(flip.y)) flip.y <- inherits(object[[image]], "FOV") && !inherits(object[[image]], "VisiumV2")
     boundaries <- spatial_coords_to_display(boundaries, display$transform)
     roi <- spatial_coords_to_display(data.frame(
@@ -302,7 +303,7 @@ SpatialCellPlot <- function(
   if (length(molecules)) {
     layers <- spatial_molecule_layers(
       object, image, molecules, xlim, ylim, image.scale,
-      mols.size, mols.alpha, mols.colors
+      mols.size, mols.alpha, mols.colors, transform = display$transform
     )
     plots <- lapply(plots, function(p) p + layers)
   }
@@ -321,7 +322,7 @@ spatial_plot_add_layers <- function(plots, layers) {
 
 spatial_molecule_layers <- function(object, image, molecules, xlim, ylim, image.scale,
                                     size, alpha, colors,
-                                    transform = SpatialCoordinates(object, image = image, image.scale = image.scale)$transform) {
+                                    transform = NULL) {
   image <- spatial_image_resolve(object, image = image)$image
   if (is.null(image)) log_message("Molecule overlays require a spatial image", message_type = "error")
   fov <- object[[image]]
@@ -342,6 +343,7 @@ spatial_molecule_layers <- function(object, image, molecules, xlim, ylim, image.
   }
   if (!is.null(xlim)) dat <- dat[dat$x >= xlim[1L] & dat$x <= xlim[2L], , drop = FALSE]
   if (!is.null(ylim)) dat <- dat[dat$y >= ylim[1L] & dat$y <= ylim[2L], , drop = FALSE]
+  transform <- transform %||% SpatialCoordinates(object, image = image, image.scale = image.scale)$transform
   dat <- spatial_coords_to_display(dat, transform)
   list(
     ggnewscale::new_scale_color(),

@@ -128,23 +128,7 @@ RunCellphoneDB <- function(
   functions <- scop_python_import("functions", convert = TRUE)
 
   args <- mget(names(formals()))
-  args <- lapply(args, function(x) {
-    if (is.numeric(x)) {
-      ifelse(grepl("\\.", as.character(x)), as.double(x), as.integer(x))
-    } else {
-      x
-    }
-  })
-  call_envir <- parent.frame(1)
-  args <- lapply(args, function(arg) {
-    if (is.symbol(arg)) {
-      eval(arg, envir = call_envir)
-    } else if (is.call(arg)) {
-      eval(arg, envir = call_envir)
-    } else {
-      arg
-    }
-  })
+  args <- runner_python_arguments(args, parent.frame())
   args[["adata"]] <- adata
   args[["celltype_key"]] <- group.by
   args[["threads"]] <- args[["cores"]]

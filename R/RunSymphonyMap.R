@@ -93,45 +93,14 @@ RunSymphonyMap <- function(
     }
   }
   if (is.null(ref_umap)) {
-    ref_umap <- sort(
-      SeuratObject::Reductions(srt_ref)[grep(
-        "umap",
-        SeuratObject::Reductions(srt_ref),
-        ignore.case = TRUE
-      )]
-    )[1]
-    if (length(ref_umap) == 0) {
-      log_message(
-        "Cannot find UMAP reduction in the {.arg srt_ref}",
-        message_type = "error"
-      )
-    } else {
-      log_message("Set ref_umap to {.val {ref_umap}}", verbose = verbose)
-    }
+    ref_umap <- mapping_default_umap(srt_ref)
+    log_message("Set ref_umap to {.val {ref_umap}}", verbose = verbose)
   }
   ref_pca_dims <- srt_ref[[ref_harmony]]@misc$reduction_dims
 
-  projection_method <- match.arg(projection_method)
-  if (
-    projection_method == "model" &&
-      !"model" %in% names(srt_ref[[ref_umap]]@misc)
-  ) {
-    log_message(
-      "No UMAP model detected. Set the projection_method to 'knn'",
-      message_type = "warning",
-      verbose = verbose
-    )
-    projection_method <- "knn"
-  }
-  if (
-    projection_method == "model" &&
-      !distance_metric %in% c("euclidean", "cosine", "manhattan", "hamming")
-  ) {
-    log_message(
-      "distance_metric must be one of euclidean, cosine, manhattan, and hamming when projection_method='model'",
-      message_type = "error"
-    )
-  }
+  projection_method <- mapping_projection_method(
+    srt_ref, ref_umap, projection_method, distance_metric, verbose
+  )
 
   query_data <- GetAssayData5(srt_query, layer = "data", assay = query_assay)
   status_query <- CheckDataType(object = query_data)

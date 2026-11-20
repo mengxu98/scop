@@ -194,7 +194,6 @@ NMFHeatmap <- function(
   cell_annotation_border <- borders$cell_annotation_border
   feature_annotation_border <- borders$feature_annotation_border
   heatmap_border_color <- borders$heatmap_border_color
-  cell_annotation_border_color <- borders$cell_annotation_border_color
   feature_annotation_border_color <- borders$feature_annotation_border_color
   heatmap_border_size <- borders$heatmap_border_size
   cell_annotation_border_size <- borders$cell_annotation_border_size
@@ -759,38 +758,21 @@ nmf_heatmap_render_plot <- function(
     legend_list = legend_list,
     flip = FALSE
   )
-  width_sum <- rendersize[["width_sum"]]
-  height_sum <- rendersize[["height_sum"]]
   if (isTRUE(fix)) {
     log_message(
       "Fixing {.fn NMFHeatmap} panel size ...",
       verbose = verbose
     )
-    fixsize_env <- new.env(parent = emptyenv())
-    invisible(grid::grid.grabExpr({
-      fixsize_env[["value"]] <- heatmap_fixsize(
-        width = width,
-        width_sum = width_sum,
-        height = height,
-        height_sum = height_sum,
-        units = units,
-        ht_list = ht_list,
-        legend_list = legend_list
-      )
-    }))
-    fixsize <- fixsize_env[["value"]]
-    rm(fixsize_env)
-    ht_width <- fixsize[["ht_width"]]
-    ht_height <- fixsize[["ht_height"]]
-  } else {
-    ht_width <- grid::unit(width_sum, units = units)
-    ht_height <- grid::unit(height_sum, units = units)
   }
+  render_units <- heatmap_render_units(
+    rendersize, fix, width, height, units, ht_list, legend_list
+  )
   log_message(
     "Drawing {.fn NMFHeatmap}; this can take time for large similarity matrices ...",
     verbose = verbose
   )
-  g_tree <- grid::grid.grabExpr(
+  g_tree <- heatmap_capture_grob(
+    render_units,
     {
       get_namespace_fun("ComplexHeatmap", "draw")(
         ht_list,
@@ -803,28 +785,15 @@ nmf_heatmap_render_plot <- function(
         !is.null(right_annotation) &&
           any(c(anno_terms, anno_keys, anno_features))
       ) {
-        nmf_heatmap_decorate_enrichment(right_annotation, db)
+        heatmap_decorate_enrichment(right_annotation, db)
       }
-    },
-    width = ht_width,
-    height = ht_height,
-    wrap = TRUE,
-    wrap.grobs = TRUE
+    }
   )
   log_message(
     "Assembling {.fn NMFHeatmap} plot object ...",
     verbose = verbose
   )
-  if (isTRUE(fix)) {
-    panel_fix_overall(
-      g_tree,
-      width = as.numeric(ht_width),
-      height = as.numeric(ht_height),
-      units = units
-    )
-  } else {
-    patchwork::wrap_plots(g_tree)
-  }
+  heatmap_wrap_grob(g_tree, render_units, units, fix)
 }
 
 nmf_heatmap_decorate_blocks <- function(ht_name, nmf_cluster) {
@@ -845,28 +814,4 @@ nmf_heatmap_decorate_blocks <- function(ht_name, nmf_cluster) {
       )
     }
   })
-}
-
-nmf_heatmap_decorate_enrichment <- function(right_annotation, db) {
-  for (enrich in db) {
-    enrich_anno <- names(right_annotation)[grep(
-      paste0("_split_", enrich),
-      names(right_annotation)
-    )]
-    if (length(enrich_anno) > 0) {
-      for (enrich_anno_element in enrich_anno) {
-        enrich_obj <- strsplit(enrich_anno_element, "_split_")[[1]][1]
-        get_namespace_fun("ComplexHeatmap", "decorate_annotation")(
-          enrich_anno_element,
-          slice = 1, {
-            grid::grid.text(
-              paste0(enrich, " (", enrich_obj, ")"),
-              x = grid::unit(1, "npc"),
-              y = grid::unit(1, "npc") + grid::unit(2.5, "mm"),
-              just = c("left", "bottom")
-            )
-        })
-      }
-    }
-  }
 }

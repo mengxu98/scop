@@ -158,13 +158,7 @@ RunReferenceMapping <- function(
   }
 
   if (is.null(ref_umap)) {
-    ref_umap <- sort(
-      SeuratObject::Reductions(reference)[grep(
-        "umap",
-        SeuratObject::Reductions(reference),
-        ignore.case = TRUE
-      )]
-    )[1]
+    ref_umap <- mapping_default_umap(reference)
   }
   if (is.na(ref_umap) || length(ref_umap) == 0) {
     log_message(

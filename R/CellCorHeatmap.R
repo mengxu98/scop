@@ -329,13 +329,10 @@ CellCorHeatmap <- function(
   )
   heatmap_border <- borders$heatmap_border
   cell_annotation_border <- borders$cell_annotation_border
-  feature_annotation_border <- borders$feature_annotation_border
   heatmap_border_color <- borders$heatmap_border_color
   cell_annotation_border_color <- borders$cell_annotation_border_color
-  feature_annotation_border_color <- borders$feature_annotation_border_color
   heatmap_border_size <- borders$heatmap_border_size
   cell_annotation_border_size <- borders$cell_annotation_border_size
-  feature_annotation_border_size <- borders$feature_annotation_border_size
   if (isTRUE(raster_by_magick)) {
     check_r("magick", verbose = FALSE)
   }
@@ -540,29 +537,12 @@ CellCorHeatmap <- function(
   }
 
   if (!is.null(query_annotation)) {
-    if (length(query_annotation_palette) == 1) {
-      query_annotation_palette <- rep(
-        query_annotation_palette,
-        length(query_annotation)
-      )
-    }
-    if (length(query_annotation_palcolor) == 1) {
-      query_annotation_palcolor <- rep(
-        query_annotation_palcolor,
-        length(query_annotation)
-      )
-    }
-    npal <- unique(c(
-      length(query_annotation_palette),
-      length(query_annotation_palcolor),
-      length(query_annotation)
-    ))
-    if (length(npal[npal != 0]) > 1) {
-      log_message(
-        "{.arg query_annotation_palette} and {.arg query_annotation_palcolor} must be the same length as {.arg query_annotation}",
-        message_type = "error"
-      )
-    }
+    colors <- heatmap_annotation_palettes(
+      query_annotation, query_annotation_palette, query_annotation_palcolor,
+      "{.arg query_annotation_palette} and {.arg query_annotation_palcolor} must be the same length as {.arg query_annotation}"
+    )
+    query_annotation_palette <- colors$palette
+    query_annotation_palcolor <- colors$palcolor
     query_annotation_all <- c(colnames(srt_query@meta.data), rownames(srt_query[[query_assay]]))
     if (any(!query_annotation %in% query_annotation_all)) {
       log_message(
@@ -572,29 +552,12 @@ CellCorHeatmap <- function(
     }
   }
   if (!is.null(ref_annotation)) {
-    if (length(ref_annotation_palette) == 1) {
-      ref_annotation_palette <- rep(
-        ref_annotation_palette,
-        length(ref_annotation)
-      )
-    }
-    if (length(ref_annotation_palcolor) == 1) {
-      ref_annotation_palcolor <- rep(
-        ref_annotation_palcolor,
-        length(ref_annotation)
-      )
-    }
-    npal <- unique(c(
-      length(ref_annotation_palette),
-      length(ref_annotation_palcolor),
-      length(ref_annotation)
-    ))
-    if (length(npal[npal != 0]) > 1) {
-      log_message(
-        "{.arg ref_annotation_palette} and {.arg ref_annotation_palcolor} must be the same length as {.arg ref_annotation}",
-        message_type = "error"
-      )
-    }
+    colors <- heatmap_annotation_palettes(
+      ref_annotation, ref_annotation_palette, ref_annotation_palcolor,
+      "{.arg ref_annotation_palette} and {.arg ref_annotation_palcolor} must be the same length as {.arg ref_annotation}"
+    )
+    ref_annotation_palette <- colors$palette
+    ref_annotation_palcolor <- colors$palcolor
     ref_annotation_all <- c(
       colnames(srt_ref@meta.data),
       rownames(srt_ref[[ref_assay]])
@@ -885,7 +848,7 @@ CellCorHeatmap <- function(
   }
 
   if (!is.null(query_annotation)) {
-    query_subplots_list <- list()
+    query_group_name <- paste0(c("Query", query_group), collapse = ":")
     for (i in seq_along(query_annotation)) {
       cellan <- query_annotation[i]
       palette <- query_annotation_palette[i]
@@ -911,21 +874,11 @@ CellCorHeatmap <- function(
             individual = TRUE,
             combine = FALSE
           )
-          query_subplots_list[[paste0(cellan, ":", query_group)]] <- subplots
           graphics <- annotation_graphics(
             subplots = subplots,
             prefix = paste0(cellan, ":", query_group)
           )
-          x_nm <- sapply(
-            strsplit(levels(cell_groups[["query_group"]]), " : "),
-            function(x) {
-              if (length(x) == 2) {
-                paste0(c(query_group, x[1], x[2]), collapse = ":")
-              } else {
-                paste0(c(query_group, x[1], ""), collapse = ":")
-              }
-            }
-          )
+          x_nm <- cellcor_heatmap_subplot_keys(levels(cell_groups[["query_group"]]), query_group)
 
           ha_cell <- list()
           ha_cell[[cellan]] <- get_namespace_fun("ComplexHeatmap", "anno_customize")(
@@ -935,22 +888,9 @@ CellCorHeatmap <- function(
             border = cell_annotation_border,
             verbose = FALSE
           )
-          ha_query <- build_heatmap_annotation(
-            annotations = ha_cell,
-            which = ifelse(flip, "column", "row"),
-            show_annotation_name = TRUE,
-            annotation_name_side = ifelse(flip, "left", "bottom"),
-            params = query_cell_annotation_params
+          ha_query_list[[query_group_name]] <- cellcor_heatmap_add_annotation(
+            ha_query_list[[query_group_name]], ha_cell, flip, query_cell_annotation_params
           )
-          query_group_name <- paste0(c("Query", query_group), collapse = ":")
-          if (is.null(ha_query_list[[query_group_name]])) {
-            ha_query_list[[query_group_name]] <- ha_query
-          } else {
-            ha_query_list[[query_group_name]] <- c(
-              ha_query_list[[query_group_name]],
-              ha_query
-            )
-          }
         } else {
           ha_cell <- list()
           ha_cell[[cellan]] <- get_namespace_fun("ComplexHeatmap", "anno_simple")(
@@ -967,22 +907,9 @@ CellCorHeatmap <- function(
             na_col = "transparent",
             border = cell_annotation_border
           )
-          ha_query <- build_heatmap_annotation(
-            annotations = ha_cell,
-            which = ifelse(flip, "column", "row"),
-            show_annotation_name = TRUE,
-            annotation_name_side = ifelse(flip, "left", "bottom"),
-            params = query_cell_annotation_params
+          ha_query_list[[query_group_name]] <- cellcor_heatmap_add_annotation(
+            ha_query_list[[query_group_name]], ha_cell, flip, query_cell_annotation_params
           )
-          query_group_name <- paste0(c("Query", query_group), collapse = ":")
-          if (is.null(ha_query_list[[query_group_name]])) {
-            ha_query_list[[query_group_name]] <- ha_query
-          } else {
-            ha_query_list[[query_group_name]] <- c(
-              ha_query_list[[query_group_name]],
-              ha_query
-            )
-          }
         }
         query_cell_name <- paste0(c("Query", cellan), collapse = ":")
         lgd[[query_cell_name]] <- get_namespace_fun("ComplexHeatmap", "Legend")(
@@ -1020,21 +947,11 @@ CellCorHeatmap <- function(
             individual = TRUE,
             combine = FALSE
           )
-          query_subplots_list[[paste0(cellan, ":", query_group)]] <- subplots
           graphics <- annotation_graphics(
             subplots = subplots,
             prefix = paste0(cellan, ":", query_group)
           )
-          x_nm <- sapply(
-            strsplit(levels(cell_groups[["query_group"]]), " : "),
-            function(x) {
-              if (length(x) == 2) {
-                paste0(c(cellan, query_group, x[1], x[2]), collapse = ":")
-              } else {
-                paste0(c(cellan, query_group, x[1], ""), collapse = ":")
-              }
-            }
-          )
+          x_nm <- cellcor_heatmap_subplot_keys(levels(cell_groups[["query_group"]]), c(cellan, query_group))
           ha_cell <- list()
           ha_cell[[cellan]] <- get_namespace_fun("ComplexHeatmap", "anno_customize")(
             x = x_nm,
@@ -1043,32 +960,9 @@ CellCorHeatmap <- function(
             border = cell_annotation_border,
             verbose = FALSE
           )
-          ha_query <- build_heatmap_annotation(
-            annotations = ha_cell,
-            which = ifelse(flip, "column", "row"),
-            show_annotation_name = TRUE,
-            annotation_name_side = ifelse(flip, "left", "bottom"),
-            params = query_cell_annotation_params
+          ha_query_list[[query_group_name]] <- cellcor_heatmap_add_annotation(
+            ha_query_list[[query_group_name]], ha_cell, flip, query_cell_annotation_params
           )
-          if (
-            is.null(ha_query_list[[paste0(
-              c("Query", query_group),
-              collapse = ":"
-            )]])
-          ) {
-            ha_query_list[[paste0(
-              c("Query", query_group),
-              collapse = ":"
-            )]] <- ha_query
-          } else {
-            ha_query_list[[paste0(
-              c("Query", query_group),
-              collapse = ":"
-            )]] <- c(
-              ha_query_list[[paste0(c("Query", query_group), collapse = ":")]],
-              ha_query
-            )
-          }
         } else {
           col_fun <- circlize::colorRamp2(
             breaks = seq(
@@ -1089,32 +983,9 @@ CellCorHeatmap <- function(
             na_col = "transparent",
             border = cell_annotation_border
           )
-          ha_query <- build_heatmap_annotation(
-            annotations = ha_cell,
-            which = ifelse(flip, "column", "row"),
-            show_annotation_name = TRUE,
-            annotation_name_side = ifelse(flip, "left", "bottom"),
-            params = query_cell_annotation_params
+          ha_query_list[[query_group_name]] <- cellcor_heatmap_add_annotation(
+            ha_query_list[[query_group_name]], ha_cell, flip, query_cell_annotation_params
           )
-          if (
-            is.null(ha_query_list[[paste0(
-              c("Query", query_group),
-              collapse = ":"
-            )]])
-          ) {
-            ha_query_list[[paste0(
-              c("Query", query_group),
-              collapse = ":"
-            )]] <- ha_query
-          } else {
-            ha_query_list[[paste0(
-              c("Query", query_group),
-              collapse = ":"
-            )]] <- c(
-              ha_query_list[[paste0(c("Query", query_group), collapse = ":")]],
-              ha_query
-            )
-          }
           query_cell_name <- paste0(c("Query", cellan), collapse = ":")
           lgd[[query_cell_name]] <- get_namespace_fun("ComplexHeatmap", "Legend")(
             title = query_cell_name,
@@ -1135,7 +1006,7 @@ CellCorHeatmap <- function(
   }
 
   if (!is.null(ref_annotation)) {
-    ref_subplots_list <- list()
+    ref_group_name <- paste0(c("Ref", ref_group), collapse = ":")
     for (i in seq_along(ref_annotation)) {
       cellan <- ref_annotation[i]
       palette <- ref_annotation_palette[i]
@@ -1161,21 +1032,11 @@ CellCorHeatmap <- function(
             individual = TRUE,
             combine = FALSE
           )
-          ref_subplots_list[[paste0(cellan, ":", ref_group)]] <- subplots
           graphics <- annotation_graphics(
             subplots = subplots,
             prefix = paste0(cellan, ":", ref_group)
           )
-          x_nm <- sapply(
-            strsplit(levels(cell_groups[["ref_group"]]), " : "),
-            function(x) {
-              if (length(x) == 2) {
-                paste0(c(ref_group, x[1], x[2]), collapse = ":")
-              } else {
-                paste0(c(ref_group, x[1], ""), collapse = ":")
-              }
-            }
-          )
+          x_nm <- cellcor_heatmap_subplot_keys(levels(cell_groups[["ref_group"]]), ref_group)
 
           ha_cell <- list()
           ha_cell[[cellan]] <- get_namespace_fun("ComplexHeatmap", "anno_customize")(
@@ -1185,22 +1046,9 @@ CellCorHeatmap <- function(
             border = cell_annotation_border,
             verbose = FALSE
           )
-          ha_ref <- build_heatmap_annotation(
-            annotations = ha_cell,
-            which = ifelse(!flip, "column", "row"),
-            show_annotation_name = TRUE,
-            annotation_name_side = ifelse(!flip, "left", "bottom"),
-            params = ref_cell_annotation_params
+          ha_ref_list[[ref_group_name]] <- cellcor_heatmap_add_annotation(
+            ha_ref_list[[ref_group_name]], ha_cell, !flip, ref_cell_annotation_params
           )
-          ref_group_name <- paste0(c("Ref", ref_group), collapse = ":")
-          if (is.null(ha_ref_list[[ref_group_name]])) {
-            ha_ref_list[[ref_group_name]] <- ha_ref
-          } else {
-            ha_ref_list[[ref_group_name]] <- c(
-              ha_ref_list[[ref_group_name]],
-              ha_ref
-            )
-          }
         } else {
           ha_cell <- list()
           ha_cell[[cellan]] <- get_namespace_fun("ComplexHeatmap", "anno_simple")(
@@ -1217,22 +1065,9 @@ CellCorHeatmap <- function(
             na_col = "transparent",
             border = cell_annotation_border
           )
-          ha_ref <- build_heatmap_annotation(
-            annotations = ha_cell,
-            which = ifelse(!flip, "column", "row"),
-            show_annotation_name = TRUE,
-            annotation_name_side = ifelse(!flip, "left", "bottom"),
-            params = ref_cell_annotation_params
+          ha_ref_list[[ref_group_name]] <- cellcor_heatmap_add_annotation(
+            ha_ref_list[[ref_group_name]], ha_cell, !flip, ref_cell_annotation_params
           )
-          ref_group_name <- paste0(c("Ref", ref_group), collapse = ":")
-          if (is.null(ha_ref_list[[ref_group_name]])) {
-            ha_ref_list[[ref_group_name]] <- ha_ref
-          } else {
-            ha_ref_list[[ref_group_name]] <- c(
-              ha_ref_list[[ref_group_name]],
-              ha_ref
-            )
-          }
         }
         ref_cell_name <- paste0(c("Ref", cellan), collapse = ":")
         lgd[[ref_cell_name]] <- get_namespace_fun("ComplexHeatmap", "Legend")(
@@ -1270,21 +1105,11 @@ CellCorHeatmap <- function(
             individual = TRUE,
             combine = FALSE
           )
-          ref_subplots_list[[paste0(cellan, ":", ref_group)]] <- subplots
           graphics <- annotation_graphics(
             subplots = subplots,
             prefix = paste0(cellan, ":", ref_group)
           )
-          x_nm <- sapply(
-            strsplit(levels(cell_groups[["ref_group"]]), " : "),
-            function(x) {
-              if (length(x) == 2) {
-                paste0(c(cellan, ref_group, x[1], x[2]), collapse = ":")
-              } else {
-                paste0(c(cellan, ref_group, x[1], ""), collapse = ":")
-              }
-            }
-          )
+          x_nm <- cellcor_heatmap_subplot_keys(levels(cell_groups[["ref_group"]]), c(cellan, ref_group))
           ha_cell <- list()
           ha_cell[[cellan]] <- get_namespace_fun("ComplexHeatmap", "anno_customize")(
             x = x_nm,
@@ -1293,22 +1118,9 @@ CellCorHeatmap <- function(
             border = cell_annotation_border,
             verbose = FALSE
           )
-          ha_ref <- build_heatmap_annotation(
-            annotations = ha_cell,
-            which = ifelse(!flip, "column", "row"),
-            show_annotation_name = TRUE,
-            annotation_name_side = ifelse(!flip, "left", "bottom"),
-            params = ref_cell_annotation_params
+          ha_ref_list[[ref_group_name]] <- cellcor_heatmap_add_annotation(
+            ha_ref_list[[ref_group_name]], ha_cell, !flip, ref_cell_annotation_params
           )
-          ref_group_name <- paste0(c("Ref", ref_group), collapse = ":")
-          if (is.null(ha_ref_list[[ref_group_name]])) {
-            ha_ref_list[[ref_group_name]] <- ha_ref
-          } else {
-            ha_ref_list[[ref_group_name]] <- c(
-              ha_ref_list[[ref_group_name]],
-              ha_ref
-            )
-          }
         } else {
           col_fun <- circlize::colorRamp2(
             breaks = seq(
@@ -1326,22 +1138,9 @@ CellCorHeatmap <- function(
             na_col = "transparent",
             border = cell_annotation_border
           )
-          ha_ref <- build_heatmap_annotation(
-            annotations = ha_cell,
-            which = ifelse(!flip, "column", "row"),
-            show_annotation_name = TRUE,
-            annotation_name_side = ifelse(!flip, "left", "bottom"),
-            params = ref_cell_annotation_params
+          ha_ref_list[[ref_group_name]] <- cellcor_heatmap_add_annotation(
+            ha_ref_list[[ref_group_name]], ha_cell, !flip, ref_cell_annotation_params
           )
-          ref_group_name <- paste0(c("Ref", ref_group), collapse = ":")
-          if (is.null(ha_ref_list[[ref_group_name]])) {
-            ha_ref_list[[ref_group_name]] <- ha_ref
-          } else {
-            ha_ref_list[[ref_group_name]] <- c(
-              ha_ref_list[[ref_group_name]],
-              ha_ref
-            )
-          }
           ref_cell_name <- paste0(c("Ref", cellan), collapse = ":")
           lgd[[ref_cell_name]] <- get_namespace_fun("ComplexHeatmap", "Legend")(
             title = ref_cell_name,
@@ -1506,54 +1305,22 @@ CellCorHeatmap <- function(
     legend_list = lgd,
     flip = flip
   )
-  width_sum <- rendersize[["width_sum"]]
-  height_sum <- rendersize[["height_sum"]]
 
-  if (isTRUE(fix)) {
-    fixsize_env <- new.env(parent = emptyenv())
-    invisible(grid::grid.grabExpr({
-      fixsize_env[["value"]] <- heatmap_fixsize(
-        width = width,
-        width_sum = width_sum,
-        height = height,
-        height_sum = height_sum,
-        units = units,
-        ht_list = ht_list,
-        legend_list = lgd
-      )
-    }))
-    fixsize <- fixsize_env[["value"]]
-    rm(fixsize_env)
-    ht_width <- fixsize[["ht_width"]]
-    ht_height <- fixsize[["ht_height"]]
-  } else {
-    ht_width <- grid::unit(width_sum, units = units)
-    ht_height <- grid::unit(height_sum, units = units)
-  }
+  render_units <- heatmap_render_units(
+    rendersize, fix, width, height, units, ht_list, lgd
+  )
 
-  g_tree <- grid::grid.grabExpr(
+  g_tree <- heatmap_capture_grob(
+    render_units,
     {
       get_namespace_fun("ComplexHeatmap", "draw")(ht_list,
         annotation_legend_list = lgd,
         annotation_legend_side = legend.position
       )
-    },
-    width = ht_width,
-    height = ht_height,
-    wrap = TRUE,
-    wrap.grobs = TRUE
+    }
   )
 
-  if (isTRUE(fix)) {
-    p <- panel_fix_overall(
-      g_tree,
-      width = as.numeric(ht_width),
-      height = as.numeric(ht_height),
-      units = units
-    )
-  } else {
-    p <- patchwork::wrap_plots(g_tree)
-  }
+  p <- heatmap_wrap_grob(g_tree, render_units, units, fix)
 
   return(
     list(
@@ -1564,4 +1331,22 @@ CellCorHeatmap <- function(
       cell_metadata = cell_metadata
     )
   )
+}
+
+cellcor_heatmap_add_annotation <- function(existing, annotations, flip, params) {
+  annotation <- build_heatmap_annotation(
+    annotations = annotations,
+    which = ifelse(flip, "column", "row"),
+    show_annotation_name = TRUE,
+    annotation_name_side = ifelse(flip, "left", "bottom"),
+    params = params
+  )
+  if (is.null(existing)) annotation else c(existing, annotation)
+}
+
+cellcor_heatmap_subplot_keys <- function(groups, prefix) {
+  sapply(strsplit(groups, " : "), function(x) {
+    subset <- if (length(x) == 2L) x[2L] else ""
+    paste0(c(prefix, x[1L], subset), collapse = ":")
+  })
 }

@@ -38,30 +38,10 @@ Conos_integrate <- function(
   verbose = TRUE,
   seed = 11
 ) {
-  if (length(linear_reduction) > 1) {
-    log_message(
-      "Only the first method in the {.arg linear_reduction} will be used",
-      message_type = "warning",
-      verbose = verbose
-    )
-    linear_reduction <- linear_reduction[1]
-  }
-  reduc_test <- c("pca", "svd", "ica", "nmf", "mds", "glmpca")
-  if (!is.null(srt_merge)) {
-    reduc_test <- c(reduc_test, SeuratObject::Reductions(srt_merge))
-  }
-  if (any(!linear_reduction %in% reduc_test)) {
-    log_message(
-      "{.arg linear_reduction} must be one of {.val {reduc_test}}",
-      message_type = "error"
-    )
-  }
-  if (
-    !is.null(linear_reduction_dims_use) &&
-      max(linear_reduction_dims_use) > linear_reduction_dims
-  ) {
-    linear_reduction_dims <- max(linear_reduction_dims_use)
-  }
+  linear_reduction <- resolve_integration_linear_reduction(
+    linear_reduction, srt_merge, verbose = verbose
+  )
+  linear_reduction_dims <- extend_integration_dims(linear_reduction_dims, linear_reduction_dims_use)
   validate_nonlinear_reductions(
     nonlinear_reduction,
     allowed = c("umap", "umap-naive", "fr")
@@ -73,53 +53,26 @@ Conos_integrate <- function(
 
   validate_integration_input_cells(srt_list, srt_merge)
   srt_merge_raw <- srt_merge
-  if (!is.null(srt_list)) {
-    checked <- CheckDataList(
-      srt_list = srt_list,
-      batch = batch,
-      assay = assay,
-      do_normalization = do_normalization,
-      do_HVF_finding = do_HVF_finding,
-      normalization_method = normalization_method,
-      HVF_source = HVF_source,
-      HVF_method = HVF_method,
-      nHVF = nHVF,
-      HVF_min_intersection = HVF_min_intersection,
-      HVF = HVF,
-      vars_to_regress = vars_to_regress,
-      verbose = verbose,
-      seed = seed
-    )
-    srt_list <- checked[["srt_list"]]
-    HVF <- checked[["HVF"]]
-    assay <- checked[["assay"]]
-    type <- checked[["type"]]
-    srt_merge <- Reduce(merge, srt_list)
-    SeuratObject::VariableFeatures(srt_merge) <- HVF
-  }
-  if (is.null(srt_list) && !is.null(srt_merge)) {
-    checked <- CheckDataMerge(
-      srt_merge = srt_merge,
-      batch = batch,
-      assay = assay,
-      do_normalization = do_normalization,
-      do_HVF_finding = do_HVF_finding,
-      normalization_method = normalization_method,
-      HVF_source = HVF_source,
-      HVF_method = HVF_method,
-      nHVF = nHVF,
-      HVF_min_intersection = HVF_min_intersection,
-      HVF = HVF,
-      vars_to_regress = vars_to_regress,
-      verbose = verbose,
-      seed = seed
-    )
-    srt_list <- checked[["srt_list"]]
-    srt_merge <- checked[["srt_merge"]]
-    HVF <- checked[["HVF"]]
-    assay <- checked[["assay"]]
-    type <- checked[["type"]]
-  }
+  checked <- prepare_integration_data(
+    srt_list, srt_merge,
+    batch = batch,
+    assay = assay,
+    do_normalization = do_normalization,
+    do_HVF_finding = do_HVF_finding,
+    normalization_method = normalization_method,
+    HVF_source = HVF_source,
+    HVF_method = HVF_method,
+    nHVF = nHVF,
+    HVF_min_intersection = HVF_min_intersection,
+    HVF = HVF,
+    vars_to_regress = vars_to_regress,
+    verbose = verbose,
+    seed = seed
+  )
+  srt_merge <- checked[["srt_merge"]]
+  srt_list <- checked[["srt_list"]]
+  HVF <- checked[["HVF"]]
+  assay <- checked[["assay"]]
 
   if (min(sapply(srt_list, ncol)) < 30) {
     log_message(
@@ -148,17 +101,7 @@ Conos_integrate <- function(
 
   for (i in seq_along(srt_list)) {
     srt <- srt_list[[i]]
-    scale_features <- rownames(
-      GetAssayData5(
-        srt,
-        layer = "scale.data",
-        assay = SeuratObject::DefaultAssay(srt)
-      )
-    )
-    if (
-      isTRUE(do_scaling) ||
-        (is.null(do_scaling) && any(!HVF %in% scale_features))
-    ) {
+    if (should_scale_integration_data(srt, HVF, do_scaling)) {
       log_message(
         "Perform ScaleData on the data {.val {i}} ..."
       )

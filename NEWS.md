@@ -1,5 +1,9 @@
 # scop (development version)
 
+* **refactor**: Share heatmap rendering, spatial coordinate preparation,
+  integration setup, and analysis inputs. Reuse common C++ and Python
+  routines across analysis backends.
+
 * **fix**: `FeatureHeatmap()` preserves numeric cell annotations when the same metadata column is also used for grouping or splitting. Numeric annotations without finite values now render in grey with a `Missing` legend instead of failing during color-scale construction; non-finite values in partially observed annotations use the existing missing-value color.
 
 * **fix**: Pin PyNNDescent 0.6.0 in Scanpy environments to prevent sparse-array `getnnz` failures in large-data `RunPAGA()` neighbor searches. `RunPAGA()` now requests an R-session restart if an older PyNNDescent module remains loaded after the environment is updated.

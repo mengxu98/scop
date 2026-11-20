@@ -341,53 +341,38 @@ List cytotrace2_ensemble_predict(
       sum_probs += prob_pred;
       sum_order += prob_order;
     }
-
-    arma::vec predicted_score = sum_order / static_cast<double>(n_models);
-    arma::mat avg_probs = sum_probs / static_cast<double>(n_models);
-
-    arma::uvec cat_idx = arma::index_max(avg_probs, 1);
-    IntegerVector predicted_category(n_cells);
-    for (int i = 0; i < n_cells; i++) {
-      predicted_category[i] = static_cast<int>(cat_idx(i)) + 1;
+  } else {
+    std::vector<ModelParams> model_params(n_models);
+    for (int m = 0; m < n_models; m++) {
+      extract_model_params(parameter_dict[m], model_params[m]);
     }
 
-    return List::create(
-      Named("score") = predicted_score,
-      Named("category") = predicted_category,
-      Named("probabilities") = avg_probs
-    );
-  }
+    std::vector<arma::mat> model_probs(n_models);
+    std::vector<arma::vec> model_orders(n_models);
+    std::atomic<int> next_model(0);
+    std::vector<std::thread> workers;
+    workers.reserve(n_workers);
 
-  std::vector<ModelParams> model_params(n_models);
-  for (int m = 0; m < n_models; m++) {
-    extract_model_params(parameter_dict[m], model_params[m]);
-  }
+    for (int worker = 0; worker < n_workers; worker++) {
+      workers.emplace_back([&]() {
+        while (true) {
+          int m = next_model.fetch_add(1);
+          if (m >= n_models) break;
+          binary_encoder_forward(
+            rank_data, log2_data, model_params[m], model_probs[m], model_orders[m]
+          );
+        }
+      });
+    }
 
-  std::vector<arma::mat> model_probs(n_models);
-  std::vector<arma::vec> model_orders(n_models);
-  std::atomic<int> next_model(0);
-  std::vector<std::thread> workers;
-  workers.reserve(n_workers);
+    for (std::thread& worker : workers) {
+      worker.join();
+    }
 
-  for (int worker = 0; worker < n_workers; worker++) {
-    workers.emplace_back([&]() {
-      while (true) {
-        int m = next_model.fetch_add(1);
-        if (m >= n_models) break;
-        binary_encoder_forward(
-          rank_data, log2_data, model_params[m], model_probs[m], model_orders[m]
-        );
-      }
-    });
-  }
-
-  for (std::thread& worker : workers) {
-    worker.join();
-  }
-
-  for (int m = 0; m < n_models; m++) {
-    sum_probs += model_probs[m];
-    sum_order += model_orders[m];
+    for (int m = 0; m < n_models; m++) {
+      sum_probs += model_probs[m];
+      sum_order += model_orders[m];
+    }
   }
 
   arma::vec predicted_score = sum_order / static_cast<double>(n_models);
@@ -757,12 +742,6 @@ List cytotrace2_main(
   List knn_result;
   if (n_cells > 100 && pca_coords.n_rows == n_cells && pca_coords.n_cols > 0) {
     knn_result = cytotrace2_knn_smooth(pca_coords, binned_scores, binned_potency, cores, seed);
-  } else if (n_cells > 100) {
-    StringVector final_potency = binned_potency;
-    knn_result = List::create(
-      Named("CytoTRACE2_Score") = binned_scores,
-      Named("CytoTRACE2_Potency") = final_potency
-    );
   } else {
     knn_result = List::create(
       Named("CytoTRACE2_Score") = binned_scores,

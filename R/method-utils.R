@@ -134,6 +134,36 @@ prepare_mapping_reference <- function(
   reference
 }
 
+mapping_default_umap <- function(reference) {
+  reductions <- SeuratObject::Reductions(reference)
+  sort(grep("umap", reductions, ignore.case = TRUE, value = TRUE))[1L]
+}
+
+mapping_projection_method <- function(reference, ref_umap, projection_method, distance_metric, verbose) {
+  projection_method <- match.arg(projection_method, c("model", "knn"))
+  if (
+    projection_method == "model" &&
+      !"model" %in% names(reference[[ref_umap]]@misc)
+  ) {
+    log_message(
+      "No UMAP model detected. Set the projection_method to 'knn'",
+      message_type = "warning",
+      verbose = verbose
+    )
+    projection_method <- "knn"
+  }
+  if (
+    projection_method == "model" &&
+      !distance_metric %in% c("euclidean", "cosine", "manhattan", "hamming")
+  ) {
+    log_message(
+      "distance_metric must be one of euclidean, cosine, manhattan, and hamming when projection_method='model'",
+      message_type = "error"
+    )
+  }
+  projection_method
+}
+
 resolve_reference_labels <- function(reference, reference_label) {
   if (
     missing(reference_label) ||
@@ -748,4 +778,16 @@ rng_seed_restorer <- function() {
       rm(".Random.seed", envir = .GlobalEnv)
     }
   }
+}
+
+resolve_trajectory_reduction <- function(srt, reduction) {
+  reduction <- if (is.null(reduction)) {
+    DefaultReduction(srt)
+  } else {
+    DefaultReduction(srt, pattern = reduction)
+  }
+  if (!reduction %in% names(srt@reductions)) {
+    log_message("{.val {reduction}} is not in the srt reduction names", message_type = "error")
+  }
+  reduction
 }

@@ -39,6 +39,194 @@ heatmap_append_panel <- function(ht_list, ht_args, ht_params, flip) {
   get_namespace_fun("ComplexHeatmap", "%v%")(ht_list, panel)
 }
 
+heatmap_render_units <- function(rendersize, fix, width, height, units, ht_list, legend_list) {
+  width_sum <- rendersize[["width_sum"]]
+  height_sum <- rendersize[["height_sum"]]
+  if (!isTRUE(fix)) {
+    return(list(
+      ht_width = grid::unit(width_sum, units = units),
+      ht_height = grid::unit(height_sum, units = units)
+    ))
+  }
+  fixsize_env <- new.env(parent = emptyenv())
+  invisible(grid::grid.grabExpr({
+    fixsize_env[["value"]] <- heatmap_fixsize(
+      width = width,
+      width_sum = width_sum,
+      height = height,
+      height_sum = height_sum,
+      units = units,
+      ht_list = ht_list,
+      legend_list = legend_list
+    )
+  }))
+  fixsize_env[["value"]]
+}
+
+heatmap_capture_grob <- function(render_units, expr) {
+  grid::grid.grabExpr(
+    expr,
+    width = render_units[["ht_width"]],
+    height = render_units[["ht_height"]],
+    wrap = TRUE,
+    wrap.grobs = TRUE
+  )
+}
+
+heatmap_wrap_grob <- function(g_tree, render_units, units, fix) {
+  if (isTRUE(fix)) {
+    return(panel_fix_overall(
+      g_tree,
+      width = as.numeric(render_units[["ht_width"]]),
+      height = as.numeric(render_units[["ht_height"]]),
+      units = units
+    ))
+  }
+  patchwork::wrap_plots(g_tree)
+}
+
+heatmap_decorate_enrichment <- function(right_annotation, db) {
+  for (enrich in db) {
+    enrich_anno <- names(right_annotation)[grep(
+      paste0("_split_", enrich),
+      names(right_annotation)
+    )]
+    if (length(enrich_anno) > 0) {
+      for (enrich_anno_element in enrich_anno) {
+        enrich_obj <- strsplit(enrich_anno_element, "_split_")[[1]][1]
+        get_namespace_fun("ComplexHeatmap", "decorate_annotation")(
+          enrich_anno_element,
+          slice = 1, {
+            grid::grid.text(
+              paste0(enrich, " (", enrich_obj, ")"),
+              x = grid::unit(1, "npc"),
+              y = grid::unit(1, "npc") + grid::unit(2.5, "mm"),
+              just = c("left", "bottom")
+            )
+        })
+      }
+    }
+  }
+}
+
+heatmap_expand_within_groups <- function(srt, group_by, group_palette, group_palcolor) {
+  new_group_by <- NULL
+  new_group_palette <- group_palette
+  new_group_palcolor <- if (!is.null(group_palcolor)) list() else NULL
+  for (g in group_by) {
+    j <- match(g, group_by)
+    groups <- split(colnames(srt), srt[[g, drop = TRUE]])
+    new_group_palette[g] <- list(rep(new_group_palette[g], length(groups)))
+    for (nm in names(groups)) {
+      group_name <- make.names(nm)
+      srt[[group_name]] <- factor(
+        NA,
+        levels = levels(srt[[g, drop = TRUE]])
+      )
+      srt[[group_name]][colnames(srt) %in% groups[[nm]], ] <- nm
+      new_group_by <- c(new_group_by, group_name)
+      if (!is.null(new_group_palcolor)) {
+        new_group_palcolor <- c(new_group_palcolor, list(group_palcolor[[j]]))
+      }
+    }
+  }
+  list(
+    srt = srt,
+    group_by = new_group_by,
+    group_palette = unlist(new_group_palette),
+    group_palcolor = new_group_palcolor
+  )
+}
+
+heatmap_order_feature_splits <- function(df_order, row_split, feature_split, split_order, decreasing) {
+  df_order <- df_order[
+    order(df_order[["order_by"]], decreasing = decreasing), ,
+    drop = FALSE
+  ]
+  if (!is.null(split_order)) {
+    df_order <- df_order[split_order, , drop = FALSE]
+  }
+  split_levels <- character(nrow(df_order))
+  for (i in seq_len(nrow(df_order))) {
+    raw_nm <- df_order[i, "row_split"]
+    cluster <- paste0("C", i)
+    feature_split[feature_split == raw_nm] <- cluster
+    level <- paste0(cluster, "(", sum(row_split == raw_nm), ")")
+    row_split[row_split == raw_nm] <- level
+    split_levels[i] <- level
+  }
+  list(
+    row_split = factor(row_split, levels = split_levels),
+    feature_split = factor(feature_split, levels = paste0("C", seq_len(nrow(df_order))))
+  )
+}
+
+heatmap_mark_features <- function(annotation, at, labels, flip, size, color, wrap) {
+  if (!is.null(wrap)) {
+    labels <- heatmap_wrap_row_labels(labels, width = wrap)
+  }
+  which <- ifelse(flip, "column", "row")
+  label_gp <- grid::gpar(fontsize = size, col = color)
+  mark <- get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation")(
+    gene = get_namespace_fun("ComplexHeatmap", "anno_mark")(
+      at = at,
+      labels = labels,
+      side = ifelse(flip, "top", "left"),
+      labels_gp = label_gp,
+      link_gp = label_gp,
+      which = which
+    ),
+    which = which,
+    show_annotation_name = FALSE
+  )
+  if (is.null(annotation)) mark else c(mark, annotation)
+}
+
+heatmap_fuzzy_feature_clusters <- function(mat, n_split, fuzzification, warn_fuzzification) {
+  check_r("e1071", verbose = FALSE)
+  colnames(mat) <- make.unique(colnames(mat))
+  mat <- standardise(mat)
+  min_fuzzification <- mestimate(mat)
+  if (is.null(fuzzification)) {
+    fuzzification <- min_fuzzification + 0.1
+  } else if (fuzzification <= min_fuzzification) {
+    warn_fuzzification(min_fuzzification)
+  }
+  fit <- e1071::cmeans(mat, centers = n_split, method = "cmeans", m = fuzzification)
+  if (length(fit$cluster) == 0) {
+    log_message(
+      "Clustering with mfuzz failed (fuzzification=",
+      round(fuzzification, 2),
+      "). Please set a larger fuzzification parameter manually.",
+      message_type = "error"
+    )
+  }
+  fit$cluster
+}
+
+heatmap_hard_feature_clusters <- function(values, method, n_split) {
+  if (method == "kmeans") {
+    return(stats::kmeans(values, centers = n_split, iter.max = 1e4, nstart = 20)$cluster)
+  }
+  fit <- stats::hclust(stats::as.dist(proxyC::dist(values)))
+  stats::cutree(fit, k = n_split)
+}
+
+heatmap_annotation_palettes <- function(annotations, palette, palcolor, length_error) {
+  n <- length(annotations)
+  if (length(palette) == 1L) {
+    palette <- rep(palette, n)
+  }
+  if (length(palcolor) == 1L) {
+    palcolor <- rep(palcolor, n)
+  }
+  npal <- unique(c(length(palette), length(palcolor), n))
+  if (length(npal[npal != 0L]) > 1L) {
+    log_message(length_error, message_type = "error")
+  }
+  list(palette = palette, palcolor = palcolor)
+}
+
 prepare_heatmap_borders <- function(
   border,
   heatmap_border,

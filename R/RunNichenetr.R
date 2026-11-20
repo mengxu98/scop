@@ -217,7 +217,6 @@ RunNichenetr <- function(
   ligand_target_df <- NULL
   ligand_receptor_df <- NULL
   raw_result <- NULL
-  de_table <- NULL
   receiver_affected_use <- NULL
   receiver_reference_use <- NULL
 
@@ -255,7 +254,6 @@ RunNichenetr <- function(
     ligand_activities <- raw_result$ligand_activities %||% NULL
     ligand_target_df <- raw_result$ligand_target_df %||% NULL
     ligand_receptor_df <- raw_result$ligand_receptor_df %||% NULL
-    de_table <- raw_result$geneset_oi %||% NULL
   } else if (identical(mode, "aggregate_cluster_de")) {
     required <- c("condition.by", "condition_oi", "condition_reference")
     missing_req <- required[vapply(
@@ -305,7 +303,6 @@ RunNichenetr <- function(
     ligand_activities <- raw_result$ligand_activities %||% NULL
     ligand_target_df <- raw_result$ligand_target_df %||% NULL
     ligand_receptor_df <- raw_result$ligand_receptor_df %||% NULL
-    de_table <- raw_result$geneset_oi %||% NULL
   } else {
     if (is.null(geneset)) {
       log_message(

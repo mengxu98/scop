@@ -774,6 +774,38 @@ scissor_resolve_foldid <- function(foldid, nfolds, n) {
   sample(rep(seq_len(nfolds), length.out = n))
 }
 
+scissor_cox_cv <- function(fits, index, n_nonzero, prep0, prepk, wbeta, nfolds) {
+  beta <- sapply(fits, function(fit) fit$Beta[, index])
+  beta[is.na(beta)] <- 0
+  beta_std <- sapply(fits, function(fit) fit$BetaSTD[, index])
+  nonzero <- colSums(beta != 0)
+  n_use <- max(0, min(max(nonzero), n_nonzero))
+  cv <- matrix(NA, nrow = nfolds, ncol = max(1, n_use))
+  for (i in seq_len(nfolds)) {
+    n_fold <- min(nonzero[i], n_use)
+    if (n_fold == 0) {
+      coefficients <- c(0.0, 0.0)
+      indices <- c(0, 0)
+    } else {
+      standardized <- beta_std[, i]
+      standardized[wbeta == 0] <- max(abs(standardized)) + 1
+      ranks <- rank(-abs(standardized), ties.method = "min")
+      selected <- which(ranks <= n_fold)
+      selected <- selected[order(ranks[selected])]
+      coefficients <- beta[selected, i]
+      indices <- selected - 1
+    }
+    fold <- prepk[[i]]
+    cv[i, ] <- cvTrimCoxC(
+      coefficients, n_fold, n_use, indices,
+      prep0$x, prep0$N, prep0$nevent, prep0$nevent1, prep0$loc1, prep0$n,
+      fold$x, fold$N, fold$nevent, fold$nevent1, fold$loc1, fold$n,
+      0, 1
+    )
+  }
+  cv
+}
+
 scissor_fit_cox <- function(
   x,
   y,
@@ -1058,104 +1090,9 @@ scissor_fit_cox <- function(
     cvm <- list()
     cv.max <- rep(NA, nlambdai)
     repeat {
-      numi <- out$nzero[il0]
-      Betai <- sapply(outi, function(x) {
-        x$Beta[, il0]
-      })
-      Betai[is.na(Betai)] <- 0
-      BetaSTDi <- sapply(outi, function(x) {
-        x$BetaSTD[, il0]
-      })
-
-      Betao <- colSums(Betai != 0)
-      numi2 <- min(max(Betao), numi)
-
-      if (numi2 > 0) {
-        cvPL <- matrix(NA, nrow = nfolds, ncol = numi2)
-        i <- 1
-        for (i in 1:nfolds) {
-          Betaj <- Betai[, i]
-          BetaSTDj <- BetaSTDi[, i]
-          numj <- min(Betao[i], numi)
-          if (numj == 0) {
-            cvPL[i, ] <- cvTrimCoxC(
-              c(0.0, 0.0),
-              numj,
-              numi2,
-              c(0, 0),
-              prep0$x,
-              prep0$N,
-              prep0$nevent,
-              prep0$nevent1,
-              prep0$loc1,
-              prep0$n,
-              prepk[[i]]$x,
-              prepk[[i]]$N,
-              prepk[[i]]$nevent,
-              prepk[[i]]$nevent1,
-              prepk[[i]]$loc1,
-              prepk[[i]]$n,
-              0,
-              1
-            )
-          } else {
-            BetaSTDjj <- BetaSTDj
-            BetaSTDjj[wbeta == 0] <- max(abs(BetaSTDj)) + 1
-            temo <- rank(-abs(BetaSTDjj), ties.method = "min")
-
-            temo <- data.frame(temo[which(temo <= numj)], which(temo <= numj))
-            temo <- temo[order(temo[, 1]), ]
-            cvPL[i, ] <- cvTrimCoxC(
-              Betaj[temo[, 2]],
-              numj,
-              numi2,
-              temo[, 2] - 1,
-              prep0$x,
-              prep0$N,
-              prep0$nevent,
-              prep0$nevent1,
-              prep0$loc1,
-              prep0$n,
-              prepk[[i]]$x,
-              prepk[[i]]$N,
-              prepk[[i]]$nevent,
-              prepk[[i]]$nevent1,
-              prepk[[i]]$loc1,
-              prepk[[i]]$n,
-              0,
-              1
-            )
-          }
-        }
-      } else {
-        cvPL <- matrix(NA, nrow = nfolds, ncol = 1)
-        for (i in 1:nfolds) {
-          cvPL[i, ] <- cvTrimCoxC(
-            c(0.0, 0.0),
-            0,
-            0,
-            c(0, 0),
-            prep0$x,
-            prep0$N,
-            prep0$nevent,
-            prep0$nevent1,
-            prep0$loc1,
-            prep0$n,
-            prepk[[i]]$x,
-            prepk[[i]]$N,
-            prepk[[i]]$nevent,
-            prepk[[i]]$nevent1,
-            prepk[[i]]$loc1,
-            prepk[[i]]$n,
-            0,
-            1
-          )
-        }
-      }
-
-      cvraw <- cvPL / weighti
-      nfoldi <- colSums(!is.na(cvraw))
-      rm(cvPL)
+      cvraw <- scissor_cox_cv(
+        outi, il0, out$nzero[il0], prep0, prepk, wbeta, nfolds
+      ) / weighti
       cvm[[il0]] <- apply(cvraw, 2, stats::weighted.mean, w = weighti, na.rm = TRUE)
       temi <- cvm[[il0]]
       if (aPen) {
@@ -1172,106 +1109,9 @@ scissor_fit_cox <- function(
       for (j in 1:2) {
         if (il1[j] >= 1 & il1[j] <= nlambdai) {
           if (is.na(cv.max[il1[j]])) {
-            numi <- out$nzero[il1[j]]
-            Betai <- sapply(outi, function(x) {
-              x$Beta[, il1[j]]
-            })
-            Betai[is.na(Betai)] <- 0
-            BetaSTDi <- sapply(outi, function(x) {
-              x$BetaSTD[, il1[j]]
-            })
-
-            Betao <- colSums(Betai != 0)
-            numi2 <- min(max(Betao), numi)
-
-            if (numi2 > 0) {
-              cvPL <- matrix(NA, nrow = nfolds, ncol = numi2)
-              for (i in 1:nfolds) {
-                Betaj <- Betai[, i]
-                BetaSTDj <- BetaSTDi[, i]
-                numj <- min(Betao[i], numi)
-                if (numj == 0) {
-                  cvPL[i, ] <- cvTrimCoxC(
-                    c(0.0, 0.0),
-                    numj,
-                    numi2,
-                    c(0, 0),
-                    prep0$x,
-                    prep0$N,
-                    prep0$nevent,
-                    prep0$nevent1,
-                    prep0$loc1,
-                    prep0$n,
-                    prepk[[i]]$x,
-                    prepk[[i]]$N,
-                    prepk[[i]]$nevent,
-                    prepk[[i]]$nevent1,
-                    prepk[[i]]$loc1,
-                    prepk[[i]]$n,
-                    0,
-                    1
-                  )
-                } else {
-                  BetaSTDjj <- BetaSTDj
-                  BetaSTDjj[wbeta == 0] <- max(abs(BetaSTDj)) + 1
-                  temo <- rank(-abs(BetaSTDjj), ties.method = "min")
-
-                  temo <- data.frame(
-                    temo[which(temo <= numj)],
-                    which(temo <= numj)
-                  )
-                  temo <- temo[order(temo[, 1]), ]
-                  cvPL[i, ] <- cvTrimCoxC(
-                    Betaj[temo[, 2]],
-                    numj,
-                    numi2,
-                    temo[, 2] - 1,
-                    prep0$x,
-                    prep0$N,
-                    prep0$nevent,
-                    prep0$nevent1,
-                    prep0$loc1,
-                    prep0$n,
-                    prepk[[i]]$x,
-                    prepk[[i]]$N,
-                    prepk[[i]]$nevent,
-                    prepk[[i]]$nevent1,
-                    prepk[[i]]$loc1,
-                    prepk[[i]]$n,
-                    0,
-                    1
-                  )
-                }
-              }
-            } else {
-              cvPL <- matrix(NA, nrow = nfolds, ncol = 1)
-              for (i in 1:nfolds) {
-                cvPL[i, ] <- cvTrimCoxC(
-                  c(0.0, 0.0),
-                  0,
-                  0,
-                  c(0, 0),
-                  prep0$x,
-                  prep0$N,
-                  prep0$nevent,
-                  prep0$nevent1,
-                  prep0$loc1,
-                  prep0$n,
-                  prepk[[i]]$x,
-                  prepk[[i]]$N,
-                  prepk[[i]]$nevent,
-                  prepk[[i]]$nevent1,
-                  prepk[[i]]$loc1,
-                  prepk[[i]]$n,
-                  0,
-                  1
-                )
-              }
-            }
-
-            cvraw <- cvPL / weighti
-            nfoldi <- colSums(!is.na(cvraw))
-            rm(cvPL)
+            cvraw <- scissor_cox_cv(
+              outi, il1[j], out$nzero[il1[j]], prep0, prepk, wbeta, nfolds
+            ) / weighti
             cvm[[il1[j]]] <- apply(
               cvraw,
               2,

@@ -62,47 +62,19 @@ spatalk_validate_matrix <- function(x, name) {
 }
 
 spatalk_input <- function(srt, group.by, assay, layer, image, coord.cols) {
-  if (!inherits(srt, "Seurat")) {
-    log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
-  }
-  if (!is.character(group.by) || length(group.by) != 1L || !group.by %in% colnames(srt[[]])) {
-    log_message("{.arg group.by} must be one metadata column", message_type = "error")
-  }
-  assay <- assay %||% SeuratObject::DefaultAssay(srt)
-  if (!assay %in% SeuratObject::Assays(srt)) {
-    log_message("Assay {.val {assay}} is absent from {.arg srt}", message_type = "error")
-  }
-  coords <- SpatialCoordinates(
-    object = srt, image = image, coord.cols = coord.cols,
-    space = "raw", image_policy = "strict"
+  input <- spatial_communication_input(
+    srt, group.by, assay, layer, image, coord.cols, "SpaTalk",
+    function(x) spatalk_validate_matrix(x, "srt expression")
   )
-  cells <- as.character(coords$data$cell_id)
-  if (length(cells) == 0L || anyDuplicated(cells) || any(!cells %in% colnames(srt))) {
-    log_message("Spatial coordinates do not identify a valid unique subset of {.arg srt}", message_type = "error")
-  }
-  coords$data <- coords$data[match(cells, coords$data$cell_id), , drop = FALSE]
-  if (any(!is.finite(coords$data$x)) || any(!is.finite(coords$data$y))) {
-    log_message("SpaTalk requires finite raw x and y coordinates", message_type = "error")
-  }
-  plot_coordinates <- ccc_spatial_payload_from_raw(
-    coords$data, coords$source,
-    transform = coords$transform
-  )
-  expression <- GetAssayData5(srt, assay = assay, layer = layer)[, cells, drop = FALSE]
-  spatalk_validate_matrix(expression, "srt expression")
-  labels <- as.character(srt[[]][cells, group.by])
-  if (anyNA(labels) || any(!nzchar(labels))) {
-    log_message("{.arg group.by} contains missing or empty labels", message_type = "error")
-  }
   list(
-    expression = expression,
-    coords = coords$data,
-    source = coords$source,
-    cells = cells,
-    labels = labels,
-    assay = assay,
-    plot_coordinates = plot_coordinates$coordinates,
-    plot_source = plot_coordinates$source
+    expression = input$expression,
+    coords = input$coords$data,
+    source = input$coords$source,
+    cells = input$cells,
+    labels = input$groups,
+    assay = input$assay,
+    plot_coordinates = input$plot_coordinates$coordinates,
+    plot_source = input$plot_coordinates$source
   )
 }
 

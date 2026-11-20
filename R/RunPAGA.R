@@ -184,35 +184,7 @@ RunPAGA <- function(
   PrepareEnv(modules = "scanpy", verbose = verbose)
 
   args <- mget(names(formals()))
-  args <- lapply(
-    args, function(x) {
-      if (is.numeric(x)) {
-        y <- ifelse(
-          grepl(
-            "\\.",
-            as.character(x)
-          ),
-          as.double(x),
-          as.integer(x)
-        )
-      } else {
-        y <- x
-      }
-      y
-    }
-  )
-  call_envir <- parent.frame(1)
-  args <- lapply(
-    args, function(arg) {
-      if (is.symbol(arg)) {
-        eval(arg, envir = call_envir)
-      } else if (is.call(arg)) {
-        eval(arg, envir = call_envir)
-      } else {
-        arg
-      }
-    }
-  )
+  args <- runner_python_arguments(args, parent.frame())
 
   args[["legend_loc"]] <- legend.position
   args[["n_jobs"]] <- cores

@@ -276,6 +276,19 @@ static DynamicalPars fit_one_gene_dynamical(
 }
 
 
+static std::vector<bool> dynamical_gene_mask(int n_genes, const IntegerVector& use_genes) {
+  std::vector<bool> do_fit(n_genes, true);
+  if (use_genes.size() > 0) {
+    do_fit.assign(n_genes, false);
+    for (int i = 0; i < use_genes.size(); ++i) {
+      int g = use_genes[i] - 1;
+      if (g >= 0 && g < n_genes) do_fit[g] = true;
+    }
+  }
+
+  return do_fit;
+}
+
 // [[Rcpp::export]]
 List scanpy_dynamical_nm_cpp(
     NumericMatrix Ms,
@@ -292,14 +305,7 @@ List scanpy_dynamical_nm_cpp(
   if (Mu.nrow() != n_genes || Mu.ncol() != n_cells)
     thisutils::log_message("Ms and Mu must have identical dimensions", "error");
 
-  std::vector<bool> do_fit(n_genes, true);
-  if (use_genes.size() > 0) {
-    do_fit.assign(n_genes, false);
-    for (int i = 0; i < use_genes.size(); ++i) {
-      int g = use_genes[i] - 1;
-      if (g >= 0 && g < n_genes) do_fit[g] = true;
-    }
-  }
+  const std::vector<bool> do_fit = dynamical_gene_mask(n_genes, use_genes);
 
   NumericVector alpha_out(n_genes);
   NumericVector beta_out(n_genes);
@@ -447,14 +453,7 @@ List scanpy_dynamical_em_cpp(
   if (Mu.nrow() != n_genes || Mu.ncol() != n_cells)
     thisutils::log_message("Ms and Mu must have identical dimensions", "error");
 
-  std::vector<bool> do_fit(n_genes, true);
-  if (use_genes.size() > 0) {
-    do_fit.assign(n_genes, false);
-    for (int i = 0; i < use_genes.size(); ++i) {
-      int g = use_genes[i] - 1;
-      if (g >= 0 && g < n_genes) do_fit[g] = true;
-    }
-  }
+  const std::vector<bool> do_fit = dynamical_gene_mask(n_genes, use_genes);
 
   NumericVector alpha_out(n_genes);
   NumericVector beta_out(n_genes);
