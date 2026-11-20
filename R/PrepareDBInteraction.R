@@ -1384,26 +1384,9 @@ PrepareCellTalk <- function(
     biomart = biomart,
     max_tries = max_tries,
     verbose = verbose, ...,
-    prepare = function(db_list, db_species, default_id_types, db, sps, org_sp, org_key, orgdb, biomart) {
-      ccc_db_use <- intersect(db, c("CellTalk", "CellChat"))
-      if (length(ccc_db_use) > 0L &&
-        any(!ccc_db_use %in% names(db_list[[sps]]))) {
-        ccc_prepared <- PrepareCCCDB(
-          species = sps,
-          db = ccc_db_use,
-          convert_species = convert_species,
-          data_dir = data_dir,
-          db_version = db_version,
-          db_update = db_update,
-          verbose = verbose
-        )
-        for (ccc_db in ccc_db_use) {
-          if (!ccc_db %in% names(ccc_prepared[[sps]])) next
-          db_list[[sps]][[ccc_db]] <- ccc_prepared[[sps]][[ccc_db]]
-        }
-      }
-      list(db_list = db_list, db_species = db_species, default_id_types = default_id_types)
-    }
+    prepare = preparedb_ccc_callback(
+      convert_species, data_dir, db_version, db_update, verbose
+    )
   )
 }
 
@@ -1446,25 +1429,31 @@ PrepareCellChat <- function(
     biomart = biomart,
     max_tries = max_tries,
     verbose = verbose, ...,
-    prepare = function(db_list, db_species, default_id_types, db, sps, org_sp, org_key, orgdb, biomart) {
-      ccc_db_use <- intersect(db, c("CellTalk", "CellChat"))
-      if (length(ccc_db_use) > 0L &&
-        any(!ccc_db_use %in% names(db_list[[sps]]))) {
-        ccc_prepared <- PrepareCCCDB(
-          species = sps,
-          db = ccc_db_use,
-          convert_species = convert_species,
-          data_dir = data_dir,
-          db_version = db_version,
-          db_update = db_update,
-          verbose = verbose
-        )
-        for (ccc_db in ccc_db_use) {
-          if (!ccc_db %in% names(ccc_prepared[[sps]])) next
-          db_list[[sps]][[ccc_db]] <- ccc_prepared[[sps]][[ccc_db]]
-        }
-      }
-      list(db_list = db_list, db_species = db_species, default_id_types = default_id_types)
-    }
+    prepare = preparedb_ccc_callback(
+      convert_species, data_dir, db_version, db_update, verbose
+    )
   )
+}
+
+preparedb_ccc_callback <- function(convert_species, data_dir, db_version, db_update, verbose) {
+  function(db_list, db_species, default_id_types, db, sps, org_sp, org_key, orgdb, biomart) {
+    ccc_db_use <- intersect(db, c("CellTalk", "CellChat"))
+    if (length(ccc_db_use) > 0L &&
+      any(!ccc_db_use %in% names(db_list[[sps]]))) {
+      ccc_prepared <- PrepareCCCDB(
+        species = sps,
+        db = ccc_db_use,
+        convert_species = convert_species,
+        data_dir = data_dir,
+        db_version = db_version,
+        db_update = db_update,
+        verbose = verbose
+      )
+      for (ccc_db in ccc_db_use) {
+        if (!ccc_db %in% names(ccc_prepared[[sps]])) next
+        db_list[[sps]][[ccc_db]] <- ccc_prepared[[sps]][[ccc_db]]
+      }
+    }
+    list(db_list = db_list, db_species = db_species, default_id_types = default_id_types)
+  }
 }

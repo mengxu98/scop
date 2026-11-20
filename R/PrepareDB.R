@@ -1441,3 +1441,34 @@ preparedb_irea_reference <- function(directory, db, species, update, verbose = T
   utils::write.csv(manifest, manifest_path, row.names = FALSE)
   reference
 }
+
+combine_annotation_databases <- function(databases, IDtype, combined = list()) {
+  TERM2GENE <- do.call(
+    rbind,
+    lapply(
+      databases,
+      function(x) x[["TERM2GENE"]][, c("Term", IDtype)]
+    )
+  )
+  TERM2NAME <- do.call(
+    rbind,
+    lapply(names(databases), function(x) {
+      databases[[x]][["TERM2NAME"]][["Name"]] <- paste0(
+        databases[[x]][["TERM2NAME"]][["Name"]],
+        " [",
+        x,
+        "]"
+      )
+      databases[[x]][["TERM2NAME"]][, c("Term", "Name")]
+    })
+  )
+  version <- unlist(lapply(
+    databases,
+    function(x) as.character(x[["version"]])
+  ))
+  version <- paste0(names(version), ":", version, collapse = ";")
+  combined[["TERM2GENE"]] <- unique(TERM2GENE)
+  combined[["TERM2NAME"]] <- unique(TERM2NAME)
+  combined[["version"]] <- unique(version)
+  combined
+}

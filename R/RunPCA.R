@@ -91,7 +91,6 @@ RunPCA.default <- function(
   if (identical(backend, "auto") && !pca_auto_supported(object, npcs, dots)) {
     return(run_seurat())
   }
-  nfeatures <- nrow(object)
   n <- ncol(object)
 
   total_variance <- sum(fast_row_vars(object), na.rm = TRUE)

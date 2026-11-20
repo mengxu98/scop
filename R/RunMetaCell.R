@@ -475,7 +475,6 @@ metacell_seacells <- function(
     py_result <- do.call(functions$RunSEACells, py_args)
 
     membership_py <- py_result[["membership"]]
-    n_meta_py <- py_result[["n_metacells"]]
     if (is.null(membership_py) || length(membership_py) == 0) {
       log_message(
         "{log_prefix}SEACells returned no assignments, falling back to random",
@@ -492,10 +491,6 @@ metacell_seacells <- function(
     membership <- as.character(membership_py)
     names(membership) <- cell_names
     list(membership = membership)
-  }
-
-  aggregate_counts <- function(counts, membership) {
-    metacell_aggregate_counts(counts, membership)
   }
 
   if (!is.null(group_df)) {
@@ -542,7 +537,7 @@ metacell_seacells <- function(
       membership[grp_cells] <- grp_membership
     }
 
-    mc_counts <- aggregate_counts(counts, membership)
+    mc_counts <- metacell_aggregate_counts(counts, membership)
 
     list(
       membership = membership,
@@ -567,7 +562,7 @@ metacell_seacells <- function(
     )
 
     membership <- result[["membership"]]
-    mc_counts <- aggregate_counts(counts, membership)
+    mc_counts <- metacell_aggregate_counts(counts, membership)
 
     list(
       membership = membership,

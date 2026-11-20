@@ -737,3 +737,15 @@ numeric_matrix_result <- function(x, row_label = "matrix", col_prefix = "score_"
   mat[!is.finite(mat)] <- NA_real_
   mat
 }
+
+rng_seed_restorer <- function() {
+  seed_exists <- exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
+  seed <- if (seed_exists) get(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
+  function() {
+    if (seed_exists) {
+      assign(".Random.seed", seed, envir = .GlobalEnv)
+    } else if (exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) {
+      rm(".Random.seed", envir = .GlobalEnv)
+    }
+  }
+}

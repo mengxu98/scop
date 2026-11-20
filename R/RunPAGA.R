@@ -642,22 +642,8 @@ paga_layout_igraph <- function(
   }
 
   layout <- layout %||% "fr"
-  seed_exists <- exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
-  old_seed <- if (seed_exists) {
-    get(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
-  } else {
-    NULL
-  }
-  on.exit(
-    {
-      if (seed_exists) {
-        assign(".Random.seed", old_seed, envir = .GlobalEnv)
-      } else if (exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) {
-        rm(".Random.seed", envir = .GlobalEnv)
-      }
-    },
-    add = TRUE
-  )
+  restore_seed <- rng_seed_restorer()
+  on.exit(restore_seed(), add = TRUE)
   set.seed(0)
 
   graph <- igraph::graph_from_adjacency_matrix(
