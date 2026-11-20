@@ -13,12 +13,17 @@ on:
 
 name: test-coverage
 
+permissions:
+  contents: read
+
 jobs:
   test-coverage:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
 
       - uses: r-lib/actions/setup-r@v2
         with:
@@ -41,24 +46,64 @@ jobs:
           Rscript -e '
             covr_flags <- getOption("covr.flags")
             options(covr.flags = stats::setNames(rep("", length(covr_flags)), names(covr_flags)))
-            covr::codecov(
+            coverage <- covr::package_coverage(
               quiet = FALSE,
               clean = FALSE,
               install_path = file.path(Sys.getenv("RUNNER_TEMP"), "package")
             )
+            covr::lcov(coverage, file = file.path(Sys.getenv("RUNNER_TEMP"), "lcov.info"))
           '
         shell: bash
+
+      - name: Store LCOV report
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: lcov-coverage
+          path: ${{ runner.temp }}/lcov.info
+          if-no-files-found: error
+          retention-days: 7
 
       - name: Show testthat output
         if: always()
         run: |
           ## --------------------------------------------------------------------
-          find ${{ runner.temp }}/package -name 'testthat.Rout*' -exec cat '{}' \; || true
+          find "$RUNNER_TEMP/package" -name 'testthat.Rout*' -exec cat '{}' \; || true
         shell: bash
 
       - name: Upload test results
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: coverage-test-failures
           path: ${{ runner.temp }}/package
+
+  upload-coverage:
+    needs: test-coverage
+    # Scheduled runs use main; manual runs can select a branch in this repository.
+    if: >-
+      github.repository == 'mengxu98/scop' &&
+      ((github.event_name == 'schedule' && github.ref == 'refs/heads/main') ||
+       (github.event_name == 'workflow_dispatch' && github.ref_type == 'branch'))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      # Codecov uses the checkout for Git metadata; do not execute its code here.
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
+
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: lcov-coverage
+          path: ${{ runner.temp }}/lcov-coverage
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
+        with:
+          use_oidc: true
+          files: ${{ runner.temp }}/lcov-coverage/lcov.info
+          disable_search: true
+          fail_ci_if_error: true
+          plugins: noop
