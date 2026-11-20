@@ -868,7 +868,49 @@ ccc_lr_contribution_plot <- function(
     return(contrib_df)
   }
 
-  plot_list <- lapply(
+  plot_list <- ccc_lr_contribution_panels(
+    contrib_df,
+    single_pathway = length(signaling_use) == 1L,
+    title = title,
+    subtitle = subtitle,
+    link_palette = link_palette,
+    link_palcolor = link_palcolor,
+    legend.position = legend.position,
+    legend.direction = legend.direction,
+    theme_use = theme_use,
+    theme_args = theme_args,
+    font.size = font.size
+  )
+  out <- plot_cc_list(plot_list, combine = combine, nrow = nrow, ncol = ncol)
+  if (inherits(out, "patchwork")) {
+    out <- patchwork_cc(
+      out,
+      title = if (length(signaling_use) > 1L) title %||% info$label else NULL,
+      subtitle = if (length(signaling_use) > 1L) subtitle else NULL,
+      legend.position = legend.position,
+      legend.direction = legend.direction,
+      theme_use = theme_use,
+      theme_args = theme_args,
+      font.size = font.size
+    )
+  }
+  out
+}
+
+ccc_lr_contribution_panels <- function(
+  contrib_df,
+  single_pathway,
+  title,
+  subtitle,
+  link_palette,
+  link_palcolor,
+  legend.position,
+  legend.direction,
+  theme_use,
+  theme_args,
+  font.size
+) {
+  lapply(
     split(contrib_df, contrib_df$signaling),
     function(df_sig) {
       df_sig <- df_sig[
@@ -898,12 +940,12 @@ ccc_lr_contribution_plot <- function(
         ggplot2::labs(x = NULL, y = "Contribution")
       finalize_cc_plot(
         p,
-        title = if (length(signaling_use) == 1L) {
+        title = if (single_pathway) {
           title %||% df_sig$signaling[1]
         } else {
           df_sig$signaling[1]
         },
-        subtitle = if (length(signaling_use) == 1L) subtitle else NULL,
+        subtitle = if (single_pathway) subtitle else NULL,
         legend.position = legend.position,
         legend.direction = legend.direction,
         theme_use = theme_use,
@@ -912,20 +954,6 @@ ccc_lr_contribution_plot <- function(
       )
     }
   )
-  out <- plot_cc_list(plot_list, combine = combine, nrow = nrow, ncol = ncol)
-  if (inherits(out, "patchwork")) {
-    out <- patchwork_cc(
-      out,
-      title = if (length(signaling_use) > 1L) title %||% info$label else NULL,
-      subtitle = if (length(signaling_use) > 1L) subtitle else NULL,
-      legend.position = legend.position,
-      legend.direction = legend.direction,
-      theme_use = theme_use,
-      theme_args = theme_args,
-      font.size = font.size
-    )
-  }
-  out
 }
 
 ccc_cellchat_stat_comparison <- function(
@@ -1506,49 +1534,18 @@ ccc_generic_lr_contribution_plot <- function(
     return(contrib_df)
   }
 
-  plot_list <- lapply(
-    split(contrib_df, contrib_df$signaling),
-    function(df_sig) {
-      df_sig <- df_sig[
-        order(df_sig$contribution, decreasing = TRUE), ,
-        drop = FALSE
-      ]
-      df_sig$interaction <- factor(
-        df_sig$interaction,
-        levels = rev(unique(df_sig$interaction))
-      )
-      cols <- palette_colors(
-        unique(as.character(df_sig$interaction)),
-        palette = link_palette,
-        palcolor = link_palcolor
-      )
-      p <- ggplot2::ggplot(
-        df_sig,
-        ggplot2::aes(x = interaction, y = contribution, fill = interaction)
-      ) +
-        ggplot2::geom_col(width = 0.75, show.legend = FALSE) +
-        ggplot2::coord_flip() +
-        ggplot2::scale_fill_manual(values = cols, drop = FALSE) +
-        ggplot2::scale_y_continuous(
-          labels = scales::label_percent(accuracy = 1),
-          expand = ggplot2::expansion(mult = c(0, 0.05))
-        ) +
-        ggplot2::labs(x = NULL, y = "Contribution")
-      finalize_cc_plot(
-        p,
-        title = if (length(signaling_use) == 1L) {
-          title %||% df_sig$signaling[1]
-        } else {
-          df_sig$signaling[1]
-        },
-        subtitle = if (length(signaling_use) == 1L) subtitle else NULL,
-        legend.position = legend.position,
-        legend.direction = legend.direction,
-        theme_use = theme_use,
-        theme_args = theme_args,
-        font.size = font.size
-      )
-    }
+  plot_list <- ccc_lr_contribution_panels(
+    contrib_df,
+    single_pathway = length(signaling_use) == 1L,
+    title = title,
+    subtitle = subtitle,
+    link_palette = link_palette,
+    link_palcolor = link_palcolor,
+    legend.position = legend.position,
+    legend.direction = legend.direction,
+    theme_use = theme_use,
+    theme_args = theme_args,
+    font.size = font.size
   )
 
   plot_cc_list(plot_list, combine = combine, nrow = nrow, ncol = ncol)

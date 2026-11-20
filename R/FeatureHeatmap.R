@@ -917,15 +917,11 @@ FeatureHeatmap <- function(
         which = ifelse(flip, "row", "column"),
         show_name = FALSE
       )
-      ha_cell_group <- do.call(
-        get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation"),
-        args = c(
-          anno,
-          which = ifelse(flip, "row", "column"),
-          show_annotation_name = TRUE,
-          annotation_name_side = ifelse(flip, "top", "left"),
-          border = cell_annotation_border
-        )
+      ha_cell_group <- thisplot::build_heatmap_annotation(
+        annotations = anno,
+        which = ifelse(flip, "row", "column"),
+        annotation_name_side = ifelse(flip, "top", "left"),
+        border = cell_annotation_border
       )
       ha_top_list[[cell_group]] <- ha_cell_group
     }
@@ -954,15 +950,11 @@ FeatureHeatmap <- function(
         which = ifelse(flip, "row", "column"),
         show_name = i == 1
       )
-      ha_split_by <- do.call(
-        get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation"),
-        args = c(
-          anno,
-          which = ifelse(flip, "row", "column"),
-          show_annotation_name = TRUE,
-          annotation_name_side = ifelse(flip, "top", "left"),
-          border = cell_annotation_border
-        )
+      ha_split_by <- thisplot::build_heatmap_annotation(
+        annotations = anno,
+        which = ifelse(flip, "row", "column"),
+        annotation_name_side = ifelse(flip, "top", "left"),
+        border = cell_annotation_border
       )
       if (is.null(ha_top_list[[cell_group]])) {
         ha_top_list[[cell_group]] <- ha_split_by
@@ -1670,77 +1662,44 @@ FeatureHeatmap <- function(
     rm(fixsize_env)
     ht_width <- fixsize[["ht_width"]]
     ht_height <- fixsize[["ht_height"]]
-
-    g_tree <- grid::grid.grabExpr(
-      {
-        get_namespace_fun("ComplexHeatmap", "draw")(ht_list,
-          annotation_legend_list = lgd,
-          annotation_legend_side = legend.position
-        )
-        for (enrich in db) {
-          enrich_anno <- names(ha_right)[grep(
-            paste0("_split_", enrich),
-            names(ha_right)
-          )]
-          if (length(enrich_anno) > 0) {
-            for (enrich_anno_element in enrich_anno) {
-              enrich_obj <- strsplit(enrich_anno_element, "_split_")[[1]][1]
-              get_namespace_fun("ComplexHeatmap", "decorate_annotation")(
-                enrich_anno_element,
-                slice = 1, {
-                  grid::grid.text(
-                    paste0(enrich, " (", enrich_obj, ")"),
-                    x = grid::unit(1, "npc"),
-                    y = grid::unit(1, "npc") + grid::unit(2.5, "mm"),
-                    just = c("left", "bottom")
-                  )
-              })
-            }
-          }
-        }
-      },
-      width = ht_width,
-      height = ht_height,
-      wrap = TRUE,
-      wrap.grobs = TRUE
-    )
   } else {
     ht_width <- grid::unit(width_sum, units = units)
     ht_height <- grid::unit(height_sum, units = units)
-    g_tree <- grid::grid.grabExpr(
-      {
-        get_namespace_fun("ComplexHeatmap", "draw")(ht_list,
-          annotation_legend_list = lgd,
-          annotation_legend_side = legend.position
-        )
-        for (enrich in db) {
-          enrich_anno <- names(ha_right)[grep(
-            paste0("_split_", enrich),
-            names(ha_right)
-          )]
-          if (length(enrich_anno) > 0) {
-            for (enrich_anno_element in enrich_anno) {
-              enrich_obj <- strsplit(enrich_anno_element, "_split_")[[1]][1]
-              get_namespace_fun("ComplexHeatmap", "decorate_annotation")(
-                enrich_anno_element,
-                slice = 1, {
-                  grid::grid.text(
-                    paste0(enrich, " (", enrich_obj, ")"),
-                    x = grid::unit(1, "npc"),
-                    y = grid::unit(1, "npc") + grid::unit(2.5, "mm"),
-                    just = c("left", "bottom")
-                  )
-              })
-            }
+  }
+
+  g_tree <- grid::grid.grabExpr(
+    {
+      get_namespace_fun("ComplexHeatmap", "draw")(ht_list,
+        annotation_legend_list = lgd,
+        annotation_legend_side = legend.position
+      )
+      for (enrich in db) {
+        enrich_anno <- names(ha_right)[grep(
+          paste0("_split_", enrich),
+          names(ha_right)
+        )]
+        if (length(enrich_anno) > 0) {
+          for (enrich_anno_element in enrich_anno) {
+            enrich_obj <- strsplit(enrich_anno_element, "_split_")[[1]][1]
+            get_namespace_fun("ComplexHeatmap", "decorate_annotation")(
+              enrich_anno_element,
+              slice = 1, {
+                grid::grid.text(
+                  paste0(enrich, " (", enrich_obj, ")"),
+                  x = grid::unit(1, "npc"),
+                  y = grid::unit(1, "npc") + grid::unit(2.5, "mm"),
+                  just = c("left", "bottom")
+                )
+            })
           }
         }
-      },
-      width = ht_width,
-      height = ht_height,
-      wrap = TRUE,
-      wrap.grobs = TRUE
-    )
-  }
+      }
+    },
+    width = ht_width,
+    height = ht_height,
+    wrap = TRUE,
+    wrap.grobs = TRUE
+  )
 
   if (isTRUE(fix)) {
     p <- panel_fix_overall(

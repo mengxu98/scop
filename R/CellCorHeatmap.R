@@ -1526,35 +1526,23 @@ CellCorHeatmap <- function(
     rm(fixsize_env)
     ht_width <- fixsize[["ht_width"]]
     ht_height <- fixsize[["ht_height"]]
-
-    g_tree <- grid::grid.grabExpr(
-      {
-        get_namespace_fun("ComplexHeatmap", "draw")(ht_list,
-          annotation_legend_list = lgd,
-          annotation_legend_side = legend.position
-        )
-      },
-      width = ht_width,
-      height = ht_height,
-      wrap = TRUE,
-      wrap.grobs = TRUE
-    )
   } else {
     ht_width <- grid::unit(width_sum, units = units)
     ht_height <- grid::unit(height_sum, units = units)
-    g_tree <- grid::grid.grabExpr(
-      {
-        get_namespace_fun("ComplexHeatmap", "draw")(ht_list,
-          annotation_legend_list = lgd,
-          annotation_legend_side = legend.position
-        )
-      },
-      width = ht_width,
-      height = ht_height,
-      wrap = TRUE,
-      wrap.grobs = TRUE
-    )
   }
+
+  g_tree <- grid::grid.grabExpr(
+    {
+      get_namespace_fun("ComplexHeatmap", "draw")(ht_list,
+        annotation_legend_list = lgd,
+        annotation_legend_side = legend.position
+      )
+    },
+    width = ht_width,
+    height = ht_height,
+    wrap = TRUE,
+    wrap.grobs = TRUE
+  )
 
   if (isTRUE(fix)) {
     p <- panel_fix_overall(

@@ -1014,12 +1014,10 @@ scissor_fit_cox <- function(
         (nfoldi - 1)
     )
 
-    cvraw <- cvraw[1:nlambdai]
     cvm <- cvm[1:nlambdai]
     cvse <- cvse[1:nlambdai]
 
     indexi <- which.max(cvm)
-    indexij <- which(cvm >= (cvm[indexi] - cvse[indexi]))[1]
     temi <- rep("", nlambdai)
     temi[indexi] <- "*"
 
@@ -1406,7 +1404,6 @@ scissor_prepare_cox <- function(x, y) {
   ty <- y[, "time"]
   tevent <- y[, "status"]
   N <- nrow(x)
-  n1 <- sum(y[, "status"])
 
   dty <- duplicated(ty)
 

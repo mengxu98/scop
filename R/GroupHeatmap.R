@@ -1251,15 +1251,11 @@ GroupHeatmap <- function(
         which = ifelse(flip, "row", "column"),
         show_name = FALSE
       )
-      ha_cell_group <- do.call(
-        get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation"),
-        args = c(
-          anno,
-          which = ifelse(flip, "row", "column"),
-          show_annotation_name = TRUE,
-          annotation_name_side = ifelse(flip, "top", "left"),
-          border = cell_annotation_border
-        )
+      ha_cell_group <- thisplot::build_heatmap_annotation(
+        annotations = anno,
+        which = ifelse(flip, "row", "column"),
+        annotation_name_side = ifelse(flip, "top", "left"),
+        border = cell_annotation_border
       )
       ha_top_list[[cell_group]] <- ha_cell_group
     }
@@ -1288,15 +1284,11 @@ GroupHeatmap <- function(
         which = ifelse(flip, "row", "column"),
         show_name = i == 1
       )
-      ha_split_by <- do.call(
-        get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation"),
-        args = c(
-          anno,
-          which = ifelse(flip, "row", "column"),
-          show_annotation_name = TRUE,
-          annotation_name_side = ifelse(flip, "top", "left"),
-          border = cell_annotation_border
-        )
+      ha_split_by <- thisplot::build_heatmap_annotation(
+        annotations = anno,
+        which = ifelse(flip, "row", "column"),
+        annotation_name_side = ifelse(flip, "top", "left"),
+        border = cell_annotation_border
       )
       if (is.null(ha_top_list[[cell_group]])) {
         ha_top_list[[cell_group]] <- ha_split_by
