@@ -199,19 +199,19 @@ spatial <- RunRCTD(
 #> get_de_genes: total DE genes: 35
 #> fitBulk: decomposing bulk
 #> chooseSigma: using initial Q_mat with sigma =  1
-#> Likelihood value: 4605.44465250976
+#> Likelihood value: 4605.44465250952
 #> Sigma value:  0.84
-#> Likelihood value: 4509.24334104217
+#> Likelihood value: 4509.24334104227
 #> Sigma value:  0.69
-#> Likelihood value: 4433.74437551853
+#> Likelihood value: 4433.74437551855
 #> Sigma value:  0.61
-#> Likelihood value: 4402.86433424713
+#> Likelihood value: 4402.86433424723
 #> Sigma value:  0.53
-#> Likelihood value: 4381.61430997104
+#> Likelihood value: 4381.61430997095
 #> Sigma value:  0.46
-#> Likelihood value: 4373.21937275516
+#> Likelihood value: 4373.21937275517
 #> Sigma value:  0.45
-#> Likelihood value: 4372.94033462064
+#> Likelihood value: 4372.9403346207
 #> Sigma value:  0.45
 SpatialDeconvolutionPlot(
   spatial,

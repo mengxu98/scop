@@ -38,7 +38,7 @@ A ggplot2 theme object (class `theme`, `gg`).
 
 ``` r
 theme_scop()
-#> <theme> List of 20
+#> <theme>List of 20
 #>  $ text                 : <ggplot2::element_text>
 #>   ..@ family       : NULL
 #>   ..@ face         : NULL
@@ -174,7 +174,8 @@ theme_scop()
 #>   ..@ vjust        : NULL
 #>   ..@ angle        : NULL
 #>   ..@ lineheight   : NULL
-#>   ..@ margin       : <ggplot2::margin> num [1:4] 0 0 3 0
+#>   ..@ margin       : <ggplot2::margin> 'simpleUnit' num [1:4] 0points 0points 3points 0points
+#>  .. .. - attr(*, "unit")= int 8
 #>   ..@ debug        : NULL
 #>   ..@ inherit.blank: logi FALSE
 #>  $ strip.background     : <ggplot2::element_rect>
@@ -197,13 +198,15 @@ theme_scop()
 #>   ..@ vjust        : NULL
 #>   ..@ angle        : NULL
 #>   ..@ lineheight   : NULL
-#>   ..@ margin       : <ggplot2::margin> num [1:4] 3 3 3 3
+#>   ..@ margin       : <ggplot2::margin> 'simpleUnit' num [1:4] 3points 3points 3points 3points
+#>  .. .. - attr(*, "unit")= int 8
 #>   ..@ debug        : NULL
 #>   ..@ inherit.blank: logi FALSE
 #>  $ strip.switch.pad.grid: 'simpleUnit' num -1points
 #>   ..- attr(*, "unit")= int 8
 #>  $ strip.switch.pad.wrap: 'simpleUnit' num -1points
 #>   ..- attr(*, "unit")= int 8
+#>  - attr(*, "class")= chr "gg"
 #>  @ complete: logi FALSE
 #>  @ validate: logi TRUE
 ```

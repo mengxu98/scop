@@ -52,6 +52,6 @@ layers.
 ``` r
 data(pancreas_sub)
 CheckDataType(pancreas_sub)
-#> ! [2026-11-15 22:52:35] Infinite values detected
+#> ! [2026-11-21 10:42:29] Infinite values detected
 #> [1] "unknown"
 ```

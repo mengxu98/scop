@@ -134,15 +134,15 @@ spatial <- RunRCTD(
 #> chooseSigma: using initial Q_mat with sigma =  1
 #> Likelihood value: 40089.2008086034
 #> Sigma value:  0.84
-#> Likelihood value: 39342.4105815424
+#> Likelihood value: 39342.4105815422
 #> Sigma value:  0.69
-#> Likelihood value: 38786.8209416112
+#> Likelihood value: 38786.820941611
 #> Sigma value:  0.61
-#> Likelihood value: 38578.9034272752
+#> Likelihood value: 38578.9034272753
 #> Sigma value:  0.53
-#> Likelihood value: 38653.2368763568
+#> Likelihood value: 38653.236876357
 #> Sigma value:  0.49
-#> Likelihood value: 38432.7589536898
+#> Likelihood value: 38432.7589536902
 #> Sigma value:  0.48
 #> Likelihood value: 38431.5741354966
 #> Sigma value:  0.48

@@ -133,8 +133,8 @@ batch scores; the metrics view lists every metric per method.
 bench <- panc8_sub@tools$IntegrationBenchmark
 bench$runs
 #>        method  status error runtime_s         latent              umap
-#> 1 Uncorrected success          11.251 Uncorrectedpca UncorrectedUMAP2D
-#> 2     Harmony success           8.510        Harmony     HarmonyUMAP2D
+#> 1 Uncorrected success          12.707 Uncorrectedpca UncorrectedUMAP2D
+#> 2     Harmony success          10.148        Harmony     HarmonyUMAP2D
 stopifnot(all(bench$runs$status == "success"))
 
 thisplot::print_colored_table(
@@ -143,8 +143,8 @@ thisplot::print_colored_table(
   palette = "Chinese"
 )
 #> method       status   overall    bio        batch      iLISI       cLISI      celltype_ASW  batch_ASW_mixing  celltype_graph_connectivity  celltype_ARI  celltype_NMI  runtime_s  latent          umap             
-#> Uncorrected  success  0.6710946  0.7850261  0.5001973  0.05972029  0.9906632  0.6055287     0.9406743         0.9464146                    0.4704063     0.7371439     11.251     Uncorrectedpca  UncorrectedUMAP2D
-#> Harmony      success  0.7796145  0.8679485  0.6471136  0.37231389  0.9939489  0.6688806     0.9219133         0.9457216                    0.7640205     0.8676191     8.510      Harmony         HarmonyUMAP2D    
+#> Uncorrected  success  0.6711161  0.7850665  0.5001905  0.05974077  0.9906647  0.6055206     0.9406402         0.9464146                    0.4699072     0.7378917     12.707     Uncorrectedpca  UncorrectedUMAP2D
+#> Harmony      success  0.7792839  0.8673960  0.6471157  0.37244914  0.9939972  0.6688506     0.9217823         0.9457216                    0.7628313     0.8654756     10.148     Harmony         HarmonyUMAP2D    
 
 metrics <- bench$metrics
 metrics <- metrics[
@@ -157,22 +157,22 @@ thisplot::print_colored_table(
   palette = "Paired"
 )
 #> metric                       category  value      scaled      direction  method     
-#> batch_ASW_mixing             batch     0.9406743  0.94067433  higher     Uncorrected
-#> celltype_ASW                 bio       0.2110575  0.60552873  higher     Uncorrected
+#> batch_ASW_mixing             batch     0.9406402  0.94064019  higher     Uncorrected
+#> celltype_ASW                 bio       0.2110412  0.60552059  higher     Uncorrected
 #> celltype_graph_connectivity  bio       0.9464146  0.94641456  higher     Uncorrected
-#> celltype_NMI                 bio       0.7371439  0.73714392  higher     Uncorrected
-#> celltype_ARI                 bio       0.4704063  0.47040634  higher     Uncorrected
+#> celltype_NMI                 bio       0.7378917  0.73789171  higher     Uncorrected
+#> celltype_ARI                 bio       0.4699072  0.46990724  higher     Uncorrected
 #> celltype_purity              bio       0.9600000  0.96000000  higher     Uncorrected
-#> iLISI                        batch     1.2388812  0.05972029  higher     Uncorrected
-#> cLISI                        bio       1.1120416  0.99066320  higher     Uncorrected
-#> batch_ASW_mixing             batch     0.9219133  0.92191335  higher     Harmony    
-#> celltype_ASW                 bio       0.3377612  0.66888060  higher     Harmony    
+#> iLISI                        batch     1.2389631  0.05974077  higher     Uncorrected
+#> cLISI                        bio       1.1120233  0.99066473  higher     Uncorrected
+#> batch_ASW_mixing             batch     0.9217823  0.92178229  higher     Harmony    
+#> celltype_ASW                 bio       0.3377012  0.66885062  higher     Harmony    
 #> celltype_graph_connectivity  bio       0.9457216  0.94572156  higher     Harmony    
-#> celltype_NMI                 bio       0.8676191  0.86761912  higher     Harmony    
-#> celltype_ARI                 bio       0.7640205  0.76402051  higher     Harmony    
+#> celltype_NMI                 bio       0.8654756  0.86547564  higher     Harmony    
+#> celltype_ARI                 bio       0.7628313  0.76283130  higher     Harmony    
 #> celltype_purity              bio       0.9675000  0.96750000  higher     Harmony    
-#> iLISI                        batch     2.4892555  0.37231389  higher     Harmony    
-#> cLISI                        bio       1.0726130  0.99394891  higher     Harmony    
+#> iLISI                        batch     2.4897966  0.37244914  higher     Harmony    
+#> cLISI                        bio       1.0720339  0.99399717  higher     Harmony    
 ```
 
 ## Read the scores without overclaiming
@@ -275,11 +275,11 @@ data.frame(
   bytes = file.info(list.files(output_dir, full.names = TRUE))$size
 )
 #>                    file    bytes
-#> 1          analysis.rds 47324995
-#> 2 benchmark-metrics.csv     1600
-#> 3    benchmark-runs.csv      179
-#> 4 benchmark-summary.csv      657
-#> 5     cell-metadata.csv   274871
+#> 1          analysis.rds 47322237
+#> 2 benchmark-metrics.csv     1606
+#> 3    benchmark-runs.csv      181
+#> 4 benchmark-summary.csv      661
+#> 5     cell-metadata.csv   274063
 ```
 
 ## Use your own data and recover common errors
@@ -336,9 +336,9 @@ build_receipt <- data.frame(
 )
 build_receipt
 #>                          article               built_utc  scop     R
-#> 1 integration-benchmark-workflow 2026-11-15 23:52:18 UTC 0.9.2 4.6.2
+#> 1 integration-benchmark-workflow 2026-11-21 11:51:38 UTC 0.9.2 4.6.2
 #>                            source_revision source_has_local_changes
-#> 1 b733a483d3faae8fe4e819f244d4a961b33c4191                    FALSE
+#> 1 b889fd7c43324cfe0037bb31b23a9957ebf1abbc                    FALSE
 #>                        article_md5 R_seed cells_retained genes_in_active_assay
 #> 1 8fe304a2e6bb06793cb671d232710b92     11           1600                 12932
 utils::write.csv(build_receipt, file.path(output_dir, "build-receipt.csv"),
@@ -354,11 +354,11 @@ Show the complete R session used for this page
 sessionInfo()
 #> R version 4.6.2 (2026-10-29)
 #> Platform: x86_64-pc-linux-gnu
-#> Running under: Ubuntu 24.04.5 LTS
+#> Running under: Ubuntu 26.04.1 LTS
 #> 
 #> Matrix products: default
 #> BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 
-#> LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.26.so;  LAPACK version 3.12.0
+#> LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.32.so;  LAPACK version 3.12.0
 #> 
 #> locale:
 #>  [1] LC_CTYPE=C.UTF-8       LC_NUMERIC=C           LC_TIME=C.UTF-8       
@@ -377,10 +377,10 @@ sessionInfo()
 #> 
 #> loaded via a namespace (and not attached):
 #>  [1] tidyselect_1.2.1    dplyr_1.2.1         farver_2.1.2       
-#>  [4] S7_0.2.2            fastmap_1.2.0       RANN_2.6.3         
+#>  [4] S7_1.0.0            fastmap_1.2.0       RANN_2.6.3         
 #>  [7] digest_0.6.39       dotCall64_1.2       lifecycle_1.0.5    
 #> [10] cluster_2.1.8.3     SeuratObject_5.4.0  magrittr_2.0.5     
-#> [13] compiler_4.6.2      rlang_1.3.0         sass_0.4.10        
+#> [13] compiler_4.6.2      rlang_1.3.0         sass_0.5.0         
 #> [16] tools_4.6.2         igraph_2.3.4        yaml_2.3.12        
 #> [19] knitr_1.52          labeling_0.4.3      htmlwidgets_1.6.4  
 #> [22] sp_2.2-4            plyr_1.8.9          RColorBrewer_1.1-3 
@@ -398,13 +398,13 @@ sessionInfo()
 #> [58] matrixStats_1.5.0   vctrs_0.7.3         Matrix_1.7-6       
 #> [61] jsonlite_2.0.0      BiocNeighbors_2.6.0 patchwork_1.3.2    
 #> [64] thisplot_0.4.7      ggrepel_0.9.8       irlba_2.4.1        
-#> [67] scattermore_1.2     listenv_1.1.0       systemfonts_1.3.2  
+#> [67] scattermore_1.2     listenv_1.1.0       systemfonts_1.3.3  
 #> [70] harmony_2.1.0       jquerylib_0.1.4     pls_2.9-0          
 #> [73] glue_1.8.1          parallelly_1.50.0   spam_2.11-4        
 #> [76] pkgdown_2.2.1       codetools_0.2-20    uwot_0.2.5         
 #> [79] cowplot_1.2.0       stringi_1.8.9       RcppAnnoy_0.0.23   
 #> [82] gtable_0.3.6        tibble_3.3.1        pillar_1.11.1      
-#> [85] htmltools_0.5.9     R6_2.6.1            textshaping_1.0.5  
+#> [85] htmltools_0.5.9     R6_2.6.1            textshaping_1.1.0  
 #> [88] evaluate_1.0.5      lattice_0.23-1      png_0.1-9          
 #> [91] RhpcBLASctl_0.23-42 bslib_0.12.0        Rcpp_1.1.2         
 #> [94] gridExtra_2.3.1     xfun_0.62           fs_2.1.0           

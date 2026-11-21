@@ -127,9 +127,9 @@ spatial <- RunSpaNorm(
 #> iter:  1, iter: 10, log-likelihood: -654745.935523
 #> iter:  1, iter: 11, log-likelihood: -654745.935523 (converged)
 #> iter:  2, estimating gene-wise dispersion
-#> iter:  2, log-likelihood: -645042.838570
+#> iter:  2, log-likelihood: -645042.838569
 #> iter:  2, fitting NB model
-#> iter:  2, iter:  1, log-likelihood: -645042.838570
+#> iter:  2, iter:  1, log-likelihood: -645042.838569
 #> iter:  2, iter:  2, log-likelihood: -642726.403732
 #> iter:  2, iter:  2, log-likelihood: -642726.403732
 #> iter:  2, iter:  2, log-likelihood: -642726.403732

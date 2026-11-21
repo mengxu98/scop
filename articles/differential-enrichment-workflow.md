@@ -583,12 +583,12 @@ data.frame(
 )
 #>                            file    bytes
 #> 1               all-markers.csv  5268635
-#> 2                  analysis.rds 50900572
+#> 2                  analysis.rds 50902879
 #> 3             cell-metadata.csv   146525
 #> 4    GO-BP-GSEA-memberships.csv 12612015
 #> 5 GO-BP-measured-background.csv 10159062
 #> 6                 GO-source.txt       41
-#> 7                      GSEA.csv  6702328
+#> 7                      GSEA.csv  6702209
 #> 8                       ORA.csv  3986172
 ```
 
@@ -650,9 +650,9 @@ build_receipt <- data.frame(
 )
 build_receipt
 #>                            article               built_utc  scop     R
-#> 1 differential-enrichment-workflow 2026-11-15 23:51:41 UTC 0.9.2 4.6.2
+#> 1 differential-enrichment-workflow 2026-11-21 11:50:51 UTC 0.9.2 4.6.2
 #>                            source_revision source_has_local_changes
-#> 1 b733a483d3faae8fe4e819f244d4a961b33c4191                    FALSE
+#> 1 b889fd7c43324cfe0037bb31b23a9957ebf1abbc                    FALSE
 #>                        article_md5 R_seed cells_retained genes_in_active_assay
 #> 1 1c730bbafc9f5f0c6783a90f73de724d     11           1000                 15998
 utils::write.csv(build_receipt, file.path(output_dir, "build-receipt.csv"),
@@ -668,11 +668,11 @@ Show the complete R session used for this page
 sessionInfo()
 #> R version 4.6.2 (2026-10-29)
 #> Platform: x86_64-pc-linux-gnu
-#> Running under: Ubuntu 24.04.5 LTS
+#> Running under: Ubuntu 26.04.1 LTS
 #> 
 #> Matrix products: default
 #> BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 
-#> LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.26.so;  LAPACK version 3.12.0
+#> LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.32.so;  LAPACK version 3.12.0
 #> 
 #> locale:
 #>  [1] LC_CTYPE=C.UTF-8       LC_NUMERIC=C           LC_TIME=C.UTF-8       
@@ -694,38 +694,38 @@ sessionInfo()
 #>   [4] tibble_3.3.1            polyclip_1.10-7         enrichit_0.2.7         
 #>   [7] fastDummies_1.7.6       lifecycle_1.0.5         httr2_1.3.0            
 #>  [10] thisplot_0.4.7          doParallel_1.0.17       globals_0.20.0         
-#>  [13] processx_3.9.0          lattice_0.23-1          MASS_7.3-66            
-#>  [16] magrittr_2.0.5          sass_0.4.10             rmarkdown_2.32         
+#>  [13] processx_3.10.0         lattice_0.23-1          MASS_7.3-66            
+#>  [16] magrittr_2.0.5          sass_0.5.0              rmarkdown_2.32         
 #>  [19] jquerylib_0.1.4         yaml_2.3.12             thisutils_0.5.4        
 #>  [22] otel_0.3.0              Seurat_6.0.0            ggtangle_0.1.5         
 #>  [25] sctransform_0.4.3       spam_2.11-4             sp_2.2-4               
 #>  [28] cowplot_1.2.0           pbapply_1.7-5           DBI_1.3.0              
 #>  [31] RColorBrewer_1.1-3      Rtsne_0.17              purrr_1.2.2            
-#>  [34] presto_1.1.0            BiocGenerics_0.58.1     yulab.utils_0.2.5      
+#>  [34] presto_1.1.0            BiocGenerics_0.58.1     yulab.utils_0.2.6      
 #>  [37] tweenr_2.0.3            rappdirs_0.3.4          aisdk_1.4.12           
-#>  [40] gdtools_0.5.3           circlize_0.4.18         IRanges_2.46.0         
+#>  [40] gdtools_0.6.0           circlize_0.4.18         IRanges_2.46.0         
 #>  [43] S4Vectors_0.50.3        enrichplot_1.32.1       ggrepel_0.9.8          
-#>  [46] irlba_2.4.1             listenv_1.1.0           tidytree_0.4.8         
+#>  [46] irlba_2.4.1             listenv_1.1.0           tidytree_0.4.9         
 #>  [49] RSpectra_0.16-2         parallelly_1.50.0       pkgdown_2.2.1          
 #>  [52] codetools_0.2-20        ggforce_0.5.0           DOSE_4.6.0             
 #>  [55] tidyselect_1.2.1        shape_1.4.6.1           aplot_0.3.2            
 #>  [58] farver_2.1.2            matrixStats_1.5.0       stats4_4.6.2           
 #>  [61] Seqinfo_1.2.0           jsonlite_2.0.0          GetoptLong_1.1.1       
 #>  [64] progressr_1.1.0         ggridges_0.5.7          iterators_1.0.14       
-#>  [67] systemfonts_1.3.2       foreach_1.5.2           tools_4.6.2            
+#>  [67] systemfonts_1.3.3       foreach_1.5.2           tools_4.6.2            
 #>  [70] ggnewscale_0.5.2        treeio_1.36.1           ragg_1.5.2             
 #>  [73] ica_1.0-3               Rcpp_1.1.2              glue_1.8.1             
 #>  [76] gridExtra_2.3.1         geomtextpath_0.2.0      xfun_0.62              
 #>  [79] qvalue_2.44.0           dplyr_1.2.1             withr_3.0.3            
 #>  [82] fastmap_1.2.0           callr_3.8.0             digest_0.6.39          
-#>  [85] R6_2.6.1                gridGraphics_0.5-1      textshaping_1.0.5      
+#>  [85] R6_2.6.1                gridGraphics_0.5-1      textshaping_1.1.0      
 #>  [88] colorspace_2.1-4        scattermore_1.2         GO.db_3.23.1           
 #>  [91] Cairo_1.7-0             dichromat_2.0-1         RSQLite_3.53.3         
 #>  [94] tidyr_1.3.2             generics_0.1.4          pls_2.9-0              
 #>  [97] fontLiberation_0.1.0    data.table_1.18.6.1     httr_1.4.9             
 #> [100] htmlwidgets_1.6.4       scatterpie_0.2.6        org.Mm.eg.db_3.23.0    
 #> [103] uwot_0.2.5              pkgconfig_2.0.3         gtable_0.3.6           
-#> [106] blob_1.3.0              ComplexHeatmap_2.28.0   S7_0.2.2               
+#> [106] blob_1.3.0              ComplexHeatmap_2.28.0   S7_1.0.0               
 #> [109] XVector_0.52.0          clusterProfiler_4.20.3  shadowtext_0.1.6       
 #> [112] htmltools_0.5.9         fontBitstreamVera_0.1.1 fgsea_1.38.0           
 #> [115] dotCall64_1.2           clue_0.3-68             SeuratObject_5.4.0     
@@ -740,7 +740,7 @@ sessionInfo()
 #> [142] cli_3.6.6               compiler_4.6.2          rlang_1.3.0            
 #> [145] crayon_1.5.3            future.apply_1.21.0     labeling_0.4.3         
 #> [148] ps_1.9.3                plyr_1.8.9              fs_2.1.0               
-#> [151] ggiraph_0.9.6           stringi_1.8.9           BiocParallel_1.46.0    
+#> [151] ggiraph_0.9.7           stringi_1.8.9           BiocParallel_1.46.0    
 #> [154] Biostrings_2.80.2       lazyeval_0.2.3          GOSemSim_2.38.3        
 #> [157] fontquiver_0.2.1        Matrix_1.7-6            RcppHNSW_0.7.0         
 #> [160] patchwork_1.3.2         bit64_4.8.6             future_1.82.0          

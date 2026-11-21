@@ -226,31 +226,31 @@ DEtestManhattanPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-11-15 22:53:34] Start standard processing workflow...
-#> ℹ [2026-11-15 22:53:34] Checking a list of <Seurat>...
-#> ! [2026-11-15 22:53:34] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-11-15 22:53:34] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-11-15 22:53:34] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-15 22:53:34] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-15 22:53:34] Number of available HVF: 2000
-#> ℹ [2026-11-15 22:53:34] Finished check
-#> ℹ [2026-11-15 22:53:34] Perform `ScaleData()`
-#> ℹ [2026-11-15 22:53:34] Perform pca linear dimension reduction
-#> ℹ [2026-11-15 22:53:34] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-11-15 22:53:35] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-15 22:53:35] Reorder clusters...
-#> ℹ [2026-11-15 22:53:35] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-15 22:53:35] Perform umap nonlinear dimension reduction
-#> ✔ [2026-11-15 22:53:42] Standard processing workflow completed
+#> ℹ [2026-11-21 10:43:32] Start standard processing workflow...
+#> ℹ [2026-11-21 10:43:32] Checking a list of <Seurat>...
+#> ! [2026-11-21 10:43:32] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-21 10:43:32] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-21 10:43:33] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-21 10:43:33] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-21 10:43:33] Number of available HVF: 2000
+#> ℹ [2026-11-21 10:43:33] Finished check
+#> ℹ [2026-11-21 10:43:33] Perform `ScaleData()`
+#> ℹ [2026-11-21 10:43:33] Perform pca linear dimension reduction
+#> ℹ [2026-11-21 10:43:33] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-11-21 10:43:33] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-21 10:43:34] Reorder clusters...
+#> ℹ [2026-11-21 10:43:34] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-21 10:43:34] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-21 10:43:41] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType",
   only.pos = FALSE
 )
-#> ℹ [2026-11-15 22:53:42] Data type is log-normalized
-#> ℹ [2026-11-15 22:53:42] Start differential expression test
-#> ℹ [2026-11-15 22:53:42] Find all markers(wilcox) among [1] 5 groups...
-#> ✔ [2026-11-15 22:53:42] Differential expression test completed
+#> ℹ [2026-11-21 10:43:41] Data type is log-normalized
+#> ℹ [2026-11-21 10:43:41] Start differential expression test
+#> ℹ [2026-11-21 10:43:41] Find all markers(wilcox) among [1] 5 groups...
+#> ✔ [2026-11-21 10:43:42] Differential expression test completed
 DEtestManhattanPlot(
   pancreas_sub,
   group.by = "CellType"

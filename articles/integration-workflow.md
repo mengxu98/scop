@@ -269,7 +269,7 @@ data.frame(
   bytes = file.info(list.files(output_dir, full.names = TRUE))$size
 )
 #>                file    bytes
-#> 1      analysis.rds 48008779
+#> 1      analysis.rds 48007625
 #> 2 cell-metadata.csv   186170
 ```
 
@@ -327,9 +327,9 @@ build_receipt <- data.frame(
 )
 build_receipt
 #>                article               built_utc  scop     R
-#> 1 integration-workflow 2026-11-15 23:52:52 UTC 0.9.2 4.6.2
+#> 1 integration-workflow 2026-11-21 11:52:19 UTC 0.9.2 4.6.2
 #>                            source_revision source_has_local_changes
-#> 1 b733a483d3faae8fe4e819f244d4a961b33c4191                    FALSE
+#> 1 b889fd7c43324cfe0037bb31b23a9957ebf1abbc                    FALSE
 #>                        article_md5 R_seed cells_retained genes_in_active_assay
 #> 1 258fa719de827f5739c0606e0dfd1e7c     11           1600                 12932
 utils::write.csv(build_receipt, file.path(output_dir, "build-receipt.csv"),
@@ -345,11 +345,11 @@ Show the complete R session used for this page
 sessionInfo()
 #> R version 4.6.2 (2026-10-29)
 #> Platform: x86_64-pc-linux-gnu
-#> Running under: Ubuntu 24.04.5 LTS
+#> Running under: Ubuntu 26.04.1 LTS
 #> 
 #> Matrix products: default
 #> BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 
-#> LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.26.so;  LAPACK version 3.12.0
+#> LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.32.so;  LAPACK version 3.12.0
 #> 
 #> locale:
 #>  [1] LC_CTYPE=C.UTF-8       LC_NUMERIC=C           LC_TIME=C.UTF-8       
@@ -368,10 +368,10 @@ sessionInfo()
 #> 
 #> loaded via a namespace (and not attached):
 #>  [1] tidyselect_1.2.1    dplyr_1.2.1         farver_2.1.2       
-#>  [4] S7_0.2.2            fastmap_1.2.0       RANN_2.6.3         
+#>  [4] S7_1.0.0            fastmap_1.2.0       RANN_2.6.3         
 #>  [7] digest_0.6.39       dotCall64_1.2       lifecycle_1.0.5    
 #> [10] cluster_2.1.8.3     SeuratObject_5.4.0  magrittr_2.0.5     
-#> [13] compiler_4.6.2      rlang_1.3.0         sass_0.4.10        
+#> [13] compiler_4.6.2      rlang_1.3.0         sass_0.5.0         
 #> [16] tools_4.6.2         igraph_2.3.4        yaml_2.3.12        
 #> [19] knitr_1.52          labeling_0.4.3      htmlwidgets_1.6.4  
 #> [22] sp_2.2-4            plyr_1.8.9          RColorBrewer_1.1-3 
@@ -389,13 +389,13 @@ sessionInfo()
 #> [58] matrixStats_1.5.0   vctrs_0.7.3         Matrix_1.7-6       
 #> [61] jsonlite_2.0.0      patchwork_1.3.2     thisplot_0.4.7     
 #> [64] ggrepel_0.9.8       irlba_2.4.1         scattermore_1.2    
-#> [67] listenv_1.1.0       systemfonts_1.3.2   harmony_2.1.0      
+#> [67] listenv_1.1.0       systemfonts_1.3.3   harmony_2.1.0      
 #> [70] jquerylib_0.1.4     pls_2.9-0           glue_1.8.1         
 #> [73] parallelly_1.50.0   spam_2.11-4         pkgdown_2.2.1      
 #> [76] codetools_0.2-20    uwot_0.2.5          cowplot_1.2.0      
 #> [79] stringi_1.8.9       RcppAnnoy_0.0.23    gtable_0.3.6       
 #> [82] tibble_3.3.1        pillar_1.11.1       htmltools_0.5.9    
-#> [85] R6_2.6.1            textshaping_1.0.5   evaluate_1.0.5     
+#> [85] R6_2.6.1            textshaping_1.1.0   evaluate_1.0.5     
 #> [88] lattice_0.23-1      png_0.1-9           RhpcBLASctl_0.23-42
 #> [91] bslib_0.12.0        Rcpp_1.1.2          gridExtra_2.3.1    
 #> [94] xfun_0.62           fs_2.1.0            pkgconfig_2.0.3

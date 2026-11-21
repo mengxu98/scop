@@ -144,58 +144,58 @@ RunGLMPCA(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-11-15 23:16:46] Start standard processing workflow...
-#> ℹ [2026-11-15 23:16:46] Checking a list of <Seurat>...
-#> ! [2026-11-15 23:16:46] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-11-15 23:16:46] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-11-15 23:16:46] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-11-15 23:16:46] Use the separate HVF from `srt_list`
-#> ℹ [2026-11-15 23:16:46] Number of available HVF: 2000
-#> ℹ [2026-11-15 23:16:46] Finished check
-#> ℹ [2026-11-15 23:16:46] Perform `ScaleData()`
-#> ℹ [2026-11-15 23:16:46] Perform pca linear dimension reduction
-#> ℹ [2026-11-15 23:16:47] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-11-15 23:16:47] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-11-15 23:16:47] Reorder clusters...
-#> ℹ [2026-11-15 23:16:47] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-11-15 23:16:47] Perform umap nonlinear dimension reduction
-#> ✔ [2026-11-15 23:16:55] Standard processing workflow completed
+#> ℹ [2026-11-21 11:10:44] Start standard processing workflow...
+#> ℹ [2026-11-21 11:10:44] Checking a list of <Seurat>...
+#> ! [2026-11-21 11:10:44] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-11-21 11:10:44] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-11-21 11:10:44] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-11-21 11:10:44] Use the separate HVF from `srt_list`
+#> ℹ [2026-11-21 11:10:44] Number of available HVF: 2000
+#> ℹ [2026-11-21 11:10:44] Finished check
+#> ℹ [2026-11-21 11:10:44] Perform `ScaleData()`
+#> ℹ [2026-11-21 11:10:44] Perform pca linear dimension reduction
+#> ℹ [2026-11-21 11:10:45] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-11-21 11:10:45] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-11-21 11:10:45] Reorder clusters...
+#> ℹ [2026-11-21 11:10:45] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-11-21 11:10:45] Perform umap nonlinear dimension reduction
+#> ✔ [2026-11-21 11:10:54] Standard processing workflow completed
 pancreas_sub <- RunGLMPCA(pancreas_sub)
 #> ℹ GLMPC_ 1 
-#> ℹ Positive:  Sparcl1, Col6a1, Anxa1, Col23a1, Galnt16, Col1a1, Sp140, Islr, Ctgf, Isg15 
-#> ℹ      Col1a2, Gm26633, Ctsk, Tnni3, Zfp385b, Hoxb4, P2ry2, Kcnj8, Plscr2, Pmp22 
-#> ℹ      Platr22, Col3a1, Prickle2, Smpx, Cxcl10, 1110002O04Rik, Edn1, Gdf15, Gm6878, Apcs 
-#> ℹ Negative:  Barx2, Gm3448, Ky, Mesp1, Ptger3, Platr26, Gm6086, Bcas1os1, Fam71b, Gm933 
-#> ℹ      Cartpt, Srrm3, Cypt3, Dusp26, 3930402G23Rik, Gm4319, Ngf, Nlgn1, Lrrc6, Doc2a 
-#> ℹ      1700001C02Rik, Cdkn2b, Gad1, Ucn3, Prl, Klk11, 2410021H03Rik, Acoxl, Il1r2, Aard 
+#> ℹ Positive:  Gm26633, Ctgf, Anxa1, Col6a1, Sparcl1, Sp140, Col23a1, Isg15, Ctsk, Zfp385b 
+#> ℹ      Islr, Col1a1, Galnt16, Tnni3, Hoxb4, Cxcl10, Platr22, Plscr2, P2ry2, Col1a2 
+#> ℹ      Smpx, Pmp22, Gm15640, Kcnj8, Olfml2a, Edn1, 1110002O04Rik, Ccl20, Cxcl16, Peg12 
+#> ℹ Negative:  Barx2, Gm3448, Fam71b, Gm933, Ky, Ptger3, Mesp1, Cartpt, Gm6086, Cypt3 
+#> ℹ      Ngf, Bcas1os1, 3930402G23Rik, Platr26, Dusp26, Srrm3, Prl, Nlgn1, Klk11, Bhlhe23 
+#> ℹ      Gm4319, 1700001C02Rik, 2410021H03Rik, Foxd3, Ucn3, Doc2a, Lrrc6, Cdkn2b, Gad1, Il1r2 
 #> ℹ GLMPC_ 2 
-#> ℹ Positive:  Dkk2, Fgb, Sparcl1, RP23-428N8.3, Gm26633, Tnni3, Lgr5, Klhl14, 4930539E08Rik, Crygn 
-#> ℹ      Otc, Ctgf, Gdf15, Gcg, 4930426D05Rik, Galnt16, Sst, Col25a1, Col6a1, Gad2 
-#> ℹ      Doc2a, Barx2, Zfp385b, Col1a2, Pyy, Col23a1, Ppy, 1700001C02Rik, Calb1, Tac1 
-#> ℹ Negative:  Ncf2, P2ry14, Cd37, Ifitm1, Prom2, Tex36, Slfn2, Tgm7, Bhlhe23, Fn3krp 
-#> ℹ      Gm16140, Krt15, Cmklr1, Snai2, Tyrobp, Fgf8, Laptm5, Siglece, Bhlhe22, Tox2 
-#> ℹ      Fam212b, Gm15567, Sema3g, Fcgr3, Pthlh, Gm8773, Neurog3, Neurod2, Epb42, S100a14 
+#> ℹ Positive:  Islr, Kcnj8, Sparcl1, Tmem119, Galnt16, Col1a1, Col3a1, L1td1, Col1a2, Fam71b 
+#> ℹ      Col6a1, Klk11, Oasl2, Jakmip3, Pdcd1, Sapcd1, Col5a1, Gsg1l, Adra2c, Pkd2l1 
+#> ℹ      Col23a1, Calb1, Wnt3, Tmem114, Acoxl, 1700128E19Rik, Pid1, Gcg, Gm6086, Tfap2c 
+#> ℹ Negative:  Sst, Dkk2, RP23-428N8.3, Gm26633, Kcne2, Tnni3, Col25a1, Rac2, Ceacam10, Ctsk 
+#> ℹ      Gtf2ird2, Klhl14, Ctgf, Gm6410, D7Ertd443e, Ppy, Afap1l2, Elovl4, RP23-58K20.3, Nov 
+#> ℹ      Tstd1, Srgn, Platr27, Cxcl10, Cttnbp2, Fcgr3, Lst1, Spock1, 1700015F17Rik, Itgb7 
 #> ℹ GLMPC_ 3 
-#> ℹ Positive:  Sst, Ceacam10, Gtf2ird2, Srgn, Gm6410, Rac2, Kcne2, RP23-58K20.3, RP23-428N8.3, Col25a1 
-#> ℹ      Afap1l2, Fcgr3, Platr27, Rasl11a, Gm26633, Itgb7, Tmem100, Lst1, Spock1, Elovl4 
-#> ℹ      Tstd1, Coro1a, D7Ertd443e, Tnni3, Klhl14, Igfbp3, Tyrobp, Lypd6b, Pik3c2b, Slc4a10 
-#> ℹ Negative:  Islr, Kcnj8, Sparcl1, Col1a1, Col1a2, Galnt16, Col6a1, Col3a1, Tmem119, Col23a1 
-#> ℹ      Fam71b, Guca2a, Ghrl, L1td1, Gcg, Pkd2l1, Col5a1, Sapcd1, Oasl2, Calb1 
-#> ℹ      Adra2c, Bcas1os1, Irs4, Ngf, Tfap2c, Gsg1l, Tmem255b, Foxd3, Gm6878, Klk11 
+#> ℹ Positive:  Ncf2, Rac2, Cd37, P2ry14, Fcgr3, Srgn, Ifitm1, Tyrobp, Prom2, Fn3krp 
+#> ℹ      Tex36, Fgf8, Gm11636, Slfn2, Gm16140, Laptm5, Snai2, Itgb7, Pthlh, Bhlhe23 
+#> ℹ      Tgm7, Cmklr1, Tox2, Fam212b, Gm8773, Siglece, S100a14, Mapkapk3, Sema3g, Gmfg 
+#> ℹ Negative:  Sparcl1, Dkk2, 4930539E08Rik, Gcg, Fgb, Gm26633, Col6a1, Lgr5, Galnt16, Col1a2 
+#> ℹ      RP23-428N8.3, Gad2, Calb1, Kng2, Ryr3, Ctgf, 4930426D05Rik, Col23a1, Tnni3, Pid1 
+#> ℹ      Npy, Hoxb4, Otc, Klhl14, Zfp385b, Crygn, Barx2, Islr, Doc2a, 1700001C02Rik 
 #> ℹ GLMPC_ 4 
-#> ℹ Positive:  Kng2, Pid1, Pif1, Nusap1, Sapcd2, Iqgap3, Ryr3, Mxd3, Ccnb1, Espl1 
-#> ℹ      Spns2, Jakmip3, Cldn18, Neil3, Esco2, Casc5, Hmmr, Ckap2l, Aurkb, Plk1 
-#> ℹ      Depdc1a, Npy, Noxred1, Cenpf, Parpbp, Prc1, Cdc25c, Troap, Kif2c, Hist1h1b 
-#> ℹ Negative:  Rac2, Sst, Cbln4, Ghrl, Sp140, Kcne2, Anxa1, Irs4, Tex36, Foxd3 
-#> ℹ      Lrrtm3, Islr, Arhgap22, D7Ertd443e, Gm17455, Ngf, Col1a1, Kcnj8, Ctsk, Elovl4 
-#> ℹ      Itgb7, Gpr6, Col6a1, Col23a1, Lst1, Nlgn1, Tstd1, Mesp1, Gm933, Avp 
+#> ℹ Positive:  Cbln4, Islr, Sp140, Ghrl, Kcnj8, Irs4, Tex36, Anxa1, Foxd3, Col1a1 
+#> ℹ      Col6a1, Lrrtm3, Arhgap22, Col1a2, Guca2a, Col23a1, Sst, Sparcl1, Ngf, Col3a1 
+#> ℹ      Gm17455, Kcne2, Avp, L1td1, Oasl2, Ctsk, D7Ertd443e, Prickle2, Fam71b, St8sia2 
+#> ℹ Negative:  Kng2, Lmx1a, Spns2, Pif1, 4930539E08Rik, Slc4a10, Ryr3, Noxred1, Il1r2, Cldn18 
+#> ℹ      Lrrc6, Cbln1, Pid1, Sapcd2, Ceacam10, Iqgap3, Espl1, Depdc1a, Aurkb, Npy 
+#> ℹ      Ckap2l, Mxd3, Ccnb1, Nusap1, Neil3, 1700024G13Rik, Esco2, P2ry1, Slc16a6, Hist1h1a 
 #> ℹ GLMPC_ 5 
-#> ℹ Positive:  Anxa1, Gast, Nepn, Cxcl10, Fgf8, Col1a2, Col3a1, Gm29440, Cxcl16, Esyt3 
-#> ℹ      Krt17, A930017K11Rik, Rerg, Cttnbp2, Sytl2, Ifit1bl1, Tagln, Gm15640, Ccl20, Cypt3 
-#> ℹ      Pole, RP23-4H17.3, Ryr3, Ltb, Calb1, Pou6f2, Zfp97, Colec12, Nrn1, Sapcd1 
-#> ℹ Negative:  Cbln4, Dlgap1, Ins1, Sst, Gsg1l, Sds, Gm6878, Adam32, Npy, Sparcl1 
-#> ℹ      Aif1, Gm11789, Oasl2, Guca2a, Rac2, Olfml2a, Aspm, Fam71b, BC043934, Ins2 
-#> ℹ      Sftpd, Snai2, Gm28875, Sp5, Syndig1l, Smpx, P2ry2, Guca2b, Rsad2, Tmem255b 
+#> ℹ Positive:  Anxa1, Nepn, Cxcl10, Gast, Col3a1, Gm29440, Fgf8, Cxcl16, Krt17, Col1a2 
+#> ℹ      Gm15640, Tagln, A930017K11Rik, Ltb, Arhgap22, Ccl20, Esyt3, RP23-4H17.3, Ifit1bl1, Nrn1 
+#> ℹ      Sytl2, Cypt3, Rerg, Colec12, Cttnbp2, Gm38112, Sapcd1, Otc, Col5a1, Ngf 
+#> ℹ Negative:  Cbln4, Dlgap1, Sst, Ins1, Sds, Gsg1l, Sparcl1, Npy, Gm6878, Adam32 
+#> ℹ      Smpx, BC043934, Ins2, Olfml2a, Snai2, Fam71b, Pkd2l1, Sp5, Sftpd, Rac2 
+#> ℹ      Gm11789, Oasl2, Syndig1l, Col25a1, Nhs, Tmem255b, Gm28875, P2ry2, Sostdc1, Atoh8 
 CellDimPlot(
   pancreas_sub,
   group.by = "CellType",

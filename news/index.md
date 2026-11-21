@@ -2,6 +2,10 @@
 
 ## scop (development version)
 
+- **refactor**: Share heatmap rendering, spatial coordinate preparation,
+  integration setup, and analysis inputs. Reuse common C++ and Python
+  routines across analysis backends.
+
 - **fix**:
   [`FeatureHeatmap()`](https://mengxu98.github.io/scop/reference/FeatureHeatmap.md)
   preserves numeric cell annotations when the same metadata column is
