@@ -1,0 +1,174 @@
+name: VST parity probe
+on:
+  push:
+    branches: [chore/vst-parity-probe]
+    paths: [.github/workflows/vst-parity-probe.yaml]
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 60
+    env:
+      MAKEFLAGS: -j2
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          ref: 9665ee492345500270ab7170e04fd812fb996b56
+          path: baseline
+          persist-credentials: false
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          ref: 80da16fff2c279916965745d2adc74d73b882541
+          path: candidate
+          persist-credentials: false
+      - uses: r-lib/actions/setup-r@f9a764fea8d5c63df6ef9a5c7795bf7deb5d7e05
+        with:
+          r-version: '4.6.2'
+          use-public-rspm: true
+          Ncpus: 2
+      - uses: r-lib/actions/setup-r-dependencies@f9a764fea8d5c63df6ef9a5c7795bf7deb5d7e05
+        with:
+          working-directory: candidate
+          cache-version: vst-parity
+          dependencies: '"hard"'
+          extra-packages: |
+            any::testthat
+            github::mengxu98/thisplot@24ecaef1c2a6d716f8dd3fe1e77a959e27368516
+            github::mengxu98/thisutils@6a1fc8eb68b645b0b754321134a246adf850e423
+          needs: check
+      - name: Verify shared runtime and install both revisions
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat /etc/os-release
+          gcc --version
+          Rscript - <<'RS'
+          required <- c(Matrix = "1.7-6", Seurat = "6.0.0", SeuratObject = "5.4.0")
+          actual <- vapply(names(required), function(x) as.character(packageVersion(x)), "")
+          print(actual)
+          print(vapply(c("thisplot", "thisutils"), function(x) {
+            d <- packageDescription(x)
+            if (is.null(d$RemoteSha)) "<not recorded>" else d$RemoteSha
+          }, ""))
+          stopifnot(as.character(getRversion()) == "4.6.2")
+          if (!identical(actual, required)) {
+            warning("Shared dependencies differ from the historical runner; paired comparison remains valid.")
+          }
+          print(sessionInfo())
+          RS
+          for side in baseline candidate; do
+            mkdir "$RUNNER_TEMP/library-$side"
+            R CMD INSTALL --library="$RUNNER_TEMP/library-$side" "$side"
+          done
+      - name: Compare the exact layered-assay test and trace ranks
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > "$RUNNER_TEMP/check-vst.R" <<'RS'
+          side <- commandArgs(TRUE)[1L]
+          scratch <- Sys.getenv("RUNNER_TEMP")
+          lib <- file.path(scratch, paste0("library-", side))
+          .libPaths(c(lib, .libPaths()))
+          library(Seurat)
+          library(scop, lib.loc = lib)
+          library(testthat)
+          stopifnot(identical(normalizePath(find.package("scop")), file.path(lib, "scop")))
+          p <- file.path(side, "tests", "testthat")
+          source(file.path(p, "helper-seurat-reference.R"), local = TRUE)
+          calls <- as.list(parse(file.path(p, "test-scop-seurat-consistency.R")))
+          select <- vapply(calls, function(x) {
+            is.call(x) && identical(x[[1L]], as.name("test_that")) &&
+              identical(x[[2L]], "VST aligns Assay5 layers with partially overlapping features")
+          }, logical(1))
+          stopifnot(sum(select) == 1L)
+          fixture <- calls[[which(select)]]
+          statements <- as.list(fixture[[3L]])
+          at <- which(vapply(statements, function(x) {
+            is.call(x) && identical(x[[1L]], as.name("<-")) &&
+              identical(x[[2L]], as.name("numeric_cols"))
+          }, logical(1)))
+          stopifnot(length(at) == 1L)
+          trace_layered_vst <- function() {
+            env <- parent.frame()
+            frames <- list(scop = env$scop_meta, seurat = env$seurat_meta)
+            x <- list(
+              features = list(A = rownames(env$counts_a), B = rownames(env$counts_b)),
+              top = list(scop = SeuratObject::VariableFeatures(env$scop_result),
+                         seurat = SeuratObject::VariableFeatures(env$seurat_result)),
+              metadata = lapply(frames, function(x) {
+                x[, grep("^vf_vst_", names(x)), drop = FALSE]
+              })
+            )
+            saveRDS(x, file.path(scratch, paste0(side, "-vst.rds")))
+            for (layer in c("A", "B")) {
+              cat(side, "input feature order", layer, paste(x$features[[layer]], collapse = ","), "\n")
+            }
+            for (method in names(x$top)) {
+              cat(side, method, "top20", paste(x$top[[method]], collapse = ","), "\n")
+            }
+            for (column in intersect(names(x$metadata$scop), names(x$metadata$seurat))) {
+              a <- x$metadata$scop[[column]]
+              b <- x$metadata$seurat[[column]]
+              if (!is.numeric(a) || !is.numeric(b)) next
+              hit <- which(!(is.na(a) & is.na(b)) & (is.na(a) | is.na(b) | a != b))
+              if (length(hit)) {
+                cat(side, column, "difference_count", length(hit), "\n")
+                for (i in hit) {
+                  cat(rownames(x$metadata$scop)[i], sprintf("%a", as.double(a[i])),
+                      sprintf("%a", as.double(b[i])), "\n")
+                }
+              }
+              if (grepl("_rank$", column)) {
+                for (method in names(x$metadata)) {
+                  m <- x$metadata[[method]]
+                  i <- order(m[[column]], na.last = NA)
+                  cat(side, method, column, "ranked features",
+                      paste(paste0(rownames(m)[i], "=", m[[column]][i]), collapse = ","), "\n")
+                }
+              }
+            }
+            for (layer in c("A", "B")) {
+              rank_key <- paste0("vf_vst_counts.", layer, "_rank")
+              keys <- grep(paste0("^vf_vst_counts\\.", layer, "_"), env$numeric_cols, value = TRUE)
+              ranks_a <- x$metadata$scop[[rank_key]]
+              ranks_b <- x$metadata$seurat[[rank_key]]
+              i <- which(!(is.na(ranks_a) & is.na(ranks_b)) &
+                         (is.na(ranks_a) | is.na(ranks_b) | ranks_a != ranks_b))
+              for (j in i) {
+                for (key in keys) {
+                  cat(side, "rank-disagreement score", rownames(x$metadata$scop)[j], key,
+                      sprintf("%a", as.double(x$metadata$scop[[key]][j])),
+                      sprintf("%a", as.double(x$metadata$seurat[[key]][j])), "\n")
+                }
+              }
+            }
+          }
+          fixture[[3L]] <- as.call(append(statements, list(quote(trace_layered_vst())), after = at))
+          eval(fixture)
+          RS
+          for side in baseline candidate; do
+            if Rscript "$RUNNER_TEMP/check-vst.R" "$side"; then
+              printf '%s fixture exit=0\n' "$side"
+            else
+              code=$?
+              printf '%s fixture exit=%s\n' "$side" "$code"
+              touch "$RUNNER_TEMP/$side-vst-failed"
+            fi
+          done
+          Rscript - <<'RS'
+          temp <- Sys.getenv("RUNNER_TEMP")
+          a <- readRDS(file.path(temp, "baseline-vst.rds"))
+          b <- readRDS(file.path(temp, "candidate-vst.rds"))
+          cat("base/candidate fixture input feature order identical:", identical(a$features, b$features), "\n")
+          cat("base/candidate top20 identical:", identical(a$top, b$top), "\n")
+          cat("base/candidate complete metadata identical:", identical(a$metadata, b$metadata), "\n")
+          if (!identical(a, b)) {
+            print(all.equal(a, b, tolerance = 0))
+          }
+          RS
+          test ! -f "$RUNNER_TEMP/baseline-vst-failed"
+          test ! -f "$RUNNER_TEMP/candidate-vst-failed"
