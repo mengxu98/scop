@@ -459,6 +459,37 @@ test_that("VST aligns Assay5 layers with partially overlapping features", {
       seurat_hvf[, logical_cols, drop = FALSE]
     )
   }
+  # Diagnostic only: retain the original rank and score assertions below.
+  for (nm in grep("_rank$", intersect(names(scop_hvf), names(seurat_hvf)), value = TRUE)) {
+    a <- scop_hvf[[nm]]
+    b <- seurat_hvf[[nm]]
+    bad <- which(xor(is.na(a), is.na(b)) | (!is.na(a) & !is.na(b) & a != b))
+    if (!length(bad)) next
+    score <- sub("_rank$", "_variance.standardized", nm)
+    x <- scop_hvf[[score]]
+    y <- seurat_hvf[[score]]
+    if (is.null(x) || is.null(y)) {
+      cat("VST_DIAG score column missing:", score, "columns:", names(scop_hvf), "\n")
+      x <- y <- rep(NA_real_, nrow(scop_hvf))
+    }
+    top <- function(z) {
+      o <- order(z, decreasing = TRUE, na.last = NA)
+      o[intersect(19:21, seq_along(o))]
+    }
+    k <- sort(unique(c(bad, which(a %in% 19:20 | b %in% 19:20), top(x), top(y))))
+    cat(sprintf(
+      "VST_DIAG column=%s feature=%s differs=%s rank_scop=%s rank_seurat=%s score_scop=%a score_seurat=%a\n",
+      nm, rownames(scop_hvf)[k], k %in% bad, a[k], b[k], x[k], y[k]
+    ), sep = "")
+    cat("VST_DIAG RNG:", RNGkind(), "BLAS:", extSoftVersion()[["BLAS"]], "\n")
+    for (pkg in c("scop", "Seurat", "SeuratObject", "Matrix", "testthat")) {
+      cat("VST_DIAG package:", pkg, as.character(getNamespaceVersion(pkg)),
+          getNamespaceInfo(asNamespace(pkg), "path"), "\n")
+    }
+    vars <- c("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS",
+              "BLIS_NUM_THREADS", "VECLIB_MAXIMUM_THREADS")
+    cat("VST_DIAG threads:", paste(vars, Sys.getenv(vars, unset = "<unset>"), sep = "="), "\n")
+  }
   expect_equal(
     scop_hvf[, numeric_cols, drop = FALSE],
     seurat_hvf[, numeric_cols, drop = FALSE]
