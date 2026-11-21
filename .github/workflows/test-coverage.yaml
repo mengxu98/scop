@@ -8,7 +8,9 @@
 on:
   push:
     branches: ['test/codecov-oidc']
-    paths: ['.github/workflows/test-coverage.yaml']
+    paths:
+      - '.github/workflows/test-coverage.yaml'
+      - 'tests/testthat/test-scop-seurat-consistency.R'
   schedule:
     # 02:00 Monday Asia/Shanghai, expressed in UTC for GitHub Actions.
     - cron: '0 18 * * 0'
