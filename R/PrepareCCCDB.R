@@ -160,10 +160,6 @@ ccc_prepare_celltalk <- function(
     "Homo_sapiens" = "https://raw.githubusercontent.com/ZJUFanLab/CellTalkDB/master/database/human_lr_pair.rds",
     "Mus_musculus" = "https://raw.githubusercontent.com/ZJUFanLab/CellTalkDB/master/database/mouse_lr_pair.rds"
   )
-  celltalk_file <- switch(species,
-    "Homo_sapiens" = "human_lr_pair.rds",
-    "Mus_musculus" = "mouse_lr_pair.rds"
-  )
   source_file <- preparedb_local_source_file(
     data_dir = data_dir,
     db = "CellTalk",
@@ -225,14 +221,6 @@ ccc_prepare_cellchat <- function(
   log_message("Preparing {.pkg CellChat} database", verbose = verbose)
   url <- paste0(
     "https://raw.githubusercontent.com/sqjin/CellChat/master/data/CellChatDB.",
-    switch(species,
-      "Homo_sapiens" = "human.rda",
-      "Mus_musculus" = "mouse.rda",
-      "Danio_rerio" = "zebrafish.rda"
-    )
-  )
-  cellchat_file <- paste0(
-    "CellChatDB.",
     switch(species,
       "Homo_sapiens" = "human.rda",
       "Mus_musculus" = "mouse.rda",

@@ -918,8 +918,15 @@ spatial_dim_coords <- function(
       require_scale = TRUE,
       image_policy = image_policy
     )
-  } else if (!is.finite(raw$transform$scale)) {
-    spatial_image_scale_info(srt[[raw$source$image]], image.scale)
+  } else if (!is.finite(raw$transform$scale) ||
+    !raw$transform$scale_name %in% c(image.scale, "identity")) {
+    scale_info <- spatial_image_scale_info(srt[[raw$source$image]], image.scale)
+    raw$transform$scale <- scale_info$scale
+    raw$transform$scale_name <- scale_info$scale_name
+    raw$source$scale_factor <- scale_info$scale
+    raw$source$scale_name <- scale_info$scale_name
+    attr(raw$data, "spatial_source") <- raw$source
+    attr(raw$data, "spatial_transform") <- raw$transform
   }
   selected_image <- raw$source$image
   out <- spatial_coords_to_display(raw$data, raw$transform)

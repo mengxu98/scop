@@ -83,21 +83,8 @@ RunCSSMap <- function(
     }
   }
   if (is.null(ref_umap)) {
-    ref_umap <- sort(
-      SeuratObject::Reductions(srt_ref)[grep(
-        "umap",
-        SeuratObject::Reductions(srt_ref),
-        ignore.case = TRUE
-      )]
-    )[1]
-    if (length(ref_umap) == 0) {
-      log_message(
-        "Cannot find UMAP reduction in the {.arg srt_ref}",
-        message_type = "error"
-      )
-    } else {
-      log_message("Set {.arg ref_umap} to {.val {ref_umap}}", verbose = verbose)
-    }
+    ref_umap <- mapping_default_umap(srt_ref)
+    log_message("Set {.arg ref_umap} to {.val {ref_umap}}", verbose = verbose)
   }
   projection_method <- match.arg(projection_method)
   if (

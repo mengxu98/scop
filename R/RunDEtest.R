@@ -1723,18 +1723,7 @@ RunDEtestNormalizeDataLayer <- function(object, assay, reason, verbose) {
   )
 }
 
-RunDEtest_limma <- function(
-  count_matrix,
-  condition,
-  condition1 = NULL,
-  condition2 = NULL,
-  only.pos = TRUE,
-  logfc.threshold = 0,
-  p.adjust.method = "bonferroni"
-) {
-  check_r("limma", verbose = FALSE)
-  check_r("edgeR", verbose = FALSE)
-
+detest_two_group_samples <- function(count_matrix, condition, condition1, condition2, dense = FALSE) {
   condition_all <- as.character(condition)
   if (is.null(condition1) || is.null(condition2)) {
     condition_levels <- unique(condition_all)
@@ -1747,19 +1736,66 @@ RunDEtest_limma <- function(
 
   keep <- condition_all %in% c(condition1, condition2)
   count_matrix <- count_matrix[, keep, drop = FALSE]
+  if (dense) count_matrix <- as.matrix(count_matrix)
   condition <- factor(condition_all[keep], levels = c(condition1, condition2))
   if (ncol(count_matrix) < 2 || any(table(condition) < 2)) {
     return(NULL)
   }
+  list(counts = count_matrix, condition = condition, first = condition1, second = condition2)
+}
+
+detest_prepare_two_group <- function(count_matrix, condition, condition1, condition2) {
+  selected <- detest_two_group_samples(count_matrix, condition, condition1, condition2)
+  if (is.null(selected)) {
+    return(NULL)
+  }
+  count_matrix <- selected$counts
+  condition <- selected$condition
+  condition1 <- selected$first
+  condition2 <- selected$second
 
   dge <- edgeR::DGEList(counts = count_matrix)
   keep_features <- edgeR::filterByExpr(dge, group = condition)
   if (!any(keep_features)) {
-    return(data.frame())
+    return(list(dge = NULL))
   }
   dge <- dge[keep_features, , keep.lib.sizes = FALSE]
   dge <- edgeR::calcNormFactors(dge)
   design <- stats::model.matrix(~condition)
+  list(
+    dge = dge,
+    design = design,
+    condition = condition,
+    condition1 = condition1,
+    condition2 = condition2
+  )
+}
+
+RunDEtest_limma <- function(
+  count_matrix,
+  condition,
+  condition1 = NULL,
+  condition2 = NULL,
+  only.pos = TRUE,
+  logfc.threshold = 0,
+  p.adjust.method = "bonferroni"
+) {
+  check_r("limma", verbose = FALSE)
+  check_r("edgeR", verbose = FALSE)
+
+  prepared <- detest_prepare_two_group(count_matrix, condition, condition1, condition2)
+  if (is.null(prepared)) {
+    return(NULL)
+  }
+  if (is.null(prepared$dge)) {
+    return(data.frame())
+  }
+  dge <- prepared$dge
+  design <- prepared$design
+  condition <- prepared$condition
+  condition1 <- prepared$condition1
+  condition2 <- prepared$condition2
+
   v <- limma::voom(dge, design, plot = FALSE)
   fit <- limma::lmFit(v, design)
   fit <- limma::eBayes(fit)
@@ -1813,31 +1849,19 @@ RunDEtest_edgeR <- function(
   }
   check_r("edgeR", verbose = FALSE)
 
-  condition_all <- as.character(condition)
-  if (is.null(condition1) || is.null(condition2)) {
-    condition_levels <- unique(condition_all)
-    if (length(condition_levels) < 2) {
-      return(NULL)
-    }
-    condition1 <- condition1 %||% condition_levels[[1]]
-    condition2 <- condition2 %||% condition_levels[[2]]
-  }
-
-  keep <- condition_all %in% c(condition1, condition2)
-  count_matrix <- count_matrix[, keep, drop = FALSE]
-  condition <- factor(condition_all[keep], levels = c(condition1, condition2))
-  if (ncol(count_matrix) < 2 || any(table(condition) < 2)) {
+  prepared <- detest_prepare_two_group(count_matrix, condition, condition1, condition2)
+  if (is.null(prepared)) {
     return(NULL)
   }
-
-  dge <- edgeR::DGEList(counts = count_matrix)
-  keep_features <- edgeR::filterByExpr(dge, group = condition)
-  if (!any(keep_features)) {
+  if (is.null(prepared$dge)) {
     return(data.frame())
   }
-  dge <- dge[keep_features, , keep.lib.sizes = FALSE]
-  dge <- edgeR::calcNormFactors(dge)
-  design <- stats::model.matrix(~condition)
+  dge <- prepared$dge
+  design <- prepared$design
+  condition <- prepared$condition
+  condition1 <- prepared$condition1
+  condition2 <- prepared$condition2
+
   dge <- edgeR::estimateDisp(dge, design = design)
   fit <- edgeR::glmQLFit(dge, design = design, robust = TRUE)
   qlf <- edgeR::glmQLFTest(fit, coef = ncol(design))
@@ -3971,22 +3995,14 @@ RunDEtest_DESeq2 <- function(
   DESeq <- get_namespace_fun("DESeq2", "DESeq")
   DESeq_results <- get_namespace_fun("DESeq2", "results")
 
-  condition_all <- as.character(condition)
-  if (is.null(condition1) || is.null(condition2)) {
-    condition_levels <- unique(condition_all)
-    if (length(condition_levels) < 2) {
-      return(NULL)
-    }
-    condition1 <- condition1 %||% condition_levels[[1]]
-    condition2 <- condition2 %||% condition_levels[[2]]
-  }
-
-  keep <- condition_all %in% c(condition1, condition2)
-  count_use <- as.matrix(count_matrix[, keep, drop = FALSE])
-  cond_use <- factor(condition_all[keep], levels = c(condition1, condition2))
-  if (ncol(count_use) < 2 || any(table(cond_use) < 2)) {
+  selected <- detest_two_group_samples(count_matrix, condition, condition1, condition2, dense = TRUE)
+  if (is.null(selected)) {
     return(NULL)
   }
+  count_use <- selected$counts
+  cond_use <- selected$condition
+  condition1 <- selected$first
+  condition2 <- selected$second
   count_use <- count_use[rowSums(count_use) > 0, , drop = FALSE]
   if (nrow(count_use) == 0L) {
     return(data.frame())
@@ -4079,22 +4095,14 @@ RunDEtest_dream <- function(
   eBayes <- get_namespace_fun("limma", "eBayes")
   topTable <- get_namespace_fun("limma", "topTable")
 
-  condition_all <- as.character(condition)
-  if (is.null(condition1) || is.null(condition2)) {
-    condition_levels <- unique(condition_all)
-    if (length(condition_levels) < 2) {
-      return(NULL)
-    }
-    condition1 <- condition1 %||% condition_levels[[1]]
-    condition2 <- condition2 %||% condition_levels[[2]]
-  }
-
-  keep <- condition_all %in% c(condition1, condition2)
-  count_use <- as.matrix(count_matrix[, keep, drop = FALSE])
-  cond_use <- factor(condition_all[keep], levels = c(condition1, condition2))
-  if (ncol(count_use) < 2 || any(table(cond_use) < 2)) {
+  selected <- detest_two_group_samples(count_matrix, condition, condition1, condition2, dense = TRUE)
+  if (is.null(selected)) {
     return(NULL)
   }
+  count_use <- selected$counts
+  cond_use <- selected$condition
+  condition1 <- selected$first
+  condition2 <- selected$second
 
   sample_df <- if (is.null(sample_data)) {
     data.frame(row.names = colnames(count_use))

@@ -897,7 +897,7 @@ GSEAPlot <- function(
         )
       plist[[nm]] <- p
     }
-  } else if (plot_type == "network") {
+  } else if (plot_type %in% c("network", "enrichmap")) {
     for (nm in names(res)) {
       res_enrich <- res[[nm]]
       if (is.null(id_use)) {
@@ -923,107 +923,82 @@ GSEAPlot <- function(
         next
       }
       df <- res_enrich[geneSetID_use, , drop = FALSE]
-      df$p.sig <- dplyr::case_when(
-        df[[metric]] > 0.05 ~ "ns  ",
-        df[[metric]] <= 0.05 & df[[metric]] > 0.01 ~ "*   ",
-        df[[metric]] <= 0.01 & df[[metric]] > 0.001 ~ "**  ",
-        df[[metric]] <= 0.001 & df[[metric]] > 0.0001 ~ "*** ",
-        df[[metric]] <= 0.0001 ~ "****"
-      )
-      df[["metric"]] <- enrichment_metric_weight(df[[metric]])
-      df[["Description"]] <- capitalize(df[["Description"]])
-      df[["Description"]] <- stringr::str_wrap(
-        df[["Description"]],
-        width = character_width
-      )
-      df[["Description"]] <- paste0(
-        df[["Description"]],
-        "\n(NES=",
-        round(df[["NES"]], 3),
-        ", ",
-        metric,
-        "=",
-        format(df[[metric]], digits = 3, scientific = TRUE),
-        ", ",
-        df[["p.sig"]],
-        ")"
-      )
-      df[["Description"]] <- factor(
-        df[["Description"]],
-        levels = unique(df[["Description"]])
-      )
-      df[["geneID"]] <- strsplit(df[["core_enrichment"]], "/")
-      df_unnest <- unnest_fun(df, cols = "geneID")
+      if (plot_type == "network") {
+        df$p.sig <- dplyr::case_when(
+          df[[metric]] > 0.05 ~ "ns  ",
+          df[[metric]] <= 0.05 & df[[metric]] > 0.01 ~ "*   ",
+          df[[metric]] <= 0.01 & df[[metric]] > 0.001 ~ "**  ",
+          df[[metric]] <= 0.001 & df[[metric]] > 0.0001 ~ "*** ",
+          df[[metric]] <= 0.0001 ~ "****"
+        )
+        df[["metric"]] <- enrichment_metric_weight(df[[metric]])
+        df[["Description"]] <- capitalize(df[["Description"]])
+        df[["Description"]] <- stringr::str_wrap(
+          df[["Description"]],
+          width = character_width
+        )
+        df[["Description"]] <- paste0(
+          df[["Description"]],
+          "\n(NES=",
+          round(df[["NES"]], 3),
+          ", ",
+          metric,
+          "=",
+          format(df[[metric]], digits = 3, scientific = TRUE),
+          ", ",
+          df[["p.sig"]],
+          ")"
+        )
+        df[["Description"]] <- factor(
+          df[["Description"]],
+          levels = unique(df[["Description"]])
+        )
+        df[["geneID"]] <- strsplit(df[["core_enrichment"]], "/")
+        df_unnest <- unnest_fun(df, cols = "geneID")
 
-      p <- enrichment_gene_network(
-        df, df_unnest, network_layout, network_layoutadjust, network_adjscale,
-        network_adjiter, palette, palcolor, network_blendmode, network_labelsize
-      ) +
-        guides(fill = guide_legend(title = "Term:", byrow = TRUE)) +
-        labs(x = "", y = "") +
-        facet_grid(Database ~ Groups, scales = "free") +
-        apply_plot_theme(theme_use, theme_args) +
-        theme(
-          aspect.ratio = aspect.ratio,
-          legend.position = legend.position,
-          legend.direction = legend.direction
-        )
-      plist[[nm]] <- p
-    }
-  } else if (plot_type == "enrichmap") {
-    for (nm in names(res)) {
-      res_enrich <- res[[nm]]
-      if (is.null(id_use)) {
-        geneSetID_use <- select_gsea_term_ids(
-          result = res_enrich@result,
-          metric = metric,
-          metric_value = metric_value,
-          top_term = topTerm,
-          direction = direction
-        )
-      } else {
-        if (is.list(id_use)) {
-          geneSetID_use <- intersect(
-            res_enrich@result[["ID"]],
-            id_use[[unique(res_enrich@result$Groups)]]
+        p <- enrichment_gene_network(
+          df, df_unnest, network_layout, network_layoutadjust, network_adjscale,
+          network_adjiter, palette, palcolor, network_blendmode, network_labelsize
+        ) +
+          guides(fill = guide_legend(title = "Term:", byrow = TRUE)) +
+          labs(x = "", y = "") +
+          facet_grid(Database ~ Groups, scales = "free") +
+          apply_plot_theme(theme_use, theme_args) +
+          theme(
+            aspect.ratio = aspect.ratio,
+            legend.position = legend.position,
+            legend.direction = legend.direction
           )
-        } else {
-          geneSetID_use <- id_use
-        }
-      }
-      if (length(geneSetID_use) == 0) {
-        plist[[nm]] <- NULL
-        next
-      }
-      df <- res_enrich[geneSetID_use, , drop = FALSE]
-      df[["metric"]] <- enrichment_metric_weight(df[[metric]])
-      df[["Description"]] <- capitalize(df[["Description"]])
-      df[["Description"]] <- stringr::str_wrap(
-        df[["Description"]],
-        width = character_width
-      )
-      df[["Description"]] <- factor(
-        df[["Description"]],
-        levels = unique(df[["Description"]])
-      )
-      df[["Direction"]] <- ifelse(df[["NES"]] > 0, "Pos", "Neg")
-      df[["Direction"]] <- factor(df[["Direction"]], levels = c("Pos", "Neg"))
-      df[["geneID"]] <- strsplit(df[["core_enrichment"]], "/")
-      df[["Count"]] <- sapply(df[["geneID"]], length)
-      rownames(df) <- df[["ID"]]
-
-      p <- enrichment_map_plot(
-        df, enrichmap_layout, enrichmap_cluster, enrichmap_show_keyword,
-        enrichmap_label, enrichmap_nlabel, character_width, words_excluded,
-        enrichmap_mark, enrichmap_labelsize, enrichmap_expand, palette, palcolor
-      ) +
-        facet_grid(Database ~ Groups, scales = "free") +
-        apply_plot_theme(theme_use, theme_args) +
-        theme(
-          aspect.ratio = aspect.ratio,
-          legend.position = legend.position,
-          legend.direction = legend.direction
+      } else {
+        df[["metric"]] <- enrichment_metric_weight(df[[metric]])
+        df[["Description"]] <- capitalize(df[["Description"]])
+        df[["Description"]] <- stringr::str_wrap(
+          df[["Description"]],
+          width = character_width
         )
+        df[["Description"]] <- factor(
+          df[["Description"]],
+          levels = unique(df[["Description"]])
+        )
+        df[["Direction"]] <- ifelse(df[["NES"]] > 0, "Pos", "Neg")
+        df[["Direction"]] <- factor(df[["Direction"]], levels = c("Pos", "Neg"))
+        df[["geneID"]] <- strsplit(df[["core_enrichment"]], "/")
+        df[["Count"]] <- sapply(df[["geneID"]], length)
+        rownames(df) <- df[["ID"]]
+
+        p <- enrichment_map_plot(
+          df, enrichmap_layout, enrichmap_cluster, enrichmap_show_keyword,
+          enrichmap_label, enrichmap_nlabel, character_width, words_excluded,
+          enrichmap_mark, enrichmap_labelsize, enrichmap_expand, palette, palcolor
+        ) +
+          facet_grid(Database ~ Groups, scales = "free") +
+          apply_plot_theme(theme_use, theme_args) +
+          theme(
+            aspect.ratio = aspect.ratio,
+            legend.position = legend.position,
+            legend.direction = legend.direction
+          )
+      }
       plist[[nm]] <- p
     }
   } else if (plot_type == "wordcloud") {

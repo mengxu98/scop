@@ -3196,67 +3196,12 @@ ccc_chord_plot <- function(
   }
   preallocate_height <- min(max(preallocate_height, 0.045), 0.085)
 
-  old_par <- graphics::par(no.readonly = TRUE)
-  circlize::circos.clear()
-  on.exit(try(circlize::circos.clear(), silent = TRUE), add = TRUE)
-  on.exit(try(graphics::par(old_par), silent = TRUE), add = TRUE)
-
-  graphics::par(mar = c(1, 1, if (!is.null(title) || !is.null(subtitle)) 3 else 1, 1))
-  circlize::circos.par(
-    start.degree = 90,
-    cell.padding = c(0, 0, 0, 0),
-    track.margin = c(0.01, 0.01),
-    points.overflow.warning = FALSE
+  ccc_draw_chord(
+    chord_df, grid.col, edge_col, link_alpha = pair_alpha,
+    track_height = preallocate_height, lab.cex = cell_lab_cex,
+    small.gap = small.gap, big.gap = big.gap,
+    title = title, subtitle = subtitle, font.size = font.size
   )
-  circlize::chordDiagram(
-    x = chord_df,
-    order = cell_order,
-    grid.col = grid.col,
-    col = grDevices::adjustcolor(edge_col, alpha.f = pair_alpha),
-    transparency = max(0, min(1, 1 - pair_alpha)),
-    annotationTrack = "grid",
-    annotationTrackHeight = c(0.03),
-    preAllocateTracks = list(track.height = preallocate_height),
-    small.gap = small.gap,
-    big.gap = big.gap,
-    link.sort = TRUE,
-    link.decreasing = FALSE,
-    link.largest.ontop = TRUE,
-    directional = 1,
-    direction.type = c("diffHeight", "arrows"),
-    link.arr.type = "big.arrow",
-    link.border = NA,
-    reduce = 1e-5
-  )
-  circlize::circos.track(
-    track.index = 1,
-    panel.fun = function(x, y) {
-      xlim_i <- circlize::get.cell.meta.data("xlim")
-      ylim_i <- circlize::get.cell.meta.data("ylim")
-      sector_i <- circlize::get.cell.meta.data("sector.index")
-      circlize::circos.text(
-        mean(xlim_i),
-        ylim_i[1],
-        sector_i,
-        facing = "clockwise",
-        niceFacing = TRUE,
-        adj = c(0, 0.5),
-        cex = cell_lab_cex,
-        col = cell_cols[sector_i]
-      )
-    },
-    bg.border = NA
-  )
-
-  if (!is.null(title) || !is.null(subtitle)) {
-    graphics::title(
-      main = title,
-      sub = subtitle,
-      cex.main = font.size / 10 * 1.15,
-      cex.sub = font.size / 10
-    )
-  }
-  grDevices::recordPlot()
 }
 
 ccc_gene_chord_plot <- function(
@@ -3371,6 +3316,27 @@ ccc_gene_chord_plot <- function(
   chord_df <- edge_df[, c("source", "target", "score"), drop = FALSE]
   colnames(chord_df) <- c("source", "target", "prob")
 
+  ccc_draw_chord(
+    chord_df, grid.col, edge_col, link_alpha = link_alpha,
+    track_height = 0.11, lab.cex = lab.cex,
+    small.gap = small.gap, big.gap = big.gap,
+    title = title, subtitle = subtitle, font.size = font.size
+  )
+}
+
+ccc_draw_chord <- function(
+  chord_df,
+  grid_colors,
+  edge_colors,
+  link_alpha,
+  track_height,
+  lab.cex,
+  small.gap,
+  big.gap,
+  title,
+  subtitle,
+  font.size
+) {
   old_par <- graphics::par(no.readonly = TRUE)
   circlize::circos.clear()
   on.exit(try(circlize::circos.clear(), silent = TRUE), add = TRUE)
@@ -3385,13 +3351,13 @@ ccc_gene_chord_plot <- function(
   )
   circlize::chordDiagram(
     x = chord_df,
-    order = node_order,
-    grid.col = grid.col,
-    col = grDevices::adjustcolor(edge_col, alpha.f = link_alpha),
+    order = names(grid_colors),
+    grid.col = grid_colors,
+    col = grDevices::adjustcolor(edge_colors, alpha.f = link_alpha),
     transparency = max(0, min(1, 1 - link_alpha)),
     annotationTrack = "grid",
     annotationTrackHeight = c(0.03),
-    preAllocateTracks = list(track.height = 0.11),
+    preAllocateTracks = list(track.height = track_height),
     small.gap = small.gap,
     big.gap = big.gap,
     link.sort = TRUE,
@@ -3417,7 +3383,7 @@ ccc_gene_chord_plot <- function(
         niceFacing = TRUE,
         adj = c(0, 0.5),
         cex = lab.cex,
-        col = grid.col[sector_i]
+        col = grid_colors[sector_i]
       )
     },
     bg.border = NA

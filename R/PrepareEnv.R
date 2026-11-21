@@ -78,7 +78,6 @@ PrepareEnv <- function(
       add = TRUE
     )
   }
-  components_missing <- missing(components)
   components <- norm_env_components(components)
   modules <- trimws(as.character(unlist(modules, use.names = FALSE)))
   modules <- normalize_env_modules(modules = modules)

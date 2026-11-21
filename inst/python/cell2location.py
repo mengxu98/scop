@@ -7,8 +7,6 @@ content hashes and parameter manifests.
 
 from __future__ import annotations
 
-import argparse
-import hashlib
 import importlib.metadata
 import json
 import os
@@ -16,6 +14,13 @@ import shutil
 import sys
 from pathlib import Path
 from typing import Any
+
+RUNNER_DIR = Path(__file__).resolve().parent
+sys.path.insert(0, str(RUNNER_DIR))
+try:
+    from scop_runner_io import configuration_path, read_json as _read_json, sha256_file as _sha256
+finally:
+    sys.path.pop(0)
 
 sys.path = [
     p for p in sys.path
@@ -36,11 +41,6 @@ except ModuleNotFoundError as e:
     ) from e
 
 
-def _read_json(path: Path) -> dict[str, Any]:
-    with path.open("r", encoding="utf-8") as handle:
-        return json.load(handle)
-
-
 def _write_json(value: dict[str, Any], path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_suffix(path.suffix + ".tmp")
@@ -48,14 +48,6 @@ def _write_json(value: dict[str, Any], path: Path) -> None:
         json.dump(value, handle, indent=2, sort_keys=True)
         handle.write("\n")
     temporary.replace(path)
-
-
-def _sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for block in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(block)
-    return digest.hexdigest()
 
 
 def _normalise_optional_list(value: Any) -> list[str] | None:
@@ -408,10 +400,7 @@ def run(config: dict[str, Any]) -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--config", required=True, type=Path)
-    args = parser.parse_args()
-    run(_read_json(args.config))
+    run(_read_json(configuration_path(__doc__)))
 
 
 if __name__ == "__main__":

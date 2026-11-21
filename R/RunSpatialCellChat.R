@@ -728,18 +728,8 @@ spatialcellchat_run_one <- function(
   nboot,
   seed.use
 ) {
-  seed_was_present <- exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
-  if (seed_was_present) old_seed <- get(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
-  on.exit(
-    {
-      if (seed_was_present) {
-        assign(".Random.seed", old_seed, envir = .GlobalEnv)
-      } else if (exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) {
-        rm(".Random.seed", envir = .GlobalEnv)
-      }
-    },
-    add = TRUE
-  )
+  restore_seed <- rng_seed_restorer()
+  on.exit(restore_seed(), add = TRUE)
   set.seed(as.integer(seed.use))
   chat <- spatialcellchat_call("createSpatialCellChat", list(
     object = expression,

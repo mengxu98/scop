@@ -103,20 +103,21 @@ void bayesprism_sample_dirichlet(
   }
 }
 
-}
+struct BayesPrismGibbsInput {
+  int max_iter;
+  std::vector<unsigned char> keep_flag;
+  int n_kept;
+  const double* phi;
+  std::vector<BayesPrismSampleSpec> samples;
+};
 
-// [[Rcpp::export]]
-List bayesprism_gibbs_initial_cpp(
-  NumericMatrix mixture,
-  NumericMatrix phi,
-  IntegerVector gibbs_idx,
-  double alpha = 1.0,
-  int seed = 123,
-  int cores = 1
+BayesPrismGibbsInput bayesprism_prepare_gibbs(
+  const NumericMatrix& mixture,
+  const NumericMatrix& phi,
+  const IntegerVector& gibbs_idx
 ) {
   const int n_samples = mixture.nrow();
   const int n_genes = mixture.ncol();
-  const int n_states = phi.nrow();
   if (phi.ncol() != n_genes) {
     thisutils::log_message("phi columns must match mixture columns.", "error");
   }
@@ -134,26 +135,51 @@ List bayesprism_gibbs_initial_cpp(
     thisutils::log_message("gibbs_idx must contain positive iteration indices.", "error");
   }
 
-  std::vector<unsigned char> keep_flag(static_cast<std::size_t>(max_iter + 1), 0);
+  BayesPrismGibbsInput input{
+    max_iter,
+    std::vector<unsigned char>(static_cast<std::size_t>(max_iter + 1), 0),
+    0,
+    nullptr,
+    {}
+  };
   for (int i = 0; i < gibbs_idx.size(); ++i) {
     const int idx = gibbs_idx[i];
     if (idx >= 1 && idx <= max_iter) {
-      keep_flag[static_cast<std::size_t>(idx)] = 1;
+      input.keep_flag[static_cast<std::size_t>(idx)] = 1;
     }
   }
-  const int n_kept = std::count(keep_flag.begin(), keep_flag.end(), static_cast<unsigned char>(1));
-  if (n_kept == 0) {
+  input.n_kept = std::count(input.keep_flag.begin(), input.keep_flag.end(), static_cast<unsigned char>(1));
+  if (input.n_kept == 0) {
     thisutils::log_message("No retained Gibbs iterations after applying gibbs_idx.", "error");
   }
 
   const double* mixture_ptr = REAL(mixture);
-  const double* phi_ptr = REAL(phi);
+  input.phi = REAL(phi);
 
-  std::vector<BayesPrismSampleSpec> sample_specs(static_cast<std::size_t>(n_samples));
+  input.samples.resize(static_cast<std::size_t>(n_samples));
   for (int n = 0; n < n_samples; ++n) {
-    sample_specs[static_cast<std::size_t>(n)] =
+    input.samples[static_cast<std::size_t>(n)] =
       bayesprism_prepare_sample(mixture_ptr, n_samples, n_genes, n);
   }
+
+  return input;
+}
+
+}
+
+// [[Rcpp::export]]
+List bayesprism_gibbs_initial_cpp(
+  NumericMatrix mixture,
+  NumericMatrix phi,
+  IntegerVector gibbs_idx,
+  double alpha = 1.0,
+  int seed = 123,
+  int cores = 1
+) {
+  const int n_samples = mixture.nrow();
+  const int n_genes = mixture.ncol();
+  const int n_states = phi.nrow();
+  const BayesPrismGibbsInput input = bayesprism_prepare_gibbs(mixture, phi, gibbs_idx);
 
   NumericVector z_out(static_cast<R_xlen_t>(n_samples) * n_genes * n_states);
   NumericMatrix theta_out(n_samples, n_states);
@@ -168,7 +194,7 @@ List bayesprism_gibbs_initial_cpp(
 
   auto worker_fun = [&](int worker_id) {
     for (int n = worker_id; n < n_samples; n += workers) {
-      const BayesPrismSampleSpec& spec = sample_specs[static_cast<std::size_t>(n)];
+      const BayesPrismSampleSpec& spec = input.samples[static_cast<std::size_t>(n)];
       std::mt19937_64 rng(
         static_cast<std::uint64_t>(seed) + 104729ULL * static_cast<std::uint64_t>(n + 1)
       );
@@ -181,14 +207,14 @@ List bayesprism_gibbs_initial_cpp(
       std::vector<double> z_state_sum(static_cast<std::size_t>(n_states), 0.0);
       std::vector<double> z_sum(static_cast<std::size_t>(n_genes) * n_states, 0.0);
 
-      for (int iter = 1; iter <= max_iter; ++iter) {
+      for (int iter = 1; iter <= input.max_iter; ++iter) {
         std::fill(z_state_sum.begin(), z_state_sum.end(), 0.0);
         for (std::size_t idx = 0; idx < spec.genes.size(); ++idx) {
           const int g = spec.genes[idx];
           const int total = spec.counts[idx];
           double prob_total = 0.0;
           for (int k = 0; k < n_states; ++k) {
-            const double value = phi_ptr[k + n_states * g] * theta[static_cast<std::size_t>(k)];
+            const double value = input.phi[k + n_states * g] * theta[static_cast<std::size_t>(k)];
             probs[static_cast<std::size_t>(k)] = value;
             prob_total += value;
           }
@@ -205,7 +231,7 @@ List bayesprism_gibbs_initial_cpp(
           for (int k = 0; k < n_states; ++k) {
             const double draw = static_cast<double>(z_gene[static_cast<std::size_t>(k)]);
             z_state_sum[static_cast<std::size_t>(k)] += draw;
-            if (keep_flag[static_cast<std::size_t>(iter)]) {
+            if (input.keep_flag[static_cast<std::size_t>(iter)]) {
               z_sum[static_cast<std::size_t>(g) + static_cast<std::size_t>(n_genes) * k] += draw;
             }
           }
@@ -217,7 +243,7 @@ List bayesprism_gibbs_initial_cpp(
         }
         bayesprism_sample_dirichlet(dirichlet_alpha, theta, rng);
 
-        if (keep_flag[static_cast<std::size_t>(iter)]) {
+        if (input.keep_flag[static_cast<std::size_t>(iter)]) {
           for (int k = 0; k < n_states; ++k) {
             const double value = theta[static_cast<std::size_t>(k)];
             theta_sum[static_cast<std::size_t>(k)] += value;
@@ -227,8 +253,8 @@ List bayesprism_gibbs_initial_cpp(
       }
 
       for (int k = 0; k < n_states; ++k) {
-        const double mean = theta_sum[static_cast<std::size_t>(k)] / static_cast<double>(n_kept);
-        const double second = theta_sq_sum[static_cast<std::size_t>(k)] / static_cast<double>(n_kept);
+        const double mean = theta_sum[static_cast<std::size_t>(k)] / static_cast<double>(input.n_kept);
+        const double second = theta_sq_sum[static_cast<std::size_t>(k)] / static_cast<double>(input.n_kept);
         const double variance = std::max(0.0, second - mean * mean);
         theta_ptr[n + n_samples * k] = mean;
         theta_cv_ptr[n + n_samples * k] =
@@ -239,7 +265,7 @@ List bayesprism_gibbs_initial_cpp(
         for (int k = 0; k < n_states; ++k) {
           z_ptr[n + n_samples * g + static_cast<R_xlen_t>(n_samples) * n_genes * k] =
             z_sum[static_cast<std::size_t>(g) + static_cast<std::size_t>(n_genes) * k] /
-            static_cast<double>(n_kept);
+            static_cast<double>(input.n_kept);
         }
       }
     }
@@ -276,43 +302,7 @@ List bayesprism_gibbs_final_cpp(
   const int n_samples = mixture.nrow();
   const int n_genes = mixture.ncol();
   const int n_types = phi.nrow();
-  if (phi.ncol() != n_genes) {
-    thisutils::log_message("phi columns must match mixture columns.", "error");
-  }
-  if (gibbs_idx.size() == 0) {
-    thisutils::log_message("gibbs_idx must contain at least one iteration.", "error");
-  }
-
-  int max_iter = 0;
-  for (int i = 0; i < gibbs_idx.size(); ++i) {
-    if (gibbs_idx[i] > max_iter) {
-      max_iter = gibbs_idx[i];
-    }
-  }
-  if (max_iter < 1) {
-    thisutils::log_message("gibbs_idx must contain positive iteration indices.", "error");
-  }
-
-  std::vector<unsigned char> keep_flag(static_cast<std::size_t>(max_iter + 1), 0);
-  for (int i = 0; i < gibbs_idx.size(); ++i) {
-    const int idx = gibbs_idx[i];
-    if (idx >= 1 && idx <= max_iter) {
-      keep_flag[static_cast<std::size_t>(idx)] = 1;
-    }
-  }
-  const int n_kept = std::count(keep_flag.begin(), keep_flag.end(), static_cast<unsigned char>(1));
-  if (n_kept == 0) {
-    thisutils::log_message("No retained Gibbs iterations after applying gibbs_idx.", "error");
-  }
-
-  const double* mixture_ptr = REAL(mixture);
-  const double* phi_ptr = REAL(phi);
-
-  std::vector<BayesPrismSampleSpec> sample_specs(static_cast<std::size_t>(n_samples));
-  for (int n = 0; n < n_samples; ++n) {
-    sample_specs[static_cast<std::size_t>(n)] =
-      bayesprism_prepare_sample(mixture_ptr, n_samples, n_genes, n);
-  }
+  const BayesPrismGibbsInput input = bayesprism_prepare_gibbs(mixture, phi, gibbs_idx);
 
   NumericMatrix theta_out(n_samples, n_types);
   NumericMatrix theta_cv_out(n_samples, n_types);
@@ -325,7 +315,7 @@ List bayesprism_gibbs_final_cpp(
 
   auto worker_fun = [&](int worker_id) {
     for (int n = worker_id; n < n_samples; n += workers) {
-      const BayesPrismSampleSpec& spec = sample_specs[static_cast<std::size_t>(n)];
+      const BayesPrismSampleSpec& spec = input.samples[static_cast<std::size_t>(n)];
       std::mt19937_64 rng(
         static_cast<std::uint64_t>(seed) + 104729ULL * static_cast<std::uint64_t>(n + 1)
       );
@@ -337,14 +327,14 @@ List bayesprism_gibbs_final_cpp(
       std::vector<int> z_gene(static_cast<std::size_t>(n_types), 0);
       std::vector<double> z_type_sum(static_cast<std::size_t>(n_types), 0.0);
 
-      for (int iter = 1; iter <= max_iter; ++iter) {
+      for (int iter = 1; iter <= input.max_iter; ++iter) {
         std::fill(z_type_sum.begin(), z_type_sum.end(), 0.0);
         for (std::size_t idx = 0; idx < spec.genes.size(); ++idx) {
           const int g = spec.genes[idx];
           const int total = spec.counts[idx];
           double prob_total = 0.0;
           for (int k = 0; k < n_types; ++k) {
-            const double value = phi_ptr[k + n_types * g] * theta[static_cast<std::size_t>(k)];
+            const double value = input.phi[k + n_types * g] * theta[static_cast<std::size_t>(k)];
             probs[static_cast<std::size_t>(k)] = value;
             prob_total += value;
           }
@@ -370,7 +360,7 @@ List bayesprism_gibbs_final_cpp(
         }
         bayesprism_sample_dirichlet(dirichlet_alpha, theta, rng);
 
-        if (keep_flag[static_cast<std::size_t>(iter)]) {
+        if (input.keep_flag[static_cast<std::size_t>(iter)]) {
           for (int k = 0; k < n_types; ++k) {
             const double value = theta[static_cast<std::size_t>(k)];
             theta_sum[static_cast<std::size_t>(k)] += value;
@@ -380,8 +370,8 @@ List bayesprism_gibbs_final_cpp(
       }
 
       for (int k = 0; k < n_types; ++k) {
-        const double mean = theta_sum[static_cast<std::size_t>(k)] / static_cast<double>(n_kept);
-        const double second = theta_sq_sum[static_cast<std::size_t>(k)] / static_cast<double>(n_kept);
+        const double mean = theta_sum[static_cast<std::size_t>(k)] / static_cast<double>(input.n_kept);
+        const double second = theta_sq_sum[static_cast<std::size_t>(k)] / static_cast<double>(input.n_kept);
         const double variance = std::max(0.0, second - mean * mean);
         theta_ptr[n + n_samples * k] = mean;
         theta_cv_ptr[n + n_samples * k] =

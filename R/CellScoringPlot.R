@@ -584,24 +584,7 @@ CellScoringPlot <- function(
     ggplot2::theme(plot.margin = ggplot2::margin(1, 1, 1, 1, "pt"))
 }
 
-scoreplot_group_umap <- function(
-  srt,
-  group.by,
-  groups,
-  reduction,
-  dims,
-  cells,
-  group.palette,
-  group.palcolor,
-  point.size,
-  raster,
-  raster.dpi,
-  title,
-  theme_use,
-  verbose,
-  ...
-) {
-  dots <- list(...)
+scoreplot_umap_context <- function(srt, group.by, group, cells, dots) {
   if (
     length(dots) &&
       (is.null(names(dots)) || any(!nzchar(names(dots))))
@@ -641,15 +624,37 @@ scoreplot_group_umap <- function(
       rep(NA_character_, ncol(plot_srt)),
       colnames(plot_srt)
     )
-    values[cells] <- as.character(groups)
+    values[cells] <- as.character(group)
     plot_srt[[group_column]] <- factor(
       values[colnames(plot_srt)],
-      levels = levels(groups)
+      levels = levels(group)
     )
   }
+  list(object = plot_srt, group.by = group_column)
+}
+
+scoreplot_group_umap <- function(
+  srt,
+  group.by,
+  groups,
+  reduction,
+  dims,
+  cells,
+  group.palette,
+  group.palcolor,
+  point.size,
+  raster,
+  raster.dpi,
+  title,
+  theme_use,
+  verbose,
+  ...
+) {
+  dots <- list(...)
+  prepared <- scoreplot_umap_context(srt, group.by, groups, cells, dots)
   defaults <- list(
-    object = plot_srt,
-    group.by = group_column,
+    object = prepared$object,
+    group.by = prepared$group.by,
     reduction = reduction,
     dims = dims,
     cells = cells,
@@ -711,54 +716,10 @@ scoreplot_umap <- function(
   ...
 ) {
   dots <- list(...)
-  if (
-    length(dots) &&
-      (is.null(names(dots)) || any(!nzchar(names(dots))))
-  ) {
-    log_message(
-      "Arguments passed via {.arg ...} must be named",
-      message_type = "error"
-    )
-  }
-  controlled <- c(
-    "srt",
-    "group.by",
-    "reduction",
-    "dims",
-    "cells",
-    "combine",
-    "legend.position",
-    "pt.size",
-    "raster",
-    "raster.dpi"
-  )
-  conflicts <- intersect(names(dots), controlled)
-  if (length(conflicts)) {
-    log_message(
-      "Arguments passed via {.arg ...} cannot override CellScoringPlot structural arguments: {.val {conflicts}}",
-      message_type = "error"
-    )
-  }
-  plot_srt <- srt
-  group_column <- group.by
-  if (is.null(group_column)) {
-    group_column <- ".scop_scoring_group"
-    while (group_column %in% colnames(plot_srt@meta.data)) {
-      group_column <- paste0(group_column, "_")
-    }
-    values <- stats::setNames(
-      rep(NA_character_, ncol(plot_srt)),
-      colnames(plot_srt)
-    )
-    values[cells] <- as.character(group)
-    plot_srt[[group_column]] <- factor(
-      values[colnames(plot_srt)],
-      levels = levels(group)
-    )
-  }
+  prepared <- scoreplot_umap_context(srt, group.by, group, cells, dots)
   defaults <- list(
-    object = plot_srt,
-    group.by = group_column,
+    object = prepared$object,
+    group.by = prepared$group.by,
     reduction = reduction,
     dims = dims,
     cells = cells,

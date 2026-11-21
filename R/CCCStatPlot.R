@@ -868,7 +868,49 @@ ccc_lr_contribution_plot <- function(
     return(contrib_df)
   }
 
-  plot_list <- lapply(
+  plot_list <- ccc_lr_contribution_panels(
+    contrib_df,
+    single_pathway = length(signaling_use) == 1L,
+    title = title,
+    subtitle = subtitle,
+    link_palette = link_palette,
+    link_palcolor = link_palcolor,
+    legend.position = legend.position,
+    legend.direction = legend.direction,
+    theme_use = theme_use,
+    theme_args = theme_args,
+    font.size = font.size
+  )
+  out <- plot_cc_list(plot_list, combine = combine, nrow = nrow, ncol = ncol)
+  if (inherits(out, "patchwork")) {
+    out <- patchwork_cc(
+      out,
+      title = if (length(signaling_use) > 1L) title %||% info$label else NULL,
+      subtitle = if (length(signaling_use) > 1L) subtitle else NULL,
+      legend.position = legend.position,
+      legend.direction = legend.direction,
+      theme_use = theme_use,
+      theme_args = theme_args,
+      font.size = font.size
+    )
+  }
+  out
+}
+
+ccc_lr_contribution_panels <- function(
+  contrib_df,
+  single_pathway,
+  title,
+  subtitle,
+  link_palette,
+  link_palcolor,
+  legend.position,
+  legend.direction,
+  theme_use,
+  theme_args,
+  font.size
+) {
+  lapply(
     split(contrib_df, contrib_df$signaling),
     function(df_sig) {
       df_sig <- df_sig[
@@ -898,12 +940,12 @@ ccc_lr_contribution_plot <- function(
         ggplot2::labs(x = NULL, y = "Contribution")
       finalize_cc_plot(
         p,
-        title = if (length(signaling_use) == 1L) {
+        title = if (single_pathway) {
           title %||% df_sig$signaling[1]
         } else {
           df_sig$signaling[1]
         },
-        subtitle = if (length(signaling_use) == 1L) subtitle else NULL,
+        subtitle = if (single_pathway) subtitle else NULL,
         legend.position = legend.position,
         legend.direction = legend.direction,
         theme_use = theme_use,
@@ -912,20 +954,6 @@ ccc_lr_contribution_plot <- function(
       )
     }
   )
-  out <- plot_cc_list(plot_list, combine = combine, nrow = nrow, ncol = ncol)
-  if (inherits(out, "patchwork")) {
-    out <- patchwork_cc(
-      out,
-      title = if (length(signaling_use) > 1L) title %||% info$label else NULL,
-      subtitle = if (length(signaling_use) > 1L) subtitle else NULL,
-      legend.position = legend.position,
-      legend.direction = legend.direction,
-      theme_use = theme_use,
-      theme_args = theme_args,
-      font.size = font.size
-    )
-  }
-  out
 }
 
 ccc_cellchat_stat_comparison <- function(
@@ -1318,50 +1346,9 @@ ccc_standardize_generic_ligand_target <- function(df) {
   if (is.null(df) || nrow(df) == 0L) {
     return(data.frame())
   }
-  df <- rename_by_candidates(
-    df,
-    "ligand",
-    c("ligand", "from", "test_ligand", "ligand_oi", "ligand_source")
-  )
-  df <- rename_by_candidates(
-    df,
-    "target",
-    c("target", "to", "gene", "target_gene", "target_genes", "gene_oi")
-  )
-  df <- rename_by_candidates(
-    df,
-    "sender",
-    c("sender", "sender_celltype", "celltype_sender", "source_celltype")
-  )
-  df <- rename_by_candidates(
-    df,
-    "receiver",
-    c("receiver", "receiver_celltype", "celltype_receiver", "target_celltype")
-  )
-  df <- rename_by_candidates(
-    df,
-    "weight",
-    c(
-      "weight",
-      "score",
-      "regulatory_potential",
-      "pearson",
-      "aupr_corrected",
-      "aupr",
-      "activity",
-      "prioritization_score"
-    )
-  )
+  df <- ccc_ligand_target_columns(df)
   if (!"weight" %in% colnames(df)) {
-    numeric_cols <- setdiff(
-      colnames(df)[vapply(df, is.numeric, logical(1))],
-      c("ligand", "target")
-    )
-    if (length(numeric_cols) > 0L) {
-      colnames(df)[match(numeric_cols[1], colnames(df))] <- "weight"
-    } else {
-      df$weight <- 1
-    }
+    df$weight <- 1
   }
   if (!"ligand" %in% colnames(df)) {
     df$ligand <- NA_character_
@@ -1506,49 +1493,18 @@ ccc_generic_lr_contribution_plot <- function(
     return(contrib_df)
   }
 
-  plot_list <- lapply(
-    split(contrib_df, contrib_df$signaling),
-    function(df_sig) {
-      df_sig <- df_sig[
-        order(df_sig$contribution, decreasing = TRUE), ,
-        drop = FALSE
-      ]
-      df_sig$interaction <- factor(
-        df_sig$interaction,
-        levels = rev(unique(df_sig$interaction))
-      )
-      cols <- palette_colors(
-        unique(as.character(df_sig$interaction)),
-        palette = link_palette,
-        palcolor = link_palcolor
-      )
-      p <- ggplot2::ggplot(
-        df_sig,
-        ggplot2::aes(x = interaction, y = contribution, fill = interaction)
-      ) +
-        ggplot2::geom_col(width = 0.75, show.legend = FALSE) +
-        ggplot2::coord_flip() +
-        ggplot2::scale_fill_manual(values = cols, drop = FALSE) +
-        ggplot2::scale_y_continuous(
-          labels = scales::label_percent(accuracy = 1),
-          expand = ggplot2::expansion(mult = c(0, 0.05))
-        ) +
-        ggplot2::labs(x = NULL, y = "Contribution")
-      finalize_cc_plot(
-        p,
-        title = if (length(signaling_use) == 1L) {
-          title %||% df_sig$signaling[1]
-        } else {
-          df_sig$signaling[1]
-        },
-        subtitle = if (length(signaling_use) == 1L) subtitle else NULL,
-        legend.position = legend.position,
-        legend.direction = legend.direction,
-        theme_use = theme_use,
-        theme_args = theme_args,
-        font.size = font.size
-      )
-    }
+  plot_list <- ccc_lr_contribution_panels(
+    contrib_df,
+    single_pathway = length(signaling_use) == 1L,
+    title = title,
+    subtitle = subtitle,
+    link_palette = link_palette,
+    link_palcolor = link_palcolor,
+    legend.position = legend.position,
+    legend.direction = legend.direction,
+    theme_use = theme_use,
+    theme_args = theme_args,
+    font.size = font.size
   )
 
   plot_cc_list(plot_list, combine = combine, nrow = nrow, ncol = ncol)

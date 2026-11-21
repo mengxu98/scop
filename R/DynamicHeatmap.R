@@ -499,29 +499,12 @@ DynamicHeatmap <- function(
   }
 
   if (!is.null(cell_annotation)) {
-    if (length(cell_annotation_palette) == 1) {
-      cell_annotation_palette <- rep(
-        cell_annotation_palette,
-        length(cell_annotation)
-      )
-    }
-    if (length(cell_annotation_palcolor) == 1) {
-      cell_annotation_palcolor <- rep(
-        cell_annotation_palcolor,
-        length(cell_annotation)
-      )
-    }
-    npal <- unique(c(
-      length(cell_annotation_palette),
-      length(cell_annotation_palcolor),
-      length(cell_annotation)
-    ))
-    if (length(npal[npal != 0]) > 1) {
-      log_message(
-        "cell_annotation_palette and cell_annotation_palcolor must be the same length as cell_annotation",
-        message_type = "error"
-      )
-    }
+    colors <- heatmap_annotation_palettes(
+      cell_annotation, cell_annotation_palette, cell_annotation_palcolor,
+      "cell_annotation_palette and cell_annotation_palcolor must be the same length as cell_annotation"
+    )
+    cell_annotation_palette <- colors$palette
+    cell_annotation_palcolor <- colors$palcolor
     if (
       any(
         !cell_annotation %in%
@@ -543,29 +526,12 @@ DynamicHeatmap <- function(
   }
 
   if (!is.null(feature_annotation)) {
-    if (length(feature_annotation_palette) == 1) {
-      feature_annotation_palette <- rep(
-        feature_annotation_palette,
-        length(feature_annotation)
-      )
-    }
-    if (length(feature_annotation_palcolor) == 1) {
-      feature_annotation_palcolor <- rep(
-        feature_annotation_palcolor,
-        length(feature_annotation)
-      )
-    }
-    npal <- unique(c(
-      length(feature_annotation_palette),
-      length(feature_annotation_palcolor),
-      length(feature_annotation)
-    ))
-    if (length(npal[npal != 0]) > 1) {
-      log_message(
-        "feature_annotation_palette and feature_annotation_palcolor must be the same length as feature_annotation",
-        message_type = "error"
-      )
-    }
+    colors <- heatmap_annotation_palettes(
+      feature_annotation, feature_annotation_palette, feature_annotation_palcolor,
+      "feature_annotation_palette and feature_annotation_palcolor must be the same length as feature_annotation"
+    )
+    feature_annotation_palette <- colors$palette
+    feature_annotation_palcolor <- colors$palcolor
     srt_assay_features <- GetFeaturesData(srt@assays[[assay]])
     if (
       any(!feature_annotation %in% colnames(srt_assay_features))
@@ -587,29 +553,12 @@ DynamicHeatmap <- function(
   }
 
   if (!is.null(separate_annotation)) {
-    if (length(separate_annotation_palette) == 1) {
-      separate_annotation_palette <- rep(
-        separate_annotation_palette,
-        length(separate_annotation)
-      )
-    }
-    if (length(separate_annotation_palcolor) == 1) {
-      separate_annotation_palcolor <- rep(
-        separate_annotation_palcolor,
-        length(separate_annotation)
-      )
-    }
-    npal <- unique(c(
-      length(separate_annotation_palette),
-      length(separate_annotation_palcolor),
-      length(separate_annotation)
-    ))
-    if (length(npal[npal != 0]) > 1) {
-      log_message(
-        "separate_annotation_palette and separate_annotation_palcolor must be the same length as separate_annotation",
-        message_type = "error"
-      )
-    }
+    colors <- heatmap_annotation_palettes(
+      separate_annotation, separate_annotation_palette, separate_annotation_palcolor,
+      "separate_annotation_palette and separate_annotation_palcolor must be the same length as separate_annotation"
+    )
+    separate_annotation_palette <- colors$palette
+    separate_annotation_palcolor <- colors$palcolor
     if (
       any(
         !unique(unlist(separate_annotation)) %in%
@@ -1314,20 +1263,13 @@ DynamicHeatmap <- function(
             which = ifelse(flip, "row", "column"),
             show_name = l == lineages[1]
           )
-          anno_args <- c(
-            ha_cell,
+          ha_top <- thisplot::build_heatmap_annotation(
+            annotations = ha_cell,
             which = ifelse(flip, "row", "column"),
             show_annotation_name = l == lineages[1],
-            annotation_name_side = ifelse(flip, "top", "left")
+            annotation_name_side = ifelse(flip, "top", "left"),
+            params = separate_annotation_params
           )
-          anno_args <- c(
-            anno_args,
-            separate_annotation_params[setdiff(
-              names(separate_annotation_params),
-              names(anno_args)
-            )]
-          )
-          ha_top <- do.call(get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation"), args = anno_args)
           if (is.null(ha_top_list[[l]])) {
             ha_top_list[[l]] <- ha_top
           } else {
@@ -1392,20 +1334,13 @@ DynamicHeatmap <- function(
             which = ifelse(flip, "row", "column"),
             show_name = l == lineages[1]
           )
-          anno_args <- c(
-            ha_cell,
+          ha_top <- thisplot::build_heatmap_annotation(
+            annotations = ha_cell,
             which = ifelse(flip, "row", "column"),
             show_annotation_name = l == lineages[1],
-            annotation_name_side = ifelse(flip, "top", "left")
+            annotation_name_side = ifelse(flip, "top", "left"),
+            params = separate_annotation_params
           )
-          anno_args <- c(
-            anno_args,
-            separate_annotation_params[setdiff(
-              names(separate_annotation_params),
-              names(anno_args)
-            )]
-          )
-          ha_top <- do.call(get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation"), args = anno_args)
           if (is.null(ha_top_list[[l]])) {
             ha_top_list[[l]] <- ha_top
           } else {
@@ -1440,75 +1375,24 @@ DynamicHeatmap <- function(
         )
       } else {
         if (split_method == "mfuzz") {
-          check_r("e1071", verbose = FALSE)
-          mat_split_tmp <- mat_split
-          colnames(mat_split_tmp) <- make.unique(colnames(mat_split_tmp))
-          mat_split_tmp <- standardise(mat_split_tmp)
-          min_fuzzification <- mestimate(mat_split_tmp)
-          if (is.null(fuzzification)) {
-            fuzzification <- min_fuzzification + 0.1
-          } else {
-            if (fuzzification <= min_fuzzification) {
+          row_split <- feature_split <- heatmap_fuzzy_feature_clusters(
+            mat_split, n_split, fuzzification, function(min_fuzzification) {
               log_message(
                 "fuzzification value is samller than estimated:",
                 round(min_fuzzification, 2),
                 message_type = "warning"
               )
             }
+          )
+        } else {
+          values <- mat_split
+          if (split_method %in% c("kmeans-peaktime", "hclust-peaktime")) {
+            values <- feature_metadata[rownames(mat_split), order_by]
+            names(values) <- rownames(mat_split)
           }
-          cl <- e1071::cmeans(
-            mat_split_tmp,
-            centers = n_split,
-            method = "cmeans",
-            m = fuzzification
+          row_split <- feature_split <- heatmap_hard_feature_clusters(
+            values, sub("-peaktime$", "", split_method), n_split
           )
-          if (length(cl$cluster) == 0) {
-            log_message(
-              "Clustering with mfuzz failed (fuzzification=",
-              round(fuzzification, 2),
-              "). Please set a larger fuzzification parameter manually.",
-              message_type = "error"
-            )
-          }
-          row_split <- feature_split <- cl$cluster
-        }
-        if (split_method == "kmeans") {
-          km <- stats::kmeans(
-            mat_split,
-            centers = n_split,
-            iter.max = 1e4,
-            nstart = 20
-          )
-          row_split <- feature_split <- km$cluster
-        }
-        if (split_method == "kmeans-peaktime") {
-          feature_y <- feature_metadata[rownames(mat_split), order_by]
-          names(feature_y) <- rownames(mat_split)
-          km <- stats::kmeans(
-            feature_y,
-            centers = n_split,
-            iter.max = 1e4,
-            nstart = 20
-          )
-          row_split <- feature_split <- km$cluster
-        }
-        if (split_method == "hclust") {
-          hc <- stats::hclust(
-            stats::as.dist(
-              proxyC::dist(mat_split)
-            )
-          )
-          row_split <- feature_split <- stats::cutree(hc, k = n_split)
-        }
-        if (split_method == "hclust-peaktime") {
-          feature_y <- feature_metadata[rownames(mat_split), order_by]
-          names(feature_y) <- rownames(mat_split)
-          hc <- stats::hclust(
-            stats::as.dist(
-              proxyC::dist(feature_y)
-            )
-          )
-          row_split <- feature_split <- stats::cutree(hc, k = n_split)
         }
       }
       df <- data.frame(
@@ -1516,26 +1400,11 @@ DynamicHeatmap <- function(
         order_by = feature_metadata[names(row_split), order_by]
       )
       df_order <- stats::aggregate(df, by = list(row_split), FUN = mean)
-      df_order <- df_order[
-        order(df_order[["order_by"]], decreasing = decreasing), ,
-        drop = FALSE
-      ]
-      if (!is.null(split_order)) {
-        df_order <- df_order[split_order, , drop = FALSE]
-      }
-      split_levels <- c()
-      for (i in seq_len(nrow(df_order))) {
-        raw_nm <- df_order[i, "row_split"]
-        feature_split[feature_split == raw_nm] <- paste0("C", i)
-        level <- paste0("C", i, "(", sum(row_split == raw_nm), ")")
-        row_split[row_split == raw_nm] <- level
-        split_levels <- c(split_levels, level)
-      }
-      row_split_raw <- row_split <- factor(row_split, levels = split_levels)
-      feature_split <- factor(
-        feature_split,
-        levels = paste0("C", seq_len(nrow(df_order)))
+      ordered_splits <- heatmap_order_feature_splits(
+        df_order, row_split, feature_split, split_order, decreasing
       )
+      row_split_raw <- row_split <- ordered_splits$row_split
+      feature_split <- ordered_splits$feature_split
     }
   } else {
     row_split_raw <- row_split <- feature_split <- feature_split[row.names(mat)]
@@ -1938,8 +1807,6 @@ DynamicHeatmap <- function(
     legend_list = lgd,
     flip = flip
   )
-  width_sum <- rendersize[["width_sum"]]
-  height_sum <- rendersize[["height_sum"]]
   pseudotime_slices <- 1L
   if (!is.null(row_split)) {
     pseudotime_slices <- if (length(row_split) == 1L && is.numeric(row_split)) {
@@ -1949,221 +1816,80 @@ DynamicHeatmap <- function(
     }
   }
 
-  if (isTRUE(fix)) {
-    fixsize_env <- new.env(parent = emptyenv())
-    invisible(grid::grid.grabExpr({
-      fixsize_env[["value"]] <- heatmap_fixsize(
-        width = width,
-        width_sum = width_sum,
-        height = height,
-        height_sum = height_sum,
-        units = units,
-        ht_list = ht_list,
-        legend_list = lgd
+  render_units <- heatmap_render_units(
+    rendersize, fix, width, height, units, ht_list, lgd
+  )
+
+  g_tree <- heatmap_capture_grob(
+    render_units,
+    {
+      get_namespace_fun("ComplexHeatmap", "draw")(ht_list,
+        annotation_legend_list = lgd,
+        annotation_legend_side = legend.position
       )
-    }))
-    fixsize <- fixsize_env[["value"]]
-    rm(fixsize_env)
-    ht_width <- fixsize[["ht_width"]]
-    ht_height <- fixsize[["ht_height"]]
-
-    g_tree <- grid::grid.grabExpr(
-      {
-        get_namespace_fun("ComplexHeatmap", "draw")(ht_list,
-          annotation_legend_list = lgd,
-          annotation_legend_side = legend.position
-        )
-        dynamic_heatmap_decorate_borders(
-          cell_annotation_names = c("Pseudotime", cell_annotation),
-          cell_annotation_border = cell_annotation_border,
-          cell_annotation_border_color = cell_annotation_border_color,
-          cell_annotation_border_size = cell_annotation_border_size,
-          feature_annotation_names = c(
-            "features_split",
-            if (length(lineages) > 1) lineages else NULL,
-            feature_annotation
-          ),
-          feature_annotation_border = feature_annotation_border,
-          feature_annotation_border_color = feature_annotation_border_color,
-          feature_annotation_border_size = feature_annotation_border_size
-        )
-        for (enrich in db) {
-          enrich_anno <- names(ha_right)[grep(
-            paste0("_split_", enrich),
-            names(ha_right)
-          )]
-          if (length(enrich_anno) > 0) {
-            for (enrich_anno_element in enrich_anno) {
-              enrich_obj <- strsplit(enrich_anno_element, "_split_")[[1]][1]
-              get_namespace_fun("ComplexHeatmap", "decorate_annotation")(
-                enrich_anno_element,
-                slice = 1, {
-                  grid::grid.text(
-                    paste0(enrich, " (", enrich_obj, ")"),
-                    x = grid::unit(1, "npc"),
-                    y = grid::unit(1, "npc") + grid::unit(2.5, "mm"),
-                    just = c("left", "bottom")
-                  )
-              })
-            }
-          }
-        }
-        if (is.numeric(pseudotime_label)) {
-          for (n in seq_along(pseudotime_label)) {
-            pse <- pseudotime_label[n]
-            col <- pseudotime_label_color[n]
-            lty <- pseudotime_label_linetype[n]
-            lwd <- pseudotime_label_linewidth[n]
-            for (l in lineages) {
-              for (slice in pseudotime_slices) {
-                get_namespace_fun("ComplexHeatmap", "decorate_heatmap_body")(
-                  l,
-                  {
-                    pseudotime <- cell_metadata[
-                      dynamic_heatmap_lineage_cells(
-                        cell_order_list[[l]],
-                        l,
-                        available = rownames(cell_metadata)
-                      ),
-                      l
-                    ]
+      dynamic_heatmap_decorate_borders(
+        cell_annotation_names = c("Pseudotime", cell_annotation),
+        cell_annotation_border = cell_annotation_border,
+        cell_annotation_border_color = cell_annotation_border_color,
+        cell_annotation_border_size = cell_annotation_border_size,
+        feature_annotation_names = c(
+          "features_split",
+          if (length(lineages) > 1) lineages else NULL,
+          feature_annotation
+        ),
+        feature_annotation_border = feature_annotation_border,
+        feature_annotation_border_color = feature_annotation_border_color,
+        feature_annotation_border_size = feature_annotation_border_size
+      )
+      heatmap_decorate_enrichment(ha_right, db)
+      if (is.numeric(pseudotime_label)) {
+        for (n in seq_along(pseudotime_label)) {
+          pse <- pseudotime_label[n]
+          col <- pseudotime_label_color[n]
+          lty <- pseudotime_label_linetype[n]
+          lwd <- pseudotime_label_linewidth[n]
+          for (l in lineages) {
+            for (slice in pseudotime_slices) {
+              get_namespace_fun("ComplexHeatmap", "decorate_heatmap_body")(
+                l,
+                {
+                  pseudotime <- cell_metadata[
+                    dynamic_heatmap_lineage_cells(
+                      cell_order_list[[l]],
+                      l,
+                      available = rownames(cell_metadata)
+                    ),
+                    l
+                  ]
+                  i <- which.min(abs(pseudotime - pse))
+                  if (flip) {
+                    x <- 1 - (i / length(pseudotime))
+                    grid::grid.lines(
+                      c(0, 1),
+                      c(x, x),
+                      gp = grid::gpar(lty = lty, lwd = lwd, col = col)
+                    )
+                  } else {
                     i <- which.min(abs(pseudotime - pse))
-                    if (flip) {
-                      x <- 1 - (i / length(pseudotime))
-                      grid::grid.lines(
-                        c(0, 1),
-                        c(x, x),
-                        gp = grid::gpar(lty = lty, lwd = lwd, col = col)
-                      )
-                    } else {
-                      i <- which.min(abs(pseudotime - pse))
-                      x <- i / length(pseudotime)
-                      grid::grid.lines(
-                        c(x, x),
-                        c(0, 1),
-                        gp = grid::gpar(lty = lty, lwd = lwd, col = col)
-                      )
-                    }
-                  },
-                  row_slice = ifelse(flip, 1, slice),
-                  column_slice = ifelse(flip, slice, 1)
-                )
-              }
+                    x <- i / length(pseudotime)
+                    grid::grid.lines(
+                      c(x, x),
+                      c(0, 1),
+                      gp = grid::gpar(lty = lty, lwd = lwd, col = col)
+                    )
+                  }
+                },
+                row_slice = ifelse(flip, 1, slice),
+                column_slice = ifelse(flip, slice, 1)
+              )
             }
           }
         }
-      },
-      width = ht_width,
-      height = ht_height,
-      wrap = TRUE,
-      wrap.grobs = TRUE
-    )
-  } else {
-    ht_width <- grid::unit(width_sum, units = units)
-    ht_height <- grid::unit(height_sum, units = units)
-    g_tree <- grid::grid.grabExpr(
-      {
-        get_namespace_fun("ComplexHeatmap", "draw")(ht_list,
-          annotation_legend_list = lgd,
-          annotation_legend_side = legend.position
-        )
-        dynamic_heatmap_decorate_borders(
-          cell_annotation_names = c("Pseudotime", cell_annotation),
-          cell_annotation_border = cell_annotation_border,
-          cell_annotation_border_color = cell_annotation_border_color,
-          cell_annotation_border_size = cell_annotation_border_size,
-          feature_annotation_names = c(
-            "features_split",
-            if (length(lineages) > 1) lineages else NULL,
-            feature_annotation
-          ),
-          feature_annotation_border = feature_annotation_border,
-          feature_annotation_border_color = feature_annotation_border_color,
-          feature_annotation_border_size = feature_annotation_border_size
-        )
-        for (enrich in db) {
-          enrich_anno <- names(ha_right)[grep(
-            paste0("_split_", enrich),
-            names(ha_right)
-          )]
-          if (length(enrich_anno) > 0) {
-            for (enrich_anno_element in enrich_anno) {
-              enrich_obj <- strsplit(enrich_anno_element, "_split_")[[1]][1]
-              get_namespace_fun("ComplexHeatmap", "decorate_annotation")(
-                enrich_anno_element,
-                slice = 1, {
-                  grid::grid.text(
-                    paste0(enrich, " (", enrich_obj, ")"),
-                    x = grid::unit(1, "npc"),
-                    y = grid::unit(1, "npc") + grid::unit(2.5, "mm"),
-                    just = c("left", "bottom")
-                  )
-              })
-            }
-          }
-        }
-        if (is.numeric(pseudotime_label)) {
-          for (n in seq_along(pseudotime_label)) {
-            pse <- pseudotime_label[n]
-            col <- pseudotime_label_color[n]
-            lty <- pseudotime_label_linetype[n]
-            lwd <- pseudotime_label_linewidth[n]
-            for (l in lineages) {
-              for (slice in pseudotime_slices) {
-                get_namespace_fun("ComplexHeatmap", "decorate_heatmap_body")(
-                  l,
-                  {
-                    pseudotime <- cell_metadata[
-                      dynamic_heatmap_lineage_cells(
-                        cell_order_list[[l]],
-                        l,
-                        available = rownames(cell_metadata)
-                      ),
-                      l
-                    ]
-                    i <- which.min(abs(pseudotime - pse))
-                    if (flip) {
-                      x <- 1 - (i / length(pseudotime))
-                      grid::grid.lines(
-                        c(0, 1),
-                        c(x, x),
-                        gp = grid::gpar(lty = lty, lwd = lwd, col = col)
-                      )
-                    } else {
-                      i <- which.min(abs(pseudotime - pse))
-                      x <- i / length(pseudotime)
-                      grid::grid.lines(
-                        c(x, x),
-                        c(0, 1),
-                        gp = grid::gpar(lty = lty, lwd = lwd, col = col)
-                      )
-                    }
-                  },
-                  row_slice = ifelse(flip, 1, slice),
-                  column_slice = ifelse(flip, slice, 1)
-                )
-              }
-            }
-          }
-        }
-      },
-      width = ht_width,
-      height = ht_height,
-      wrap = TRUE,
-      wrap.grobs = TRUE
-    )
-  }
+      }
+    }
+  )
 
-  if (isTRUE(fix)) {
-    p <- panel_fix_overall(
-      g_tree,
-      width = as.numeric(ht_width),
-      height = as.numeric(ht_height),
-      units = units
-    )
-  } else {
-    p <- patchwork::wrap_plots(g_tree)
-  }
+  p <- heatmap_wrap_grob(g_tree, render_units, units, fix)
 
   return(
     list(

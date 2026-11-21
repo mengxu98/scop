@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import argparse
 from contextlib import contextmanager
 import hashlib
 import importlib
@@ -18,6 +17,11 @@ from pathlib import Path
 from typing import Any
 
 RUNNER_DIR = Path(__file__).resolve().parent
+sys.path.insert(0, str(RUNNER_DIR))
+try:
+    from scop_runner_io import configuration_path, read_json as _read_json, sha256_file as _sha256
+finally:
+    sys.path.pop(0)
 sys.path = [
     entry
     for entry in sys.path
@@ -27,7 +31,6 @@ sys.path = [
 import anndata as ad
 import numpy as np
 import pandas as pd
-from pathlib import Path
 
 try:
     from log_message import log_message
@@ -53,11 +56,6 @@ def _load_cell2fate_backend():
             message_type="error",
         )
     return backend, utilities
-
-
-def _read_json(path: Path) -> dict[str, Any]:
-    with path.open("r", encoding="utf-8") as handle:
-        return json.load(handle)
 
 
 def _write_json(value: dict[str, Any], path: Path) -> None:
@@ -116,14 +114,6 @@ def _assert_external_lock(result_dir: Path, token: Any) -> None:
         log_message("Cell2fate external result lock is missing", message_type="error")
     if observed != token:
         log_message("Cell2fate external result lock owner changed", message_type="error")
-
-
-def _sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for block in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(block)
-    return digest.hexdigest()
 
 
 def _versions() -> dict[str, str]:
@@ -747,10 +737,7 @@ def _run_locked(config: dict[str, Any], lock_token: str) -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--config", required=True)
-    args = parser.parse_args()
-    run(_read_json(Path(args.config)))
+    run(_read_json(configuration_path()))
 
 
 if __name__ == "__main__":

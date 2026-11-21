@@ -324,35 +324,10 @@ RunGSVA <- function(
       "Create {.val Combined} database ...",
       verbose = verbose
     )
-    TERM2GENE <- do.call(
-      rbind,
-      lapply(
-        db_list[[species]],
-        function(x) x[["TERM2GENE"]][, c("Term", IDtype)]
-      )
-    )
-    TERM2NAME <- do.call(
-      rbind,
-      lapply(names(db_list[[species]]), function(x) {
-        db_list[[species]][[x]][["TERM2NAME"]][["Name"]] <- paste0(
-          db_list[[species]][[x]][["TERM2NAME"]][["Name"]],
-          " [",
-          x,
-          "]"
-        )
-        db_list[[species]][[x]][["TERM2NAME"]][, c("Term", "Name")]
-      })
-    )
-    version <- unlist(lapply(
-      db_list[[species]],
-      function(x) as.character(x[["version"]])
-    ))
-    version <- paste0(names(version), ":", version, collapse = ";")
     db <- "Combined"
-    db_list[[species]][[db]] <- list()
-    db_list[[species]][[db]][["TERM2GENE"]] <- unique(TERM2GENE)
-    db_list[[species]][[db]][["TERM2NAME"]] <- unique(TERM2NAME)
-    db_list[[species]][[db]][["version"]] <- unique(version)
+    db_list[[species]][[db]] <- combine_annotation_databases(
+      db_list[[species]], IDtype
+    )
   }
 
   if (!single_cell_mode) {

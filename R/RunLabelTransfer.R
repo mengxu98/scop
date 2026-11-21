@@ -306,18 +306,8 @@ atac_transfer_labels <- function(
     )
   }
 
-  seed_exists <- exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
-  old_seed <- if (seed_exists) get(".Random.seed", envir = .GlobalEnv, inherits = FALSE) else NULL
-  on.exit(
-    {
-      if (seed_exists) {
-        assign(".Random.seed", old_seed, envir = .GlobalEnv)
-      } else if (exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) {
-        rm(".Random.seed", envir = .GlobalEnv)
-      }
-    },
-    add = TRUE
-  )
+  restore_seed <- rng_seed_restorer()
+  on.exit(restore_seed(), add = TRUE)
   reference_assay <- reference_assay %||% SeuratObject::DefaultAssay(reference)
   features <- features %||% SeuratObject::VariableFeatures(reference, assay = reference_assay)
   weight_reduction <- atac_weight_reduction(

@@ -4,7 +4,6 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
-#include <numeric>
 #include <vector>
 
 using namespace Rcpp;
@@ -65,14 +64,7 @@ DgcMatrixView dgc_view(S4 x) {
   return out;
 }
 
-std::vector<int> selected_gene_indices(
-    const NumericMatrix& ref,
-    const IntegerVector& labels,
-    int n_labels,
-    int n_top,
-    int additional_per_label) {
-  const int n_gene = ref.nrow();
-  const int n_cell = ref.ncol();
+std::vector<int> scibet_label_counts(const IntegerVector& labels, int n_cell, int n_labels) {
   std::vector<int> label_n(n_labels, 0);
   for (int cell = 0; cell < n_cell; ++cell) {
     const int lab = labels[cell] - 1;
@@ -80,111 +72,31 @@ std::vector<int> selected_gene_indices(
       label_n[lab]++;
     }
   }
-
-  std::vector<double> type_mean(n_gene * n_labels, 0.0);
-  std::vector<ScoreIndex> scores;
-  scores.reserve(n_gene);
-  for (int gene = 0; gene < n_gene; ++gene) {
-    double mean_sum = 0.0;
-    double log_sum = 0.0;
-    for (int cell = 0; cell < n_cell; ++cell) {
-      const int lab = labels[cell] - 1;
-      if (lab < 0 || lab >= n_labels) {
-        continue;
-      }
-      double value = ref(gene, cell);
-      if (R_finite(value) && value > 0.0) {
-        type_mean[gene * n_labels + lab] += value;
-      }
-    }
-    for (int lab = 0; lab < n_labels; ++lab) {
-      double mean = 0.0;
-      if (label_n[lab] > 0) {
-        mean = type_mean[gene * n_labels + lab] / label_n[lab];
-      }
-      type_mean[gene * n_labels + lab] = mean;
-      mean_sum += mean;
-      log_sum += std::log(mean + 1.0);
-    }
-    const double score = std::log(mean_sum / n_labels + 1.0) * n_labels - log_sum;
-    scores.push_back({score, gene});
-  }
-
-  std::vector<int> selected;
-  const int n_keep = std::min(std::max(n_top, 0), n_gene);
-  selected.reserve(n_keep + std::max(0, additional_per_label) * n_labels);
-  keep_top_scores(scores, n_keep);
-  for (int i = 0; i < static_cast<int>(scores.size()); ++i) {
-    selected.push_back(scores[i].index);
-  }
-
-  if (additional_per_label > 0) {
-    for (int lab = 0; lab < n_labels; ++lab) {
-      std::vector<ScoreIndex> means;
-      means.reserve(n_gene);
-      for (int gene = 0; gene < n_gene; ++gene) {
-        means.push_back({type_mean[gene * n_labels + lab], gene});
-      }
-      const int add_keep = std::min(additional_per_label, n_gene);
-      keep_top_scores(means, add_keep);
-      for (int i = 0; i < static_cast<int>(means.size()); ++i) {
-        selected.push_back(means[i].index);
-      }
-    }
-  }
-
-  return unique_sorted_indices(selected);
+  return label_n;
 }
 
-std::vector<int> selected_gene_indices_sparse(
-    const DgcMatrixView& ref,
-    const IntegerVector& labels,
+double scibet_gene_score(double* gene_counts, const std::vector<int>& label_n, int n_labels) {
+  double mean_sum = 0.0;
+  double log_sum = 0.0;
+  for (int lab = 0; lab < n_labels; ++lab) {
+    double mean = 0.0;
+    if (label_n[lab] > 0) {
+      mean = gene_counts[lab] / label_n[lab];
+    }
+    gene_counts[lab] = mean;
+    mean_sum += mean;
+    log_sum += std::log(mean + 1.0);
+  }
+  return std::log(mean_sum / n_labels + 1.0) * n_labels - log_sum;
+}
+
+std::vector<int> scibet_select_top_genes(
+    std::vector<ScoreIndex>& scores,
+    const std::vector<double>& type_mean,
+    int n_gene,
     int n_labels,
     int n_top,
     int additional_per_label) {
-  const int n_gene = ref.n_gene;
-  const int n_cell = ref.n_cell;
-  std::vector<int> label_n(n_labels, 0);
-  for (int cell = 0; cell < n_cell; ++cell) {
-    const int lab = labels[cell] - 1;
-    if (lab >= 0 && lab < n_labels) {
-      label_n[lab]++;
-    }
-  }
-
-  std::vector<double> type_mean(n_gene * n_labels, 0.0);
-  for (int cell = 0; cell < n_cell; ++cell) {
-    const int lab = labels[cell] - 1;
-    if (lab < 0 || lab >= n_labels) {
-      continue;
-    }
-    for (int ptr = ref.col_ptr[cell]; ptr < ref.col_ptr[cell + 1]; ++ptr) {
-      const int gene = ref.row_idx[ptr];
-      const double value = ref.values[ptr];
-      if (gene >= 0 && gene < n_gene && R_finite(value) && value > 0.0) {
-        type_mean[gene * n_labels + lab] += value;
-      }
-    }
-  }
-
-  std::vector<ScoreIndex> scores;
-  scores.reserve(n_gene);
-  for (int gene = 0; gene < n_gene; ++gene) {
-    double mean_sum = 0.0;
-    double log_sum = 0.0;
-    for (int lab = 0; lab < n_labels; ++lab) {
-      double mean = 0.0;
-      if (label_n[lab] > 0) {
-        mean = type_mean[gene * n_labels + lab] / label_n[lab];
-      }
-      type_mean[gene * n_labels + lab] = mean;
-      mean_sum += mean;
-      log_sum += std::log(mean + 1.0);
-    }
-    const double score = std::log(mean_sum / n_labels + 1.0) * n_labels - log_sum;
-    scores.push_back({score, gene});
-  }
-
   std::vector<int> selected;
   const int n_keep = std::min(std::max(n_top, 0), n_gene);
   selected.reserve(n_keep + std::max(0, additional_per_label) * n_labels);
@@ -208,6 +120,83 @@ std::vector<int> selected_gene_indices_sparse(
   }
 
   return unique_sorted_indices(selected);
+}
+
+std::vector<int> selected_gene_indices(
+    const NumericMatrix& ref,
+    const IntegerVector& labels,
+    int n_labels,
+    int n_top,
+    int additional_per_label) {
+  const int n_gene = ref.nrow();
+  const int n_cell = ref.ncol();
+  const std::vector<int> label_n = scibet_label_counts(labels, n_cell, n_labels);
+
+  std::vector<double> type_mean(n_gene * n_labels, 0.0);
+  std::vector<ScoreIndex> scores;
+  scores.reserve(n_gene);
+  for (int gene = 0; gene < n_gene; ++gene) {
+    for (int cell = 0; cell < n_cell; ++cell) {
+      const int lab = labels[cell] - 1;
+      if (lab < 0 || lab >= n_labels) {
+        continue;
+      }
+      double value = ref(gene, cell);
+      if (R_finite(value) && value > 0.0) {
+        type_mean[gene * n_labels + lab] += value;
+      }
+    }
+    const double score = scibet_gene_score(&type_mean[gene * n_labels], label_n, n_labels);
+    scores.push_back({score, gene});
+  }
+
+  return scibet_select_top_genes(scores, type_mean, n_gene, n_labels, n_top, additional_per_label);
+}
+
+std::vector<int> selected_gene_indices_sparse(
+    const DgcMatrixView& ref,
+    const IntegerVector& labels,
+    int n_labels,
+    int n_top,
+    int additional_per_label) {
+  const int n_gene = ref.n_gene;
+  const int n_cell = ref.n_cell;
+  const std::vector<int> label_n = scibet_label_counts(labels, n_cell, n_labels);
+
+  std::vector<double> type_mean(n_gene * n_labels, 0.0);
+  for (int cell = 0; cell < n_cell; ++cell) {
+    const int lab = labels[cell] - 1;
+    if (lab < 0 || lab >= n_labels) {
+      continue;
+    }
+    for (int ptr = ref.col_ptr[cell]; ptr < ref.col_ptr[cell + 1]; ++ptr) {
+      const int gene = ref.row_idx[ptr];
+      const double value = ref.values[ptr];
+      if (gene >= 0 && gene < n_gene && R_finite(value) && value > 0.0) {
+        type_mean[gene * n_labels + lab] += value;
+      }
+    }
+  }
+
+  std::vector<ScoreIndex> scores;
+  scores.reserve(n_gene);
+  for (int gene = 0; gene < n_gene; ++gene) {
+    const double score = scibet_gene_score(&type_mean[gene * n_labels], label_n, n_labels);
+    scores.push_back({score, gene});
+  }
+
+  return scibet_select_top_genes(scores, type_mean, n_gene, n_labels, n_top, additional_per_label);
+}
+
+void normalize_log_probability_core(NumericMatrix& core, const std::vector<double>& sums) {
+  const int n_gene = core.nrow();
+  const int n_labels = core.ncol();
+  for (int lab = 0; lab < n_labels; ++lab) {
+    const double denom = sums[lab] + n_gene;
+    for (int g = 0; g < n_gene; ++g) {
+      core(g, lab) = std::log(core(g, lab) + 1.0) - std::log(denom);
+    }
+  }
 }
 
 NumericMatrix build_log_probability_core(
@@ -238,12 +227,7 @@ NumericMatrix build_log_probability_core(
     }
   }
 
-  for (int lab = 0; lab < n_labels; ++lab) {
-    const double denom = sums[lab] + n_gene;
-    for (int g = 0; g < n_gene; ++g) {
-      core(g, lab) = std::log(core(g, lab) + 1.0) - std::log(denom);
-    }
-  }
+  normalize_log_probability_core(core, sums);
   return core;
 }
 
@@ -286,17 +270,43 @@ NumericMatrix build_log_probability_core_sparse(
     }
   }
 
-  for (int lab = 0; lab < n_labels; ++lab) {
-    const double denom = sums[lab] + n_gene;
-    for (int g = 0; g < n_gene; ++g) {
-      core(g, lab) = std::log(core(g, lab) + 1.0) - std::log(denom);
-    }
-  }
+  normalize_log_probability_core(core, sums);
   return core;
 }
 
 
 
+
+double scibet_prediction_probability(
+    const std::vector<double>& scores,
+    int best,
+    double max_score,
+    NumericMatrix& prob,
+    int cell,
+    bool return_probabilities) {
+  const int n_labels = scores.size();
+  double sum_exp = 0.0;
+  double best_exp = 0.0;
+  for (int lab = 0; lab < n_labels; ++lab) {
+    const double val = std::exp(scores[lab] - max_score);
+    if (return_probabilities) {
+      prob(cell, lab) = val;
+    }
+    if (lab == best) {
+      best_exp = val;
+    }
+    sum_exp += val;
+  }
+  if (sum_exp > 0.0) {
+    if (return_probabilities) {
+      for (int lab = 0; lab < n_labels; ++lab) {
+        prob(cell, lab) /= sum_exp;
+      }
+    }
+    return best_exp / sum_exp;
+  }
+  return NA_REAL;
+}
 
 List predict_labels_and_scores(
     const NumericMatrix& query,
@@ -334,28 +344,9 @@ List predict_labels_and_scores(
       }
     }
 
-    double sum_exp = 0.0;
-    double best_exp = 0.0;
-    for (int lab = 0; lab < n_labels; ++lab) {
-      const double val = std::exp(scores[lab] - max_score);
-      if (return_probabilities) {
-        prob(cell, lab) = val;
-      }
-      if (lab == best) {
-        best_exp = val;
-      }
-      sum_exp += val;
-    }
-    if (sum_exp > 0.0) {
-      max_probability[cell] = best_exp / sum_exp;
-      if (return_probabilities) {
-        for (int lab = 0; lab < n_labels; ++lab) {
-          prob(cell, lab) /= sum_exp;
-        }
-      }
-    } else {
-      max_probability[cell] = NA_REAL;
-    }
+    max_probability[cell] = scibet_prediction_probability(
+      scores, best, max_score, prob, cell, return_probabilities
+    );
     predicted[cell] = best + 1;
   }
 
@@ -416,28 +407,9 @@ List predict_labels_and_scores_sparse(
         best = lab;
       }
     }
-    double sum_exp = 0.0;
-    double best_exp = 0.0;
-    for (int lab = 0; lab < n_labels; ++lab) {
-      const double val = std::exp(scores[lab] - max_score);
-      if (return_probabilities) {
-        prob(cell, lab) = val;
-      }
-      if (lab == best) {
-        best_exp = val;
-      }
-      sum_exp += val;
-    }
-    if (sum_exp > 0.0) {
-      max_probability[cell] = best_exp / sum_exp;
-      if (return_probabilities) {
-        for (int lab = 0; lab < n_labels; ++lab) {
-          prob(cell, lab) /= sum_exp;
-        }
-      }
-    } else {
-      max_probability[cell] = NA_REAL;
-    }
+    max_probability[cell] = scibet_prediction_probability(
+      scores, best, max_score, prob, cell, return_probabilities
+    );
     predicted[cell] = best + 1;
   }
 
@@ -445,6 +417,37 @@ List predict_labels_and_scores_sparse(
     _["probabilities"] = return_probabilities ? wrap(prob) : R_NilValue,
     _["predicted_index"] = predicted,
     _["max_probability"] = max_probability
+  );
+}
+
+void validate_scibet_inputs(
+    int n_ref_genes, int n_query_genes, int n_cells, R_xlen_t n_labels_given, int n_labels, int n_top) {
+  if (n_ref_genes != n_query_genes) {
+    thisutils::log_message("ref and query must have the same number of rows", "error");
+  }
+  if (n_cells != n_labels_given) {
+    thisutils::log_message("labels must have one value per reference cell", "error");
+  }
+  if (n_labels < 2) {
+    thisutils::log_message("at least two labels are required", "error");
+  }
+  if (n_top < 1) {
+    thisutils::log_message("n_top must be positive", "error");
+  }
+}
+
+List scibet_fit_result(const std::vector<int>& genes, const NumericMatrix& core, const List& prediction) {
+  IntegerVector genes_out(genes.size());
+  for (int i = 0; i < static_cast<int>(genes.size()); ++i) {
+    genes_out[i] = genes[i] + 1;
+  }
+
+  return List::create(
+    _["feature_index"] = genes_out,
+    _["core"] = core,
+    _["probabilities"] = prediction["probabilities"],
+    _["predicted_index"] = prediction["predicted_index"],
+    _["max_probability"] = prediction["max_probability"]
   );
 }
 
@@ -459,18 +462,7 @@ List scibet_fit_predict(
     int n_top,
     int additional_per_label = 0,
     bool return_probabilities = true) {
-  if (ref.nrow() != query.nrow()) {
-    thisutils::log_message("ref and query must have the same number of rows", "error");
-  }
-  if (ref.ncol() != labels.size()) {
-    thisutils::log_message("labels must have one value per reference cell", "error");
-  }
-  if (n_labels < 2) {
-    thisutils::log_message("at least two labels are required", "error");
-  }
-  if (n_top < 1) {
-    thisutils::log_message("n_top must be positive", "error");
-  }
+  validate_scibet_inputs(ref.nrow(), query.nrow(), ref.ncol(), labels.size(), n_labels, n_top);
 
   std::vector<int> genes = selected_gene_indices(
     ref,
@@ -491,18 +483,7 @@ List scibet_fit_predict(
     return_probabilities
   );
 
-  IntegerVector genes_out(genes.size());
-  for (int i = 0; i < static_cast<int>(genes.size()); ++i) {
-    genes_out[i] = genes[i] + 1;
-  }
-
-  return List::create(
-    _["feature_index"] = genes_out,
-    _["core"] = core,
-    _["probabilities"] = prediction["probabilities"],
-    _["predicted_index"] = prediction["predicted_index"],
-    _["max_probability"] = prediction["max_probability"]
-  );
+  return scibet_fit_result(genes, core, prediction);
 }
 
 // [[Rcpp::export]]
@@ -516,18 +497,7 @@ List scibet_fit_predict_sparse(
     bool return_probabilities = true) {
   DgcMatrixView ref_view = dgc_view(ref);
   DgcMatrixView query_view = dgc_view(query);
-  if (ref_view.n_gene != query_view.n_gene) {
-    thisutils::log_message("ref and query must have the same number of rows", "error");
-  }
-  if (ref_view.n_cell != labels.size()) {
-    thisutils::log_message("labels must have one value per reference cell", "error");
-  }
-  if (n_labels < 2) {
-    thisutils::log_message("at least two labels are required", "error");
-  }
-  if (n_top < 1) {
-    thisutils::log_message("n_top must be positive", "error");
-  }
+  validate_scibet_inputs(ref_view.n_gene, query_view.n_gene, ref_view.n_cell, labels.size(), n_labels, n_top);
 
   std::vector<int> genes = selected_gene_indices_sparse(
     ref_view,
@@ -548,16 +518,5 @@ List scibet_fit_predict_sparse(
     return_probabilities
   );
 
-  IntegerVector genes_out(genes.size());
-  for (int i = 0; i < static_cast<int>(genes.size()); ++i) {
-    genes_out[i] = genes[i] + 1;
-  }
-
-  return List::create(
-    _["feature_index"] = genes_out,
-    _["core"] = core,
-    _["probabilities"] = prediction["probabilities"],
-    _["predicted_index"] = prediction["predicted_index"],
-    _["max_probability"] = prediction["max_probability"]
-  );
+  return scibet_fit_result(genes, core, prediction);
 }

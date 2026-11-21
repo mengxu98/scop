@@ -82,49 +82,25 @@ scVI_integrate <- function(
 
   validate_integration_input_cells(srt_list, srt_merge)
   srt_merge_raw <- srt_merge
-  if (!is.null(srt_list)) {
-    checked <- CheckDataList(
-      srt_list = srt_list,
-      batch = batch,
-      assay = assay,
-      do_normalization = do_normalization,
-      do_HVF_finding = do_HVF_finding,
-      normalization_method = normalization_method,
-      HVF_source = HVF_source,
-      HVF_method = HVF_method,
-      nHVF = nHVF,
-      HVF_min_intersection = HVF_min_intersection,
-      HVF = HVF,
-      seed = seed
-    )
-    srt_list <- checked[["srt_list"]]
-    HVF <- checked[["HVF"]]
-    assay <- checked[["assay"]]
-    type <- checked[["type"]]
-    srt_merge <- Reduce(merge, srt_list)
-    SeuratObject::VariableFeatures(srt_merge) <- HVF
-  }
-  if (is.null(srt_list) && !is.null(srt_merge)) {
-    checked <- CheckDataMerge(
-      srt_merge = srt_merge,
-      batch = batch,
-      assay = assay,
-      do_normalization = do_normalization,
-      do_HVF_finding = do_HVF_finding,
-      normalization_method = normalization_method,
-      HVF_source = HVF_source,
-      HVF_method = HVF_method,
-      nHVF = nHVF,
-      HVF_min_intersection = HVF_min_intersection,
-      HVF = HVF,
-      verbose = verbose,
-      seed = seed
-    )
-    srt_merge <- checked[["srt_merge"]]
-    HVF <- checked[["HVF"]]
-    assay <- checked[["assay"]]
-    type <- checked[["type"]]
-  }
+  checked <- prepare_integration_data(
+    srt_list, srt_merge,
+    batch = batch,
+    assay = assay,
+    do_normalization = do_normalization,
+    do_HVF_finding = do_HVF_finding,
+    normalization_method = normalization_method,
+    HVF_source = HVF_source,
+    HVF_method = HVF_method,
+    nHVF = nHVF,
+    HVF_min_intersection = HVF_min_intersection,
+    HVF = HVF,
+    verbose = verbose,
+    seed = seed,
+    list_verbose = TRUE
+  )
+  srt_merge <- checked[["srt_merge"]]
+  HVF <- checked[["HVF"]]
+  assay <- checked[["assay"]]
   if (
     identical(model, "PEAKVI") &&
       !inherits(srt_merge[[assay]], "ChromatinAssay")

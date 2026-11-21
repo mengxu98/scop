@@ -459,7 +459,6 @@ scFEAHeatmap <- function(
   heatmap_border <- borders$heatmap_border
   cell_annotation_border <- borders$cell_annotation_border
   feature_annotation_border <- borders$feature_annotation_border
-  heatmap_border_color <- borders$heatmap_border_color
   cell_annotation_border_color <- borders$cell_annotation_border_color
   feature_annotation_border_color <- borders$feature_annotation_border_color
   heatmap_border_size <- borders$heatmap_border_size

@@ -57,50 +57,25 @@ Coralysis_integrate <- function(
   set.seed(seed)
   validate_integration_input_cells(srt_list, srt_merge)
   srt_merge_raw <- srt_merge
-  if (!is.null(srt_list)) {
-    checked <- CheckDataList(
-      srt_list = srt_list,
-      batch = batch,
-      assay = assay,
-      do_normalization = do_normalization,
-      do_HVF_finding = do_HVF_finding,
-      normalization_method = normalization_method,
-      HVF_source = HVF_source,
-      HVF_method = HVF_method,
-      nHVF = nHVF,
-      HVF_min_intersection = HVF_min_intersection,
-      HVF = HVF,
-      vars_to_regress = NULL,
-      verbose = verbose,
-      seed = seed
-    )
-    srt_list <- checked[["srt_list"]]
-    HVF <- checked[["HVF"]]
-    assay <- checked[["assay"]]
-    srt_merge <- Reduce(merge, srt_list)
-    SeuratObject::VariableFeatures(srt_merge) <- HVF
-  }
-  if (is.null(srt_list) && !is.null(srt_merge)) {
-    checked <- CheckDataMerge(
-      srt_merge = srt_merge,
-      batch = batch,
-      assay = assay,
-      do_normalization = do_normalization,
-      do_HVF_finding = do_HVF_finding,
-      normalization_method = normalization_method,
-      HVF_source = HVF_source,
-      HVF_method = HVF_method,
-      nHVF = nHVF,
-      HVF_min_intersection = HVF_min_intersection,
-      HVF = HVF,
-      vars_to_regress = NULL,
-      verbose = verbose,
-      seed = seed
-    )
-    srt_merge <- checked[["srt_merge"]]
-    HVF <- checked[["HVF"]]
-    assay <- checked[["assay"]]
-  }
+  checked <- prepare_integration_data(
+    srt_list, srt_merge,
+    batch = batch,
+    assay = assay,
+    do_normalization = do_normalization,
+    do_HVF_finding = do_HVF_finding,
+    normalization_method = normalization_method,
+    HVF_source = HVF_source,
+    HVF_method = HVF_method,
+    nHVF = nHVF,
+    HVF_min_intersection = HVF_min_intersection,
+    HVF = HVF,
+    vars_to_regress = NULL,
+    verbose = verbose,
+    seed = seed
+  )
+  srt_merge <- checked[["srt_merge"]]
+  HVF <- checked[["HVF"]]
+  assay <- checked[["assay"]]
 
   assay_use <- SeuratObject::DefaultAssay(srt_merge)
   if (!is.null(assay) && assay %in% SeuratObject::Assays(srt_merge)) {

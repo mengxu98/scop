@@ -184,35 +184,7 @@ RunPAGA <- function(
   PrepareEnv(modules = "scanpy", verbose = verbose)
 
   args <- mget(names(formals()))
-  args <- lapply(
-    args, function(x) {
-      if (is.numeric(x)) {
-        y <- ifelse(
-          grepl(
-            "\\.",
-            as.character(x)
-          ),
-          as.double(x),
-          as.integer(x)
-        )
-      } else {
-        y <- x
-      }
-      y
-    }
-  )
-  call_envir <- parent.frame(1)
-  args <- lapply(
-    args, function(arg) {
-      if (is.symbol(arg)) {
-        eval(arg, envir = call_envir)
-      } else if (is.call(arg)) {
-        eval(arg, envir = call_envir)
-      } else {
-        arg
-      }
-    }
-  )
+  args <- runner_python_arguments(args, parent.frame())
 
   args[["legend_loc"]] <- legend.position
   args[["n_jobs"]] <- cores
@@ -642,22 +614,8 @@ paga_layout_igraph <- function(
   }
 
   layout <- layout %||% "fr"
-  seed_exists <- exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
-  old_seed <- if (seed_exists) {
-    get(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
-  } else {
-    NULL
-  }
-  on.exit(
-    {
-      if (seed_exists) {
-        assign(".Random.seed", old_seed, envir = .GlobalEnv)
-      } else if (exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) {
-        rm(".Random.seed", envir = .GlobalEnv)
-      }
-    },
-    add = TRUE
-  )
+  restore_seed <- rng_seed_restorer()
+  on.exit(restore_seed(), add = TRUE)
   set.seed(0)
 
   graph <- igraph::graph_from_adjacency_matrix(

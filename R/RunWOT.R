@@ -119,30 +119,7 @@ RunWOT <- function(
   }
 
   args <- mget(names(formals()))
-  args <- lapply(
-    args, function(x) {
-      if (is.numeric(x)) {
-        y <- ifelse(
-          grepl("\\.", as.character(x)), as.double(x), as.integer(x)
-        )
-      } else {
-        y <- x
-      }
-      return(y)
-    }
-  )
-  call.envir <- parent.frame(1)
-  args <- lapply(
-    args, function(arg) {
-      if (is.symbol(arg)) {
-        eval(arg, envir = call.envir)
-      } else if (is.call(arg)) {
-        eval(arg, envir = call.envir)
-      } else {
-        arg
-      }
-    }
-  )
+  args <- runner_python_arguments(args, parent.frame())
 
   args[["save"]] <- save_plot
   args[["dpi"]] <- plot_dpi

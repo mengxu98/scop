@@ -7,9 +7,7 @@ Seurat object directly.
 
 from __future__ import annotations
 
-import argparse
 import importlib.metadata
-import json
 from pathlib import Path
 
 import anndata
@@ -19,30 +17,11 @@ import spatialdm as sdm
 from scipy import sparse
 from scipy.io import mmread, mmwrite
 
+from scop_runner_io import configuration_path, read_ids as _read_ids, read_json, write_manifest as _write_json
+
 
 def _read_json(path: Path) -> dict:
-    with path.open("r", encoding="utf-8") as handle:
-        value = json.load(handle)
-    if not isinstance(value, dict):
-        raise ValueError("SpatialDM configuration must be a JSON object")
-    return value
-
-
-def _write_json(value: dict, path: Path) -> None:
-    temporary = path.with_name(f".{path.name}.tmp")
-    with temporary.open("w", encoding="utf-8") as handle:
-        json.dump(value, handle, indent=2, ensure_ascii=False, allow_nan=False)
-    temporary.replace(path)
-
-
-def _read_ids(path: Path, label: str) -> list[str]:
-    frame = pd.read_csv(path, sep="\t", dtype=str)
-    if frame.shape[1] != 1:
-        raise ValueError(f"{label} must contain exactly one column")
-    values = frame.iloc[:, 0].astype(str).tolist()
-    if not values or len(values) != len(set(values)) or any(not value for value in values):
-        raise ValueError(f"{label} must contain unique non-empty IDs")
-    return values
+    return read_json(path, object_label="SpatialDM")
 
 
 def _build_adata(config: dict) -> anndata.AnnData:
@@ -287,10 +266,7 @@ def run(config: dict) -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--config", required=True)
-    args = parser.parse_args()
-    run(_read_json(Path(args.config)))
+    run(_read_json(configuration_path()))
 
 
 if __name__ == "__main__":

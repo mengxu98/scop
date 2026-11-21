@@ -627,7 +627,6 @@ FeatureStatPlot <- function(
       theme_args,
       allow_null = TRUE
     )
-    `%||%` <- function(x, y) if (is.null(x)) y else x
     element_text_to_gpar <- function(el) {
       if (is.null(el) || !inherits(el, "element_text")) {
         return(NULL)

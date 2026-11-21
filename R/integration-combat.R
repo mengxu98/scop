@@ -57,12 +57,7 @@ ComBat_integrate <- function(
       message_type = "error"
     )
   }
-  if (
-    !is.null(linear_reduction_dims_use) &&
-      max(linear_reduction_dims_use) > linear_reduction_dims
-  ) {
-    linear_reduction_dims <- max(linear_reduction_dims_use)
-  }
+  linear_reduction_dims <- extend_integration_dims(linear_reduction_dims, linear_reduction_dims_use)
   validate_nonlinear_reductions(nonlinear_reduction)
   cluster_algorithm_index <- resolve_cluster_algorithm_index(cluster_algorithm)
 
@@ -71,52 +66,25 @@ ComBat_integrate <- function(
 
   validate_integration_input_cells(srt_list, srt_merge)
   srt_merge_raw <- srt_merge
-  if (!is.null(srt_list)) {
-    checked <- CheckDataList(
-      srt_list = srt_list,
-      batch = batch,
-      assay = assay,
-      do_normalization = do_normalization,
-      do_HVF_finding = do_HVF_finding,
-      normalization_method = normalization_method,
-      HVF_source = HVF_source,
-      HVF_method = HVF_method,
-      nHVF = nHVF,
-      HVF_min_intersection = HVF_min_intersection,
-      HVF = HVF,
-      vars_to_regress = vars_to_regress,
-      verbose = verbose,
-      seed = seed
-    )
-    srt_list <- checked[["srt_list"]]
-    HVF <- checked[["HVF"]]
-    assay <- checked[["assay"]]
-    type <- checked[["type"]]
-    srt_merge <- Reduce(merge, srt_list)
-    SeuratObject::VariableFeatures(srt_merge) <- HVF
-  }
-  if (is.null(srt_list) && !is.null(srt_merge)) {
-    checked <- CheckDataMerge(
-      srt_merge = srt_merge,
-      batch = batch,
-      assay = assay,
-      do_normalization = do_normalization,
-      do_HVF_finding = do_HVF_finding,
-      normalization_method = normalization_method,
-      HVF_source = HVF_source,
-      HVF_method = HVF_method,
-      nHVF = nHVF,
-      HVF_min_intersection = HVF_min_intersection,
-      HVF = HVF,
-      vars_to_regress = vars_to_regress,
-      verbose = verbose,
-      seed = seed
-    )
-    srt_merge <- checked[["srt_merge"]]
-    HVF <- checked[["HVF"]]
-    assay <- checked[["assay"]]
-    type <- checked[["type"]]
-  }
+  checked <- prepare_integration_data(
+    srt_list, srt_merge,
+    batch = batch,
+    assay = assay,
+    do_normalization = do_normalization,
+    do_HVF_finding = do_HVF_finding,
+    normalization_method = normalization_method,
+    HVF_source = HVF_source,
+    HVF_method = HVF_method,
+    nHVF = nHVF,
+    HVF_min_intersection = HVF_min_intersection,
+    HVF = HVF,
+    vars_to_regress = vars_to_regress,
+    verbose = verbose,
+    seed = seed
+  )
+  srt_merge <- checked[["srt_merge"]]
+  HVF <- checked[["HVF"]]
+  assay <- checked[["assay"]]
 
   if (normalization_method == "TFIDF") {
     log_message(
@@ -152,16 +120,7 @@ ComBat_integrate <- function(
   srt_integrated[["ComBatcorrected"]] <- CreateAssayObject(data = corrected)
   SeuratObject::DefaultAssay(srt_integrated) <- "ComBatcorrected"
   SeuratObject::VariableFeatures(srt_integrated[["ComBatcorrected"]]) <- HVF
-  scale_features <- rownames(
-    GetAssayData5(
-      srt_integrated,
-      layer = "scale.data",
-      assay = SeuratObject::DefaultAssay(srt_integrated)
-    )
-  )
-  if (
-    isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))
-  ) {
+  if (should_scale_integration_data(srt_integrated, HVF, do_scaling)) {
     log_message("Perform {.fn Seurat::ScaleData}")
     srt_integrated <- ScaleData(
       srt_integrated,

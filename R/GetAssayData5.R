@@ -97,20 +97,7 @@ GetAssayData5.Assay5 <- function(
       ...
     )
   }
-  if (!is.null(features) && !is.null(cells)) {
-    features_use <- features[features %in% rownames(data)]
-    cells_use <- cells[cells %in% colnames(data)]
-    return(data[features_use, cells_use, drop = FALSE])
-  }
-  if (!is.null(features)) {
-    features_use <- features[features %in% rownames(data)]
-    data <- data[features_use, , drop = FALSE]
-  }
-  if (!is.null(cells)) {
-    cells_use <- cells[cells %in% colnames(data)]
-    data <- data[, cells_use, drop = FALSE]
-  }
-  return(data)
+  subset_assay_data(data, features, cells)
 }
 
 #' @rdname GetAssayData5
@@ -128,6 +115,10 @@ GetAssayData5.Assay <- function(
     layer = layer,
     ...
   )
+  subset_assay_data(data, features, cells)
+}
+
+subset_assay_data <- function(data, features, cells) {
   if (!is.null(features) && !is.null(cells)) {
     features_use <- features[features %in% rownames(data)]
     cells_use <- cells[cells %in% colnames(data)]
