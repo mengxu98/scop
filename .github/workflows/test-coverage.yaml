@@ -6,6 +6,9 @@
 # three platforms on every push. Run manually with workflow_dispatch
 # whenever fresh coverage numbers are needed.
 on:
+  push:
+    branches: ['test/codecov-oidc']
+    paths: ['.github/workflows/test-coverage.yaml']
   schedule:
     # 02:00 Monday Asia/Shanghai, expressed in UTC for GitHub Actions.
     - cron: '0 18 * * 0'
@@ -83,7 +86,8 @@ jobs:
     if: >-
       github.repository == 'mengxu98/scop' &&
       ((github.event_name == 'schedule' && github.ref == 'refs/heads/main') ||
-       (github.event_name == 'workflow_dispatch' && github.ref_type == 'branch'))
+       (github.event_name == 'workflow_dispatch' && github.ref_type == 'branch') ||
+       (github.event_name == 'push' && github.ref == 'refs/heads/test/codecov-oidc'))
     runs-on: ubuntu-latest
     permissions:
       contents: read
