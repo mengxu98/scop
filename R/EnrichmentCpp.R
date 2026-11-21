@@ -2,8 +2,7 @@ resolve_ora_universe <- function(
   universe,
   groups,
   TERM2GENE,
-  IDtype,
-  geneID_exclude = NULL
+  IDtype
 ) {
   annotation_genes <- unique(as.character(TERM2GENE[[IDtype]]))
   annotation_genes <- annotation_genes[
@@ -22,9 +21,7 @@ resolve_ora_universe <- function(
   normalize_universe <- function(genes, group = NULL) {
     genes <- unique(as.character(genes))
     genes <- genes[!is.na(genes) & nzchar(genes)]
-    excluded <- as.character(geneID_exclude)
-    excluded <- excluded[!is.na(excluded) & nzchar(excluded)]
-    genes <- setdiff(intersect(genes, annotation_genes), excluded)
+    genes <- intersect(genes, annotation_genes)
     if (length(genes) == 0L) {
       group_label <- if (is.null(group)) "" else paste0(" for group '", group, "'")
       log_message(
