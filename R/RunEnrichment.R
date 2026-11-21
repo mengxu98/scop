@@ -16,7 +16,15 @@
 #' This argument is only used if `object` is specified.
 #' @param geneID Gene IDs.
 #' @param geneID_groups A factor vector specifying the group labels for each gene.
-#' @param geneID_exclude Gene IDs to be excluded from the analysis.
+#' @param geneID_exclude Gene IDs to be excluded from the input genes and the
+#' enrichment universe.
+#' @param universe A character vector of background gene IDs shared by all
+#' groups, or a named list of character vectors with one entry per
+#' `geneID_groups` level. When `object` is supplied and `geneID` is omitted,
+#' `NULL` uses all genes returned by the unfiltered differential-expression
+#' results for each comparison. Otherwise, `NULL` uses all genes represented
+#' in the selected `TERM2GENE` mapping. Genes without annotation in the selected
+#' mapping are excluded from the effective universe.
 #' @param IDtype Type of gene IDs in the `object` object or `geneID` argument.
 #' This argument is used to convert the gene IDs to a different type if `IDtype` is different from `result_IDtype`.
 #' @param result_IDtype Desired type of gene ID to be used in the output.
@@ -52,7 +60,8 @@
 #'
 #' Enrichment result is a list with the following component:
 #' \itemize{
-#'  \item `enrichment`: A data.frame containing all enrichment results.
+#'  \item `enrichment`: A data.frame containing all enrichment results,
+#'  including the effective background size in `UniverseSize`.
 #'  \item `results`: A list of `enrichResult` objects from the DOSE package.
 #'  \item `geneMap`: A data.frame containing the ID mapping table for input gene IDs.
 #'  \item `input`: A data.frame containing the input gene IDs and gene ID groups.
@@ -123,6 +132,7 @@ RunEnrichment <- function(
   simplify_similarityCutoff = 0.7,
   verbose = TRUE,
   srt = NULL,
+  universe = NULL,
   ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
@@ -153,6 +163,16 @@ RunEnrichment <- function(
       group.by = group.by,
       test.use = test.use
     )
+    de_all <- prepare_de_for_pathway(
+      de_results = de_df,
+      require_score = FALSE
+    )
+    if (is.null(universe)) {
+      universe <- lapply(
+        split(as.character(de_all$gene), as.character(de_all$comparison)),
+        unique
+      )
+    }
     de_df <- filter_de_results(
       de_results = de_df,
       DE_threshold = DE_threshold
@@ -286,13 +306,31 @@ RunEnrichment <- function(
     )
     group_levels <- levels(geneID_groups)
     genes_by_group <- split(input[[IDtype]], input$geneID_groups, drop = TRUE)
+    group_genes <- lapply(
+      group_levels,
+      function(group) genes_by_group[[group]] %||% character()
+    )
+    names(group_genes) <- group_levels
+    universe_use <- resolve_ora_universe(
+      universe = universe,
+      groups = group_levels,
+      TERM2GENE = TERM2GENE_tmp,
+      IDtype = IDtype,
+      geneID_exclude = geneID_exclude
+    )
+    group_universe <- if (is.list(universe_use)) {
+      universe_use[group_levels]
+    } else {
+      universe_use
+    }
     group_results <- run_ora_result(
-      gene = lapply(group_levels, function(group) genes_by_group[[group]] %||% character()),
+      gene = group_genes,
       TERM2GENE = TERM2GENE_tmp,
       TERM2NAME = TERM2NAME_tmp,
       IDtype = IDtype,
       min_gs_size = ifelse(term %in% unlimited_db, 1, minGSSize),
-      max_gs_size = ifelse(term %in% unlimited_db, Inf, maxGSSize)
+      max_gs_size = ifelse(term %in% unlimited_db, Inf, maxGSSize),
+      universe = group_universe
     )
     result_list <- lapply(seq_along(group_levels), function(i) {
       group <- group_levels[[i]]
@@ -359,8 +397,21 @@ RunEnrichment <- function(
   )
 
   group_levels <- levels(geneID_groups)
+  universe_inputs <- stats::setNames(lapply(db, function(term) {
+    resolve_ora_universe(
+      universe = universe,
+      groups = group_levels,
+      TERM2GENE = term_inputs[[term]][["TERM2GENE"]],
+      IDtype = IDtype,
+      geneID_exclude = geneID_exclude
+    )
+  }), db)
   term_results <- if (identical(backend, "cpp")) {
-    group_genes <- lapply(group_levels, function(group) input[input$geneID_groups == group, IDtype])
+    group_genes <- lapply(
+      group_levels,
+      function(group) input[input$geneID_groups == group, IDtype]
+    )
+    names(group_genes) <- group_levels
     stats::setNames(lapply(db, function(term) {
       term_input <- term_inputs[[term]]
       run_ora_result(
@@ -369,7 +420,8 @@ RunEnrichment <- function(
         TERM2NAME = term_input[["TERM2NAME"]],
         IDtype = IDtype,
         min_gs_size = term_input[["minGSSize"]],
-        max_gs_size = term_input[["maxGSSize"]]
+        max_gs_size = term_input[["maxGSSize"]],
+        universe = universe_inputs[[term]]
       )
     }), db)
   }
@@ -384,6 +436,12 @@ RunEnrichment <- function(
       term_input <- term_inputs[[term]]
       TERM2GENE_tmp <- term_input[["TERM2GENE"]]
       TERM2NAME_tmp <- term_input[["TERM2NAME"]]
+      universe_term <- universe_inputs[[term]]
+      universe_group <- if (is.list(universe_term)) {
+        universe_term[[as.character(group)]]
+      } else {
+        universe_term
+      }
       if (identical(backend, "cpp")) {
         result <- term_results[[term]][[match(group, group_levels)]]
         enrich_res <- result
@@ -395,7 +453,7 @@ RunEnrichment <- function(
           pAdjustMethod = "BH",
           pvalueCutoff = Inf,
           qvalueCutoff = Inf,
-          universe = NULL,
+          universe = universe_group,
           TERM2GENE = TERM2GENE_tmp,
           TERM2NAME = TERM2NAME_tmp
         )
@@ -406,6 +464,9 @@ RunEnrichment <- function(
         result[["Groups"]] <- group
         result[["Database"]] <- term
         result[["Version"]] <- term_input[["version"]]
+        if (identical(backend, "r")) {
+          result[["UniverseSize"]] <- length(universe_group)
+        }
         if (!identical(IDtype, result_IDtype)) {
           result$geneID <- map_gene_ids(result$geneID)
         }

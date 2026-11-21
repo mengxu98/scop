@@ -1,11 +1,138 @@
+resolve_ora_universe <- function(
+  universe,
+  groups,
+  TERM2GENE,
+  IDtype,
+  geneID_exclude = NULL
+) {
+  annotation_genes <- unique(as.character(TERM2GENE[[IDtype]]))
+  annotation_genes <- annotation_genes[
+    !is.na(annotation_genes) & nzchar(annotation_genes)
+  ]
+  if (is.null(universe)) {
+    universe <- annotation_genes
+  }
+  if (is.data.frame(universe)) {
+    log_message(
+      "{.arg universe} must be a character vector or a named list of character vectors.",
+      message_type = "error"
+    )
+  }
+
+  normalize_universe <- function(genes, group = NULL) {
+    genes <- unique(as.character(genes))
+    genes <- genes[!is.na(genes) & nzchar(genes)]
+    excluded <- as.character(geneID_exclude)
+    excluded <- excluded[!is.na(excluded) & nzchar(excluded)]
+    genes <- setdiff(intersect(genes, annotation_genes), excluded)
+    if (length(genes) == 0L) {
+      group_label <- if (is.null(group)) "" else paste0(" for group '", group, "'")
+      log_message(
+        paste0(
+          "The enrichment universe has no genes annotated in the selected TERM2GENE mapping",
+          group_label,
+          "."
+        ),
+        message_type = "error"
+      )
+    }
+    genes
+  }
+
+  if (is.list(universe)) {
+    universe_names <- names(universe)
+    if (
+      is.null(universe_names) ||
+        anyNA(universe_names) ||
+        any(!nzchar(universe_names)) ||
+        anyDuplicated(universe_names)
+    ) {
+      log_message(
+        "A list supplied to {.arg universe} must have unique names matching {.arg geneID_groups}.",
+        message_type = "error"
+      )
+    }
+    groups <- unique(as.character(groups))
+    missing_groups <- setdiff(groups, universe_names)
+    if (length(missing_groups) > 0L) {
+      log_message(
+        paste0(
+          "{.arg universe} is missing backgrounds for: ",
+          paste(missing_groups, collapse = ", "),
+          "."
+        ),
+        message_type = "error"
+      )
+    }
+    out <- lapply(groups, function(group) {
+      normalize_universe(universe[[group]], group = group)
+    })
+    names(out) <- groups
+    if (
+      length(out) > 0L &&
+        (length(out) == 1L ||
+          all(vapply(out[-1L], function(x) setequal(x, out[[1L]]), logical(1))))
+    ) {
+      return(out[[1L]])
+    }
+    return(out)
+  }
+
+  normalize_universe(universe)
+}
+
 run_ora_result <- function(
   gene,
   TERM2GENE,
   TERM2NAME,
   IDtype,
   min_gs_size = 10,
-  max_gs_size = 500
+  max_gs_size = 500,
+  universe = NULL
 ) {
+  if (is.list(universe)) {
+    if (!is.list(gene) || length(universe) != length(gene)) {
+      log_message(
+        "A group-specific {.arg universe} must match the grouped {.arg gene} input.",
+        message_type = "error"
+      )
+    }
+    out <- lapply(seq_along(gene), function(i) {
+      run_ora_result(
+        gene = gene[[i]],
+        TERM2GENE = TERM2GENE,
+        TERM2NAME = TERM2NAME,
+        IDtype = IDtype,
+        min_gs_size = min_gs_size,
+        max_gs_size = max_gs_size,
+        universe = universe[[i]]
+      )
+    })
+    names(out) <- names(gene)
+    return(out)
+  }
+
+  if (is.null(universe)) {
+    universe <- unique(as.character(TERM2GENE[[IDtype]]))
+  }
+  universe <- unique(as.character(universe))
+  universe <- universe[!is.na(universe) & nzchar(universe)]
+  annotated_genes <- unique(as.character(TERM2GENE[[IDtype]]))
+  effective_universe <- intersect(universe, annotated_genes)
+  TERM2GENE <- TERM2GENE[
+    as.character(TERM2GENE[[IDtype]]) %in% effective_universe,
+    ,
+    drop = FALSE
+  ]
+  if (nrow(TERM2GENE) == 0L) {
+    if (is.list(gene)) {
+      out <- rep(list(NULL), length(gene))
+      names(out) <- names(gene)
+      return(out)
+    }
+    return(NULL)
+  }
+
   max_size <- if (is.finite(max_gs_size)) {
     as.integer(max_gs_size)
   } else {
@@ -39,6 +166,7 @@ format_ora_result <- function(res) {
 
   res[["GeneRatio"]] <- paste0(res[["Count"]], "/", res[["query_size"]])
   res[["BgRatio"]] <- paste0(res[["term_size"]], "/", res[["universe_size"]])
+  res[["UniverseSize"]] <- as.integer(res[["universe_size"]])
   res[["RichFactor"]] <- res[["Count"]] / res[["term_size"]]
   res[["FoldEnrichment"]] <- (res[["Count"]] / res[["query_size"]]) /
     (res[["term_size"]] / res[["universe_size"]])
@@ -56,7 +184,7 @@ format_ora_result <- function(res) {
   res <- res[order(res[["pvalue"]], res[["p.adjust"]], res[["ID"]]), , drop = FALSE]
   rownames(res) <- NULL
   res[, c(
-    "ID", "Description", "GeneRatio", "BgRatio", "RichFactor",
+    "ID", "Description", "GeneRatio", "BgRatio", "UniverseSize", "RichFactor",
     "FoldEnrichment", "zScore", "pvalue", "p.adjust", "qvalue",
     "geneID", "Count"
   ), drop = FALSE]

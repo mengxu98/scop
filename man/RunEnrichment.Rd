@@ -35,6 +35,7 @@ RunEnrichment(
   simplify_similarityCutoff = 0.7,
   verbose = TRUE,
   srt = NULL,
+  universe = NULL,
   ...
 )
 }
@@ -56,7 +57,16 @@ This argument is only used if \code{object} is specified.}
 
 \item{geneID_groups}{A factor vector specifying the group labels for each gene.}
 
-\item{geneID_exclude}{Gene IDs to be excluded from the analysis.}
+\item{geneID_exclude}{Gene IDs to be excluded from the input genes and the
+enrichment universe.}
+
+\item{universe}{A character vector of background gene IDs shared by all groups,
+or a named list of character vectors with one entry per \code{geneID_groups} level.
+When \code{object} is supplied and \code{geneID} is omitted, \code{NULL} uses all
+genes returned by the unfiltered differential-expression results for each comparison.
+Otherwise, \code{NULL} uses all genes represented in the selected
+\code{TERM2GENE} mapping. Genes without annotation in the selected mapping are
+excluded from the effective universe.}
 
 \item{IDtype}{Type of gene IDs in the \code{object} object or \code{geneID} argument.
 This argument is used to convert the gene IDs to a different type if \code{IDtype} is different from \code{result_IDtype}.}
@@ -136,7 +146,8 @@ If input is a geneID vector with or without geneID_groups, return the enrichment
 
 Enrichment result is a list with the following component:
 \itemize{
-\item \code{enrichment}: A data.frame containing all enrichment results.
+\item \code{enrichment}: A data.frame containing all enrichment results,
+including the effective background size in \code{UniverseSize}.
 \item \code{results}: A list of \code{enrichResult} objects from the DOSE package.
 \item \code{geneMap}: A data.frame containing the ID mapping table for input gene IDs.
 \item \code{input}: A data.frame containing the input gene IDs and gene ID groups.
