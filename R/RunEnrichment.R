@@ -315,7 +315,7 @@ RunEnrichment <- function(
       universe = universe,
       groups = group_levels,
       TERM2GENE = TERM2GENE_tmp,
-      IDtype = IDtype,
+      IDtype = IDtype
     )
     group_universe <- if (is.list(universe_use)) {
       universe_use[group_levels]
@@ -401,7 +401,7 @@ RunEnrichment <- function(
       universe = universe,
       groups = group_levels,
       TERM2GENE = term_inputs[[term]][["TERM2GENE"]],
-      IDtype = IDtype,
+      IDtype = IDtype
     )
   }), db)
   term_results <- if (identical(backend, "cpp")) {
