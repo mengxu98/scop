@@ -25,6 +25,18 @@ jobs:
           ref: 80da16fff2c279916965745d2adc74d73b882541
           path: candidate
           persist-credentials: false
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          repository: mengxu98/thisutils
+          ref: 6a1fc8eb68b645b0b754321134a246adf850e423
+          path: deps-thisutils
+          persist-credentials: false
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          repository: mengxu98/thisplot
+          ref: 24ecaef1c2a6d716f8dd3fe1e77a959e27368516
+          path: deps-thisplot
+          persist-credentials: false
       - uses: r-lib/actions/setup-r@f9a764fea8d5c63df6ef9a5c7795bf7deb5d7e05
         with:
           r-version: '4.6.2'
@@ -35,10 +47,7 @@ jobs:
           working-directory: candidate
           cache-version: vst-parity
           dependencies: '"hard"'
-          extra-packages: |
-            any::testthat
-            github::mengxu98/thisplot@24ecaef1c2a6d716f8dd3fe1e77a959e27368516
-            github::mengxu98/thisutils@6a1fc8eb68b645b0b754321134a246adf850e423
+          extra-packages: any::testthat
           needs: check
       - name: Verify shared runtime and install both revisions
         shell: bash
@@ -46,14 +55,18 @@ jobs:
           set -euo pipefail
           cat /etc/os-release
           gcc --version
+          git -C deps-thisutils rev-parse HEAD
+          git -C deps-thisplot rev-parse HEAD
+          shared_lib="$(Rscript --vanilla -e 'cat(.libPaths()[1L])')"
+          R CMD INSTALL --library="$shared_lib" deps-thisutils
+          R CMD INSTALL --library="$shared_lib" deps-thisplot
           Rscript - <<'RS'
           required <- c(Matrix = "1.7-6", Seurat = "6.0.0", SeuratObject = "5.4.0")
           actual <- vapply(names(required), function(x) as.character(packageVersion(x)), "")
           print(actual)
-          print(vapply(c("thisplot", "thisutils"), function(x) {
-            d <- packageDescription(x)
-            if (is.null(d$RemoteSha)) "<not recorded>" else d$RemoteSha
-          }, ""))
+          runtime <- vapply(c("thisplot", "thisutils"), function(x) as.character(packageVersion(x)), "")
+          print(runtime)
+          stopifnot(identical(unname(runtime), c("0.4.7", "0.5.4")))
           stopifnot(as.character(getRversion()) == "4.6.2")
           if (!identical(actual, required)) {
             warning("Shared dependencies differ from the historical runner; paired comparison remains valid.")
