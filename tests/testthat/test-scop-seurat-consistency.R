@@ -406,13 +406,16 @@ test_that("VST on split Assay5 layers matches Seurat's layered reference", {
 
 test_that("VST aligns Assay5 layers with partially overlapping features", {
   set.seed(42)
+  # Vary expression across features so exact rank comparisons test layer
+  # alignment, not floating-point tie-breaking between equal VST scores.
+  gene_means <- seq(0.5, 8, length.out = 80L)
   counts_a <- Matrix::Matrix(
-    matrix(stats::rpois(80 * 30, lambda = 2), nrow = 80),
+    matrix(stats::rpois(80 * 30, lambda = gene_means), nrow = 80),
     sparse = TRUE,
     dimnames = list(paste0("g", 1:80), paste0("a", 1:30))
   )
   counts_b <- Matrix::Matrix(
-    matrix(stats::rpois(80 * 30, lambda = 2), nrow = 80),
+    matrix(stats::rpois(80 * 30, lambda = gene_means), nrow = 80),
     sparse = TRUE,
     dimnames = list(paste0("g", 41:120), paste0("b", 1:30))
   )
@@ -449,6 +452,20 @@ test_that("VST aligns Assay5 layers with partially overlapping features", {
   seurat_meta <- methods::slot(seurat_assay, "meta.data")
   hvf_columns <- grep("^vf_vst_", colnames(scop_meta), value = TRUE)
   expect_identical(rownames(scop_meta), rownames(seurat_meta))
+  for (layer in SeuratObject::Layers(seurat_assay, search = "counts")) {
+    prefix <- paste0("vf_vst_", layer, "_")
+    scores <- seurat_meta[[paste0(prefix, "variance.standardized")]]
+    top_scores <- head(sort(scores[is.finite(scores)], decreasing = TRUE), 21L)
+    # Include rank 21 so a tie at the nfeatures boundary also fails the fixture.
+    expect_length(top_scores, 21L)
+    expect_gt(min(-diff(top_scores)), 1e-8)
+
+    layer_features <- SeuratObject::Features(scop_assay, layer = layer)
+    absent <- which(!rownames(scop_assay) %in% layer_features)
+    layer_columns <- hvf_columns[startsWith(hvf_columns, prefix)]
+    expect_gt(length(absent), 0L)
+    expect_true(all(is.na(scop_meta[absent, layer_columns, drop = FALSE])))
+  }
   scop_hvf <- scop_meta[, hvf_columns, drop = FALSE]
   seurat_hvf <- seurat_meta[, hvf_columns, drop = FALSE]
   logical_cols <- hvf_columns[vapply(scop_hvf, is.logical, logical(1L))]
