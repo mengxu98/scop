@@ -1,5 +1,10 @@
 # scop (development version)
 
+* **feat**: `RunEnrichment()` accepts an explicit `universe` and derives
+  comparison-specific backgrounds from unfiltered DEtest results when genes
+  are extracted from an object. The R and C++ backends now use the same
+  annotation-restricted background and report `UniverseSize`.
+
 * **refactor**: Share heatmap rendering, spatial coordinate preparation,
   integration setup, and analysis inputs. Reuse common C++ and Python
   routines across analysis backends.

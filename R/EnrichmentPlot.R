@@ -408,13 +408,24 @@
 #'   species = "Mus_musculus"
 #' )
 #'
-#' EnrichmentPlot(
-#'   pancreas_sub,
-#'   db = c("MP", "DO"),
-#'   group.by = "CellType",
-#'   group_use = "Ductal",
-#'   ncol = 1
-#' )
+#' # Whether terms pass the cutoff depends on the gene background and annotation release.
+#' mp_do <- pancreas_sub@tools$Enrichment_CellType_wilcox$enrichment
+#' ductal_significant <- with(mp_do, which(
+#'   Groups == "Ductal" & Database %in% c("MP", "DO") &
+#'     is.finite(p.adjust) & p.adjust < 0.05
+#' ))
+#' plot_db <- unique(as.character(mp_do$Database[ductal_significant]))
+#' if (length(plot_db)) {
+#'   print(EnrichmentPlot(
+#'     pancreas_sub,
+#'     db = plot_db,
+#'     group.by = "CellType",
+#'     group_use = "Ductal",
+#'     ncol = 1
+#'   ))
+#' } else {
+#'   message("No MP or DO terms pass adjusted p < 0.05 for Ductal cells.")
+#' }
 EnrichmentPlot <- function(
   object = NULL,
   db = "GO_BP",
