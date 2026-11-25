@@ -7,7 +7,6 @@ test_that("Python matrix bridge preserves sparse storage and orientation", {
   dense_out <- bridge(dense)
 
   expect_s4_class(sparse_out, "sparseMatrix")
-  expect_identical(dim(sparse_out), rev(dim(sparse)))
   expect_equal(as.matrix(sparse_out), t(as.matrix(sparse)))
   expect_identical(dense_out, t(dense))
 })

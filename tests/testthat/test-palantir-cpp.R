@@ -33,7 +33,7 @@ make_palantir_mock <- function(
 }
 
 
-test_that("palantir_compute_kernel_cpp returns correct structure", {
+test_that("palantir_compute_kernel_cpp preserves structure, responds to alpha and is deterministic", {
   dat <- make_palantir_mock()
   out <- palantir_compute_kernel_cpp(
     data = dat$embedding,
@@ -54,17 +54,16 @@ test_that("palantir_compute_kernel_cpp returns correct structure", {
   expect_true(all(out$j >= 1 & out$j <= dat$n_cells))
   non_self <- out$i != out$j
   expect_gt(sum(non_self), 0)
-})
 
-test_that("palantir_compute_kernel_cpp with alpha > 0 produces different kernel", {
-  dat <- make_palantir_mock()
-  out0 <- palantir_compute_kernel_cpp(
+  out2 <- palantir_compute_kernel_cpp(
     data = dat$embedding,
     knn_idx = dat$knn_idx,
     knn_dist = dat$knn_dist,
     knn = dat$n_neighbors,
     alpha = 0.0
   )
+  expect_equal(out, out2)
+
   out1 <- palantir_compute_kernel_cpp(
     data = dat$embedding,
     knn_idx = dat$knn_idx,
@@ -72,7 +71,7 @@ test_that("palantir_compute_kernel_cpp with alpha > 0 produces different kernel"
     knn = dat$n_neighbors,
     alpha = 0.5
   )
-  expect_false(isTRUE(all.equal(out0$x, out1$x)))
+  expect_false(isTRUE(all.equal(out$x, out1$x)))
 })
 
 test_that("palantir_compute_kernel_cpp handles all-zero embedding", {
@@ -99,26 +98,6 @@ test_that("palantir_compute_kernel_cpp handles all-zero embedding", {
   expect_true(all(out$x > 0))
   expect_true(all(is.finite(out$x)))
 })
-
-test_that("palantir_compute_kernel_cpp is deterministic", {
-  dat <- make_palantir_mock(seed = 42)
-  out1 <- palantir_compute_kernel_cpp(
-    data = dat$embedding,
-    knn_idx = dat$knn_idx,
-    knn_dist = dat$knn_dist,
-    knn = dat$n_neighbors,
-    alpha = 0.0
-  )
-  out2 <- palantir_compute_kernel_cpp(
-    data = dat$embedding,
-    knn_idx = dat$knn_idx,
-    knn_dist = dat$knn_dist,
-    knn = dat$n_neighbors,
-    alpha = 0.0
-  )
-  expect_equal(out1, out2)
-})
-
 
 test_that("palantir_normalize_kernel_cpp returns correct structure", {
   dat <- make_palantir_mock()

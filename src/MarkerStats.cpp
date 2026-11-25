@@ -35,15 +35,8 @@ static bool sparse_wilcox_entry_less(
   return a.group1 && !b.group1;
 }
 
-static bool sparse_wilcox_group_less(
-  const SparseWilcoxGroup& a,
-  const SparseWilcoxGroup& b
-) {
-  return a.value < b.value;
-}
-
 static double sparse_wilcox_two_sided_p_from_groups(
-  std::vector<SparseWilcoxGroup>& groups,
+  const std::vector<SparseWilcoxGroup>& groups,
   int n1,
   int n2
 ) {
@@ -51,8 +44,6 @@ static double sparse_wilcox_two_sided_p_from_groups(
   if (n <= 1 || n1 == 0 || n2 == 0) {
     return 1.0;
   }
-
-  std::sort(groups.begin(), groups.end(), sparse_wilcox_group_less);
 
   double rank_sum1 = 0.0;
   double tie_adjust_num = 0.0;
@@ -141,13 +132,16 @@ static double sparse_wilcox_two_sided_p_all_cells(
   std::vector<SparseWilcoxGroup> groups;
   const int zero_n1 = n1 - nonzero_n1;
   const int zero_n2 = n2 - nonzero_n2;
-  if (zero_n1 + zero_n2 > 0) {
-    groups.push_back(SparseWilcoxGroup{0.0, zero_n1, zero_n2});
-  }
-
+  // Observed tied blocks already come in sorted order. Insert the zero
+  // block just before the first nonnegative block (if any).
+  bool insert_zero = zero_n1 + zero_n2 > 0;
   int i = 0;
   const int n_entries = static_cast<int>(entries.size());
   while (i < n_entries) {
+    if (insert_zero && entries[i].value >= 0) {
+      groups.push_back(SparseWilcoxGroup{0.0, zero_n1, zero_n2});
+      insert_zero = false;
+    }
     int j = i + 1;
     int tie_n1 = entries[i].group1 ? 1 : 0;
     int tie_n2 = entries[i].group1 ? 0 : 1;
@@ -161,6 +155,10 @@ static double sparse_wilcox_two_sided_p_all_cells(
     }
     groups.push_back(SparseWilcoxGroup{entries[i].value, tie_n1, tie_n2});
     i = j;
+  }
+
+  if (insert_zero) {
+    groups.push_back(SparseWilcoxGroup{0.0, zero_n1, zero_n2});
   }
 
   return sparse_wilcox_two_sided_p_from_groups(groups, n1, n2);

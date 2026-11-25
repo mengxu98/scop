@@ -101,32 +101,31 @@ RunPCAMap <- function(
   }
 
   log_message("Run PCA projection", verbose = verbose)
-  features <- rownames(pca.out@feature.loadings)
-  ref_pca_data <- ref_data[features, , drop = FALSE]
-  center <- Matrix::rowMeans(ref_pca_data)
-  names(center) <- features
-  sds <- sqrt(fast_row_vars(ref_pca_data))
-  names(sds) <- features
   rotation <- pca.out@feature.loadings
-
   features_common <- Reduce(
     intersect,
-    list(
-      features,
-      rownames(srt_query[[query_assay]]),
-      rownames(srt_ref[[ref_assay]])
+    list(rownames(rotation), rownames(query_data), rownames(ref_data))
+  )
+  if (!length(features_common)) {
+    log_message(
+      "No shared PCA features in the query and reference data layers.",
+      message_type = "error"
     )
-  )
+  }
+  ref_pca_data <- ref_data[features_common, , drop = FALSE]
+  center <- Matrix::rowMeans(ref_pca_data)
+  sds <- sqrt(fast_row_vars(ref_pca_data))
+  if (length(features_common) == 1L && (!is.finite(sds) || sds <= 0)) {
+    log_message(
+      "The sole shared PCA feature must have positive finite reference variance.",
+      message_type = "error"
+    )
+  }
+
   log_message("Use ", length(features_common), " features to calculate PC.", verbose = verbose)
-  query_data <- Matrix::t(
-    query_data[features_common, ]
-  )
-  query_pca <- scale(
-    query_data[, features_common],
-    center[features_common],
-    sds[features_common]
-  ) %*%
-    rotation[features_common, ]
+  query_data <- Matrix::t(query_data[features_common, , drop = FALSE])
+  query_pca <- scale(query_data, center, sds) %*%
+    rotation[features_common, , drop = FALSE]
 
   srt_query[["ref.pca"]] <- SeuratObject::CreateDimReducObject(
     embeddings = query_pca,

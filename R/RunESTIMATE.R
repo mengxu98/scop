@@ -133,13 +133,21 @@ run_estimate_bundle <- function(
   input = list(),
   verbose = TRUE
 ) {
-  expr <- estimate_prepare_matrix(count_matrix)
+  signatures <- NULL
+  sparse_common <- NULL
+  if (isTRUE(filter_common_genes) && identical(class(count_matrix)[[1L]], "dgCMatrix")) {
+    sparse_common <- function() {
+      signatures <<- estimate_get_signatures()
+      signatures$common_genes
+    }
+  }
+  expr <- estimate_prepare_matrix(count_matrix, sparse_common = sparse_common)
   log_message(
     "ESTIMATE input: {.val {nrow(expr)}} genes x {.val {ncol(expr)}} samples",
     verbose = verbose
   )
 
-  signatures <- estimate_get_signatures()
+  if (is.null(signatures)) signatures <- estimate_get_signatures()
   if (isTRUE(filter_common_genes)) {
     common <- intersect(rownames(expr), signatures$common_genes)
     if (length(common) == 0L) {
@@ -177,7 +185,7 @@ run_estimate_bundle <- function(
   )
 
   scores <- estimate_ssgsea_scores(
-    expr = expr,
+    expr = as.matrix(expr),
     gene_sets = overlaps
   )
   scores <- as.data.frame(scores, check.names = FALSE)
@@ -233,9 +241,13 @@ estimate_get_signatures <- function() {
   )
 }
 
-estimate_prepare_matrix <- function(x) {
+estimate_prepare_matrix <- function(x, sparse_common = NULL) {
   if (is.null(x)) {
     log_message("{.arg count_matrix} must be provided.", message_type = "error")
+  }
+  if (!is.null(sparse_common) && identical(class(x)[[1L]], "dgCMatrix")) {
+    sparse <- estimate_prepare_sparse_matrix(x, sparse_common)
+    if (!is.null(sparse)) return(sparse)
   }
   mat <- as.matrix(x)
   dim_names <- dimnames(mat)
@@ -271,6 +283,43 @@ estimate_prepare_matrix <- function(x) {
     )
   }
   mat
+}
+
+# Keep sparse data compressed only when the common-gene filter will
+# shrink it substantially. NULL signals the original allocation path.
+estimate_prepare_sparse_matrix <- function(x, sparse_common) {
+  genes <- rownames(x)
+  samples <- colnames(x)
+  if (is.null(genes) || is.null(samples) || anyNA(genes) ||
+    !is.null(attributes(genes)) || !is.null(attributes(samples)) ||
+    any(!nzchar(genes)) || any(!nzchar(samples)) || !length(x@x) ||
+    !is.null(attributes(x@Dim)) || !is.null(attributes(x@p)) ||
+    !is.null(attributes(x@i)) || !is.null(attributes(x@x)) ||
+    !isTRUE(methods::validObject(x, test = TRUE))) {
+    return(NULL)
+  }
+  # Matrix may reserve sparse slots beyond the live entries in the final
+  # column pointer. Preserve the original conversion path in that case.
+  n_stored <- x@p[[length(x@p)]]
+  if (length(x@x) != n_stored || length(x@i) != n_stored) return(NULL)
+  genes <- toupper(genes)
+  if (anyDuplicated(genes)) return(NULL)
+  common <- genes %in% sparse_common()
+  n_common <- sum(common)
+  if (n_common == 0L || n_common > 0.55 * length(genes)) return(NULL)
+
+  values <- x@x
+  nonzero <- is.finite(values) & values != 0
+  keep <- logical(nrow(x))
+  keep[x@i[nonzero] + 1L] <- TRUE
+  n_common <- sum(common & keep)
+  if (n_common == 0L || n_common > 0.55 * sum(keep)) return(NULL)
+
+  # rowsum() previously gave a positive zero for sanitized or
+  # explicitly stored zero entries, including negative zero.
+  if (!all(nonzero)) x@x[!nonzero] <- 0
+  dimnames(x) <- list(genes, samples)
+  if (all(keep)) x else x[keep, , drop = FALSE]
 }
 
 estimate_ssgsea_scores <- function(expr, gene_sets) {
@@ -335,15 +384,30 @@ estimate_seurat_pseudobulk <- function(
     log_message("{.arg group.by} is not in Seurat metadata.", message_type = "error")
   }
 
-  sample_vec <- if (!is.null(sample.by)) meta[[sample.by]] else meta[[group.by]]
-  sample_vec <- as.character(sample_vec)
+  expr <- GetAssayData5(object, assay = assay, layer = layer)
+  meta_rows <- match(colnames(expr), rownames(meta))
+  if (!ncol(expr)) {
+    log_message("Selected Seurat assay layer has no cells.", message_type = "error")
+  }
+  if (length(meta_rows) != ncol(expr) || anyNA(meta_rows) || anyDuplicated(meta_rows)) {
+    log_message(
+      "Selected Seurat assay layer cells must match distinct Seurat metadata rows.",
+      message_type = "error"
+    )
+  }
+
+  sample_vec <- as.character(meta[[sample.by %||% group.by]][meta_rows])
   if (any(is.na(sample_vec) | !nzchar(sample_vec))) {
     log_message(
       "Pseudo-bulk sample labels contain missing or empty values.",
       message_type = "error"
     )
   }
-  group_vec <- if (!is.null(group.by)) as.character(meta[[group.by]]) else sample_vec
+  group_vec <- if (!is.null(group.by)) {
+    as.character(meta[[group.by]][meta_rows])
+  } else {
+    sample_vec
+  }
   if (any(is.na(group_vec) | !nzchar(group_vec))) {
     log_message(
       "Pseudo-bulk group labels contain missing or empty values.",
@@ -364,7 +428,6 @@ estimate_seurat_pseudobulk <- function(
     )
   }
 
-  expr <- GetAssayData5(object, assay = assay, layer = layer)
   if (!is.null(features)) {
     feature_key <- toupper(rownames(expr))
     features_key <- toupper(features)
@@ -374,7 +437,8 @@ estimate_seurat_pseudobulk <- function(
   if (!inherits(expr, c("dgCMatrix", "matrix", "Matrix"))) {
     expr <- as_matrix(expr)
   }
-  sample_factor <- factor(sample_vec, levels = unique(sample_vec))
+  # Preserve metadata sample order while matching expression columns by cell name.
+  sample_factor <- factor(sample_vec, levels = unique(sample_vec[order(meta_rows)]))
   design <- Matrix::sparseMatrix(
     i = seq_along(sample_factor),
     j = as.integer(sample_factor),

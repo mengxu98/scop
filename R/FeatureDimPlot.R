@@ -523,22 +523,7 @@ FeatureDimPlot <- function(
       message_type = "error"
     )
   }
-  if (!is.null(cells.highlight) && isFALSE(cells.highlight)) {
-    if (!any(cells.highlight %in% colnames(srt@assays[[1]]))) {
-      log_message(
-        "No cells in {.val {cells.highlight}} found in {.cls Seurat}",
-        message_type = "error"
-      )
-    }
-    if (!all(cells.highlight %in% colnames(srt@assays[[1]]))) {
-      log_message(
-        "Some cells in {.val {cells.highlight}} not found in {.cls Seurat}",
-        message_type = "warning",
-        verbose = verbose
-      )
-    }
-    cells.highlight <- intersect(cells.highlight, colnames(srt@assays[[1]]))
-  }
+  cells.highlight <- normalize_plot_highlight(cells.highlight, colnames(srt), verbose)
 
   feature_input <- features
   features <- unique(features)
@@ -601,12 +586,12 @@ FeatureDimPlot <- function(
     status <- CheckDataType(srt, layer = layer, assay = assay)
     log_message("Data type detected in {.val {layer}} layer: {.val {status}}", verbose = verbose)
     if (status %in% c("raw_counts", "raw_normalized_counts")) {
-      srt@meta.data[["CoExp"]] <- feature_cor_geometric_mean(
+      coexp <- feature_cor_geometric_mean(
         assay_data[features_gene, , drop = FALSE],
         log_normalized = FALSE
       )
     } else if (status == "log_normalized_counts") {
-      srt@meta.data[["CoExp"]] <- feature_cor_geometric_mean(
+      coexp <- feature_cor_geometric_mean(
         assay_data[features_gene, , drop = FALSE],
         log_normalized = TRUE
       )
@@ -616,6 +601,7 @@ FeatureDimPlot <- function(
         message_type = "error"
       )
     }
+    srt@meta.data[["CoExp"]] <- coexp[rownames(srt@meta.data)]
     features <- c(features, "CoExp")
     features_meta <- c(features_meta, "CoExp")
   }
@@ -1258,6 +1244,9 @@ FeatureDimPlot <- function(
       palette = palette,
       palcolor = palcolor
     )
+    # Shared point scales depend on all cells, not on the current panel.
+    # Fill the cache lazily so panels without usable values keep their fallback.
+    point_scales <- new.env(parent = emptyenv())
     plist <- lapply(
       stats::setNames(rownames(comb), rownames(comb)), function(i) {
         f <- comb[i, "feature"]
@@ -1354,38 +1343,31 @@ FeatureDimPlot <- function(
               length.out = 100
             )
           } else {
-            if (keep_scale == "feature") {
-              colors_value <- seq(
-                lower_cutoff %||%
-                  stats::quantile(
-                    dat_exp[is.finite(dat_exp[, f]), f],
-                    lower_quantile,
-                    na.rm = TRUE
-                  ),
-                upper_cutoff %||%
-                  stats::quantile(
-                    dat_exp[is.finite(dat_exp[, f]), f],
-                    upper_quantile,
-                    na.rm = TRUE
-                  ) +
-                  0.001,
-                length.out = 100
-              )
-            }
-            if (keep_scale == "all") {
-              all_values <- as_matrix(dat_exp[, features])
-              colors_value <- seq(
-                lower_cutoff %||%
-                  stats::quantile(
-                    all_values[is.finite(all_values)],
-                    lower_quantile,
-                    na.rm = TRUE
-                  ),
-                upper_cutoff %||%
-                  stats::quantile(all_values, upper_quantile, na.rm = TRUE) +
-                  0.001,
-                length.out = 100
-              )
+            scale_key <- if (keep_scale == "feature") paste0("feature:", f) else "all"
+            colors_value <- point_scales[[scale_key]]
+            if (is.null(colors_value)) {
+              if (keep_scale == "feature") {
+                finite_values <- if (is.null(lower_cutoff) || is.null(upper_cutoff)) {
+                  values <- dat_exp[, f]
+                  values[is.finite(values)]
+                }
+                lower <- lower_cutoff %||% stats::quantile(
+                  finite_values, lower_quantile, na.rm = TRUE
+                )
+                upper <- upper_cutoff %||% stats::quantile(
+                  finite_values, upper_quantile, na.rm = TRUE
+                )
+              } else {
+                all_values <- as_matrix(dat_exp[, features])
+                lower <- lower_cutoff %||% stats::quantile(
+                  all_values[is.finite(all_values)], lower_quantile, na.rm = TRUE
+                )
+                upper <- upper_cutoff %||% stats::quantile(
+                  all_values, upper_quantile, na.rm = TRUE
+                )
+              }
+              colors_value <- seq(lower, upper + 0.001, length.out = 100)
+              point_scales[[scale_key]] <- colors_value
             }
           }
         }
@@ -1884,22 +1866,7 @@ FeatureDimPlot3D <- function(
       message_type = "error"
     )
   }
-  if (!is.null(cells.highlight) && isFALSE(cells.highlight)) {
-    if (!any(cells.highlight %in% colnames(srt@assays[[1]]))) {
-      log_message(
-        "No cells in 'cells.highlight' found in srt.",
-        message_type = "error"
-      )
-    }
-    if (!all(cells.highlight %in% colnames(srt@assays[[1]]))) {
-      log_message(
-        "Some cells in 'cells.highlight' not found in srt.",
-        message_type = "warning",
-        verbose = verbose
-      )
-    }
-    cells.highlight <- intersect(cells.highlight, colnames(srt@assays[[1]]))
-  }
+  cells.highlight <- normalize_plot_highlight(cells.highlight, colnames(srt), verbose)
   if (isTRUE(cells.highlight)) {
     cells.highlight <- colnames(srt@assays[[1]])
   }
@@ -1984,12 +1951,12 @@ FeatureDimPlot3D <- function(
     status <- CheckDataType(srt, layer = layer, assay = assay)
     log_message("Data type detected in ", layer, " layer: ", status, verbose = verbose)
     if (status %in% c("raw_counts", "raw_normalized_counts")) {
-      srt@meta.data[["CoExp"]] <- feature_cor_geometric_mean(
+      coexp <- feature_cor_geometric_mean(
         assay_data[features_gene, , drop = FALSE],
         log_normalized = FALSE
       )
     } else if (status == "log_normalized_counts") {
-      srt@meta.data[["CoExp"]] <- feature_cor_geometric_mean(
+      coexp <- feature_cor_geometric_mean(
         assay_data[features_gene, , drop = FALSE],
         log_normalized = TRUE
       )
@@ -1999,6 +1966,7 @@ FeatureDimPlot3D <- function(
         message_type = "error"
       )
     }
+    srt@meta.data[["CoExp"]] <- coexp[rownames(srt@meta.data)]
     features <- c(features, "CoExp")
     features_meta <- c(features_meta, "CoExp")
   }
@@ -2033,10 +2001,11 @@ FeatureDimPlot3D <- function(
   dat_dim <- srt@reductions[[reduction]]@cell.embeddings
   colnames(dat_dim) <- paste0(reduction_key, seq_len(ncol(dat_dim)))
   rownames(dat_dim) <- rownames(dat_dim) %||% colnames(srt@assays[[1]])
+  cells <- intersect(rownames(dat_exp), rownames(dat_dim))
   dat_use <- cbind(
-    dat_exp,
-    dat_dim[rownames(dat_exp), , drop = FALSE],
-    dat_sp[rownames(dat_exp), , drop = FALSE]
+    dat_exp[cells, , drop = FALSE],
+    dat_dim[cells, , drop = FALSE],
+    dat_sp[cells, , drop = FALSE]
   )
 
   coordinate_names <- paste0(reduction_key, dims[seq_len(3L)])
@@ -2170,11 +2139,10 @@ FeatureDimPlot3D <- function(
   )
 
   if ((!is.null(save) && is.character(save) && nchar(save) > 0)) {
-    htmlwidgets::saveWidget(
+    save_dim_plot_widget(
       widget = plotly::as_widget(p),
       file = save
     )
-    unlink(gsub("\\.html", "_files", save), recursive = TRUE)
   }
 
   return(p)
@@ -2182,6 +2150,8 @@ FeatureDimPlot3D <- function(
 
 feature_dim_values <- function(srt, assay, layer, assay_data, features, features_gene,
                                features_meta, features_embedding) {
+  cells <- colnames(srt)
+  blocks <- list()
   if (length(features_gene) > 0) {
     assay_data <- assay_data %||% GetAssayData5(
       srt,
@@ -2189,43 +2159,32 @@ feature_dim_values <- function(srt, assay, layer, assay_data, features, features
       layer = layer,
       features = features_gene
     )
-    if (all(rownames(srt@assays[[assay]]) %in% features_gene)) {
-      dat_gene <- Matrix::t(
-        as_matrix(
-          assay_data
-        )
-      )
-    } else {
-      dat_gene <- Matrix::t(
-        as_matrix(
-          assay_data[features_gene, , drop = FALSE]
-        )
-      )
+    if (!all(rownames(srt@assays[[assay]]) %in% features_gene)) {
+      assay_data <- assay_data[features_gene, , drop = FALSE]
     }
-  } else {
-    dat_gene <- matrix(nrow = ncol(srt@assays[[1]]), ncol = 0)
+    blocks$gene <- feature_dim_align_cells(Matrix::t(as_matrix(assay_data)), cells)
   }
   if (length(features_meta) > 0) {
-    dat_meta <- as_matrix(srt@meta.data[, features_meta, drop = FALSE])
-  } else {
-    dat_meta <- matrix(nrow = ncol(srt@assays[[1]]), ncol = 0)
+    meta <- as_matrix(srt@meta.data[, features_meta, drop = FALSE])
+    blocks$meta <- feature_dim_align_cells(meta, cells)
   }
   if (length(features_embedding) > 0) {
-    dat_embedding <- as_matrix(
-      SeuratObject::FetchData(
-        srt,
-        vars = features_embedding
-      )
-    )
-  } else {
-    dat_embedding <- matrix(nrow = ncol(srt@assays[[1]]), ncol = 0)
+    embedding <- as_matrix(SeuratObject::FetchData(
+      srt, vars = features_embedding, cells = cells, clean = "none"
+    ))
+    blocks$embedding <- feature_dim_align_cells(embedding, cells)
   }
-  dat_exp <- as_matrix(do.call(
-    cbind,
-    list(dat_gene, dat_meta, dat_embedding)
-  ))
+  dat_exp <- as_matrix(do.call(cbind, blocks))
   features <- unique(features[
     features %in% c(features_gene, features_meta, features_embedding)
   ])
   list(values = dat_exp, features = features)
+}
+
+feature_dim_align_cells <- function(values, cells) {
+  if (!identical(rownames(values), cells)) {
+    values <- values[match(cells, rownames(values)), , drop = FALSE]
+    rownames(values) <- cells
+  }
+  values
 }

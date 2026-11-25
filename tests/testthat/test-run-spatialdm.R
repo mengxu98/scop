@@ -163,3 +163,31 @@ test_that("SpatialDM uses a standalone pinned Python environment", {
     "standalone"
   )
 })
+
+test_that("SpatialDM returned spot and interaction identifiers stay exact", {
+  coords <- withr::local_tempfile()
+  writeLines(c("cell_id\tx\ty", "001\t1.5\t0", "NA\t2\t3", "a#b\t4\t5", "O'Neil\t6\t7"), coords)
+  out <- spatialdm_read_table(coords, c("cell_id", "x", "y"), "coordinates")
+  expect_identical(out$cell_id, c("001", "NA", "a#b", "O'Neil"))
+  expect_identical(out$x, c(1.5, 2, 4, 6))
+  expect_identical(out$y, c(0L, 3L, 5L, 7L))
+  writeLines(c("cell_id\tx\ty", "001\t1.5\t0", "002\t2\t3"), coords)
+  numeric_ids <- spatialdm_read_table(coords, "cell_id", "coordinates")
+  expect_identical(numeric_ids$cell_id, c("001", "002"))
+
+  local <- withr::local_tempfile()
+  writeLines(c("\t001\t  padded  ", "007\t1.5\tNaN", "NA\t2\t0"), local)
+  scores <- spatialdm_read_matrix(local, c("001", "  padded  "))
+  expect_identical(rownames(scores), c("007", "NA"))
+  expect_identical(colnames(scores), c("001", "  padded  "))
+  expect_identical(unname(scores), matrix(c(1.5, 2, NA_real_, 0), nrow = 2))
+  expect_error(spatialdm_read_matrix(local, c("  padded  ", "001")), "spot IDs are misaligned")
+
+  global <- withr::local_tempfile()
+  writeLines(c("interaction,annotation,z_score,selected", "007,NA,NaN,TRUE", "NA,020,2,FALSE"), global)
+  result <- spatialdm_read_table(global, "interaction", "global", sep = ",")
+  expect_identical(result$interaction, c("007", "NA"))
+  expect_identical(result$annotation, c("NA", "020"))
+  expect_identical(as.numeric(result$z_score), c(NA_real_, 2))
+  expect_identical(result$selected, c(TRUE, FALSE))
+})

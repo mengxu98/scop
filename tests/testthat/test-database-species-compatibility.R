@@ -157,3 +157,72 @@ test_that("RunMetabolism stores canonical species with unchanged pathway scores"
   expect_identical(out$species, "Homo_sapiens")
   expect_length(out$gene_sets, 1L)
 })
+
+test_that("AnnotateFeatures joins standard GTF gene records exactly by symbol", {
+  object <- species_compatibility_object()
+  gtf <- withr::local_tempfile(fileext = ".gtf")
+  writeLines(c(
+    "# example gene annotation",
+    'chr1\tsource\ttranscript\t13\t18\t.\t+\t.\tgene_id "ID2.1"; gene_name "G2";',
+    'chr2\tsource\tgene\t11\t21\t.\t+\t.\tgene_id "ID2.1"; gene_name "G2"; gene_type "protein coding; curated #1";',
+    'chr2\tsource\tgene\t11\t21\t.\t+\t.\tgene_id "ID2.1"; gene_name "G2";',
+    'chr3\tsource\tgene\t31\t41\t.\t-\t.\tgene_id "ID2.1"; gene_name "G2";',
+    "# an interleaved comment",
+    'chr4\tsource\tgene\t51\t61\t.\t+\t.\tgene_id "ID12.2"; gene_name "G12";',
+    'chr5\tsource\tgene\t71\t81\t.\t+\t.\tgene_id "ID71";'
+  ), gtf)
+  annotated <- AnnotateFeatures(object, gtf = gtf, verbose = FALSE)
+  result <- GetFeaturesData(annotated)
+  expect_identical(rownames(result), rownames(object))
+  expect_identical(
+    unname(unlist(result["G2", ], use.names = FALSE)),
+    c("chr2;chr3", "gene", "11;31", "21;41", "+;-", "ID2.1", "G2", "protein coding; curated #1")
+  )
+  expect_identical(result["G12", "gene_id"], "ID12.2")
+  expect_identical(result["G12", "gene_type"], NA_character_)
+  expect_true(all(is.na(result["G1", ])))
+  expect_true(methods::validObject(annotated, test = TRUE))
+  expect_identical(SeuratObject::LayerData(annotated, layer = "counts"),
+                   SeuratObject::LayerData(object, layer = "counts"))
+})
+
+test_that("AnnotateFeatures accepts GTF column selection and an independent key", {
+  counts <- Matrix::sparseMatrix(
+    i = 1:3, j = 1:3, x = 1L, dims = c(3L, 3L),
+    dimnames = list(c("ID2.1", "ID1", "ID1.6"), c("C1", "C2", "C3"))
+  )
+  object <- SeuratObject::CreateSeuratObject(counts)
+  object <- AddFeaturesData(
+    object,
+    data.frame(gene_name = rep("existing", 3L), keep = 1:3, row.names = rownames(counts))
+  )
+  gtf <- withr::local_tempfile(fileext = ".gtf.gz")
+  conn <- gzfile(gtf, "wt")
+  tryCatch(writeLines(c(
+    "# transcript-only fallback",
+    'chr1\tensembl\ttranscript\t1\t3\t.\t+\t.\tgene_id "ID1.6"; gene_name "first gene"; gene_biotype "type A";',
+    'chr1\tensembl\ttranscript\t4\t5\t.\t+\t.\tgene_biotype "type B"; gene_name "second gene"; gene_id "ID2.1";',
+    'chr1\tensembl\texon\t2\t2\t.\t+\t.\tgene_id "ID1.6"; gene_name "not used";'
+  ), conn), finally = close(conn))
+
+  run <- function(overwrite) {
+    GetFeaturesData(AnnotateFeatures(
+      object, gtf = gtf, IDtype = "ensembl_id", merge_gtf_by = "gene_id",
+      columns = c("source", "gene_name", "gene_biotype"), overwrite = overwrite,
+      verbose = FALSE
+    ))
+  }
+  preserved <- run(FALSE)
+  expect_identical(preserved$gene_name, rep("existing", 3L))
+  replaced <- run(TRUE)
+  expect_identical(rownames(replaced), rownames(counts))
+  expect_identical(names(replaced), c("gene_name", "keep", "source", "gene_biotype"))
+  expect_identical(replaced$keep, 1:3)
+  expect_identical(replaced$source, c("ensembl", NA, "ensembl"))
+  expect_identical(replaced$gene_name, c("second gene", NA, "first gene"))
+  expect_identical(replaced$gene_biotype, c("type B", NA, "type A"))
+  expect_error(
+    AnnotateFeatures(object, gtf = gtf, merge_gtf_by = "absent_key", verbose = FALSE),
+    "^No GTF records contain values"
+  )
+})

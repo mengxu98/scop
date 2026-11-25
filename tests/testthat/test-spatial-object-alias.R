@@ -186,3 +186,23 @@ test_that("spatial object input rejects ambiguous or missing input", {
     expect_error(call(), "object.*srt")
   }
 })
+
+test_that("empty spot QC rules pass evaluated assay spots without including other cells", {
+  utils::data("visium_human_pancreas_sub", package = "scop", envir = environment())
+  counts <- SeuratObject::LayerData(visium_human_pancreas_sub, assay = "Spatial", layer = "counts")
+  counts <- counts[, seq_len(120L)]
+  srt <- SeuratObject::CreateSeuratObject(counts)
+  selected <- colnames(srt)[seq.int(2L, ncol(srt), by = 2L)]
+  srt[["ALT"]] <- SeuratObject::CreateAssay5Object(counts = counts[, selected])
+  qc <- RunSpotQC(srt, assay = "ALT", qc_metrics = character(), verbose = FALSE)
+  expected <- rep(NA_character_, ncol(srt))
+  expected[colnames(srt) %in% selected] <- "Pass"
+  expect_identical(as.character(qc$SpotQC), expected)
+  expect_identical(levels(qc$SpotQC), c("Pass", "Fail"))
+  filtered <- RunSpotQC(
+    srt, assay = "ALT", qc_metrics = character(),
+    return_filtered = TRUE, verbose = FALSE
+  )
+  expect_identical(colnames(filtered), selected)
+  expect_identical(as.character(filtered$SpotQC), rep("Pass", length(selected)))
+})

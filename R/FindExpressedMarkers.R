@@ -733,11 +733,46 @@ find_conserved_marker_combine_pval <- function(
   pvalues <- as.matrix(pvalues)
   out <- if (identical(backend, "cpp")) {
     combine_conserved_pvalues_cpp(pvalues, method)
+  } else if (identical(method, "sump")) {
+    apply(pvalues, 1L, conserved_marker_sump_r)
   } else {
     apply(pvalues, 1, function(x) metap(x, method = method)$p)
   }
   names(out) <- rownames(pvalues)
   out
+}
+
+conserved_marker_sump_r <- function(p) {
+  p <- p[is.finite(p) & p >= 0 & p <= 1]
+  k <- length(p)
+  if (k < 2L) return(NA_real_)
+
+  x <- sum(p)
+  if (x <= 0) return(0)
+  if (x >= k) return(1)
+  if (x == k / 2) return(0.5)
+
+  # Irwin-Hall CDF: reflect to the lower half and avoid the cancellation
+  # of the alternating polynomial. Same one-sided convention as C++.
+  reflect <- x > k / 2
+  if (reflect) x <- k - x
+  if (x <= 1) {
+    lower <- exp(k * log(x) - lgamma(k + 1))
+  } else {
+    # At each order work[i+1] contains the CDF at x-i. Entries
+    # outside the support remain 1 (left) or 0 (right).
+    last <- as.integer(x)
+    shifted <- x - seq.int(0L, last)
+    work <- c(rep(1, last), shifted[last + 1L], 0)
+    for (order in seq.int(2L, k)) {
+      active <- seq.int(max(1L, last - order + 2L), last + 1L)
+      weight <- shifted[active] / order
+      work[active] <- weight * work[active] +
+        (1 - weight) * work[active + 1L]
+    }
+    lower <- work[1L]
+  }
+  if (reflect) 1 - lower else lower
 }
 
 metap <- function(

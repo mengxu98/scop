@@ -136,7 +136,6 @@ test_that("paga_connectivities_cpp handles single group gracefully", {
   expect_equal(dim(out$connectivities), c(1, 1))
   expect_equal(dim(out$connectivities_tree), c(1, 1))
   expect_equal(out$group_sizes, n_cells)
-  expect_equal(sum(out$group_sizes), n_cells)
   expect_equal(out$directed_edges[1, 1], n_cells * 3)
   expect_equal(out$connectivities[1, 1], 0)
 })
@@ -435,6 +434,53 @@ test_that("cell-level DPT returns per-cell pseudotime", {
   expect_true(all(out$pseudotime >= 0))
   expect_true(max(out$pseudotime) <= 1 + 1e-10)
   expect_equal(out$pseudotime[out$root_cell], 0, tolerance = 1e-10)
+})
+
+
+test_that("PAGA overlay aligns observed centroids without dropping unused graph levels", {
+  cells <- c("c8", "c3", "c4", "c1", "c6", "c7", "c2", "c5")
+  counts <- Matrix::Matrix(
+    matrix(1L, 3L, length(cells), dimnames = list(c("g1", "g2", "g3"), cells)),
+    sparse = TRUE
+  )
+  srt <- SeuratObject::CreateSeuratObject(counts)
+  srt$group <- factor(c("A", "C", "A", "A", "C", "A", "C", "A"), levels = c("C", "B", "A"))
+  current <- cbind(
+    PC_1 = c(6, -4, 2, 7, 2, -3, -1, 4),
+    PC_2 = c(0, 2, -2, 2, 6, 12, -3, 4)
+  )
+  rownames(current) <- cells
+  srt[["pca"]] <- SeuratObject::CreateDimReducObject(current, assay = "RNA", key = "PC_")
+
+  knn <- cbind(c(2L, 1L, 4L, 3L, 6L, 5L, 8L, 7L), c(3L, 4L, 5L, 6L, 7L, 8L, 1L, 2L))
+  run <- function(overlay) run_paga_cpp(
+    srt, group.by = "group", linear_reduction = "pca", nonlinear_reduction = "pca",
+    n_pcs = 2L, n_neighbors = 3L, paga_layout = "circle", threshold = 0, cores = 1L,
+    embedded_with_PAGA = overlay, knn_override = list(idx = knn), verbose = FALSE
+  )
+  graph_only <- run(FALSE)
+  out <- run(TRUE)
+  groups <- as.character(srt$group)
+  graph_rows <- match(groups, levels(srt$group))
+  tool <- out@tools$PAGA
+
+  expected_center <- t(vapply(
+    groups, function(g) colMeans(current[groups == g, , drop = FALSE]), numeric(2L)
+  ))
+  offsets <- current - expected_center
+  expected <- tool$pos[graph_rows, , drop = FALSE] +
+    sweep(offsets, 2L, apply(offsets, 2L, stats::sd), "/") * 0.1
+  dimnames(expected) <- list(cells, c("PAGA_1", "PAGA_2"))
+
+  expect_identical(out[[]], srt[[]])
+  expect_identical(out@misc$group_sizes, c(C = 3, B = 0, A = 5))
+  expect_identical(dim(tool$connectivities), c(3L, 3L))
+  expect_equal(tool$connectivities[2L, ], rep(0, 3L), tolerance = 0)
+  expect_identical(tool$connectivities, graph_only@tools$PAGA$connectivities)
+  expect_identical(tool$connectivities_tree, graph_only@tools$PAGA$connectivities_tree)
+  expect_identical(tool$pos, graph_only@tools$PAGA$pos)
+  expect_true(tool$parameters$embedded_with_PAGA)
+  expect_equal(SeuratObject::Embeddings(out[["paga"]]), expected, tolerance = 1e-12)
 })
 
 test_that("RunPAGA cpp infer_pseudotime writes dpt_pseudotime to meta.data", {

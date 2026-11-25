@@ -32,6 +32,11 @@
 #' @param dims For `plot_type = "embedding_network"`: dimensions to plot.
 #' @param layout Layout used for graph-based network views. `"chord"` can also
 #'   be requested via `plot_type = "circle"` for backward compatibility.
+#'   Use `"hierarchy"` with `plot_type = "pathway"`, `"individual"` or
+#'   `"individual_lr"` for a directional sender-to-receiver network.
+#'   The circle layout remains the default.
+#'   Cell positions and colors are kept across pathways from the same dataset;
+#'   paths returned by a single call also share an edge-width scale.
 #' @param link_curvature Curvature used for circle-like differential links and
 #'   flow edges.
 #' @param edge_size Range used for scaling edge widths.
@@ -55,6 +60,11 @@
 #' @param legend.title Legend title.
 #' @param ... Arguments passed to other functions.
 #' @return A ggplot, patchwork, or recorded plot object.
+#' @details For side-by-side networks, explicitly reuse the same named
+#'   `cell_palcolor` and `link_palcolor` vectors for consistent identity
+#'   colors across filtered plots. If edge widths are normalized separately
+#'   by the layout, compare the stored scores rather than comparing line
+#'   widths across panels.
 #' @export
 #'
 #' @examples
@@ -519,8 +529,60 @@ CCCNetworkPlot <- function(
   }
 
   if (plot_type %in% c("pathway", "individual", "individual_lr")) {
+    hierarchy <- NULL
+    if (identical(layout, "hierarchy")) {
+      if (missing(node_size)) node_size <- 3.3
+      if (missing(edge_size)) edge_size <- c(0.2, 1.25)
+      if (missing(arrow_length)) arrow_length <- grid::unit(1.4, "mm")
+      if (missing(legend.position)) legend.position <- "bottom"
+      if (missing(legend.direction)) {
+        legend.direction <- if (legend.position %in% c("top", "bottom")) {
+          "horizontal"
+        } else {
+          "vertical"
+        }
+      }
+      hierarchy <- list(
+        directed = if (missing(directed)) TRUE else isTRUE(directed),
+        arrow = grid::arrow(
+          type = arrow_type, angle = arrow_angle, length = arrow_length
+        ),
+        curvature = link_curvature
+      )
+    }
+    finish_pathway_plots <- function(plots) {
+      if (!is.null(hierarchy)) {
+        max_weight <- max(vapply(plots, function(p) max(abs(p$data$weight)), numeric(1)))
+        metric <- if (display_by == "interaction") {
+          "Sum of selected LR scores"
+        } else {
+          switch(ccc_circle_value_col(value),
+            count = "Interaction count", mean = "Mean score",
+            max = "Maximum score", sum = "Total score"
+          )
+        }
+        if (any(vapply(plots, function(p) any(p$data$weight < 0), logical(1)))) {
+          metric <- paste(metric, "(magnitude)")
+        }
+        plots <- lapply(plots, function(p) {
+          p + ggplot2::scale_linewidth_continuous(
+            name = legend.title %||% metric,
+            range = edge_size, limits = c(0, max_weight),
+            breaks = function(limits) {
+              ticks <- scales::breaks_extended(n = 4)(limits)
+              ticks <- ticks[ticks > 0 & ticks <= limits[2]]
+              if (length(ticks)) ticks else limits[2]
+            },
+            guide = ggplot2::guide_legend(
+              override.aes = list(colour = "grey30", alpha = 1, arrow = NULL)
+            )
+          )
+        })
+      }
+      simplify_cc_plot_list(plots)
+    }
     if (identical(method, "CellChat")) {
-      if (!identical(layout, "circle")) {
+      if (!layout %in% c("circle", "hierarchy")) {
         log_message(
           "{.arg layout} is ignored for {.val plot_type = {plot_type}}; CellChat pathway/LR networks use the circle layout",
           message_type = "warning"
@@ -532,10 +594,12 @@ CCCNetworkPlot <- function(
         dataset = dataset
       )
       cellchat_object <- obj_info$object
-      plot_cellchat_circle <- function(sig,
-                                       pairLR = NULL,
-                                       plot_title = NULL,
-                                       plot_subtitle = NULL) {
+      if (!is.null(hierarchy)) {
+        hierarchy$levels <- ccc_group_levels(cellchat_object@idents)
+      }
+      plot_cellchat_pathway <- function(
+        sig, pairLR = NULL, plot_title = NULL, plot_subtitle = NULL
+      ) {
         ccc_cellchat_circle_network_plot(
           srt = srt,
           condition = condition,
@@ -560,6 +624,7 @@ CCCNetworkPlot <- function(
           link_palcolor = palette_cfg$link_palcolor,
           title = plot_title,
           subtitle = plot_subtitle,
+          hierarchy = hierarchy,
           legend.position = legend.position,
           legend.direction = legend.direction,
           legend.title = legend.title,
@@ -583,7 +648,7 @@ CCCNetworkPlot <- function(
           )
         }
         plots <- lapply(pathways_to_show, function(sig) {
-          plot_cellchat_circle(
+          plot_cellchat_pathway(
             sig = sig,
             plot_title = if (length(pathways_to_show) == 1L) {
               title %||% sig
@@ -593,7 +658,7 @@ CCCNetworkPlot <- function(
             plot_subtitle = if (length(pathways_to_show) == 1L) subtitle else NULL
           )
         })
-        return(simplify_cc_plot_list(plots))
+        return(finish_pathway_plots(plots))
       }
 
       if (is.null(signaling)) {
@@ -609,7 +674,7 @@ CCCNetworkPlot <- function(
         )
       }
       plots <- lapply(signaling, function(sig) {
-        plot_cellchat_circle(
+        plot_cellchat_pathway(
           sig = sig,
           pairLR = pairLR.use,
           plot_title = title %||% if (is.null(pairLR.use)) {
@@ -624,10 +689,10 @@ CCCNetworkPlot <- function(
           plot_subtitle = subtitle
         )
       })
-      return(simplify_cc_plot_list(plots))
+      return(finish_pathway_plots(plots))
     }
 
-    if (!identical(layout, "circle")) {
+    if (!layout %in% c("circle", "hierarchy")) {
       log_message(
         "{.arg layout} is ignored for {.val plot_type = {plot_type}} when using pathway-aware generic CCC results; the circle layout is used",
         message_type = "warning"
@@ -643,6 +708,11 @@ CCCNetworkPlot <- function(
       thresh = thresh
     )
     long_df <- standardize_long_df(long_df)
+    if (!is.null(hierarchy)) {
+      hierarchy$levels <- union(
+        ccc_group_levels(long_df$sender), ccc_group_levels(long_df$receiver)
+      )
+    }
     available_pathways <- unique(as.character(long_df$pathway_name))
     available_pathways <- available_pathways[
       !is.na(available_pathways) & nzchar(available_pathways)
@@ -684,7 +754,7 @@ CCCNetworkPlot <- function(
       }
     }
 
-    plot_generic_circle <- function(sig) {
+    plot_generic_pathway <- function(sig) {
       df_sig <- filter_long_df(
         df = long_df,
         sender.use = sender.use,
@@ -715,7 +785,8 @@ CCCNetworkPlot <- function(
             edge_size = edge_size,
             node_size = node_size,
             node_alpha = node_alpha,
-            link_alpha = link_alpha
+            link_alpha = link_alpha,
+            hierarchy = hierarchy
           ),
           list(
             title = if (identical(plot_type, "individual_lr")) {
@@ -750,14 +821,14 @@ CCCNetworkPlot <- function(
       )
     }
 
-    plots <- Filter(Negate(is.null), lapply(pathways_to_show, plot_generic_circle))
+    plots <- Filter(Negate(is.null), lapply(pathways_to_show, plot_generic_pathway))
     if (length(plots) == 0L) {
       log_message(
         "No pathway-specific communication records remain after filtering",
         message_type = "error"
       )
     }
-    return(simplify_cc_plot_list(plots))
+    return(finish_pathway_plots(plots))
   }
 
   if (identical(plot_type, "diff_network")) {
@@ -1114,7 +1185,8 @@ ccc_cellchat_circle_network_plot <- function(
   legend.title = NULL,
   font.size = 10,
   theme_use = "theme_scop",
-  theme_args = list()
+  theme_args = list(),
+  hierarchy = NULL
 ) {
   df <- extract_long_table(
     srt = srt,
@@ -1161,7 +1233,8 @@ ccc_cellchat_circle_network_plot <- function(
     legend.direction = legend.direction,
     font.size = font.size,
     theme_use = theme_use,
-    theme_args = theme_args
+    theme_args = theme_args,
+    hierarchy = hierarchy
   )
 }
 
@@ -2076,9 +2149,7 @@ ccc_diff_network_plot <- function(
     layout = coords_scale,
     margin = 0.2,
     vertex.label.dist = label_dist,
-    vertex.label.degree = label_locs,
-    vertex.label.family = "Helvetica",
-    edge.label.family = "Helvetica"
+    vertex.label.degree = label_locs
   )
   graphics::title(
     main = title %||% paste0(object_names[2], " vs ", object_names[1]),
@@ -2114,7 +2185,8 @@ ccc_circle_plot <- function(
   label.size = 4,
   label.fg = "white",
   label.bg = "black",
-  label.bg.r = 0.1
+  label.bg.r = 0.1,
+  hierarchy = NULL
 ) {
   value_col <- ccc_circle_value_col(value)
   plot_df <- ccc_network_df(
@@ -2138,6 +2210,15 @@ ccc_circle_plot <- function(
       "No finite CCC edge values are available for circle plotting",
       message_type = "error"
     )
+  }
+
+  if (!is.null(hierarchy)) {
+    return(ccc_hierarchy_network_plot(
+      plot_df, hierarchy, node_size, node_alpha, link_alpha,
+      cell_palette, cell_palcolor, link_palette, link_palcolor,
+      title, subtitle, legend.position, legend.direction,
+      font.size, theme_use, theme_args
+    ))
   }
 
   node_levels <- unique(c(
@@ -2241,14 +2322,108 @@ ccc_circle_plot <- function(
     layout = coords_scale,
     margin = 0.2,
     vertex.label.dist = label_dist,
-    vertex.label.degree = label_locs,
-    vertex.label.family = "Helvetica",
-    edge.label.family = "Helvetica"
+    vertex.label.degree = label_locs
   )
   if (!is.null(title) || !is.null(subtitle)) {
     graphics::title(main = title, sub = subtitle)
   }
   grDevices::recordPlot()
+}
+
+ccc_hierarchy_network_plot <- function(
+  edges,
+  hierarchy,
+  node_size,
+  node_alpha,
+  link_alpha,
+  cell_palette,
+  cell_palcolor,
+  link_palette,
+  link_palcolor,
+  title,
+  subtitle,
+  legend.position,
+  legend.direction,
+  font.size,
+  theme_use,
+  theme_args
+) {
+  edges <- edges[edges$weight != 0, , drop = FALSE]
+  if (nrow(edges) == 0L) {
+    log_message("No nonzero CCC edges remain for hierarchy plotting", message_type = "error")
+  }
+  cells <- union(
+    hierarchy$levels,
+    union(as.character(edges$sender), as.character(edges$receiver))
+  )
+  y <- rev(seq_along(cells))
+  cell_colors <- palette_colors(
+    cells, palette = cell_palette,
+    palcolor = ccc_align_named_palcolor(cell_palcolor, cells)
+  )
+  link_colors <- palette_colors(
+    cells, palette = link_palette,
+    palcolor = ccc_align_named_palcolor(link_palcolor, cells)
+  )
+  nodes <- data.frame(
+    x = rep(c(0, 1), each = length(cells)), y = rep(y, 2L),
+    active = c(cells %in% edges$sender, cells %in% edges$receiver),
+    color = rep(unname(cell_colors[cells]), 2L)
+  )
+  nodes$fill <- ifelse(nodes$active, nodes$color, "white")
+
+  edges$y_from <- y[match(edges$sender, cells)]
+  edges$y_to <- y[match(edges$receiver, cells)]
+  edges$color <- unname(link_colors[as.character(edges$sender)])
+  edges <- edges[order(abs(edges$weight)), , drop = FALSE]
+
+  mapping <- ggplot2::aes(
+    y = y_from, yend = y_to, linewidth = abs(weight), color = color
+  )
+  arrow <- if (hierarchy$directed) hierarchy$arrow else NULL
+  edge_layer <- if (isTRUE(hierarchy$curvature == 0)) {
+    ggplot2::geom_segment(
+      mapping, x = 0.05, xend = 0.95, arrow = arrow,
+      alpha = link_alpha, lineend = "round", show.legend = c(colour = FALSE)
+    )
+  } else {
+    ggplot2::geom_curve(
+      mapping, x = 0.05, xend = 0.95, arrow = arrow,
+      curvature = hierarchy$curvature,
+      alpha = link_alpha, lineend = "round", show.legend = c(colour = FALSE)
+    )
+  }
+  p <- ggplot2::ggplot(edges) +
+    edge_layer +
+    ggplot2::geom_point(
+      data = nodes, ggplot2::aes(x = x, y = y, fill = fill, color = color),
+      inherit.aes = FALSE, shape = 21, size = node_size,
+      stroke = 0.8, alpha = node_alpha, show.legend = FALSE
+    ) +
+    ggplot2::scale_colour_identity() +
+    ggplot2::scale_fill_identity() +
+    ggplot2::scale_x_continuous(
+      breaks = c(0, 1), labels = c("Sender", "Receiver"),
+      position = "top", expand = ggplot2::expansion(mult = 0.055)
+    ) +
+    ggplot2::scale_y_continuous(
+      breaks = y, labels = cells,
+      sec.axis = ggplot2::dup_axis(name = NULL),
+      expand = ggplot2::expansion(add = 0.55)
+    ) +
+    ggplot2::labs(x = NULL, y = NULL)
+  p <- finalize_cc_plot(
+    p, title = title, subtitle = subtitle, legend.position = legend.position,
+    legend.direction = legend.direction,
+    theme_use = theme_use, theme_args = theme_args, font.size = font.size
+  )
+  p + ggplot2::theme(
+    panel.grid = ggplot2::element_blank(), panel.border = ggplot2::element_blank(),
+    axis.line = ggplot2::element_blank(), axis.ticks = ggplot2::element_blank(),
+    axis.text.x.top = ggplot2::element_text(face = "bold"),
+    axis.text.y = ggplot2::element_text(color = "grey23"),
+    legend.position = legend.position, legend.direction = legend.direction
+  )
 }
 
 ccc_network_df <- function(

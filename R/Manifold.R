@@ -13,33 +13,16 @@ manifold_metric_id <- function(metric) {
   metric_id
 }
 
-manifold_prepare_data <- function(data, apply_pca = TRUE) {
+manifold_prepare_data <- function(data, apply_pca = TRUE, pacmap = FALSE) {
   data <- as.matrix(data)
   storage.mode(data) <- "double"
   if (any(!is.finite(data))) {
     log_message(
-      "Manifold algorithm requires finite input values",
-      message_type = "error"
-    )
-  }
-  if (isTRUE(apply_pca) && ncol(data) > 100L) {
-    rank <- min(100L, ncol(data), nrow(data) - 1L)
-    data <- stats::prcomp(
-      data,
-      center = TRUE,
-      scale. = FALSE,
-      rank. = rank
-    )$x[, seq_len(rank), drop = FALSE]
-  }
-  data
-}
-
-pacmap_prepare_data <- function(data, apply_pca = TRUE) {
-  data <- as.matrix(data)
-  storage.mode(data) <- "double"
-  if (any(!is.finite(data))) {
-    log_message(
-      "PaCMAP requires finite input values",
+      if (pacmap) {
+        "PaCMAP requires finite input values"
+      } else {
+        "Manifold algorithm requires finite input values"
+      },
       message_type = "error"
     )
   }
@@ -52,12 +35,19 @@ pacmap_prepare_data <- function(data, apply_pca = TRUE) {
       rank. = rank
     )$x[, seq_len(rank), drop = FALSE])
   }
+  if (!pacmap) {
+    return(data)
+  }
   data <- data - min(data)
   maximum <- max(data)
   if (is.finite(maximum) && maximum > 0) {
     data <- data / maximum
   }
   sweep(data, 2L, colMeans(data), "-")
+}
+
+pacmap_prepare_data <- function(data, apply_pca = TRUE) {
+  manifold_prepare_data(data, apply_pca = apply_pca, pacmap = TRUE)
 }
 
 manifold_initialization <- function(

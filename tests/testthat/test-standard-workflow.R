@@ -1,4 +1,4 @@
-test_that("RunStandardWorkflow defaults to 2D UMAP", {
+test_that("RunStandardWorkflow defaults to 2D UMAP and records a compact FindClusters command", {
   skip_if_not_installed("Seurat")
   skip_if_not_installed("SeuratObject")
   skip_if_not_installed("Matrix")
@@ -23,6 +23,10 @@ test_that("RunStandardWorkflow defaults to 2D UMAP", {
 
   expect_true("StandardpcaUMAP2D" %in% SeuratObject::Reductions(out))
   expect_false("StandardpcaUMAP3D" %in% SeuratObject::Reductions(out))
+
+  command <- out@commands[["FindClusters"]]
+  expect_identical(command@params$resolution, 0.6)
+  expect_lt(sum(nchar(command@call.string)), 1000)
 })
 
 test_that("RunStandardWorkflow runs explicit 3D UMAP through RunUMAP2 path", {
@@ -52,33 +56,6 @@ test_that("RunStandardWorkflow runs explicit 3D UMAP through RunUMAP2 path", {
   expect_true("Standardpca_SNN" %in% names(out@graphs))
   expect_true("StandardpcaUMAP2D" %in% SeuratObject::Reductions(out))
   expect_true("StandardpcaUMAP3D" %in% SeuratObject::Reductions(out))
-})
-
-test_that("RunStandardWorkflow records a compact FindClusters command", {
-  skip_if_not_installed("Seurat")
-  skip_if_not_installed("SeuratObject")
-  skip_if_not_installed("Matrix")
-  skip_if_not_installed("uwot")
-
-  set.seed(11)
-  counts <- Matrix::rsparsematrix(120, 50, density = 0.08)
-  counts@x <- abs(round(counts@x * 10)) + 1
-  rownames(counts) <- paste0("g", seq_len(nrow(counts)))
-  colnames(counts) <- paste0("c", seq_len(ncol(counts)))
-
-  out <- suppressWarnings(RunStandardWorkflow(
-    Seurat::CreateSeuratObject(counts),
-    nHVF = 40,
-    linear_reduction_dims = 10,
-    linear_reduction_dims_use = 1:5,
-    neighbor_k = 10,
-    verbose = FALSE,
-    cores = 1
-  ))
-
-  command <- out@commands[["FindClusters"]]
-  expect_identical(command@params$resolution, 0.6)
-  expect_lt(sum(nchar(command@call.string)), 1000)
 })
 
 test_that("legacy workflow aliases warn and forward until version 1.0.0", {

@@ -163,15 +163,21 @@
 #'
 #' data(pancreas_sub)
 #' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
+#' # Keep both directions and no fold-change filter for background eligibility.
 #' pancreas_sub <- RunDEtest(
 #'   pancreas_sub,
-#'   group.by = "CellType"
+#'   group.by = "CellType",
+#'   only.pos = FALSE, fc.threshold = 1
 #' )
+#' stored_de <- pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox
+#' tested_background <- split(stored_de$gene, stored_de$group1)
 #'
 #' pancreas_sub <- RunEnrichment(
 #'   pancreas_sub,
 #'   db = c("GO_BP", "GO_CC"),
 #'   group.by = "CellType",
+#'   universe = tested_background,
+#'   DE_threshold = "avg_log2FC >= log2(1.5) & p_val_adj < 0.05",
 #'   species = "Mus_musculus"
 #' )
 #'
@@ -404,6 +410,8 @@
 #'   pancreas_sub,
 #'   db = c("MP", "DO"),
 #'   group.by = "CellType",
+#'   universe = tested_background,
+#'   DE_threshold = "avg_log2FC >= log2(1.5) & p_val_adj < 0.05",
 #'   convert_species = TRUE,
 #'   species = "Mus_musculus"
 #' )
@@ -1809,7 +1817,7 @@ enrichment_rank_plot <- function(
           inherit.aes = FALSE, hjust = 0, size = label_size,
           lineheight = 0.85, colour = label.fg,
           bg.color = label.bg, bg.r = label.bg.r,
-          family = "sans", fontface = "bold",
+          fontface = "bold",
           nudge_x = hi$.label_x - hi$.rank,
           nudge_y = hi$.label_y - hi$.score,
           direction = "y", force = 0.8, force_pull = 0,

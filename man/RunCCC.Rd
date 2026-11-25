@@ -60,3 +60,9 @@ A \code{Seurat} object with method-specific results and a unified
 \description{
 Run common cell-cell communication analyses
 }
+\details{
+Choose a named method in \code{methods} and keep method-specific inference arguments in \code{method_params}. For example, select CellChat with \code{methods = "CellChat"} and pass \code{species} in \code{method_params$CellChat}. Choose sender/receiver, top records, colors, and legend position in the plotting function after inference; these do not rerun the engine. Save the Seurat object with \code{saveRDS()} to preserve native and unified results. Use \code{\link[=ccc_to_liana]{ccc_to_liana()}} for ligand–receptor records, not for association-only methods such as MDIC3. Those methods may have nonempty group-pair tables even when there are no ligand–receptor rows.
+}
+\seealso{
+\code{\link[=CCCHeatmap]{CCCHeatmap()}}, \code{\link[=CCCNetworkPlot]{CCCNetworkPlot()}}, \code{\link[=CCCStatPlot]{CCCStatPlot()}}
+}

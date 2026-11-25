@@ -163,7 +163,7 @@ annotation tracks. Default \code{TRUE}.}
 
 \item{width, height}{Optional heatmap body width and height. When only one is
 supplied, the other is inferred from the matrix dimensions to keep cells
-square. When both are \code{NULL}, a square-cell size is computed automatically.}
+square. When both are \code{NULL}, the body is sized automatically from the matrix and labels.}
 
 \item{units}{Units for \code{width} and \code{height}. Default \code{"inch"}.}
 
@@ -203,6 +203,12 @@ CCC heatmap and dot matrix plot
 \details{
 Canonical selection parameters and legacy aliases may be supplied
 together only when their values agree. Conflicting values raise an error.
+\code{width} and \code{height} here control the heatmap body, not the canvas.
+
+Aggregation heatmaps retain receivers on rows and senders on columns.
+By default, the top and left show bars; the bottom and right show cell-type
+color strips. The legend is on the right and sender labels are rotated by
+90 degrees. The export is sized from the rendered heatmap.
 }
 \examples{
 data(pancreas_sub)

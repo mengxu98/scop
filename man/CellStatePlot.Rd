@@ -34,7 +34,6 @@ CellStatePlot(
   expression_palette = "Reds",
   enrichment_palette = "RdBu",
   palcolor = NULL,
-  family = "sans",
   title = NULL,
   panel_label = NULL,
   return_data = FALSE,
@@ -112,8 +111,6 @@ and NES. RdBu maps negative NES to blue and positive NES to red.}
 
 \item{palcolor}{List of named class, subclass, program and sample colors,
 or expression and enrichment color ramps.}
-
-\item{family}{Font family.}
 
 \item{title, panel_label}{Optional title and panel letter.}
 

@@ -55,19 +55,15 @@ test_that("external wrapper R packages remain optional explicit installs", {
   )
 })
 
-test_that("PrepareEnv exposes CHOIR as an optional R module", {
-  packages <- getFromNamespace("env_r_packages", "scop")("choir")
-
-  expect_true("corceslab/CHOIR" %in% packages)
-})
-
 test_that("PrepareEnv supports explicit R and Python components", {
   expect_identical(formals(scop::PrepareEnv)$components, "python")
   normalize <- getFromNamespace("norm_env_components", "scop")
   expect_setequal(normalize(c("python", "r")), c("python", "r"))
   expect_setequal(normalize("all"), c("python", "r"))
 
-  packages <- getFromNamespace("env_r_packages", "scop")("secact")
+  env_packages <- getFromNamespace("env_r_packages", "scop")
+  expect_true("corceslab/CHOIR" %in% env_packages("choir"))
+  packages <- env_packages("secact")
   expect_true(all(c(
     "reticulate", "UCell",
     "jinworks/SpatialCellChat", "data2intelligence/SecAct"

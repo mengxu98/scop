@@ -152,6 +152,7 @@ RunSpotQC <- function(
 
   counts <- GetAssayData5(srt, assay = assay, layer = "counts")
   evaluated_spots <- colnames(counts)
+  object_spots <- colnames(srt)
   n_evaluated <- ncol(counts)
   nCount <- Matrix::colSums(counts)
   nFeature <- Matrix::colSums(counts > 0)
@@ -235,10 +236,9 @@ RunSpotQC <- function(
         known_fail + missing_rules < outlier_n
     ] <- "Pass"
     spot_outlier_qc <- evaluated_spots[which(spot_outlier_status == "Fail")]
+    outlier_flag <- setNames(rep(NA, length(object_spots)), object_spots)
     for (i in seq_along(outlier_flags)) {
       nm <- names(outlier_flags)[[i]]
-      outlier_flag <- rep(NA, ncol(srt))
-      names(outlier_flag) <- colnames(srt)
       outlier_flag[evaluated_spots] <- outlier_flags[[i]]
       srt[[make.names(paste0("spot_", nm))]] <- outlier_flag
     }
@@ -260,10 +260,10 @@ RunSpotQC <- function(
     spot_mito_qc = pass_fail_status(spot_mito_qc),
     spot_outlier_qc = spot_outlier_status
   )
-  requested_status_names <- paste0("spot_", qc_metrics, "_qc")
-  if (length(requested_status_names) == 0L) {
+  if (length(qc_metrics) == 0L) {
     overall_status <- setNames(rep("Pass", n_evaluated), evaluated_spots)
   } else {
+    requested_status_names <- paste0("spot_", qc_metrics, "_qc")
     requested_status <- do.call(
       cbind,
       unname(qc_status_map[requested_status_names])
@@ -278,12 +278,10 @@ RunSpotQC <- function(
     names(overall_status) <- evaluated_spots
   }
   qc_status_map$SpotQC <- overall_status
+  qc_status <- setNames(rep(NA_character_, length(object_spots)), object_spots)
   for (qc in names(qc_status_map)) {
-    qc_status <- rep(NA_character_, ncol(srt))
-    names(qc_status) <- colnames(srt)
     qc_status[evaluated_spots] <- qc_status_map[[qc]]
-    srt[[qc]] <- qc_status
-    srt[[qc]] <- factor(srt[[qc, drop = TRUE]], levels = c("Pass", "Fail"))
+    srt[[qc]] <- factor(qc_status, levels = c("Pass", "Fail"))
   }
 
   selected_labels <- as.character(

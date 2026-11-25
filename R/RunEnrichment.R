@@ -16,15 +16,17 @@
 #' This argument is only used if `object` is specified.
 #' @param geneID Gene IDs.
 #' @param geneID_groups A factor vector specifying the group labels for each gene.
-#' @param geneID_exclude Gene IDs to be excluded from the input genes and the
-#' enrichment universe.
+#' @param geneID_exclude Gene IDs to remove from the query only. The background
+#' universe is unchanged.
 #' @param universe A character vector of background gene IDs shared by all
 #' groups, or a named list of character vectors with one entry per
-#' `geneID_groups` level. When `object` is supplied and `geneID` is omitted,
-#' `NULL` uses all genes returned by the unfiltered differential-expression
-#' results for each comparison. Otherwise, `NULL` uses all genes represented
-#' in the selected `TERM2GENE` mapping. Genes without annotation in the selected
-#' mapping are excluded from the effective universe.
+#' `geneID_groups` level. When extracting genes from an object, `NULL` uses the
+#' stored differential-expression rows for each comparison before applying
+#' `DE_threshold`. These rows may already have been filtered by [RunDEtest()].
+#' Supply the eligible gene set explicitly to use a background defined before
+#' marker selection. With explicit `geneID`, `NULL` uses the genes represented in
+#' the selected `TERM2GENE` mapping. The effective universe is restricted to
+#' genes annotated in that mapping.
 #' @param IDtype Type of gene IDs in the `object` object or `geneID` argument.
 #' This argument is used to convert the gene IDs to a different type if `IDtype` is different from `result_IDtype`.
 #' @param result_IDtype Desired type of gene ID to be used in the output.
@@ -54,7 +56,10 @@
 #' This argument is only used if `GO_simplify` is `TRUE`.
 #'
 #' @return
-#' If input is a Seurat object, returns the modified Seurat object with the enrichment result stored in the tools slot.
+#' For a Seurat object, returns the modified object with enrichment in the
+#' tools slot. A successful rerun replaces results for the current comparisons
+#' and databases, including their simplified GO results, even if no terms are
+#' returned. Other comparisons and databases are preserved.
 #'
 #' If input is a geneID vector with or without geneID_groups, return the enrichment result directly.
 #'
@@ -157,6 +162,7 @@ RunEnrichment <- function(
     check_r("clusterProfiler", verbose = FALSE)
   }
   use_object <- !is.null(srt)
+  de_scope_groups <- NULL
   if (is.null(geneID) && !is.null(srt)) {
     de_df <- resolve_detest_result(
       object = srt,
@@ -167,7 +173,13 @@ RunEnrichment <- function(
       de_results = de_df,
       require_score = FALSE
     )
+    de_scope_groups <- unique(as.character(de_all$comparison))
     if (is.null(universe)) {
+      log_message(
+        "Using stored DE rows before {.arg DE_threshold} as the ORA background. ",
+        "Earlier marker filters may have removed genes; supply {.arg universe} to use a different background.",
+        verbose = verbose
+      )
       universe <- lapply(
         split(as.character(de_all$gene), as.character(de_all$comparison)),
         unique
@@ -581,34 +593,12 @@ RunEnrichment <- function(
   if (isTRUE(use_object) && inherits(srt, "Seurat")) {
     group.by <- group.by %||% "custom"
     result_key <- paste("Enrichment", group.by, test.use, sep = "_")
-    if (!is.null(srt@tools[[result_key]][["enrichment"]])) {
-      old_enrichment <- srt@tools[[result_key]][["enrichment"]]
-      if (
-        isTRUE(GO_simplify) &&
-          all(c("Database", "Groups") %in% colnames(old_enrichment))
-      ) {
-        go_terms <- intersect(db, c("GO", "GO_BP", "GO_CC", "GO_MF"))
-        sim_missing <- paste0(go_terms, "_sim")
-        sim_missing <- sim_missing[
-          !sim_missing %in% unique(c(enrichment[["Database"]], old_enrichment[["Database"]]))
-        ]
-        if (length(sim_missing) > 0) {
-          sim_rows <- old_enrichment[
-            old_enrichment[["Database"]] %in% sub("_sim$", "", sim_missing), ,
-            drop = FALSE
-          ]
-          if (nrow(sim_rows) > 0) {
-            sim_rows[["Database"]] <- paste0(sim_rows[["Database"]], "_sim")
-            enrichment <- dplyr::bind_rows(enrichment, sim_rows)
-          }
-        }
-      }
-      enrichment <- unique(dplyr::bind_rows(old_enrichment, enrichment))
-      res[["enrichment"]] <- enrichment
-      if (!is.null(srt@tools[[result_key]][["results"]])) {
-        res[["results"]] <- c(srt@tools[[result_key]][["results"]], res[["results"]])
-      }
-    }
+    res <- replace_ora_scopes(
+      previous = srt@tools[[result_key]],
+      current = res,
+      groups = de_scope_groups %||% group_levels,
+      databases = db
+    )
     srt@tools[[result_key]] <- utils::modifyList(res, list(DE_threshold = DE_threshold))
     return(srt)
   }
@@ -623,6 +613,44 @@ RunEnrichment <- function(
   } else {
     return(res)
   }
+}
+
+replace_ora_scopes <- function(previous, current, groups, databases) {
+  if (is.null(previous)) {
+    return(current)
+  }
+
+  # A rerun invalidates cached simplified GO terms in the same scope,
+  # even when simplification is not requested this time.
+  go <- intersect(databases, c("GO", "GO_BP", "GO_CC", "GO_MF"))
+  databases <- unique(c(databases, if (length(go)) paste0(go, "_sim")))
+  in_scope <- function(x) {
+    x[["Groups"]] %in% groups & x[["Database"]] %in% databases
+  }
+
+  old_table <- previous[["enrichment"]]
+  if (is.data.frame(old_table) && nrow(old_table) > 0L) {
+    if (all(c("Groups", "Database") %in% names(old_table))) {
+      old_table <- old_table[!in_scope(old_table), , drop = FALSE]
+    }
+    current[["enrichment"]] <- dplyr::bind_rows(old_table, current[["enrichment"]])
+  }
+
+  old_results <- previous[["results"]]
+  if (length(old_results)) {
+    keys <- as.vector(outer(groups, databases, paste, sep = "-"))
+    discard <- vapply(seq_along(old_results), function(i) {
+      entry <- old_results[[i]]
+      tab <- if (methods::is(entry, "enrichResult")) entry@result else entry
+      if (is.data.frame(tab) && nrow(tab) > 0L &&
+          all(c("Groups", "Database") %in% names(tab))) {
+        return(all(in_scope(tab)))
+      }
+      !is.null(names(old_results)) && names(old_results)[[i]] %in% keys
+    }, logical(1))
+    current[["results"]] <- c(old_results[!discard], current[["results"]])
+  }
+  current
 }
 
 make_enrichment_id_mapper <- function(geneMap, IDtype, result_IDtype,

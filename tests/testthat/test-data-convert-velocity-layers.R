@@ -1,3 +1,29 @@
+test_that("AnnData layer alignment uses identifiers rather than shape", {
+  align <- getFromNamespace("align_adata_layer", "scop")
+  genes <- c("g1", "g2", "g3")
+  cells <- c("c1", "c2", "c3")
+  mat <- Matrix::Matrix(
+    matrix(seq_len(9L), 3L, dimnames = list(genes, cells)),
+    sparse = TRUE
+  )
+
+  reorder <- function(matrix, features = genes, cells_use = cells) {
+    align(matrix, features, cells_use, "RNA", "spliced", "counts")
+  }
+  expect_identical(reorder(mat), mat)
+  expect_identical(reorder(mat[3:1, c(2, 3, 1)]), mat)
+  expect_identical(reorder(mat, genes[2], cells[3]), mat[2, 3, drop = FALSE])
+  expect_s4_class(reorder(mat[3:1, 3:1]), "sparseMatrix")
+
+  bad <- mat
+  rownames(bad)[3] <- "g4"
+  colnames(bad)[3] <- "c4"
+  expect_error(reorder(bad), "missing 1 requested[[:space:]]+feature ID")
+  rownames(bad)[3] <- "g2"
+  expect_error(reorder(bad), "non-missing,[[:space:]]+non-empty and unique")
+  expect_error(reorder(unname(mat)), "non-missing,[[:space:]]+non-empty and unique")
+})
+
 test_that("srt_to_adata converts velocity matrices stored as assay layers", {
   skip_if_not_installed("Seurat")
   skip_if_not_installed("SeuratObject")
@@ -66,7 +92,9 @@ test_that("srt_to_adata converts velocity matrices stored as assay layers", {
       srt <- Seurat::CreateSeuratObject(counts = counts)
 
       srt_assays <- srt
-      srt_assays[["spliced"]] <- SeuratObject::CreateAssayObject(counts = counts)
+      srt_assays[["spliced"]] <- SeuratObject::CreateAssayObject(
+        counts = counts[rev(rownames(counts)), , drop = FALSE]
+      )
       srt_assays[["unspliced"]] <- SeuratObject::CreateAssayObject(
         counts = unspliced
       )
@@ -75,6 +103,27 @@ test_that("srt_to_adata converts velocity matrices stored as assay layers", {
         prepare_env = FALSE,
         verbose = FALSE
       )
+
+      adata_one <- to_adata(
+        object = srt_assays,
+        features = rownames(counts)[2],
+        prepare_env = FALSE,
+        verbose = FALSE
+      )
+
+      srt_split <- srt_assays
+      srt_split[["RNA"]] <- split(
+        srt_split[["RNA"]],
+        f = rep(c("even", "odd"), length.out = ncol(counts))
+      )
+      adata_split <- to_adata(
+        object = srt_split,
+        prepare_env = FALSE,
+        verbose = FALSE
+      )
+      split_cells <- as.character(reticulate::py_to_r(adata_split$obs_names$tolist()))
+      split_genes <- as.character(reticulate::py_to_r(adata_split$var_names$tolist()))
+      split_layer <- reticulate::py_to_r(adata_split$layers$get("spliced")$toarray())
 
       srt_layers <- srt
       srt_layers[["RNA"]]$spliced <- counts
@@ -102,6 +151,12 @@ test_that("srt_to_adata converts velocity matrices stored as assay layers", {
       list(
         available = TRUE,
         assays_keys = layer_keys(adata_assays),
+        assays_spliced = reticulate::py_to_r(adata_assays$layers$get("spliced")$toarray()),
+        one_gene = as.character(reticulate::py_to_r(adata_one$var_names$tolist())),
+        one_spliced = reticulate::py_to_r(adata_one$layers$get("spliced")$toarray()),
+        split_cells = split_cells,
+        split_genes = split_genes,
+        split_layer = split_layer,
         layers_keys = layer_keys(adata_layers),
         layers_spliced_sum = layer_sum(adata_layers, "spliced"),
         layers_unspliced_sum = layer_sum(adata_layers, "unspliced"),
@@ -120,6 +175,15 @@ test_that("srt_to_adata converts velocity matrices stored as assay layers", {
   )
 
   expect_true(all(c("spliced", "unspliced") %in% result$assays_keys))
+  expect_equal(result$assays_spliced, unname(t(as.matrix(counts))))
+  expect_identical(result$one_gene, genes[2])
+  expect_equal(result$one_spliced, unname(t(as.matrix(counts[2, , drop = FALSE]))))
+  expect_setequal(result$split_cells, cells)
+  expect_identical(result$split_genes, genes)
+  expect_equal(
+    result$split_layer,
+    unname(t(as.matrix(counts[genes, result$split_cells, drop = FALSE])))
+  )
   expect_true(all(c("spliced", "unspliced") %in% result$layers_keys))
   expect_equal(result$layers_spliced_sum, sum(counts))
   expect_equal(result$layers_unspliced_sum, sum(unspliced))

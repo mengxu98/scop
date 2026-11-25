@@ -104,29 +104,8 @@ RunKNNMap <- function(
       message_type = "error"
     )
   }
-  simil_method <- c(
-    "pearson",
-    "spearman",
-    "cosine",
-    "correlation",
-    "jaccard",
-    "ejaccard",
-    "dice",
-    "edice",
-    "hamman",
-    "simple matching",
-    "faith"
-  )
-  dist_method <- c(
-    "euclidean",
-    "chisquared",
-    "kullback",
-    "manhattan",
-    "maximum",
-    "canberra",
-    "minkowski",
-    "hamming"
-  )
+  simil_method <- knn_similarity_metrics()
+  dist_method <- knn_distance_metrics()
   all_metrics <- c(simil_method, dist_method)
   if (!distance_metric %in% all_metrics) {
     log_message(
@@ -153,9 +132,9 @@ RunKNNMap <- function(
     log_message("Use the reduction to calculate distance metric", verbose = verbose)
     if (!is.null(query_dims) && !is.null(ref_dims) && length(query_dims) == length(ref_dims)) {
       query <- Seurat::Embeddings(srt_query, reduction = query_reduction)
-      query <- query[, query_dims]
+      query <- query[, query_dims, drop = FALSE]
       ref <- Seurat::Embeddings(srt_ref, reduction = ref_reduction)
-      ref <- ref[, ref_dims]
+      ref <- ref[, ref_dims, drop = FALSE]
     } else {
       log_message(
         "{.arg query_dims} and {.arg ref_dims} must be provided with the same length",
@@ -318,7 +297,7 @@ RunKNNMap <- function(
     refumap_all <- srt_ref[[ref_umap]]@cell.embeddings[knn_cells, ]
     group <- rep(query_neighbor@cell.names, ncol(query_neighbor@nn.idx))
   } else {
-    if (distance_metric %in% c(simil_method, "pearson", "spearman")) {
+    if (distance_metric %in% simil_method) {
       if (distance_metric %in% c("pearson", "spearman")) {
         if (distance_metric == "spearman") {
           ref <- knn_rank_rows(ref)

@@ -17,7 +17,7 @@ import spatialdm as sdm
 from scipy import sparse
 from scipy.io import mmread, mmwrite
 
-from scop_runner_io import configuration_path, read_ids as _read_ids, read_json, write_manifest as _write_json
+from scop_runner_io import configuration_path, read_ids as _read_ids, read_json, read_staged_tsv, validate_ids, write_manifest as _write_json
 
 
 def _read_json(path: Path) -> dict:
@@ -27,10 +27,10 @@ def _read_json(path: Path) -> dict:
 def _build_adata(config: dict) -> anndata.AnnData:
     cells = _read_ids(Path(config["cells_path"]), "cell table")
     features = _read_ids(Path(config["features_path"]), "feature table")
-    coordinates = pd.read_csv(config["coordinates_path"], sep="\t", dtype={"cell_id": str})
+    coordinates = read_staged_tsv(config["coordinates_path"])
     if list(coordinates.columns) != ["cell_id", "x", "y"]:
         raise ValueError("coordinate columns must be cell_id, x and y")
-    if coordinates["cell_id"].astype(str).tolist() != cells:
+    if validate_ids(coordinates["cell_id"].tolist(), "coordinate cell IDs") != cells:
         raise ValueError("coordinate IDs are not identically ordered with cell IDs")
     xy = coordinates[["x", "y"]].to_numpy(dtype=float)
     if not np.isfinite(xy).all():

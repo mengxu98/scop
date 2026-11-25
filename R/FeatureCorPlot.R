@@ -146,21 +146,7 @@ FeatureCorPlot <- function(
       )
     }
   }
-  if (!is.null(cells.highlight) & isFALSE(cells.highlight)) {
-    if (!any(cells.highlight %in% colnames(srt@assays[[1]]))) {
-      log_message("No cells in 'cells.highlight' found in srt.",
-        message_type = "error"
-      )
-    }
-    if (!all(cells.highlight %in% colnames(srt@assays[[1]]))) {
-      log_message(
-        "Some cells in 'cells.highlight' not found in srt.",
-        message_type = "warning",
-        verbose = verbose
-      )
-    }
-    cells.highlight <- intersect(cells.highlight, colnames(srt@assays[[1]]))
-  }
+  cells.highlight <- normalize_plot_highlight(cells.highlight, colnames(srt), verbose)
   if (isTRUE(cells.highlight)) {
     cells.highlight <- colnames(srt@assays[[1]])
   }

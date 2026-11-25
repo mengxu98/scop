@@ -1,0 +1,101 @@
+ccc_layout_fixture <- function() {
+  cells <- paste0("cell", seq_len(6))
+  object <- suppressWarnings(SeuratObject::CreateSeuratObject(matrix(
+    seq_len(12), nrow = 2L, dimnames = list(c("G1", "G2"), cells)
+  )))
+  groups <- c("Ductal", "Ngn3-high-EP", "Pre-endocrine")
+  object@tools$MDIC3 <- list(long_table = data.frame(
+    sender = factor(groups[c(1, 2, 3, 1)], levels = groups),
+    receiver = factor(groups[c(2, 3, 2, 1)], levels = groups),
+    ligand = c("L1", "L2", "L3", "L4"),
+    receptor = c("R1", "R2", "R3", "R4"),
+    interaction_name = c("L1_R1", "L2_R2", "L3_R3", "L4_R4"),
+    pathway_name = c("P1", "P1", "P2", "P2"),
+    pvalue = 0.01, score = c(.3, .4, .2, .8)
+  ))
+  object
+}
+
+test_that("pathway hierarchy preserves sender/receiver scores and shared positions", {
+  x <- ccc_layout_fixture()
+  original <- x@tools
+  p <- CCCNetworkPlot(
+    x, method = "MDIC3", plot_type = "pathway",
+    layout = "hierarchy", signaling = c("P1", "P2")
+  )
+  expect_length(p, 2L)
+  expect_s3_class(p[[1]], "ggplot")
+  expect_equal(sort(p[[1]]$data$weight), c(.3, .4))
+  expect_equal(sort(p[[2]]$data$weight), c(.2, .8))
+  expect_equal(p[[2]]$data$weight[p[[2]]$data$sender == p[[2]]$data$receiver], .8)
+  expect_identical(p[[1]]$layers[[2]]$data[c("x", "y", "color")],
+    p[[2]]$layers[[2]]$data[c("x", "y", "color")])
+  expect_identical(p[[1]]$scales$get_scales("linewidth")$limits, c(0, .8))
+  expect_identical(p[[2]]$scales$get_scales("linewidth")$limits, c(0, .8))
+  expect_false(is.null(p[[1]]$layers[[1]]$geom_params$arrow))
+
+  filtered <- CCCNetworkPlot(
+    x, method = "MDIC3", plot_type = "pathway",
+    layout = "hierarchy", signaling = "P1", receiver.use = "Pre-endocrine",
+    directed = FALSE, link_curvature = 0
+  )
+  expect_identical(filtered$data$receiver, "Pre-endocrine")
+  expect_equal(filtered$data$weight, .4)
+  expect_null(filtered$layers[[1]]$geom_params$arrow)
+  expect_identical(x@tools, original)
+})
+
+test_that("aggregate heatmaps measure the native layout without leaking a device", {
+  skip_if_not_installed("ComplexHeatmap")
+  skip_if_not_installed("circlize")
+  x <- ccc_layout_fixture()
+  dev <- grDevices::dev.cur()
+  p <- CCCHeatmap(x, method = "MDIC3", title = "Aggregate communication")
+  expect_identical(grDevices::dev.cur(), dev)
+  size <- attr(p, "size")
+  expect_s3_class(p, "ggplot")
+  expect_gt(size$width, 0)
+  expect_gt(size$height, 0)
+  expect_lt(size$height, 5)
+  manual <- CCCHeatmap(
+    x, method = "MDIC3", width = 2,
+    x_text_angle = 45, legend.position = "none", top_anno = NULL, left_anno = NULL
+  )
+  expect_identical(grDevices::dev.cur(), dev)
+  expect_gt(attr(manual, "size")$width, 2)
+  f <- tempfile(fileext = ".pdf")
+  on.exit(unlink(f), add = TRUE)
+  ggplot2::ggsave(f, p, width = size$width, height = size$height, units = size$units)
+  expect_gt(file.info(f)$size, 4000)
+})
+
+test_that("pathway networks default to circle without removing hierarchy", {
+  x <- ccc_layout_fixture()
+  args <- list(object = x, method = "MDIC3", plot_type = "pathway", signaling = "P1")
+  grDevices::pdf(NULL)
+  on.exit(grDevices::dev.off(), add = TRUE)
+  grDevices::dev.control(displaylist = "enable")
+  expect_s3_class(do.call(CCCNetworkPlot, args), "recordedplot")
+  expect_s3_class(do.call(CCCNetworkPlot, c(args, list(layout = "circle"))), "recordedplot")
+  expect_s3_class(do.call(CCCNetworkPlot, c(args, list(layout = "hierarchy"))), "ggplot")
+})
+
+test_that("aggregate heatmaps keep bars and cell-type strips on separate sides", {
+  x <- ccc_layout_fixture()
+  local_mocked_bindings(ccc_heatmap_full_plot = function(...) list(...), .package = "scop")
+  p <- CCCHeatmap(x, method = "MDIC3")
+  expect_identical(p$top_anno, "bar")
+  expect_identical(p$left_anno, "bar")
+  expect_identical(p$bottom_anno, "cell")
+  expect_identical(p$right_anno, "cell")
+  expect_identical(p$x_text_angle, 90)
+  expect_identical(p$legend.position, "right")
+  expect_identical(p$legend.direction, "vertical")
+  p <- CCCHeatmap(x, method = "MDIC3", top_anno = c("bar", "cell"),
+    right_anno = NULL, x_text_angle = 0, legend.position = "bottom")
+  expect_identical(p$top_anno, c("bar", "cell"))
+  expect_length(p$right_anno, 0)
+  expect_identical(p$x_text_angle, 0)
+  expect_identical(p$legend.position, "bottom")
+  expect_identical(p$legend.direction, "horizontal")
+})

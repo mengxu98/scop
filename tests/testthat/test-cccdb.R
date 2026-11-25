@@ -1,6 +1,8 @@
 test_that("ListCCCDB enumerates CCC databases with a unified schema", {
   resources <- ListCCCDB()
   expect_identical(colnames(resources), c("Database", "Resource", "Species", "Default", "Status", "Description"))
+  expect_false(inherits(resources, "ccc_db_table"))
+  expect_identical(colnames(as.data.frame(resources)), colnames(resources))
   expect_setequal(unique(resources$Database), c("LIANA", "CellChat", "Nichenetr", "CellphoneDB"))
   available <- resources[resources$Status == "available", , drop = FALSE]
   expect_true(all(available$Species %in% c("human", "mouse", "zebrafish")))
@@ -16,13 +18,6 @@ test_that("ListCCCDB enumerates CCC databases with a unified schema", {
     "backend_not_installed",
     "requires_python_cellphonedb"
   )))
-})
-
-test_that("ListCCCDB returns a plain data frame", {
-  resources <- ListCCCDB()
-  expect_false(inherits(resources, "ccc_db_table"))
-  df <- as.data.frame(resources)
-  expect_identical(colnames(df), colnames(resources))
 })
 
 test_that("ListCCCDB filters by db and species", {

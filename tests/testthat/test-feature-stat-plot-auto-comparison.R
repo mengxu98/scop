@@ -336,3 +336,61 @@ test_that("explicit ref_group is used by auto_comparison", {
     list(c("A", "B"), c("A", "C"))
   )
 })
+
+test_that("expression fill retains per-split medians and theme callbacks", {
+  cells <- paste0("c", seq_len(48L))
+  meta <- data.frame(
+    cells = cells,
+    group = factor(rep(c("B", "A"), each = 24L), levels = c("A", "B")),
+    batch = factor(rep(rep(c("S2", "S1"), each = 12L), 2L)),
+    a = rep(seq_len(12L), 4L),
+    b = seq_along(cells) / 10,
+    row.names = cells
+  )
+  seen <- numeric()
+  theme_observer <- function(...) {
+    seen <<- c(seen, stats::runif(1))
+    ggplot2::theme_bw()
+  }
+  withr::local_seed(21L)
+  rng_before <- .Random.seed
+  plots <- ExpressionStatPlot(
+    meta.data = meta, stat.by = c("a", "b"), group.by = "group",
+    split.by = "batch", fill.by = "expression", palette = "Blues",
+    individual = TRUE, plot_type = "box", theme_use = theme_observer
+  )
+  expect_length(plots, 8L)
+  expect_length(seen, length(plots))
+  expect_identical(.Random.seed, rng_before)
+  for (panel in plots) {
+    d <- panel$data
+    f <- unique(d$features)
+    expected <- stats::median(meta[[f]][meta$group == as.character(d$group.by[[1L]]) &
+      meta$batch == as.character(d$split.by[[1L]])])
+    expect_equal(d$fill.by, rep(expected, nrow(d)))
+  }
+})
+
+test_that("grouped expression plots accept several grouping columns and omit absent individual panels", {
+  meta <- make_feature_stat_meta(seq_len(12L), rep(c("A", "B"), each = 6L))
+  meta$other <- rep(c("C", "D"), each = 3L, length.out = nrow(meta))
+  meta$batch <- factor(rep(c("u", "v"), each = 6L), levels = c("v", "u"))
+  grouped <- ExpressionStatPlot(
+    meta.data = meta, stat.by = "score", group.by = c("group", "other"),
+    split.by = "batch", plot_type = "box"
+  )
+  expect_named(grouped, c("score:group:A,B:v,u", "score:other:C,D:v,u"))
+  expect_identical(lapply(grouped, function(p) sort(p$data$score)),
+    list("score:group:A,B:v,u" = meta$score, "score:other:C,D:v,u" = meta$score)
+  )
+
+  individual <- ExpressionStatPlot(
+    meta.data = meta, stat.by = "score", group.by = "group", split.by = "batch",
+    plot_type = "box", individual = TRUE, fill.by = "expression", palette = "Blues"
+  )
+  expect_named(individual, c("score:group:B:v", "score:group:A:u"))
+  expect_identical(lapply(individual, function(p) unique(p$data$fill.by)),
+    list("score:group:B:v" = 9.5, "score:group:A:u" = 3.5)
+  )
+  expect_no_warning(invisible(lapply(individual, ggplot2::ggplot_build)))
+})

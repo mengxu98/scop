@@ -488,15 +488,14 @@ run_seurat_module_scores <- function(
   )
   names(data_cut) <- names(data_avg)
 
+  # Reuse the same ordered control vectors for genes sharing an expression
+  # bin. Keep their repetitions: sampling is over positions, not unique genes.
+  control_bins <- split(seq_along(data_cut), data_cut)
   control_sets <- lapply(features, function(features_use) {
-    ctrl_use <- unlist(
-      lapply(
-        seq_len(length(features_use)),
-        function(j) {
-          data_cut[which(data_cut == data_cut[features_use[j]])]
-        }
-      )
+    control_positions <- unlist(
+      control_bins[as.character(data_cut[features_use])], use.names = FALSE
     )
+    ctrl_use <- data_cut[control_positions]
     names(
       sample(
         ctrl_use,

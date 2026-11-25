@@ -25,6 +25,21 @@ The old human-to-mouse capitalization shortcut is intentionally avoided:
 changing letter case is not ortholog mapping. For cross-species work, prepare
 and report a versioned ortholog table first, resolving one-to-many mappings.
 
+## Choose the starting function
+
+| Starting point | Use | Where to look for the result |
+| --- | --- | --- |
+| Labeled reference cells or reference expression profiles | `RunKNNPredict()` | `<prefix>_classification` in metadata and neighbor evidence under the same name in `object@tools` |
+| Labeled reference and a SingleR or scmap workflow | `RunSingleR()` or `RunScmap()` | `singler_annotation` / `singler_score`, or `scmap_annotation` and method-specific scmap evidence |
+| Existing CellTypist model or a model to train | `RunCellTypist()` or `TrainCellTypist()` | Prefixed annotation metadata (or the requested AnnData result); training produces a model |
+| RNA reference and an ATAC query | `RunLabelTransfer()` for labels; `RunReferenceMapping()` for labels plus projection | Prediction metadata; use the stored tool's `predicted_col` and `probability_col` rather than guessing their names |
+| Existing RNA reference embedding | `RunPCAMap()`, `RunKNNMap()`, `RunSeuratMap()` or `RunSymphonyMap()` | Reference-space reductions; predictions require providing reference labels |
+| Marker sets without a labeled reference | `CellScoring()` then `CellScoringPlot()` | Signature scores; treat them as evidence, not reference-transferred labels |
+
+Choose one inference route first. Adjust its backend parameters in that call;
+set colors, labels, and any export dimensions on the plotting/export side.
+The worked example below uses KNN and does not execute every optional backend.
+
 ## Prepare disjoint query and reference inputs
 
 ```{r prepare-query-reference}
@@ -195,6 +210,11 @@ ht <- CellCorHeatmap(
 print(ht$plot)
 ```
 
+For figure hand-off, save an editable RDS and a review PDF separately. A
+reference projection can have separate reference/query legends and may need a
+larger export canvas than a label-only plot. Open the generated PDF and check
+both legends before sharing; a valid file can still have clipped content.
+
 This is group-level expression similarity. Similar support for several
 reference labels flags ambiguity; these groups should remain under review.
 
@@ -215,7 +235,21 @@ saveRDS(reference, reference_file)
 utils::write.csv(as.matrix(profiles), file.path(output_dir, "log-scale-reference-profiles.csv"))
 writeLines(shared_features, file.path(output_dir, "shared-prediction-features.txt"))
 utils::write.csv(comparison, file.path(output_dir, "prediction-agreement.csv"), row.names = FALSE)
-utils::write.csv(query@meta.data, file.path(output_dir, "cell-metadata.csv"))
+metadata <- query[[]]
+stopifnot(identical(rownames(metadata), colnames(query)))
+utils::write.csv(
+  data.frame(cell_id = rownames(metadata), metadata, row.names = NULL),
+  file.path(output_dir, "cell-metadata.csv"), row.names = FALSE
+)
+csv <- utils::read.csv(
+  file.path(output_dir, "cell-metadata.csv"),
+  colClasses = c(cell_id = "character"), check.names = FALSE
+)
+stopifnot(
+  identical(csv$cell_id, colnames(query)),
+  identical(csv$CellKNN_classification,
+    as.character(query$CellKNN_classification))
+)
 reloaded <- readRDS(result_file)
 reloaded_reference <- readRDS(reference_file)
 stopifnot(

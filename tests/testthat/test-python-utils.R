@@ -129,6 +129,33 @@ test_that("runner log tails stay bounded and retain the final lines", {
   expect_false(any(!nzchar(tail_lines)))
 })
 
+test_that("Python argument conversion uses values rather than decimal formatting", {
+  convert <- getFromNamespace("runner_python_arguments", "scop")
+  args <- list(
+    small = 1e-5,
+    decimal = 0.125,
+    whole = 8,
+    integer = 8L,
+    big = 1e10,
+    negative_limit = -.Machine$integer.max - 1,
+    mixed = c(v1 = 0.125, v2 = 1e-5, v3 = 3),
+    missing = NA_real_,
+    classed_double = structure(2, class = "custom"),
+    near_integer = 1 + 2 * .Machine$double.eps
+  )
+  expected <- args
+  expected$whole <- 8L
+
+  expect_identical(
+    withr::with_options(list(scipen = 0), convert(args, environment())),
+    expected
+  )
+  expect_identical(
+    withr::with_options(list(scipen = 999), convert(args, environment())),
+    expected
+  )
+})
+
 test_that("Python distribution matching follows canonical package names", {
   canonical <- getFromNamespace("canonical_python_distribution_name", "scop")
   expect_identical(

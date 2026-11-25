@@ -862,6 +862,20 @@ should_scale_integration_data <- function(srt, features, do_scaling) {
   isTRUE(do_scaling) || (is.null(do_scaling) && any(!features %in% scale_features))
 }
 
+scale_integrated_assay_data <- function(
+  srt_merge, HVF, batch, scale_within_batch, vars_to_regress, regression_model
+) {
+  assay_merge <- SeuratObject::DefaultAssay(srt_merge)
+  if (inherits(srt_merge[[assay_merge]], "Assay5")) {
+    srt_merge[[assay_merge]] <- SeuratObject::JoinLayers(srt_merge[[assay_merge]])
+  }
+  ScaleData(
+    object = srt_merge, split.by = if (isTRUE(scale_within_batch)) batch else NULL,
+    assay = SeuratObject::DefaultAssay(srt_merge), features = HVF,
+    vars.to.regress = vars_to_regress, model.use = regression_model, verbose = FALSE
+  )
+}
+
 extend_integration_dims <- function(dims, dims_use) {
   if (!is.null(dims_use) && max(dims_use) > dims) {
     return(max(dims_use))
@@ -1001,20 +1015,8 @@ Uncorrected_integrate <- function(
         "Perform {.fn Seurat::ScaleData}",
         verbose = verbose
       )
-      assay_merge <- SeuratObject::DefaultAssay(srt_merge)
-      if (inherits(srt_merge[[assay_merge]], "Assay5")) {
-        srt_merge[[assay_merge]] <- SeuratObject::JoinLayers(
-          srt_merge[[assay_merge]]
-        )
-      }
-      srt_merge <- ScaleData(
-        object = srt_merge,
-        split.by = if (isTRUE(scale_within_batch)) batch else NULL,
-        assay = SeuratObject::DefaultAssay(srt_merge),
-        features = HVF,
-        vars.to.regress = vars_to_regress,
-        model.use = regression_model,
-        verbose = FALSE
+      srt_merge <- scale_integrated_assay_data(
+        srt_merge, HVF, batch, scale_within_batch, vars_to_regress, regression_model
       )
     }
   }

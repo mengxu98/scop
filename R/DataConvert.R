@@ -195,7 +195,8 @@ srt_to_adata <- function(
       var
     )
   )
-  adata$var_names <- features
+  # A length-one R character vector converts to a Python scalar, not an index.
+  adata$var_names <- as.list(as.character(features))
 
   layer_list <- list()
   for (assay in names(srt@assays)[names(srt@assays) != assay_x]) {
@@ -351,28 +352,38 @@ get_adata_sparse_layer <- function(
     assay = assay,
     layer = layer
   )
-  if (!identical(dim(mat), c(length(features), length(cell_order)))) {
-    if (all(features %in% rownames(mat)) && all(cell_order %in% colnames(mat))) {
-      mat <- mat[features, cell_order, drop = FALSE]
-    } else {
-      features_null <- features[!features %in% rownames(mat)]
-      cells_null <- cell_order[!cell_order %in% colnames(mat)]
-      log_message(
-        "The following features in the {.val {assay_x}} are not found in the {.val {assay}}: {.val {features_null}}",
-        message_type = "warning",
-        verbose = verbose
-      )
-      log_message(
-        "The following cells in the {.val {assay_x}} are not found in the {.val {assay}}: {.val {cells_null}}",
-        message_type = "warning",
-        verbose = verbose
-      )
-    }
-  }
+  mat <- align_adata_layer(mat, features, cell_order, assay_x, assay, layer)
   scipy_sparse$csr_matrix(
     reticulate::r_to_py(Matrix::t(mat)),
     dtype = np$float32
   )
+}
+
+align_adata_layer <- function(mat, features, cells, assay_x, assay, layer) {
+  feature_ids <- rownames(mat)
+  cell_ids <- colnames(mat)
+  for (ids in list(features, cells, feature_ids, cell_ids)) {
+    if (is.null(ids) || anyNA(ids) || any(!nzchar(ids)) || anyDuplicated(ids)) {
+      log_message(
+        "Cannot align {.val {layer}} in assay {.val {assay}}: feature and cell IDs must be non-missing, non-empty and unique",
+        message_type = "error"
+      )
+    }
+  }
+
+  missing_features <- sum(!features %in% feature_ids)
+  missing_cells <- sum(!cells %in% cell_ids)
+  if (missing_features > 0L || missing_cells > 0L) {
+    log_message(
+      "Cannot align {.val {layer}} in assay {.val {assay}} to {.val {assay_x}}: missing {missing_features} requested feature ID(s) and {missing_cells} requested cell ID(s)",
+      message_type = "error"
+    )
+  }
+
+  if (!identical(feature_ids, features) || !identical(cell_ids, cells)) {
+    mat <- mat[features, cells, drop = FALSE]
+  }
+  mat
 }
 
 get_adata_sparse_assay_layer <- function(
@@ -558,6 +569,33 @@ adata_to_srt <- function(
     verbose = verbose
   )
 
+  # These AnnData containers share one component namespace in Seurat.
+  component_keys <- list(
+    X = "RNA",
+    layers = get_adata_keys(adata$layers),
+    obsm = get_adata_keys(adata$obsm),
+    obsp = get_adata_keys(adata$obsp)
+  )
+  entries <- lapply(component_keys, unique)
+  raw_names <- unlist(entries, use.names = FALSE)
+  sources <- rep(names(entries), lengths(entries))
+  # Seurat applies make.names() to names assigned with [[<-.
+  component_names <- make.names(raw_names)
+  collisions <- unique(component_names[duplicated(component_names)])
+  if (length(collisions) > 0L) {
+    conflicts <- vapply(collisions, function(key) {
+      which_keys <- component_names == key
+      labels <- paste(sources[which_keys], sQuote(raw_names[which_keys]))
+      paste0(sQuote(key), " (", paste(labels, collapse = ", "), ")")
+    }, character(1L))
+    stop(
+      "Conflicting AnnData keys map to the same Seurat component names: ",
+      paste(conflicts, collapse = "; "),
+      ". Rename the conflicting keys before import.",
+      call. = FALSE
+    )
+  }
+
   x <- Matrix::t(adata_matrix_to_r(adata$X))
   if (!inherits(x, "dgCMatrix")) {
     x <- SeuratObject::as.sparse(x)
@@ -570,7 +608,7 @@ adata_to_srt <- function(
   metadata <- NULL
   if (length(adata$obs_keys()) > 0) {
     metadata <- as.data.frame(py_to_r2(adata$obs))
-    colnames(metadata) <- make.names(colnames(metadata))
+    colnames(metadata) <- make.names(colnames(metadata), unique = TRUE)
   }
 
   srt <- Seurat::CreateSeuratObject(
@@ -578,7 +616,7 @@ adata_to_srt <- function(
     meta.data = metadata
   )
 
-  keys <- get_adata_keys(adata$layers)
+  keys <- component_keys$layers
   skipped_layers <- list()
   if (length(keys) > 0) {
     for (k in keys) {
@@ -614,7 +652,7 @@ adata_to_srt <- function(
     }
   }
 
-  keys <- get_adata_keys(adata$obsm)
+  keys <- component_keys$obsm
   if (length(keys) > 0) {
     processed_reductions <- character(0)
     for (k in keys) {
@@ -650,7 +688,7 @@ adata_to_srt <- function(
     }
   }
 
-  keys <- get_adata_keys(adata$obsp)
+  keys <- component_keys$obsp
   if (length(keys) > 0) {
     for (k in keys) {
       obsp <- tryCatch(

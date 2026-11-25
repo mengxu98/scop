@@ -124,7 +124,6 @@ test_that("ClusterTreePlot returns ggplot for cluster tree", {
   expect_identical(plot$theme$legend.position, "inside")
   expect_equal(plot$theme$legend.position.inside, c(0.022, 0.978))
   expect_null(plot$labels$title)
-  expect_identical(plot$theme$text$family, "Arial")
   expect_identical(plot$theme$text$colour, "black")
   expect_identical(plot$theme$plot.subtitle$colour, "black")
   expect_identical(plot$theme$axis.title$colour, "black")
@@ -261,14 +260,15 @@ test_that("ClusterTreePlot auto legends follow tree direction without overlap", 
   }
 })
 
-test_that("ClusterTreePlot respects explicit titles and font families", {
+test_that("ClusterTreePlot inherits theme fonts and renders on a standard PDF device", {
   srt <- make_cluster_tree_seurat()
 
   plot <- ClusterTreePlot(
     srt,
     prefix = "RNA_snn",
     title = "My cluster tree",
-    family = "Helvetica",
+    theme_use = ggplot2::theme_bw,
+    theme_args = list(base_family = "serif"),
     label.fg = "black"
   )
   text_layers <- Filter(
@@ -277,9 +277,14 @@ test_that("ClusterTreePlot respects explicit titles and font families", {
   )
 
   expect_identical(plot$labels$title, "My cluster tree")
-  expect_identical(plot$theme$text$family, "Helvetica")
+  expect_identical(ggplot2::calc_element("plot.title", plot$theme)$family, "serif")
   expect_length(text_layers, 1L)
-  expect_identical(text_layers[[1L]]$aes_params$family, "Helvetica")
+  expect_null(text_layers[[1L]]$aes_params$family)
+  output <- withr::local_tempfile(fileext = ".pdf")
+  withr::with_pdf(output, {
+    print(ClusterTreePlot(srt, prefix = "RNA_snn"))
+  })
+  expect_gt(file.info(output)$size, 0)
 })
 
 test_that("ClusterTreePlot uses compact non-redundant guides", {
@@ -366,8 +371,7 @@ test_that("inside multi-feature patchwork retains guide titles", {
     srt,
     prefix = "RNA_snn",
     features = c("Gene1", "Gene2"),
-    combine = TRUE,
-    family = "sans"
+    combine = TRUE
   )
   grob <- patchwork::patchworkGrob(plot)
   grob_labels <- function(x) {

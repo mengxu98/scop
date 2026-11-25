@@ -669,6 +669,34 @@ matrix_values <- function(x) {
   }
 }
 
+read_runner_output_table <- function(path, sep, id.cols, first.id = FALSE) {
+  # These runner tables are pandas CSV/TSV output. Parse text first so
+  # identifier columns are not type-converted and only empty IDs become NA.
+  out <- utils::read.table(
+    path, header = TRUE, sep = sep, quote = '"', comment.char = "",
+    fill = identical(sep, ","), check.names = FALSE,
+    colClasses = "character", na.strings = NULL
+  )
+  if (first.id) {
+    # Spot IDs appear in the matrix header, which read.table() otherwise trims.
+    names(out) <- scan(
+      path, what = character(), sep = sep, quote = '"', comment.char = "",
+      nlines = 1L, quiet = TRUE, na.strings = NULL, strip.white = FALSE
+    )
+  }
+  missing <- c("", "NA", "NaN", "nan")
+  for (j in seq_along(out)) {
+    value <- out[[j]]
+    if ((first.id && j == 1L) || names(out)[j] %in% id.cols) {
+      value[value == ""] <- NA_character_
+    } else {
+      value <- utils::type.convert(value, na.strings = missing, as.is = TRUE)
+    }
+    out[[j]] <- value
+  }
+  out
+}
+
 write_tsv <- function(x, path) {
   utils::write.table(x,
     file = path, sep = "\t", quote = FALSE,
@@ -749,12 +777,15 @@ numeric_matrix_result <- function(x, row_label = "matrix", col_prefix = "score_"
   }
   mat <- as.matrix(x)
   dim_names <- dimnames(mat)
-  mat <- suppressWarnings(matrix(
-    as.numeric(mat),
-    nrow = nrow(mat),
-    ncol = ncol(mat),
-    dimnames = dim_names
-  ))
+  if (!is.double(mat) || is.object(mat) ||
+    !all(names(attributes(mat)) %in% c("dim", "dimnames"))) {
+    mat <- suppressWarnings(matrix(
+      as.numeric(mat),
+      nrow = nrow(mat),
+      ncol = ncol(mat),
+      dimnames = dim_names
+    ))
+  }
   if (is.null(rownames(mat))) {
     log_message(
       "{.arg {row_label}} must have rownames for sample alignment.",
@@ -764,7 +795,8 @@ numeric_matrix_result <- function(x, row_label = "matrix", col_prefix = "score_"
   if (is.null(colnames(mat))) {
     colnames(mat) <- paste0(col_prefix, seq_len(ncol(mat)))
   }
-  mat[!is.finite(mat)] <- NA_real_
+  nonfinite <- !is.finite(mat)
+  if (any(nonfinite)) mat[nonfinite] <- NA_real_
   mat
 }
 

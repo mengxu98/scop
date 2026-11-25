@@ -74,10 +74,10 @@ commot_read_table <- function(path, required, numeric, label, allow_empty = FALS
     log_message("COMMOT did not produce {.val {label}} output", message_type = "error")
   }
   value <- tryCatch(
-    utils::read.csv(
-      path,
-      stringsAsFactors = FALSE, check.names = FALSE,
-      na.strings = c("", "NA", "NaN", "nan")
+    read_runner_output_table(
+      path, sep = ",",
+      id.cols = c("cell_id", "group", "sender", "receiver", "ligand", "receptor",
+                  "interaction_name", "pathway_name", "key")
     ),
     error = function(e) {
       log_message("Unable to read COMMOT {.val {label}} output: {conditionMessage(e)}", message_type = "error")

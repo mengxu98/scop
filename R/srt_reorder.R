@@ -69,28 +69,9 @@ srt_reorder <- function(
     )
     return(srt)
   }
-  simil_methods <- c(
-    "cosine",
-    "correlation",
-    "jaccard",
-    "ejaccard",
-    "dice",
-    "edice",
-    "hamman",
-    "simple matching",
-    "faith"
-  )
-  dist_methods <- c(
-    "euclidean",
-    "chisquared",
-    "kullback",
-    "manhattan",
-    "maximum",
-    "canberra",
-    "minkowski",
-    "hamming"
-  )
-  if (!distance_metric %in% c(simil_methods, dist_methods, "pearson", "spearman")) {
+  simil_methods <- knn_similarity_metrics()
+  dist_methods <- knn_distance_metrics()
+  if (!distance_metric %in% c(simil_methods, dist_methods)) {
     log_message(
       "{.pkg {distance_metric}} method is invalid",
       message_type = "error"
@@ -134,7 +115,7 @@ srt_reorder <- function(
     )
   }
 
-  if (distance_metric %in% c(simil_methods, "pearson", "spearman")) {
+  if (distance_metric %in% simil_methods) {
     if (distance_metric %in% c("pearson", "spearman")) {
       if (distance_metric == "spearman") {
         mat <- knn_rank_rows(mat)

@@ -100,9 +100,14 @@ spatialdm_runtime <- function(envname, verbose) {
   normalizePath(python, winslash = "/", mustWork = TRUE)
 }
 
-spatialdm_read_table <- function(path, required = character(), label, allow.empty = FALSE, sep = "\t") {
+spatialdm_read_table <- function(path, required = character(), label, allow.empty = FALSE, sep = "\t", first.id = FALSE) {
   if (!file.exists(path)) log_message("SpatialDM did not produce {.val {label}} output", message_type = "error")
-  value <- tryCatch(utils::read.table(path, header = TRUE, sep = sep, stringsAsFactors = FALSE, check.names = FALSE, na.strings = c("", "NA", "NaN", "nan")),
+  value <- tryCatch(
+    read_runner_output_table(
+      path, sep,
+      id.cols = if (first.id) character() else c("cell_id", "interaction", "ligand", "receptor", "annotation", "pathway_name"),
+      first.id = first.id
+    ),
     error = function(e) log_message("Unable to read SpatialDM {.val {label}} output: {conditionMessage(e)}", message_type = "error")
   )
   if (!all(required %in% colnames(value)) || (!allow.empty && nrow(value) == 0L)) {
@@ -112,7 +117,7 @@ spatialdm_read_table <- function(path, required = character(), label, allow.empt
 }
 
 spatialdm_read_matrix <- function(path, cells = NULL, label = "matrix", logical = FALSE) {
-  table <- spatialdm_read_table(path, required = character(), label = label, allow.empty = TRUE)
+  table <- spatialdm_read_table(path, required = character(), label = label, allow.empty = TRUE, first.id = TRUE)
   if (ncol(table) == 0L) {
     return(matrix(numeric(), nrow = 0L, ncol = 0L))
   }

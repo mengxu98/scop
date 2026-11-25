@@ -33,7 +33,6 @@ ClusterTreePlot(
   ncol = NULL,
   return_data = FALSE,
   verbose = TRUE,
-  family = "Arial",
   direction = c("left-to-right", "right-to-left", "top-to-bottom", "bottom-to-top"),
   srt = NULL
 )
@@ -96,8 +95,6 @@ starting side, while vertical trees place guides on the right. Use
 \item{return_data}{Whether to return plot data along with the plot.}
 
 \item{verbose}{Whether to print messages.}
-
-\item{family}{Font family used for node labels, axes, titles, and legends.}
 
 \item{direction}{Tree direction: \code{"left-to-right"}, \code{"right-to-left"},
 \code{"top-to-bottom"}, or \code{"bottom-to-top"}.}

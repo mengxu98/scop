@@ -1,3 +1,33 @@
+normalize_plot_highlight <- function(highlight, cells, verbose = TRUE) {
+  if (is.null(highlight) || isFALSE(highlight)) {
+    return(NULL)
+  }
+  if (isTRUE(highlight)) {
+    return(TRUE)
+  }
+  if (!is.character(highlight)) {
+    log_message(
+      "{.arg cells.highlight} must be NULL, TRUE, FALSE, or a character vector of cell IDs.",
+      message_type = "error"
+    )
+  }
+  if (!length(highlight)) {
+    return(NULL)
+  }
+  keep <- highlight %in% cells
+  if (!any(keep)) {
+    log_message("No cells in {.arg cells.highlight} found.", message_type = "error")
+  }
+  if (!all(keep)) {
+    log_message(
+      "Some cells in {.arg cells.highlight} were not found and are ignored.",
+      message_type = "warning",
+      verbose = verbose
+    )
+  }
+  highlight[keep]
+}
+
 combine_plot_list <- function(
   plots,
   combine = TRUE,

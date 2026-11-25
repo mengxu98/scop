@@ -251,49 +251,10 @@ PseudotimeProjectionPlot <- function(
     df_field <- cbind.data.frame(field_x, field_v)
     colnames(df_field) <- c("x", "y", "u", "v")
 
-    grouped <- plot_type == "raw" && !is.null(group.by)
-    if (grouped) {
-      df_field[["group.by"]] <- srt@meta.data[
-        rownames(df_field),
-        group.by,
-        drop = TRUE
-      ]
-    }
-    segment_args <- list(
-      data = df_field,
-      mapping = if (grouped) {
-        aes(x = x, y = y, xend = x + .data$u, yend = y + .data$v, color = group.by)
-      } else {
-        aes(x = x, y = y, xend = x + .data$u, yend = y + .data$v)
-      },
-      arrow = grid::arrow(
-        length = grid::unit(1.5, "mm"),
-        type = "closed",
-        angle = arrow_angle
-      ),
-      lineend = "round",
-      linejoin = "mitre",
-      inherit.aes = FALSE
+    velocity_layer <- projection_segment_layers(
+      df_field, srt@meta.data, plot_type, group.by,
+      arrow_angle, arrow_color, group_palette, group_palcolor
     )
-    if (!grouped) {
-      segment_args["color"] <- list(arrow_color)
-    }
-    velocity_layer <- list(do.call(geom_segment, segment_args))
-    if (grouped) {
-      velocity_layer[[2L]] <- scale_color_manual(
-        name = group.by,
-        values = palette_colors(
-          df_field[["group.by"]],
-          palette = group_palette,
-          palcolor = group_palcolor
-        ),
-        guide = guide_legend(
-          title.hjust = 0,
-          order = 1,
-          override.aes = list(linewidth = 2, alpha = 1)
-        )
-      )
-    }
   }
   if (plot_type == "stream") {
     res <- compute_velocity_on_grid(

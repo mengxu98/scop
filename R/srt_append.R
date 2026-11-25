@@ -34,11 +34,19 @@ srt_append <- function(
       )
       next
     }
-    if (identical(slot_nm, "active.ident") && isTRUE(overwrite)) {
-      methods::slot(srt_raw, name = "active.ident") <- methods::slot(
-        srt_append,
-        name = "active.ident"
-      )
+    if (identical(slot_nm, "active.ident")) {
+      if (!isTRUE(overwrite)) {
+        next
+      }
+      identities <- methods::slot(srt_append, name = "active.ident")
+      cell_index <- match(colnames(srt_raw), names(identities))
+      if (anyNA(cell_index) || anyDuplicated(names(identities))) {
+        log_message(
+          "Cannot overwrite Seurat identities: each target cell must have a uniquely named source identity.",
+          message_type = "error"
+        )
+      }
+      methods::slot(srt_raw, name = "active.ident") <- identities[cell_index]
       next
     }
     slot_data <- methods::slot(srt_append, name = slot_nm)

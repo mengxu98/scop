@@ -23,16 +23,27 @@ def write_manifest(value: dict, path: Path) -> None:
 
 
 
-def read_ids(path: Path, label: str) -> list[str]:
+def read_staged_tsv(path: str | Path):
     import pandas as pd
 
-    frame = pd.read_csv(path, sep="\t", dtype=str)
-    if frame.shape[1] != 1:
-        raise ValueError(f"{label} must contain exactly one column")
-    values = frame.iloc[:, 0].astype(str).tolist()
-    if not values or len(values) != len(set(values)) or any(not value for value in values):
+    # R stages missing fields as empty strings; literal IDs such as "NULL"
+    # and "001" must survive pandas' default NA and type inference.
+    return pd.read_csv(
+        path, sep="\t", dtype=str, keep_default_na=False, skip_blank_lines=False
+    )
+
+
+def validate_ids(values: list[str], label: str) -> list[str]:
+    if not values or any(not value for value in values) or len(values) != len(set(values)):
         raise ValueError(f"{label} must contain unique non-empty IDs")
     return values
+
+
+def read_ids(path: Path, label: str) -> list[str]:
+    frame = read_staged_tsv(path)
+    if frame.shape[1] != 1:
+        raise ValueError(f"{label} must contain exactly one column")
+    return validate_ids(frame.iloc[:, 0].tolist(), label)
 
 
 

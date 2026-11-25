@@ -24,7 +24,6 @@
 #' each extent while preserving identical numeric unit lengths on both sides.
 #' @param band_gap Non-negative gap between the database band and estimated left content extent, in x-axis units.
 #' @param base_size Positive theme font size in points.
-#' @param font_family Font family used by the theme, term and gene text.
 #' @return A ggplot. Its data retains selected original rows plus plotting columns.
 #' Terms are ranked independently by adjusted P within each database and group.
 #' Missing adjusted P values are omitted with a warning; zero values are capped
@@ -54,7 +53,7 @@ EnrichmentMirrorPlot <- function(
   row_step = 0.84, db_gap = 0.40, bar_height = 0.46,
   term_size = 3, gene_size = 2.2, gene_width = 82,
   alpha_range = c(0.55, 1), corner_mm = 2, title = NULL,
-  symmetric_axis = FALSE, band_gap = 0.6, base_size = 11, font_family = "sans", res = NULL
+  symmetric_axis = FALSE, band_gap = 0.6, base_size = 11, res = NULL
 ) {
   if (length(group_use) != 2L || anyNA(group_use) || anyDuplicated(group_use)) {
     log_message("group_use must specify exactly two distinct groups, left then right", message_type = "error")
@@ -184,7 +183,7 @@ EnrichmentMirrorPlot <- function(
         x = .data$.text_x, y = .data$.y + 0.10,
         label = .data$.term, hjust = .data$.hjust
       ),
-      size = term_size, colour = text_colors, family = font_family, alpha = 1,
+      size = term_size, colour = text_colors, alpha = 1,
       bg.colour = ifelse(text_colors == "white", "black", "white"), bg.r = 0.04,
       show.legend = FALSE
     ) +
@@ -194,7 +193,7 @@ EnrichmentMirrorPlot <- function(
         y = .data$.y + 0.10 - bar_height / 2 - 0.15,
         label = .data$.genes, hjust = .data$.hjust, colour = Groups, alpha = .data$.score
       ),
-      size = gene_size, family = font_family, fontface = "italic", show.legend = FALSE
+      size = gene_size, fontface = "italic", show.legend = FALSE
     ) +
     ggplot2::annotate("text",
       x = -0.5 * left_span, y = max(d$.y) + 0.9,
@@ -226,7 +225,7 @@ EnrichmentMirrorPlot <- function(
       subtitle = paste0("Top ", topTerm, " terms per database and group; adjusted P < ", padjustCutoff),
       caption = "Independent group-wise rankings; opposite rows need not represent the same pathway.\nLeftward bars do not indicate negative enrichment or downregulation."
     ) +
-    ggplot2::theme_classic(base_size = base_size, base_family = font_family) +
+    ggplot2::theme_classic(base_size = base_size) +
     ggplot2::theme(
       axis.line.y = ggplot2::element_blank(), axis.ticks.y = ggplot2::element_blank(),
       axis.line.x = ggplot2::element_line(linewidth = 0.35),

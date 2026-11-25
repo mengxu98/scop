@@ -31,6 +31,38 @@ test_that("feature metadata only drops generated identifier columns", {
   expect_identical(external_export$features.metadata, external$features)
 })
 
+test_that("AnnData observation metadata retains colliding normalized columns", {
+  cells <- c("cell3", "cell1", "cell2")
+  obs <- data.frame(
+    `a-b` = c("C", "A", "B"),
+    `a b` = c("three", "one", "two"),
+    a.b.1 = c(30, 10, 20),
+    keep_me = c(TRUE, FALSE, TRUE),
+    row.names = cells,
+    check.names = FALSE
+  )
+  adata <- structure(
+    list(
+      X = matrix(1:6, nrow = 3L),
+      obs = obs,
+      obs_names = cells,
+      obs_keys = function() names(obs),
+      var_names = c("gene1", "gene2"),
+      var_keys = function() character()
+    ),
+    class = "InMemoryAnnData"
+  )
+  srt <- adata_to_srt(adata, prepare_env = FALSE, verbose = FALSE)
+  metadata <- srt[[]]
+  expected_names <- c("a.b", "a.b.2", "a.b.1", "keep_me")
+  expect_identical(rownames(metadata), cells)
+  expect_identical(names(metadata)[names(metadata) %in% expected_names], expected_names)
+  expect_identical(
+    unname(as.list(metadata[, expected_names, drop = FALSE])),
+    unname(as.list(obs))
+  )
+})
+
 test_that("srt <-> adata roundtrip keeps var column names unique", {
   skip_if_not_installed("Seurat")
   skip_if_not_installed("SeuratObject")
@@ -136,4 +168,29 @@ test_that("adata_to_srt(prepare_env = FALSE) does not prepare the Scanpy environ
     silent = TRUE
   )
   expect_identical(n_prepare, 0L)
+})
+
+test_that("AnnData keys cannot collide in the Seurat component namespace", {
+  layer <- matrix(101:112, nrow = 4L)
+  embedding <- matrix(1:8, nrow = 4L)
+  adata <- structure(
+    list(
+      X = matrix(1:12, nrow = 4L),
+      layers = list(RNA = layer, `signal-A` = layer, signal.A = layer),
+      obsm = list(shared = embedding, `graph-key` = embedding),
+      obsp = list(shared = diag(4L), graph.key = diag(4L))
+    ),
+    class = "InMemoryAnnData"
+  )
+  err <- tryCatch(
+    adata_to_srt(adata, prepare_env = FALSE, verbose = FALSE),
+    error = identity
+  )
+  expect_s3_class(err, "error")
+  message <- conditionMessage(err)
+  expect_match(message, "Conflicting AnnData keys")
+  expect_match(message, "RNA.*X.*RNA.*layers.*RNA")
+  expect_match(message, "signal[.]A.*layers.*signal-A.*layers.*signal[.]A")
+  expect_match(message, "shared.*obsm.*shared.*obsp.*shared")
+  expect_match(message, "graph[.]key.*obsm.*graph-key.*obsp.*graph[.]key")
 })

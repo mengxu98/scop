@@ -11,7 +11,7 @@ make_consistency_object <- function(seed = 21, n_genes = 60, n_cells = 50) {
   obj
 }
 
-test_that("RunPCA default output is identical to Seurat", {
+test_that("RunPCA default matches Seurat exactly and cpp remains an explicit override", {
   obj <- make_consistency_object()
   hvf <- SeuratObject::VariableFeatures(obj)
 
@@ -46,11 +46,6 @@ test_that("RunPCA default output is identical to Seurat", {
     scop_pca[["pca_scop"]]@stdev,
     seurat_pca[["pca_seurat"]]@stdev
   )
-})
-
-test_that("RunPCA cpp backend remains an explicit override", {
-  obj <- make_consistency_object()
-  hvf <- SeuratObject::VariableFeatures(obj)
 
   scop_pca <- RunPCA(
     obj,
@@ -61,17 +56,6 @@ test_that("RunPCA cpp backend remains an explicit override", {
     backend = "cpp",
     verbose = FALSE
   )
-  seurat_pca <- seurat_reference_method(
-    "RunPCA",
-    "Seurat",
-    obj,
-    features = hvf,
-    npcs = 8,
-    reduction.name = "pca_seurat",
-    seed.use = 42,
-    verbose = FALSE
-  )
-
   cpp_embeddings <- SeuratObject::Embeddings(scop_pca[["pca_cpp"]])
   seurat_embeddings <- SeuratObject::Embeddings(seurat_pca[["pca_seurat"]])
   expect_equal(dim(cpp_embeddings), c(ncol(obj), 8L))
@@ -307,7 +291,7 @@ test_that("RunPCA native auto path preserves a separated PCA subspace", {
   expect_equal(candidate@stdev, reference@stdev, tolerance = 1e-10)
 })
 
-test_that("FindNeighbors nn graph is identical to Seurat (self edges preserved)", {
+test_that("FindNeighbors NN and SNN graphs match Seurat, including NN self edges", {
   obj <- make_consistency_object()
   hvf <- SeuratObject::VariableFeatures(obj)
   obj <- RunPCA(obj, features = hvf, npcs = 8, verbose = FALSE)
@@ -340,32 +324,6 @@ test_that("FindNeighbors nn graph is identical to Seurat (self edges preserved)"
     ncol(obj),
     label = "nn graph keeps self edges like Seurat"
   )
-})
-
-test_that("FindNeighbors SNN graph is identical to Seurat", {
-  obj <- make_consistency_object()
-  hvf <- SeuratObject::VariableFeatures(obj)
-  obj <- RunPCA(obj, features = hvf, npcs = 8, verbose = FALSE)
-
-  scop_nn <- FindNeighbors(
-    obj,
-    reduction = "pca",
-    dims = 1:8,
-    k.param = 10,
-    graph.name = c("nn_scop", "snn_scop"),
-    verbose = FALSE
-  )
-  seurat_nn <- seurat_reference_method(
-    "FindNeighbors",
-    "Seurat",
-    obj,
-    reduction = "pca",
-    dims = 1:8,
-    k.param = 10,
-    graph.name = c("nn_seurat", "snn_seurat"),
-    verbose = FALSE
-  )
-
   expect_identical(
     as.matrix(scop_nn@graphs[["snn_scop"]]),
     as.matrix(seurat_nn@graphs[["snn_seurat"]])

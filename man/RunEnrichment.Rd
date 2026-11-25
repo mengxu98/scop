@@ -57,16 +57,19 @@ This argument is only used if \code{object} is specified.}
 
 \item{geneID_groups}{A factor vector specifying the group labels for each gene.}
 
-\item{geneID_exclude}{Gene IDs to be excluded from the input genes and the
-enrichment universe.}
+\item{geneID_exclude}{Gene IDs to remove from the query only. The background
+universe is unchanged.}
 
 \item{universe}{A character vector of background gene IDs shared by all groups,
 or a named list of character vectors with one entry per \code{geneID_groups} level.
-When \code{object} is supplied and \code{geneID} is omitted, \code{NULL} uses all
-genes returned by the unfiltered differential-expression results for each comparison.
-Otherwise, \code{NULL} uses all genes represented in the selected
-\code{TERM2GENE} mapping. Genes without annotation in the selected mapping are
-excluded from the effective universe.}
+When extracting genes from an object, \code{NULL} uses the stored
+differential-expression rows for each comparison before applying
+\code{DE_threshold}. These rows may already have been filtered by
+\code{\link[=RunDEtest]{RunDEtest()}}. Supply the eligible gene set explicitly
+to use a background defined before marker selection. With explicit
+\code{geneID}, \code{NULL} uses the genes represented in the selected
+\code{TERM2GENE} mapping. The effective universe is restricted to genes
+annotated in that mapping.}
 
 \item{IDtype}{Type of gene IDs in the \code{object} object or \code{geneID} argument.
 This argument is used to convert the gene IDs to a different type if \code{IDtype} is different from \code{result_IDtype}.}
@@ -140,7 +143,10 @@ will be removed in scop 1.0.0.}
 \item{...}{Arguments passed to other functions.}
 }
 \value{
-If input is a Seurat object, returns the modified Seurat object with the enrichment result stored in the tools slot.
+For a Seurat object, returns the modified object with enrichment in the
+tools slot. A successful rerun replaces results for the current comparisons
+and databases, including their simplified GO results, even if no terms are
+returned. Other comparisons and databases are preserved.
 
 If input is a geneID vector with or without geneID_groups, return the enrichment result directly.
 

@@ -183,7 +183,7 @@ ExpressionStatPlot <- function(
       "Using explicit {.arg ref_group} as the reference for {.arg auto_comparison}"
     )
   }
-  if (group.by == split.by && group.by == "All.groups") {
+  if (isTRUE(group.by == "All.groups") && isTRUE(split.by == "All.groups")) {
     legend.position <- "none"
   }
   for (i in unique(c(group.by, split.by, bg.by))) {
@@ -220,21 +220,7 @@ ExpressionStatPlot <- function(
       )
     }
   }
-  if (!is.null(cells.highlight) && isFALSE(cells.highlight)) {
-    if (!any(cells.highlight %in% allcells)) {
-      log_message(
-        "No cells in {.arg cells.highlight} found",
-        message_type = "error"
-      )
-    }
-    if (!all(cells.highlight %in% allcells)) {
-      log_message(
-        "Some cells in {.arg cells.highlight} not found",
-        message_type = "warning"
-      )
-    }
-    cells.highlight <- intersect(cells.highlight, allcells)
-  }
+  cells.highlight <- normalize_plot_highlight(cells.highlight, allcells)
   if (isTRUE(cells.highlight)) {
     cells.highlight <- allcells
   }
@@ -403,16 +389,19 @@ ExpressionStatPlot <- function(
   )
   if (isTRUE(individual)) {
     for (g in group.by) {
+      individual_groups <- expand.grid(
+        group_name = g,
+        group_element = levels(dat_use[[g]]),
+        split_name = levels(dat_use[[split.by]]),
+        stringsAsFactors = FALSE
+      )
+      if (fill.by == "expression") {
+        # An unobserved group/split pair has no expression median.
+        present <- table(dat_use[[g]], dat_use[[split.by]]) > 0L
+        individual_groups <- individual_groups[as.vector(present), , drop = FALSE]
+      }
       comb_list[[g]] <- merge(
-        comb,
-        expand.grid(
-          group_name = g,
-          group_element = levels(dat_use[[g]]),
-          split_name = levels(dat_use[[split.by]]),
-          stringsAsFactors = FALSE
-        ),
-        by = "group_name",
-        all = FALSE
+        comb, individual_groups, by = "group_name", all = FALSE
       )
     }
   } else {
@@ -431,6 +420,9 @@ ExpressionStatPlot <- function(
     }
   }
   comb <- do.call(rbind, comb_list)
+  if (isTRUE(individual) && fill.by == "expression" && nrow(comb) == 0L) {
+    log_message("No observed groups to plot", message_type = "error")
+  }
   rownames(comb) <- paste0(
     comb[["stat_name"]],
     ":",
@@ -440,6 +432,29 @@ ExpressionStatPlot <- function(
     ":",
     sapply(comb[["split_name"]], function(x) paste0(x, collapse = ","))
   )
+
+  # Expression colour uses the same group/split medians for every panel of
+  # a grouping variable. Reuse these summaries, not palette or theme calls.
+  reuse_expression_medians <- identical(fill.by, "expression") &&
+    nrow(comb) > length(group.by) &&
+    identical(class(dat_use), "data.frame") &&
+    all(vapply(dat_use[, stat.by, drop = FALSE], function(x) {
+      !is.object(x) && is.null(dim(x)) && is.numeric(x)
+    }, logical(1)))
+  expression_medians <- vector("list", length(group.by))
+  compute_expression_medians <- function(g) {
+    median_values <- stats::aggregate(
+      dat_use[, stat.by, drop = FALSE],
+      by = list(dat_use[[g]], dat_use[[split.by]]),
+      FUN = stats::median
+    )
+    rownames(median_values) <- paste0(
+      median_values[, 1],
+      "-",
+      median_values[, 2]
+    )
+    median_values
+  }
 
   plist <- lapply(
     stats::setNames(rownames(comb), rownames(comb)), function(i) {
@@ -476,16 +491,15 @@ ExpressionStatPlot <- function(
         }
       }
       if (fill.by == "expression") {
-        median_values <- stats::aggregate(
-          dat_use[, stat.by, drop = FALSE],
-          by = list(dat_use[[g]], dat_use[[split.by]]),
-          FUN = stats::median
-        )
-        rownames(median_values) <- paste0(
-          median_values[, 1],
-          "-",
-          median_values[, 2]
-        )
+        if (reuse_expression_medians) {
+          group_index <- match(g, group.by)
+          if (is.null(expression_medians[[group_index]])) {
+            expression_medians[[group_index]] <<- compute_expression_medians(g)
+          }
+          median_values <- expression_medians[[group_index]]
+        } else {
+          median_values <- compute_expression_medians(g)
+        }
         colors <- palette_colors(
           unlist(median_values[, stat.by]),
           type = "continuous",

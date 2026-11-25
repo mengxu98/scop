@@ -1,9 +1,24 @@
 # scop (development version)
 
+* **feat**: `CCCNetworkPlot()` keeps the circle as the default and supports
+  an explicit hierarchy layout for pathway and ligand–receptor views.
+  Pathways selected together share cell positions, colors, and edge-weight
+  scales.
+* **fix**: `CCCHeatmap()` sizes aggregate heatmaps using the rendered
+  ComplexHeatmap layout. By default, marginal bars are on the top and left,
+  cell-type strips on the bottom and right, and the score legend on the right.
+  Sender labels remain vertical.
+
 * **feat**: `RunEnrichment()` accepts an explicit `universe` and derives
-  comparison-specific backgrounds from unfiltered DEtest results when genes
-  are extracted from an object. The R and C++ backends now use the same
-  annotation-restricted background and report `UniverseSize`.
+  comparison-specific backgrounds from stored DEtest rows before enrichment
+  filtering when genes are extracted from an object. The R and C++ backends
+  use the same annotation-restricted background and report `UniverseSize`.
+  Seurat reruns replace results for refreshed comparisons and databases.
+
+* **fix**: Plots no longer select a font family. They use the plot theme or
+  graphics device default. The plot-specific `family` arguments in
+  `ClusterTreePlot()` and `CellStatePlot()`, and `font_family` in
+  `EnrichmentMirrorPlot()`, have been removed.
 
 * **refactor**: Share heatmap rendering, spatial coordinate preparation,
   integration setup, and analysis inputs. Reuse common C++ and Python

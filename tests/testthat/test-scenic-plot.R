@@ -868,7 +868,7 @@ test_that("network_graph defaults to FR and still supports explicit KK", {
   expect_equal(automatic$plot_data$display_edges, automatic$plot_data$edges)
 })
 
-test_that("network_graph honors network_tf with the same neighbor selection as features", {
+test_that("network_graph honors TF selection and retains historical node circles", {
   dat <- make_scenic_plot_mock()
   by_tf <- SCENICPlot(dat$srt,
     group.by = "CellType", plot_type = "network_graph",
@@ -885,6 +885,14 @@ test_that("network_graph honors network_tf with the same neighbor selection as f
     features = "TF3", network_tf = "TF1", verbose = FALSE
   )
   expect_equal(precedence$plot_data$edges, by_tf$plot_data$edges)
+
+  built <- ggplot2::ggplot_build(by_tf$plot)
+  point_idx <- which(vapply(by_tf$plot$layers, function(x) inherits(x$geom, "GeomPoint"), logical(1)))
+  shapes <- unlist(lapply(unname(point_idx), function(idx) {
+    stats::setNames(built$data[[idx]]$shape, by_tf$plot$layers[[idx]]$data$name)
+  }))
+  expect_equal(unname(shapes["TF1"]), 21)
+  expect_true(all(shapes[c("Gene1", "Gene2")] == 21))
 })
 
 test_that("network_graph limits SCENIC+ triplets to the selected TF neighborhood", {
@@ -933,21 +941,6 @@ test_that("network_graph respects its label budget and explicit all or none", {
     label_nodes = "none", verbose = FALSE
   )
   expect_length(labels(none), 0)
-})
-
-test_that("SCENIC restores TF and gene circles from its historical renderer", {
-  dat <- make_scenic_plot_mock()
-  out <- SCENICPlot(dat$srt,
-    group.by = "CellType", plot_type = "network_graph",
-    network_tf = "TF1", verbose = FALSE
-  )
-  built <- ggplot2::ggplot_build(out$plot)
-  point_idx <- which(vapply(out$plot$layers, function(x) inherits(x$geom, "GeomPoint"), logical(1)))
-  shapes <- unlist(lapply(unname(point_idx), function(idx) {
-    stats::setNames(built$data[[idx]]$shape, out$plot$layers[[idx]]$data$name)
-  }))
-  expect_equal(unname(shapes["TF1"]), 21)
-  expect_true(all(shapes[c("Gene1", "Gene2")] == 21))
 })
 
 test_that("large TF legends cannot squeeze the network viewport to zero", {

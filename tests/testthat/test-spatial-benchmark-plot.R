@@ -74,15 +74,6 @@ test_that("per-cell benchmark panels retain the requested multi-feature layout",
   expect_true(all(vapply(panels, inherits, logical(1), "ggplot")))
 })
 
-test_that("SpatialBenchmarkPlot selects publication benchmark views", {
-  result <- make_benchmark_plot_result()
-  expect_s3_class(SpatialBenchmarkPlot(data = result, plot_type = "quality"), "ggplot")
-  expect_s3_class(SpatialBenchmarkPlot(data = result, plot_type = "efficiency"), "ggplot")
-  expect_s3_class(SpatialBenchmarkPlot(data = result, plot_type = "heatmap"), "ggplot")
-  expect_s3_class(SpatialBenchmarkPlot(data = result), "patchwork")
-  expect_s3_class(SpatialBenchmarkPlot(data = result, plot_type = "overview"), "patchwork")
-})
-
 test_that("quality ordering and automatic log scales are explicit", {
   result <- make_benchmark_plot_result()
   expect_identical(
@@ -90,6 +81,7 @@ test_that("quality ordering and automatic log scales are explicit", {
     "BayesSpace"
   )
   efficiency <- SpatialBenchmarkPlot(data = result, plot_type = "efficiency")
+  expect_s3_class(efficiency, "ggplot")
   expect_true(inherits(efficiency$scales$get_scales("x")$trans, "transform"))
   expect_identical(efficiency$labels$x, "Runtime (s, log10)")
   expect_match(efficiency$labels$y, "log10")
@@ -102,6 +94,7 @@ test_that("quality view uses score tracks and explicit direction", {
     data = make_benchmark_plot_result(),
     plot_type = "quality"
   )
+  expect_s3_class(quality, "ggplot")
   expect_identical(quality$labels$x, "Agreement score (higher is better)")
   expect_true(any(vapply(quality$layers, function(layer) {
     inherits(layer$geom, "GeomSegment")
@@ -117,6 +110,7 @@ test_that("heatmap normalization respects metric direction", {
     data = make_benchmark_plot_result(),
     plot_type = "heatmap"
   )
+  expect_s3_class(heatmap, "ggplot")
   expect_gte(length(heatmap$layers), 2L)
   expect_match(heatmap$labels$subtitle, "labels show raw values")
   expect_identical(levels(heatmap$data$metric)[4:5], c("Runtime", "Peak memory"))
@@ -126,7 +120,9 @@ test_that("status strip appears only for incomplete runs", {
   incomplete <- make_benchmark_plot_result()
   complete <- make_benchmark_plot_result(rep("success", 3))
   incomplete_plot <- SpatialBenchmarkPlot(data = incomplete)
-  complete_plot <- SpatialBenchmarkPlot(data = complete)
+  complete_plot <- SpatialBenchmarkPlot(data = complete, plot_type = "overview")
+  expect_s3_class(incomplete_plot, "patchwork")
+  expect_s3_class(complete_plot, "patchwork")
   expect_identical(incomplete_plot[[2]]$labels$title, "Incomplete runs")
   expect_identical(complete_plot[[2]]$labels$title, "Computational efficiency")
 })
@@ -138,26 +134,20 @@ test_that("legacy benchmark bar mode remains available", {
   expect_s3_class(SpatialBenchmarkPlot(data = data, plot_type = "bar"), "ggplot")
 })
 
-test_that("automatic summary plots use the stable bar view", {
-  data <- data.frame(
-    method = c("A", "B"), metric = c("ARI", "ARI"), value = c(0.8, 0.6)
-  )
-  plot <- SpatialBenchmarkPlot(data = data)
-  expect_s3_class(plot, "ggplot")
-})
-
-test_that("summary benchmark plots preserve theme controls", {
+test_that("automatic summary plots use a bar view and preserve theme controls", {
   data <- data.frame(
     method = c("A", "B"), metric = c("ARI", "ARI"), value = c(0.8, 0.6)
   )
   plot <- SpatialBenchmarkPlot(
     data = data,
-    plot_type = "auto",
     theme_use = "theme_scop",
     theme_args = list(aspect.ratio = 1)
   )
   expect_s3_class(plot, "ggplot")
   expect_identical(plot$theme$aspect.ratio, 1)
+  expect_true(any(vapply(plot$layers, function(layer) {
+    inherits(layer$geom, "GeomCol")
+  }, logical(1))))
 })
 
 test_that("all-unavailable benchmark results render truthful empty panels", {

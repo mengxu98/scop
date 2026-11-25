@@ -145,25 +145,31 @@ spatial_sample_coords <- function(srt, sample.by, image = NULL,
   image_map <- spatial_resolve_sample_images(srt, sample.by, image = image)
   data <- sources <- vector("list", length(samples))
   names(data) <- names(sources) <- samples
+  object_cells <- colnames(srt)
+  # Metadata coordinates cover the same object-wide axis for every sample.
+  delayedAssign("metadata_coords", spatial_analysis_coords(
+    srt, image = NULL, coord.cols = coord.cols, coordinate_space = coordinate_space
+  ))
   for (sample in samples) {
-    cells <- colnames(srt)[labels == sample]
+    cells <- object_cells[labels == sample]
     selected <- image_map[[sample]]
-    if (is.na(selected)) selected <- NULL
-    resolved <- spatial_analysis_coords(
-      srt,
-      image = selected,
-      coord.cols = coord.cols,
-      coordinate_space = coordinate_space
-    )
-    if (!all(cells %in% resolved$data$cell_id)) {
+    resolved <- if (is.na(selected)) {
+      metadata_coords
+    } else {
+      spatial_analysis_coords(
+        srt, image = selected, coord.cols = coord.cols, coordinate_space = coordinate_space
+      )
+    }
+    index <- match(cells, resolved$data$cell_id)
+    if (anyNA(index)) {
       log_message("Selected image does not cover every cell in sample {.val {sample}}", message_type = "error")
     }
-    data[[sample]] <- resolved$data[match(cells, resolved$data$cell_id), , drop = FALSE]
+    data[[sample]] <- resolved$data[index, , drop = FALSE]
     sources[[sample]] <- c(resolved$source, list(transform = resolved$transform))
   }
   coords <- do.call(rbind, unname(data))
   rownames(coords) <- coords$cell_id
-  list(data = coords[colnames(srt), , drop = FALSE], sources = sources, images = image_map)
+  list(data = coords[object_cells, , drop = FALSE], sources = sources, images = image_map)
 }
 
 spatial_empty_plot <- function(

@@ -3,6 +3,7 @@
 #' @md
 #' @details Canonical selection parameters and legacy aliases may be supplied
 #'   together only when their values agree. Conflicting values raise an error.
+#'   `width` and `height` here control the heatmap body, not the canvas.
 #' @inheritParams CCCStatPlot
 #' @inheritParams scop-params
 #' @param plot_type Plot type. One of `"heatmap"` or `"dot"`.
@@ -37,8 +38,13 @@
 #' @param value_palcolor Optional custom colors for `value_palette`.
 #' @param width,height Optional heatmap body width and height. When only one is
 #'   supplied, the other is inferred from the matrix dimensions to keep cells
-#'   square. When both are `NULL`, a square-cell size is computed automatically.
+#'   square. When both are `NULL`, the body is sized automatically from the matrix and labels.
 #' @param units Units for `width` and `height`. Default `"inch"`.
+#'
+#' @details Aggregation heatmaps retain receivers on rows and senders on
+#' columns. By default, the top and left show bars; the bottom and right
+#' show cell-type color strips. The legend is on the right and sender labels
+#' are rotated by 90 degrees. The export is sized from the rendered heatmap.
 #'
 #' @return A ggplot / patchwork object wrapping the ComplexHeatmap grob.
 #' @export
@@ -410,6 +416,10 @@ CCCHeatmap <- function(
     choices = c("count", "sum", "mean", "max"),
     several.ok = TRUE
   )
+  aggregate_heatmap <- identical(plot_type, "heatmap") &&
+    identical(display_by, "aggregation")
+  # Preserve the historical annotation shorthand outside the aggregate heatmap.
+  use_legacy_anno <- plot_type %in% c("heatmap", "bubble") && !aggregate_heatmap
   default_top_bar <- identical(top_anno, "bar")
   default_left_bar <- identical(left_anno, "bar")
   default_bottom_cell <- identical(bottom_anno, "cell")
@@ -418,20 +428,19 @@ CCCHeatmap <- function(
   right_anno <- ccc_match_side_anno(right_anno)
   left_anno <- ccc_match_side_anno(left_anno)
   bottom_anno <- ccc_match_side_anno(bottom_anno)
-  if (plot_type %in% c("heatmap", "bubble") && isTRUE(default_top_bar)) {
+  if (use_legacy_anno && isTRUE(default_top_bar)) {
     top_anno <- c("bar", "cell")
   }
   if (
-    plot_type %in% c("heatmap", "bubble") &&
-      identical(display_by, "aggregation") &&
+    use_legacy_anno && identical(display_by, "aggregation") &&
       isTRUE(default_left_bar)
   ) {
     left_anno <- c("bar", "cell")
   }
-  if (plot_type %in% c("heatmap", "bubble") && isTRUE(default_bottom_cell)) {
+  if (use_legacy_anno && isTRUE(default_bottom_cell)) {
     bottom_anno <- NULL
   }
-  if (plot_type %in% c("heatmap", "bubble") && isTRUE(default_right_cell)) {
+  if (use_legacy_anno && isTRUE(default_right_cell)) {
     right_anno <- NULL
   }
 
@@ -968,7 +977,14 @@ CCCHeatmap <- function(
     cell_palette = palette_cfg$cell_palette,
     cell_palcolor = palette_cfg$cell_palcolor,
     legend.position = legend.position,
-    legend.direction = legend.direction,
+    legend.direction = if (aggregate_heatmap && missing(legend.direction) &&
+      isTRUE(legend.position %in% c("top", "bottom"))) {
+      "horizontal"
+    } else {
+      legend.direction
+    },
+    sequential = identical(method, "CellChat") && missing(value_palette) &&
+      is.null(value_palcolor),
     font.size = font.size,
     theme_use = theme_use,
     theme_args = theme_args
@@ -1012,7 +1028,8 @@ ccc_heatmap_full_plot <- function(
   legend.direction = "vertical",
   font.size = 10,
   theme_use = "theme_scop",
-  theme_args = list()
+  theme_args = list(),
+  sequential = FALSE
 ) {
   check_r("ComplexHeatmap", verbose = FALSE)
 
@@ -1302,7 +1319,9 @@ ccc_heatmap_full_plot <- function(
     legend.direction = legend.direction,
     font.size = font.size,
     theme_use = theme_use,
-    theme_args = theme_args
+    theme_args = theme_args,
+    compact = identical(display_by, "aggregation"),
+    sequential = sequential
   )
 }
 

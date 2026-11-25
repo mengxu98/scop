@@ -1202,8 +1202,15 @@ ccc_draw_heatmap <- function(
   theme_use,
   theme_args,
   symmetric = FALSE,
-  add_dot = FALSE
+  add_dot = FALSE,
+  compact = FALSE,
+  sequential = FALSE
 ) {
+  if (compact) {
+    grDevices::pdf(NULL)
+    capture_device <- grDevices::dev.cur()
+    on.exit(grDevices::dev.off(capture_device), add = TRUE)
+  }
   mat_vals <- mat[is.finite(mat)]
   if (length(mat_vals) == 0L) {
     mat_vals <- c(0, 1)
@@ -1219,6 +1226,11 @@ ccc_draw_heatmap <- function(
     if (val_range[1] == val_range[2]) {
       val_range <- val_range + c(-0.5, 0.5)
     }
+  }
+  if (compact && sequential && !symmetric && all(mat_vals >= 0)) {
+    value_palette <- "Reds"
+    val_range[1] <- 0
+    if (val_range[2] <= 0) val_range[2] <- 1
   }
   fill_cols <- palette_colors(
     palette = value_palette,
@@ -1240,8 +1252,12 @@ ccc_draw_heatmap <- function(
           x,
           y,
           gp = grid::gpar(
-            fontsize = font.size * 0.7,
-            col = if (!is.na(fill) && grDevices::col2rgb(fill)[1] < 128) {
+            fontsize = font.size * if (compact) 0.85 else 0.7,
+            col = if (!is.na(fill) && (if (compact) {
+              sum(c(0.213, 0.715, 0.072) * grDevices::col2rgb(fill)[, 1L]) < 140
+            } else {
+              grDevices::col2rgb(fill)[1L] < 128
+            })) {
               "white"
             } else {
               "grey20"
@@ -1300,9 +1316,62 @@ ccc_draw_heatmap <- function(
     units = units
   )
 
+  if (is.null(x_text_angle)) {
+    x_text_angle <- 90
+  }
+  horizontal_labels <- compact && isTRUE(x_text_angle == 0) &&
+    isTRUE(show_column_names) && !is.null(colnames(mat))
+  column_label_ann <- NULL
+  if (horizontal_labels) {
+    label_gp <- grid::gpar(fontsize = font.size)
+    labels <- vapply(colnames(mat), function(label) {
+      parts <- strwrap(gsub("-", "- ", label, fixed = TRUE), width = 13)
+      gsub("- ", "-", paste(parts, collapse = "\n"), fixed = TRUE)
+    }, character(1))
+    label_grobs <- lapply(labels, grid::textGrob, gp = label_gp)
+    label_height <- do.call(grid::unit.pmax, lapply(label_grobs, grid::grobHeight))
+    label_width <- do.call(grid::unit.pmax, lapply(label_grobs, grid::grobWidth))
+    column_label_ann <- get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation")(
+      sender_label = get_namespace_fun("ComplexHeatmap", "anno_text")(
+        labels, which = "column", rot = 0, just = "center",
+        location = grid::unit(0.5, "npc"),
+        height = label_height + grid::unit(2.2, "mm"), gp = label_gp
+      ),
+      show_annotation_name = FALSE
+    )
+    if (!body_size$fixed) {
+      body_size$width <- ncol(mat) * grid::unit.pmax(
+        grid::unit(3 * font.size, "pt"), label_width + grid::unit(5, "pt")
+      )
+    }
+  }
+  if (compact && !body_size$fixed) {
+    if (isTRUE(add_text) && !isTRUE(add_dot)) {
+      number_width <- ComplexHeatmap::max_text_width(
+        unique(sprintf("%.2g", mat_vals)), gp = grid::gpar(fontsize = font.size * 0.85)
+      )
+      body_size$width <- grid::unit.pmax(
+        body_size$width, ncol(mat) * (number_width + grid::unit(5, "pt"))
+      )
+    }
+    row_height <- if (nrow(mat) <= 10L) 2.45 else 1.72
+    body_size$height <- grid::unit(nrow(mat) * row_height * font.size, "pt")
+  }
+
+  row_cols <- col_cols <- NULL
+  if (compact) {
+    cells <- sort(union(rownames(mat), colnames(mat)))
+    common_colors <- palette_colors(
+      cells, palette = cell_palette,
+      palcolor = ccc_align_named_palcolor(cell_palcolor, cells)
+    )
+    row_cols <- common_colors[rownames(mat)]
+    col_cols <- common_colors[colnames(mat)]
+  }
+
   col_ann <- if (!is.null(colnames(mat))) {
     col_nms <- colnames(mat)
-    col_cols <- palette_colors(
+    col_cols <- col_cols %||% palette_colors(
       col_nms,
       palette = cell_palette,
       palcolor = cell_palcolor
@@ -1320,7 +1389,12 @@ ccc_draw_heatmap <- function(
       show_annotation_name = FALSE,
       show_legend = FALSE,
       which = "column",
-      border = border,
+      border = border && !compact,
+      simple_anno_size = if (compact) {
+        grid::unit(2.5, "mm")
+      } else {
+        ComplexHeatmap::ht_opt("simple_anno_size")
+      },
       gp = grid::gpar(col = if (isTRUE(border)) "white" else NA)
     )
   } else {
@@ -1329,7 +1403,7 @@ ccc_draw_heatmap <- function(
 
   row_ann <- if (!is.null(rownames(mat))) {
     row_nms <- rownames(mat)
-    row_cols <- palette_colors(
+    row_cols <- row_cols %||% palette_colors(
       row_nms,
       palette = cell_palette,
       palcolor = cell_palcolor
@@ -1346,7 +1420,12 @@ ccc_draw_heatmap <- function(
       annotation_name_gp = grid::gpar(fontsize = font.size * 0.8),
       show_annotation_name = FALSE,
       show_legend = FALSE,
-      border = border,
+      border = border && !compact,
+      simple_anno_size = if (compact) {
+        grid::unit(2.5, "mm")
+      } else {
+        ComplexHeatmap::ht_opt("simple_anno_size")
+      },
       gp = grid::gpar(col = if (isTRUE(border)) "white" else NA)
     )
   } else {
@@ -1355,12 +1434,12 @@ ccc_draw_heatmap <- function(
 
   top_names <- colnames(mat)
   right_names <- rownames(mat)
-  top_cols <- if (!is.null(top_names)) {
+  top_cols <- if (compact) col_cols else if (!is.null(top_names)) {
     palette_colors(top_names, palette = cell_palette, palcolor = cell_palcolor)
   } else {
     NULL
   }
-  right_cols <- if (!is.null(right_names)) {
+  right_cols <- if (compact) row_cols else if (!is.null(right_names)) {
     palette_colors(
       right_names,
       palette = cell_palette,
@@ -1370,12 +1449,22 @@ ccc_draw_heatmap <- function(
     NULL
   }
 
+  bar_ranges <- NULL
+  if (compact) {
+    bar_ranges <- lapply(union(names(top_bar_vec), names(right_bar_vec)), function(metric) {
+      values <- c(0, top_bar_vec[[metric]], right_bar_vec[[metric]])
+      range(values[is.finite(values)])
+    })
+    names(bar_ranges) <- union(names(top_bar_vec), names(right_bar_vec))
+  }
   top_bar_ann <- ccc_build_bar_annotation(
     stats_list = top_bar_vec,
     fill_cols = top_cols,
     which = "column",
     font.size = font.size,
-    border = border,
+    border = border && !compact,
+    ranges = bar_ranges,
+    track_size = if (compact) 12 else 20,
     reverse = FALSE
   )
   left_bar_ann <- ccc_build_bar_annotation(
@@ -1383,7 +1472,11 @@ ccc_draw_heatmap <- function(
     fill_cols = right_cols,
     which = "row",
     font.size = font.size,
-    border = border,
+    border = border && !compact,
+    ranges = bar_ranges,
+    track_size = if (compact) 12 else 20,
+    show_name = !(compact && "bar" %in% top_anno && "bar" %in% left_anno &&
+      length(top_bar_vec) == 1L && identical(names(top_bar_vec), names(right_bar_vec))),
     reverse = TRUE
   )
   right_bar_ann <- ccc_build_bar_annotation(
@@ -1391,7 +1484,9 @@ ccc_draw_heatmap <- function(
     fill_cols = right_cols,
     which = "row",
     font.size = font.size,
-    border = border,
+    border = border && !compact,
+    ranges = bar_ranges,
+    track_size = if (compact) 12 else 20,
     reverse = FALSE
   )
   top_box_ann <- ccc_build_distribution_annotation(
@@ -1583,6 +1678,13 @@ ccc_draw_heatmap <- function(
       cell = col_ann
     )
   )
+  if (!is.null(column_label_ann)) {
+    bottom_combined <- if (is.null(bottom_combined)) {
+      column_label_ann
+    } else {
+      c(bottom_combined, column_label_ann, gap = grid::unit(0.5, "mm"))
+    }
+  }
   left_combined <- ccc_combine_side_annotations(
     side_anno = left_anno,
     annotations = list(
@@ -1625,7 +1727,7 @@ ccc_draw_heatmap <- function(
     row_title_gp = grid::gpar(fontsize = font.size),
     column_title_gp = grid::gpar(fontsize = font.size),
     show_row_names = show_row_names,
-    show_column_names = show_column_names,
+    show_column_names = show_column_names && !horizontal_labels,
     cluster_rows = cluster_rows,
     cluster_columns = cluster_columns,
     row_names_gp = grid::gpar(fontsize = font.size),
@@ -1636,13 +1738,58 @@ ccc_draw_heatmap <- function(
     use_raster = FALSE,
     width = body_size$width,
     height = body_size$height,
+    show_heatmap_legend = !compact || !identical(legend.position, "none"),
     heatmap_legend_param = list(
+      direction = if (compact && isTRUE(legend.direction %in% c("horizontal", "vertical"))) {
+        legend.direction
+      } else {
+        "vertical"
+      },
       title_gp = grid::gpar(fontsize = font.size * 0.9, fontface = "bold"),
       labels_gp = grid::gpar(fontsize = font.size * 0.8),
       border = "black",
       grid_width = grid::unit(4, "mm")
     )
   )
+
+  if (compact) {
+    draw_heatmap <- get_namespace_fun("ComplexHeatmap", "draw")
+    legend.position <- legend.position %||% "right"
+    legend_side <- if (legend.position %in% c("top", "bottom", "left", "right")) {
+      legend.position
+    } else {
+      "right"
+    }
+    heading <- paste(c(title, subtitle), collapse = "\n")
+    draw_args <- list(
+      object = ht, heatmap_legend_side = legend_side,
+      padding = grid::unit(rep(2.5, 4), "mm"),
+      column_title = if (nzchar(heading)) heading else NULL,
+      column_title_gp = grid::gpar(fontsize = font.size * 1.12, fontface = "bold")
+    )
+    drawn <- do.call(draw_heatmap, draw_args)
+    size <- c(
+      width = grid::convertWidth(
+        get_namespace_fun("ComplexHeatmap", "width")(drawn), "in", valueOnly = TRUE
+      ),
+      height = grid::convertHeight(
+        get_namespace_fun("ComplexHeatmap", "height")(drawn), "in", valueOnly = TRUE
+      )
+    )
+    grob <- grid::grid.grabExpr(
+      do.call(draw_heatmap, draw_args),
+      width = size[["width"]], height = size[["height"]],
+      wrap = TRUE, wrap.grobs = TRUE
+    )
+    canvas <- gtable::gtable_matrix(
+      "ccc_heatmap", matrix(list(grob), nrow = 1L),
+      widths = grid::unit(size[["width"]], "in"),
+      heights = grid::unit(size[["height"]], "in")
+    )
+    p <- patchwork::wrap_plots(canvas)
+    attr(p, "size") <- list(width = size[["width"]], height = size[["height"]], units = "in")
+    return(p)
+  }
 
   g_tree <- grid::grid.grabExpr(
     get_namespace_fun("ComplexHeatmap", "draw")(
@@ -2228,7 +2375,10 @@ ccc_build_bar_annotation <- function(
   which = c("column", "row"),
   font.size = 10,
   border = TRUE,
-  reverse = FALSE
+  reverse = FALSE,
+  ranges = NULL,
+  track_size = 20,
+  show_name = TRUE
 ) {
   which <- match.arg(which)
   if (is.null(stats_list) || is.null(fill_cols)) {
@@ -2241,12 +2391,14 @@ ccc_build_bar_annotation <- function(
       which = which,
       font.size = font.size,
       border = border,
-      reverse = reverse
+      reverse = reverse,
+      ranges = ranges,
+      track_size = track_size
     ),
     list(
       annotation_name_gp = grid::gpar(fontsize = font.size * 0.8),
       annotation_name_side = if (identical(which, "column")) "left" else "top",
-      show_annotation_name = TRUE,
+      show_annotation_name = show_name,
       border = border,
       gap = grid::unit(1, "mm")
     )
@@ -2430,7 +2582,9 @@ ccc_build_bar_annotation_args <- function(
   which = c("column", "row"),
   font.size = 10,
   border = TRUE,
-  reverse = FALSE
+  reverse = FALSE,
+  ranges = NULL,
+  track_size = 20
 ) {
   which <- match.arg(which)
   out <- list()
@@ -2448,6 +2602,10 @@ ccc_build_bar_annotation_args <- function(
       border = border,
       bar_width = 0.8
     )
+    limits <- ranges[[metric]]
+    if (length(limits) == 2L && diff(limits) > 0) {
+      anno_args$ylim <- limits
+    }
     anno_args$axis_param <- list(
       gp = grid::gpar(fontsize = font.size * 0.7)
     )
@@ -2459,9 +2617,9 @@ ccc_build_bar_annotation_args <- function(
       }
     }
     if (identical(which, "column")) {
-      anno_args$height <- grid::unit(2, "cm")
+      anno_args$height <- grid::unit(track_size, "mm")
     } else {
-      anno_args$width <- grid::unit(2, "cm")
+      anno_args$width <- grid::unit(track_size, "mm")
     }
     out[[tools::toTitleCase(metric)]] <- do.call(
       get_namespace_fun("ComplexHeatmap", "anno_barplot"),
