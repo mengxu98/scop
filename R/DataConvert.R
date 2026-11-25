@@ -195,7 +195,6 @@ srt_to_adata <- function(
       var
     )
   )
-  # A length-one R character vector converts to a Python scalar, not an index.
   adata$var_names <- as.list(as.character(features))
 
   layer_list <- list()
@@ -569,7 +568,6 @@ adata_to_srt <- function(
     verbose = verbose
   )
 
-  # These AnnData containers share one component namespace in Seurat.
   component_keys <- list(
     X = "RNA",
     layers = get_adata_keys(adata$layers),
@@ -579,7 +577,6 @@ adata_to_srt <- function(
   entries <- lapply(component_keys, unique)
   raw_names <- unlist(entries, use.names = FALSE)
   sources <- rep(names(entries), lengths(entries))
-  # Seurat applies make.names() to names assigned with [[<-.
   component_names <- make.names(raw_names)
   collisions <- unique(component_names[duplicated(component_names)])
   if (length(collisions) > 0L) {

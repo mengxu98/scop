@@ -150,7 +150,7 @@ test_that("SCENICPlus extraction uses an isolated subprocess", {
   testthat::local_mocked_bindings(
     .package = "scop",
     runner_script_path = function(script, ...) file.path("python", script),
-    scop_python_import = function(...) stop("embedded Python used"),
+    import_bundled_python = function(...) stop("embedded Python used"),
     runner_system2 = function(command, args, env, stdout, stderr) {
       seen <<- list(command = command, args = args, env = env)
       writeLines("SCENICPLUS_TEST_FAILURE", stderr)

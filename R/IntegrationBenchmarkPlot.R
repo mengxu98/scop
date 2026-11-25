@@ -10,7 +10,7 @@
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams CellDimPlot
-#' @inheritParams scop-params
+#' @inheritParams shared-params
 #' @param ... Arguments passed to other functions.
 #' @param srt Deprecated alias for `object`; supply exactly one of the two. It
 #' will be removed in scop 1.0.0.

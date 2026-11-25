@@ -200,7 +200,6 @@ gtf_feature_annotations <- function(gtf, columns, merge_gtf_by) {
   records <- read_gtf_feature_records(gtf)
   attrs <- setdiff(c(columns, merge_gtf_by), names(records))
   if (length(attrs)) {
-    # Match semicolon-delimited keys without splitting quoted values.
     pattern <- r"{(?:^|;)[[:space:]]*([^;[:space:]]+)[[:space:]]+("(?:[^"\\]|\\.)*"|[^";]*?)[[:space:]]*(?=;|$)}"
     attributes <- regmatches(records$attribute, gregexec(pattern, records$attribute, perl = TRUE))
     for (j in seq_along(attrs)) {
@@ -229,7 +228,6 @@ gtf_feature_annotations <- function(gtf, columns, merge_gtf_by) {
       if (length(values)) paste(values, collapse = ";") else NA_character_
     }
   )
-  # aggregate() sorts grouping values; keep the actual key attached to each row.
   rownames(out) <- out[[1L]]
   out[, -1L, drop = FALSE]
 }

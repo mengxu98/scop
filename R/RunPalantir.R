@@ -3,7 +3,7 @@
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams RunCellRank
-#' @inheritParams scop-params
+#' @inheritParams shared-params
 #' @param backend Backend used to compute Palantir. `"python"` keeps the
 #' reference Palantir workflow and remains the default. `"cpp"` uses an
 #' approximate C++ workflow, stores results in `srt@tools[["Palantir"]]`, and
@@ -319,7 +319,7 @@ RunPalantir <- function(
     palcolor = palcolor
   )
 
-  functions <- scop_python_import("functions", convert = TRUE)
+  functions <- import_bundled_python("functions", convert = TRUE)
   adata <- do.call(functions$Palantir, args)
 
   if (isTRUE(return_seurat)) {

@@ -6,7 +6,7 @@
 #'
 #' @md
 #' @inheritParams CellDimPlot
-#' @inheritParams scop-params
+#' @inheritParams shared-params
 #' @param object Optional `SummarizedExperiment`, `Seurat`, deconvolution bundle,
 #' or matrix-like object.
 #' @param immune.data Optional abundance matrix with samples/spots/cells in rows

@@ -220,7 +220,7 @@ run_aucell_scores <- function(
     strategy = strategy_id,
     algorithm = algorithm_id,
     seed = rank_seed,
-    n_threads = scop_n_threads(cores)
+    n_threads = normalize_thread_count(cores)
   )
   dimnames(scores) <- list(colnames(expr_counts), names(gene_set_idx))
   names(dimnames(scores)) <- c("cells", "gene sets")
@@ -317,7 +317,7 @@ run_ucell_scores <- function(
       ties_method,
       c("average", "min", "max", "dense", "first", "last")
     ),
-    n_threads = scop_n_threads(cores)
+    n_threads = normalize_thread_count(cores)
   )
   dimnames(scores) <- list(colnames(expr_counts), names(gene_sets))
   names(dimnames(scores)) <- c("cells", "gene sets")
@@ -488,8 +488,6 @@ run_seurat_module_scores <- function(
   )
   names(data_cut) <- names(data_avg)
 
-  # Reuse the same ordered control vectors for genes sharing an expression
-  # bin. Keep their repetitions: sampling is over positions, not unique genes.
   control_bins <- split(seq_along(data_cut), data_cut)
   control_sets <- lapply(features, function(features_use) {
     control_positions <- unlist(
@@ -518,7 +516,7 @@ run_seurat_module_scores <- function(
     expr = expr_data,
     feature_sets = feature_idx,
     control_sets = control_idx,
-    n_threads = scop_n_threads(cores)
+    n_threads = normalize_thread_count(cores)
   )
   dimnames(scores) <- list(colnames(expr_data), names(features))
   scores
@@ -606,7 +604,7 @@ run_gsva_scores <- function(
       abs_ranking = abs_ranking,
       tau = tau,
       chunk_size = chunk_size,
-      n_threads = scop_n_threads(cores),
+      n_threads = normalize_thread_count(cores),
       legacy_zero_walk = gsva_uses_legacy_sparse_walk()
     )
     dimnames(scores) <- list(colnames(expr_counts), names(gene_set_idx))

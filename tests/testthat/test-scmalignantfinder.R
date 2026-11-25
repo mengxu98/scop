@@ -241,7 +241,7 @@ test_that("scMalignantFinder imports the bundled scop bridge", {
   sentinel <- new.env(parent = emptyenv())
   testthat::local_mocked_bindings(
     .package = "scop",
-    scop_python_import = function(module, convert = TRUE) {
+    import_bundled_python = function(module, convert = TRUE) {
       imported <<- list(module = module, convert = convert)
       sentinel
     }

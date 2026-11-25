@@ -1,7 +1,7 @@
 #' @title Doublet calling
 #'
 #' @md
-#' @inheritParams scop-params
+#' @inheritParams shared-params
 #' @param assay Assay used for doublet calling.
 #' @param db_method `"scDblFinder"`, `"Scrublet"`, `"DoubletDetection"`,
 #' `"scds_cxds"`, `"scds_bcds"`, or `"scds_hybrid"`.
@@ -691,7 +691,7 @@ RunDoubletDetection <- function(
 #' @title Ambient RNA decontamination with decontX
 #'
 #' @md
-#' @inheritParams scop-params
+#' @inheritParams shared-params
 #' @param assay Assay to decontaminate.
 #' @param group.by,batch Cell cluster and batch labels passed to [decontX::decontX()].
 #' Column name, cell-aligned vector, or `NULL`.
@@ -958,7 +958,7 @@ RunDecontX <- function(
 #' @md
 #' @inheritParams CellDimPlot
 #' @inheritParams RunDoubletCalling
-#' @inheritParams scop-params
+#' @inheritParams shared-params
 #' @param split.by Metadata column used to run QC separately per split, then merge.
 #' @param return_filtered Return only cells that pass QC.
 #' @param qc_metrics Metrics to apply: `"doublets"`, `"decontX"`, `"atac"`,

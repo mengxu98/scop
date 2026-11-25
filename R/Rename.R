@@ -126,7 +126,6 @@ RenameFeatures <- function(
         methods::slot(assay_obj, "var.features")
       )
     } else {
-      # The assay-wide feature map supplies names to each layer independently.
       dimnames(assay_obj) <- list(renamed, colnames(assay_obj))
       metadata <- methods::slot(assay_obj, "meta.data")
       if ("var.features" %in% names(metadata)) {

@@ -117,7 +117,7 @@ test_that("SCENICPlus native fitting never initializes Python", {
     .package = "scop",
     run_scenicplus_python = function(...) stop("Python route called"),
     check_python = function(...) stop("Python initialized"),
-    scop_python_import = function(...) stop("Python imported")
+    import_bundled_python = function(...) stop("Python imported")
   )
   set.seed(7)
   expr <- matrix(rnorm(3 * 40), 3, 40,
@@ -133,7 +133,7 @@ test_that("the native object workflow and its errors stay independent of Python"
   blocked <- function(...) stop("Python route must never be called")
   testthat::local_mocked_bindings(
     .package = "scop", run_scenicplus_python = blocked,
-    check_python = blocked, scop_python_import = blocked
+    check_python = blocked, import_bundled_python = blocked
   )
   testthat::local_mocked_bindings(
     .package = "reticulate", import = blocked,

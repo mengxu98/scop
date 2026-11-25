@@ -8,7 +8,7 @@
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams RunCellRank
-#' @inheritParams scop-params
+#' @inheritParams shared-params
 #' @param backend Backend used to compute RNA velocity. `"python"` keeps the
 #' original scVelo workflow. `"cpp"` uses the package C++ implementation for a
 #' stochastic velocity embedding that is compatible with [VelocityPlot].
@@ -291,7 +291,7 @@ RunSCVELO <- function(
     palcolor = palcolor
   )
 
-  functions <- scop_python_import("functions", convert = TRUE)
+  functions <- import_bundled_python("functions", convert = TRUE)
 
   adata <- do.call(functions$SCVELO, args)
 
@@ -565,7 +565,7 @@ run_scanpy_cpp <- function(
     1L,
     min(as.integer(n_neighbors) - 1L, nrow(linear_embedding) - 1L)
   )
-  omp_threads <- scop_n_threads(cores)
+  omp_threads <- normalize_thread_count(cores)
   knn <- scanpy_knn_cpp(linear_embedding, knn_nonself, TRUE, omp_threads)
   knn_k <- ncol(knn[["idx"]])
   moments <- scanpy_moments_connectivities_cpp(

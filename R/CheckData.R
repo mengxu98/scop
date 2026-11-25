@@ -71,8 +71,6 @@ CheckDataType.default <- function(
   isfinite <- all(is.finite(data_range))
   if (inherits(object, "dgCMatrix")) {
     values <- object@x
-    # A bounded prefix can prove at least one fractional value. Stay well
-    # below R's modulus precision-warning range before skipping the rest.
     prefix_float <- length(values) > 4096L &&
       identical(class(object), structure("dgCMatrix", package = "Matrix")) &&
       !is.object(values) &&

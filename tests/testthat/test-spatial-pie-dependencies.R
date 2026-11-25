@@ -30,7 +30,6 @@ test_that("empty pies render without looking up the optional backend", {
   for (state in names(values)) {
     value <- values[[state]]
     dimnames(value) <- list(colnames(object), c("A", "B"))
-    # Retain the all-zero data-frame input from the former smoke test.
     if (identical(state, "zero")) value <- as.data.frame(value)
     plot <- scop::SpatialSpotPlot(
       object,

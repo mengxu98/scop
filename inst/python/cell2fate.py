@@ -19,7 +19,7 @@ from typing import Any
 RUNNER_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(RUNNER_DIR))
 try:
-    from scop_runner_io import configuration_path, read_json as _read_json, sha256_file as _sha256
+    from runner_io import configuration_path, read_json as _read_json, sha256_file as _sha256
 finally:
     sys.path.pop(0)
 sys.path = [

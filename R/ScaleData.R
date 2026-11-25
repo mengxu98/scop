@@ -308,7 +308,7 @@ ScaleData.Seurat <- function(
       isTRUE(do.scale) &&
       isTRUE(do.center)
   if (fast_path) {
-    result <- scale_sparse_full(data_mat, idx, scale.max, scop_n_threads(n_threads))
+    result <- scale_sparse_full(data_mat, idx, scale.max, normalize_thread_count(n_threads))
     dimnames(result) <- list(features, colnames(data_mat))
   } else {
     sub <- data_mat[idx + 1L, , drop = FALSE]
@@ -443,7 +443,7 @@ ScaleData.default <- function(
       data,
       seq_len(nrow(data)) - 1L,
       scale.max,
-      scop_n_threads(n_threads)
+      normalize_thread_count(n_threads)
     )
     dimnames(out) <- dimnames(data)
     return(out)

@@ -15,7 +15,7 @@ test_that("Python logger imports and runners support both thisutils layouts", {
     system_file(..., package = package, mustWork = mustWork)
   }
   scope$system2 <- function(...) Sys.getenv("PYTHONPATH")
-  import <- scop_python_import
+  import <- import_bundled_python
   run <- runner_system2
   environment(import) <- environment(run) <- scope
   imported <- NULL

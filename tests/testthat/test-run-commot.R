@@ -371,7 +371,7 @@ test_that("staged Python IDs preserve literal text and reject genuinely empty ID
     "import sys",
     "sys.path.insert(0, sys.argv[1])",
     "from pathlib import Path",
-    "from scop_runner_io import read_ids",
+    "from runner_io import read_ids",
     "assert read_ids(Path(sys.argv[2]), 'test IDs') == ['001', 'NULL', 'N/A', '  padded  ']",
     "try:",
     "    read_ids(Path(sys.argv[3]), 'test IDs')",

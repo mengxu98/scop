@@ -355,7 +355,7 @@ RunCytoTRACE.default <- function(
     cpp_threads <- if (outer_cores > 1L) {
       inner_cores
     } else {
-      scop_n_threads(cores_kernel)
+      normalize_thread_count(cores_kernel)
     }
 
     process_subsample <- function(subsample) {
@@ -758,12 +758,12 @@ cytotrace2_preprocess <- function(
   preprocessed_numeric <- if (inherits(expression_mapped, "sparseMatrix")) {
     cytotrace2_preprocess_sparse_numeric(
       expression_mapped,
-      scop_n_threads(cores)
+      normalize_thread_count(cores)
     )
   } else {
     cytotrace2_preprocess_numeric(
       as.matrix(expression_mapped),
-      scop_n_threads(cores)
+      normalize_thread_count(cores)
     )
   }
   ranked_data <- preprocessed_numeric$ranked_data

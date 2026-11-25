@@ -10,7 +10,7 @@
 #' @inheritParams CheckDataMerge
 #' @inheritParams RunStandardWorkflow
 #' @inheritParams thisutils::log_message
-#' @inheritParams scop-params
+#' @inheritParams shared-params
 #' @param scale_within_batch Scale within each batch. Only used by
 #' `"Uncorrected"`, `"Seurat"`, `"MNN"`, `"Harmony"`, `"BBKNN"`, `"CSS"`, `"ComBat"`.
 #' @param integration_methods Method(s) to run. Multiple methods require

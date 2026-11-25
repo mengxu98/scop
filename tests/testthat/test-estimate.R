@@ -258,7 +258,6 @@ test_that("RunESTIMATE preserves sparse input results and leaves the input uncha
   mat <- rbind(mat, extra, all_zero = 0, absent = c(Inf, -Inf, NA, NaN, 0, 0))
   mat[cbind(1:6, 1:6)] <- c(-1, Inf, -Inf, NA, NaN, -3)
   sparse <- as(Matrix::Matrix(mat, sparse = TRUE), "dgCMatrix")
-  # Explicitly store a signed zero as well as implicit zero entries.
   sparse@x[[1L]] <- -0.0
   original <- sparse
   dense <- as.matrix(sparse)
@@ -279,7 +278,6 @@ test_that("RunESTIMATE preserves sparse input results and leaves the input uncha
   }
   expect_identical(sparse, original, num.eq = FALSE)
 
-  # An attributed dimname vector can be normalized by as.matrix()/rowsum().
   attributed <- sparse
   attributed@Dimnames[[2L]] <- setNames(colnames(attributed), seq_len(ncol(attributed)))
   expect_true(is.matrix(estimate_prepare_matrix(attributed, sparse_common = common)))
@@ -298,7 +296,6 @@ test_that("RunESTIMATE preserves sparse input results and leaves the input uncha
     num.eq = FALSE
   )
 
-  # A gene that becomes a duplicate after case folding still needs averaging.
   rownames(sparse)[2L] <- tolower(rownames(sparse)[1L])
   expect_identical(
     RunESTIMATE(count_matrix = sparse, min_sig_genes = 5, verbose = FALSE),
@@ -327,7 +324,6 @@ test_that("RunESTIMATE keeps the legacy path for overallocated sparse slots", {
     dimnames = list(paste0("NotInEstimate", seq_len(150L)), colnames(mat))
   )
   extra[, 1L] <- 1
-  # A trailing entry in an unused slot must not make an all-zero row usable.
   extra[150L, ] <- 0
   sparse <- as(Matrix::Matrix(rbind(mat, extra), sparse = TRUE), "dgCMatrix")
   sparse@i <- c(sparse@i, nrow(sparse) - 1L)

@@ -130,7 +130,7 @@ RunCellRankTrends <- function(
     layer_x = layer,
     prepare_env = FALSE
   )
-  functions <- scop_python_import("functions", convert = TRUE)
+  functions <- import_bundled_python("functions", convert = TRUE)
   result <- functions$CellRankTrends(
     adata = adata,
     fate_probabilities = reticulate::r_to_py(fate),

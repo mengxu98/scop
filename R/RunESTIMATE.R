@@ -285,8 +285,6 @@ estimate_prepare_matrix <- function(x, sparse_common = NULL) {
   mat
 }
 
-# Keep sparse data compressed only when the common-gene filter will
-# shrink it substantially. NULL signals the original allocation path.
 estimate_prepare_sparse_matrix <- function(x, sparse_common) {
   genes <- rownames(x)
   samples <- colnames(x)
@@ -298,8 +296,6 @@ estimate_prepare_sparse_matrix <- function(x, sparse_common) {
     !isTRUE(methods::validObject(x, test = TRUE))) {
     return(NULL)
   }
-  # Matrix may reserve sparse slots beyond the live entries in the final
-  # column pointer. Preserve the original conversion path in that case.
   n_stored <- x@p[[length(x@p)]]
   if (length(x@x) != n_stored || length(x@i) != n_stored) return(NULL)
   genes <- toupper(genes)
@@ -315,8 +311,6 @@ estimate_prepare_sparse_matrix <- function(x, sparse_common) {
   n_common <- sum(common & keep)
   if (n_common == 0L || n_common > 0.55 * sum(keep)) return(NULL)
 
-  # rowsum() previously gave a positive zero for sanitized or
-  # explicitly stored zero entries, including negative zero.
   if (!all(nonzero)) x@x[!nonzero] <- 0
   dimnames(x) <- list(genes, samples)
   if (all(keep)) x else x[keep, , drop = FALSE]
@@ -437,7 +431,6 @@ estimate_seurat_pseudobulk <- function(
   if (!inherits(expr, c("dgCMatrix", "matrix", "Matrix"))) {
     expr <- as_matrix(expr)
   }
-  # Preserve metadata sample order while matching expression columns by cell name.
   sample_factor <- factor(sample_vec, levels = unique(sample_vec[order(meta_rows)]))
   design <- Matrix::sparseMatrix(
     i = seq_along(sample_factor),

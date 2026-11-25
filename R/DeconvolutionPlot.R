@@ -3,7 +3,7 @@
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams CellDimPlot
-#' @inheritParams scop-params
+#' @inheritParams shared-params
 #' @param object A `SummarizedExperiment` object containing deconvolution
 #' results in `metadata(object)[["Deconvolution"]]`.
 #' @param res A deconvolution result data frame. When provided, `object` is

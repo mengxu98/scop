@@ -1,5 +1,8 @@
 # scop (development version)
 
+* **refactor**: Simplify private runner and runtime helper names without
+  changing the public API.
+
 * **ci**: Use the JAGS 4-compatible interface for website builds and make
   integration routing and p-value checks portable across platforms.
 

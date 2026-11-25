@@ -340,7 +340,7 @@ cisTarget_python <- function(
   )
   configure_python_runtime(python_path)
 
-  functions <- scop_python_import("functions", convert = TRUE)
+  functions <- import_bundled_python("functions", convert = TRUE)
 
   if (is.null(expression_mtx)) {
     expr_csv <- file.path(work_dir, paste0(prefix, "_expr.csv"))

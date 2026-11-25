@@ -8,7 +8,7 @@
 #' @md
 #' @inheritParams RunStandardWorkflow
 #' @inheritParams thisutils::log_message
-#' @inheritParams scop-params
+#' @inheritParams shared-params
 #' @param layer Assay layer used for expression values.
 #' @param features Features to score. If `NULL`, current variable features are
 #' used; if no variable features are present, all assay features are used.
@@ -439,7 +439,7 @@ spatial_variable_run_knn <- function(
       edge_to = as.integer(edges$to) - 1L,
       method = match(method, c("moran", "geary")),
       n_permutations = as.integer(nperm),
-      n_threads = scop_n_threads(cores)
+      n_threads = normalize_thread_count(cores)
     )
   } else {
     spatial_variable_score_matrix(

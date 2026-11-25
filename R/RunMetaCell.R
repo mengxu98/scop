@@ -410,7 +410,7 @@ metacell_seacells <- function(
     modules = c("scanpy", "seacells")
   )
 
-  functions <- scop_python_import("functions", convert = TRUE)
+  functions <- import_bundled_python("functions", convert = TRUE)
 
   pca_reduction <- tryCatch(
     DefaultReduction(srt, pattern = "pca"),

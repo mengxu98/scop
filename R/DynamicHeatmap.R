@@ -3,7 +3,7 @@
 #' @md
 #' @inheritParams GroupHeatmap
 #' @inheritParams RunDynamicFeatures
-#' @inheritParams scop-params
+#' @inheritParams shared-params
 #' @inheritParams thisutils::parallelize_fun
 #' @param features Features to plot.
 #' By default, this parameter is set to NULL, and the dynamic features will be determined by the parameters

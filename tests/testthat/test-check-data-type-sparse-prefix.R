@@ -13,7 +13,6 @@ test_that("sparse data type preserves bounds, missing data and late fractions", 
     dims = c(1L, length(v))
   )
   status <- function(v) suppressMessages(CheckDataType(mat(v), verbose = FALSE))
-  # Immediate boundary lengths exercise both sides of the prefix guard.
   for (n in c(4096L, 4097L)) {
     x <- rep(1, n)
     expect_identical(status(x), "raw_counts")
@@ -38,8 +37,6 @@ test_that("sparse data type preserves bounds, missing data and late fractions", 
     expect_identical(status(x), "raw_normalized_counts")
   }
 
-  # The fractional prefix must not hide the original modulus warning from a
-  # later huge value. Derive the warning oracle for this R build.
   x[length(x)] <- 1e30
   reference <- sparse_prefix_type_capture(any(x %% 1 != 0, na.rm = TRUE))
   result <- sparse_prefix_type_capture(status(x))
@@ -48,8 +45,6 @@ test_that("sparse data type preserves bounds, missing data and late fractions", 
 })
 
 test_that("sparse data type preserves modulus warnings for spare-capacity matrices", {
-  # Matrix permits spare capacity whereas the original modulus operates on
-  # every stored slot value, including values beyond the final CSC pointer.
   x <- rep(1, 8301L)
   x[1L] <- 1.25
   x[length(x)] <- 1e30

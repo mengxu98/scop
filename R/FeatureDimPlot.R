@@ -5,7 +5,7 @@
 #' numeric metadata).
 #'
 #' @md
-#' @inheritParams scop-params
+#' @inheritParams shared-params
 #' @inheritParams CellDimPlot
 #' @param lineages_trim,lineages_span,lineages_palcolor,lineages_arrow,lineages_linewidth,lineages_line_bg,lineages_line_bg_stroke,lineages_whiskers,lineages_whiskers_linewidth,lineages_whiskers_alpha
 #' Pseudotime lineages as [stats::loess] curves. See [grid::arrow] for `lineages_arrow`.
@@ -1244,8 +1244,6 @@ FeatureDimPlot <- function(
       palette = palette,
       palcolor = palcolor
     )
-    # Shared point scales depend on all cells, not on the current panel.
-    # Fill the cache lazily so panels without usable values keep their fallback.
     point_scales <- new.env(parent = emptyenv())
     plist <- lapply(
       stats::setNames(rownames(comb), rownames(comb)), function(i) {

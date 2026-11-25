@@ -81,8 +81,6 @@ GetAssayData5.Assay5 <- function(
         dims = c(length(features_use), length(cells_use)), dimnames = list(features_use, cells_use)
       ))
     }
-    # Subsetting an already complete native assay rewrites every sparse layer
-    # before the join. Keep the original path for slices and other backends.
     full_native_join <- is.null(features) && is.null(cells) &&
       identical(class(object)[[1L]], "Assay5") &&
       identical(features_use, rownames(object)) &&

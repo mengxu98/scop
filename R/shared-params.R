@@ -107,5 +107,6 @@
 #' @param xlab Plot labels.
 #' @param ylab Plot labels.
 
-#' @name scop-params
+#' @name shared-params
+#' @aliases scop-params
 NULL

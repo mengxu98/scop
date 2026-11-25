@@ -784,7 +784,7 @@ scenicplus_extract_python_tables <- function(python_path, scplus_object, output_
 scenicplus_auc <- function(counts, signatures, cores = 1L) {
   rankings <- scenicplus_rank_cpp(as_matrix(counts),
     random_seed = 123L,
-    cores = scop_n_threads(cores)
+    cores = normalize_thread_count(cores)
   )
   dimnames(rankings) <- list(colnames(counts), rownames(counts))
   run_aucell_scores_from_rankings(rankings, signatures)
@@ -1768,12 +1768,12 @@ scenicplus_tf_gene <- function(
   adjacency <- scenicplus_add_tfg_cor(
     adjacency,
     rna_counts = rna_counts,
-    cores = scop_n_threads(cores)
+    cores = normalize_thread_count(cores)
   )
   scenicplus_inject_tf_self(
     adjacency,
     rna_counts = rna_counts,
-    cores = scop_n_threads(cores)
+    cores = normalize_thread_count(cores)
   )
 }
 
@@ -1829,7 +1829,7 @@ scenicplus_add_tfg_cor <- function(
       expr = t(expr),
       tf_index = tf_index[matched],
       target_index = target_index[matched],
-      n_threads = scop_n_threads(cores)
+      n_threads = normalize_thread_count(cores)
     )
   } else {
     corr <- suppressWarnings(stats::cor(
@@ -2035,7 +2035,7 @@ scenicplus_edge_spearman <- function(accessibility, expression, edge_regions, ed
     scenic_edge_correlation_cpp(
       expr = ranked, tf_index = as.integer(edge_regions),
       target_index = as.integer(ncol(accessibility) + edge_genes),
-      n_threads = scop_n_threads(cores)
+      n_threads = normalize_thread_count(cores)
     )
   } else {
     vapply(seq_along(edge_regions), function(index) {
@@ -2084,7 +2084,7 @@ scenicplus_rg_gbm <- function(
     n_rounds = as.integer(max(1L, n_rounds)),
     max_features = max_features,
     random_seed = as.integer(seed),
-    cores = scop_n_threads(cores)
+    cores = normalize_thread_count(cores)
   )
   edge_regions <- unlist(candidates, use.names = FALSE)
   edge_genes <- rep(seq_along(genes), lengths(candidates))
@@ -2609,7 +2609,7 @@ scenicplus_le_triplets <- function(
       rankings = lapply(jobs, function(job) unname(job$ranking)),
       hits = lapply(jobs, function(job) as.integer(job$hits)),
       n_perm = as.integer(n_perm), random_seed = as.integer(seed),
-      cores = scop_n_threads(cores)
+      cores = normalize_thread_count(cores)
     )
     valid <- is.finite(statistics$NES) & is.finite(statistics$pval)
     adjusted <- rep(NA_real_, length(jobs))

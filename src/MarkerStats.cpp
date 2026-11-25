@@ -132,8 +132,6 @@ static double sparse_wilcox_two_sided_p_all_cells(
   std::vector<SparseWilcoxGroup> groups;
   const int zero_n1 = n1 - nonzero_n1;
   const int zero_n2 = n2 - nonzero_n2;
-  // Observed tied blocks already come in sorted order. Insert the zero
-  // block just before the first nonnegative block (if any).
   bool insert_zero = zero_n1 + zero_n2 > 0;
   int i = 0;
   const int n_entries = static_cast<int>(entries.size());

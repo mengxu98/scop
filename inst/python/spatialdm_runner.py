@@ -17,7 +17,7 @@ import spatialdm as sdm
 from scipy import sparse
 from scipy.io import mmread, mmwrite
 
-from scop_runner_io import configuration_path, read_ids as _read_ids, read_json, read_staged_tsv, validate_ids, write_manifest as _write_json
+from runner_io import configuration_path, read_ids as _read_ids, read_json, read_staged_tsv, validate_ids, write_manifest as _write_json
 
 
 def _read_json(path: Path) -> dict:

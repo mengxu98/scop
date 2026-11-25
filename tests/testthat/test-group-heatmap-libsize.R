@@ -12,7 +12,6 @@ test_that("GroupHeatmap yields the same library-normalized values from metadata 
       exp_method = "raw", lib_normalize = TRUE, verbose = FALSE
     )$matrix_list$group
   }
-  # Normalized target counts: 1.5, 6, 1.5, 1.8 (median library size 6).
   expected <- matrix(c(3.9, 1.5), nrow = 1,
     dimnames = list("target", c("A", "B"))
   )

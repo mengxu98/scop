@@ -45,11 +45,11 @@ inline void blas_set_num_threads(int n) {
   static bool loaded = false;
   if (!loaded) {
     loaded = true;
-    void* self = scop_dlopen(NULL);
+    void* self = open_dynamic_library(NULL);
     if (self != NULL) {
-      fn = reinterpret_cast<set_fn>(scop_dlsym(self, "openblas_set_num_threads"));
+      fn = reinterpret_cast<set_fn>(find_dynamic_symbol(self, "openblas_set_num_threads"));
       if (fn == NULL) {
-        fn = reinterpret_cast<set_fn>(scop_dlsym(self, "MKL_Set_Num_Threads"));
+        fn = reinterpret_cast<set_fn>(find_dynamic_symbol(self, "MKL_Set_Num_Threads"));
       }
     }
   }
@@ -64,11 +64,11 @@ inline int blas_get_num_threads() {
   static bool loaded = false;
   if (!loaded) {
     loaded = true;
-    void* self = scop_dlopen(NULL);
+    void* self = open_dynamic_library(NULL);
     if (self != NULL) {
-      fn = reinterpret_cast<get_fn>(scop_dlsym(self, "openblas_get_num_threads"));
+      fn = reinterpret_cast<get_fn>(find_dynamic_symbol(self, "openblas_get_num_threads"));
       if (fn == NULL) {
-        fn = reinterpret_cast<get_fn>(scop_dlsym(self, "MKL_Get_Max_Threads"));
+        fn = reinterpret_cast<get_fn>(find_dynamic_symbol(self, "MKL_Get_Max_Threads"));
       }
     }
   }

@@ -125,7 +125,7 @@ module_score_compute <- function(
       expr = data,
       feature_sets = lapply(features, match, table = rownames(data)),
       control_sets = lapply(control_sets, match, table = rownames(data)),
-      n_threads = scop_n_threads(cores)
+      n_threads = normalize_thread_count(cores)
     )
     rownames(scores) <- colnames(data)
     scores

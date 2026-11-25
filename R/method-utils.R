@@ -670,15 +670,12 @@ matrix_values <- function(x) {
 }
 
 read_runner_output_table <- function(path, sep, id.cols, first.id = FALSE) {
-  # These runner tables are pandas CSV/TSV output. Parse text first so
-  # identifier columns are not type-converted and only empty IDs become NA.
   out <- utils::read.table(
     path, header = TRUE, sep = sep, quote = '"', comment.char = "",
     fill = identical(sep, ","), check.names = FALSE,
     colClasses = "character", na.strings = NULL
   )
   if (first.id) {
-    # Spot IDs appear in the matrix header, which read.table() otherwise trims.
     names(out) <- scan(
       path, what = character(), sep = sep, quote = '"', comment.char = "",
       nlines = 1L, quiet = TRUE, na.strings = NULL, strip.white = FALSE

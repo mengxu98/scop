@@ -146,7 +146,6 @@ spatial_sample_coords <- function(srt, sample.by, image = NULL,
   data <- sources <- vector("list", length(samples))
   names(data) <- names(sources) <- samples
   object_cells <- colnames(srt)
-  # Metadata coordinates cover the same object-wide axis for every sample.
   delayedAssign("metadata_coords", spatial_analysis_coords(
     srt, image = NULL, coord.cols = coord.cols, coordinate_space = coordinate_space
   ))

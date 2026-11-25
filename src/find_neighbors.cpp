@@ -50,9 +50,9 @@ static matrix_multiply_f32 runtime_sgemm() {
   static bool loaded = false;
   if (!loaded) {
     loaded = true;
-    void* self = scop_dlopen(NULL);
+    void* self = open_dynamic_library(NULL);
     if (self != NULL) {
-      fn = reinterpret_cast<matrix_multiply_f32>(scop_dlsym(self, "cblas_sgemm"));
+      fn = reinterpret_cast<matrix_multiply_f32>(find_dynamic_symbol(self, "cblas_sgemm"));
     }
     const char* candidates[] = {
       "/System/Library/Frameworks/Accelerate.framework/Accelerate",
@@ -62,9 +62,9 @@ static matrix_multiply_f32 runtime_sgemm() {
       "Rblas.dll", "libopenblas.dll", "openblas.dll", "mkl_rt.dll", NULL
     };
     for (int i = 0; fn == NULL && candidates[i] != NULL; ++i) {
-      void* handle = scop_dlopen(candidates[i]);
+      void* handle = open_dynamic_library(candidates[i]);
       if (handle != NULL) {
-        fn = reinterpret_cast<matrix_multiply_f32>(scop_dlsym(handle, "cblas_sgemm"));
+        fn = reinterpret_cast<matrix_multiply_f32>(find_dynamic_symbol(handle, "cblas_sgemm"));
       }
     }
   }

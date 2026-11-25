@@ -1344,7 +1344,7 @@ def CellRank(
     random.seed(0)
     np.random.seed(0)
 
-    def _scop_cellrank_cluster_X(
+    def _cluster_states_with_fixed_seed(
         X,
         method="leiden",
         n_neighbors=20,
@@ -1378,8 +1378,8 @@ def CellRank(
         import cellrank._utils._utils as cr_utils
         import cellrank.estimators.terminal_states._cflare as cr_cflare
 
-        cr_utils._cluster_X = _scop_cellrank_cluster_X
-        cr_cflare._cluster_X = _scop_cellrank_cluster_X
+        cr_utils._cluster_X = _cluster_states_with_fixed_seed
+        cr_cflare._cluster_X = _cluster_states_with_fixed_seed
     except Exception as e:
         log_message(
             "Unable to patch {.pkg CellRank} CFLARE clustering random_state: {.val {e}}",

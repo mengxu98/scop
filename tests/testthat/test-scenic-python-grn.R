@@ -7,7 +7,7 @@ test_that("Python SCENIC GRNBoost2 runs through local Dask cluster", {
   skip_if_not(reticulate::py_module_available("arboreto"))
   skip_if_not(reticulate::py_module_available("distributed"))
 
-  functions <- scop_python_import("functions", convert = TRUE)
+  functions <- import_bundled_python("functions", convert = TRUE)
 
   tmp_dir <- tempfile("scenic-python-grn-")
   dir.create(tmp_dir)

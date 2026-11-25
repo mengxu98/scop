@@ -26,8 +26,6 @@ def write_manifest(value: dict, path: Path) -> None:
 def read_staged_tsv(path: str | Path):
     import pandas as pd
 
-    # R stages missing fields as empty strings; literal IDs such as "NULL"
-    # and "001" must survive pandas' default NA and type inference.
     return pd.read_csv(
         path, sep="\t", dtype=str, keep_default_na=False, skip_blank_lines=False
     )

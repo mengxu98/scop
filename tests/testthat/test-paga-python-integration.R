@@ -32,7 +32,7 @@ test_that("real large-data RunPAGA roundtrips Seurat through AnnData", {
       .package = "scop"
     )
 
-    getFromNamespace("scop_python_import", "scop")("functions", convert = FALSE)
+    getFromNamespace("import_bundled_python", "scop")("functions", convert = FALSE)
     reticulate::py_run_string(paste(
       "import sys, types",
       "from unittest.mock import patch",

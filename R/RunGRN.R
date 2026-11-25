@@ -568,7 +568,7 @@ grnboost_python <- function(
     )
   )
   configure_python_runtime(python_path)
-  functions <- scop_python_import("functions", convert = TRUE)
+  functions <- import_bundled_python("functions", convert = TRUE)
   functions$RunSCENICGrn(
     expression_mtx = expr_csv,
     regulators = regulators_file,
@@ -669,7 +669,7 @@ regdiffusion_python <- function(
     )
   )
   configure_python_runtime(python_path)
-  functions <- scop_python_import("functions", convert = TRUE)
+  functions <- import_bundled_python("functions", convert = TRUE)
   functions$RunSCENICRegDiffusion(
     expression_mtx = expr_csv,
     regulators = regulators_file,

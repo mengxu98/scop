@@ -5,7 +5,7 @@
 #'   together only when their values agree. Conflicting values raise an error.
 #'   `width` and `height` here control the heatmap body, not the canvas.
 #' @inheritParams CCCStatPlot
-#' @inheritParams scop-params
+#' @inheritParams shared-params
 #' @param plot_type Plot type. One of `"heatmap"` or `"dot"`.
 #' `"bubble"` is a CellChat-specific interaction bubble matrix.
 #' `"ligand_target"` is a special heatmap path available only with
@@ -418,7 +418,6 @@ CCCHeatmap <- function(
   )
   aggregate_heatmap <- identical(plot_type, "heatmap") &&
     identical(display_by, "aggregation")
-  # Preserve the historical annotation shorthand outside the aggregate heatmap.
   use_legacy_anno <- plot_type %in% c("heatmap", "bubble") && !aggregate_heatmap
   default_top_bar <- identical(top_anno, "bar")
   default_left_bar <- identical(left_anno, "bar")

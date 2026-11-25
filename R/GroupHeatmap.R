@@ -5,7 +5,7 @@
 #' @inheritParams thisutils::parallelize_fun
 #' @inheritParams CellDimPlot
 #' @inheritParams PrepareDB
-#' @inheritParams scop-params
+#' @inheritParams shared-params
 #' @param features Features to plot.
 #' @param within_groups Separate color scales per group.
 #' @param grouping.var,numerator Extra grouping variable (e.g. condition) and

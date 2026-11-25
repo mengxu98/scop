@@ -3,7 +3,7 @@
 #' @md
 #' @inheritParams CellDimPlot
 #' @inheritParams FeatureDimPlot
-#' @inheritParams scop-params
+#' @inheritParams shared-params
 #' @param stat.by Features to plot.
 #' @param plot.by `"group"` or `"feature"`.
 #' @param bg.by Metadata column used as background color.

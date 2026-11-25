@@ -15,19 +15,19 @@ class BlasThreadGuard {
  public:
   BlasThreadGuard(int requested, int previous) : previous_(previous) {
     if (requested > 0) {
-      void* handle = scop_dlopen(NULL);
+      void* handle = open_dynamic_library(NULL);
       if (handle != nullptr) {
-        auto parallel = reinterpret_cast<int (*)()>(scop_dlsym(handle, "openblas_get_parallel"));
+        auto parallel = reinterpret_cast<int (*)()>(find_dynamic_symbol(handle, "openblas_get_parallel"));
         if (parallel != nullptr && parallel() == 2) {
 #ifndef _WIN32
           Dl_info provider;
           if (dladdr(reinterpret_cast<void*>(parallel), &provider) != 0) {
             dlclose(handle);
-            handle = scop_dlopen(provider.dli_fname);
+            handle = open_dynamic_library(provider.dli_fname);
           }
 #endif
-          auto get_omp = reinterpret_cast<int (*)()>(scop_dlsym(handle, "omp_get_max_threads"));
-          set_omp_ = reinterpret_cast<void (*)(int)>(scop_dlsym(handle, "omp_set_num_threads"));
+          auto get_omp = reinterpret_cast<int (*)()>(find_dynamic_symbol(handle, "omp_get_max_threads"));
+          set_omp_ = reinterpret_cast<void (*)(int)>(find_dynamic_symbol(handle, "omp_set_num_threads"));
           if (get_omp != nullptr && set_omp_ != nullptr) {
             previous_omp_ = get_omp();
             set_omp_(requested);
@@ -100,12 +100,12 @@ static PcaBlas* resolve_pca_blas() {
     "Rblas.dll", "libopenblas.dll", "openblas.dll", "mkl_rt.dll", NULL
   };
   for (int i = 0; candidates[i] != NULL || i == 0; ++i) {
-    void* handle = scop_dlopen(candidates[i]);
+    void* handle = open_dynamic_library(candidates[i]);
     if (handle == nullptr) {
       continue;
     }
-    auto dsyrk = reinterpret_cast<scop_dsyrk_ptr>(scop_dlsym(handle, "cblas_dsyrk"));
-    auto dgemm = reinterpret_cast<scop_dgemm_ptr>(scop_dlsym(handle, "cblas_dgemm"));
+    auto dsyrk = reinterpret_cast<scop_dsyrk_ptr>(find_dynamic_symbol(handle, "cblas_dsyrk"));
+    auto dgemm = reinterpret_cast<scop_dgemm_ptr>(find_dynamic_symbol(handle, "cblas_dgemm"));
     if (dsyrk == nullptr || dgemm == nullptr) {
       continue;
     }
@@ -113,7 +113,7 @@ static PcaBlas* resolve_pca_blas() {
     scop_pca_blas.dsyrk = dsyrk;
     scop_pca_blas.dgemm = dgemm;
     scop_pca_blas.dsyevr =
-      reinterpret_cast<scop_dsyevr_ptr>(scop_dlsym(handle, "dsyevr_"));
+      reinterpret_cast<scop_dsyevr_ptr>(find_dynamic_symbol(handle, "dsyevr_"));
     break;
   }
   return (scop_pca_blas.dsyrk && scop_pca_blas.dgemm) ? &scop_pca_blas : nullptr;

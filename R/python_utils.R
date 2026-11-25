@@ -1,4 +1,4 @@
-scop_python_import <- function(module, convert = TRUE) {
+import_bundled_python <- function(module, convert = TRUE) {
   python_files <- c(
     system.file("scripts", "log_message.py", package = "thisutils"),
     system.file("python", "log_message.py", package = "thisutils")

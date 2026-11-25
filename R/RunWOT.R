@@ -162,7 +162,7 @@ RunWOT <- function(
     palcolor = palcolor
   )
 
-  functions <- scop_python_import("functions", convert = TRUE)
+  functions <- import_bundled_python("functions", convert = TRUE)
   adata <- do.call(functions$WOT, args)
 
   if (isTRUE(return_seurat)) {

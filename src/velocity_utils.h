@@ -352,7 +352,6 @@ inline NumericVector stationary_distribution_sparse(
 
     std::vector<int> col_rows(order.size());
     std::vector<double> col_vals(order.size());
-    // The column-sorted order already places every entry at its final offset.
     for (std::size_t k = 0; k < order.size(); ++k) {
         const int entry = order[k];
         col_rows[k] = t.rows[entry] - 1;

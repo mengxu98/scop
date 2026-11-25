@@ -396,7 +396,6 @@ ExpressionStatPlot <- function(
         stringsAsFactors = FALSE
       )
       if (fill.by == "expression") {
-        # An unobserved group/split pair has no expression median.
         present <- table(dat_use[[g]], dat_use[[split.by]]) > 0L
         individual_groups <- individual_groups[as.vector(present), , drop = FALSE]
       }
@@ -433,8 +432,6 @@ ExpressionStatPlot <- function(
     sapply(comb[["split_name"]], function(x) paste0(x, collapse = ","))
   )
 
-  # Expression colour uses the same group/split medians for every panel of
-  # a grouping variable. Reuse these summaries, not palette or theme calls.
   reuse_expression_medians <- identical(fill.by, "expression") &&
     nrow(comb) > length(group.by) &&
     identical(class(dat_use), "data.frame") &&

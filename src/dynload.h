@@ -8,7 +8,7 @@
 #endif
 #include <windows.h>
 
-inline void* scop_dlopen(const char* path) {
+inline void* open_dynamic_library(const char* path) {
   if (path == nullptr) {
     return static_cast<void*>(GetModuleHandleA(nullptr));
   }
@@ -19,7 +19,7 @@ inline void* scop_dlopen(const char* path) {
   return static_cast<void*>(LoadLibraryA(path));
 }
 
-inline void* scop_dlsym(void* handle, const char* name) {
+inline void* find_dynamic_symbol(void* handle, const char* name) {
   if (handle == nullptr || name == nullptr) {
     return nullptr;
   }
@@ -29,11 +29,11 @@ inline void* scop_dlsym(void* handle, const char* name) {
 #else
 #include <dlfcn.h>
 
-inline void* scop_dlopen(const char* path) {
+inline void* open_dynamic_library(const char* path) {
   return dlopen(path, RTLD_LAZY | RTLD_LOCAL);
 }
 
-inline void* scop_dlsym(void* handle, const char* name) {
+inline void* find_dynamic_symbol(void* handle, const char* name) {
   return dlsym(handle, name);
 }
 #endif

@@ -9,7 +9,7 @@
 #' @param srt Deprecated alias for `object`; supply exactly one of the two. It
 #' will be removed in scop 1.0.0.
 #' @param object A `Seurat` object.
-#' @inheritParams scop-params
+#' @inheritParams shared-params
 #' @param reference Spatial reference type: `"trajectory"` for STS or
 #' `"annotation"` for SAS.
 #' @param backend Computation backend. The supported backend is `"cpp"`, which

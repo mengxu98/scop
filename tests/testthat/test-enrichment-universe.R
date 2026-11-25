@@ -259,8 +259,6 @@ test_that("Seurat ORA reruns refresh only the requested comparison and database"
   key <- "Enrichment_test_wilcox"
   srt <- enrich(srt, c("Alpha", "Beta"), c("GO_BP", "OtherDB"), genes)
 
-  # Add a previously cached simplified view to check invalidation without
-  # changing the actual C++ calculations or requiring the optional R backend.
   result <- srt@tools[[key]]
   sims <- lapply(c("Alpha-GO_BP", "Beta-GO_BP"), function(nm) {
     tab <- result$results[[nm]]

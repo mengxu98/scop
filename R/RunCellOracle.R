@@ -289,7 +289,7 @@ RunCellOracle <- function(
       reticulate::py_get_attr(adata, "obsm"), paste0("X_", reduction),
       reticulate::r_to_py(embedding[, 1:2, drop = FALSE])
     )
-    runner <- scop_python_import("celloracle_runner", convert = TRUE)
+    runner <- import_bundled_python("celloracle_runner", convert = TRUE)
     log_message("Running official CellOracle 0.20.0", verbose = verbose)
     result <- runner$run_celloracle(
       adata = adata, group_by = group.by, embedding_name = paste0("X_", reduction),

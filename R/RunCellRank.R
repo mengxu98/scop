@@ -8,7 +8,7 @@
 #' @inheritParams CellDimPlot
 #' @inheritParams srt_to_adata
 #' @inheritParams RunStandardWorkflow
-#' @inheritParams scop-params
+#' @inheritParams shared-params
 #' @param srt Deprecated alias for `object`; supply exactly one of the two. It
 #' will be removed in scop 1.0.0.
 #' @param object A Seurat object.
@@ -516,7 +516,7 @@ RunCellRank <- function(
   }
 
   log_message("Running {.pkg CellRank} analysis...", verbose = verbose)
-  functions <- scop_python_import("functions", convert = TRUE)
+  functions <- import_bundled_python("functions", convert = TRUE)
   result <- do.call(functions$CellRank, args)
   log_message(
     "{.pkg CellRank} analysis completed",

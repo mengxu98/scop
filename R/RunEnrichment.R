@@ -620,8 +620,6 @@ replace_ora_scopes <- function(previous, current, groups, databases) {
     return(current)
   }
 
-  # A rerun invalidates cached simplified GO terms in the same scope,
-  # even when simplification is not requested this time.
   go <- intersect(databases, c("GO", "GO_BP", "GO_CC", "GO_MF"))
   databases <- unique(c(databases, if (length(go)) paste0(go, "_sim")))
   in_scope <- function(x) {

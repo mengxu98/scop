@@ -6,7 +6,7 @@ run_sparse_wilcox <- function(x, n_group1, min.expression = 0, cores = NULL) {
     mat = x,
     n_group1 = as.integer(n_group1),
     min_expression = as.numeric(min.expression),
-    n_threads = scop_n_threads(cores)
+    n_threads = normalize_thread_count(cores)
   )
   names(p_val) <- rownames(x)
   p_val

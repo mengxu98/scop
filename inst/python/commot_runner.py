@@ -17,7 +17,7 @@ import scanpy as sc
 from scipy import sparse
 from scipy.io import mmread
 
-from scop_runner_io import configuration_path, read_ids as _read_single_column, read_json, read_staged_tsv, validate_ids, write_manifest as _write_json
+from runner_io import configuration_path, read_ids as _read_single_column, read_json, read_staged_tsv, validate_ids, write_manifest as _write_json
 
 
 COMMUNICATION_COLUMNS = [

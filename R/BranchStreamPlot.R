@@ -7,7 +7,7 @@
 #'
 #' @md
 #' @inheritParams CellDimPlot
-#' @inheritParams scop-params
+#' @inheritParams shared-params
 #' @param object A `Seurat` object or a `data.frame` containing cell metadata.
 #' @param group.by Column containing cell-state or branch labels.
 #' @param lineages Pseudotime columns to use. If `NULL`, lineage-like

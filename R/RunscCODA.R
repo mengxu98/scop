@@ -132,7 +132,7 @@ RunscCODA <- function(
 
   reticulate::use_python(python_path, required = TRUE)
   reticulate::py_available(initialize = TRUE)
-  functions <- scop_python_import("functions", convert = TRUE)
+  functions <- import_bundled_python("functions", convert = TRUE)
   py_output <- functions$ScCODA(
     counts = as.data.frame(count_mat, stringsAsFactors = FALSE),
     metadata = data.frame(

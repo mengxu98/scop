@@ -3,7 +3,6 @@ test_that("numeric matrix validation retains plain double matrices and result sc
     c(0, -0.0, -2, 3), nrow = 2L,
     dimnames = list(samples = c("s2", "s1"), methods = c("a", "b"))
   )
-  # Includes dimnames labels, row and column order, and preservation of signed zero.
   expect_identical(numeric_matrix_result(score), score, num.eq = FALSE)
   corrupted <- score
   corrupted[] <- c(Inf, NaN, -Inf, 5)

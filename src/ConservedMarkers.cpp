@@ -42,7 +42,7 @@ double uniform_sum_cdf(int k, double x, std::vector<double>& work) {
   return reflect ? 1.0 - work[0] : work[0];
 }
 
-}  // namespace
+}
 
 // [[Rcpp::export]]
 NumericVector combine_conserved_pvalues_cpp(

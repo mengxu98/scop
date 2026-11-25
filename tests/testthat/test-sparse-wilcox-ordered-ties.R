@@ -10,7 +10,6 @@ test_that("sparse Wilcoxon keeps zero, signed values and ties in rank order", {
     all_zero = rep(0, 10)
   )
   positions <- which(is.na(values) | values != 0, arr.ind = TRUE)
-  # Deliberately include two stored zero entries adjacent to implicit zeros.
   positions <- rbind(positions, c(1L, 4L), c(1L, 6L))
   x <- Matrix::sparseMatrix(
     i = positions[, 1L], j = positions[, 2L], x = values[positions],

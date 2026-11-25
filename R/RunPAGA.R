@@ -6,7 +6,7 @@
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams RunCellRank
-#' @inheritParams scop-params
+#' @inheritParams shared-params
 #' @param backend Backend used to compute PAGA. `"python"` keeps the original
 #' scanpy workflow and remains the default. `"cpp"` uses the package C++
 #' implementation for the standard connectivity graph and tree, plus an
@@ -232,7 +232,7 @@ RunPAGA <- function(
     palcolor = palcolor
   )
 
-  functions <- scop_python_import("functions", convert = TRUE)
+  functions <- import_bundled_python("functions", convert = TRUE)
   log_message("Running {.pkg PAGA} analysis...", verbose = verbose)
   adata <- do.call(functions$PAGA, args)
   log_message(
@@ -350,7 +350,7 @@ run_paga_cpp <- function(
       k = knn_k,
       metric = "euclidean",
       exclude_self = TRUE,
-      n_threads = scop_n_threads(cores)
+      n_threads = normalize_thread_count(cores)
     )
   }
   paga <- paga_connectivities_cpp(
@@ -528,7 +528,6 @@ run_paga_cpp <- function(
       current <- current[cells, , drop = FALSE]
     }
     centers <- rowsum(current, groups)
-    # The graph retains every factor level; only observed groups have centroids.
     center_groups <- match(rownames(centers), group_levels)
     centers <- sweep(centers, 1L, paga[["group_sizes"]][center_groups], "/")
     offsets <- current - centers[match(as.character(groups), rownames(centers)), , drop = FALSE]

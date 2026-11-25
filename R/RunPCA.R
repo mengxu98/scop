@@ -111,7 +111,7 @@ RunPCA.default <- function(
         obj,
         as.integer(native_npcs),
         isTRUE(weight.by.var),
-        n_threads = scop_n_threads(cores)
+        n_threads = normalize_thread_count(cores)
       ),
       error = function(e) NULL
     )

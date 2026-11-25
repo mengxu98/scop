@@ -5,7 +5,6 @@ save_dim_plot_widget <- function(widget, file, save_widget = htmlwidgets::saveWi
   }
   on.exit(unlink(staging, recursive = TRUE), add = TRUE)
 
-  # Keep dependency staging and cleanup away from the requested output path.
   staged_file <- file.path(staging, "widget.html")
   save_widget(
     widget = widget,
@@ -27,7 +26,7 @@ save_dim_plot_widget <- function(widget, file, save_widget = htmlwidgets::saveWi
 #' labels, marks, density, lineages, PAGA, and RNA velocity layers.
 #'
 #' @md
-#' @inheritParams scop-params
+#' @inheritParams shared-params
 #' @param group.by Metadata column(s) used to color cells.
 #' @param label.by Metadata column for labels. `NULL` uses `group.by`.
 #' @param mark.by Metadata column for marks. `NULL` uses `legend.by` (nested
@@ -1895,7 +1894,7 @@ cell_dim_nested_legend_data <- function(
 #'
 #' @md
 #' @inheritParams CellDimPlot
-#' @inheritParams scop-params
+#' @inheritParams shared-params
 #'
 #' @description
 #' Color cells in 3D reduction space, or draw an interactive density surface.
