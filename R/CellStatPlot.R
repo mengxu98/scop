@@ -2,7 +2,7 @@
 #'
 #' @md
 #' @inheritParams FeatureStatPlot
-#' @inheritParams shared-params
+#' @inheritParams scop-params
 #' @param force Draw even when a grouping has more than 100 levels.
 #' @param NA_color The color to use for missing values.
 #' @param NA_stat Whether to include missing values in the plot.

@@ -4,7 +4,7 @@
 #' @details Canonical selection parameters and legacy aliases may be supplied
 #'   together only when their values agree. Conflicting values raise an error.
 #' @inheritParams CCCStatPlot
-#' @inheritParams shared-params
+#' @inheritParams scop-params
 #' @param plot_type Plot type. One of `"circle"`, `"chord"`, `"pathway"`,
 #'   `"individual_lr"`, `"arrow"`, `"sigmoid"`, `"bipartite"`,
 #'   `"embedding_network"`, `"diff_network"`, or `"spatial"`. The spatial

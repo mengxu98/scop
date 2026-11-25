@@ -10,7 +10,7 @@
 #' @inheritParams CellDimPlot
 #' @inheritParams RunStandardWorkflow
 #' @inheritParams FeatureDimPlot
-#' @inheritParams shared-params
+#' @inheritParams scop-params
 #' @param ref_srt A Seurat object.
 #' If your dataset is perturbed in a way that would substantially alter feature-feature correlations,
 #' for example if different time points are present or certain cell types are mostly depleted,

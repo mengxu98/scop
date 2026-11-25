@@ -3,7 +3,7 @@
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams RunCellRank
-#' @inheritParams shared-params
+#' @inheritParams scop-params
 #' @param backend Backend used to compute Palantir. `"python"` keeps the
 #' reference Palantir workflow and remains the default. `"cpp"` uses an
 #' approximate C++ workflow, stores results in `srt@tools[["Palantir"]]`, and

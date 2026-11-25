@@ -8,7 +8,7 @@
 #' @md
 #' @inheritParams RunStandardWorkflow
 #' @inheritParams thisutils::log_message
-#' @inheritParams shared-params
+#' @inheritParams scop-params
 #' @param layer Assay layer used for expression values.
 #' @param features Features to score. If `NULL`, current variable features are
 #' used; if no variable features are present, all assay features are used.

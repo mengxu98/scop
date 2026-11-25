@@ -7,7 +7,7 @@
 #' @md
 #' @inheritParams CellDimPlot
 #' @inheritParams VelocityPlot
-#' @inheritParams shared-params
+#' @inheritParams scop-params
 #' @param time_key Name of the column in the Seurat object metadata containing pseudotime values.
 #' @param method Method to compute velocity vectors from pseudotime.
 #' Can be `"gradient"` or `"knn"`.

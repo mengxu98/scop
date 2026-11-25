@@ -26,7 +26,7 @@ save_dim_plot_widget <- function(widget, file, save_widget = htmlwidgets::saveWi
 #' labels, marks, density, lineages, PAGA, and RNA velocity layers.
 #'
 #' @md
-#' @inheritParams shared-params
+#' @inheritParams scop-params
 #' @param group.by Metadata column(s) used to color cells.
 #' @param label.by Metadata column for labels. `NULL` uses `group.by`.
 #' @param mark.by Metadata column for marks. `NULL` uses `legend.by` (nested
@@ -1894,7 +1894,7 @@ cell_dim_nested_legend_data <- function(
 #'
 #' @md
 #' @inheritParams CellDimPlot
-#' @inheritParams shared-params
+#' @inheritParams scop-params
 #'
 #' @description
 #' Color cells in 3D reduction space, or draw an interactive density surface.

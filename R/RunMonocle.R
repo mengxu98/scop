@@ -5,7 +5,7 @@
 #' @inheritParams RunStandardWorkflow
 #' @inheritParams GroupHeatmap
 #' @inheritParams CellDimPlot
-#' @inheritParams shared-params
+#' @inheritParams scop-params
 #' @param expressionFamily The distribution family to use for modeling gene expression.
 #' @param features Features to use.
 #' Defaults to NULL, in which case features were determined by `feature_type`.

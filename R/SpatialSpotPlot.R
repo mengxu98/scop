@@ -2,7 +2,7 @@
 #'
 #' @md
 #' @inheritParams CellDimPlot
-#' @inheritParams shared-params
+#' @inheritParams scop-params
 #' @param object A `Seurat` object.
 #' @param srt Deprecated alias for `object`; supply exactly one of the two. It
 #' will be removed in scop 1.0.0.

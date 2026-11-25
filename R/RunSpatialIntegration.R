@@ -7,7 +7,7 @@
 #' @md
 #' @inheritParams RunSpatialVariableFeatures
 #' @inheritParams SpatialSpotPlot
-#' @inheritParams shared-params
+#' @inheritParams scop-params
 #' @param object A merged spatial `Seurat` object or a list of spatial `Seurat`
 #' objects.
 #' @param image Optional image name or named character vector mapping sample

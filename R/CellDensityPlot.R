@@ -6,7 +6,7 @@
 #' @md
 #' @inheritParams CellDimPlot
 #' @inheritParams FeatureDimPlot
-#' @inheritParams shared-params
+#' @inheritParams scop-params
 #' @param features Features to plot.
 #' @param flip,reverse Flip the x-axis or reverse the y-axis.
 #' @param x_order `"value"` or `"rank"`.

@@ -6,7 +6,7 @@
 #' @md
 #' @inheritParams CellDimPlot
 #' @inheritParams RunStandardWorkflow
-#' @inheritParams shared-params
+#' @inheritParams scop-params
 #' @param srt Deprecated alias for `object`; supply exactly one of the two. It
 #' will be removed in scop 1.0.0.
 #' @param object A Seurat object containing the results of RunDEtest and RunEnrichment.

@@ -5,7 +5,7 @@
 #'   together only when their values agree. Conflicting values raise an error.
 #'   `width` and `height` here control the heatmap body, not the canvas.
 #' @inheritParams CCCStatPlot
-#' @inheritParams shared-params
+#' @inheritParams scop-params
 #' @param plot_type Plot type. One of `"heatmap"` or `"dot"`.
 #' `"bubble"` is a CellChat-specific interaction bubble matrix.
 #' `"ligand_target"` is a special heatmap path available only with

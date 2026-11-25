@@ -11,7 +11,7 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @inheritParams shared-params
+#' @inheritParams scop-params
 #' @param prefix Prefix for intermediate object names.
 #' @param workflow `"single_cell"` or `"spatial"` (one explicitly selected spatial context).
 #' @param do_spot_qc,spot_qc_params Run [RunSpotQC()] and extra arguments.
