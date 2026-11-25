@@ -608,6 +608,17 @@ CCCHeatmap <- function(
   }
 
   if (identical(plot_type, "bubble") && identical(method, "CellChat")) {
+    bubble_palette <- if (missing(value_palette) && is.null(value_palcolor)) {
+      "Reds"
+    } else {
+      palette_cfg$value_palette
+    }
+    bubble_legend_direction <- if (missing(legend.direction) &&
+      isTRUE(legend.position %in% c("top", "bottom"))) {
+      "horizontal"
+    } else {
+      legend.direction
+    }
     explicit_lr_filter <- !is.null(pairLR.use) || !is.null(interaction.use)
     bubble_top_n <- if (isTRUE(explicit_lr_filter)) NULL else top_n
     if (use_cc_single_condition(srt, condition = condition)) {
@@ -647,14 +658,14 @@ CCCHeatmap <- function(
         ylab = NULL,
         color.by = bubble_color.by,
         bubble_size.range = bubble_size.range,
-        palette = palette_cfg$value_palette,
+        palette = bubble_palette,
         palcolor = palette_cfg$value_palcolor,
         font.size = font.size,
         angle.x = angle.x,
         hjust.x = hjust.x,
         vjust.x = vjust.x,
         legend.position = legend.position,
-        legend.direction = legend.direction,
+        legend.direction = bubble_legend_direction,
         theme_use = theme_use,
         theme_args = theme_args,
         aspect.ratio = aspect.ratio,
@@ -706,14 +717,14 @@ CCCHeatmap <- function(
       ylab = NULL,
       color.by = bubble_color.by,
       bubble_size.range = bubble_size.range,
-      palette = palette_cfg$value_palette,
+      palette = bubble_palette,
       palcolor = palette_cfg$value_palcolor,
       font.size = font.size,
       angle.x = angle.x,
       hjust.x = hjust.x,
       vjust.x = vjust.x,
       legend.position = legend.position,
-      legend.direction = legend.direction,
+      legend.direction = bubble_legend_direction,
       theme_use = theme_use,
       theme_args = theme_args,
       aspect.ratio = aspect.ratio,
@@ -1607,7 +1618,7 @@ custom_cc_bubble_plot <- function(
   ylab = NULL,
   color.by = c("prob", "pval"),
   bubble_size.range = c(1.5, 8),
-  palette = "RdBu",
+  palette = "Reds",
   palcolor = NULL,
   font.size = 10,
   angle.x = 45,
@@ -1677,7 +1688,7 @@ custom_cc_bubble_plot <- function(
     "fill_val"
   }
   fill_label <- legend.title %||%
-    if (identical(color.by, "pval")) "-log10(pval)" else "prob"
+    if (identical(color.by, "pval")) "-log10(p-value)" else "Probability"
 
   p <- ggplot2::ggplot(
     df,
@@ -1690,21 +1701,25 @@ custom_cc_bubble_plot <- function(
   ) +
     ggplot2::geom_point(shape = 21, color = "grey20", stroke = 0.2) +
     ggplot2::scale_size_area(
-      name = "prob",
+      name = "Probability",
       max_size = max(bubble_size.range),
       n.breaks = 4,
-      guide = ggplot2::guide_legend(
-        override.aes = list(fill = "grey30", shape = 21, color = "grey20"),
-        order = 2
-      )
+      guide = if (identical(color.by, "pval")) {
+        ggplot2::guide_legend(
+          override.aes = list(fill = "grey30", shape = 21, color = "grey20"),
+          order = 2
+        )
+      } else {
+        "none"
+      }
     ) +
     ggplot2::scale_fill_gradientn(
       name = fill_label,
       colours = cols,
       n.breaks = 4,
       guide = ggplot2::guide_colorbar(
-        frame.colour = "black",
-        ticks.colour = "black",
+        frame.colour = "grey40",
+        ticks.colour = "grey40",
         title.hjust = 0,
         order = 1
       )
@@ -1714,22 +1729,9 @@ custom_cc_bubble_plot <- function(
       y = ylab,
       title = title,
       subtitle = subtitle
-    ) +
-    ggplot2::theme(
-      axis.text.x = ggplot2::element_text(
-        angle = angle.x,
-        hjust = hjust.x,
-        vjust = vjust.x
-      ),
-      panel.grid.major = ggplot2::element_line(
-        linewidth = 0.3,
-        colour = "grey80",
-        linetype = 2
-      ),
-      panel.grid.minor = ggplot2::element_blank()
     )
 
-  finalize_cc_plot(
+  p <- finalize_cc_plot(
     p,
     title = title,
     subtitle = subtitle,
@@ -1743,6 +1745,30 @@ custom_cc_bubble_plot <- function(
     aspect.ratio = aspect.ratio,
     font.size = font.size
   )
+  p <- p + ggplot2::theme(
+    legend.position = legend.position,
+    legend.direction = legend.direction,
+    axis.text.x = ggplot2::element_text(
+      angle = angle.x,
+      hjust = hjust.x,
+      vjust = vjust.x
+    )
+  )
+  if (isTRUE(abs(angle.x) == 90)) {
+    p <- p + ggplot2::scale_x_discrete(
+      labels = function(x) sub(" -> ", " ->\n", x, fixed = TRUE)
+    )
+  }
+  if (identical(theme_use, "theme_scop") && !length(theme_args)) {
+    p <- p + ggplot2::theme(
+      panel.grid.major = ggplot2::element_line(colour = "grey92", linewidth = 0.25),
+      panel.grid.minor = ggplot2::element_blank(),
+      axis.ticks = ggplot2::element_blank(),
+      plot.margin = ggplot2::margin(4, 5, 4, 4),
+      legend.box.spacing = grid::unit(2, "mm")
+    )
+  }
+  p
 }
 
 ccc_identifier_key <- function(x) {

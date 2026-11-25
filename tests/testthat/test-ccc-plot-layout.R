@@ -99,3 +99,23 @@ test_that("aggregate heatmaps keep bars and cell-type strips on separate sides",
   expect_identical(p$legend.position, "bottom")
   expect_identical(p$legend.direction, "horizontal")
 })
+
+test_that("CellChat bubble labels and guides remain compact without changing records", {
+  records <- data.frame(
+    source = c("Ductal", "Pre-endocrine"),
+    target = c("Ngn3-high-EP", "Ductal"),
+    interaction_name = c("MDK-SDC4", "PTN-NCL"),
+    prob = c(0.2, 0.1),
+    pval = c(0.01, 0.02)
+  )
+  p <- custom_cc_bubble_plot(records, angle.x = 90)
+  expect_equal(p$data$prob, records$prob)
+  expect_identical(p$scales$get_scales("size")$guide, "none")
+  labels <- ggplot2::ggplot_build(p)$layout$panel_params[[1L]]$x$get_labels()
+  expect_identical(gsub("\n", " ", as.character(labels)), levels(p$data$pair))
+  q <- custom_cc_bubble_plot(records, angle.x = 35, color.by = "pval", legend.position = "bottom")
+  expect_equal(q$data$fill_val, -log10(records$pval))
+  expect_false(identical(q$scales$get_scales("size")$guide, "none"))
+  expect_equal(ggplot2::calc_element("axis.text.x", q$theme)$angle, 35)
+  expect_identical(q$theme$legend.position, "bottom")
+})

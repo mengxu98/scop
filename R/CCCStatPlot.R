@@ -1895,7 +1895,7 @@ ccc_stat_bar_plot <- function(
     ggplot2::coord_flip() +
     ggplot2::scale_fill_manual(values = cols, guide = "none") +
     ggplot2::labs(x = NULL, y = value_label)
-  return(finalize_cc_plot(
+  p <- finalize_cc_plot(
     p,
     title = title %||% paste0(
       "Top communication ",
@@ -1908,7 +1908,18 @@ ccc_stat_bar_plot <- function(
     theme_args = theme_args,
     font.size = font.size
   ) +
-    ggplot2::theme(panel.grid.major = grid_major_element))
+    ggplot2::theme(
+      panel.grid.major.x = grid_major_element,
+      panel.grid.major.y = ggplot2::element_blank(),
+      panel.grid.minor = ggplot2::element_blank()
+    )
+  if (identical(theme_use, "theme_scop") && !length(theme_args)) {
+    p <- p + ggplot2::theme(
+      axis.ticks.y = ggplot2::element_blank(),
+      plot.margin = ggplot2::margin(4, 5, 4, 4)
+    )
+  }
+  p
 }
 
 ccc_pathway_summary_plot <- function(

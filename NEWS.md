@@ -1,5 +1,8 @@
 # scop (development version)
 
+* **fix**: CellChat bubble plots use a compact probability legend and
+  shorter vertical labels; communication bars keep only the value grid.
+
 * **refactor**: Simplify private runner and runtime helper names without
   changing the public API.
 
