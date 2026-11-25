@@ -59,9 +59,10 @@ test_that("conserved-marker sum p-values agree with an independent high-precisio
     0.20301575157035084, 0.79698424842964916,
     0.99299508839848781, 0.99999973115347334
   )
-  expect_equal(actual_50, expected_50, tolerance = 1e-15)
   r_50 <- unname(combine(pvalues_50, "sump", "r"))
-  expect_equal(r_50, expected_50, tolerance = 1e-15)
+  tolerance_50 <- 16 * .Machine$double.eps
+  expect_lte(max(abs(actual_50 - expected_50)), tolerance_50)
+  expect_lte(max(abs(r_50 - expected_50)), tolerance_50)
 
   r_100 <- unname(combine(pvalues, "sump", "r"))
   expect_identical(r_100[c(1L, 4L, 7L)], c(0, 0.5, 1))

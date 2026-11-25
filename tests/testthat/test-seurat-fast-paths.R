@@ -47,10 +47,11 @@ test_that("internal workflows use scop Seurat-compatible entry points", {
       "RunDynamicFeatures", "CheckDataList"
     ),
     ScaleData = c(
-      "Uncorrected_integrate", "Seurat_integrate", "MNN_integrate",
-      "Harmony_integrate", "BBKNN_integrate", "CSS_integrate",
+      "scale_integrated_assay_data", "Seurat_integrate", "MNN_integrate",
+      "Harmony_integrate", "CSS_integrate",
       "Conos_integrate", "ComBat_integrate"
     ),
+    scale_integrated_assay_data = c("Uncorrected_integrate", "BBKNN_integrate"),
     FindNeighbors = c(
       "find_neighbors_and_clusters", "RunKNNMap", "RunKNNPredict",
       "RunFR.Seurat", "RunRareQ"

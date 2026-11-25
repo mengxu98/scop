@@ -1,5 +1,8 @@
 # scop (development version)
 
+* **ci**: Use the JAGS 4-compatible interface for website builds and make
+  integration routing and p-value checks portable across platforms.
+
 * **feat**: `CCCNetworkPlot()` keeps the circle as the default and supports
   an explicit hierarchy layout for pathway and ligand–receptor views.
   Pathways selected together share cell positions, colors, and edge-weight
