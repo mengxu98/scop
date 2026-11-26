@@ -1238,7 +1238,8 @@ ccc_draw_heatmap <- function(
       val_range <- val_range + c(-0.5, 0.5)
     }
   }
-  if (compact && sequential && !symmetric && all(mat_vals >= 0)) {
+  sequential <- sequential && !symmetric && all(mat_vals >= 0)
+  if (sequential) {
     value_palette <- "Reds"
     val_range[1] <- 0
     if (val_range[2] <= 0) val_range[2] <- 1
@@ -1265,7 +1266,7 @@ ccc_draw_heatmap <- function(
           y,
           gp = grid::gpar(
             fontsize = font.size * if (compact) 0.85 else 0.7,
-            col = if (!is.na(fill) && (if (compact) {
+            col = if (!is.na(fill) && (if (compact || sequential) {
               sum(c(0.213, 0.715, 0.072) * grDevices::col2rgb(fill)[, 1L]) < 140
             } else {
               grDevices::col2rgb(fill)[1L] < 128

@@ -807,7 +807,13 @@ CCCHeatmap <- function(
       cell_palette = palette_cfg$cell_palette,
       cell_palcolor = palette_cfg$cell_palcolor,
       legend.position = legend.position,
-      legend.direction = legend.direction,
+      legend.direction = if (missing(legend.direction) &&
+        isTRUE(legend.position %in% c("top", "bottom"))) {
+        "horizontal"
+      } else {
+        legend.direction
+      },
+      sequential = missing(value_palette) && is.null(value_palcolor),
       font.size = font.size,
       theme_use = theme_use,
       theme_args = theme_args
@@ -952,7 +958,14 @@ CCCHeatmap <- function(
       value_palette = palette_cfg$value_palette,
       value_palcolor = palette_cfg$value_palcolor,
       legend.position = legend.position,
-      legend.direction = legend.direction,
+      legend.direction = if (missing(legend.direction) &&
+        isTRUE(legend.position %in% c("top", "bottom"))) {
+        "horizontal"
+      } else {
+        legend.direction
+      },
+      sequential = missing(value_palette) && is.null(value_palcolor),
+      x_text_angle = x_text_angle,
       font.size = font.size,
       theme_use = theme_use,
       theme_args = theme_args
@@ -1343,7 +1356,7 @@ ccc_heatmap_full_plot <- function(
     theme_use = theme_use,
     theme_args = theme_args,
     compact = identical(display_by, "aggregation"),
-    sequential = sequential
+    sequential = identical(display_by, "aggregation") && sequential
   )
 }
 
@@ -1380,7 +1393,8 @@ ccc_ligand_target_heatmap <- function(
   legend.direction = "vertical",
   font.size = 10,
   theme_use = "theme_scop",
-  theme_args = list()
+  theme_args = list(),
+  sequential = FALSE
 ) {
   check_r("ComplexHeatmap", verbose = FALSE)
 
@@ -1516,7 +1530,8 @@ ccc_ligand_target_heatmap <- function(
     font.size = font.size,
     theme_use = theme_use,
     theme_args = theme_args,
-    compact = is.null(width) && is.null(height)
+    compact = is.null(width) && is.null(height),
+    sequential = sequential
   )
 }
 
@@ -2125,7 +2140,9 @@ ccc_source_target_tile_plot <- function(
   legend.direction = "vertical",
   font.size = 10,
   theme_use = "theme_scop",
-  theme_args = list()
+  theme_args = list(),
+  sequential = FALSE,
+  x_text_angle = 90
 ) {
   if (is.null(interaction_df) || nrow(interaction_df) == 0L) {
     log_message(
@@ -2183,23 +2200,46 @@ ccc_source_target_tile_plot <- function(
   )
   plot_df <- rbind(left, right)
   plot_df$interaction_label <- factor(plot_df$interaction_label, levels = interaction_order)
+  sequential <- isTRUE(sequential) && all(plot_df$plot_metric >= 0)
   fill_cols <- palette_colors(
-    palette = value_palette,
+    palette = if (sequential) "Reds" else value_palette,
     palcolor = value_palcolor,
-    n = 9
+    n = if (sequential) 100L else 9L
   )
+  fill_limits <- if (sequential) {
+    max_value <- max(plot_df$plot_metric)
+    c(0, if (max_value > 0) max_value else 1)
+  }
   fill_label <- if (identical(color.by, "pvalue")) {
     "-log10(p-value)"
   } else {
     "Communication score"
   }
+  columns <- length(unique(plot_df$cell_type))
+  x_text_angle <- x_text_angle %||% 90
+  strip_labels <- if (columns < 5L) {
+    ggplot2::as_labeller(c(
+      "Source ligand" = "Source\nligand",
+      "Target receptor" = "Target\nreceptor"
+    ))
+  } else {
+    ggplot2::label_value
+  }
   p <- ggplot2::ggplot(
     plot_df,
     ggplot2::aes(x = cell_type, y = interaction_label, fill = plot_metric)
   ) +
-    ggplot2::geom_tile(color = "white", linewidth = 0.4) +
-    ggplot2::facet_wrap(~type, nrow = 1, scales = "free_x") +
-    ggplot2::scale_fill_gradientn(colours = fill_cols, name = fill_label)
+    ggplot2::geom_tile(color = "white", linewidth = 0.3) +
+    ggplot2::facet_wrap(~type, nrow = 1, labeller = strip_labels) +
+    ggplot2::coord_fixed(ratio = 1, expand = FALSE) +
+    ggplot2::scale_x_discrete(expand = ggplot2::expansion(add = 0)) +
+    ggplot2::scale_y_discrete(expand = ggplot2::expansion(add = 0)) +
+    ggplot2::scale_fill_gradientn(
+      colours = fill_cols,
+      limits = fill_limits,
+      name = fill_label,
+      guide = ggplot2::guide_colourbar(frame.colour = "black")
+    )
 
   p <- finalize_cc_plot(
     p,
@@ -2213,20 +2253,28 @@ ccc_source_target_tile_plot <- function(
     font.size = font.size
   ) +
     ggplot2::theme(
-      axis.text.x = ggplot2::element_text(angle = 90, hjust = 1, vjust = 0.5),
+      axis.text.x = ggplot2::element_text(
+        angle = x_text_angle,
+        hjust = if (x_text_angle == 0) 0.5 else 1,
+        vjust = if (x_text_angle == 90) 0.5 else 1
+      ),
       panel.grid = ggplot2::element_blank()
     )
-  row_mm <- max(4, font.size * 25.4 / 72 * 1.3)
   if (identical(theme_use, "theme_scop") && !length(theme_args)) {
     p <- p + ggplot2::theme(
-      strip.text = ggplot2::element_text(colour = "black", face = "bold"),
+      strip.text = ggplot2::element_text(colour = "black", face = "bold", size = font.size),
       strip.background = ggplot2::element_blank(),
+      panel.spacing.x = grid::unit(2, "mm"),
+      panel.border = ggplot2::element_rect(fill = NA, colour = "black", linewidth = 0.35),
+      legend.box.spacing = grid::unit(2.5, "mm"),
       legend.location = "panel",
       legend.justification.right = c(0, 0.5)
     )
-    if (nlevels(plot_df$interaction_label) * row_mm > 35) {
-      p <- p + ggplot2::theme(aspect.ratio = nlevels(plot_df$interaction_label) * row_mm / 45)
-    }
   }
-  p
+  thisplot::plot_autosize(
+    p,
+    panel_width = max(columns * 5.6, 13.5) * (font.size %||% 10) / 10,
+    base_size = NULL,
+    label_autosize = FALSE
+  )
 }
