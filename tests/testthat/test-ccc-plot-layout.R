@@ -120,6 +120,40 @@ test_that("CellChat bubble labels and guides remain compact without changing rec
   expect_identical(q$theme$legend.position, "bottom")
 })
 
+test_that("CellChat bubbles separate reported zeros from positive p-values", {
+  x <- ccc_layout_fixture()
+  x@tools$CellChat <- list(results = list(ALL = list()))
+  records <- data.frame(
+    source = rep("Ductal", 6L),
+    target = rep("Ngn3-high-EP", 6L),
+    interaction_name = paste0("L", seq_len(6), "-R"),
+    prob = c(.2, .2, .1, .1, .05, .05),
+    pval = c(0, .01, .02, .03, .04, NA)
+  )
+  local_mocked_bindings(subset_cc_table = function(...) records, .package = "scop")
+  args <- list(object = x, method = "CellChat", plot_type = "bubble")
+  p <- do.call(CCCHeatmap, c(args, list(bubble_color.by = "pval")))
+  base <- do.call(CCCHeatmap, args)
+  p_layer <- ggplot2::ggplot_build(p)$data[[1L]]
+  base_layer <- ggplot2::ggplot_build(base)$data[[1L]]
+  expect_identical(p$data$pval, records$pval)
+  expect_identical(p_layer[c("x", "y", "size")], base_layer[c("x", "y", "size")])
+  expect_identical(unname(p_layer$shape), c(23, rep(21, 5)))
+  expect_length(unique(p_layer$fill[2:5]), 4)
+  expect_equal(p$scales$get_scales("fill")$breaks, -log10(rev(records$pval[2:5])))
+  expect_identical(p$scales$get_scales("fill")$labels, c("0.04", "0.03", "0.02", "0.01"))
+  expect_identical(base$data$fill_val, records$prob)
+  expect_identical(do.call(CCCHeatmap, c(args, list(
+    bubble_color.by = "pval", return.data = TRUE
+  ))), records)
+
+  records$pval <- rep(0, nrow(records))
+  zero <- do.call(CCCHeatmap, c(args, list(bubble_color.by = "pval")))
+  expect_silent(ggplot2::ggplotGrob(zero))
+  expect_identical(zero$scales$get_scales("fill")$guide, "none")
+  expect_true(all(ggplot2::ggplot_build(zero)$data[[1L]]$shape == 23))
+})
+
 test_that("dense pathway summaries retain ranks on a shared numeric axis", {
   x <- ccc_layout_fixture()
   records <- x@tools$MDIC3$long_table

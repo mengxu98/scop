@@ -1680,50 +1680,81 @@ custom_cc_bubble_plot <- function(
   )
 
   cols <- palette_colors(palette = palette, palcolor = palcolor, n = 9)
-  fill_var <- if (identical(color.by, "pval")) {
-    df$fill_val <- -log10(df$pval + 1e-300)
-    "fill_val"
-  } else {
-    df$fill_val <- df$prob
-    "fill_val"
+  pvalue_fill <- identical(color.by, "pval")
+  fill_args <- list(
+    name = legend.title %||% "Probability",
+    colours = cols,
+    n.breaks = 4
+  )
+  df$fill_val <- df$prob
+  if (pvalue_fill) {
+    df$zero_pvalue <- is.finite(df$pval) & df$pval == 0
+    positive <- is.finite(df$pval) & df$pval > 0 & df$pval <= 1
+    df$fill_val <- rep(NA_real_, nrow(df))
+    df$fill_val[positive] <- -log10(df$pval[positive])
+    pvalue_breaks <- sort(unique(df$pval[positive]), decreasing = TRUE)
+    if (length(pvalue_breaks) > 4L) {
+      pvalue_breaks <- pvalue_breaks[round(seq(1, length(pvalue_breaks), length.out = 4L))]
+    }
+    fill_args$name <- legend.title %||% "P-value"
+    fill_args$breaks <- -log10(pvalue_breaks)
+    fill_args$labels <- format(pvalue_breaks, trim = TRUE)
   }
-  fill_label <- legend.title %||%
-    if (identical(color.by, "pval")) "-log10(p-value)" else "Probability"
+  fill_args$guide <- if (pvalue_fill && !any(positive)) {
+    "none"
+  } else {
+    ggplot2::guide_colorbar(
+      frame.colour = "grey40",
+      ticks.colour = "grey40",
+      title.hjust = 0,
+      order = 1,
+      theme = if (pvalue_fill) {
+        if (identical(legend.direction, "horizontal")) {
+          ggplot2::theme(legend.key.width = grid::unit(34, "mm"))
+        } else {
+          ggplot2::theme(legend.key.height = grid::unit(19, "mm"))
+        }
+      }
+    )
+  }
 
   p <- ggplot2::ggplot(
     df,
-    ggplot2::aes(
-      x = pair,
-      y = interaction_plot,
-      size = prob,
-      fill = .data[[fill_var]]
-    )
-  ) +
-    ggplot2::geom_point(shape = 21, color = "grey20", stroke = 0.2) +
+    ggplot2::aes(x = pair, y = interaction_plot, size = prob, fill = .data[["fill_val"]])
+  )
+  if (pvalue_fill && any(df$zero_pvalue)) {
+    p <- p +
+      ggplot2::geom_point(
+        ggplot2::aes(shape = .data[["zero_pvalue"]]), color = "grey20", stroke = 0.2
+      ) +
+      ggplot2::scale_shape_manual(
+        name = NULL,
+        values = c("FALSE" = 21, "TRUE" = 23),
+        breaks = TRUE,
+        labels = "Reported p = 0",
+        guide = ggplot2::guide_legend(
+          override.aes = list(fill = "grey50", size = 3),
+          order = 2
+        )
+      )
+  } else {
+    p <- p + ggplot2::geom_point(shape = 21, color = "grey20", stroke = 0.2)
+  }
+  p <- p +
     ggplot2::scale_size_area(
       name = "Probability",
       max_size = max(bubble_size.range),
       n.breaks = 4,
-      guide = if (identical(color.by, "pval")) {
+      guide = if (pvalue_fill) {
         ggplot2::guide_legend(
           override.aes = list(fill = "grey30", shape = 21, color = "grey20"),
-          order = 2
+          order = 3
         )
       } else {
         "none"
       }
     ) +
-    ggplot2::scale_fill_gradientn(
-      name = fill_label,
-      colours = cols,
-      n.breaks = 4,
-      guide = ggplot2::guide_colorbar(
-        frame.colour = "grey40",
-        ticks.colour = "grey40",
-        title.hjust = 0,
-        order = 1
-      )
-    ) +
+    do.call(ggplot2::scale_fill_gradientn, fill_args) +
     ggplot2::labs(
       x = xlab,
       y = ylab,
@@ -1754,10 +1785,28 @@ custom_cc_bubble_plot <- function(
       vjust = vjust.x
     )
   )
-  if (isTRUE(abs(angle.x) == 90)) {
-    p <- p + ggplot2::scale_x_discrete(
-      labels = function(x) sub(" -> ", " ->\n", x, fixed = TRUE)
+  if (pvalue_fill) {
+    p <- p + ggplot2::theme(
+      legend.location = "plot",
+      legend.box = "vertical",
+      legend.spacing.y = grid::unit(1.5, "mm")
     )
+    if (isTRUE(abs(angle.x) == 90)) {
+      p <- p + ggplot2::theme(axis.text.x = ggplot2::element_text(lineheight = 0.8))
+    }
+  }
+  if (isTRUE(abs(angle.x) == 90) || pvalue_fill) {
+    p <- p + ggplot2::scale_x_discrete(
+      labels = if (isTRUE(abs(angle.x) == 90)) {
+        function(x) sub(" -> ", " ->\n", x, fixed = TRUE)
+      } else {
+        ggplot2::waiver()
+      },
+      expand = if (pvalue_fill) ggplot2::expansion(add = 0.8) else ggplot2::waiver()
+    )
+  }
+  if (pvalue_fill) {
+    p <- p + ggplot2::scale_y_discrete(expand = ggplot2::expansion(add = 0.8))
   }
   if (identical(theme_use, "theme_scop") && !length(theme_args)) {
     p <- p + ggplot2::theme(
