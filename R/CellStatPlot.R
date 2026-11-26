@@ -440,9 +440,6 @@ CellStatPlot <- function(
     }
     if (plot_type == "dot") {
       panel <- panel + ggplot2::scale_y_discrete(expand = ggplot2::expansion(add = 1))
-      if (is.null(bg.by)) {
-        panel <- panel + ggplot2::guides(fill = "none")
-      }
       if (stat_type == "percent") {
         panel$scales <- panel$scales$clone()
         size_scale <- panel$scales$get_scales("size")

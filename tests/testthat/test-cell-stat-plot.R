@@ -133,7 +133,9 @@ test_that("composition styling retains size units, visible category keys and plo
   p <- do.call(CellStatPlot, c(args, list(plot_type = "dot")))
   expect_identical(p$theme$axis.text.x$angle, 0)
   expect_identical(p$scales$get_scales("size")$labels(0.25), "25%")
-  expect_identical(p$guides$guides$fill, "none")
+  expect_s3_class(p$guides$guides$fill, "GuideLegend")
+  hidden <- do.call(CellStatPlot, c(args, list(plot_type = "dot", legend.position = "none")))
+  expect_identical(hidden$theme$legend.position, "none")
   expect_equal(p$scales$get_scales("y")$expand, c(0, 1, 0, 1))
 
   flipped <- do.call(CellStatPlot, c(args, list(
@@ -160,6 +162,6 @@ test_that("composition styling retains size units, visible category keys and plo
   expect_length(separate, 2L)
   expect_s3_class(combined, "patchwork")
   expect_identical(combined[[1]]$data, separate[[1]]$data)
-  expect_identical(combined[[2]]$guides$guides$fill, "none")
+  expect_s3_class(combined[[2]]$guides$guides$fill, "GuideLegend")
   expect_no_error(patchwork::patchworkGrob(combined))
 })

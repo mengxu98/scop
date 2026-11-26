@@ -570,10 +570,6 @@ CCCStatPlot <- function(
   }
 
   if (identical(plot_type, "comparison")) {
-    if (identical(compare_by, "overall") && missing(legend.position) &&
-      identical(theme_use, "theme_scop") && !length(theme_args)) {
-      legend.position <- "none"
-    }
     return(ccc_stat_comparison_plot(
       srt = srt,
       method = method,
@@ -1316,7 +1312,7 @@ ccc_cellchat_role_change_plot <- function(
     ) +
     ggplot2::scale_fill_manual(
       values = cell_cols, name = "Cell type", drop = FALSE,
-      guide = if (length(idents_use) > 1L) ggplot2::guide_legend(order = 1, override.aes = list(size = 3)) else "none"
+      guide = ggplot2::guide_legend(order = 1, override.aes = list(size = 3))
     ) +
     ggplot2::scale_size_continuous(
       name = "Change magnitude", range = c(2, 6), breaks = scales::breaks_extended(4),
@@ -2827,7 +2823,7 @@ ccc_scatter_plot <- function(
     ) +
     ggplot2::scale_fill_manual(
       values = cell_cols[cell_levels], drop = FALSE,
-      guide = if (do_label && length(cell_levels) <= 12L) "none" else ggplot2::guide_legend(order = 1, override.aes = list(size = 3))
+      guide = ggplot2::guide_legend(order = 1, override.aes = list(size = 3))
     ) +
     ggplot2::scale_size_continuous(
       range = dot_size,

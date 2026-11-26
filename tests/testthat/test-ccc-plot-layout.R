@@ -203,7 +203,7 @@ test_that("dense pathway summaries retain ranks on a shared numeric axis", {
   expect_identical(sparse$labels$x, "Significant interactions")
 })
 
-test_that("comparison bar labels have space and explicit legends are retained", {
+test_that("comparison bar labels have space and legends are shown by default", {
   x <- ccc_layout_fixture()
   records <- x@tools$MDIC3$long_table
   records$dataset <- rep(c("Group1", "Group2"), each = 2)
@@ -212,11 +212,11 @@ test_that("comparison bar labels have space and explicit legends are retained", 
     comparison = c("Group1", "Group2"), sample_col = "dataset")
   p <- do.call(CCCStatPlot, args)
   built <- ggplot2::ggplot_build(p)
-  expect_identical(p$theme$legend.position, "none")
+  expect_identical(p$theme$legend.position, "right")
   expect_gt(max(built$layout$panel_params[[1L]]$y.range), max(built$data[[2L]]$y))
   expect_identical(p$labels$y, "Number of inferred interactions")
-  q <- do.call(CCCStatPlot, c(args, list(legend.position = "right")))
-  expect_identical(q$theme$legend.position, "right")
+  q <- do.call(CCCStatPlot, c(args, list(legend.position = "none")))
+  expect_identical(q$theme$legend.position, "none")
   expect_identical(p$data, q$data)
 })
 
@@ -390,20 +390,22 @@ test_that("dense role-change panels label only the largest points without removi
   expect_identical(p$data, do.call(CCCStatPlot, c(args, list(return.data = TRUE))))
   expect_identical(p$data$signaling, paths)
   expect_identical(p$layers[[4L]]$data$signaling, rev(tail(paths, 8L)))
+  expect_s3_class(p$scales$get_scales("fill")$guide, "GuideLegend")
   expect_identical(p$labels$x, "Outgoing change")
   expect_match(p$labels$subtitle, "ConditionB - ConditionA", fixed = TRUE)
 })
 
-test_that("role scatter keeps category keys when direct labeling is disabled", {
+test_that("role scatter keeps both keys independently of direct labeling", {
   x <- ccc_layout_fixture()
   args <- list(object = x, method = "MDIC3", plot_type = "role_scatter")
   p <- do.call(CCCStatPlot, args)
   no_labels <- do.call(CCCStatPlot, c(args, list(do.label = FALSE, xlabel = "Custom")))
   hidden <- do.call(CCCStatPlot, c(args, list(do.label = FALSE, show.legend = FALSE)))
   expect_identical(p$data, no_labels$data)
-  expect_identical(p$scales$get_scales("fill")$guide, "none")
-  expect_false(identical(no_labels$scales$get_scales("fill")$guide, "none"))
-  expect_false(identical(no_labels$scales$get_scales("size")$guide, "none"))
+  g <- ggplot2::ggplotGrob(p)
+  right <- g$grobs[[which(g$layout$name == "guide-box-right")]]
+  expect_equal(sum(right$layout$name == "guides"), 2L)
+  expect_s3_class(no_labels$scales$get_scales("fill")$guide, "GuideLegend")
   expect_identical(hidden$theme$legend.position, "none")
   expect_identical(no_labels$labels$x, "Custom")
 })

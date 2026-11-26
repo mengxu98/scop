@@ -287,10 +287,10 @@ CellDensityPlot <- function(
           dat,
           aes(x = .data[["value"]], y = .data[["order"]], fill = .data[[g]])
         ) +
-          ggridges::geom_density_ridges()
+          ggridges::geom_density_ridges(linewidth = 0.28, color = "#374151", alpha = 0.86)
         p <- p +
           scale_fill_manual(
-            name = paste0(g, ":"),
+            name = g,
             values = colors
           )
         y.trans <- ifelse(flip, "reverse", "identity")
@@ -306,7 +306,7 @@ CellDensityPlot <- function(
           c(y_min_use, y_max_use)
         }
         p <- p +
-          scale_y_discrete(drop = !keep_empty, expand = c(0, 0)) +
+          scale_y_discrete(drop = !keep_empty, expand = expansion(add = c(0.15, 1.65))) +
           scale_x_continuous(
             limits = limits,
             trans = y.trans,
@@ -324,9 +324,11 @@ CellDensityPlot <- function(
               aspect.ratio = aspect.ratio,
               strip.text.x = element_text(angle = 0),
               axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
-              axis.ticks.x = element_line(),
-              panel.grid.major.x = element_line(color = "grey", linetype = 2),
+              axis.ticks.x = element_blank(),
+              panel.grid.major.x = element_blank(),
+              panel.grid.major.y = element_line(color = "#E6EAF0", linewidth = 0.28),
               legend.position = legend.position,
+              legend.justification = "center",
               legend.direction = legend.direction
             ) +
             coord_flip()
@@ -338,9 +340,11 @@ CellDensityPlot <- function(
               strip.text.y = element_text(angle = 0),
               axis.text.x = element_text(),
               axis.text.y = element_text(hjust = 1),
-              axis.ticks.y = element_line(),
-              panel.grid.major.y = element_line(color = "grey", linetype = 2),
+              axis.ticks.y = element_blank(),
+              panel.grid.major.x = element_line(color = "#E6EAF0", linewidth = 0.28),
+              panel.grid.major.y = element_blank(),
               legend.position = legend.position,
+              legend.justification = "center",
               legend.direction = legend.direction
             )
         }
