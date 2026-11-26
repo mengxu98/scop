@@ -1089,26 +1089,49 @@ ccc_cellchat_ranknet_plot <- function(
         x = value_1,
         xend = value_2
       ),
-      color = "grey75",
-      linewidth = 0.7
+      color = "grey72",
+      linewidth = 0.55
     ) +
     ggplot2::geom_point(
       data = long_df,
-      ggplot2::aes(x = value, y = pathway, color = dataset),
-      size = 3
+      ggplot2::aes(x = value, y = pathway, fill = dataset, size = dataset),
+      shape = 21, colour = "grey25", stroke = 0.24
     ) +
-    ggplot2::scale_color_manual(values = cols, drop = FALSE) +
-    ggplot2::labs(x = "Information flow", y = NULL, color = NULL)
-  finalize_cc_plot(
+    ggplot2::scale_fill_manual(
+      name = "Condition", values = cols, breaks = cc_cmp$object_names, drop = FALSE,
+      guide = ggplot2::guide_legend(override.aes = list(size = c(3, 2)))
+    ) +
+    ggplot2::scale_size_manual(
+      values = stats::setNames(c(3, 2), cc_cmp$object_names), guide = "none"
+    ) +
+    ggplot2::expand_limits(x = 0) +
+    ggplot2::scale_x_continuous(expand = ggplot2::expansion(mult = c(.03, .08)))
+  p <- finalize_cc_plot(
     p,
     title = title %||% cmp_cc_label(cc_cmp$cmp, cc_cmp$comp_idx),
     subtitle = subtitle,
+    xlab = "Information flow",
     legend.position = legend.position,
     legend.direction = legend.direction,
     theme_use = theme_use,
     theme_args = theme_args,
     font.size = font.size
-  )
+  ) +
+    ggplot2::theme(
+      legend.position = legend.position,
+      legend.direction = legend.direction,
+      legend.location = "panel",
+      legend.justification.right = c(0, 0.5),
+      legend.box.spacing = grid::unit(2, "mm"),
+      panel.grid.minor = ggplot2::element_blank(),
+      panel.grid.major.x = ggplot2::element_line(colour = "grey91", linewidth = 0.3),
+      panel.grid.major.y = ggplot2::element_blank(),
+      axis.ticks.y = ggplot2::element_blank()
+    )
+  axis_text <- ggplot2::calc_element("axis.text.y", ggplot2::theme_get() + p$theme)
+  label_size <- axis_text$size %||% font.size
+  row_mm <- max(4, label_size * 25.4 / 72 * 1.25)
+  p + ggplot2::theme(aspect.ratio = (nrow(wide) + 0.2) * row_mm / 45)
 }
 
 ccc_cellchat_role_components <- function(object, signaling = NULL) {

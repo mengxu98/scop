@@ -291,3 +291,30 @@ test_that("role and difference heatmaps report rendered export sizes", {
   expect_gt(attr(pair, "size")$height, 0)
   expect_gt(attr(diff, "size")$height, 0)
 })
+
+test_that("CellChat pathway rankings stay in one panel and size to the rows", {
+  x <- ccc_layout_fixture()
+  paths <- paste("Pathway", seq_len(29L))
+  x@tools$CellChat <- list(comparisons = list(ConditionA_vs_ConditionB = list(
+    object.list = list(ConditionA = 1, ConditionB = 2)
+  )))
+  local_mocked_bindings(
+    ccc_cellchat_pathway_summary_df = function(object, dataset, signaling, ...) {
+      df <- data.frame(dataset = dataset, pathway = paths, value = object * seq_along(paths))
+      if (is.null(signaling)) df else df[df$pathway %in% signaling, , drop = FALSE]
+    },
+    .package = "scop"
+  )
+  args <- list(object = x, method = "CellChat", plot_type = "ranknet", condition = "ConditionA_vs_ConditionB")
+  p <- do.call(CCCStatPlot, args)
+  small <- do.call(CCCStatPlot, c(args, list(signaling = paths[seq_len(8L)])))
+  built <- ggplot2::ggplot_build(p)
+  expect_length(built$layout$panel_params, 1L)
+  expect_identical(as.character(rev(built$layout$panel_params[[1L]]$y$get_labels())), rev(paths))
+  expect_identical(p$labels$x, "Information flow")
+  expect_gt(p$theme$aspect.ratio, 3 * small$theme$aspect.ratio)
+  expect_identical(p$theme$axis.text$size, small$theme$axis.text$size)
+  raw <- do.call(CCCStatPlot, c(args, list(return.data = TRUE)))
+  expect_identical(raw$pathway, rev(paths))
+  expect_equal(raw$diff, 29:1)
+})
