@@ -900,11 +900,20 @@ CCCHeatmap <- function(
   pair_df <- plot_data$pair_df
   interaction_df <- plot_data$interaction_df
 
-  if (identical(plot_type, "dot")) {
+  if (plot_type %in% c("dot", "sample_dot")) {
+    source_target <- identical(plot_type, "dot")
+    dot_palette <- if (identical(method, "CellChat") && identical(color.by, "score") &&
+      missing(value_palette) && is.null(value_palcolor)) {
+      "Reds"
+    } else {
+      palette_cfg$value_palette
+    }
     return(ccc_interaction_dot_plot(
-      df = interaction_df,
-      display = "source_target",
+      df = if (source_target) interaction_df else df,
+      display = if (source_target) "source_target" else "sample",
+      sample_key = sample_key,
       top_n = top_n,
+      top_n_pairs = top_n_pairs,
       color.by = color.by,
       interaction.use = interaction.use,
       pairLR.use = pairLR.use,
@@ -912,11 +921,16 @@ CCCHeatmap <- function(
       nrows = nrows,
       title = title,
       subtitle = subtitle,
-      value_palette = palette_cfg$value_palette,
+      value_palette = dot_palette,
       value_palcolor = palette_cfg$value_palcolor,
       legend.position = legend.position,
-      legend.direction = legend.direction,
+      legend.direction = if (missing(legend.direction) && isTRUE(legend.position %in% c("top", "bottom"))) {
+        "horizontal"
+      } else {
+        legend.direction
+      },
       font.size = font.size,
+      x_text_angle = if (missing(x_text_angle)) NULL else x_text_angle,
       theme_use = theme_use,
       theme_args = theme_args
     ))
@@ -929,30 +943,6 @@ CCCHeatmap <- function(
       color.by = color.by,
       interaction.use = interaction.use,
       pairLR.use = pairLR.use,
-      title = title,
-      subtitle = subtitle,
-      value_palette = palette_cfg$value_palette,
-      value_palcolor = palette_cfg$value_palcolor,
-      legend.position = legend.position,
-      legend.direction = legend.direction,
-      font.size = font.size,
-      theme_use = theme_use,
-      theme_args = theme_args
-    ))
-  }
-
-  if (identical(plot_type, "sample_dot")) {
-    return(ccc_interaction_dot_plot(
-      df = df,
-      display = "sample",
-      sample_key = sample_key,
-      top_n = top_n,
-      top_n_pairs = top_n_pairs,
-      color.by = color.by,
-      interaction.use = interaction.use,
-      pairLR.use = pairLR.use,
-      ncols = ncols,
-      nrows = nrows,
       title = title,
       subtitle = subtitle,
       value_palette = palette_cfg$value_palette,
@@ -1920,6 +1910,7 @@ ccc_interaction_dot_plot <- function(
   legend.position = "right",
   legend.direction = "vertical",
   font.size = 10,
+  x_text_angle = NULL,
   theme_use = "theme_scop",
   theme_args = list()
 ) {
@@ -1977,7 +1968,11 @@ ccc_interaction_dot_plot <- function(
 
     grid <- ccc_panel_grid(
       n_panels = length(source_order),
-      ncols = ncols,
+      ncols = if (is.null(nrows)) {
+        ncols %||% if (length(source_order) <= 3L) length(source_order) else ceiling(sqrt(length(source_order)))
+      } else {
+        ncols
+      },
       nrows = nrows,
       context = "source-target dot plot"
     )
@@ -2036,7 +2031,11 @@ ccc_interaction_dot_plot <- function(
     df$interaction_label <- factor(df$interaction_label, levels = keep_interactions)
     grid <- ccc_panel_grid(
       n_panels = length(keep_interactions),
-      ncols = ncols %||% min(3L, length(keep_interactions)),
+      ncols = if (is.null(nrows)) {
+        ncols %||% min(3L, floor(sqrt(length(keep_interactions))))
+      } else {
+        ncols
+      },
       nrows = nrows,
       context = "sample dot plot"
     )
@@ -2057,6 +2056,7 @@ ccc_interaction_dot_plot <- function(
   } else {
     "Communication score"
   }
+  angle <- x_text_angle %||% if (source_target || any(nchar(plot_df$sample) > 13L, na.rm = TRUE)) 45 else 0
   p <- ggplot2::ggplot(plot_df, mapping) +
     ggplot2::geom_point(shape = 21, color = "grey20", stroke = 0.25, alpha = 0.9) +
     ggplot2::facet_wrap(
@@ -2065,17 +2065,24 @@ ccc_interaction_dot_plot <- function(
       nrow = grid$nrows,
       scales = if (source_target) "free_x" else "free_y"
     ) +
-    ggplot2::scale_fill_gradientn(colours = fill_cols, name = fill_label) +
-    ggplot2::scale_size_area(name = "Communication score", max_size = 8) +
-    ggplot2::labs(
-      x = if (source_target) "Target" else sample_col,
-      y = if (source_target) "Interactions (Ligand -> Receptor)" else "Sender -> receiver"
+    ggplot2::scale_fill_gradientn(
+      colours = fill_cols, name = fill_label, n.breaks = 4,
+      guide = ggplot2::guide_colorbar(frame.colour = "grey55", ticks.colour = "grey55", order = 1)
+    ) +
+    ggplot2::scale_size_area(
+      name = "Communication score", max_size = 5.4, n.breaks = 4,
+      guide = if (identical(color.by, "pvalue")) {
+        ggplot2::guide_legend(order = 2, override.aes = list(fill = "grey45"))
+      } else {
+        "none"
+      }
     )
 
   finalize_cc_plot(
     p,
     title = title,
     subtitle = subtitle,
+    xlab = if (source_target) "Receiver cell type" else NULL,
     legend.position = legend.position,
     legend.direction = legend.direction,
     theme_use = theme_use,
@@ -2083,8 +2090,18 @@ ccc_interaction_dot_plot <- function(
     font.size = font.size
   ) +
     ggplot2::theme(
-      axis.text.x = ggplot2::element_text(angle = 90, hjust = 1, vjust = 0.5),
-      panel.grid.major = ggplot2::element_line(colour = "grey90", linewidth = 0.3),
+      legend.position = legend.position,
+      legend.direction = legend.direction,
+      legend.location = "panel",
+      legend.justification.right = c(0, 0.5),
+      legend.box.spacing = grid::unit(2, "mm"),
+      axis.text.x = ggplot2::element_text(
+        angle = angle, hjust = if (angle == 0) 0.5 else 1, vjust = if (angle == 90) 0.5 else 1
+      ),
+      axis.ticks = ggplot2::element_blank(),
+      strip.background = ggplot2::element_blank(),
+      strip.text = ggplot2::element_text(colour = "black", face = "bold"),
+      panel.grid.major = ggplot2::element_line(colour = "grey92", linewidth = 0.25),
       panel.grid.minor = ggplot2::element_blank()
     )
 }
