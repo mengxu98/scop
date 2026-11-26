@@ -345,6 +345,8 @@ CellStatPlot <- function(
   plot_type <- match.arg(plot_type)
   stat_type <- match.arg(stat_type)
   position <- match.arg(position)
+  compact <- plot_type %in% c("bar", "dot") &&
+    identical(theme_use, "theme_scop") && !length(theme_args)
   theme_use <- resolve_plot_theme_use(theme_use)
   if (identical(plot_type, "chord") && length(stat.by) != 2L) {
     cli::cli_abort("{.arg stat.by} must contain exactly two metadata columns when {.arg plot_type = 'chord'}")
@@ -409,5 +411,55 @@ CellStatPlot <- function(
     ...
   )
 
-  return(plot)
+  if (!compact) {
+    return(plot)
+  }
+
+  short_labels <- missing(x_text_angle)
+  quiet_grid <- isTRUE(grid_major) && missing(grid_major_colour) &&
+    missing(grid_major_linetype) && missing(grid_major_linewidth)
+  refine_panel <- function(panel) {
+    panel <- panel + ggplot2::theme(plot.margin = ggplot2::margin(4, 5, 4, 4))
+    if (quiet_grid) {
+      value_grid <- ggplot2::element_line(colour = "#ECECEF", linewidth = 0.28)
+      blank <- ggplot2::element_blank()
+      panel <- panel + ggplot2::theme(
+        panel.grid.major.x = if (isTRUE(flip)) value_grid else blank,
+        panel.grid.major.y = if (isTRUE(flip)) blank else value_grid,
+        panel.grid.minor = blank
+      )
+    }
+    if (short_labels && (!isTRUE(flip) || plot_type == "dot")) {
+      axis <- if (isTRUE(flip)) panel$mapping$y else panel$mapping$x
+      labels <- unique(as.character(rlang::eval_tidy(axis, data = panel$data)))
+      if (length(labels) <= 6L && all(nchar(labels, keepNA = TRUE) <= 6L, na.rm = TRUE)) {
+        panel <- panel + ggplot2::theme(axis.text.x = ggplot2::element_text(
+          angle = 0, hjust = 0.5, vjust = 1
+        ))
+      }
+    }
+    if (plot_type == "dot") {
+      panel <- panel + ggplot2::scale_y_discrete(expand = ggplot2::expansion(add = 1))
+      if (is.null(bg.by)) {
+        panel <- panel + ggplot2::guides(fill = "none")
+      }
+      if (stat_type == "percent") {
+        panel$scales <- panel$scales$clone()
+        size_scale <- panel$scales$get_scales("size")
+        size_scale$labels <- scales::label_percent()
+      }
+    }
+    panel
+  }
+
+  if (inherits(plot, "patchwork")) {
+    for (i in seq_along(plot)) {
+      plot[[i]] <- refine_panel(plot[[i]])
+    }
+  } else if (inherits(plot, "ggplot")) {
+    plot <- refine_panel(plot)
+  } else {
+    plot <- lapply(plot, refine_panel)
+  }
+  plot
 }
