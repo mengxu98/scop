@@ -570,6 +570,10 @@ CCCStatPlot <- function(
   }
 
   if (identical(plot_type, "comparison")) {
+    if (identical(compare_by, "overall") && missing(legend.position) &&
+      identical(theme_use, "theme_scop") && !length(theme_args)) {
+      legend.position <- "none"
+    }
     return(ccc_stat_comparison_plot(
       srt = srt,
       method = method,
@@ -2008,9 +2012,20 @@ ccc_pathway_summary_plot <- function(
   } else {
     ggplot2::element_blank()
   }
+  compact <- identical(theme_use, "theme_scop") && !length(theme_args)
+  if (compact && nrow(summary) > 9L) {
+    n_sections <- ceiling(nrow(summary) / 9)
+    summary$section <- (seq_len(nrow(summary)) - 1L) %/% ceiling(nrow(summary) / n_sections) + 1L
+  }
+  metric_label <- switch(value,
+    count = "Significant interactions",
+    mean = "Mean pathway communication strength",
+    max = "Maximum pathway communication strength",
+    "Total pathway communication strength"
+  )
   p <- ggplot2::ggplot(
     summary,
-    ggplot2::aes(x = pathway, y = total_strength, fill = pathway)
+    ggplot2::aes(x = total_strength, y = pathway, fill = pathway)
   ) +
     ggplot2::geom_col(width = 0.75) +
     ggplot2::geom_text(
@@ -2018,22 +2033,46 @@ ccc_pathway_summary_plot <- function(
       hjust = -0.08,
       size = max(3, font.size * 0.28)
     ) +
-    ggplot2::coord_flip(clip = "off") +
+    ggplot2::coord_cartesian(clip = "off") +
     ggplot2::scale_fill_manual(values = bar_cols, guide = "none") +
-    ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0, 0.18))) +
-    ggplot2::labs(x = NULL, y = "Total pathway communication strength")
+    ggplot2::scale_x_continuous(expand = ggplot2::expansion(mult = c(0, 0.50)))
 
-  finalize_cc_plot(
+  if ("section" %in% names(summary)) {
+    p <- p + ggplot2::facet_wrap(~section, ncol = 1, scales = "free_y")
+  }
+
+  p <- finalize_cc_plot(
     p,
     title = title %||% "Significant pathway communication summary",
     subtitle = subtitle,
+    xlab = metric_label,
     legend.position = legend.position,
     legend.direction = legend.direction,
     theme_use = theme_use,
     theme_args = theme_args,
     font.size = font.size
   ) +
-    ggplot2::theme(panel.grid.major = grid_major_element)
+    ggplot2::theme(
+      panel.grid.major.x = grid_major_element,
+      panel.grid.major.y = ggplot2::element_blank(),
+      panel.grid.minor = ggplot2::element_blank()
+    )
+  if ("section" %in% names(summary)) {
+    p <- p + ggplot2::theme(
+      strip.text = ggplot2::element_blank(),
+      strip.background = ggplot2::element_blank(),
+      panel.spacing.y = grid::unit(1.5, "mm")
+    )
+  }
+  if (compact) {
+    p <- p + ggplot2::theme(
+      axis.ticks.y = ggplot2::element_blank(),
+      panel.border = ggplot2::element_blank(),
+      axis.line.x = ggplot2::element_line(colour = "grey65", linewidth = 0.3),
+      plot.margin = ggplot2::margin(4, 5, 4, 4)
+    )
+  }
+  p
 }
 
 ccc_stat_comparison_plot <- function(
@@ -2136,11 +2175,12 @@ ccc_stat_comparison_plot <- function(
         size = 3
       ) +
       ggplot2::scale_fill_manual(values = cols, drop = FALSE) +
-      ggplot2::labs(x = NULL, y = ylab, fill = NULL)
+      ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0.04, 0.16)))
     return(finalize_cc_plot(
       p,
       title = title %||% cmp_cc_label(cc_cmp$cmp, cc_cmp$comp_idx),
       subtitle = subtitle,
+      ylab = ylab,
       legend.position = legend.position,
       legend.direction = legend.direction,
       theme_use = theme_use,
@@ -2191,12 +2231,13 @@ ccc_stat_comparison_plot <- function(
     ) +
     ggplot2::facet_wrap(~celltype, scales = "free_y") +
     ggplot2::scale_fill_manual(values = cols, drop = FALSE) +
-    ggplot2::labs(x = NULL, y = ylab, fill = NULL)
+    ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0.04, 0.16)))
   finalize_cc_plot(
     p,
     title = title %||%
       paste0(cmp_cc_label(cc_cmp$cmp, cc_cmp$comp_idx), ": ", pattern),
     subtitle = subtitle,
+    ylab = ylab,
     legend.position = legend.position,
     legend.direction = legend.direction,
     theme_use = theme_use,
@@ -2282,11 +2323,12 @@ ccc_generic_stat_comparison_plot <- function(
         size = 3
       ) +
       ggplot2::scale_fill_manual(values = cols, drop = FALSE) +
-      ggplot2::labs(x = NULL, y = cmp_data$ylab, fill = NULL)
+      ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0.04, 0.16)))
     return(finalize_cc_plot(
       p,
       title = title %||% paste(context_names, collapse = " vs "),
       subtitle = subtitle,
+      ylab = cmp_data$ylab,
       legend.position = legend.position,
       legend.direction = legend.direction,
       theme_use = theme_use,
@@ -2308,11 +2350,12 @@ ccc_generic_stat_comparison_plot <- function(
     ) +
     ggplot2::facet_wrap(~celltype, scales = "free_y") +
     ggplot2::scale_fill_manual(values = cols, drop = FALSE) +
-    ggplot2::labs(x = NULL, y = cmp_data$ylab, fill = NULL)
+    ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0.04, 0.16)))
   finalize_cc_plot(
     p,
     title = title %||% paste0(paste(context_names, collapse = " vs "), ": ", pattern),
     subtitle = subtitle,
+    ylab = cmp_data$ylab,
     legend.position = legend.position,
     legend.direction = legend.direction,
     theme_use = theme_use,

@@ -119,3 +119,38 @@ test_that("CellChat bubble labels and guides remain compact without changing rec
   expect_equal(ggplot2::calc_element("axis.text.x", q$theme)$angle, 35)
   expect_identical(q$theme$legend.position, "bottom")
 })
+
+test_that("dense pathway summaries retain ranks on a shared numeric axis", {
+  x <- ccc_layout_fixture()
+  records <- x@tools$MDIC3$long_table
+  records <- records[rep(1L, 20L), ]
+  records$pathway_name <- paste0("Pathway ", seq_len(20L))
+  records$score <- seq_len(20L)
+  p <- ccc_pathway_summary_plot(records)
+  expect_equal(p$data$total_strength, 20:1)
+  expect_equal(as.integer(table(p$data$section)), c(7, 7, 6))
+  built <- ggplot2::ggplot_build(p)
+  ranges <- lapply(built$layout$panel_params, function(panel) panel$x.range)
+  expect_identical(ranges, rep(ranges[1L], 3L))
+  expect_identical(p$labels$x, "Total pathway communication strength")
+  sparse <- ccc_pathway_summary_plot(records, top_n = 8, value = "count")
+  expect_false("section" %in% names(sparse$data))
+  expect_identical(sparse$labels$x, "Significant interactions")
+})
+
+test_that("comparison bar labels have space and explicit legends are retained", {
+  x <- ccc_layout_fixture()
+  records <- x@tools$MDIC3$long_table
+  records$dataset <- rep(c("Group1", "Group2"), each = 2)
+  x@tools$MDIC3$long_table <- records
+  args <- list(object = x, method = "MDIC3", plot_type = "comparison",
+    comparison = c("Group1", "Group2"), sample_col = "dataset")
+  p <- do.call(CCCStatPlot, args)
+  built <- ggplot2::ggplot_build(p)
+  expect_identical(p$theme$legend.position, "none")
+  expect_gt(max(built$layout$panel_params[[1L]]$y.range), max(built$data[[2L]]$y))
+  expect_identical(p$labels$y, "Number of inferred interactions")
+  q <- do.call(CCCStatPlot, c(args, list(legend.position = "right")))
+  expect_identical(q$theme$legend.position, "right")
+  expect_identical(p$data, q$data)
+})
