@@ -420,3 +420,37 @@ test_that("straight and sigmoid flows put stage headings above the graph", {
     expect_gt(nrow(nodes), 0L)
   }
 })
+
+test_that("communication gene plots forward grouping and stacking exactly once", {
+  x <- ccc_layout_fixture()
+  x$cell_type <- rep(c("A", "B"), each = 3L)
+  x@tools$MDIC3$long_table$ligand <- "G1"
+  x@tools$MDIC3$long_table$receptor <- "G2"
+  seen <- list()
+  local_mocked_bindings(
+    FeatureStatPlot = function(object, stat.by, group.by, stack, ...) {
+      seen[[length(seen) + 1L]] <<- list(features = stat.by, grouping = group.by, stacked = stack)
+      ggplot2::ggplot()
+    },
+    .package = "scop"
+  )
+  CCCStatPlot(
+    x, method = "MDIC3", plot_type = "gene",
+    group.by = "cell_type", stack = FALSE
+  )
+  expect_true(length(seen) > 0L)
+  expect_setequal(unlist(lapply(seen, `[[`, "features")), c("G1", "G2"))
+  expect_true(all(vapply(seen, function(x) identical(x$grouping, "cell_type"), logical(1))))
+  expect_false(any(vapply(seen, `[[`, logical(1), "stacked")))
+})
+
+test_that("Sankey export reserves space for separate stage legends", {
+  x <- ccc_layout_fixture()
+  p <- CCCStatPlot(x, method = "MDIC3", plot_type = "sankey", edge_value = "count")
+  hidden <- CCCStatPlot(
+    x, method = "MDIC3", plot_type = "sankey",
+    edge_value = "count", legend.position = "none"
+  )
+  expect_s3_class(p, "patchwork")
+  expect_gt(attr(p, "size")$width, attr(hidden, "size")$width)
+})

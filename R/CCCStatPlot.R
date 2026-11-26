@@ -1786,7 +1786,8 @@ ccc_feature_plot <- function(
     return(gene_df)
   }
 
-  group.by <- get_group_by(srt, method = method)
+  group.by <- dots[["group.by"]] %||% get_group_by(srt, method = method)
+  stack <- dots[["stack"]] %||% TRUE
   if (is.null(group.by) || !group.by %in% colnames(srt@meta.data)) {
     group.by <- ".ccc_gene_group"
     srt[[group.by]] <- as.character(SeuratObject::Idents(srt))
@@ -1801,7 +1802,9 @@ ccc_feature_plot <- function(
       "idents.use",
       "signaling.exclude",
       "aspect.ratio",
-      "gene_plot_type"
+      "gene_plot_type",
+      "group.by",
+      "stack"
     )] <- NULL
     p <- do.call(
       FeatureStatPlot,
@@ -1814,8 +1817,7 @@ ccc_feature_plot <- function(
           plot_type = gene_plot_type,
           palette = palette,
           palcolor = palcolor,
-          stack = isTRUE(local_dots[["stack"]]) ||
-            is.null(local_dots[["stack"]]),
+          stack = isTRUE(stack),
           legend.position = legend.position,
           legend.direction = legend.direction,
           theme_use = theme_use,
@@ -1829,6 +1831,34 @@ ccc_feature_plot <- function(
     )
     p
   })
+  tables <- lapply(plot_list, function(p) attr(p, "grobs", exact = TRUE)$full)
+  measured <- vapply(tables, inherits, logical(1), "gtable")
+  plot_list[measured] <- lapply(tables[measured], thisplot::plot_autosize,
+    base_size = NULL, label_autosize = FALSE
+  )
+  if (length(tables) > 1L && isTRUE(combine) && all(measured)) {
+    np <- length(plot_list)
+    ncol <- ncol %||% if (is.null(nrow)) grDevices::n2mfrow(np)[2L] else ceiling(np / nrow)
+    nrow <- nrow %||% ceiling(np / ncol)
+    sizes <- lapply(plot_list, attr, which = "size", exact = TRUE)
+    cols <- rep(seq_len(ncol), length.out = np)
+    rows <- ceiling(seq_len(np) / ncol)
+    widths <- tapply(vapply(sizes, `[[`, numeric(1), "width"), cols, max)
+    heights <- tapply(vapply(sizes, `[[`, numeric(1), "height"), rows, max)
+    p <- patchwork::wrap_plots(
+      plot_list, ncol = ncol, nrow = nrow,
+      widths = grid::unit(widths, "mm"), heights = grid::unit(heights, "mm")
+    )
+    grDevices::pdf(NULL)
+    on.exit(grDevices::dev.off(), add = TRUE)
+    layout <- patchwork::patchworkGrob(p)
+    attr(p, "size") <- list(
+      width = grid::convertWidth(sum(layout$widths), "mm", valueOnly = TRUE),
+      height = grid::convertHeight(sum(layout$heights), "mm", valueOnly = TRUE),
+      units = "mm"
+    )
+    return(p)
+  }
   plot_cc_list(plot_list, combine = combine, nrow = nrow, ncol = ncol)
 }
 
@@ -1947,8 +1977,7 @@ ccc_stat_bar_plot <- function(
   ) +
     ggplot2::geom_col(width = 0.75) +
     ggplot2::coord_flip() +
-    ggplot2::scale_fill_manual(values = cols, guide = "none") +
-    ggplot2::labs(x = NULL, y = value_label)
+    ggplot2::scale_fill_manual(values = cols, guide = "none")
   p <- finalize_cc_plot(
     p,
     title = title %||% paste0(
@@ -1956,6 +1985,7 @@ ccc_stat_bar_plot <- function(
       if (identical(display_by, "aggregation")) "pairs" else "interactions"
     ),
     subtitle = subtitle,
+    ylab = value_label,
     legend.position = legend.position,
     legend.direction = legend.direction,
     theme_use = theme_use,
@@ -1972,6 +2002,10 @@ ccc_stat_bar_plot <- function(
       axis.ticks.y = ggplot2::element_blank(),
       plot.margin = ggplot2::margin(4, 5, 4, 4)
     )
+    row_mm <- max(4, font.size * 25.4 / 72 * 1.3)
+    if ((nrow(plot_df) + 1) * row_mm > 35) {
+      p <- p + ggplot2::theme(aspect.ratio = (nrow(plot_df) + 1) * row_mm / 45)
+    }
   }
   p
 }
@@ -2988,7 +3022,7 @@ ccc_sankey_plot <- function(
     ylab_use <- "Interaction count"
   }
 
-  StatPlot(
+  p <- StatPlot(
     meta.data = meta_data,
     stat.by = stat_by,
     plot_type = "sankey",
@@ -3003,6 +3037,28 @@ ccc_sankey_plot <- function(
     theme_use = plot_theme_use,
     theme_args = theme_args,
     combine = TRUE
+  )
+  gt <- attr(p, "grobs", exact = TRUE)$full
+  if (!inherits(gt, "gtable")) return(p)
+  panel <- match("panel", gt$layout$name)
+  guides <- which(vapply(gt$grobs, inherits, logical(1), "gtable"))
+  guides <- setdiff(guides, panel)
+  if (is.na(panel)) return(p)
+  grDevices::pdf(NULL)
+  on.exit(grDevices::dev.off(), add = TRUE)
+  horizontal <- legend.position %in% c("top", "bottom")
+  guide_span <- vapply(gt$grobs[guides], function(guide) {
+    if (horizontal) {
+      grid::convertWidth(gtable::gtable_width(guide), "mm", valueOnly = TRUE)
+    } else {
+      grid::convertHeight(gtable::gtable_height(guide), "mm", valueOnly = TRUE)
+    }
+  }, numeric(1))
+  thisplot::panel_fix(
+    gt, panel_index = panel,
+    width = max(45, if (horizontal) guide_span),
+    height = max(35, if (!horizontal) guide_span),
+    units = "mm", margin = 2
   )
 }
 

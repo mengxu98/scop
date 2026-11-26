@@ -1515,7 +1515,8 @@ ccc_ligand_target_heatmap <- function(
     legend.direction = legend.direction,
     font.size = font.size,
     theme_use = theme_use,
-    theme_args = theme_args
+    theme_args = theme_args,
+    compact = is.null(width) && is.null(height)
   )
 }
 
@@ -2198,13 +2199,13 @@ ccc_source_target_tile_plot <- function(
   ) +
     ggplot2::geom_tile(color = "white", linewidth = 0.4) +
     ggplot2::facet_wrap(~type, nrow = 1, scales = "free_x") +
-    ggplot2::scale_fill_gradientn(colours = fill_cols, name = fill_label) +
-    ggplot2::labs(x = "Cell type", y = NULL)
+    ggplot2::scale_fill_gradientn(colours = fill_cols, name = fill_label)
 
-  finalize_cc_plot(
+  p <- finalize_cc_plot(
     p,
     title = title,
     subtitle = subtitle,
+    xlab = "Cell type",
     legend.position = legend.position,
     legend.direction = legend.direction,
     theme_use = theme_use,
@@ -2215,4 +2216,17 @@ ccc_source_target_tile_plot <- function(
       axis.text.x = ggplot2::element_text(angle = 90, hjust = 1, vjust = 0.5),
       panel.grid = ggplot2::element_blank()
     )
+  row_mm <- max(4, font.size * 25.4 / 72 * 1.3)
+  if (identical(theme_use, "theme_scop") && !length(theme_args)) {
+    p <- p + ggplot2::theme(
+      strip.text = ggplot2::element_text(colour = "black", face = "bold"),
+      strip.background = ggplot2::element_blank(),
+      legend.location = "panel",
+      legend.justification.right = c(0, 0.5)
+    )
+    if (nlevels(plot_df$interaction_label) * row_mm > 35) {
+      p <- p + ggplot2::theme(aspect.ratio = nlevels(plot_df$interaction_label) * row_mm / 45)
+    }
+  }
+  p
 }

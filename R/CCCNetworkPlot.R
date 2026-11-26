@@ -2108,20 +2108,57 @@ ccc_diff_network_plot <- function(
 
   old_par <- graphics::par(no.readonly = TRUE)
   on.exit(try(graphics::par(old_par), silent = TRUE), add = TRUE)
-  graphics::par(mar = c(0.5, 0.5, if (is.null(title) && is.null(subtitle)) 1.8 else 3, 0.5))
+  margins <- c(0.5, 0.5, if (is.null(title) && is.null(subtitle)) 1.8 else 3, 0.5)
+  has_legend <- isTRUE(legend.position %in% c("bottom", "left", "top", "right"))
+  if (has_legend) {
+    guide_labels <- c(negative_label, positive_label)
+    guide_cols <- unname(edge_cols[guide_labels])
+    guide_cex <- max(0.7, font.size / 12)
+    guide_horizontal <- identical(legend.direction, "horizontal")
+    line_in <- graphics::par("csi") * graphics::par("mex")
+    label_in <- graphics::strwidth(guide_labels, units = "inches", cex = guide_cex)
+    side <- match(legend.position, c("bottom", "left", "top", "right"))
+    extra <- if (side %% 2L == 0L) {
+      if (guide_horizontal) sum(label_in / line_in + 2.5) else max(label_in / line_in) + 2.5
+    } else {
+      if (guide_horizontal) 1.6 else 2.6
+    }
+    margins[side] <- margins[side] + extra
+  }
+  graphics::par(mar = margins)
   plot(
     g,
     edge.curved = link_curvature,
     vertex.shape = "circle",
     layout = coords_scale,
-    margin = 0.2,
+    margin = if (has_legend) 0.45 else 0.2,
     vertex.label.dist = label_dist,
     vertex.label.degree = label_locs
   )
   graphics::title(
     main = title %||% paste0(object_names[2], " vs ", object_names[1]),
-    sub = subtitle
+    sub = subtitle,
+    line = if (has_legend && side %in% c(1L, 3L)) 0.5 else NA
   )
+  if (has_legend) {
+    usr <- graphics::par("usr")
+    x <- mean(usr[1:2])
+    y <- mean(usr[3:4])
+    gap <- 0.05
+    if (side %% 2L == 0L) {
+      x_edge <- graphics::grconvertX(usr[if (side == 2L) 1L else 2L], "user", "inches")
+      x <- graphics::grconvertX(x_edge + if (side == 2L) -gap else gap, "inches", "user")
+    } else {
+      y_edge <- graphics::grconvertY(usr[if (side == 1L) 3L else 4L], "user", "inches")
+      shift <- if (side == 3L || !is.null(subtitle)) 1.5 * line_in else gap
+      y <- graphics::grconvertY(y_edge + if (side == 1L) -shift else shift, "inches", "user")
+    }
+    graphics::legend(
+      x, y, legend = guide_labels, col = guide_cols, lwd = 2,
+      bty = "n", cex = guide_cex, horiz = guide_horizontal, xpd = NA,
+      xjust = c(0.5, 1, 0.5, 0)[side], yjust = c(1, 0.5, 0, 0.5)[side]
+    )
+  }
   grDevices::recordPlot()
 }
 
