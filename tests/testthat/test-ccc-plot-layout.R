@@ -318,3 +318,29 @@ test_that("CellChat pathway rankings stay in one panel and size to the rows", {
   expect_identical(raw$pathway, rev(paths))
   expect_equal(raw$diff, 29:1)
 })
+
+test_that("ligand-receptor contribution plots preserve percentages and a common axis", {
+  x <- ccc_layout_fixture()
+  p <- x@tools$MDIC3$long_table
+  rownames(p) <- NULL
+  p$score <- c(.75, .25, .6, .4)
+  p$pathway_name <- rep(c("P1", "P2"), each = 2L)
+  x@tools$CellChat <- list(results = list(ALL = list(cellchat_object = p)))
+  local_mocked_bindings(
+    subset_cc_table = function(object, signaling, ...) {
+      object[object$pathway_name %in% signaling, , drop = FALSE]
+    },
+    .package = "scop"
+  )
+  args <- list(object = x, method = "CellChat", plot_type = "lr_contribution", signaling = c("P1", "P2"))
+  raw <- do.call(CCCStatPlot, c(args, list(return.data = TRUE)))
+  expect_equal(raw$contribution, c(.75, .25, .6, .4))
+  p <- do.call(CCCStatPlot, c(args, list(combine = FALSE)))
+  built <- lapply(p, ggplot2::ggplot_build)
+  expect_identical(built[[1L]]$layout$panel_params[[1L]]$x.range,
+    built[[2L]]$layout$panel_params[[1L]]$x.range)
+  expect_identical(built[[1L]]$data[[2L]]$label, c("75.0%", "25.0%"))
+  expect_identical(p[[1L]]$labels$x, "Contribution share")
+  limited <- do.call(CCCStatPlot, c(args, list(top_n = 1, return.data = TRUE)))
+  expect_equal(limited$contribution, c(1, 1))
+})

@@ -914,6 +914,8 @@ ccc_lr_contribution_panels <- function(
   theme_args,
   font.size
 ) {
+  value_limit <- max(contrib_df$contribution, na.rm = TRUE)
+  percent_label <- scales::label_percent(accuracy = 0.1)
   lapply(
     split(contrib_df, contrib_df$signaling),
     function(df_sig) {
@@ -932,17 +934,20 @@ ccc_lr_contribution_panels <- function(
       )
       p <- ggplot2::ggplot(
         df_sig,
-        ggplot2::aes(x = interaction, y = contribution, fill = interaction)
+        ggplot2::aes(x = contribution, y = interaction, fill = interaction)
       ) +
-        ggplot2::geom_col(width = 0.75, show.legend = FALSE) +
-        ggplot2::coord_flip() +
-        ggplot2::scale_fill_manual(values = cols, drop = FALSE) +
-        ggplot2::scale_y_continuous(
-          labels = scales::label_percent(accuracy = 1),
-          expand = ggplot2::expansion(mult = c(0, 0.05))
+        ggplot2::geom_col(width = 0.65, show.legend = FALSE) +
+        ggplot2::geom_text(
+          ggplot2::aes(label = percent_label(contribution)),
+          hjust = -0.13, size = font.size * 0.9, size.unit = "pt", colour = "grey25"
         ) +
-        ggplot2::labs(x = NULL, y = "Contribution")
-      finalize_cc_plot(
+        ggplot2::scale_fill_manual(values = cols, drop = FALSE) +
+        ggplot2::scale_x_continuous(
+          limits = c(0, value_limit),
+          labels = scales::label_percent(accuracy = 1),
+          expand = ggplot2::expansion(mult = c(0, 0.32))
+        )
+      p <- finalize_cc_plot(
         p,
         title = if (single_pathway) {
           title %||% df_sig$signaling[1]
@@ -950,12 +955,21 @@ ccc_lr_contribution_panels <- function(
           df_sig$signaling[1]
         },
         subtitle = if (single_pathway) subtitle else NULL,
+        xlab = "Contribution share",
         legend.position = legend.position,
         legend.direction = legend.direction,
         theme_use = theme_use,
         theme_args = theme_args,
         font.size = font.size
-      )
+      ) +
+        ggplot2::theme(
+          panel.grid.minor = ggplot2::element_blank(),
+          panel.grid.major.x = ggplot2::element_line(colour = "grey91", linewidth = 0.3),
+          panel.grid.major.y = ggplot2::element_blank(),
+          axis.ticks.y = ggplot2::element_blank()
+        )
+      row_mm <- max(4, font.size * 25.4 / 72 * 1.30)
+      p + ggplot2::theme(aspect.ratio = (nrow(df_sig) + 0.2) * row_mm / 45)
     }
   )
 }
