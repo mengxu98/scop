@@ -1258,11 +1258,6 @@ bipartite_plot <- function(
   legend.position = "right",
   legend.direction = "vertical",
   legend.title = NULL,
-  label = FALSE,
-  label.size = 4,
-  label.fg = "white",
-  label.bg = "black",
-  label.bg.r = 0.1,
   font.size = 10,
   theme_use = "theme_scop",
   theme_args = list()
@@ -1512,8 +1507,8 @@ bipartite_plot <- function(
   receiver_label_df <- node_df[node_df$col_type == "receiver", , drop = FALSE]
   structural_nodes <- node_df[!node_df$is_cell, , drop = FALSE]
   cell_nodes <- node_df[node_df$is_cell, , drop = FALSE]
-  sender_label_df$x_label <- sender_label_df$x - 0.08
-  receiver_label_df$x_label <- receiver_label_df$x + 0.08
+  sender_label_df$x_label <- sender_label_df$x - 0.13
+  receiver_label_df$x_label <- receiver_label_df$x + 0.13
   ligand_label_df$n_lines <- lengths(strsplit(
     ligand_label_df$label_plot,
     "\n",
@@ -1525,20 +1520,17 @@ bipartite_plot <- function(
     fixed = TRUE
   ))
   ligand_label_df$y_label <- ligand_label_df$y +
-    0.035 +
+    0.055 +
     0.018 * pmax(ligand_label_df$n_lines - 1, 0)
   receptor_label_df$y_label <- receptor_label_df$y +
-    0.035 +
+    0.055 +
     0.018 * pmax(receptor_label_df$n_lines - 1, 0)
   y_min <- 0.08
-  y_max <- min(
-    0.96,
-    max(
-      c(node_df$y, ligand_label_df$y_label, receptor_label_df$y_label),
-      na.rm = TRUE
-    ) +
-      0.03
-  )
+  y_max <- max(
+    c(node_df$y, ligand_label_df$y_label, receptor_label_df$y_label),
+    na.rm = TRUE
+  ) + 0.11 + 0.05 * (max(c(ligand_label_df$n_lines, receptor_label_df$n_lines)) - 1)
+
 
   p <- ggplot2::ggplot() +
     ggplot2::geom_segment(
@@ -1606,55 +1598,21 @@ bipartite_plot <- function(
       alpha = node_alpha,
       show.legend = FALSE
     ) +
-    ccc_network_label_layer(
+    ggplot2::geom_text(
       data = sender_label_df,
-      mapping = ggplot2::aes(x = x_label, y = y, label = label_plot),
-      label = TRUE,
-      label_size = label.size,
-      label_fg = label.fg,
-      label_bg = label.bg,
-      label_bg_r = label.bg.r,
-      repel = FALSE,
-      hjust = 1
+      ggplot2::aes(x = x_label, y = y, label = label_plot),
+      hjust = 1, size = font.size, size.unit = "pt", colour = "grey15"
     ) +
-    ccc_network_label_layer(
-      data = ligand_label_df,
-      mapping = ggplot2::aes(x = x, y = y_label, label = label_plot),
-      label = TRUE,
-      label_size = max(3, label.size * 0.92),
-      label_fg = label.fg,
-      label_bg = label.bg,
-      label_bg_r = label.bg.r,
-      repel = FALSE,
-      hjust = 0.5,
-      vjust = 0,
-      lineheight = 0.9,
-      fontface = "italic"
+    ggplot2::geom_text(
+      data = rbind(ligand_label_df, receptor_label_df),
+      ggplot2::aes(x = x, y = y_label, label = label_plot),
+      vjust = 0, size = font.size, size.unit = "pt", colour = "grey20",
+      lineheight = 0.92, fontface = "italic"
     ) +
-    ccc_network_label_layer(
-      data = receptor_label_df,
-      mapping = ggplot2::aes(x = x, y = y_label, label = label_plot),
-      label = TRUE,
-      label_size = max(3, label.size * 0.92),
-      label_fg = label.fg,
-      label_bg = label.bg,
-      label_bg_r = label.bg.r,
-      repel = FALSE,
-      hjust = 0.5,
-      vjust = 0,
-      lineheight = 0.9,
-      fontface = "italic"
-    ) +
-    ccc_network_label_layer(
+    ggplot2::geom_text(
       data = receiver_label_df,
-      mapping = ggplot2::aes(x = x_label, y = y, label = label_plot),
-      label = TRUE,
-      label_size = label.size,
-      label_fg = label.fg,
-      label_bg = label.bg,
-      label_bg_r = label.bg.r,
-      repel = FALSE,
-      hjust = 0
+      ggplot2::aes(x = x_label, y = y, label = label_plot),
+      hjust = 0, size = font.size, size.unit = "pt", colour = "grey15"
     ) +
     ggplot2::geom_point(
       data = data.frame(
@@ -1686,7 +1644,8 @@ bipartite_plot <- function(
     ggplot2::scale_x_continuous(
       breaks = c(0, 1, 2, 3),
       labels = c("Sender", "Ligand", "Receptor", "Receiver"),
-      expand = ggplot2::expansion(mult = c(0.22, 0.22))
+      position = "top",
+      expand = ggplot2::expansion(mult = c(0.37, 0.37))
     ) +
     ggplot2::scale_y_continuous(
       limits = c(y_min, y_max),
@@ -1738,8 +1697,15 @@ bipartite_plot <- function(
     ggplot2::theme(
       legend.position = legend.position,
       legend.direction = legend.direction,
+      legend.location = "panel",
+      legend.justification.right = c(0, 0.5),
+      legend.box.spacing = grid::unit(2, "mm"),
       panel.grid = ggplot2::element_blank(),
       panel.border = ggplot2::element_blank(),
+      axis.text.x.top = ggplot2::element_text(
+        size = font.size, face = "bold", colour = "grey20",
+        margin = ggplot2::margin(b = 7)
+      ),
       axis.text.y = ggplot2::element_blank(),
       axis.ticks.x = ggplot2::element_blank(),
       axis.ticks.y = ggplot2::element_blank(),
@@ -1749,7 +1715,7 @@ bipartite_plot <- function(
         face = "bold"
       ),
       plot.subtitle = ggplot2::element_text(size = font.size),
-      plot.margin = ggplot2::margin(5, 40, 5, 40)
+      plot.margin = ggplot2::margin(6, 9, 6, 9)
     )
   p
 }

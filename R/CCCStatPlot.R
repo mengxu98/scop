@@ -657,7 +657,7 @@ CCCStatPlot <- function(
       interaction.use = interaction.use,
       pairLR.use = pairLR.use,
       facet_by = facet_by,
-      x_text_angle = x_text_angle,
+      x_text_angle = if (missing(x_text_angle)) 45 else x_text_angle,
       cell_palette = palette_cfg$cell_palette,
       cell_palcolor = palette_cfg$cell_palcolor,
       title = title,
@@ -1271,6 +1271,19 @@ ccc_cellchat_role_change_plot <- function(
     palette = palette,
     palcolor = palcolor
   )
+  label_df <- role_df
+  if (any(table(role_df$celltype) > 12L)) {
+    label_df <- do.call(rbind, lapply(split(role_df, role_df$celltype), function(df) {
+      if (nrow(df) <= 12L) return(df)
+      rows <- head(order(df$magnitude, decreasing = TRUE), 8L)
+      df[rows, , drop = FALSE]
+    }))
+  }
+  delta <- paste(cc_cmp$object_names[2], "-", cc_cmp$object_names[1])
+  subtitle <- paste(c(
+    subtitle, delta,
+    if (nrow(label_df) < nrow(role_df)) "Labels show the 8 largest changes per dense panel."
+  ), collapse = "\n")
   p <- ggplot2::ggplot(
     role_df,
     ggplot2::aes(
@@ -1289,33 +1302,28 @@ ccc_cellchat_role_change_plot <- function(
       stroke = 0.25
     ) +
     ggrepel::geom_text_repel(
+      data = label_df,
       ggplot2::aes(label = signaling),
       size = max(2.8, font.size * 0.28),
       min.segment.length = 0,
-      box.padding = 0.3,
+      box.padding = 0.4,
+      segment.colour = "grey50",
+      segment.size = 0.3,
       point.padding = 0.15,
       seed = 11,
+      max.overlaps = Inf,
       show.legend = FALSE
     ) +
-    ggplot2::scale_fill_manual(values = cell_cols, drop = FALSE) +
-    ggplot2::scale_size_continuous(name = "Change", range = c(2.5, 8)) +
-    ggplot2::labs(
-      x = paste0(
-        "Outgoing change (",
-        cc_cmp$object_names[2],
-        " - ",
-        cc_cmp$object_names[1],
-        ")"
-      ),
-      y = paste0(
-        "Incoming change (",
-        cc_cmp$object_names[2],
-        " - ",
-        cc_cmp$object_names[1],
-        ")"
-      ),
-      fill = NULL
-    )
+    ggplot2::scale_fill_manual(
+      values = cell_cols, name = "Cell type", drop = FALSE,
+      guide = if (length(idents_use) > 1L) ggplot2::guide_legend(order = 1, override.aes = list(size = 3)) else "none"
+    ) +
+    ggplot2::scale_size_continuous(
+      name = "Change magnitude", range = c(2, 6), breaks = scales::breaks_extended(4),
+      guide = ggplot2::guide_legend(order = 2, override.aes = list(fill = "grey55"))
+    ) +
+    ggplot2::scale_x_continuous(expand = ggplot2::expansion(mult = .12)) +
+    ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = .12))
   if (length(idents_use) > 1L) {
     p <- p + ggplot2::facet_wrap(~celltype)
   }
@@ -1323,13 +1331,25 @@ ccc_cellchat_role_change_plot <- function(
     p,
     title = title %||% cmp_cc_label(cc_cmp$cmp, cc_cmp$comp_idx),
     subtitle = subtitle,
+    xlab = "Outgoing change",
+    ylab = "Incoming change",
     legend.position = legend.position,
     legend.direction = legend.direction,
     theme_use = theme_use,
     theme_args = theme_args,
     aspect.ratio = aspect.ratio,
     font.size = font.size
-  )
+  ) +
+    ggplot2::theme(
+      legend.position = legend.position,
+      legend.direction = legend.direction,
+      legend.location = "panel",
+      legend.justification.right = c(0, 0.5),
+      strip.text = ggplot2::element_text(colour = "black", face = "bold"),
+      strip.background = ggplot2::element_blank(),
+      panel.grid.major = ggplot2::element_line(colour = "grey91", linewidth = 0.25),
+      panel.grid.minor = ggplot2::element_blank()
+    )
 }
 
 ccc_match_seurat_genes <- function(genes, seurat_genes) {
@@ -3035,57 +3055,61 @@ ccc_distribution_plot <- function(
     palcolor = cell_palcolor
   )
 
+  group_label <- switch(group_var, sender = "Sender", receiver = "Receiver", pair = "Sender–receiver pair")
+  p <- ggplot2::ggplot(
+    plot_df,
+    ggplot2::aes(x = .data[[group_var]], y = score, fill = .data[[group_var]])
+  )
   if (identical(plot_type, "violin")) {
-    p <- ggplot2::ggplot(
-      plot_df,
-      ggplot2::aes(
-        x = .data[[group_var]],
-        y = score,
-        fill = .data[[group_var]]
+    p <- p +
+      ggplot2::geom_violin(
+        scale = "width", trim = FALSE, alpha = 0.72, linewidth = 0.32,
+        colour = "grey30", key_glyph = ggplot2::draw_key_rect
+      ) +
+      ggplot2::geom_boxplot(
+        width = 0.15, outlier.size = 0.2, fill = "white", alpha = 0.8,
+        linewidth = 0.32, colour = "grey25", show.legend = FALSE
       )
-    ) +
-      ggplot2::geom_violin(scale = "width", trim = FALSE, alpha = 0.8) +
-      ggplot2::geom_boxplot(width = 0.15, outlier.size = 0.2, alpha = 0.5) +
-      ggplot2::labs(x = group_var, y = "score", fill = group_var)
-    if (!identical(facet_by, "pair")) {
-      p <- p +
-        ggplot2::facet_wrap(
-          stats::as.formula(paste("~", facet_by)),
-          scales = "free_x"
-        )
-    }
   } else {
-    p <- ggplot2::ggplot(
-      plot_df,
-      ggplot2::aes(
-        x = .data[[group_var]],
-        y = score,
-        fill = .data[[group_var]]
+    p <- p +
+      ggplot2::geom_boxplot(
+        alpha = 0.8, outlier.size = 0.3, linewidth = 0.38,
+        colour = "grey30", key_glyph = ggplot2::draw_key_rect
       )
-    ) +
-      ggplot2::geom_boxplot(alpha = 0.85, outlier.size = 0.3) +
-      ggplot2::labs(x = group_var, y = "score", fill = group_var)
-    if (!identical(facet_by, "pair")) {
-      p <- p +
-        ggplot2::facet_wrap(
-          stats::as.formula(paste("~", facet_by)),
-          scales = "free_x"
-        )
-    }
   }
-  p <- p +
-    ggplot2::scale_fill_manual(values = fill_cols[fill_levels], drop = FALSE) +
-    ggplot2::theme(
-      axis.text.x = ggplot2::element_text(angle = x_text_angle, hjust = 1)
-    )
-  finalize_cc_plot(
+  if (!identical(facet_by, "pair")) {
+    p <- p +
+      ggplot2::facet_wrap(
+        stats::as.formula(paste("~", facet_by)),
+        scales = "free_x"
+      )
+  }
+  p <- p + ggplot2::scale_fill_manual(name = group_label, values = fill_cols[fill_levels], drop = FALSE)
+  p <- finalize_cc_plot(
     p,
     title = title,
     subtitle = subtitle,
+    ylab = "Communication score",
     legend.position = legend.position,
     legend.direction = legend.direction,
     theme_use = theme_use,
     theme_args = theme_args,
     font.size = font.size
+  )
+  p + ggplot2::theme(
+    axis.text.x = ggplot2::element_text(
+      angle = x_text_angle,
+      hjust = if (isTRUE(x_text_angle == 0)) 0.5 else 1,
+      vjust = if (isTRUE(x_text_angle == 90)) 0.5 else 1
+    ),
+    axis.ticks.x = ggplot2::element_blank(),
+    panel.grid.major.x = ggplot2::element_blank(),
+    panel.grid.major.y = ggplot2::element_line(colour = "grey90", linewidth = 0.3),
+    panel.grid.minor = ggplot2::element_blank(),
+    strip.text = ggplot2::element_text(face = "bold", colour = "black"),
+    strip.background = ggplot2::element_blank(),
+    legend.location = "panel",
+    legend.justification.right = c(0, 0.5),
+    legend.key.spacing.y = grid::unit(1, "mm")
   )
 }

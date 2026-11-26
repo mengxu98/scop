@@ -344,3 +344,52 @@ test_that("ligand-receptor contribution plots preserve percentages and a common 
   limited <- do.call(CCCStatPlot, c(args, list(top_n = 1, return.data = TRUE)))
   expect_equal(limited$contribution, c(1, 1))
 })
+
+test_that("communication distributions keep their scores and explicit label settings", {
+  x <- ccc_layout_fixture()
+  args <- list(object = x, method = "MDIC3", plot_type = "box", facet_by = "sender")
+  p <- do.call(CCCStatPlot, args)
+  expect_equal(sort(p$data$score), sort(x@tools$MDIC3$long_table$score))
+  expect_identical(p$labels$y, "Communication score")
+  expect_equal(ggplot2::calc_element("axis.text.x", p$theme)$angle, 45)
+  q <- do.call(CCCStatPlot, c(args, list(x_text_angle = 0, legend.position = "none")))
+  expect_equal(ggplot2::calc_element("axis.text.x", q$theme)$angle, 0)
+  expect_identical(q$theme$legend.position, "none")
+})
+
+test_that("bipartite cell labels sit outside unchanged edge endpoints", {
+  x <- ccc_layout_fixture()
+  p <- CCCNetworkPlot(x, method = "MDIC3", plot_type = "bipartite", legend.position = "none")
+  expect_s3_class(p, "ggplot")
+  edges <- p$layers[[1L]]$data
+  expect_true(nrow(edges) > 0L)
+  left <- p$layers[[6L]]$data
+  right <- p$layers[[8L]]$data
+  expect_true(all(left$x_label < left$x))
+  expect_true(all(right$x_label > right$x))
+  expect_identical(p$theme$legend.position, "none")
+})
+
+test_that("dense role-change panels label only the largest points without removing marks", {
+  x <- ccc_layout_fixture()
+  paths <- paste0("P", seq_len(16L))
+  base <- matrix(seq_len(16L), ncol = 1L, dimnames = list(paths, "Ductal"))
+  x@tools$CellChat <- list(comparisons = list(ConditionA_vs_ConditionB = list(
+    object.list = list(ConditionA = base, ConditionB = 2 * base)
+  )))
+  local_mocked_bindings(
+    ccc_cellchat_role_components = function(object, signaling = NULL) {
+      x <- if (is.null(signaling)) object else object[signaling, , drop = FALSE]
+      list(outgoing = x, incoming = x)
+    },
+    .package = "scop"
+  )
+  args <- list(object = x, method = "CellChat", plot_type = "role_change",
+    condition = "ConditionA_vs_ConditionB", idents.use = "Ductal")
+  p <- do.call(CCCStatPlot, args)
+  expect_identical(p$data, do.call(CCCStatPlot, c(args, list(return.data = TRUE))))
+  expect_identical(p$data$signaling, paths)
+  expect_identical(p$layers[[4L]]$data$signaling, rev(tail(paths, 8L)))
+  expect_identical(p$labels$x, "Outgoing change")
+  expect_match(p$labels$subtitle, "ConditionB - ConditionA", fixed = TRUE)
+})
