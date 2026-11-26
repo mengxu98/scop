@@ -2789,8 +2789,8 @@ ccc_scatter_plot <- function(
   do_label <- if (is.null(dots[["do.label"]])) TRUE else isTRUE(dots[["do.label"]])
   show_legend <- if (is.null(dots[["show.legend"]])) TRUE else isTRUE(dots[["show.legend"]])
   show_axes <- if (is.null(dots[["show.axes"]])) TRUE else isTRUE(dots[["show.axes"]])
-  xlabel <- dots[["xlabel"]] %||% "Outgoing interaction strength"
-  ylabel <- dots[["ylabel"]] %||% "Incoming interaction strength"
+  xlabel <- dots[["xlabel"]] %||% "Outgoing strength"
+  ylabel <- dots[["ylabel"]] %||% "Incoming strength"
   weight_minmax <- dots[["weight.MinMax"]] %||% NULL
 
   plot_df <- ccc_scatter_df(pair_df)
@@ -2822,14 +2822,20 @@ ccc_scatter_plot <- function(
     ggplot2::geom_point(
       shape = 21,
       color = "grey20",
-      stroke = 0.8,
+      stroke = 0.35,
       alpha = dot_alpha
     ) +
-    ggplot2::scale_fill_manual(values = cell_cols[cell_levels], drop = FALSE) +
+    ggplot2::scale_fill_manual(
+      values = cell_cols[cell_levels], drop = FALSE,
+      guide = if (do_label && length(cell_levels) <= 12L) "none" else ggplot2::guide_legend(order = 1, override.aes = list(size = 3))
+    ) +
     ggplot2::scale_size_continuous(
       range = dot_size,
-      limits = weight_minmax
+      limits = weight_minmax,
+      guide = ggplot2::guide_legend(order = 2, override.aes = list(fill = "grey60"))
     ) +
+    ggplot2::scale_x_continuous(expand = ggplot2::expansion(mult = 0.14)) +
+    ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = 0.14)) +
     ggplot2::labs(
       x = xlabel,
       y = ylabel,
@@ -2845,6 +2851,7 @@ ccc_scatter_plot <- function(
       segment.size = 0.2,
       segment.alpha = 0.5,
       seed = 1,
+      max.overlaps = if (length(cell_levels) <= 12L) Inf else getOption("ggrepel.max.overlaps", 10),
       size = label_size,
       color = "grey15"
     )
@@ -2860,6 +2867,10 @@ ccc_scatter_plot <- function(
       plot.subtitle = ggplot2::element_text(size = font.size),
       legend.position = legend.position,
       legend.direction = legend.direction,
+      legend.location = "panel",
+      legend.justification.right = c(0, 0.5),
+      panel.grid.major = ggplot2::element_line(colour = "grey91", linewidth = 0.25),
+      panel.grid.minor = ggplot2::element_blank(),
       axis.line.x = ggplot2::element_line(linewidth = 0.25),
       axis.line.y = ggplot2::element_line(linewidth = 0.25)
     )

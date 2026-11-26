@@ -393,3 +393,28 @@ test_that("dense role-change panels label only the largest points without removi
   expect_identical(p$labels$x, "Outgoing change")
   expect_match(p$labels$subtitle, "ConditionB - ConditionA", fixed = TRUE)
 })
+
+test_that("role scatter keeps category keys when direct labeling is disabled", {
+  x <- ccc_layout_fixture()
+  args <- list(object = x, method = "MDIC3", plot_type = "role_scatter")
+  p <- do.call(CCCStatPlot, args)
+  no_labels <- do.call(CCCStatPlot, c(args, list(do.label = FALSE, xlabel = "Custom")))
+  hidden <- do.call(CCCStatPlot, c(args, list(do.label = FALSE, show.legend = FALSE)))
+  expect_identical(p$data, no_labels$data)
+  expect_identical(p$scales$get_scales("fill")$guide, "none")
+  expect_false(identical(no_labels$scales$get_scales("fill")$guide, "none"))
+  expect_false(identical(no_labels$scales$get_scales("size")$guide, "none"))
+  expect_identical(hidden$theme$legend.position, "none")
+  expect_identical(no_labels$labels$x, "Custom")
+})
+
+test_that("straight and sigmoid flows put stage headings above the graph", {
+  x <- ccc_layout_fixture()
+  for (type in c("arrow", "sigmoid")) {
+    p <- CCCNetworkPlot(x, method = "MDIC3", plot_type = type, legend.position = "none")
+    expect_s3_class(p, "ggplot")
+    expect_identical(p$scales$get_scales("x")$position, "top")
+    nodes <- p$layers[[3L]]$data
+    expect_gt(nrow(nodes), 0L)
+  }
+})

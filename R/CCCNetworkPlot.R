@@ -285,8 +285,9 @@ CCCNetworkPlot <- function(
   label.enable <- isTRUE(dots[["label"]])
   label.spatial <- if (is.null(dots[["label"]])) TRUE else isTRUE(dots[["label"]])
   label.size <- dots[["label.size"]] %||% 4
-  label.fg <- dots[["label.fg"]] %||% "white"
-  label.bg <- dots[["label.bg"]] %||% "black"
+  flow_labels <- plot_type %in% c("arrow", "sigmoid")
+  label.fg <- dots[["label.fg"]] %||% if (flow_labels) "grey15" else "white"
+  label.bg <- dots[["label.bg"]] %||% if (flow_labels) "white" else "black"
   label.bg.r <- dots[["label.bg.r"]] %||% 0.1
   dots[c("label", "label.size", "label.fg", "label.bg", "label.bg.r")] <- NULL
   ncols <- dots[["ncols"]] %||% dots[["ncol"]] %||% NULL
@@ -2961,8 +2962,11 @@ ccc_flow_network_plot <- function(
   cell_node_df <- node_df[node_df$column %in% c("sender", "receiver"), , drop = FALSE]
   interaction_node_df <- node_df[node_df$column == "interaction", , drop = FALSE]
   label_sender$x_label <- label_sender$x - 0.06
+  label_sender$hjust <- 1
   label_receiver$x_label <- label_receiver$x + 0.06
-  label_interaction$y_label <- label_interaction$y + 0.08
+  label_receiver$hjust <- 0
+  label_cell <- rbind(label_sender, label_receiver)
+  label_interaction$y_label <- label_interaction$y + 0.26
 
   p <- ggplot2::ggplot()
   if (identical(plot_type, "sigmoid")) {
@@ -3063,18 +3067,6 @@ ccc_flow_network_plot <- function(
     ggplot2::scale_size_identity() +
     ggplot2::scale_linewidth_continuous(range = edge_size, guide = "none") +
     ccc_network_label_layer(
-      data = label_sender,
-      mapping = ggplot2::aes(x = x_label, y = y, label = label),
-      label = label,
-      label_size = label.size,
-      label_fg = label.fg,
-      label_bg = label.bg,
-      label_bg_r = label.bg.r,
-      repel = TRUE,
-      direction = "y",
-      hjust = 1
-    ) +
-    ccc_network_label_layer(
       data = label_interaction,
       mapping = ggplot2::aes(x = x, y = y_label, label = label),
       label = label,
@@ -3088,18 +3080,26 @@ ccc_flow_network_plot <- function(
       vjust = 0,
       lineheight = 0.9
     ) +
-    ccc_network_label_layer(
-      data = label_receiver,
-      mapping = ggplot2::aes(x = x_label, y = y, label = label),
-      label = label,
-      label_size = label.size,
-      label_fg = label.fg,
-      label_bg = label.bg,
-      label_bg_r = label.bg.r,
-      repel = TRUE,
-      direction = "y",
-      hjust = 0
-    ) +
+    (if (isTRUE(label)) {
+      ccc_network_label_layer(
+        data = label_cell,
+        mapping = ggplot2::aes(x = x_label, y = y, label = label, hjust = hjust),
+        label = TRUE,
+        label_size = label.size,
+        label_fg = label.fg,
+        label_bg = label.bg,
+        label_bg_r = label.bg.r,
+        direction = "y"
+      )
+    } else {
+      ggplot2::geom_text(
+        data = label_cell,
+        ggplot2::aes(x = x_label, y = y, label = label, hjust = hjust),
+        size = label.size,
+        color = label.fg,
+        show.legend = FALSE
+      )
+    }) +
     ggplot2::geom_point(
       data = data.frame(
         x = NA_real_,
@@ -3127,7 +3127,8 @@ ccc_flow_network_plot <- function(
     ggplot2::scale_x_continuous(
       breaks = flow$breaks,
       labels = flow$labels,
-      expand = ggplot2::expansion(mult = c(0.18, 0.18))
+      position = "top",
+      expand = ggplot2::expansion(mult = c(0.34, 0.34))
     ) +
     ggplot2::coord_cartesian(clip = "off") +
     ggplot2::labs(x = NULL, y = NULL)
@@ -3149,6 +3150,11 @@ ccc_flow_network_plot <- function(
       panel.border = ggplot2::element_blank(),
       axis.ticks = ggplot2::element_blank(),
       axis.text.y = ggplot2::element_blank(),
+      axis.text.x.top = ggplot2::element_text(
+        face = "bold",
+        color = "black",
+        margin = ggplot2::margin(b = 8)
+      ),
       axis.line = ggplot2::element_blank(),
       plot.margin = ggplot2::margin(5.5, 28, 5.5, 28)
     )
