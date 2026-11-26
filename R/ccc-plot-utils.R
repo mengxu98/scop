@@ -1070,7 +1070,11 @@ ccc_matrix_heatmap_plot <- function(
   font.size = 10,
   theme_use = "theme_scop",
   theme_args = list(),
-  symmetric = FALSE
+  symmetric = FALSE,
+  compact = FALSE,
+  value_limits = NULL,
+  na_col = "grey",
+  na_label = NULL
 ) {
   check_r("ComplexHeatmap", verbose = FALSE)
 
@@ -1130,6 +1134,10 @@ ccc_matrix_heatmap_plot <- function(
     column_annotation_name = column_annotation_name,
     add_text = add_text,
     symmetric = symmetric,
+    compact = compact,
+    value_limits = value_limits,
+    na_col = na_col,
+    na_label = na_label,
     top_bar_vec = top_bar_vec,
     top_box_vec = top_box_vec,
     top_summary_vec = top_summary_vec,
@@ -1204,7 +1212,10 @@ ccc_draw_heatmap <- function(
   symmetric = FALSE,
   add_dot = FALSE,
   compact = FALSE,
-  sequential = FALSE
+  sequential = FALSE,
+  value_limits = NULL,
+  na_col = "grey",
+  na_label = NULL
 ) {
   if (compact) {
     grDevices::pdf(NULL)
@@ -1232,6 +1243,7 @@ ccc_draw_heatmap <- function(
     val_range[1] <- 0
     if (val_range[2] <= 0) val_range[2] <- 1
   }
+  if (!is.null(value_limits)) val_range <- value_limits
   fill_cols <- palette_colors(
     palette = value_palette,
     palcolor = value_palcolor,
@@ -1715,6 +1727,7 @@ ccc_draw_heatmap <- function(
   ht <- get_namespace_fun("ComplexHeatmap", "Heatmap")(
     matrix = mat,
     col = col_fun,
+    na_col = na_col,
     name = value_label,
     cell_fun = cell_fun,
     layer_fun = layer_fun,
@@ -1761,12 +1774,32 @@ ccc_draw_heatmap <- function(
       "right"
     }
     heading <- paste(c(title, subtitle), collapse = "\n")
+    heading_style <- NULL
+    if (nzchar(heading) && (!identical(theme_use, "theme_scop") || length(theme_args))) {
+      plot_theme <- apply_plot_theme(theme_use, theme_args, allow_null = TRUE)
+      heading_style <- ggplot2::calc_element("plot.title", ggplot2::theme_get() + plot_theme)
+      if (inherits(heading_style, "element_blank")) heading <- ""
+    }
     draw_args <- list(
       object = ht, heatmap_legend_side = legend_side,
       padding = grid::unit(rep(2.5, 4), "mm"),
       column_title = if (nzchar(heading)) heading else NULL,
-      column_title_gp = grid::gpar(fontsize = font.size * 1.12, fontface = "bold")
+      column_title_gp = grid::gpar(
+        fontsize = font.size * 1.12,
+        fontface = heading_style$face %||% "bold",
+        col = heading_style$colour %||% "black",
+        fontfamily = heading_style$family %||% ""
+      )
     )
+    if (!is.null(na_label) && anyNA(mat) && !identical(legend.position, "none")) {
+      draw_args$heatmap_legend_list <- list(
+        get_namespace_fun("ComplexHeatmap", "Legend")(
+          labels = na_label,
+          legend_gp = grid::gpar(fill = na_col),
+          labels_gp = grid::gpar(fontsize = font.size * 0.8)
+        )
+      )
+    }
     drawn <- do.call(draw_heatmap, draw_args)
     size <- c(
       width = grid::convertWidth(
@@ -1922,7 +1955,8 @@ ccc_cellchat_role_heatmap_plot <- function(
     mat,
     plot_title,
     plot_subtitle = NULL,
-    symmetric = FALSE
+    symmetric = FALSE,
+    show_legend = TRUE
   ) {
     ccc_matrix_heatmap_plot(
       mat = mat,
@@ -1956,12 +1990,15 @@ ccc_cellchat_role_heatmap_plot <- function(
       value_palcolor = value_palcolor,
       cell_palette = cell_palette,
       cell_palcolor = cell_palcolor,
-      legend.position = legend.position,
+      legend.position = if (show_legend) legend.position else "none",
       legend.direction = legend.direction,
       font.size = font.size,
       theme_use = theme_use,
       theme_args = theme_args,
-      symmetric = symmetric
+      symmetric = symmetric,
+      compact = TRUE,
+      value_limits = if (!symmetric) c(0, 1) else NULL,
+      na_col = "white"
     )
   }
   if (isTRUE(use_cc_single_condition(srt, condition = condition))) {
@@ -2001,10 +2038,22 @@ ccc_cellchat_role_heatmap_plot <- function(
     )
     build_role_heatmap(
       mat = role$scaled,
-      plot_title = object_names[i]
+      plot_title = object_names[i],
+      show_legend = !identical(legend.position, "right") || i == length(object_list)
     )
   })
-  out <- Reduce(`+`, plots)
+  sizes <- lapply(plots, attr, which = "size", exact = TRUE)
+  ncols <- min(3L, length(plots))
+  plot_cols <- rep_len(seq_len(ncols), length(plots))
+  plot_rows <- ceiling(seq_along(plots) / ncols)
+  col_widths <- tapply(vapply(sizes, `[[`, numeric(1), "width"), plot_cols, max)
+  row_heights <- tapply(vapply(sizes, `[[`, numeric(1), "height"), plot_rows, max)
+  out <- patchwork::wrap_plots(
+    plots,
+    ncol = ncols,
+    widths = grid::unit(col_widths, "in"),
+    heights = grid::unit(row_heights, "in")
+  )
   if (!is.null(title) || !is.null(subtitle)) {
     out <- out +
       patchwork::plot_annotation(
@@ -2016,6 +2065,14 @@ ccc_cellchat_role_heatmap_plot <- function(
         plot.subtitle = ggplot2::element_text(size = font.size, hjust = 0.5)
       )
   }
+  grDevices::pdf(NULL)
+  on.exit(grDevices::dev.off(), add = TRUE)
+  layout <- patchwork::patchworkGrob(out)
+  attr(out, "size") <- list(
+    width = grid::convertWidth(sum(layout$widths), "in", valueOnly = TRUE),
+    height = grid::convertHeight(sum(layout$heights), "in", valueOnly = TRUE),
+    units = "in"
+  )
   out
 }
 
@@ -2111,7 +2168,10 @@ ccc_cellchat_diff_heatmap_plot <- function(
     font.size = font.size,
     theme_use = theme_use,
     theme_args = theme_args,
-    symmetric = TRUE
+    symmetric = TRUE,
+    compact = TRUE,
+    na_col = "#D9D9D9",
+    na_label = "Not comparable"
   )
 }
 

@@ -257,3 +257,37 @@ test_that("sample dot plots align conditions with compact default panels", {
   expect_equal(ggplot2::ggplot_build(p)$layout$panel_params[[1L]]$x$get_labels(),
     c("ConditionA", "ConditionB"))
 })
+
+test_that("role and difference heatmaps report rendered export sizes", {
+  skip_if_not_installed("ComplexHeatmap")
+  skip_if_not_installed("circlize")
+  x <- ccc_layout_fixture()
+  a <- list(scaled = matrix(c(1, .4, NA, 1), 2L,
+    dimnames = list(c("WNT", "NOTCH"), c("Ductal", "Endocrine"))
+  ))
+  b <- a
+  b$scaled[2, 1] <- .7
+  x@tools$CellChat <- list(
+    results = list(ConditionA = list(cellchat_object = a)),
+    comparisons = list(ConditionA_vs_ConditionB = list(object.list = list(ConditionA = a, ConditionB = b)))
+  )
+  local_mocked_bindings(
+    ccc_cellchat_role_matrix = function(object, ...) object,
+    .package = "scop"
+  )
+  dev <- grDevices::dev.cur()
+  p <- CCCHeatmap(x, method = "CellChat", condition = "ConditionA",
+    plot_type = "role_heatmap", signaling = c("WNT", "NOTCH"), width = 1.2
+  )
+  pair <- CCCHeatmap(x, method = "CellChat", condition = "ConditionA_vs_ConditionB",
+    plot_type = "role_heatmap", signaling = c("WNT", "NOTCH"), width = 1.2
+  )
+  diff <- CCCHeatmap(x, method = "CellChat", condition = "ConditionA_vs_ConditionB",
+    plot_type = "diff_heatmap", signaling = c("WNT", "NOTCH"), legend.position = "none"
+  )
+  expect_identical(grDevices::dev.cur(), dev)
+  expect_gt(attr(p, "size")$width, 1.2)
+  expect_gt(attr(pair, "size")$width, 2.4)
+  expect_gt(attr(pair, "size")$height, 0)
+  expect_gt(attr(diff, "size")$height, 0)
+})

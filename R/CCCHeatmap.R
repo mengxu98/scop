@@ -577,7 +577,11 @@ CCCHeatmap <- function(
         units = units,
         title = title,
         subtitle = subtitle,
-        value_palette = palette_cfg$value_palette,
+        value_palette = if (missing(value_palette) && is.null(value_palcolor)) {
+          "Reds"
+        } else {
+          palette_cfg$value_palette
+        },
         value_palcolor = palette_cfg$value_palcolor,
         cell_palette = palette_cfg$cell_palette,
         cell_palcolor = palette_cfg$cell_palcolor,
