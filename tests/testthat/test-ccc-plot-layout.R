@@ -100,58 +100,89 @@ test_that("aggregate heatmaps keep bars and cell-type strips on separate sides",
   expect_identical(p$legend.direction, "horizontal")
 })
 
-test_that("CellChat bubble labels and guides remain compact without changing records", {
-  records <- data.frame(
-    source = c("Ductal", "Pre-endocrine"),
-    target = c("Ngn3-high-EP", "Ductal"),
-    interaction_name = c("MDK-SDC4", "PTN-NCL"),
-    prob = c(0.2, 0.1),
-    pval = c(0.01, 0.02)
-  )
-  p <- custom_cc_bubble_plot(records, angle.x = 90)
-  expect_equal(p$data$prob, records$prob)
-  expect_identical(p$scales$get_scales("size")$guide, "none")
-  labels <- ggplot2::ggplot_build(p)$layout$panel_params[[1L]]$x$get_labels()
-  expect_identical(gsub("\n", " ", as.character(labels)), levels(p$data$pair))
-  q <- custom_cc_bubble_plot(records, angle.x = 35, color.by = "pval", legend.position = "bottom")
-  expect_equal(q$data$fill_val, -log10(records$pval))
-  expect_false(identical(q$scales$get_scales("size")$guide, "none"))
-  expect_equal(ggplot2::calc_element("axis.text.x", q$theme)$angle, 35)
-  expect_identical(q$theme$legend.position, "bottom")
-})
-
-test_that("CellChat bubbles separate reported zeros from positive p-values", {
+test_that("CellChat bubbles preserve raw values and the significance boundaries", {
   x <- ccc_layout_fixture()
   x@tools$CellChat <- list(results = list(ALL = list()))
   records <- data.frame(
-    source = rep("Ductal", 6L),
-    target = rep("Ngn3-high-EP", 6L),
+    source = "Ductal",
+    target = "Ngn3-high-EP",
     interaction_name = paste0("L", seq_len(6), "-R"),
+    interaction_name_2 = paste0("L", seq_len(6), "  - R"),
     prob = c(.2, .2, .1, .1, .05, .05),
-    pval = c(0, .01, .02, .03, .04, NA)
+    pval = c(0, .01, .010001, .05, .08, NA)
   )
   local_mocked_bindings(subset_cc_table = function(...) records, .package = "scop")
-  args <- list(object = x, method = "CellChat", plot_type = "bubble")
-  p <- do.call(CCCHeatmap, c(args, list(bubble_color.by = "pval")))
-  base <- do.call(CCCHeatmap, args)
-  p_layer <- ggplot2::ggplot_build(p)$data[[1L]]
-  base_layer <- ggplot2::ggplot_build(base)$data[[1L]]
-  expect_identical(p$data$pval, records$pval)
-  expect_identical(p_layer[c("x", "y", "size")], base_layer[c("x", "y", "size")])
-  expect_identical(unname(p_layer$shape), c(23, rep(21, 5)))
-  expect_length(unique(p_layer$fill[2:5]), 4)
-  expect_equal(p$scales$get_scales("fill")$breaks, -log10(rev(records$pval[2:5])))
-  expect_identical(p$scales$get_scales("fill")$labels, c("0.04", "0.03", "0.02", "0.01"))
-  expect_identical(base$data$fill_val, records$prob)
-  expect_identical(do.call(CCCHeatmap, c(args, list(
-    bubble_color.by = "pval", return.data = TRUE
-  ))), records)
+  args <- list(object = x, method = "CellChat", plot_type = "bubble", thresh = .1)
+  p <- do.call(CCCHeatmap, args)
+  built <- ggplot2::ggplot_build(p)
+  layer <- built$data[[1L]]
+  expect_identical(p$data[names(records)], records)
+  expect_identical(as.integer(p$data$pvalue_band), c(1L, 1L, 2L, 2L, 3L, NA))
+  expect_equal(layer$size[c(1L, 3L, 5L, 6L)], c(5.4, 4.1, 2.8, 1.5))
+  expect_true(all(layer$shape == 21))
+  expect_identical(layer$fill[1L], layer$fill[2L])
+  expect_identical(as.character(built$layout$panel_params[[1L]]$x$get_labels()), paste0("L", seq_len(6), " - R"))
+  expect_identical(built$layout$panel_params[[1L]]$y$get_labels(), "Ductal \u2192 Ngn3-high-EP")
+  expect_equal(ggplot2::calc_element("axis.text.x", p$theme)$angle, 45)
 
-  records$pval <- rep(0, nrow(records))
-  zero <- do.call(CCCHeatmap, c(args, list(bubble_color.by = "pval")))
-  expect_silent(ggplot2::ggplotGrob(zero))
-  expect_identical(zero$scales$get_scales("fill")$guide, "none")
-  expect_true(all(ggplot2::ggplot_build(zero)$data[[1L]]$shape == 23))
+  q <- do.call(CCCHeatmap, c(args, list(
+    bubble_color.by = "pval", x_text_angle = 35, legend.position = "bottom",
+    bubble_size.range = c(1, 6)
+  )))
+  q_layer <- ggplot2::ggplot_build(q)$data[[1L]]
+  expect_identical(q_layer$fill[1L], q_layer$fill[2L])
+  expect_length(unique(q_layer$fill[1:5]), 3L)
+  expect_equal(max(q_layer$size), 6)
+  expect_equal(ggplot2::calc_element("axis.text.x", q$theme)$angle, 35)
+  expect_identical(q$theme$legend.position, "bottom")
+  expect_silent(ggplot2::ggplotGrob(q))
+  expect_identical(do.call(CCCHeatmap, c(args, list(return.data = TRUE))), records)
+
+  records$pval[] <- 0
+  p <- do.call(CCCHeatmap, args)
+  expect_silent(ggplot2::ggplotGrob(p))
+  expect_true(all(ggplot2::ggplot_build(p)$data[[1L]]$size == 5.4))
+})
+
+test_that("CellChat comparison conditions share scales and centered right guides", {
+  x <- ccc_layout_fixture()
+  x@tools$CellChat <- list(comparisons = list(ConditionA_vs_ConditionB = list(
+    object.list = list(ConditionA = list(), ConditionB = list())
+  )))
+  records <- data.frame(
+    source = "Ductal", target = "Ngn3-high-EP",
+    interaction_name = c("L1-R1", "L2-R2"),
+    prob = c(.2, .1), pval = c(0, .02)
+  )
+  local_mocked_bindings(
+    subset_cc_table = function(object, ..., dataset) {
+      transform(records, dataset = dataset, prob = prob * if (dataset == "ConditionA") 1 else .5)
+    },
+    .package = "scop"
+  )
+  args <- list(
+    object = x, method = "CellChat", plot_type = "bubble",
+    condition = "ConditionA_vs_ConditionB", comparison = c(2, 1)
+  )
+  p <- do.call(CCCHeatmap, args)
+  expect_identical(ggplot2::ggplot_build(p)$layout$layout$dataset, factor(
+    c("ConditionB", "ConditionA"),
+    levels = c("ConditionB", "ConditionA")
+  ))
+  expect_identical(p$theme$legend.position, "right")
+  expect_identical(p$theme$legend.justification.right, c(0, .5))
+  expect_identical(p$theme$strip.text.y.right$colour, "black")
+  expect_s3_class(p$theme$strip.background, "element_blank")
+  g <- ggplot2::ggplotGrob(p)
+  guide <- which(g$layout$name == "guide-box-right")
+  panels <- grepl("^panel", g$layout$name)
+  expect_equal(g$layout$t[guide], min(g$layout$t[panels]))
+  expect_equal(g$layout$b[guide], max(g$layout$b[panels]))
+  expect_equal(sum(g$grobs[[guide]]$layout$name == "guides"), 2L)
+  result <- do.call(CCCHeatmap, c(args, list(return.data = TRUE)))
+  expect_identical(names(result), c("ConditionB", "ConditionA"))
+  expect_identical(result$ConditionA$prob, records$prob)
+  expect_identical(result$ConditionB$prob, records$prob * .5)
 })
 
 test_that("dense pathway summaries retain ranks on a shared numeric axis", {

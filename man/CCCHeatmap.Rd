@@ -79,10 +79,9 @@ CCCHeatmap(
 \item{comparison}{Comparison indices or names.}
 
 \item{plot_type}{Plot type. One of \code{"heatmap"} or \code{"dot"}.
-\code{"bubble"} is a CellChat-specific interaction bubble matrix.
-\code{"ligand_target"} is a special heatmap path available only with
-\code{NicheNet}/\code{MultiNicheNet} results. \code{"role_heatmap"} and \code{"diff_heatmap"}
-are CellChat-specific pathway role views.}
+\code{"bubble"} is a CellChat interaction matrix with sender–receiver pairs on
+rows and ligand–receptor interactions on columns. By default, color shows
+communication probability and size shows p-value bands (≤ 0.01,0.01 to ≤ 0.05, > 0.05).Comparisons share scales across condition panels."ligand_target" is a special heatmap path available only withNicheNet/MultiNicheNet results. "role_heatmap" and "diff_heatmap"are CellChat-specific pathway role views.}
 
 \item{display_by}{Whether to summarize by \code{"aggregation"} or \code{"interaction"}.}
 
@@ -205,10 +204,10 @@ Canonical selection parameters and legacy aliases may be supplied
 together only when their values agree. Conflicting values raise an error.
 \code{width} and \code{height} here control the heatmap body, not the canvas.
 
-Aggregation heatmaps retain receivers on rows and senders on columns.
-By default, the top and left show bars; the bottom and right show cell-type
-color strips. The legend is on the right and sender labels are rotated by
-90 degrees. The export is sized from the rendered heatmap.
+Aggregation heatmaps retain receivers on rows and senders on
+columns. By default, the top and left show bars; the bottom and right
+show cell-type color strips. The legend is on the right and sender labels
+are rotated by 90 degrees. The export is sized from the rendered heatmap.
 }
 \examples{
 data(pancreas_sub)
@@ -347,5 +346,18 @@ CCCHeatmap(
   top_n = 20,
   width = 0.6,
   height = 3.5
+)
+
+CCCHeatmap(
+  pancreas_sub,
+  method = "CellChat",
+  condition = "ConditionA_vs_ConditionB",
+  plot_type = "bubble",
+  sender.use = c("Ductal", "Ngn3-low-EP", "Ngn3-high-EP"),
+  receiver.use = c("Ductal", "Ngn3-low-EP"),
+  interaction.use = c(
+    "MDK_NCL", "CLDN3_CLDN3", "MDK_SDC1", "MDK_ITGA6_ITGB1",
+    "COL9A2_SDC4", "DLK1_NOTCH1", "GRN_SORT1"
+  )
 )
 }
