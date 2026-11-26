@@ -392,7 +392,7 @@ test_that("dense role-change panels label only the largest points without removi
   expect_identical(p$layers[[4L]]$data$signaling, rev(tail(paths, 8L)))
   expect_s3_class(p$scales$get_scales("fill")$guide, "GuideLegend")
   expect_identical(p$labels$x, "Outgoing change")
-  expect_match(p$labels$subtitle, "ConditionB - ConditionA", fixed = TRUE)
+  expect_identical(p$labels$subtitle, "ConditionB - ConditionA")
 })
 
 test_that("role scatter keeps both keys independently of direct labeling", {

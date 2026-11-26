@@ -1276,10 +1276,7 @@ ccc_cellchat_role_change_plot <- function(
     }))
   }
   delta <- paste(cc_cmp$object_names[2], "-", cc_cmp$object_names[1])
-  subtitle <- paste(c(
-    subtitle, delta,
-    if (nrow(label_df) < nrow(role_df)) "Labels show the 8 largest changes per dense panel."
-  ), collapse = "\n")
+  subtitle <- paste(c(subtitle, delta), collapse = "\n")
   p <- ggplot2::ggplot(
     role_df,
     ggplot2::aes(
