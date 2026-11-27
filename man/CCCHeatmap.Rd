@@ -64,6 +64,8 @@ CCCHeatmap(
   resource = NULL,
   sample = NULL,
   srt = NULL,
+  row_bar_color = NULL,
+  column_bar_color = NULL,
   ...
 )
 }
@@ -81,7 +83,14 @@ CCCHeatmap(
 \item{plot_type}{Plot type. One of \code{"heatmap"} or \code{"dot"}.
 \code{"bubble"} is a CellChat interaction matrix with sender–receiver pairs on
 rows and ligand–receptor interactions on columns. By default, color shows
-communication probability and size shows p-value bands (≤ 0.01,0.01 to ≤ 0.05, > 0.05).Comparisons share scales across condition panels."ligand_target" is a special heatmap path available only withNicheNet/MultiNicheNet results. "role_heatmap" and "diff_heatmap"are CellChat-specific pathway role views.}
+communication probability and size shows p-value bands: \code{p <= 0.01},
+\verb{0.01 < p <= 0.05}, and \code{p > 0.05}.
+Comparisons share scales across condition panels. Shared matrix bubbles use
+upper and left summary bars by default; add cell strips explicitly if needed.
+Nonnegative scores use a sequential red scale unless a value palette is supplied.
+\code{"ligand_target"} is a special heatmap path available only with
+\code{NicheNet}/\code{MultiNicheNet} results. \code{"role_heatmap"} and \code{"diff_heatmap"}
+are CellChat-specific pathway role views.}
 
 \item{display_by}{Whether to summarize by \code{"aggregation"} or \code{"interaction"}.}
 
@@ -186,11 +195,15 @@ combines within-method percentile ranks for visualization, and \code{"legacy"}
 retains the deprecated raw-score aggregation.}
 
 \item{resource, sample}{Optional resource and sample/context filters for
-unified CCC results. Separate CellChat panels use a native result selected
+unified CCC results. Native CellChat plots use a stored result selected
 by \code{condition} and do not support these additional filters.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{row_bar_color, column_bar_color}{Optional colors for the summary bars in
+shared matrix bubble plots. Each defaults to the first cell palette color
+and can be overridden independently.}
 
 \item{...}{Arguments passed to other functions.}
 }

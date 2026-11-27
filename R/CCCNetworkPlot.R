@@ -574,7 +574,12 @@ CCCNetworkPlot <- function(
     method = method,
     resource = resource,
     condition = if (identical(method, "CellChat")) NULL else condition,
-    sample = sample
+    sample = sample,
+    native_cellchat = plot_type %in% c("pathway", "individual", "individual_lr", "diff_network") ||
+      ccc_uses_native_cellchat_table(
+        srt, method, condition, dataset, slot.name, signaling, pairLR.use,
+        sender.use, receiver.use
+      )
   )
   if (identical(method, "CCC") && identical(combine_methods, "separate")) {
     return(ccc_plot_methods_separately(
@@ -1709,12 +1714,6 @@ bipartite_plot <- function(
         )
       )
     ) +
-    ggplot2::scale_x_continuous(
-      breaks = c(0, 1, 2, 3),
-      labels = c("Sender", "Ligand", "Receptor", "Receiver"),
-      position = "top",
-      expand = ggplot2::expansion(mult = c(0.37, 0.37))
-    ) +
     ggplot2::scale_y_continuous(
       limits = c(y_min, y_max),
       expand = ggplot2::expansion(mult = c(0, 0))
@@ -1785,7 +1784,11 @@ bipartite_plot <- function(
       plot.subtitle = ggplot2::element_text(size = font.size),
       plot.margin = ggplot2::margin(6, 9, 6, 9)
     )
-  p
+  ccc_size_labeled_network(
+    p, sender_label_df$label_plot, receiver_label_df$label_plot,
+    font.size, 0:3, c("Sender", "Ligand", "Receptor", "Receiver"), 0.37,
+    rows = max(sum(ligand_label_df$n_lines), sum(receptor_label_df$n_lines))
+  )
 }
 
 
@@ -3065,11 +3068,16 @@ ccc_flow_network_plot <- function(
   label_receiver <- node_df[node_df$column == "receiver", , drop = FALSE]
   cell_node_df <- node_df[node_df$column %in% c("sender", "receiver"), , drop = FALSE]
   interaction_node_df <- node_df[node_df$column == "interaction", , drop = FALSE]
-  label_sender$x_label <- label_sender$x - 0.06
   label_sender$hjust <- 1
-  label_receiver$x_label <- label_receiver$x + 0.06
   label_receiver$hjust <- 0
   label_cell <- rbind(label_sender, label_receiver)
+  core_width <- max(60, 24 * length(flow$breaks))
+  label_offset <- ifelse(
+    is.finite(label_cell$size_scaled), label_cell$size_scaled, node_size
+  ) / 2 + 1.8
+  label_cell$x_label <- label_cell$x +
+    ifelse(label_cell$column == "sender", -1, 1) *
+      label_offset * diff(range(flow$breaks)) / core_width
   label_interaction$y_label <- label_interaction$y + 0.26
 
   p <- ggplot2::ggplot()
@@ -3170,20 +3178,31 @@ ccc_flow_network_plot <- function(
     ) +
     ggplot2::scale_size_identity() +
     ggplot2::scale_linewidth_continuous(range = edge_size, guide = "none") +
-    ccc_network_label_layer(
-      data = label_interaction,
-      mapping = ggplot2::aes(x = x, y = y_label, label = label),
-      label = label,
-      label_size = label.size,
-      label_fg = label.fg,
-      label_bg = label.bg,
-      label_bg_r = label.bg.r,
-      repel = isTRUE(label) && identical(display_by, "interaction"),
-      direction = "y",
-      hjust = 0.5,
-      vjust = 0,
-      lineheight = 0.9
-    ) +
+    (if (!isTRUE(label) && nrow(label_interaction) >= 8L) {
+      ggrepel::geom_text_repel(
+        data = label_interaction,
+        mapping = ggplot2::aes(x = x, y = y_label, label = label),
+        size = label.size, color = label.fg, bg.color = label.bg, bg.r = 0.04,
+        box.padding = 0, point.padding = 0, max.overlaps = Inf,
+        force = 0, force_pull = 0, segment.color = NA, seed = 11,
+        vjust = 0, inherit.aes = FALSE, show.legend = FALSE
+      )
+    } else {
+      ccc_network_label_layer(
+        data = label_interaction,
+        mapping = ggplot2::aes(x = x, y = y_label, label = label),
+        label = label,
+        label_size = label.size,
+        label_fg = label.fg,
+        label_bg = label.bg,
+        label_bg_r = label.bg.r,
+        repel = isTRUE(label) && identical(display_by, "interaction"),
+        direction = "y",
+        hjust = 0.5,
+        vjust = 0,
+        lineheight = 0.9
+      )
+    }) +
     (if (isTRUE(label)) {
       ccc_network_label_layer(
         data = label_cell,
@@ -3228,12 +3247,6 @@ ccc_flow_network_plot <- function(
         override.aes = list(shape = 21, size = 4, color = "grey20", stroke = 0.8)
       )
     ) +
-    ggplot2::scale_x_continuous(
-      breaks = flow$breaks,
-      labels = flow$labels,
-      position = "top",
-      expand = ggplot2::expansion(mult = c(0.34, 0.34))
-    ) +
     ggplot2::coord_cartesian(clip = "off") +
     ggplot2::labs(x = NULL, y = NULL)
 
@@ -3248,7 +3261,7 @@ ccc_flow_network_plot <- function(
     font.size = font.size
   )
 
-  p +
+  p <- p +
     ggplot2::theme(
       panel.grid = ggplot2::element_blank(),
       panel.border = ggplot2::element_blank(),
@@ -3260,8 +3273,41 @@ ccc_flow_network_plot <- function(
         margin = ggplot2::margin(b = 8)
       ),
       axis.line = ggplot2::element_blank(),
-      plot.margin = ggplot2::margin(5.5, 28, 5.5, 28)
+      plot.margin = ggplot2::margin(5.5, 9, 5.5, 9)
     )
+  ccc_size_labeled_network(
+    p, label_sender$label, label_receiver$label,
+    label.size * ggplot2::.pt, flow$breaks, flow$labels, 0.34,
+    rows = nrow(label_interaction), side_gap = max(c(0, label_offset))
+  )
+}
+
+ccc_size_labeled_network <- function(p, left, right, font.size, breaks, labels, expansion, rows = 0L, side_gap = 0) {
+  widths <- vapply(list(left, right), function(text) {
+    if (!length(text)) return(0)
+    grobs <- lapply(unique(text), grid::textGrob, gp = grid::gpar(fontsize = font.size))
+    max(vapply(grobs, function(grob) {
+      grid::convertWidth(grid::grobWidth(grob), "mm", valueOnly = TRUE)
+    }, numeric(1)))
+  }, numeric(1))
+  core_width <- max(60, 24 * length(breaks))
+  padding <- pmax(expansion, (widths + side_gap + 4) / core_width)
+  p <- p + ggplot2::scale_x_continuous(
+    breaks = breaks,
+    labels = labels,
+    position = "top",
+    expand = ggplot2::expansion(mult = padding)
+  )
+  label_height <- grid::convertHeight(
+    grid::unit(font.size * 1.55, "pt"), "mm", valueOnly = TRUE
+  )
+  sized <- thisplot::plot_autosize(
+    p, panel_width = core_width * (1 + sum(padding)),
+    panel_height = max(35, label_height * max(length(left), length(right), rows)),
+    base_size = NULL, label_autosize = FALSE
+  )
+  attr(p, "size") <- attr(sized, "size", exact = TRUE)
+  p
 }
 
 ccc_chord_plot <- function(
@@ -3594,8 +3640,14 @@ ccc_draw_chord <- function(
   on.exit(try(graphics::par(old_par), silent = TRUE), add = TRUE)
 
   graphics::par(mar = c(1, 1, if (!is.null(title) || !is.null(subtitle)) 3 else 1, 1))
+  label_width <- max(graphics::strwidth(names(grid_colors), units = "inches", cex = lab.cex))
+  device_span <- min(graphics::par("pin"))
+  label_fraction <- min(0.5, 2 * label_width / device_span)
+  canvas_limit <- 1.04 / (1 - label_fraction)
   circlize::circos.par(
     start.degree = 90,
+    canvas.xlim = c(-canvas_limit, canvas_limit),
+    canvas.ylim = c(-canvas_limit, canvas_limit),
     cell.padding = c(0, 0, 0, 0),
     track.margin = c(0.01, 0.01),
     points.overflow.warning = FALSE

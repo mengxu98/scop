@@ -9,9 +9,11 @@
 #' @param plot_type Plot type. One of `"heatmap"` or `"dot"`.
 #' `"bubble"` is a CellChat interaction matrix with sender–receiver pairs on
 #' rows and ligand–receptor interactions on columns. By default, color shows
-#' communication probability and size shows p-value bands (≤ 0.01,
-#' > 0.01 to ≤ 0.05, > 0.05).
-#' Comparisons share scales across condition panels.
+#' communication probability and size shows p-value bands: `p <= 0.01`,
+#' `0.01 < p <= 0.05`, and `p > 0.05`.
+#' Comparisons share scales across condition panels. Shared matrix bubbles use
+#' upper and left summary bars by default; add cell strips explicitly if needed.
+#' Nonnegative scores use a sequential red scale unless a value palette is supplied.
 #' `"ligand_target"` is a special heatmap path available only with
 #' `NicheNet`/`MultiNicheNet` results. `"role_heatmap"` and `"diff_heatmap"`
 #' are CellChat-specific pathway role views.
@@ -25,6 +27,9 @@
 #' `"histogram"`, `"density"`, `"violin"`, `"cell"`, or a character vector
 #' containing multiple values.
 #' Defaults are `left_anno = "bar"` and `right_anno = "cell"`.
+#' @param row_bar_color,column_bar_color Optional colors for the summary bars in
+#'   shared matrix bubble plots. Each defaults to the first cell palette color
+#'   and can be overridden independently.
 #' @param bar_value Aggregation metric shown in the bar annotations.
 #' One or more of `"count"`, `"sum"`, `"mean"`, or `"max"`.
 #' Multiple values add multiple annotation tracks. Default `"sum"`.
@@ -261,6 +266,8 @@ CCCHeatmap <- function(
   resource = NULL,
   sample = NULL,
   srt = NULL,
+  row_bar_color = NULL,
+  column_bar_color = NULL,
   ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
@@ -434,30 +441,14 @@ CCCHeatmap <- function(
   )
   aggregate_heatmap <- identical(plot_type, "heatmap") &&
     identical(display_by, "aggregation")
-  use_legacy_anno <- plot_type %in% c("heatmap", "bubble") && !aggregate_heatmap
-  default_top_bar <- identical(top_anno, "bar")
-  default_left_bar <- identical(left_anno, "bar")
-  default_bottom_cell <- identical(bottom_anno, "cell")
-  default_right_cell <- identical(right_anno, "cell")
+  if (identical(plot_type, "bubble")) {
+    if (missing(bottom_anno)) bottom_anno <- NULL
+    if (missing(right_anno)) right_anno <- NULL
+  }
   top_anno <- ccc_match_side_anno(top_anno)
   right_anno <- ccc_match_side_anno(right_anno)
   left_anno <- ccc_match_side_anno(left_anno)
   bottom_anno <- ccc_match_side_anno(bottom_anno)
-  if (use_legacy_anno && isTRUE(default_top_bar)) {
-    top_anno <- c("bar", "cell")
-  }
-  if (
-    use_legacy_anno && identical(display_by, "aggregation") &&
-      isTRUE(default_left_bar)
-  ) {
-    left_anno <- c("bar", "cell")
-  }
-  if (use_legacy_anno && isTRUE(default_bottom_cell)) {
-    bottom_anno <- NULL
-  }
-  if (use_legacy_anno && isTRUE(default_right_cell)) {
-    right_anno <- NULL
-  }
 
   if ("add_top_bar" %in% dot_names) {
     top_anno <- ccc_update_side_anno_legacy(
@@ -497,7 +488,12 @@ CCCHeatmap <- function(
     method = method,
     resource = resource,
     condition = if (identical(method, "CellChat")) NULL else condition,
-    sample = sample
+    sample = sample,
+    native_cellchat = plot_type %in% c("bubble", "role_heatmap", "diff_heatmap") ||
+      ccc_uses_native_cellchat_table(
+        srt, method, condition, dataset, slot.name, signaling, pairLR.use,
+        sender.use, receiver.use
+      )
   )
   if (identical(method, "CCC") && identical(combine_methods, "separate")) {
     return(ccc_plot_methods_separately(
@@ -971,7 +967,8 @@ CCCHeatmap <- function(
 
   if (plot_type %in% c("dot", "sample_dot")) {
     source_target <- identical(plot_type, "dot")
-    dot_palette <- if (identical(method, "CellChat") && identical(color.by, "score") &&
+    scores <- suppressWarnings(as.numeric(if (source_target) interaction_df$score else df$score))
+    dot_palette <- if (identical(color.by, "score") && all(scores[is.finite(scores)] >= 0) &&
       missing(value_palette) && is.null(value_palcolor)) {
       "Reds"
     } else {
@@ -1071,14 +1068,16 @@ CCCHeatmap <- function(
     cell_palette = palette_cfg$cell_palette,
     cell_palcolor = palette_cfg$cell_palcolor,
     legend.position = legend.position,
-    legend.direction = if (aggregate_heatmap && missing(legend.direction) &&
+    legend.direction = if ((aggregate_heatmap || add_dot_eff) && missing(legend.direction) &&
       isTRUE(legend.position %in% c("top", "bottom"))) {
       "horizontal"
     } else {
       legend.direction
     },
-    sequential = identical(method, "CellChat") && missing(value_palette) &&
+    sequential = identical(color.by, "score") && missing(value_palette) &&
       is.null(value_palcolor),
+    row_bar_color = row_bar_color,
+    column_bar_color = column_bar_color,
     font.size = font.size,
     theme_use = theme_use,
     theme_args = theme_args
@@ -1123,7 +1122,9 @@ ccc_heatmap_full_plot <- function(
   font.size = 10,
   theme_use = "theme_scop",
   theme_args = list(),
-  sequential = FALSE
+  sequential = FALSE,
+  row_bar_color = NULL,
+  column_bar_color = NULL
 ) {
   check_r("ComplexHeatmap", verbose = FALSE)
 
@@ -1414,8 +1415,10 @@ ccc_heatmap_full_plot <- function(
     font.size = font.size,
     theme_use = theme_use,
     theme_args = theme_args,
-    compact = identical(display_by, "aggregation"),
-    sequential = identical(display_by, "aggregation") && sequential
+    compact = TRUE,
+    sequential = sequential,
+    row_bar_color = row_bar_color,
+    column_bar_color = column_bar_color
   )
 }
 

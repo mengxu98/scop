@@ -554,3 +554,61 @@ test_that("Sankey export reserves space for separate stage legends", {
   expect_s3_class(p, "patchwork")
   expect_gt(attr(p, "size")$width, attr(hidden, "size")$width)
 })
+
+test_that("native CellChat plots reject unrepresentable sample or resource selectors", {
+  x <- ccc_layout_fixture()
+  x@tools$CellChat <- list(
+    long_table = transform(x@tools$MDIC3$long_table, sample = "Observed")
+  )
+  pattern <- "Native CellChat plots do not support"
+  expect_error(CCCHeatmap(x, method = "CellChat", plot_type = "bubble",
+    sample = "Unknown", return.data = TRUE), pattern)
+  expect_error(CCCNetworkPlot(x, method = "CellChat", plot_type = "pathway",
+    signaling = "P1", layout = "hierarchy", sample = "Unknown"), pattern)
+  expect_error(CCCStatPlot(x, method = "CellChat", plot_type = "gene",
+    resource = "Unknown", return.data = TRUE), pattern)
+  expect_error(CCCStatPlot(x, method = "CellChat", plot_type = "comparison",
+    sample = "Observed"), pattern)
+})
+
+test_that("shared bubbles measure their plot and preserve explicitly selected tracks", {
+  skip_if_not_installed("ComplexHeatmap")
+  skip_if_not_installed("circlize")
+  x <- ccc_layout_fixture()
+  args <- list(object = x, method = "MDIC3", plot_type = "bubble",
+    display_by = "interaction", top_anno = "bar")
+  seen <- NULL
+  heatmap <- ComplexHeatmap::Heatmap
+  bars <- ComplexHeatmap::anno_barplot
+  colors <- list()
+  local_mocked_bindings(
+    Heatmap = function(matrix, col, top_annotation, bottom_annotation, ...) {
+      seen <<- list(values = matrix, zero = col(0), top = top_annotation, bottom = bottom_annotation)
+      heatmap(matrix = matrix, col = col, top_annotation = top_annotation,
+        bottom_annotation = bottom_annotation, ...)
+    },
+    anno_barplot = function(x, gp, which, border, ...) {
+      colors[[which]] <<- list(fill = gp$fill, border = border)
+      bars(x, gp = gp, which = which, border = border, ...)
+    },
+    .package = "ComplexHeatmap"
+  )
+  p <- do.call(CCCHeatmap, args)
+  values <- seen$values
+  expect_equal(attr(p, "size")$units, "in")
+  expect_identical(names(seen$top@anno_list), "Sum")
+  expect_null(seen$bottom)
+  expect_equal(seen$zero, "#FFF5F0FF")
+  first <- unname(thisplot::palette_colors("summary", palette = "Chinese"))
+  expect_identical(colors$column, list(fill = first, border = FALSE))
+  expect_identical(colors$row, colors$column)
+  q <- do.call(CCCHeatmap, c(args, list(
+    bottom_anno = "cell", row_bar_color = "#3D8B72", column_bar_color = "#1772B4",
+    value_palcolor = c("white", "black"), units = "mm"
+  )))
+  expect_s4_class(seen$bottom, "HeatmapAnnotation")
+  expect_identical(seen$values, values)
+  expect_identical(colors$row$fill, "#3D8B72")
+  expect_identical(colors$column$fill, "#1772B4")
+  expect_equal(attr(q, "size")$height > 0, TRUE)
+})

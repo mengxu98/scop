@@ -297,3 +297,10 @@ test_that("spatial CCC node colors retain the full grouping palette after edge f
   fill <- ggplot2::ggplot_build(p)$plot$scales$get_scales("fill")
   expect_identical(fill$map(c("A", "B")), unname(expected[c("A", "B")]))
 })
+
+test_that("composition radius depends on tissue spans, not absolute coordinates", {
+  coords <- data.frame(x_display = c(0, 2, 1), y_display = c(0, 1, 1))
+  radius <- ccc_spatial_auto_radius(coords)
+  expect_equal(ccc_spatial_auto_radius(transform(coords, x_display = x_display + 10000)), radius)
+  expect_equal(ccc_spatial_auto_radius(transform(coords, y_display = y_display - 10000)), radius)
+})

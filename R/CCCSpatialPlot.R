@@ -393,7 +393,10 @@ ccc_spatial_render_data <- function(payload, pair_df) {
 }
 
 ccc_spatial_auto_radius <- function(coords) {
-  span <- diff(range(c(coords$x_display, coords$y_display), finite = TRUE))
+  span <- max(
+    diff(range(coords$x_display, finite = TRUE)),
+    diff(range(coords$y_display, finite = TRUE))
+  )
   if (!is.finite(span) || span <= 0) span <- 1
   sqrt(span^2 / max(1, nrow(coords))) * 0.45
 }
@@ -534,8 +537,11 @@ ccc_spatial_network_plot <- function(
     p <- p + do.call(edge_geom, edge_args)
   }
   if (nrow(self_data) > 0L) {
-    span_x <- diff(range(c(coords$x_display, coords$y_display), finite = TRUE))
-    loop <- max(0.05, if (is.finite(span_x)) span_x * 0.04 else 0.1)
+    span <- max(
+      diff(range(coords$x_display, finite = TRUE)),
+      diff(range(coords$y_display, finite = TRUE))
+    )
+    loop <- max(0.05, if (is.finite(span)) span * 0.04 else 0.1)
     self_data$xend <- self_data$x + loop
     self_data$yend <- self_data$y + loop
     self_mapping <- if (is.null(edge_color)) {

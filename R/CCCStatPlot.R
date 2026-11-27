@@ -14,7 +14,7 @@
 #' combines within-method percentile ranks for visualization, and `"legacy"`
 #' retains the deprecated raw-score aggregation.
 #' @param resource,sample Optional resource and sample/context filters for
-#' unified CCC results. Separate CellChat panels use a native result selected
+#' unified CCC results. Native CellChat plots use a stored result selected
 #' by `condition` and do not support these additional filters.
 #' @param plot_type Plot type. One of:
 #' - `"bar"` — horizontal bar chart of top pairs or interactions according to
@@ -283,28 +283,6 @@ CCCStatPlot <- function(
   palette_cfg$cell_palcolor <- ccc_cell_palcolor(
     srt, method, palette_cfg$cell_palette, palette_cfg$cell_palcolor
   )
-  combine_methods <- match.arg(combine_methods)
-  srt <- ccc_prepare_filtered_object(
-    srt = srt,
-    method = method,
-    resource = resource,
-    condition = if (identical(method, "CellChat")) NULL else condition,
-    sample = sample
-  )
-  if (identical(method, "CCC") && identical(combine_methods, "separate")) {
-    share_colors <- plot_type %in% c(
-      "sankey", "scatter", "role_scatter", "role_network", "role_network_marsilea", "role_change"
-    ) || (plot_type %in% c("box", "violin") && !identical(facet_by, "pair"))
-    return(ccc_plot_methods_separately(
-      match.call(), srt = srt, env = parent.frame(),
-      palette_cfg = if (share_colors) comparison_palette_cfg, condition = condition, filter_context = !is.null(resource) || !is.null(sample)
-    ))
-  }
-  srt <- ccc_prepare_combined_object(
-    srt = srt,
-    method = method,
-    combine_methods = combine_methods
-  )
   dots <- list(...)
   return.data <- isTRUE(dots[["return.data"]])
   idents.use <- dots[["idents.use"]] %||% NULL
@@ -324,6 +302,36 @@ CCCStatPlot <- function(
     c("context_col", "condition_col", "dataset_col"),
     sample_col,
     supplied = "sample_col" %in% names(dots)
+  )
+
+  combine_methods <- match.arg(combine_methods)
+  srt <- ccc_prepare_filtered_object(
+    srt = srt,
+    method = method,
+    resource = resource,
+    condition = if (identical(method, "CellChat")) NULL else condition,
+    sample = sample,
+    native_cellchat = plot_type %in% c(
+      "gene", "ranknet", "role_change", "role_network", "role_network_marsilea", "comparison"
+    ) ||
+      ccc_uses_native_cellchat_table(
+        srt, method, condition, dataset, slot.name, signaling, pairLR.use,
+        sender.use, receiver.use
+      )
+  )
+  if (identical(method, "CCC") && identical(combine_methods, "separate")) {
+    share_colors <- plot_type %in% c(
+      "sankey", "scatter", "role_scatter", "role_network", "role_network_marsilea", "role_change"
+    ) || (plot_type %in% c("box", "violin") && !identical(facet_by, "pair"))
+    return(ccc_plot_methods_separately(
+      match.call(), srt = srt, env = parent.frame(),
+      palette_cfg = if (share_colors) comparison_palette_cfg, condition = condition, filter_context = !is.null(resource) || !is.null(sample)
+    ))
+  }
+  srt <- ccc_prepare_combined_object(
+    srt = srt,
+    method = method,
+    combine_methods = combine_methods
   )
 
   if (identical(plot_type, "role_scatter")) {
@@ -1842,14 +1850,17 @@ ccc_feature_plot <- function(
     )
     p
   })
-  tables <- lapply(plot_list, function(p) attr(p, "grobs", exact = TRUE)$full)
-  measured <- vapply(tables, inherits, logical(1), "gtable")
-  plot_list[measured] <- lapply(tables[measured], thisplot::plot_autosize,
-    base_size = NULL, label_autosize = FALSE
-  )
-  if (length(tables) > 1L && isTRUE(combine) && all(measured)) {
+  plot_list <- lapply(plot_list, function(p) {
+    table <- attr(p, "grobs", exact = TRUE)$full
+    thisplot::plot_autosize(
+      if (inherits(table, "gtable")) table else p,
+      base_size = NULL, label_autosize = FALSE
+    )
+  })
+  if (length(plot_list) > 1L && isTRUE(combine)) {
     np <- length(plot_list)
     ncol <- ncol %||% if (is.null(nrow)) grDevices::n2mfrow(np)[2L] else ceiling(np / nrow)
+    ncol <- min(ncol, np)
     nrow <- nrow %||% ceiling(np / ncol)
     sizes <- lapply(plot_list, attr, which = "size", exact = TRUE)
     cols <- rep(seq_len(ncol), length.out = np)
