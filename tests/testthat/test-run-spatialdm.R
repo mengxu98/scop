@@ -155,7 +155,7 @@ test_that("SpatialDM is registered as a non-edge CCC method", {
 test_that("SpatialDM uses a standalone pinned Python environment", {
   req <- getFromNamespace("env_requirements", "scop")(modules = "spatialdm", verbose = FALSE)
   expect_identical(req$python, "3.10-1")
-  expect_match(unname(req$packages[["SpatialDM"]]), "StatBiomed/SpatialDM.git")
+  expect_identical(unname(req$packages[["SpatialDM"]]), "SpatialDM==0.3.1")
   expect_match(unname(req$packages[["scipy"]]), "scipy==1.11.4")
   expect_match(unname(req$packages[["anndata"]]), "anndata==0.10.8")
   expect_error(

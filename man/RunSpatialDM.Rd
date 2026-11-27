@@ -103,3 +103,8 @@ A Seurat object with a schema-v1 \code{SpatialDM} result bundle.
 \description{
 Run official SpatialDM spatial ligand-receptor association analysis
 }
+\details{
+The Python environment must contain the SpatialDM release and its bundled
+ligand-receptor annotation files. If an older environment lacks those files,
+prepare a fresh SpatialDM environment and pass its name through \code{envname}.
+}

@@ -908,6 +908,58 @@ CCCHeatmap <- function(
       )
     }
   }
+  if (identical(method, "SpaTalk") && identical(plot_type, "bubble") &&
+    identical(display_by, "interaction")) {
+    df <- df[is.finite(df$score), , drop = FALSE]
+    if (!nrow(df)) {
+      log_message("No SpaTalk interaction scores remain after filtering", message_type = "error")
+    }
+    df$source <- df$sender
+    df$target <- df$receiver
+    df$prob <- df$score
+    df$pval <- df$pvalue
+    lr <- ccc_display_interaction(df$interaction_name)
+    pathway_bubble <- identical(plot_type_requested, "pathway_bubble")
+    if (pathway_bubble) {
+      df$interaction_name <- paste(stringr::str_wrap(df$pathway_name, width = 30), lr, sep = "\n")
+    } else {
+      df$interaction_name <- lr
+      if (is.numeric(top_n) && length(top_n) == 1L && is.finite(top_n) && top_n > 0L &&
+        is.null(pairLR.use) && is.null(interaction.use)) {
+        rank <- sort(tapply(df$prob, lr, sum), decreasing = TRUE)
+        df <- df[lr %in% names(utils::head(rank, top_n)), , drop = FALSE]
+      }
+    }
+    df$interaction_name_2 <- NULL
+    if (isTRUE(return.data)) {
+      return(df)
+    }
+    return(custom_cc_bubble_plot(
+      df = df,
+      title = title,
+      subtitle = subtitle,
+      color.by = dots[["bubble_color.by"]] %||%
+        if (identical(color.by, "pvalue")) "pval" else "prob",
+      bubble_size.range = bubble_size.range,
+      palette = if (missing(value_palette) && is.null(value_palcolor)) "Reds" else palette_cfg$value_palette,
+      palcolor = palette_cfg$value_palcolor,
+      font.size = font.size,
+      angle.x = dots[["angle.x"]] %||% if (!missing(x_text_angle)) x_text_angle else if (pathway_bubble) 90 else 45,
+      hjust.x = hjust.x,
+      vjust.x = if (pathway_bubble && is.null(dots[["vjust.x"]])) 0.5 else vjust.x,
+      legend.position = legend.position,
+      legend.direction = if (missing(legend.direction) && legend.position %in% c("top", "bottom")) {
+        "horizontal"
+      } else {
+        legend.direction
+      },
+      theme_use = theme_use,
+      theme_args = theme_args,
+      aspect.ratio = aspect.ratio,
+      remove.isolate = remove.isolate,
+      score.title = "SpaTalk score"
+    ))
+  }
   plot_data <- ccc_plot_tables(df, thresh = thresh)
   df <- plot_data$long_df
   pair_df <- plot_data$pair_df
@@ -1661,7 +1713,8 @@ custom_cc_bubble_plot <- function(
   theme_use = "theme_scop",
   theme_args = list(),
   aspect.ratio = NULL,
-  remove.isolate = TRUE
+  remove.isolate = TRUE,
+  score.title = NULL
 ) {
   color.by <- match.arg(color.by)
   if (is.null(df) || nrow(df) == 0L) {
@@ -1716,7 +1769,7 @@ custom_cc_bubble_plot <- function(
   )
   bands <- levels(df$pvalue_band)
   cols <- palette_colors(palette = palette, palcolor = palcolor, n = 9)
-  probability_title <- if (identical(legend.direction, "horizontal")) {
+  probability_title <- score.title %||% if (identical(legend.direction, "horizontal")) {
     "Communication probability"
   } else {
     "Communication\nprobability"
@@ -1812,6 +1865,10 @@ custom_cc_bubble_plot <- function(
       font_mm / sin(abs(angle.x) * pi / 180)
     } else {
       max(nchar(interaction_labels, type = "width")) * font_mm * 0.55
+    }
+    label_lines <- max(lengths(strsplit(interaction_labels, "\n", fixed = TRUE)))
+    if (label_lines > 1L) {
+      pitch_x <- pitch_x + (label_lines - 1L) * font_mm * 1.25
     }
     sized <- thisplot::plot_autosize(
       p,

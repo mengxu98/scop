@@ -1442,23 +1442,71 @@ SpatialCellChatPlot <- function(
     colors <- spatial_palette_colors(
       ccc_group_levels(coords$label), palette = if (missing(palette)) "Chinese" else palette, palcolor = colors
     )
+    self <- edges$sender == edges$receiver
+    arcs <- edges[!self, , drop = FALSE]
+    loops <- edges[self, , drop = FALSE]
+    span <- max(vapply(
+      coords[c("x_display", "y_display")],
+      function(x) diff(range(x, finite = TRUE)),
+      numeric(1)
+    ))
+    offset <- max(0.05, if (is.finite(span)) span * 0.04 else 0.1)
+    coincident <- which(arcs$x == arcs$xend & arcs$y == arcs$yend)
+    arcs$x_draw <- arcs$x
+    arcs$xend_draw <- arcs$xend
+    if (length(coincident)) {
+      groups <- match(arcs$sender[coincident], centers$label) <
+        match(arcs$receiver[coincident], centers$label)
+      gap <- ifelse(groups, offset, -offset)
+      arcs$x_draw[coincident] <- arcs$x[coincident] - gap
+      arcs$xend_draw[coincident] <- arcs$xend[coincident] + gap
+    }
+    weight_key <- function(data, params, size) {
+      color <- scales::alpha(data$colour %||% "black", data$alpha %||% 1)
+      grid::grobTree(
+        grid::segmentsGrob(
+          x0 = 0.12, x1 = 0.88, y0 = 0.5, y1 = 0.5,
+          gp = grid::gpar(col = color, lwd = data$linewidth * ggplot2::.pt * 0.25, lineend = "round")
+        ),
+        grid::polylineGrob(
+          x = c(0.67, 0.88, 0.67), y = c(0.25, 0.5, 0.75),
+          gp = grid::gpar(col = color, lwd = 0.8, lineend = "round", linejoin = "round")
+        )
+      )
+    }
     p <- ggplot2::ggplot() +
       ggplot2::geom_point(
         data = coords, ggplot2::aes(x = x_display, y = y_display),
         color = "grey80", size = point.size * 0.7, alpha = 0.5
       ) +
-      ggplot2::geom_segment(
-        data = edges,
-        ggplot2::aes(x = x, y = y, xend = xend, yend = yend, linewidth = weight),
-        alpha = 0.55,
-        arrow = grid::arrow(length = grid::unit(0.08, "inches"))
-      ) +
+      ggplot2::geom_curve(
+        data = arcs,
+        ggplot2::aes(x = .data$x_draw, y = y, xend = .data$xend_draw, yend = yend, linewidth = weight),
+        curvature = 0.18, alpha = 0.55,
+        arrow = grid::arrow(length = grid::unit(0.08, "inches")),
+        key_glyph = weight_key
+      )
+    if (nrow(loops)) {
+      p <- p + ggplot2::geom_curve(
+        data = loops,
+        ggplot2::aes(
+          x = x - offset * 0.65, y = y + offset * 0.30,
+          xend = xend + offset * 0.65, yend = yend + offset * 0.30,
+          linewidth = weight
+        ),
+        curvature = 1.3, alpha = 0.55, show.legend = !nrow(arcs),
+        arrow = grid::arrow(length = grid::unit(0.08, "inches")),
+        key_glyph = weight_key
+      )
+    }
+    p <- p +
       ggplot2::geom_point(
         data = centers,
         ggplot2::aes(x = x, y = y, color = label),
         size = point.size * 2
       ) +
       ggplot2::scale_colour_manual(values = colors) +
+      ggplot2::scale_linewidth_continuous(range = c(0.45, 2.2)) +
       ggplot2::coord_fixed() +
       ggplot2::labs(
         title = title %||% "Aggregated spatial communication network",
@@ -1466,7 +1514,12 @@ SpatialCellChatPlot <- function(
         color = "Group",
         linewidth = "Weight", x = NULL, y = NULL
       ) +
-      ggplot2::guides(color = ggplot2::guide_legend(override.aes = list(size = 3.4, alpha = 1))) +
+      ggplot2::guides(
+        color = ggplot2::guide_legend(override.aes = list(size = 3.4, alpha = 1)),
+        linewidth = ggplot2::guide_legend(
+          theme = ggplot2::theme(legend.key.width = grid::unit(8, "mm"))
+        )
+      ) +
       spatial_theme
     return(thisplot::plot_autosize(p, panel_width = 66, base_size = NULL, label_autosize = FALSE))
   }

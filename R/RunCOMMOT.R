@@ -177,8 +177,9 @@ commot_execute <- function(
     species = species, database = database,
     distance_threshold = distance.threshold,
     cluster = cluster, direction = direction,
-    communication_args = communication.args,
-    cluster_args = cluster.args, direction_args = direction.args,
+    communication_args = if (length(communication.args)) communication.args,
+    cluster_args = if (length(cluster.args)) cluster.args,
+    direction_args = if (length(direction.args)) direction.args,
     store_h5ad = store.h5ad
   ))
   config_path <- file.path(workdir, "config.json")
@@ -424,8 +425,8 @@ commot_select_key <- function(table, key, label) {
 #' data(visium_human_pancreas_sub)
 #' spatial <- RunCOMMOT(
 #'   visium_human_pancreas_sub,
-#'   group.by = "CellType",
-#'   coord.cols = c("col", "row"),
+#'   group.by = "coda_label", assay = "Spatial", image = "slice1",
+#'   coord.cols = c("x", "y"), distance.threshold = 136.7708,
 #'   cluster = TRUE,
 #'   direction = TRUE,
 #'   backend = "r"
@@ -466,25 +467,28 @@ COMMOTPlot <- function(
     table <- commot_select_key(table, key, "cluster output")
     finite <- table$score[is.finite(table$score)]
     nonnegative <- length(finite) > 0L && all(finite >= 0)
-    p <- ggplot2::ggplot(table, ggplot2::aes(
-        x = .data[["receiver"]], y = .data[["sender"]], fill = .data[["score"]]
-      )) +
-        ggplot2::geom_tile(colour = "white", linewidth = 0.3) +
-        ggplot2::coord_fixed(expand = FALSE) +
-        ggplot2::scale_fill_gradientn(
-          colours = thisplot::palette_colors(n = 100, palette = if (nonnegative) "Reds" else "viridis"),
-          limits = if (nonnegative) c(0, if (max(finite) > 0) max(finite) else 1),
-          na.value = "white",
-          guide = ggplot2::guide_colourbar(frame.colour = "black")
-        ) +
-        ggplot2::labs(x = "Receiver", y = "Sender", fill = "Score") +
-        apply_plot_theme(theme_use, theme_args) +
-        ggplot2::theme(
-          axis.text.x = ggplot2::element_text(angle = 90, hjust = 1, vjust = 0.5),
-          panel.grid = ggplot2::element_blank(),
-          legend.justification.right = c(0, 0.5)
-        )
-    return(thisplot::plot_autosize(p, panel_width = 60, base_size = NULL, label_autosize = FALSE))
+    table$sender <- factor(table$sender, levels = rev(sort(unique(table$sender))))
+    table$receiver <- factor(table$receiver, levels = sort(unique(table$receiver)))
+    if (anyDuplicated(table[c("sender", "receiver")])) {
+      log_message("The stored COMMOT matrix has duplicate sender-receiver records", message_type = "error")
+    }
+    mat <- ccc_pivot_matrix(table, "sender", "receiver", "score")
+    dots <- list(...)
+    groups <- union(rownames(mat), colnames(mat))
+    palette <- dots$cell_palette %||% dots$palette %||% "Chinese"
+    palcolor <- ccc_cell_palcolor(object, "COMMOT", palette, dots$cell_palcolor %||% dots$palcolor, groups)
+    position <- dots$legend.position %||% theme_args$legend.position %||% "right"
+    font.size <- dots$font.size %||% 10
+    return(ccc_matrix_heatmap_plot(
+      mat, value_label = "Score", row_title = "Sender", column_title = "Receiver",
+      add_text = FALSE, compact = TRUE, width = ncol(mat) * 5.6 * font.size / 10,
+      units = "mm", value_palette = if (nonnegative) "Reds" else "viridis",
+      value_limits = if (nonnegative) c(0, if (max(finite) > 0) max(finite) else 1),
+      cell_palette = palette, cell_palcolor = palcolor, font.size = font.size,
+      legend.position = position,
+      legend.direction = dots$legend.direction %||% if (position %in% c("top", "bottom")) "horizontal" else "vertical",
+      theme_use = theme_use, theme_args = theme_args
+    ))
   }
   if (identical(theme_use, "theme_scop") && !"panel.border" %in% names(theme_args)) {
     theme_args$panel.border <- ggplot2::element_blank()

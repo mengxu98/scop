@@ -473,3 +473,34 @@ test_that("SpaTalkPlot requires an explicit result when several are stored", {
     "ggplot"
   )
 })
+
+test_that("SpaTalk pathway views use only exact directed ligand-receptor annotations", {
+  mock_spatalk_bindings()
+  out <- RunSpaTalk(make_spatalk_test_object(),
+    group.by = "celltype", mode = "single_cell", backend = "r", verbose = FALSE
+  )
+  expect_error(SpaTalkPlot(out, plot_type = "pathway"), "no pathway labels")
+  out@tools$SpaTalk$results$default$pathway_table <- data.frame(
+    src = c("L1", "L1", "R1", "R1"), dest = c("R1", "R1", "L1", "TF1"),
+    pathway = c("direct", "direct", "reversed", "downstream")
+  )
+  before <- out@tools
+  for (type in c("bubble", "pathway")) {
+    p <- SpaTalkPlot(out, plot_type = type)
+    expect_s3_class(p, "ggplot")
+    expect_identical(p$data$prob, 2)
+    expect_identical(p$data$pval, 0.02)
+    expect_identical(p$scales$get_scales("fill")$name, "SpaTalk score")
+    expect_identical(p$scales$get_scales("size")$name, "P-value")
+    expect_identical(p$theme$legend.justification.right, c(0, 0.5))
+  }
+  testthat::local_mocked_bindings(CCCHeatmap = function(object, ...) {
+    displayed <- object@tools$SpaTalk$long_table
+    expect_identical(displayed$pathway_name, "direct")
+    expect_identical(displayed$score, 2)
+    expect_identical(displayed$pvalue, 0.02)
+    ggplot2::ggplot()
+  })
+  expect_s3_class(SpaTalkPlot(out, plot_type = "pathway"), "ggplot")
+  expect_identical(out@tools, before)
+})

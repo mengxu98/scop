@@ -613,8 +613,11 @@ ccc_spatial_network_plot <- function(
   if ("FOV" %in% image_class && !"VisiumV2" %in% image_class) {
     p <- p + ggplot2::scale_y_reverse()
   }
+  x_span <- diff(range(coords$x_display))
+  y_span <- diff(range(coords$y_display))
+  width_scale <- if (x_span > 0 && y_span > 0) min(1, 2 * x_span / y_span) else 1
   thisplot::plot_autosize(
-    p, panel_width = 66 * (font.size %||% 10) / 10,
+    p, panel_width = 66 * width_scale * (font.size %||% 10) / 10,
     base_size = NULL, label_autosize = FALSE
   )
 }

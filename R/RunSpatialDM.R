@@ -266,6 +266,11 @@ spatialdm_bundle <- function(input, executed, parameters, result.name) {
 #' @inheritParams scop-params
 #' @param srt Deprecated alias for `object`; supply exactly one of the two. It
 #' will be removed in scop 1.0.0.
+#' @details
+#' The Python environment must contain the SpatialDM release and its bundled
+#' ligand-receptor annotation files. If an older environment lacks those files,
+#' prepare a fresh SpatialDM environment and pass its name through `envname`.
+#'
 #' @param object A `Seurat` spatial object.
 #' @param species Built-in SpatialDM species (`"human"` or `"mouse"`).
 #' @param lr.database Optional custom LR table with `ligand`, `receptor`, and
@@ -421,7 +426,12 @@ GetSpatialDMResult <- function(object, result.name = NULL, type = c("global", "l
 #' @param signaling Which stored weight matrix to use.
 #' @param image.scale Image scale factor matching the selected raster.
 #' @param highlight LR interactions to label in the global plot.
-#' @param palette,palcolor,theme_use,theme_args SCOP plotting controls.
+#' @param palette Palette name. The global plot defaults to `"Chinese"`;
+#'   other plot types retain their continuous palettes.
+#' @param palcolor Custom colors that override the palette. For the global plot,
+#'   supply colors in the order `Selected`, `Not selected`, or name them
+#'   with those labels. A single unnamed color overrides only `Selected`.
+#' @param theme_use,theme_args SCOP theme controls.
 #' @param ... Arguments passed to other functions.
 #' @return A `ggplot` or `patchwork` object.
 #'
@@ -429,12 +439,16 @@ GetSpatialDMResult <- function(object, result.name = NULL, type = c("global", "l
 #' @examples
 #' \dontrun{
 #' data(visium_human_pancreas_sub)
+#' spatial <- Seurat::NormalizeData(
+#'   visium_human_pancreas_sub, assay = "Spatial", verbose = FALSE
+#' )
 #' spatial <- RunSpatialDM(
-#'   visium_human_pancreas_sub,
-#'   coord.cols = c("col", "row")
+#'   spatial, assay = "Spatial", image = "slice1",
+#'   coord.cols = c("x", "y"), coordinate.unit = "pixel", l = 54.70832
 #' )
 #' SpatialDMPlot(spatial, plot_type = "global")
 #' SpatialDMPlot(spatial, plot_type = "weights", spot = colnames(spatial)[1])
+#' SpatialDMPlot(spatial, plot_type = "local", pair = "MDK_SDC4")
 #' }
 SpatialDMPlot <- function(
   object, result.name = NULL, plot_type = c("weights", "global", "local"),
@@ -470,19 +484,39 @@ SpatialDMPlot <- function(
   if (identical(plot_type, "global")) {
     df <- result$global
     df$selected <- as.logical(df$selected)
+    df$selection <- factor(df$selected, levels = c(TRUE, FALSE), labels = c("Selected", "Not selected"))
+    df <- df[order(df$selected, na.last = FALSE), , drop = FALSE]
+    selection_levels <- levels(df$selection)
+    global_palette <- if (missing(palette)) "Chinese" else palette
+    if (is.null(palcolor) || !length(palcolor) ||
+      (length(palcolor) == 1L && is.null(names(palcolor)))) {
+      colors <- spatial_palette_colors(rev(selection_levels), palette = global_palette)
+      if (length(palcolor) && nzchar(palcolor)) colors["Selected"] <- unlist(palcolor)
+    } else {
+      colors <- spatial_palette_colors(selection_levels, palette = global_palette, palcolor = palcolor)
+    }
     global_p_label <- if ("fdr" %in% colnames(df)) "-log10(FDR)" else "-log10(p-value)"
     df$minus_log10_fdr <- -log10(pmax(as.numeric(df$fdr %||% df$pvalue), .Machine$double.xmin))
     p <- ggplot2::ggplot(df, ggplot2::aes(x = .data$moran_r, y = .data$minus_log10_fdr)) +
-      ggplot2::geom_point(ggplot2::aes(color = .data$selected), alpha = 0.75) +
+      ggplot2::geom_point(ggplot2::aes(color = .data$selection), size = 1.8, alpha = 0.82) +
       ggplot2::scale_color_manual(
-        values = c(`FALSE` = "grey70", `TRUE` = palcolor %||% "#D55E00"),
-        name = "Selected"
+        values = colors,
+        name = "Selection"
       ) +
-      ggplot2::labs(x = "Global Moran's R", y = global_p_label, title = "Spatial association (Moran's R)") +
+      ggplot2::labs(x = "Global Moran's R", y = global_p_label, title = "Spatial association") +
       apply_plot_theme(theme_use = theme_use, theme_args = theme_args) +
-      ggplot2::guides(color = ggplot2::guide_legend(override.aes = list(size = 3.4, alpha = 1)))
+      ggplot2::guides(color = ggplot2::guide_legend(override.aes = list(size = 3.4, alpha = 1))) +
+      ggplot2::theme(aspect.ratio = 1)
+    if (identical(theme_use, "theme_scop") && !length(theme_args)) {
+      p <- p + ggplot2::theme(
+        panel.grid.major.y = ggplot2::element_line(colour = "grey92", linewidth = 0.25),
+        legend.location = "panel", legend.justification.right = c(0, 0.5)
+      )
+    }
     if (!is.null(highlight)) p <- p + ggrepel::geom_text_repel(data = df[df$interaction %in% highlight, , drop = FALSE], ggplot2::aes(label = .data$interaction), size = 3, max.overlaps = Inf)
-    return(thisplot::plot_autosize(p, panel_width = 70, panel_height = 45, base_size = NULL))
+    sized <- thisplot::plot_autosize(p, panel_width = 56, panel_height = 56, base_size = NULL)
+    attr(p, "size") <- attr(sized, "size")
+    return(p)
   }
   if (is.null(pair) || length(pair) != 1L || !pair %in% rownames(result$local$local_p)) log_message("{.arg pair} must identify one stored local LR result", message_type = "error")
   pvalue <- as.numeric(result$local$local_p[pair, ])
@@ -500,7 +534,7 @@ SpatialDMPlot <- function(
     theme_args = theme_args, legend.title = local_label, ...
   ))
   plots[[1L]] <- plots[[1L]] & ggplot2::labs(title = "Local association")
-  for (gene in c(ligands, receptors)) {
+  for (gene in unique(c(ligands, receptors))) {
     if (gene %in% rownames(object)) {
       plots[[length(plots) + 1L]] <- SpatialSpotPlot(object,
         features = gene,
