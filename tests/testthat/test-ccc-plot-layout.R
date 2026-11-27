@@ -45,6 +45,31 @@ test_that("pathway hierarchy preserves sender/receiver scores and shared positio
   expect_identical(x@tools, original)
 })
 
+test_that("separate pathways align shared cell colors by label", {
+  object <- ccc_layout_fixture()
+  first <- object@tools$MDIC3$long_table[1:2, ]
+  first$sender <- c("A", "B")
+  first$receiver <- c("B", "A")
+  first$method <- "MDIC3"
+  second <- first
+  second$sender <- c("C", "B")
+  second$receiver <- c("B", "C")
+  second$method <- "SpaTalk"
+  object@tools$MDIC3$long_table <- first
+  object@tools$SpaTalk <- list(long_table = second, coordinate_contract_version = 3L)
+  object@tools$CCC <- list(methods = c("MDIC3", "SpaTalk"), long_table = rbind(first, second))
+  colors <- c(C = "#770077", A = "#707700", B = "#007777")
+  p <- CCCNetworkPlot(
+    object, method = "CCC", plot_type = "pathway", layout = "hierarchy",
+    signaling = "P1", link_palcolor = colors, cell_palcolor = colors
+  )
+  for (plot in p) {
+    if (!inherits(plot, "ggplot")) plot <- plot[[1L]]
+    expect_identical(plot$data$color, unname(colors[as.character(plot$data$sender)]))
+    expect_equal(sort(plot$data$weight), sort(first$score))
+  }
+})
+
 test_that("aggregate heatmaps measure the native layout without leaking a device", {
   skip_if_not_installed("ComplexHeatmap")
   skip_if_not_installed("circlize")
@@ -196,10 +221,10 @@ test_that("dense pathway summaries retain ranks on a shared numeric axis", {
   records$score <- seq_len(20L)
   p <- ccc_pathway_summary_plot(records)
   expect_equal(p$data$total_strength, 20:1)
-  expect_equal(as.integer(table(p$data$section)), c(7, 7, 6))
+  expect_false("section" %in% names(p$data))
   built <- ggplot2::ggplot_build(p)
-  ranges <- lapply(built$layout$panel_params, function(panel) panel$x.range)
-  expect_identical(ranges, rep(ranges[1L], 3L))
+  expect_length(built$layout$panel_params, 1L)
+  expect_gt(attr(p, "size")$height, 20 * 4)
   expect_identical(p$labels$x, "Total pathway communication strength")
   sparse <- ccc_pathway_summary_plot(records, top_n = 8, value = "count")
   expect_false("section" %in% names(sparse$data))

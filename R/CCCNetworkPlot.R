@@ -559,6 +559,7 @@ CCCNetworkPlot <- function(
       theme_args = theme_args
     ))
   }
+  comparison_palette_cfg <- palette_cfg
   palette_cfg$cell_palcolor <- ccc_cell_palcolor(
     srt, method, palette_cfg$cell_palette, palette_cfg$cell_palcolor
   )
@@ -576,7 +577,10 @@ CCCNetworkPlot <- function(
     sample = sample
   )
   if (identical(method, "CCC") && identical(combine_methods, "separate")) {
-    return(ccc_plot_methods_separately(match.call(), srt = srt, env = parent.frame()))
+    return(ccc_plot_methods_separately(
+      match.call(), srt = srt, env = parent.frame(), palette_cfg = comparison_palette_cfg,
+      link_groups = plot_type %in% c("circle", "pathway", "individual", "individual_lr", "cell_chord")
+    ))
   }
   srt <- ccc_prepare_combined_object(
     srt = srt,

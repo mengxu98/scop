@@ -487,6 +487,7 @@ CCCHeatmap <- function(
   )
 
   method <- detect_method(srt = srt, method = method)
+  comparison_palette_cfg <- palette_cfg
   palette_cfg$cell_palcolor <- ccc_cell_palcolor(
     srt, method, palette_cfg$cell_palette, palette_cfg$cell_palcolor
   )
@@ -499,7 +500,7 @@ CCCHeatmap <- function(
     sample = sample
   )
   if (identical(method, "CCC") && identical(combine_methods, "separate")) {
-    return(ccc_plot_methods_separately(match.call(), srt = srt, env = parent.frame()))
+    return(ccc_plot_methods_separately(match.call(), srt = srt, env = parent.frame(), palette_cfg = comparison_palette_cfg))
   }
   srt <- ccc_prepare_combined_object(
     srt = srt,

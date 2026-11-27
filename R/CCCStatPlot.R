@@ -278,6 +278,7 @@ CCCStatPlot <- function(
   )
 
   method <- detect_method(srt = srt, method = method)
+  comparison_palette_cfg <- palette_cfg
   palette_cfg$cell_palcolor <- ccc_cell_palcolor(
     srt, method, palette_cfg$cell_palette, palette_cfg$cell_palcolor
   )
@@ -290,7 +291,13 @@ CCCStatPlot <- function(
     sample = sample
   )
   if (identical(method, "CCC") && identical(combine_methods, "separate")) {
-    return(ccc_plot_methods_separately(match.call(), srt = srt, env = parent.frame()))
+    share_colors <- plot_type %in% c(
+      "sankey", "scatter", "role_scatter", "role_network", "role_network_marsilea", "role_change"
+    ) || (plot_type %in% c("box", "violin") && !identical(facet_by, "pair"))
+    return(ccc_plot_methods_separately(
+      match.call(), srt = srt, env = parent.frame(),
+      palette_cfg = if (share_colors) comparison_palette_cfg
+    ))
   }
   srt <- ccc_prepare_combined_object(
     srt = srt,
@@ -2100,10 +2107,6 @@ ccc_pathway_summary_plot <- function(
     ggplot2::element_blank()
   }
   compact <- identical(theme_use, "theme_scop") && !length(theme_args)
-  if (compact && nrow(summary) > 9L) {
-    n_sections <- ceiling(nrow(summary) / 9)
-    summary$section <- (seq_len(nrow(summary)) - 1L) %/% ceiling(nrow(summary) / n_sections) + 1L
-  }
   metric_label <- switch(value,
     count = "Significant interactions",
     mean = "Mean pathway communication strength",
@@ -2124,10 +2127,6 @@ ccc_pathway_summary_plot <- function(
     ggplot2::scale_fill_manual(values = bar_cols, guide = "none") +
     ggplot2::scale_x_continuous(expand = ggplot2::expansion(mult = c(0, 0.50)))
 
-  if ("section" %in% names(summary)) {
-    p <- p + ggplot2::facet_wrap(~section, ncol = 1, scales = "free_y")
-  }
-
   p <- finalize_cc_plot(
     p,
     title = title %||% "Significant pathway communication summary",
@@ -2144,13 +2143,6 @@ ccc_pathway_summary_plot <- function(
       panel.grid.major.y = ggplot2::element_blank(),
       panel.grid.minor = ggplot2::element_blank()
     )
-  if ("section" %in% names(summary)) {
-    p <- p + ggplot2::theme(
-      strip.text = ggplot2::element_blank(),
-      strip.background = ggplot2::element_blank(),
-      panel.spacing.y = grid::unit(1.5, "mm")
-    )
-  }
   if (compact) {
     p <- p + ggplot2::theme(
       axis.ticks.y = ggplot2::element_blank(),
@@ -2158,6 +2150,14 @@ ccc_pathway_summary_plot <- function(
       axis.line.x = ggplot2::element_line(colour = "grey65", linewidth = 0.3),
       plot.margin = ggplot2::margin(4, 5, 4, 4)
     )
+  }
+  if (nrow(summary) > 9L) {
+    pitch <- font.size * 25.4 / 72 * 1.6
+    sized <- thisplot::plot_autosize(
+      p, panel_height = (nrow(summary) + 1L) * pitch,
+      base_size = NULL, label_autosize = FALSE
+    )
+    attr(p, "size") <- attr(sized, "size")
   }
   p
 }

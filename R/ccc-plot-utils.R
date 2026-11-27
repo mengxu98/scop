@@ -1026,10 +1026,34 @@ ccc_prepare_combined_object <- function(
   srt
 }
 
-ccc_plot_methods_separately <- function(call, srt, env) {
+ccc_plot_methods_separately <- function(call, srt, env, palette_cfg, link_groups = FALSE) {
   unified <- ccc_semantic_long_table(srt@tools[["CCC"]]$long_table)
   methods <- unique(as.character(unified$method))
   methods <- methods[!is.na(methods) & nzchar(methods) & methods != "CCC"]
+  group_by <- unique(unlist(lapply(methods, function(method) srt@tools[[method]]$parameters$group.by)))
+  group_by <- group_by[!is.na(group_by) & nzchar(group_by)]
+  share_groups <- !is.null(palette_cfg) && length(group_by) <= 1L
+  if (share_groups) {
+    group_by <- intersect(group_by, colnames(srt@meta.data))
+    labels <- unique(c(
+      unlist(lapply(srt@meta.data[group_by], ccc_group_levels)),
+      sort(unique(c(ccc_group_levels(unified$sender), ccc_group_levels(unified$receiver))))
+    ))
+    shared_colors <- function(palette, colors) {
+      if (!length(labels)) return(colors)
+      if (is.null(names(colors))) {
+        return(thisplot::palette_colors(labels, palette = palette, palcolor = colors))
+      }
+      resolved <- thisplot::palette_colors(labels, palette = palette)
+      override <- intersect(names(colors), labels)
+      resolved[override] <- unlist(colors[override])
+      resolved
+    }
+    cell_colors <- shared_colors(palette_cfg$cell_palette, palette_cfg$cell_palcolor)
+    if (link_groups) {
+      link_colors <- shared_colors(palette_cfg$link_palette, palette_cfg$link_palcolor)
+    }
+  }
   plots <- lapply(methods, function(method) {
     method_table <- unified[as.character(unified$method) == method, , drop = FALSE]
     bundle <- srt@tools[[method]] %||% list(method = method)
@@ -1042,6 +1066,10 @@ ccc_plot_methods_separately <- function(call, srt, env) {
     next_call$srt <- NULL
     next_call$object <- method_object
     next_call$method <- method
+    if (share_groups) {
+      next_call$cell_palcolor <- cell_colors
+      if (link_groups) next_call$link_palcolor <- link_colors
+    }
     next_call$combine_methods <- "legacy"
     next_call$resource <- NULL
     next_call$condition <- NULL
