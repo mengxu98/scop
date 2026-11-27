@@ -70,6 +70,78 @@ test_that("separate pathways align shared cell colors by label", {
   }
 })
 
+test_that("separate CellChat panels retain the requested native condition", {
+  x <- ccc_layout_fixture()
+  native <- function(sender, receiver, weight) data.frame(
+    source = sender, target = receiver, ligand = "L", receptor = "R",
+    interaction_name = "L_R", interaction_name_2 = "L - R",
+    pathway_name = "P1", prob = weight, pval = .01
+  )
+  native_result <- methods::setClass(
+    "CCCConditionPlotFixture", slots = c(idents = "factor", table = "data.frame"),
+    where = environment()
+  )
+  native_all <- native_result(idents = factor(c("A", "B")), table = native("B", "A", .90))
+  native_b <- native_result(idents = factor(c("A", "B")), table = native("A", "B", .30))
+  local_mocked_bindings(
+    subset_cc_table = function(object, slot.name, signaling, pairLR.use,
+                               sources.use, targets.use, thresh, dataset) {
+      rows <- object@table
+      if (!is.null(dataset)) rows$dataset <- dataset
+      rows
+    },
+    .package = "scop"
+  )
+  x@tools$CellChat <- list(results = list(
+    ALL = list(cellchat_object = native_all), ConditionB = list(cellchat_object = native_b)
+  ))
+  cellchat <- ccc_bundle_long_table(x, "CellChat")
+  expect_identical(cellchat$condition, c("ALL", "ConditionB"))
+  cellchat$condition <- NA_character_
+  mdic <- transform(standardize_long_df(native("A", "B", .45)), condition = "ConditionB", method = "MDIC3")
+  x@tools$CCC <- list(
+    methods = c("CellChat", "MDIC3"), long_table = ccc_bind_long_tables(list(cellchat, mdic))
+  )
+  condition <- "ConditionB"
+  separated <- CCCNetworkPlot(
+    x, method = "CCC", plot_type = "pathway", layout = "hierarchy",
+    condition = condition, signaling = "P1"
+  )
+  reference <- CCCNetworkPlot(
+    x, method = "CellChat", plot_type = "pathway", layout = "hierarchy",
+    condition = condition, signaling = "P1"
+  )
+  edges <- function(p) {
+    if (!inherits(p, "ggplot")) p <- p[[1L]]
+    p$data[c("sender", "receiver", "weight")]
+  }
+  expect_equal(edges(separated$CellChat), edges(reference))
+  expect_equal(edges(separated$MDIC3)$weight, .45)
+
+  bubble <- CCCHeatmap(x, method = "CCC", plot_type = "bubble", condition = condition, return.data = TRUE)
+  expect_equal(bubble$CellChat$prob, .30)
+  stat <- CCCStatPlot(x, method = "CCC", plot_type = "pathway_summary", condition = condition, signaling = "P1")
+  expect_equal(stat$CellChat$data$total_strength, .30)
+  expect_equal(stat$MDIC3$data$total_strength, .45)
+
+  names(x@tools$CellChat$results)[1L] <- "ConditionA"
+  no_all <- CCCNetworkPlot(
+    x, method = "CCC", plot_type = "pathway", layout = "hierarchy",
+    condition = condition, signaling = "P1"
+  )
+  expect_equal(edges(no_all$CellChat), edges(reference))
+  x@tools$CCC$long_table$sample <- ifelse(x@tools$CCC$long_table$method == "CellChat", "S1", "S2")
+  expect_error(
+    CCCNetworkPlot(x, method = "CCC", plot_type = "pathway", sample = "S1", signaling = "P1"),
+    "do not support"
+  )
+  generic <- CCCNetworkPlot(
+    x, method = "CCC", plot_type = "pathway", layout = "hierarchy", sample = "S2", signaling = "P1"
+  )
+  expect_named(generic, "MDIC3")
+  expect_equal(edges(generic$MDIC3)$weight, .45)
+})
+
 test_that("aggregate heatmaps measure the native layout without leaking a device", {
   skip_if_not_installed("ComplexHeatmap")
   skip_if_not_installed("circlize")

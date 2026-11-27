@@ -14,7 +14,8 @@
 #' combines within-method percentile ranks for visualization, and `"legacy"`
 #' retains the deprecated raw-score aggregation.
 #' @param resource,sample Optional resource and sample/context filters for
-#' unified CCC results.
+#' unified CCC results. Separate CellChat panels use a native result selected
+#' by `condition` and do not support these additional filters.
 #' @param plot_type Plot type. One of:
 #' - `"bar"` — horizontal bar chart of top pairs or interactions according to
 #'   `display_by`.
@@ -296,7 +297,7 @@ CCCStatPlot <- function(
     ) || (plot_type %in% c("box", "violin") && !identical(facet_by, "pair"))
     return(ccc_plot_methods_separately(
       match.call(), srt = srt, env = parent.frame(),
-      palette_cfg = if (share_colors) comparison_palette_cfg
+      palette_cfg = if (share_colors) comparison_palette_cfg, condition = condition, filter_context = !is.null(resource) || !is.null(sample)
     ))
   }
   srt <- ccc_prepare_combined_object(

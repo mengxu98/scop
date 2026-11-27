@@ -579,7 +579,8 @@ CCCNetworkPlot <- function(
   if (identical(method, "CCC") && identical(combine_methods, "separate")) {
     return(ccc_plot_methods_separately(
       match.call(), srt = srt, env = parent.frame(), palette_cfg = comparison_palette_cfg,
-      link_groups = plot_type %in% c("circle", "pathway", "individual", "individual_lr", "cell_chord")
+      link_groups = plot_type %in% c("circle", "pathway", "individual", "individual_lr", "cell_chord"),
+      condition = condition, filter_context = !is.null(resource) || !is.null(sample)
     ))
   }
   srt <- ccc_prepare_combined_object(

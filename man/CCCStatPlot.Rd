@@ -182,7 +182,8 @@ combines within-method percentile ranks for visualization, and \code{"legacy"}
 retains the deprecated raw-score aggregation.}
 
 \item{resource, sample}{Optional resource and sample/context filters for
-unified CCC results.}
+unified CCC results. Separate CellChat panels use a native result selected
+by \code{condition} and do not support these additional filters.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}

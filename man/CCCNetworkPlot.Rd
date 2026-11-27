@@ -225,7 +225,8 @@ combines within-method percentile ranks for visualization, and \code{"legacy"}
 retains the deprecated raw-score aggregation.}
 
 \item{resource, sample}{Optional resource and sample/context filters for
-unified CCC results.}
+unified CCC results. Separate CellChat panels use a native result selected
+by \code{condition} and do not support these additional filters.}
 
 \item{spot_size, spot_alpha}{Size and alpha of ordinary spatial observations.}
 

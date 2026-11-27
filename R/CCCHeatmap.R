@@ -500,7 +500,10 @@ CCCHeatmap <- function(
     sample = sample
   )
   if (identical(method, "CCC") && identical(combine_methods, "separate")) {
-    return(ccc_plot_methods_separately(match.call(), srt = srt, env = parent.frame(), palette_cfg = comparison_palette_cfg))
+    return(ccc_plot_methods_separately(
+      match.call(), srt = srt, env = parent.frame(), palette_cfg = comparison_palette_cfg,
+      condition = condition, filter_context = !is.null(resource) || !is.null(sample)
+    ))
   }
   srt <- ccc_prepare_combined_object(
     srt = srt,

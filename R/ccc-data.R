@@ -486,6 +486,7 @@ ccc_build_cellchat_long_table <- function(srt, thresh = 0.05) {
     if (is.null(out) || nrow(out) == 0L) {
       return(data.frame())
     }
+    out$condition <- condition
     out
   })
   pieces <- Filter(function(x) is.data.frame(x) && nrow(x) > 0L, pieces)

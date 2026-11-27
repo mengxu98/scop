@@ -831,6 +831,12 @@ ccc_filter_table_context <- function(
     df <- df[as.character(df$resource) %in% as.character(resource), , drop = FALSE]
   }
   if (!is.null(condition)) {
+    if (all(c("method", "dataset") %in% names(df))) {
+      conditions <- if ("condition" %in% names(df)) as.character(df$condition) else rep(NA_character_, nrow(df))
+      cellchat <- which(df$method == "CellChat" & (is.na(conditions) | !nzchar(conditions)))
+      conditions[cellchat] <- as.character(df$dataset[cellchat])
+      df$condition <- conditions
+    }
     available_condition <- if ("condition" %in% colnames(df)) {
       unique(as.character(df$condition))
     } else {
@@ -1026,7 +1032,15 @@ ccc_prepare_combined_object <- function(
   srt
 }
 
-ccc_plot_methods_separately <- function(call, srt, env, palette_cfg, link_groups = FALSE) {
+ccc_plot_methods_separately <- function(
+  call,
+  srt,
+  env,
+  palette_cfg,
+  link_groups = FALSE,
+  condition = NULL,
+  filter_context = FALSE
+) {
   unified <- ccc_semantic_long_table(srt@tools[["CCC"]]$long_table)
   methods <- unique(as.character(unified$method))
   methods <- methods[!is.na(methods) & nzchar(methods) & methods != "CCC"]
@@ -1073,6 +1087,21 @@ ccc_plot_methods_separately <- function(call, srt, env, palette_cfg, link_groups
     next_call$combine_methods <- "legacy"
     next_call$resource <- NULL
     next_call$condition <- NULL
+    if (identical(method, "CellChat") && length(c(cc_names(srt), comparison_cc_names(srt)))) {
+      if (filter_context) {
+        log_message(
+          "Separate CellChat panes do not support {.arg resource} or {.arg sample}; select a native result with {.arg condition}",
+          message_type = "error"
+        )
+      }
+      if (length(condition) > 1L) {
+        log_message(
+          "CellChat panes require a single {.arg condition}; draw each condition separately",
+          message_type = "error"
+        )
+      }
+      next_call$condition <- condition
+    }
     next_call$sample <- NULL
     eval(next_call, envir = env)
   })
