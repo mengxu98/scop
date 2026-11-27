@@ -701,6 +701,22 @@ ccc_palettes <- function(
   )
 }
 
+ccc_cell_palcolor <- function(srt, method, palette = "Chinese", palcolor = NULL, groups = NULL) {
+  if (!is.null(palcolor)) return(palcolor)
+  bundle <- srt@tools[[method]]
+  group_by <- bundle$parameters$group.by
+  reference <- if (length(group_by) == 1L) srt@meta.data[[group_by]]
+  if (!is.factor(reference)) reference <- sort(unique(reference))
+  table <- bundle$long_table %||% bundle$primary_table
+  labels <- unique(c(
+    ccc_group_levels(reference),
+    ccc_group_levels(groups),
+    ccc_group_levels(table$sender),
+    ccc_group_levels(table$receiver)
+  ))
+  if (length(labels)) thisplot::palette_colors(labels, palette = palette)
+}
+
 ccc_assign_plot_score <- function(df, value = "score") {
   if (is.null(df) || nrow(df) == 0L) {
     return(df)
@@ -1073,8 +1089,8 @@ ccc_matrix_heatmap_plot <- function(
   symmetric = FALSE,
   compact = FALSE,
   value_limits = NULL,
-  na_col = "grey",
-  na_label = NULL
+  na_col = "white",
+  na_label = "No retained record"
 ) {
   check_r("ComplexHeatmap", verbose = FALSE)
 
@@ -1214,8 +1230,8 @@ ccc_draw_heatmap <- function(
   compact = FALSE,
   sequential = FALSE,
   value_limits = NULL,
-  na_col = "grey",
-  na_label = NULL
+  na_col = "white",
+  na_label = "No retained record"
 ) {
   if (compact) {
     grDevices::pdf(NULL)
@@ -1314,7 +1330,17 @@ ccc_draw_heatmap <- function(
       lwd = 0.6
     )
   } else {
-    layer_fun <- NULL
+    layer_fun <- if (isTRUE(border) && anyNA(mat)) {
+      function(j, i, x, y, width, height, fill) {
+        missing <- is.na(mat[cbind(i, j)])
+        if (any(missing)) {
+          grid::grid.rect(
+            x[missing], y[missing], width[missing], height[missing],
+            gp = grid::gpar(col = "#D9D9D9", fill = NA, lwd = 0.65)
+          )
+        }
+      }
+    }
     rect_gp <- grid::gpar(
       col = if (isTRUE(border)) "white" else NA,
       lwd = 1
@@ -1387,7 +1413,7 @@ ccc_draw_heatmap <- function(
     col_cols <- col_cols %||% palette_colors(
       col_nms,
       palette = cell_palette,
-      palcolor = cell_palcolor
+      palcolor = ccc_align_named_palcolor(cell_palcolor, col_nms)
     )
     get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation")(
       df = stats::setNames(
@@ -1419,7 +1445,7 @@ ccc_draw_heatmap <- function(
     row_cols <- row_cols %||% palette_colors(
       row_nms,
       palette = cell_palette,
-      palcolor = cell_palcolor
+      palcolor = ccc_align_named_palcolor(cell_palcolor, row_nms)
     )
     get_namespace_fun("ComplexHeatmap", "rowAnnotation")(
       df = stats::setNames(
@@ -1448,7 +1474,7 @@ ccc_draw_heatmap <- function(
   top_names <- colnames(mat)
   right_names <- rownames(mat)
   top_cols <- if (compact) col_cols else if (!is.null(top_names)) {
-    palette_colors(top_names, palette = cell_palette, palcolor = cell_palcolor)
+    palette_colors(top_names, palette = cell_palette, palcolor = ccc_align_named_palcolor(cell_palcolor, top_names))
   } else {
     NULL
   }
@@ -1456,7 +1482,7 @@ ccc_draw_heatmap <- function(
     palette_colors(
       right_names,
       palette = cell_palette,
-      palcolor = cell_palcolor
+      palcolor = ccc_align_named_palcolor(cell_palcolor, right_names)
     )
   } else {
     NULL
@@ -1797,6 +1823,7 @@ ccc_draw_heatmap <- function(
         get_namespace_fun("ComplexHeatmap", "Legend")(
           labels = na_label,
           legend_gp = grid::gpar(fill = na_col),
+          border = "#D9D9D9",
           labels_gp = grid::gpar(fontsize = font.size * 0.8)
         )
       )
@@ -1999,7 +2026,7 @@ ccc_cellchat_role_heatmap_plot <- function(
       symmetric = symmetric,
       compact = TRUE,
       value_limits = if (!symmetric) c(0, 1) else NULL,
-      na_col = "white"
+      na_label = "No value"
     )
   }
   if (isTRUE(use_cc_single_condition(srt, condition = condition))) {
@@ -2171,7 +2198,6 @@ ccc_cellchat_diff_heatmap_plot <- function(
     theme_args = theme_args,
     symmetric = TRUE,
     compact = TRUE,
-    na_col = "#D9D9D9",
     na_label = "Not comparable"
   )
 }

@@ -432,6 +432,9 @@ ccc_spatial_network_plot <- function(
   theme_args = list()
 ) {
   composition_display <- match.arg(composition_display)
+  if (identical(theme_use, "theme_scop") && !"panel.border" %in% names(theme_args)) {
+    theme_args$panel.border <- ggplot2::element_blank()
+  }
   render <- ccc_spatial_render_data(stored$payload, pair_df)
   coords <- render$coords
   nodes <- render$nodes
@@ -567,7 +570,7 @@ ccc_spatial_network_plot <- function(
     ggplot2::scale_fill_manual(
       values = cell_cols, drop = FALSE,
       name = legend.title %||% "Cell type",
-      guide = ggplot2::guide_legend(override.aes = list(shape = 21, size = 3, color = "grey20"))
+      guide = ggplot2::guide_legend(override.aes = list(shape = 21, size = 3.4, alpha = 1, color = "grey20"))
     ) +
     ggplot2::scale_size_continuous(range = c(node_size * 0.7, node_size * 1.8), guide = "none") +
     ggplot2::scale_linewidth_continuous(range = edge_size, guide = "none") +
@@ -586,6 +589,11 @@ ccc_spatial_network_plot <- function(
       legend.position = legend.position,
       legend.direction = legend.direction,
       text = ggplot2::element_text(size = font.size),
+      legend.location = "panel",
+      legend.justification.right = c(0, 0.5),
+      legend.text = ggplot2::element_text(size = (font.size %||% 10) + 1),
+      legend.title = ggplot2::element_text(size = (font.size %||% 10) + 1, face = "bold"),
+      legend.key.size = grid::unit(4.5, "mm"),
       axis.title = ggplot2::element_blank(),
       axis.text = ggplot2::element_blank(),
       axis.ticks = ggplot2::element_blank(),
@@ -605,5 +613,8 @@ ccc_spatial_network_plot <- function(
   if ("FOV" %in% image_class && !"VisiumV2" %in% image_class) {
     p <- p + ggplot2::scale_y_reverse()
   }
-  p
+  thisplot::plot_autosize(
+    p, panel_width = 66 * (font.size %||% 10) / 10,
+    base_size = NULL, label_autosize = FALSE
+  )
 }

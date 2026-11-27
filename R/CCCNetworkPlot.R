@@ -400,6 +400,15 @@ CCCNetworkPlot <- function(
       receptor = receptor
     )
   }
+  palette_cfg <- ccc_palettes(
+    palette = palette,
+    palcolor = palcolor,
+    cell_palette = cell_palette,
+    cell_palcolor = cell_palcolor,
+    link_palette = link_palette,
+    link_palcolor = link_palcolor
+  )
+
   if (identical(plot_type, "diffusion")) {
     diffusion_method <- detect_method(srt = srt, method = method)
     if (identical(diffusion_method, "SpatialCellChat")) {
@@ -424,23 +433,64 @@ CCCNetworkPlot <- function(
       native_dots <- dots[intersect(names(dots), native_formals)]
       native_dots$object <- native
       native_dots$signaling <- signaling
-      native_dots$pattern <- native_dots$pattern %||% "outgoing"
-      return(do.call(diffusion_fun, native_dots))
+      if (!missing(slot.name)) native_dots$slot.name <- slot.name
+      native_dots$pattern <- match.arg(
+        native_dots$pattern %||% "outgoing",
+        c("incoming", "outgoing")
+      )
+      native_dots$legend.size <- native_dots$legend.size %||% 3
+      native_dots$legend.text.size <- native_dots$legend.text.size %||% ((font.size %||% 10) + 1)
+      native_dots$plot.title.name <- native_dots$plot.title.name %||% title
+      native_dots$plot.title.text.size <- native_dots$plot.title.text.size %||% (font.size + 2)
+      groups <- if (isS4(native) && "idents" %in% methods::slotNames(native)) {
+        ccc_group_levels(methods::slot(native, "idents"))
+      } else {
+        character()
+      }
+      colors <- native_dots$color.use %||% ccc_cell_palcolor(
+        srt, diffusion_method, palette_cfg$cell_palette, palette_cfg$cell_palcolor, groups
+      )
+      if (length(groups) && is.null(names(colors))) {
+        colors <- thisplot::palette_colors(groups, palette = palette_cfg$cell_palette, palcolor = colors)
+      }
+      if (length(colors) && "color.use" %in% native_formals) native_dots$color.use <- colors
+      p <- do.call(diffusion_fun, native_dots)
+      scale <- p$scales$get_scales("colour")
+      if (length(colors) && !is.null(scale)) {
+        p$scales$scales <- Filter(function(x) !"colour" %in% x$aesthetics, p$scales$scales)
+        p <- p + ggplot2::scale_colour_manual(values = colors, na.value = scale$na.value)
+      }
+      p <- p +
+        ggplot2::labs(subtitle = subtitle) +
+        ggplot2::guides(colour = ggplot2::guide_legend(
+          title = legend.title %||% if (identical(native_dots$pattern, "incoming")) "Targets" else "Sources",
+          override.aes = list(size = native_dots$legend.size, alpha = 1)
+        )) +
+        ggplot2::theme(
+          legend.position = legend.position,
+          legend.direction = if (missing(legend.direction) && isTRUE(legend.position %in% c("top", "bottom"))) {
+            "horizontal"
+          } else {
+            legend.direction
+          },
+          legend.location = "panel",
+          legend.justification.right = c(0, 0.5),
+          legend.key.size = grid::unit(4.5, "mm"),
+          legend.box.spacing = grid::unit(2, "mm"),
+          panel.border = theme_args$panel.border %||% ggplot2::element_blank(),
+          plot.title = ggplot2::element_text(face = "bold", margin = ggplot2::margin(b = 4)),
+          plot.margin = ggplot2::margin(4, 4, 4, 4)
+        )
+      return(thisplot::plot_autosize(
+        p, panel_width = 66 * (font.size %||% 10) / 10,
+        base_size = NULL, label_autosize = FALSE
+      ))
     }
     log_message(
       "{.val plot_type = 'diffusion'} requires stored full SpatialCellChat results",
       message_type = "error"
     )
   }
-  palette_cfg <- ccc_palettes(
-    palette = palette,
-    palcolor = palcolor,
-    cell_palette = cell_palette,
-    cell_palcolor = cell_palcolor,
-    link_palette = link_palette,
-    link_palcolor = link_palcolor
-  )
-
   method <- detect_method(srt = srt, method = method)
   if (identical(plot_type, "spatial")) {
     stored <- ccc_spatial_stored(
@@ -470,9 +520,13 @@ CCCNetworkPlot <- function(
       stored = stored,
       pair_df = pair_df_spatial,
       cell_palette = palette_cfg$cell_palette,
-      cell_palcolor = palette_cfg$cell_palcolor,
+      cell_palcolor = ccc_cell_palcolor(
+        srt, method, palette_cfg$cell_palette, palette_cfg$cell_palcolor, stored$payload$group_levels
+      ),
       link_palette = palette_cfg$link_palette,
-      link_palcolor = palette_cfg$link_palcolor,
+      link_palcolor = ccc_cell_palcolor(
+        srt, method, palette_cfg$link_palette, palette_cfg$link_palcolor, stored$payload$group_levels
+      ),
       edge_size = edge_size,
       edge_color = edge_color,
       edge_alpha = edge_alpha,
@@ -504,6 +558,14 @@ CCCNetworkPlot <- function(
       theme_use = theme_use,
       theme_args = theme_args
     ))
+  }
+  palette_cfg$cell_palcolor <- ccc_cell_palcolor(
+    srt, method, palette_cfg$cell_palette, palette_cfg$cell_palcolor
+  )
+  if (plot_type %in% c("circle", "pathway", "individual", "individual_lr", "cell_chord")) {
+    palette_cfg$link_palcolor <- ccc_cell_palcolor(
+      srt, method, palette_cfg$link_palette, palette_cfg$link_palcolor
+    )
   }
   combine_methods <- match.arg(combine_methods)
   srt <- ccc_prepare_filtered_object(
@@ -1409,7 +1471,7 @@ bipartite_plot <- function(
   cell_cols <- palette_colors(
     all_cell_types,
     palette = cell_palette,
-    palcolor = cell_palcolor,
+    palcolor = ccc_align_named_palcolor(cell_palcolor, all_cell_types),
     NA_keep = TRUE
   )
   node_df$fill <- ifelse(
@@ -1776,7 +1838,7 @@ ccc_align_named_palcolor <- function(palcolor, levels) {
   if (is.null(palcolor) || is.null(names(palcolor))) {
     return(palcolor)
   }
-  levels <- as.character(levels)
+  levels <- if (is.factor(levels)) base::levels(levels) else as.character(levels)
   levels <- levels[!is.na(levels) & nzchar(levels)]
   pal_names <- names(palcolor)
   if (!all(levels %in% pal_names)) {
@@ -2037,7 +2099,7 @@ ccc_diff_network_plot <- function(
   node_cols <- palette_colors(
     node_levels,
     palette = cell_palette,
-    palcolor = cell_palcolor,
+    palcolor = ccc_align_named_palcolor(cell_palcolor, node_levels),
     NA_keep = TRUE
   )
   edge_cols <- ccc_diff_edge_palette(
@@ -2251,7 +2313,7 @@ ccc_circle_plot <- function(
   cell_cols <- palette_colors(
     node_levels,
     palette = cell_palette,
-    palcolor = cell_palcolor,
+    palcolor = ccc_align_named_palcolor(cell_palcolor, node_levels),
     NA_keep = TRUE
   )
   link_cols <- palette_colors(
@@ -2929,7 +2991,7 @@ ccc_flow_network_plot <- function(
   celltype_cols <- palette_colors(
     celltype_levels,
     palette = cell_palette,
-    palcolor = cell_palcolor,
+    palcolor = ccc_align_named_palcolor(cell_palcolor, celltype_levels),
     NA_keep = TRUE
   )
   node_df$fill <- ifelse(
@@ -3352,7 +3414,7 @@ ccc_chord_plot <- function(
   cell_cols <- palette_colors(
     cell_order,
     palette = cell_palette,
-    palcolor = cell_palcolor
+    palcolor = ccc_align_named_palcolor(cell_palcolor, cell_order)
   )
   names(cell_cols) <- cell_order
 
@@ -3488,7 +3550,7 @@ ccc_gene_chord_plot <- function(
   cell_cols <- palette_colors(
     cell_levels,
     palette = cell_palette,
-    palcolor = cell_palcolor
+    palcolor = ccc_align_named_palcolor(cell_palcolor, cell_levels)
   )
   names(cell_cols) <- cell_levels
   node_cell <- strength_df$cell[match(node_order, strength_df$node)]
@@ -4148,7 +4210,7 @@ ccc_dim_network_layers <- function(
   colors <- palette_colors(
     group_levels,
     palette = cell_palette,
-    palcolor = cell_palcolor,
+    palcolor = ccc_align_named_palcolor(cell_palcolor, group_levels),
     NA_keep = TRUE
   )
   edge_cols <- palette_colors(

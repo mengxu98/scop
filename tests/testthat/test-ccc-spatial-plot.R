@@ -209,6 +209,12 @@ test_that("spatial renderer maps abundance, weighted centroids, arrows, and labe
     cell_palcolor = c(A = "#d73027", B = "#4575b4", C = "#1a9850")
   )
   expect_s3_class(plot, "ggplot")
+  expect_s3_class(plot$theme$panel.border, "element_blank")
+  framed <- CCCNetworkPlot(
+    object, method = "SpatialCellChat", plot_type = "spatial",
+    theme_args = list(panel.border = ggplot2::element_rect(fill = NA, colour = "black"))
+  )
+  expect_s3_class(framed$theme$panel.border, "element_rect")
   built <- ggplot2::ggplot_build(plot)
   expect_gte(length(built$data), 4L)
   expect_true(any(vapply(built$data, nrow, integer(1)) == 6L))
@@ -277,4 +283,17 @@ test_that("CCC dot views retain aggregate scores and sample-specific observation
   expect_s3_class(ggplot2::ggplotGrob(source_target), "gtable")
   expect_s3_class(ggplot2::ggplotGrob(sample), "gtable")
   expect_identical(object, original)
+})
+
+test_that("spatial CCC node colors retain the full grouping palette after edge filtering", {
+  object <- make_ccc_spatial_plot_object()
+  object$cell_type <- factor(rep(c("A", "B", "C"), each = 2L), levels = c("C", "A", "B"))
+  object@tools$SpatialCellChat$parameters$group.by <- "cell_type"
+  expected <- thisplot::palette_colors(levels(object$cell_type), palette = "Chinese")
+  p <- CCCNetworkPlot(
+    object, method = "SpatialCellChat", plot_type = "spatial",
+    sender.use = "A", receiver.use = "B", label.spatial = FALSE
+  )
+  fill <- ggplot2::ggplot_build(p)$plot$scales$get_scales("fill")
+  expect_identical(fill$map(c("A", "B")), unname(expected[c("A", "B")]))
 })

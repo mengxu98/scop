@@ -474,7 +474,7 @@ CCCHeatmap <- function(
 
   if (is.null(cell_palette) || identical(cell_palette, "Chinese")) {
     cell_palette <- palette
-    cell_palcolor <- palcolor
+    cell_palcolor <- cell_palcolor %||% palcolor
   }
 
   palette_cfg <- ccc_palettes(
@@ -487,6 +487,9 @@ CCCHeatmap <- function(
   )
 
   method <- detect_method(srt = srt, method = method)
+  palette_cfg$cell_palcolor <- ccc_cell_palcolor(
+    srt, method, palette_cfg$cell_palette, palette_cfg$cell_palcolor
+  )
   combine_methods <- match.arg(combine_methods)
   srt <- ccc_prepare_filtered_object(
     srt = srt,
@@ -1729,12 +1732,12 @@ custom_cc_bubble_plot <- function(
         name = legend.title %||% "P-value",
         values = stats::setNames(cols[c(9L, 6L, 3L)], bands), breaks = bands,
         na.value = "grey90", guide = ggplot2::guide_legend(
-          order = 1, override.aes = list(size = 3)
+          order = 1, override.aes = list(size = 3.4, alpha = 1)
         )
       ) +
       ggplot2::scale_size_area(
         name = probability_title, max_size = max(bubble_size.range), n.breaks = 4,
-        guide = ggplot2::guide_legend(order = 2, override.aes = list(fill = "grey45"))
+        guide = ggplot2::guide_legend(order = 2, override.aes = list(fill = "grey30", alpha = 1))
       )
   } else {
     p <- p +
@@ -1745,7 +1748,10 @@ custom_cc_bubble_plot <- function(
       ggplot2::scale_fill_gradientn(
         name = legend.title %||% probability_title, colours = cols, n.breaks = 4,
         guide = ggplot2::guide_colorbar(
-          frame.colour = "grey55", ticks.colour = "grey55", order = 1
+          frame.colour = "grey55", ticks.colour = "grey55", order = 1,
+          theme = if (identical(legend.direction, "vertical")) {
+            ggplot2::theme(legend.key.height = grid::unit(18, "mm"))
+          }
         )
       ) +
       ggplot2::scale_size_manual(
@@ -1756,7 +1762,7 @@ custom_cc_bubble_plot <- function(
         ),
         breaks = bands,
         na.value = min(bubble_size.range),
-        guide = ggplot2::guide_legend(order = 2, override.aes = list(fill = "grey45"))
+        guide = ggplot2::guide_legend(order = 2, override.aes = list(fill = "grey30", alpha = 1))
       )
   }
   if ("dataset" %in% names(df) && length(unique(df$dataset)) > 1L) {
@@ -1795,8 +1801,25 @@ custom_cc_bubble_plot <- function(
       panel.grid.minor = ggplot2::element_blank(),
       axis.ticks = ggplot2::element_blank(),
       plot.margin = ggplot2::margin(4, 5, 4, 4),
-      legend.box.spacing = grid::unit(2, "mm")
+      legend.box.spacing = grid::unit(2, "mm"),
+      legend.key.height = grid::unit(max(4.5, max(bubble_size.range)), "mm")
     )
+  }
+  if (is.null(aspect.ratio) && identical(theme_use, "theme_scop") && !length(theme_args)) {
+    font_mm <- (font.size %||% 10) * 25.4 / 72
+    point_mm <- max(bubble_size.range)
+    pitch_x <- if (sin(abs(angle.x) * pi / 180) >= 0.25) {
+      font_mm / sin(abs(angle.x) * pi / 180)
+    } else {
+      max(nchar(interaction_labels, type = "width")) * font_mm * 0.55
+    }
+    sized <- thisplot::plot_autosize(
+      p,
+      panel_width = max(22, nlevels(df$interaction_plot) * max(pitch_x, point_mm + 0.8)),
+      panel_height = max(13.5, nlevels(df$pair) * max(font_mm * 1.35, point_mm + 0.8)),
+      base_size = NULL, label_autosize = FALSE
+    )
+    attr(p, "size") <- attr(sized, "size")
   }
   p
 }

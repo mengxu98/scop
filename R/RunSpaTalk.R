@@ -563,11 +563,24 @@ SpaTalkPlot <- function(
     stringsAsFactors = FALSE
   )
   plot_df$score[!is.finite(plot_df$score)] <- 1
-  ggplot2::ggplot(plot_df, ggplot2::aes(
+  dots <- list(...)
+  palette <- dots$cell_palette %||% dots$palette %||% "Chinese"
+  groups <- ccc_group_levels(plot_df$receiver)
+  colors <- ccc_cell_palcolor(object, "SpaTalk", palette, dots$cell_palcolor %||% dots$palcolor, groups)
+  colors <- spatial_palette_colors(groups, palette = palette, palcolor = colors)
+  p <- ggplot2::ggplot(plot_df, ggplot2::aes(
     x = .data[["receptor"]], y = .data[["tf"]],
     size = .data[["score"]], color = .data[["receiver"]]
   )) +
     ggplot2::geom_point(alpha = 0.8) +
+    ggplot2::scale_colour_manual(values = colors) +
     ggplot2::labs(x = "Receptor", y = "Transcription factor", color = "Receiver", size = "Score") +
-    apply_plot_theme(theme_use, theme_args)
+    apply_plot_theme(theme_use, theme_args) +
+    ggplot2::guides(color = ggplot2::guide_legend(override.aes = list(size = 3.4, alpha = 1))) +
+    ggplot2::theme(
+      legend.justification.right = c(0, 0.5),
+      panel.grid.minor = ggplot2::element_blank(),
+      axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)
+    )
+  thisplot::plot_autosize(p, panel_width = 65, panel_height = 50, base_size = NULL)
 }

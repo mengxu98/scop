@@ -278,6 +278,9 @@ CCCStatPlot <- function(
   )
 
   method <- detect_method(srt = srt, method = method)
+  palette_cfg$cell_palcolor <- ccc_cell_palcolor(
+    srt, method, palette_cfg$cell_palette, palette_cfg$cell_palcolor
+  )
   combine_methods <- match.arg(combine_methods)
   srt <- ccc_prepare_filtered_object(
     srt = srt,
@@ -1265,7 +1268,7 @@ ccc_cellchat_role_change_plot <- function(
   cell_cols <- palette_colors(
     idents_use,
     palette = palette,
-    palcolor = palcolor
+    palcolor = ccc_align_named_palcolor(palcolor, idents_use)
   )
   label_df <- role_df
   if (any(table(role_df$celltype) > 12L)) {
@@ -2832,7 +2835,7 @@ ccc_scatter_plot <- function(
   cell_cols <- palette_colors(
     cell_levels,
     palette = cell_palette,
-    palcolor = cell_palcolor,
+    palcolor = ccc_align_named_palcolor(cell_palcolor, cell_levels),
     NA_keep = TRUE
   )
   plot_df$cell <- factor(plot_df$cell, levels = cell_levels)
@@ -3022,6 +3025,13 @@ ccc_sankey_plot <- function(
     ylab_use <- "Interaction count"
   }
 
+  if (!is.null(names(cell_palcolor))) {
+    sankey_levels <- unique(unlist(lapply(meta_data[stat_by], ccc_group_levels), use.names = FALSE))
+    colors <- thisplot::palette_colors(sankey_levels, palette = cell_palette)
+    matched <- intersect(sankey_levels, names(cell_palcolor))
+    colors[matched] <- cell_palcolor[matched]
+    cell_palcolor <- unname(colors)
+  }
   p <- StatPlot(
     meta.data = meta_data,
     stat.by = stat_by,
@@ -3108,11 +3118,11 @@ ccc_distribution_plot <- function(
   } else {
     "pair"
   }
-  fill_levels <- unique(plot_df[[group_var]])
+  fill_levels <- unique(as.character(plot_df[[group_var]]))
   fill_cols <- palette_colors(
     fill_levels,
     palette = cell_palette,
-    palcolor = cell_palcolor
+    palcolor = ccc_align_named_palcolor(cell_palcolor, fill_levels)
   )
 
   group_label <- switch(group_var, sender = "Sender", receiver = "Receiver", pair = "Sender–receiver pair")

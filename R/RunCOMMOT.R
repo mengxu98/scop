@@ -464,29 +464,75 @@ COMMOTPlot <- function(
       log_message("The stored COMMOT result has no cluster communication", message_type = "error")
     }
     table <- commot_select_key(table, key, "cluster output")
-    return(
-      ggplot2::ggplot(table, ggplot2::aes(
+    finite <- table$score[is.finite(table$score)]
+    nonnegative <- length(finite) > 0L && all(finite >= 0)
+    p <- ggplot2::ggplot(table, ggplot2::aes(
         x = .data[["receiver"]], y = .data[["sender"]], fill = .data[["score"]]
       )) +
-        ggplot2::geom_tile() +
-        ggplot2::scale_fill_viridis_c() +
+        ggplot2::geom_tile(colour = "white", linewidth = 0.3) +
+        ggplot2::coord_fixed(expand = FALSE) +
+        ggplot2::scale_fill_gradientn(
+          colours = thisplot::palette_colors(n = 100, palette = if (nonnegative) "Reds" else "viridis"),
+          limits = if (nonnegative) c(0, if (max(finite) > 0) max(finite) else 1),
+          na.value = "white",
+          guide = ggplot2::guide_colourbar(frame.colour = "black")
+        ) +
         ggplot2::labs(x = "Receiver", y = "Sender", fill = "Score") +
-        apply_plot_theme(theme_use, theme_args)
-    )
+        apply_plot_theme(theme_use, theme_args) +
+        ggplot2::theme(
+          axis.text.x = ggplot2::element_text(angle = 90, hjust = 1, vjust = 0.5),
+          panel.grid = ggplot2::element_blank(),
+          legend.justification.right = c(0, 0.5)
+        )
+    return(thisplot::plot_autosize(p, panel_width = 60, base_size = NULL, label_autosize = FALSE))
+  }
+  if (identical(theme_use, "theme_scop") && !"panel.border" %in% names(theme_args)) {
+    theme_args$panel.border <- ggplot2::element_blank()
   }
   table <- stored$result$direction_table
   if (!is.data.frame(table) || nrow(table) == 0L) {
     log_message("The stored COMMOT result has no communication directions", message_type = "error")
   }
+  groups <- ccc_group_levels(table$group)
+  dots <- list(...)
+  palette <- dots$cell_palette %||% dots$palette %||% "Chinese"
+  colors <- ccc_cell_palcolor(object, "COMMOT", palette, dots$cell_palcolor %||% dots$palcolor, groups)
+  colors <- spatial_palette_colors(groups, palette = palette, palcolor = colors)
   table <- commot_select_key(table, key, "direction output")
-  ggplot2::ggplot(table, ggplot2::aes(x = .data[["x"]], y = .data[["y"]])) +
-    ggplot2::geom_point(ggplot2::aes(color = .data[["group"]]), alpha = 0.45) +
-    ggplot2::geom_segment(ggplot2::aes(
-      xend = .data[["x"]] + .data[["dx"]],
-      yend = .data[["y"]] + .data[["dy"]]
-    ), arrow = grid::arrow(length = grid::unit(0.08, "inches")), alpha = 0.65) +
+  arrows <- table
+  if (nrow(table) > 1000L && all(is.finite(table$x)) && all(is.finite(table$y))) {
+    ordered <- order(table$dx^2 + table$dy^2, decreasing = TRUE)
+    x_bin <- findInterval(table$x, seq(min(table$x), max(table$x), length.out = 17L), all.inside = TRUE)
+    y_bin <- findInterval(table$y, seq(min(table$y), max(table$y), length.out = 17L), all.inside = TRUE)
+    tiles <- data.frame(perspective = table$perspective, x = x_bin, y = y_bin)
+    arrows <- table[ordered[!duplicated(tiles[ordered, , drop = FALSE])], , drop = FALSE]
+  }
+  p <- ggplot2::ggplot(table, ggplot2::aes(x = .data[["x"]], y = .data[["y"]])) +
+    ggplot2::geom_point(ggplot2::aes(color = .data[["group"]]), size = 1.15, alpha = 0.38) +
+    ggplot2::geom_segment(
+      data = arrows,
+      ggplot2::aes(
+        xend = .data[["x"]] + .data[["dx"]],
+        yend = .data[["y"]] + .data[["dy"]]
+      ),
+      arrow = grid::arrow(length = grid::unit(1.1, "mm"), angle = 22),
+      colour = "#263342", linewidth = 0.35, alpha = 0.75
+    ) +
+    ggplot2::scale_colour_manual(values = colors) +
     ggplot2::facet_wrap(~perspective) +
     ggplot2::coord_equal() +
     ggplot2::labs(x = "Raw x", y = "Raw y", color = "Group") +
-    apply_plot_theme(theme_use, theme_args)
+    apply_plot_theme(theme_use, theme_args) +
+    ggplot2::guides(color = ggplot2::guide_legend(override.aes = list(size = 3.4, alpha = 1))) +
+    ggplot2::theme(
+      legend.location = "panel",
+      legend.justification.right = c(0, 0.5),
+      legend.key.size = grid::unit(4.5, "mm"),
+      legend.text = ggplot2::element_text(size = 11),
+      legend.title = ggplot2::element_text(size = 11, face = "bold"),
+      strip.background = ggplot2::element_blank(),
+      strip.text = ggplot2::element_text(colour = "black"),
+      panel.grid = ggplot2::element_blank()
+    )
+  thisplot::plot_autosize(p, panel_width = 40, base_size = NULL, label_autosize = FALSE)
 }

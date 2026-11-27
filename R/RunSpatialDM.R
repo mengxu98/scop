@@ -446,18 +446,26 @@ SpatialDMPlot <- function(
   plot_type <- match.arg(plot_type)
   image.scale <- match.arg(image.scale)
   signaling <- match.arg(signaling)
+  if (plot_type != "global" && identical(theme_use, "theme_scop") &&
+    !"panel.border" %in% names(theme_args)) {
+    theme_args$panel.border <- ggplot2::element_blank()
+  }
   result <- spatialdm_get_result(object, result.name)
   spatial_require_coordinate_contract(result, "RunSpatialDM()")
   if (identical(plot_type, "weights")) {
     if (is.null(spot) || length(spot) != 1L || !spot %in% as.character(result$coordinates$cell_id)) log_message("{.arg spot} must identify one stored SpatialDM spot", message_type = "error")
     values <- as.numeric(result$weights[[signaling]][spot, , drop = TRUE])
     names(values) <- colnames(result$weights[[signaling]])
-    return(SpatialSpotPlot(object,
+    p <- SpatialSpotPlot(object,
       values = values, image = result$parameters$image,
       image.scale = image.scale,
-      coord.cols = result$parameters$coord.cols, palette = palette, palcolor = palcolor,
+      coord.cols = result$parameters$coord.cols,
+      palette = if (missing(palette) && is.null(palcolor) && all(values[is.finite(values)] >= 0)) "Reds" else palette,
+      palcolor = palcolor,
       theme_use = theme_use, theme_args = theme_args, legend.title = "Spatial weight", ...
-    ))
+    )
+    p <- p & ggplot2::labs(title = "Spatial weights")
+    return(thisplot::plot_autosize(p, panel_width = 66, base_size = NULL, label_autosize = FALSE))
   }
   if (identical(plot_type, "global")) {
     df <- result$global
@@ -471,9 +479,10 @@ SpatialDMPlot <- function(
         name = "Selected"
       ) +
       ggplot2::labs(x = "Global Moran's R", y = global_p_label, title = "Spatial association (Moran's R)") +
-      apply_plot_theme(theme_use = theme_use, theme_args = theme_args)
+      apply_plot_theme(theme_use = theme_use, theme_args = theme_args) +
+      ggplot2::guides(color = ggplot2::guide_legend(override.aes = list(size = 3.4, alpha = 1)))
     if (!is.null(highlight)) p <- p + ggrepel::geom_text_repel(data = df[df$interaction %in% highlight, , drop = FALSE], ggplot2::aes(label = .data$interaction), size = 3, max.overlaps = Inf)
-    return(p)
+    return(thisplot::plot_autosize(p, panel_width = 70, panel_height = 45, base_size = NULL))
   }
   if (is.null(pair) || length(pair) != 1L || !pair %in% rownames(result$local$local_p)) log_message("{.arg pair} must identify one stored local LR result", message_type = "error")
   pvalue <- as.numeric(result$local$local_p[pair, ])
@@ -490,6 +499,7 @@ SpatialDMPlot <- function(
     coord.cols = result$parameters$coord.cols, palette = "Reds", theme_use = theme_use,
     theme_args = theme_args, legend.title = local_label, ...
   ))
+  plots[[1L]] <- plots[[1L]] & ggplot2::labs(title = "Local association")
   for (gene in c(ligands, receptors)) {
     if (gene %in% rownames(object)) {
       plots[[length(plots) + 1L]] <- SpatialSpotPlot(object,
@@ -501,5 +511,21 @@ SpatialDMPlot <- function(
       )
     }
   }
-  patchwork::wrap_plots(plots, ncol = length(plots)) + patchwork::plot_annotation(title = pair)
+  ncols <- min(2L, length(plots))
+  plot_cells <- lapply(seq_along(plots), function(i) {
+    col <- (i - 1L) %% ncols + 1L
+    row <- (i - 1L) %/% ncols + 1L
+    patchwork::area(t = row, l = col)
+  })
+  p <- patchwork::wrap_plots(plots, design = do.call(c, plot_cells)) +
+    patchwork::plot_annotation(
+      title = pair,
+      theme = ggplot2::theme(plot.title = ggplot2::element_text(size = 12, face = "bold"))
+    ) &
+    ggplot2::theme(
+      legend.text = ggplot2::element_text(size = 10),
+      legend.title = ggplot2::element_text(size = 11),
+      plot.margin = ggplot2::margin(3, 3, 3, 3)
+    )
+  thisplot::plot_autosize(p, panel_width = 44, base_size = NULL, label_autosize = FALSE)
 }
