@@ -1,0 +1,427 @@
+---
+title: "Cell communication workflows"
+lang: en
+---
+
+## A. Embryonic mouse pancreas: find candidate interactions between cell groups
+
+`pancreas_sub` comes from the [pancreatic endocrine development study by Bastidas-Ponce et al.](https://pubmed.ncbi.nlm.nih.gov/31160421/). This example uses all 1,000 bundled cells and their complete expression matrix from the E15.5 dataset distributed by [scVelo](https://scvelo.readthedocs.io/en/stable/scvelo.datasets.pancreas.html). The original annotations distinguish ductal, endocrine progenitor, and endocrine populations.
+
+```{r load-mouse, message=FALSE}
+library(scop)
+data(pancreas_sub)
+table(pancreas_sub$CellType)
+
+pancreas_sub <- Seurat::NormalizeData(
+  pancreas_sub, assay = "RNA", verbose = FALSE
+)
+group_colors <- c(
+  Ductal = "#1772B4", Endocrine = "#0AA344",
+  "Ngn3-high-EP" = "#F9BD10", "Ngn3-low-EP" = "#F97D1C",
+  "Pre-endocrine" = "#ED5736"
+)
+```
+
+### Visualize the cell groups
+
+Build a UMAP from the normalized expression and color cells by `CellType`. The low- and high-Ngn3 progenitor groups sit between the ductal and early endocrine groups in this embedding. Use the same annotations to group cells for communication analysis.
+
+```{r mouse-umap, fig.width=6, fig.height=3.6, message=FALSE}
+embedding <- Seurat::FindVariableFeatures(pancreas_sub, verbose = FALSE)
+embedding <- Seurat::ScaleData(embedding, verbose = FALSE)
+embedding <- Seurat::RunPCA(embedding, npcs = 20, verbose = FALSE)
+embedding <- Seurat::RunUMAP(embedding, dims = 1:20, seed.use = 11, verbose = FALSE)
+CellDimPlot(
+  embedding, group.by = "CellType", reduction = "umap",
+  palcolor = group_colors, show_stat = FALSE
+)
+```
+
+### Run CellChat and inspect communication between cell groups
+
+Run CellChat on the normalized RNA data. Columns are sender groups, rows are receiver groups, and each tile summarizes the scores of retained interactions. Locate the Ductal and Ngn3-low-EP groups before drilling down to pathways and ligand–receptor pairs.
+
+```{r run-mouse-cellchat, message=FALSE, results='hide'}
+set.seed(11)
+ccc <- RunCellChat(
+  pancreas_sub, group.by = "CellType",
+  species = "Mus_musculus", assay = "RNA", layer = "data"
+)
+```
+
+```{r mouse-overview, fig.width=5.3, fig.height=4.7, message=FALSE}
+CCCHeatmap(
+  ccc, method = "CellChat", plot_type = "heatmap",
+  display_by = "aggregation", value = "sum",
+  color.by = "score", value_palette = "Reds",
+  cell_palcolor = group_colors, width = 56, units = "mm"
+)
+```
+
+### View the network as a circle or chord diagram
+
+The circle diagram uses nodes and edges; the chord diagram uses sectors and directional ribbons. Both show the 12 strongest cell-group links with the same group colors, so the same populations are easy to find in either layout.
+
+```{r mouse-circle, fig.width=5.6, fig.height=5.6, message=FALSE, fig.keep="last"}
+CCCNetworkPlot(
+  ccc, method = "CellChat", plot_type = "circle",
+  display_by = "aggregation", top_n = 12, edge_value = "sum",
+  cell_palcolor = group_colors, link_palcolor = group_colors,
+  title = "Cell-group communication"
+)
+```
+
+```{r mouse-chord, fig.width=5.6, fig.height=5.6, message=FALSE, fig.keep="last", echo=2}
+graphics::plot.new()
+CCCNetworkPlot(
+  ccc, method = "CellChat", plot_type = "chord",
+  display_by = "aggregation", top_n = 12, edge_value = "sum",
+  cell_palcolor = group_colors, link_palcolor = group_colors,
+  title = "Cell-group communication"
+)
+```
+
+### Rank pathways and identify sender groups
+
+Rank pathways by total communication strength, then inspect which groups send MK signals. The heatmap shows relative sending strength within each pathway. The strip below the heatmap uses the UMAP cell-type colors. In the MK row, Ngn3-high-EP has the highest relative sending strength. Set `pattern = "incoming"` to inspect receiving roles.
+
+```{r mouse-pathways, fig.width=6.2, fig.height=3.5, message=FALSE}
+stat_theme <- ggplot2::theme(
+  panel.border = ggplot2::element_rect(fill = NA, colour = "grey25", linewidth = .45),
+  axis.line = ggplot2::element_blank(),
+  axis.ticks.y = ggplot2::element_blank(),
+  panel.grid.major.x = ggplot2::element_line(colour = "grey90", linewidth = .25, linetype = 1),
+  panel.grid.major.y = ggplot2::element_blank(),
+  panel.grid.minor = ggplot2::element_blank(),
+  plot.title = ggplot2::element_text(size = 11, face = "bold", margin = ggplot2::margin(b = 5)),
+  plot.margin = ggplot2::margin(5, 8, 5, 7)
+)
+pathway_plot <- CCCStatPlot(
+  ccc, method = "CellChat", plot_type = "pathway_summary", top_n = 8
+) + stat_theme + ggplot2::labs(title = "Pathway communication strength")
+pathway_plot$layers[[1]]$aes_params$width <- .65
+pathway_plot$layers[[1]]$geom_params$width <- .65
+pathway_plot$layers[[2]]$aes_params$size <- 3.16
+pathway_plot$layers[[2]]$aes_params$colour <- "grey25"
+pathway_plot$layers[[2]]$aes_params$hjust <- -.13
+pathway_plot
+```
+
+```{r mouse-roles, fig.width=5.5, fig.height=4.4, message=FALSE}
+CCCHeatmap(
+  ccc, method = "CellChat", plot_type = "role_heatmap",
+  pattern = "outgoing",
+  signaling = c("MK", "CypA", "PTN", "COLLAGEN", "NOTCH", "LAMININ"),
+  top_anno = "none", left_anno = "none",
+  right_anno = "none", bottom_anno = "cell",
+  cell_palcolor = c(
+    group_colors, MK = "#446978", CypA = "#607E99", PTN = "#758F98",
+    COLLAGEN = "#496279", NOTCH = "#799694", LAMININ = "#586E82"
+  ),
+  width = 48, units = "mm"
+)
+```
+
+```{r mouse-roles-scatter, fig.width=6.1, fig.height=4.1, message=FALSE}
+CCCStatPlot(
+  ccc, method = "CellChat", plot_type = "scatter", signaling = "MK",
+  cell_palcolor = group_colors, title = "MK signaling roles"
+)
+```
+
+The scatter plot places each cell group's outgoing and incoming MK strengths on the same axes, with color identifying the group.
+
+### Find specific interactions in the MK pathway
+
+The bubble plot places sender–receiver pairs on the rows and ligand–receptor pairs on the columns. Color shows communication score, and bubble size indicates the significance category. Start with Mdk–Ncl from Ngn3-high-EP to Ductal or Ngn3-low-EP, then check those entries in the exported table.
+
+```{r mouse-bubble, fig.width=5.7, fig.height=5.4, message=FALSE}
+bubble_args <- list(
+  object = ccc, method = "CellChat", plot_type = "bubble",
+  signaling = "MK", value_palette = "Reds", title = "MK"
+)
+bubble <- do.call(CCCHeatmap, bubble_args)
+bubble
+```
+
+The contribution plot sums MK scores by ligand–receptor pair. Mdk–Ncl accounts for about 72% of the pathway score in this example. The hierarchy layout places senders on the left and receivers on the right. Arrows indicate direction, and edge width shows the aggregate pathway score.
+
+```{r mouse-contribution, fig.width=6.1, fig.height=2.7, message=FALSE}
+CCCStatPlot(
+  ccc, method = "CellChat", plot_type = "lr_contribution", signaling = "MK"
+) + stat_theme + ggplot2::labs(title = "MK ligand–receptor contribution")
+```
+
+```{r mouse-hierarchy, fig.width=6.6, fig.height=3.0, message=FALSE}
+CCCNetworkPlot(
+  ccc, method = "CellChat", plot_type = "pathway",
+  signaling = "MK", layout = "hierarchy", legend.position = "right",
+  cell_palcolor = group_colors, link_palcolor = group_colors
+)
+```
+
+### Trace ligand–receptor interactions and their direction
+
+The ligand–receptor chord diagram focuses on Mdk–Ncl. The gene-level chord diagram labels sectors with both the cell group and the gene. The bipartite network connects senders, ligands, receptors, and receivers. The Sankey plot traces sender → interaction → receiver, with ribbon width showing the number of displayed interaction records.
+
+```{r mouse-lr-chord, fig.width=5.6, fig.height=5.6, message=FALSE, fig.keep="last", echo=2}
+graphics::plot.new()
+CCCNetworkPlot(
+  ccc, method = "CellChat", plot_type = "lr_chord",
+  pairLR.use = "MDK_NCL", top_n = 10,
+  cell_palcolor = group_colors, link_palcolor = group_colors,
+  title = "Mdk–Ncl communication"
+)
+```
+
+```{r mouse-gene-chord, fig.width=5.9, fig.height=5.9, message=FALSE, fig.keep="last"}
+CCCNetworkPlot(
+  ccc, method = "CellChat", plot_type = "gene_chord",
+  signaling = "MK", top_n = 6,
+  cell_palcolor = group_colors, link_palcolor = group_colors,
+  title = "MK ligands and receptors"
+)
+```
+
+```{r mouse-bipartite, fig.width=6.6, fig.height=3.9, message=FALSE}
+CCCNetworkPlot(
+  ccc, method = "CellChat", plot_type = "bipartite",
+  signaling = "MK", top_n = 8, cell_palcolor = group_colors,
+  title = "MK ligand–receptor network"
+)
+```
+
+```{r mouse-sankey, fig.width=7.5, fig.height=4.8, message=FALSE}
+CCCStatPlot(
+  ccc, method = "CellChat", plot_type = "sankey",
+  signaling = "MK", display_by = "interaction", top_n = 18,
+  cell_palcolor = group_colors, title = "MK interaction flows"
+)
+```
+
+The sender–receiver dot plot uses one panel per sender, with receiver groups on the horizontal axis and ligand–receptor pairs on the vertical axis.
+
+```{r mouse-source-target, fig.width=7.6, fig.height=6.2, message=FALSE}
+CCCHeatmap(
+  ccc, method = "CellChat", plot_type = "dot",
+  signaling = "MK", display_by = "interaction", top_n = 4, ncols = 2,
+  value_palette = "Reds", cell_palcolor = group_colors,
+  title = "MK sender–receiver combinations"
+)
+```
+
+### Inspect expression and export plots and tables
+
+Use `GroupHeatmap(add_dot = TRUE)` on the same RNA data to inspect the candidate ligand and receptor. Dot size shows the fraction of cells with detected expression. Color shows `log1p` of the mean normalized expression on the linear scale. The strip on the left reuses the cell-type colors from the UMAP and role heatmap. Reuse the bubble plot arguments to export a PDF and its corresponding CSV.
+
+```{r mouse-expression, fig.width=5.8, fig.height=3.3, message=FALSE}
+expression_object <- ccc
+expression_object$CellType <- factor(ccc$CellType, levels = names(group_colors))
+expression <- GroupHeatmap(
+  expression_object, features = c("Mdk", "Ncl"), group.by = "CellType",
+  assay = "RNA", layer = "data", exp_method = "raw",
+  aggregate_fun = function(x) log1p(mean(expm1(x))),
+  add_dot = TRUE, dot_size = grid::unit(5, "mm"),
+  flip = TRUE, show_row_names = TRUE, show_column_names = TRUE,
+  column_names_rot = 0, column_names_side = "bottom", nlabel = 0,
+  cell_annotation_border = FALSE, use_raster = FALSE,
+  group_palcolor = group_colors, heatmap_palette = "Reds",
+  exp_legend_title = "Average expression",
+  legend_params = list(percent = list(title = "Percent expressed"))
+)
+expression$plot
+```
+
+```{r mouse-export, message=FALSE}
+bubble_table <- do.call(CCCHeatmap, c(bubble_args, list(return.data = TRUE)))
+size <- attr(bubble, "size")
+ggplot2::ggsave(
+  "mk-bubble.pdf", bubble, device = grDevices::cairo_pdf,
+  width = size$width, height = size$height, units = size$units
+)
+utils::write.csv(bubble_table, "mk-bubble.csv", row.names = FALSE)
+knitr::kable(head(bubble_table[c("source", "target", "interaction_name", "prob", "pval")], 3))
+```
+
+```{r check-mouse, include=FALSE}
+key <- c("source", "target", "interaction_name", "prob", "pval")
+stopifnot(
+  ncol(ccc) == 1000, nrow(bubble_table) > 0L,
+  identical(bubble_table[key], bubble$data[key]),
+  file.info("mk-bubble.pdf")$size > 0,
+  nrow(read.csv("mk-bubble.csv")) == nrow(bubble_table)
+)
+```
+
+## B. Human pancreas section: locate MK signaling in tissue
+
+This example uses the human pancreatic Visium section [GSM8058244 / PanIN-LG2](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM8058244). Load all 1,986 bundled spots. The tissue image and CODA annotations locate the tissue regions used in the analysis.
+
+```{r load-visium, message=FALSE}
+data(visium_human_pancreas_sub)
+s <- visium_human_pancreas_sub
+coords <- SpatialCoordinates(s, image = "slice1", space = "raw")$data
+table(s$coda_label)
+```
+
+```{r spatial-context, fig.width=7.2, fig.height=3.45, message=FALSE}
+group_levels <- sort(unique(as.character(s$coda_label)))
+spatial_colors <- thisplot::palette_colors(group_levels, palette = "Chinese")
+histology <- SpatialSpotPlot(
+  s, image = "slice1", group.by = "coda_label",
+  overlay_image = TRUE, pt.alpha = 0, legend.position = "none",
+  verbose = FALSE
+) + ggplot2::labs(title = "Tissue image")
+groups <- SpatialSpotPlot(
+  s, image = "slice1", group.by = "coda_label", overlay_image = FALSE,
+  palcolor = spatial_colors, pt.size = 1, verbose = FALSE
+) + ggplot2::labs(title = "CODA groups")
+patchwork::wrap_plots(histology, groups, widths = c(1, 1.45))
+```
+
+### Run spatial communication analysis for the MK pathway
+
+[Visium v1/v2](https://www.10xgenomics.com/support/software/space-ranger/latest/getting-started/space-ranger-glossary) spots are 100 μm apart center to center and 55 μm in diameter. Estimate micrometers per pixel from the nearest-neighbor spacing in the original slice coordinates and use half a spot diameter as the distance tolerance. The analysis selects MK and other growth-factor-related pathways from the human database. The plots below focus on MK.
+
+```{r run-spatial, message=FALSE, results='hide'}
+library(grid)
+pitch_px <- median(RANN::nn2(coords[c("x", "y")], k = 2)$nn.dists[, 2])
+um_per_pixel <- 100 / pitch_px
+data(CellChatDB.human, package = "SpatialCellChat")
+pathways <- c("MK", "PTN", "EGF", "FGF", "TGFb", "BMP", "WNT")
+signal_db <- SpatialCellChat::subsetDB(
+  CellChatDB.human, search = pathways, key = "pathway_name"
+)
+s <- Seurat::NormalizeData(s, assay = "Spatial", verbose = FALSE)
+spatial_result <- RunSpatialCellChat(
+  s, group.by = "coda_label", image = "slice1",
+  assay = "Spatial", layer = "data", species = "Homo_sapiens",
+  coordinate.unit = "pixel", ratio = um_per_pixel, tol = 55 / 2,
+  database = "custom", custom.db = signal_db, store.object = "full"
+)
+```
+
+### Summarize group-to-group signals and locate them in tissue
+
+Each heatmap tile summarizes the score for one sender–receiver pair. The score maps color spots by the score for their CODA tissue group. The left map shows outgoing scores for the human MDK–LRP1 pair; the right map shows outgoing scores for the whole MK pathway.
+
+```{r spatial-focused-heatmap, fig.width=5.4, fig.height=4.65, message=FALSE}
+CCCHeatmap(
+  spatial_result, method = "SpatialCellChat", sample = "ALL",
+  plot_type = "focused_heatmap", signaling = "MK",
+  value = "sum", color.by = "score", value_palette = "Reds",
+  cell_palcolor = spatial_colors, width = 48, units = "mm"
+)
+```
+
+```{r spatial-signal, fig.width=7.2, fig.height=3.6, message=FALSE}
+lr_map <- SpatialCellChatPlot(
+  spatial_result, sample = "ALL", plot_type = "lr_spatial",
+  pairLR.use = "MDK_LRP1", direction = "outgoing", pt.size = 1
+)
+pathway_map <- SpatialCellChatPlot(
+  spatial_result, sample = "ALL", plot_type = "pathway",
+  signaling = "MK", direction = "outgoing", pt.size = 1
+)
+patchwork::wrap_plots(lr_map, pathway_map)
+```
+
+### Map outgoing and incoming scores and draw the spatial network
+
+The outgoing map places the total MK score sent by each group back on the tissue. The incoming map shows the total it receives. The network places nodes at tissue-group centroids. Follow the arrows for direction and use the weight legend to read edge scores.
+
+```{r spatial-out-in, fig.width=7.2, fig.height=3.6, message=FALSE}
+outgoing <- SpatialCellChatPlot(
+  spatial_result, plot_type = "outgoing", signaling = "MK",
+  result.name = "default", sample = "ALL", pt.size = 1
+)
+incoming <- SpatialCellChatPlot(
+  spatial_result, plot_type = "incoming", signaling = "MK",
+  result.name = "default", sample = "ALL", pt.size = 1
+)
+patchwork::wrap_plots(outgoing, incoming)
+```
+
+```{r spatial-network, fig.width=6.0, fig.height=4.0, message=FALSE}
+SpatialCellChatPlot(
+  spatial_result, plot_type = "spatial_network", signaling = "MK",
+  result.name = "default", sample = "ALL", palette = "Chinese",
+  palcolor = spatial_colors, pt.size = 1
+)
+```
+
+### Visualize outgoing and incoming direction fields
+
+The arrows show the local direction of communication. Use `pattern = "outgoing"` for the sending field and `pattern = "incoming"` for the receiving field.
+
+```{r compute-fields, include=FALSE}
+stopifnot(
+  requireNamespace("metR", quietly = TRUE),
+  requireNamespace("progress", quietly = TRUE)
+)
+native <- GetCCCObject(spatial_result, method = "SpatialCellChat", sample = "ALL")
+field_input <- tempfile(fileext = ".rds")
+field_output <- tempfile(fileext = ".rds")
+saveRDS(native, field_input, compress = FALSE)
+field_code <- paste(
+  'files <- commandArgs(trailingOnly = TRUE);',
+  'object <- SpatialCellChat::computeCommunField(readRDS(files[1]), signaling.name = "MK");',
+  'saveRDS(object, files[2], compress = FALSE)'
+)
+status <- system2(
+  file.path(R.home("bin"), "Rscript"),
+  c("--vanilla", "-e", shQuote(field_code), shQuote(field_input), shQuote(field_output)),
+  stdout = TRUE, stderr = TRUE
+)
+if (!is.null(attr(status, "status"))) stop(paste(status, collapse = "\n"))
+stopifnot(file.exists(field_output))
+native <- readRDS(field_output)
+unlink(c(field_input, field_output))
+spatial_result@tools[["SpatialCellChat"]]$results[["default"]][["ALL"]]$native_object <- native
+```
+
+```{r spatial-fields, fig.width=7.2, fig.height=3.6, message=FALSE}
+out_field <- CCCNetworkPlot(
+  spatial_result, method = "SpatialCellChat", plot_type = "diffusion",
+  sample = "ALL", signaling = "MK", pattern = "outgoing",
+  cell_palcolor = spatial_colors, point.size = 1, title = "MK outgoing"
+)
+in_field <- CCCNetworkPlot(
+  spatial_result, method = "SpatialCellChat", plot_type = "diffusion",
+  sample = "ALL", signaling = "MK", pattern = "incoming",
+  cell_palcolor = spatial_colors, point.size = 1, title = "MK incoming"
+)
+patchwork::wrap_plots(out_field, in_field)
+```
+
+### Locate transcript expression in the tissue
+
+Plot raw UMI counts for MDK and NCL in the same section. Read these maps alongside the tissue image and MK scores to identify regions for closer inspection.
+
+```{r spatial-expression, fig.width=7.2, fig.height=3.6, message=FALSE}
+mdk <- SpatialSpotPlot(
+  s, image = "slice1", assay = "Spatial", layer = "counts",
+  features = "MDK", overlay_image = FALSE, palette = "Reds", verbose = FALSE
+)
+ncl <- SpatialSpotPlot(
+  s, image = "slice1", assay = "Spatial", layer = "counts",
+  features = "NCL", overlay_image = FALSE, palette = "Reds", verbose = FALSE
+)
+patchwork::wrap_plots(mdk, ncl)
+```
+
+```{r check-spatial, include=FALSE}
+stopifnot(
+  ncol(s) == 1986, nrow(coords) == ncol(s),
+  is.finite(pitch_px) && pitch_px > 0,
+  inherits(lr_map, "ggplot"), inherits(pathway_map, "ggplot"),
+  inherits(out_field, "ggplot"), inherits(in_field, "ggplot")
+)
+```
+
+## Plots for other data structures
+
+| Data structure | Plot |
+|---|---|
+| Multiple samples in one communication result | `CCCHeatmap(plot_type = "sample_dot")` shows communication records by sample. |
+| Two saved CellChat conditions with the same cell types in the same order | `CCCHeatmap(plot_type = "diff_heatmap")` shows changes in relative pathway roles, scaled separately within each condition. `CCCNetworkPlot(plot_type = "diff_network")` shows changes in communication counts or weights between cell groups. |

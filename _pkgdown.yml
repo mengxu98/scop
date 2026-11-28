@@ -52,6 +52,7 @@ articles:
   - trajectory-dynamic-workflow
   - cellrank-palantir-fate-workflow
   - reproduce-pancreatic-endocrinogenesis
+  - cell-communication-workflow
 - title: Import and extend spatial analyses
   navbar: Spatial methods
   contents:
