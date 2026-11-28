@@ -1,4 +1,4 @@
-scop_n_threads <- function(cores = NULL) {
+normalize_thread_count <- function(cores = NULL) {
   if (is.null(cores) || length(cores) < 1L) {
     return(0L)
   }

@@ -313,9 +313,10 @@ RunKNNPredict <- function(
       ) {
         query <- Embeddings(srt_query, reduction = query_reduction)[
           ,
-          query_dims
+          query_dims,
+          drop = FALSE
         ]
-        ref <- Embeddings(srt_ref, reduction = ref_reduction)[, ref_dims]
+        ref <- Embeddings(srt_ref, reduction = ref_reduction)[, ref_dims, drop = FALSE]
       } else {
         log_message(
           "query_dims and ref_dims must be provided with the same length.",
@@ -565,29 +566,8 @@ RunKNNPredict <- function(
     )
     return_full_distance_matrix <- FALSE
   }
-  simil_methods <- c(
-    "cosine",
-    "pearson",
-    "spearman",
-    "correlation",
-    "jaccard",
-    "ejaccard",
-    "dice",
-    "edice",
-    "hamman",
-    "simple matching",
-    "faith"
-  )
-  dist_methods <- c(
-    "euclidean",
-    "chisquared",
-    "kullback",
-    "manhattan",
-    "maximum",
-    "canberra",
-    "minkowski",
-    "hamming"
-  )
+  simil_methods <- knn_similarity_metrics()
+  dist_methods <- knn_distance_metrics()
   if (!(distance_metric %in% c(simil_methods, dist_methods))) {
     log_message(
       "{.val {distance_metric}} method is invalid",
@@ -634,7 +614,7 @@ RunKNNPredict <- function(
     match_k_distance <- query.neighbor@nn.dist
     rownames(match_k_distance) <- rownames(query)
   } else {
-    if (distance_metric %in% c(simil_methods, "pearson", "spearman")) {
+    if (distance_metric %in% simil_methods) {
       if (distance_metric %in% c("pearson", "spearman")) {
         if (distance_metric == "spearman") {
           ref <- knn_rank_rows(ref)
@@ -762,7 +742,7 @@ RunKNNPredict <- function(
     srt_query[[paste0(prefix, "_prob")]] <- prob
   } else {
     distance <- match_k_distance[, 1]
-    if (distance_metric %in% c(simil_methods, "pearson", "spearman")) {
+    if (distance_metric %in% simil_methods) {
       if (isTRUE(query_collapsing)) {
         simil <- unlist(lapply(names(match_best), function(ct) {
           rep((1 - distance)[ct], length(cell_type_to_id[[ct]]))
@@ -797,6 +777,21 @@ RunKNNPredict <- function(
 
   return(srt_query)
 }
+
+knn_similarity_metrics <- function() {
+  c(
+    "pearson", "spearman", "cosine", "correlation", "jaccard", "ejaccard",
+    "dice", "edice", "hamman", "simple matching", "faith"
+  )
+}
+
+knn_distance_metrics <- function() {
+  c(
+    "euclidean", "chisquared", "kullback", "manhattan", "maximum", "canberra",
+    "minkowski", "hamming"
+  )
+}
+
 knn_match_prob_max <- function(match_prob) {
   check_r("matrixStats", verbose = FALSE)
   out <- matrixStats::rowMaxs(as.matrix(match_prob))

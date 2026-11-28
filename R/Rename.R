@@ -1,9 +1,13 @@
 #' @title Rename features for the Seurat object
 #'
 #' @inheritParams RunStandardWorkflow
-#' @param newnames A vector with the same length of features in Seurat object,
-#' or characters named with old features.
-#' @param assays Assays to rename.
+#' @param newnames One name per feature in the first selected assay, or a character
+#'   vector named by old feature IDs. Unnamed vectors require the selected assays
+#'   to have the same feature IDs.
+#' @param assays Assays to rename (all assays by default). Standard Seurat v3 and
+#'   v5 assays are supported. Rename features before fitting reductions that rely
+#'   on those features.
+#' @details Previously computed results stored in the object are not rewritten.
 #'
 #' @export
 #'
@@ -30,66 +34,105 @@ RenameFeatures <- function(
   srt = NULL
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
-  assays <- assays[assays %in% SeuratObject::Assays(srt)] %||% SeuratObject::Assays(srt)
+  available_assays <- SeuratObject::Assays(srt)
+  assays <- intersect(assays %||% available_assays, available_assays)
+  if (!length(assays)) {
+    return(srt)
+  }
+  if (!is.character(newnames) || !length(newnames) ||
+    anyNA(newnames) || any(!nzchar(newnames))) {
+    log_message("{.arg newnames} must contain non-empty feature names.", message_type = "error")
+  }
+
   if (is.null(names(newnames))) {
-    if (length(newnames) == nrow(srt)) {
+    features <- rownames(srt[[assays[[1L]]]])
+    if (length(newnames) != length(features)) {
       log_message(
-        "'newnames' must be named or the length of features in the srt.",
+        "Supply one name per feature or a named old-to-new mapping.",
         message_type = "error"
       )
     }
-    if (length(unique(sapply(srt@assays[assays], nrow))) > 1) {
+    if (!all(vapply(assays, function(assay) {
+      setequal(features, rownames(srt[[assay]]))
+    }, logical(1)))) {
       log_message(
-        "Assays in the srt object have different number of features. Please use a named vectors.",
+        "Selected assays have different feature IDs. Supply a named old-to-new mapping.",
         message_type = "error"
       )
     }
-    names(newnames) <- rownames(srt[[assays[1]]])
+    names(newnames) <- features
+  } else if (anyNA(names(newnames)) || any(!nzchar(names(newnames))) ||
+    anyDuplicated(names(newnames))) {
+    log_message(
+      "Old feature names must be non-empty and unique.",
+      message_type = "error"
+    )
+  }
+
+  rename <- function(ids) {
+    mapping <- match(ids, names(newnames))
+    found <- !is.na(mapping)
+    ids[found] <- unname(newnames[mapping[found]])
+    ids
   }
   for (assay in assays) {
-    log_message("Rename features for the assay: ", assay, verbose = verbose)
-    assay_obj <- Seurat::GetAssay(srt, assay = assay)
-    if (inherits(assay_obj, "Assay")) {
-      for (d in c("meta.features", "scale.data", "counts", "data")) {
-        index <- which(
-          rownames(methods::slot(assay_obj, d)) %in% names(newnames)
-        )
-        rownames(methods::slot(assay_obj, d))[index] <- newnames[rownames(
-          methods::slot(
-            assay_obj,
-            d
-          )
-        )[index]]
-      }
-      if (length(methods::slot(assay_obj, "var.features")) > 0) {
-        index <- which(
-          methods::slot(
-            assay_obj, "var.features"
-          ) %in% names(newnames)
-        )
-        methods::slot(assay_obj, "var.features")[index] <- newnames[methods::slot(
-          assay_obj,
-          "var.features"
-        )[index]]
-      }
+    assay_obj <- srt[[assay]]
+    features <- rownames(assay_obj)
+    renamed <- rename(features)
+    changed <- features[features != renamed]
+    if (!length(changed)) {
+      next
     }
-
-    if (inherits(assay_obj, "Assay5")) {
-      meta.data <- methods::slot(assay_obj, "meta.data")
-      if ("var.features" %in% names(meta.data)) {
-        index <- which(
-          meta.data$var.features %in% names(newnames)
-        )
-        meta.data$var.features[index] <- newnames[meta.data$var.features[index]]
-        methods::slot(assay_obj, "meta.data") <- meta.data
-      }
-
-      index_all <- which(
-        rownames(assay_obj) %in% names(newnames)
+    if (anyDuplicated(renamed)) {
+      log_message(
+        "Renamed features must be unique within assay {.val {assay}}.",
+        message_type = "error"
       )
-      rownames(assay_obj) <- newnames[rownames(assay_obj)[index_all]]
     }
 
+    assay_class <- class(assay_obj)[[1L]]
+    if (!assay_class %in% c("Assay", "Assay5")) {
+      log_message(
+        "Renaming features in assay class {.val {assay_class}} is not supported.",
+        message_type = "error"
+      )
+    }
+    for (reduction in SeuratObject::Reductions(srt)) {
+      reduction_obj <- srt[[reduction]]
+      if (!identical(SeuratObject::DefaultAssay(reduction_obj), assay)) {
+        next
+      }
+      loading_features <- c(
+        rownames(SeuratObject::Loadings(reduction_obj)),
+        rownames(SeuratObject::Loadings(reduction_obj, projected = TRUE))
+      )
+      if (any(changed %in% loading_features)) {
+        log_message(
+          "Reduction {.val {reduction}} contains feature loadings for renamed features. Rename before computing the reduction.",
+          message_type = "error"
+        )
+      }
+    }
+    log_message("Rename features for the assay: ", assay, verbose = verbose)
+    if (identical(assay_class, "Assay")) {
+      for (layer in c("meta.features", "scale.data", "counts", "data")) {
+        data <- methods::slot(assay_obj, layer)
+        if (length(rownames(data))) {
+          rownames(data) <- rename(rownames(data))
+          methods::slot(assay_obj, layer) <- data
+        }
+      }
+      methods::slot(assay_obj, "var.features") <- rename(
+        methods::slot(assay_obj, "var.features")
+      )
+    } else {
+      dimnames(assay_obj) <- list(renamed, colnames(assay_obj))
+      metadata <- methods::slot(assay_obj, "meta.data")
+      if ("var.features" %in% names(metadata)) {
+        metadata$var.features <- rename(metadata$var.features)
+        methods::slot(assay_obj, "meta.data") <- metadata
+      }
+    }
     srt[[assay]] <- assay_obj
   }
   return(srt)

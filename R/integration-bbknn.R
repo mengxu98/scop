@@ -89,20 +89,8 @@ BBKNN_integrate <- function(
   }
   if (should_scale_integration_data(srt_merge, HVF, do_scaling)) {
     log_message("Perform {.fn Seurat::ScaleData}")
-    assay_merge <- SeuratObject::DefaultAssay(srt_merge)
-    if (inherits(srt_merge[[assay_merge]], "Assay5")) {
-      srt_merge[[assay_merge]] <- SeuratObject::JoinLayers(
-        srt_merge[[assay_merge]]
-      )
-    }
-    srt_merge <- ScaleData(
-      object = srt_merge,
-      split.by = if (isTRUE(scale_within_batch)) batch else NULL,
-      assay = SeuratObject::DefaultAssay(srt_merge),
-      features = HVF,
-      vars.to.regress = vars_to_regress,
-      model.use = regression_model,
-      verbose = FALSE
+    srt_merge <- scale_integrated_assay_data(
+      srt_merge, HVF, batch, scale_within_batch, vars_to_regress, regression_model
     )
   }
 

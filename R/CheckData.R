@@ -70,7 +70,15 @@ CheckDataType.default <- function(
   }
   isfinite <- all(is.finite(data_range))
   if (inherits(object, "dgCMatrix")) {
-    isfloat <- any(object@x %% 1 != 0, na.rm = TRUE)
+    values <- object@x
+    prefix_float <- length(values) > 4096L &&
+      identical(class(object), structure("dgCMatrix", package = "Matrix")) &&
+      !is.object(values) &&
+      length(object@p) > 0L && object@p[[length(object@p)]] == length(values) &&
+      isfinite && all(abs(data_range) <= 2^40) &&
+      any(values[seq_len(4096L)] %% 1 != 0, na.rm = TRUE) &&
+      isTRUE(methods::validObject(object, test = TRUE))
+    isfloat <- prefix_float || any(object@x %% 1 != 0, na.rm = TRUE)
   } else {
     isfloat <- any(
       object[, sample(seq_len(ncol(object)), min(ncol(object), 1000))] %% 1 != 0,

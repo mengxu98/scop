@@ -64,6 +64,8 @@ CCCHeatmap(
   resource = NULL,
   sample = NULL,
   srt = NULL,
+  row_bar_color = NULL,
+  column_bar_color = NULL,
   ...
 )
 }
@@ -79,7 +81,13 @@ CCCHeatmap(
 \item{comparison}{Comparison indices or names.}
 
 \item{plot_type}{Plot type. One of \code{"heatmap"} or \code{"dot"}.
-\code{"bubble"} is a CellChat-specific interaction bubble matrix.
+\code{"bubble"} is a CellChat interaction matrix with sender–receiver pairs on
+rows and ligand–receptor interactions on columns. By default, color shows
+communication probability and size shows p-value bands: \code{p <= 0.01},
+\verb{0.01 < p <= 0.05}, and \code{p > 0.05}.
+Comparisons share scales across condition panels. Shared matrix bubbles use
+upper and left summary bars by default; add cell strips explicitly if needed.
+Nonnegative scores use a sequential red scale unless a value palette is supplied.
 \code{"ligand_target"} is a special heatmap path available only with
 \code{NicheNet}/\code{MultiNicheNet} results. \code{"role_heatmap"} and \code{"diff_heatmap"}
 are CellChat-specific pathway role views.}
@@ -163,7 +171,7 @@ annotation tracks. Default \code{TRUE}.}
 
 \item{width, height}{Optional heatmap body width and height. When only one is
 supplied, the other is inferred from the matrix dimensions to keep cells
-square. When both are \code{NULL}, a square-cell size is computed automatically.}
+square. When both are \code{NULL}, the body is sized automatically from the matrix and labels.}
 
 \item{units}{Units for \code{width} and \code{height}. Default \code{"inch"}.}
 
@@ -187,10 +195,15 @@ combines within-method percentile ranks for visualization, and \code{"legacy"}
 retains the deprecated raw-score aggregation.}
 
 \item{resource, sample}{Optional resource and sample/context filters for
-unified CCC results.}
+unified CCC results. Native CellChat plots use a stored result selected
+by \code{condition} and do not support these additional filters.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{row_bar_color, column_bar_color}{Optional colors for the summary bars in
+shared matrix bubble plots. Each defaults to the first cell palette color
+and can be overridden independently.}
 
 \item{...}{Arguments passed to other functions.}
 }
@@ -203,6 +216,12 @@ CCC heatmap and dot matrix plot
 \details{
 Canonical selection parameters and legacy aliases may be supplied
 together only when their values agree. Conflicting values raise an error.
+\code{width} and \code{height} here control the heatmap body, not the canvas.
+
+Aggregation heatmaps retain receivers on rows and senders on
+columns. By default, the top and left show bars; the bottom and right
+show cell-type color strips. The legend is on the right and sender labels
+are rotated by 90 degrees. The export is sized from the rendered heatmap.
 }
 \examples{
 data(pancreas_sub)
@@ -341,5 +360,18 @@ CCCHeatmap(
   top_n = 20,
   width = 0.6,
   height = 3.5
+)
+
+CCCHeatmap(
+  pancreas_sub,
+  method = "CellChat",
+  condition = "ConditionA_vs_ConditionB",
+  plot_type = "bubble",
+  sender.use = c("Ductal", "Ngn3-low-EP", "Ngn3-high-EP"),
+  receiver.use = c("Ductal", "Ngn3-low-EP"),
+  interaction.use = c(
+    "MDK_NCL", "CLDN3_CLDN3", "MDK_SDC1", "MDK_ITGA6_ITGB1",
+    "COL9A2_SDC4", "DLK1_NOTCH1", "GRN_SORT1"
+  )
 )
 }

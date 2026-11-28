@@ -1,4 +1,4 @@
-scop_python_import <- function(module, convert = TRUE) {
+import_bundled_python <- function(module, convert = TRUE) {
   python_files <- c(
     system.file("scripts", "log_message.py", package = "thisutils"),
     system.file("python", "log_message.py", package = "thisutils")
@@ -338,11 +338,16 @@ runner_tail_lines <- function(path, max_lines = 20L, chunk_size = 1000L) {
 
 runner_python_arguments <- function(args, caller) {
   args <- lapply(args, function(value) {
-    if (is.numeric(value)) {
-      ifelse(grepl("\\.", as.character(value)), as.double(value), as.integer(value))
-    } else {
-      value
+    if (
+      is.double(value) &&
+        !is.object(value) &&
+        is.numeric(value) &&
+        length(value) > 0L &&
+        all(is.finite(value) & abs(value) <= .Machine$integer.max & value == trunc(value))
+    ) {
+      storage.mode(value) <- "integer"
     }
+    value
   })
   lapply(args, function(value) {
     if (is.symbol(value) || is.call(value)) {

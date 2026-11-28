@@ -100,9 +100,14 @@ spatialdm_runtime <- function(envname, verbose) {
   normalizePath(python, winslash = "/", mustWork = TRUE)
 }
 
-spatialdm_read_table <- function(path, required = character(), label, allow.empty = FALSE, sep = "\t") {
+spatialdm_read_table <- function(path, required = character(), label, allow.empty = FALSE, sep = "\t", first.id = FALSE) {
   if (!file.exists(path)) log_message("SpatialDM did not produce {.val {label}} output", message_type = "error")
-  value <- tryCatch(utils::read.table(path, header = TRUE, sep = sep, stringsAsFactors = FALSE, check.names = FALSE, na.strings = c("", "NA", "NaN", "nan")),
+  value <- tryCatch(
+    read_runner_output_table(
+      path, sep,
+      id.cols = if (first.id) character() else c("cell_id", "interaction", "ligand", "receptor", "annotation", "pathway_name"),
+      first.id = first.id
+    ),
     error = function(e) log_message("Unable to read SpatialDM {.val {label}} output: {conditionMessage(e)}", message_type = "error")
   )
   if (!all(required %in% colnames(value)) || (!allow.empty && nrow(value) == 0L)) {
@@ -112,7 +117,7 @@ spatialdm_read_table <- function(path, required = character(), label, allow.empt
 }
 
 spatialdm_read_matrix <- function(path, cells = NULL, label = "matrix", logical = FALSE) {
-  table <- spatialdm_read_table(path, required = character(), label = label, allow.empty = TRUE)
+  table <- spatialdm_read_table(path, required = character(), label = label, allow.empty = TRUE, first.id = TRUE)
   if (ncol(table) == 0L) {
     return(matrix(numeric(), nrow = 0L, ncol = 0L))
   }
@@ -261,6 +266,11 @@ spatialdm_bundle <- function(input, executed, parameters, result.name) {
 #' @inheritParams scop-params
 #' @param srt Deprecated alias for `object`; supply exactly one of the two. It
 #' will be removed in scop 1.0.0.
+#' @details
+#' The Python environment must contain the SpatialDM release and its bundled
+#' ligand-receptor annotation files. If an older environment lacks those files,
+#' prepare a fresh SpatialDM environment and pass its name through `envname`.
+#'
 #' @param object A `Seurat` spatial object.
 #' @param species Built-in SpatialDM species (`"human"` or `"mouse"`).
 #' @param lr.database Optional custom LR table with `ligand`, `receptor`, and
@@ -416,7 +426,12 @@ GetSpatialDMResult <- function(object, result.name = NULL, type = c("global", "l
 #' @param signaling Which stored weight matrix to use.
 #' @param image.scale Image scale factor matching the selected raster.
 #' @param highlight LR interactions to label in the global plot.
-#' @param palette,palcolor,theme_use,theme_args SCOP plotting controls.
+#' @param palette Palette name. The global plot defaults to `"Chinese"`;
+#'   other plot types retain their continuous palettes.
+#' @param palcolor Custom colors that override the palette. For the global plot,
+#'   supply colors in the order `Selected`, `Not selected`, or name them
+#'   with those labels. A single unnamed color overrides only `Selected`.
+#' @param theme_use,theme_args SCOP theme controls.
 #' @param ... Arguments passed to other functions.
 #' @return A `ggplot` or `patchwork` object.
 #'
@@ -424,12 +439,16 @@ GetSpatialDMResult <- function(object, result.name = NULL, type = c("global", "l
 #' @examples
 #' \dontrun{
 #' data(visium_human_pancreas_sub)
+#' spatial <- Seurat::NormalizeData(
+#'   visium_human_pancreas_sub, assay = "Spatial", verbose = FALSE
+#' )
 #' spatial <- RunSpatialDM(
-#'   visium_human_pancreas_sub,
-#'   coord.cols = c("col", "row")
+#'   spatial, assay = "Spatial", image = "slice1",
+#'   coord.cols = c("x", "y"), coordinate.unit = "pixel", l = 54.70832
 #' )
 #' SpatialDMPlot(spatial, plot_type = "global")
 #' SpatialDMPlot(spatial, plot_type = "weights", spot = colnames(spatial)[1])
+#' SpatialDMPlot(spatial, plot_type = "local", pair = "MDK_SDC4")
 #' }
 SpatialDMPlot <- function(
   object, result.name = NULL, plot_type = c("weights", "global", "local"),
@@ -441,33 +460,62 @@ SpatialDMPlot <- function(
   plot_type <- match.arg(plot_type)
   image.scale <- match.arg(image.scale)
   signaling <- match.arg(signaling)
+  if (plot_type != "global" && identical(theme_use, "theme_scop") &&
+    !"panel.border" %in% names(theme_args)) {
+    theme_args$panel.border <- ggplot2::element_blank()
+  }
   result <- spatialdm_get_result(object, result.name)
   spatial_require_coordinate_contract(result, "RunSpatialDM()")
   if (identical(plot_type, "weights")) {
     if (is.null(spot) || length(spot) != 1L || !spot %in% as.character(result$coordinates$cell_id)) log_message("{.arg spot} must identify one stored SpatialDM spot", message_type = "error")
     values <- as.numeric(result$weights[[signaling]][spot, , drop = TRUE])
     names(values) <- colnames(result$weights[[signaling]])
-    return(SpatialSpotPlot(object,
+    p <- SpatialSpotPlot(object,
       values = values, image = result$parameters$image,
       image.scale = image.scale,
-      coord.cols = result$parameters$coord.cols, palette = palette, palcolor = palcolor,
+      coord.cols = result$parameters$coord.cols,
+      palette = if (missing(palette) && is.null(palcolor) && all(values[is.finite(values)] >= 0)) "Reds" else palette,
+      palcolor = palcolor,
       theme_use = theme_use, theme_args = theme_args, legend.title = "Spatial weight", ...
-    ))
+    )
+    p <- p & ggplot2::labs(title = "Spatial weights")
+    return(thisplot::plot_autosize(p, panel_width = 66, base_size = NULL, label_autosize = FALSE))
   }
   if (identical(plot_type, "global")) {
     df <- result$global
     df$selected <- as.logical(df$selected)
+    df$selection <- factor(df$selected, levels = c(TRUE, FALSE), labels = c("Selected", "Not selected"))
+    df <- df[order(df$selected, na.last = FALSE), , drop = FALSE]
+    selection_levels <- levels(df$selection)
+    global_palette <- if (missing(palette)) "Chinese" else palette
+    if (is.null(palcolor) || !length(palcolor) ||
+      (length(palcolor) == 1L && is.null(names(palcolor)))) {
+      colors <- spatial_palette_colors(rev(selection_levels), palette = global_palette)
+      if (length(palcolor) && nzchar(palcolor)) colors["Selected"] <- unlist(palcolor)
+    } else {
+      colors <- spatial_palette_colors(selection_levels, palette = global_palette, palcolor = palcolor)
+    }
     global_p_label <- if ("fdr" %in% colnames(df)) "-log10(FDR)" else "-log10(p-value)"
     df$minus_log10_fdr <- -log10(pmax(as.numeric(df$fdr %||% df$pvalue), .Machine$double.xmin))
     p <- ggplot2::ggplot(df, ggplot2::aes(x = .data$moran_r, y = .data$minus_log10_fdr)) +
-      ggplot2::geom_point(ggplot2::aes(color = .data$selected), alpha = 0.75) +
+      ggplot2::geom_point(ggplot2::aes(color = .data$selection), size = 1.8, alpha = 0.82) +
       ggplot2::scale_color_manual(
-        values = c(`FALSE` = "grey70", `TRUE` = palcolor %||% "#D55E00"),
-        name = "Selected"
+        values = colors,
+        name = "Selection"
       ) +
-      ggplot2::labs(x = "Global Moran's R", y = global_p_label, title = "Spatial association (Moran's R)") +
-      apply_plot_theme(theme_use = theme_use, theme_args = theme_args)
+      ggplot2::labs(x = "Global Moran's R", y = global_p_label, title = "Spatial association") +
+      apply_plot_theme(theme_use = theme_use, theme_args = theme_args) +
+      ggplot2::guides(color = ggplot2::guide_legend(override.aes = list(size = 3.4, alpha = 1))) +
+      ggplot2::theme(aspect.ratio = 1)
+    if (identical(theme_use, "theme_scop") && !length(theme_args)) {
+      p <- p + ggplot2::theme(
+        panel.grid.major.y = ggplot2::element_line(colour = "grey92", linewidth = 0.25),
+        legend.location = "panel", legend.justification.right = c(0, 0.5)
+      )
+    }
     if (!is.null(highlight)) p <- p + ggrepel::geom_text_repel(data = df[df$interaction %in% highlight, , drop = FALSE], ggplot2::aes(label = .data$interaction), size = 3, max.overlaps = Inf)
+    sized <- thisplot::plot_autosize(p, panel_width = 56, panel_height = 56, base_size = NULL)
+    attr(p, "size") <- attr(sized, "size")
     return(p)
   }
   if (is.null(pair) || length(pair) != 1L || !pair %in% rownames(result$local$local_p)) log_message("{.arg pair} must identify one stored local LR result", message_type = "error")
@@ -485,7 +533,8 @@ SpatialDMPlot <- function(
     coord.cols = result$parameters$coord.cols, palette = "Reds", theme_use = theme_use,
     theme_args = theme_args, legend.title = local_label, ...
   ))
-  for (gene in c(ligands, receptors)) {
+  plots[[1L]] <- plots[[1L]] & ggplot2::labs(title = "Local association")
+  for (gene in unique(c(ligands, receptors))) {
     if (gene %in% rownames(object)) {
       plots[[length(plots) + 1L]] <- SpatialSpotPlot(object,
         features = gene,
@@ -496,5 +545,21 @@ SpatialDMPlot <- function(
       )
     }
   }
-  patchwork::wrap_plots(plots, ncol = length(plots)) + patchwork::plot_annotation(title = pair)
+  ncols <- min(2L, length(plots))
+  plot_cells <- lapply(seq_along(plots), function(i) {
+    col <- (i - 1L) %% ncols + 1L
+    row <- (i - 1L) %/% ncols + 1L
+    patchwork::area(t = row, l = col)
+  })
+  p <- patchwork::wrap_plots(plots, design = do.call(c, plot_cells)) +
+    patchwork::plot_annotation(
+      title = pair,
+      theme = ggplot2::theme(plot.title = ggplot2::element_text(size = 12, face = "bold"))
+    ) &
+    ggplot2::theme(
+      legend.text = ggplot2::element_text(size = 10),
+      legend.title = ggplot2::element_text(size = 11),
+      plot.margin = ggplot2::margin(3, 3, 3, 3)
+    )
+  thisplot::plot_autosize(p, panel_width = 44, base_size = NULL, label_autosize = FALSE)
 }

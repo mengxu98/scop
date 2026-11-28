@@ -207,7 +207,7 @@ RunGNIPLR.default <- function(
       )
     )
     configure_python_runtime(python_path)
-    functions <- scop_python_import("functions", convert = TRUE)
+    functions <- import_bundled_python("functions", convert = TRUE)
     res <- functions$RunGNIPLR(
       expression = expr,
       genes = rownames(expr),

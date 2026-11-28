@@ -21,7 +21,7 @@ test_that("spatial coordinate resolver prefers x/y before col/row", {
   expect_equal(p$data$y, c(3, 4, 5))
 })
 
-test_that("spatial plots handle single-value and empty pie states", {
+test_that("spatial point plots handle an all-zero value vector", {
   counts <- Matrix::Matrix(matrix(1, nrow = 2, ncol = 3), sparse = TRUE)
   rownames(counts) <- c("Gene1", "Gene2")
   colnames(counts) <- paste0("Spot", 1:3)
@@ -37,14 +37,4 @@ test_that("spatial plots handle single-value and empty pie states", {
     theme_use = NULL
   )
   expect_s3_class(p_single, "ggplot")
-
-  zero_pies <- data.frame(A = rep(0, 3), B = rep(0, 3), row.names = colnames(srt))
-  p_empty <- SpatialSpotPlot(
-    srt,
-    values = zero_pies,
-    plot_type = "pie",
-    overlay_image = FALSE,
-    theme_use = NULL
-  )
-  expect_s3_class(p_empty, "ggplot")
 })

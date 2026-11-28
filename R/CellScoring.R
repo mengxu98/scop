@@ -384,7 +384,7 @@ CellScoring <- function(
           nbin = dots[["nbin"]] %||% 24,
           ctrl = dots[["ctrl"]] %||% 100,
           seed = seed,
-          cores = scop_n_threads(cores)
+          cores = normalize_thread_count(cores)
         )
         filtered <- names(features)[
           !names(features) %in% colnames(module_scores)
@@ -438,7 +438,7 @@ CellScoring <- function(
           negative_weight = dots[["w_neg"]] %||% 1,
           missing_genes = dots[["missing_genes"]] %||% "impute",
           ties_method = ties_method,
-          cores = scop_n_threads(cores)
+          cores = normalize_thread_count(cores)
         )
         filtered <- names(features)[
           !names(features) %in% colnames(ucell_scores)
@@ -513,7 +513,7 @@ CellScoring <- function(
           gene_sets = features,
           strategy = "topk",
           tie_method = "first",
-          cores = scop_n_threads(cores)
+          cores = normalize_thread_count(cores)
         )
         filtered <- names(features)[
           !names(features) %in% colnames(auc_scores)
@@ -526,7 +526,7 @@ CellScoring <- function(
               expr_counts = expr_sp,
               gene_sets = features,
               tie_method = "first",
-              cores = scop_n_threads(cores)
+              cores = normalize_thread_count(cores)
             ),
             dots
           )
@@ -563,7 +563,7 @@ CellScoring <- function(
             abs_ranking = abs.ranking,
             tau = tau,
             chunk_size = cpp_chunk_size,
-            cores = scop_n_threads(cores)
+            cores = normalize_thread_count(cores)
           )
         } else if (method == "ssGSEA") {
           gs_scores <- run_ssgsea_scores(

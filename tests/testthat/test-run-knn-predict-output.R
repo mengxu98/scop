@@ -1,16 +1,3 @@
-knn_match_best_labels <- function(match_prob) {
-  match_prob <- as.matrix(match_prob)
-  if (!all(is.finite(match_prob))) {
-    return(apply(
-      match_prob,
-      1L,
-      function(x) names(x)[order(x, decreasing = TRUE)][1L]
-    ))
-  }
-  out <- colnames(match_prob)[max.col(match_prob, ties.method = "first")]
-  names(out) <- rownames(match_prob)
-  out
-}
 test_that("RunKNNPredict probability maxima retain row labels and missing values", {
   probabilities <- matrix(
     c(0.1, 0.7, NA_real_, 0.5, 0.4, NA_real_),
@@ -54,27 +41,52 @@ test_that("matrix neighbor dispatch remains available to KNN reference mapping",
   expect_true(all(observed@nn.idx >= 1L & observed@nn.idx <= nrow(reference)))
 })
 
-test_that("KNN prediction labels retain legacy ties and non-finite values", {
-  finite_probabilities <- rbind(
-    Query1 = c(B = 0.8, A = 0.8, C = 0.1),
-    Query2 = c(B = 0.2, A = 0.9, C = 0.3)
+test_that("KNN reference mapping and prediction preserve a single selected dimension", {
+  make_object <- function(cells, pca) {
+    counts <- Matrix::Matrix(
+      matrix(1, nrow = 3L, ncol = length(cells),
+             dimnames = list(c("g1", "g2", "g3"), cells)),
+      sparse = TRUE
+    )
+    object <- SeuratObject::CreateSeuratObject(counts)
+    dimnames(pca) <- list(cells, c("PC_1", "PC_2"))
+    object[["pca"]] <- SeuratObject::CreateDimReducObject(
+      embeddings = pca, assay = "RNA", key = "PC_"
+    )
+    object
+  }
+  reference_cells <- c("r4", "r1", "r2", "r3")
+  query_cells <- c("q3", "q1", "q2")
+  reference <- make_object(
+    reference_cells, cbind(c(-4, 0, 10, 30), c(900, 100, -800, 8))
   )
-  legacy_finite <- apply(
-    finite_probabilities,
-    1L,
-    function(x) names(x)[order(x, decreasing = TRUE)][1L]
+  reference$kind <- c("A", "B", "C", "D")
+  reference_umap <- cbind(UMAP_1 = 1:4, UMAP_2 = c(8, 3, 9, 6))
+  rownames(reference_umap) <- reference_cells
+  reference[["umap"]] <- SeuratObject::CreateDimReducObject(
+    embeddings = reference_umap, assay = "RNA", key = "UMAP_"
   )
-  expect_identical(knn_match_best_labels(finite_probabilities), legacy_finite)
+  query <- make_object(query_cells, cbind(c(2, 9, 28), c(870, 5, -750)))
+  args <- list(
+    srt_query = query, srt_ref = reference, ref_group = "kind",
+    query_reduction = "pca", ref_reduction = "pca",
+    query_dims = 1L, ref_dims = 1L, distance_metric = "euclidean",
+    k = 1L, nn_method = "raw", verbose = FALSE
+  )
 
-  probabilities <- rbind(
-    finite_probabilities,
-    Query3 = c(B = NA_real_, A = 0.5, C = 0.5)
+  mapped <- do.call(
+    RunKNNMap, c(args, list(ref_umap = "umap", projection_method = "knn"))
   )
-  legacy <- apply(
-    probabilities,
-    1L,
-    function(x) names(x)[order(x, decreasing = TRUE)][1L]
-  )
+  predicted <- do.call(RunKNNPredict, args)
 
-  expect_identical(knn_match_best_labels(probabilities), legacy)
+  expect_identical(colnames(mapped), query_cells)
+  expect_identical(colnames(predicted), query_cells)
+  expect_identical(as.character(mapped$predicted_ref_group), c("B", "C", "D"))
+  expect_identical(as.character(predicted$KNNPredict_classification), c("B", "C", "D"))
+  expect_equal(unname(predicted$KNNPredict_dist), c(2, 1, 2), tolerance = 0)
+  expect_equal(
+    unname(SeuratObject::Embeddings(mapped[["ref.embeddings"]])[query_cells, , drop = FALSE]),
+    unname(reference_umap[c("r1", "r2", "r3"), , drop = FALSE]),
+    tolerance = 0
+  )
 })

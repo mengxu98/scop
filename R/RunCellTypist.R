@@ -150,7 +150,7 @@ RunCellTypist <- function(
     !isTRUE(insert_decision)
   args[["return_obs"]] <- direct_obs_return
 
-  functions <- scop_python_import("functions", convert = TRUE)
+  functions <- import_bundled_python("functions", convert = TRUE)
   celltypist_result <- do.call(functions$CellTypist, args)
 
   if (isTRUE(return_seurat)) {
@@ -343,7 +343,7 @@ TrainCellTypist <- function(
     }
   }
 
-  functions <- scop_python_import("functions", convert = TRUE)
+  functions <- import_bundled_python("functions", convert = TRUE)
 
   model <- functions$TrainCellTypist(
     adata = adata,
@@ -464,7 +464,7 @@ CellTypistModels <- function(
   )
   PrepareEnv(modules = "celltypist")
   check_python("celltypist==1.7.1", verbose = verbose)
-  functions <- scop_python_import("functions", convert = TRUE)
+  functions <- import_bundled_python("functions", convert = TRUE)
 
   result <- functions$CellTypistModels(
     action = action,

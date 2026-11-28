@@ -319,3 +319,29 @@ test_that("spatial integration preserves named backend coords by cell identity",
   )
   expect_error(standardize(dup, cells), "exactly|duplicate")
 })
+
+test_that("metadata-only sample coordinates resolve the object axis once per call", {
+  object <- make_spatial_test_grid()
+  object$sample <- c("B", "A", "B", "C")
+  original <- object
+  calls <- 0L
+  resolve <- spatial_analysis_coords
+  testthat::local_mocked_bindings(
+    spatial_analysis_coords = function(...) {
+      calls <<- calls + 1L
+      resolve(...)
+    },
+    .package = "scop"
+  )
+  for (space in c("raw", "legacy_display")) {
+    got <- spatial_sample_coords(object, "sample", coordinate_space = space)
+    expect_identical(rownames(got$data), colnames(object))
+    expect_equal(got$data$x, unname(object$col))
+    expect_equal(got$data$y, unname(object$row))
+    expect_identical(names(got$sources), c("B", "A", "C"))
+    expect_identical(got$sources$B, got$sources$A)
+    expect_identical(got$sources$B, got$sources$C)
+  }
+  expect_identical(calls, 2L)
+  expect_identical(object, original)
+})

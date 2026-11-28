@@ -219,8 +219,9 @@ test_that("fragment mappings distinguish repeated barcodes across captures and s
   expect_equal(CheckATACData(restored), report)
   bad <- restored
   bad[["peaks"]]@fragments[[1]]@cells[] <- "AA-1"
-  expect_true(CheckATACData(bad)$valid)
-  expect_false(CheckATACData(bad)$fragments_ready)
+  bad_report <- CheckATACData(bad)
+  expect_true(bad_report$valid)
+  expect_false(bad_report$fragments_ready)
   capture <- subset(restored, cells = names(maps[[1]]))
   capture_report <- CheckATACData(capture)
   expect_true(capture_report$fragments_ready)
@@ -270,8 +271,9 @@ test_that("existing native assay seqinfo contributes reference and bounds checks
   expect_false(CheckATACData(object)$valid)
   GenomeInfoDb::genome(object[["peaks"]]@ranges) <- NA_character_
   GenomeInfoDb::seqlengths(object[["peaks"]]@seqinfo) <- c(100L, 1000L)
-  expect_false(CheckATACData(object)$valid)
-  expect_match(paste(CheckATACData(object)$errors, collapse = " "), "assay seqinfo")
+  report <- CheckATACData(object)
+  expect_false(report$valid)
+  expect_match(paste(report$errors, collapse = " "), "assay seqinfo")
 })
 
 test_that("ATAC analysis uses default package checks and propagates failures", {

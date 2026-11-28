@@ -233,8 +233,9 @@ test_that("new-assay recount is atomic and preserves source analyses", {
     SeuratObject::GetAssayData(result, assay = "recount", layer = "data"),
     SeuratObject::GetAssayData(result, assay = "recount", layer = "counts")
   )
-  expect_true(CheckATACData(result, assay = "recount")$valid)
-  expect_true(CheckATACData(result, assay = "recount")$fragments_ready)
+  report <- CheckATACData(result, assay = "recount")
+  expect_true(report$valid)
+  expect_true(report$fragments_ready)
   path <- file.path(directory, "recount.rds")
   saveRDS(result, path)
   restored <- readRDS(path)

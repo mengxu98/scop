@@ -32,6 +32,11 @@
 #' @param dims For `plot_type = "embedding_network"`: dimensions to plot.
 #' @param layout Layout used for graph-based network views. `"chord"` can also
 #'   be requested via `plot_type = "circle"` for backward compatibility.
+#'   Use `"hierarchy"` with `plot_type = "pathway"`, `"individual"` or
+#'   `"individual_lr"` for a directional sender-to-receiver network.
+#'   The circle layout remains the default.
+#'   Cell positions and colors are kept across pathways from the same dataset;
+#'   paths returned by a single call also share an edge-width scale.
 #' @param link_curvature Curvature used for circle-like differential links and
 #'   flow edges.
 #' @param edge_size Range used for scaling edge widths.
@@ -55,6 +60,11 @@
 #' @param legend.title Legend title.
 #' @param ... Arguments passed to other functions.
 #' @return A ggplot, patchwork, or recorded plot object.
+#' @details For side-by-side networks, explicitly reuse the same named
+#'   `cell_palcolor` and `link_palcolor` vectors for consistent identity
+#'   colors across filtered plots. If edge widths are normalized separately
+#'   by the layout, compare the stored scores rather than comparing line
+#'   widths across panels.
 #' @export
 #'
 #' @examples
@@ -275,8 +285,9 @@ CCCNetworkPlot <- function(
   label.enable <- isTRUE(dots[["label"]])
   label.spatial <- if (is.null(dots[["label"]])) TRUE else isTRUE(dots[["label"]])
   label.size <- dots[["label.size"]] %||% 4
-  label.fg <- dots[["label.fg"]] %||% "white"
-  label.bg <- dots[["label.bg"]] %||% "black"
+  flow_labels <- plot_type %in% c("arrow", "sigmoid")
+  label.fg <- dots[["label.fg"]] %||% if (flow_labels) "grey15" else "white"
+  label.bg <- dots[["label.bg"]] %||% if (flow_labels) "white" else "black"
   label.bg.r <- dots[["label.bg.r"]] %||% 0.1
   dots[c("label", "label.size", "label.fg", "label.bg", "label.bg.r")] <- NULL
   ncols <- dots[["ncols"]] %||% dots[["ncol"]] %||% NULL
@@ -389,6 +400,15 @@ CCCNetworkPlot <- function(
       receptor = receptor
     )
   }
+  palette_cfg <- ccc_palettes(
+    palette = palette,
+    palcolor = palcolor,
+    cell_palette = cell_palette,
+    cell_palcolor = cell_palcolor,
+    link_palette = link_palette,
+    link_palcolor = link_palcolor
+  )
+
   if (identical(plot_type, "diffusion")) {
     diffusion_method <- detect_method(srt = srt, method = method)
     if (identical(diffusion_method, "SpatialCellChat")) {
@@ -413,23 +433,64 @@ CCCNetworkPlot <- function(
       native_dots <- dots[intersect(names(dots), native_formals)]
       native_dots$object <- native
       native_dots$signaling <- signaling
-      native_dots$pattern <- native_dots$pattern %||% "outgoing"
-      return(do.call(diffusion_fun, native_dots))
+      if (!missing(slot.name)) native_dots$slot.name <- slot.name
+      native_dots$pattern <- match.arg(
+        native_dots$pattern %||% "outgoing",
+        c("incoming", "outgoing")
+      )
+      native_dots$legend.size <- native_dots$legend.size %||% 3
+      native_dots$legend.text.size <- native_dots$legend.text.size %||% ((font.size %||% 10) + 1)
+      native_dots$plot.title.name <- native_dots$plot.title.name %||% title
+      native_dots$plot.title.text.size <- native_dots$plot.title.text.size %||% (font.size + 2)
+      groups <- if (isS4(native) && "idents" %in% methods::slotNames(native)) {
+        ccc_group_levels(methods::slot(native, "idents"))
+      } else {
+        character()
+      }
+      colors <- native_dots$color.use %||% ccc_cell_palcolor(
+        srt, diffusion_method, palette_cfg$cell_palette, palette_cfg$cell_palcolor, groups
+      )
+      if (length(groups) && is.null(names(colors))) {
+        colors <- thisplot::palette_colors(groups, palette = palette_cfg$cell_palette, palcolor = colors)
+      }
+      if (length(colors) && "color.use" %in% native_formals) native_dots$color.use <- colors
+      p <- do.call(diffusion_fun, native_dots)
+      scale <- p$scales$get_scales("colour")
+      if (length(colors) && !is.null(scale)) {
+        p$scales$scales <- Filter(function(x) !"colour" %in% x$aesthetics, p$scales$scales)
+        p <- p + ggplot2::scale_colour_manual(values = colors, na.value = scale$na.value)
+      }
+      p <- p +
+        ggplot2::labs(subtitle = subtitle) +
+        ggplot2::guides(colour = ggplot2::guide_legend(
+          title = legend.title %||% if (identical(native_dots$pattern, "incoming")) "Targets" else "Sources",
+          override.aes = list(size = native_dots$legend.size, alpha = 1)
+        )) +
+        ggplot2::theme(
+          legend.position = legend.position,
+          legend.direction = if (missing(legend.direction) && isTRUE(legend.position %in% c("top", "bottom"))) {
+            "horizontal"
+          } else {
+            legend.direction
+          },
+          legend.location = "panel",
+          legend.justification.right = c(0, 0.5),
+          legend.key.size = grid::unit(4.5, "mm"),
+          legend.box.spacing = grid::unit(2, "mm"),
+          panel.border = theme_args$panel.border %||% ggplot2::element_blank(),
+          plot.title = ggplot2::element_text(face = "bold", margin = ggplot2::margin(b = 4)),
+          plot.margin = ggplot2::margin(4, 4, 4, 4)
+        )
+      return(thisplot::plot_autosize(
+        p, panel_width = 66 * (font.size %||% 10) / 10,
+        base_size = NULL, label_autosize = FALSE
+      ))
     }
     log_message(
       "{.val plot_type = 'diffusion'} requires stored full SpatialCellChat results",
       message_type = "error"
     )
   }
-  palette_cfg <- ccc_palettes(
-    palette = palette,
-    palcolor = palcolor,
-    cell_palette = cell_palette,
-    cell_palcolor = cell_palcolor,
-    link_palette = link_palette,
-    link_palcolor = link_palcolor
-  )
-
   method <- detect_method(srt = srt, method = method)
   if (identical(plot_type, "spatial")) {
     stored <- ccc_spatial_stored(
@@ -459,9 +520,13 @@ CCCNetworkPlot <- function(
       stored = stored,
       pair_df = pair_df_spatial,
       cell_palette = palette_cfg$cell_palette,
-      cell_palcolor = palette_cfg$cell_palcolor,
+      cell_palcolor = ccc_cell_palcolor(
+        srt, method, palette_cfg$cell_palette, palette_cfg$cell_palcolor, stored$payload$group_levels
+      ),
       link_palette = palette_cfg$link_palette,
-      link_palcolor = palette_cfg$link_palcolor,
+      link_palcolor = ccc_cell_palcolor(
+        srt, method, palette_cfg$link_palette, palette_cfg$link_palcolor, stored$payload$group_levels
+      ),
       edge_size = edge_size,
       edge_color = edge_color,
       edge_alpha = edge_alpha,
@@ -494,16 +559,34 @@ CCCNetworkPlot <- function(
       theme_args = theme_args
     ))
   }
+  comparison_palette_cfg <- palette_cfg
+  palette_cfg$cell_palcolor <- ccc_cell_palcolor(
+    srt, method, palette_cfg$cell_palette, palette_cfg$cell_palcolor
+  )
+  if (plot_type %in% c("circle", "pathway", "individual", "individual_lr", "cell_chord")) {
+    palette_cfg$link_palcolor <- ccc_cell_palcolor(
+      srt, method, palette_cfg$link_palette, palette_cfg$link_palcolor
+    )
+  }
   combine_methods <- match.arg(combine_methods)
   srt <- ccc_prepare_filtered_object(
     srt = srt,
     method = method,
     resource = resource,
     condition = if (identical(method, "CellChat")) NULL else condition,
-    sample = sample
+    sample = sample,
+    native_cellchat = plot_type %in% c("pathway", "individual", "individual_lr", "diff_network") ||
+      ccc_uses_native_cellchat_table(
+        srt, method, condition, dataset, slot.name, signaling, pairLR.use,
+        sender.use, receiver.use
+      )
   )
   if (identical(method, "CCC") && identical(combine_methods, "separate")) {
-    return(ccc_plot_methods_separately(match.call(), srt = srt, env = parent.frame()))
+    return(ccc_plot_methods_separately(
+      match.call(), srt = srt, env = parent.frame(), palette_cfg = comparison_palette_cfg,
+      link_groups = plot_type %in% c("circle", "pathway", "individual", "individual_lr", "cell_chord"),
+      condition = condition, filter_context = !is.null(resource) || !is.null(sample)
+    ))
   }
   srt <- ccc_prepare_combined_object(
     srt = srt,
@@ -519,8 +602,60 @@ CCCNetworkPlot <- function(
   }
 
   if (plot_type %in% c("pathway", "individual", "individual_lr")) {
+    hierarchy <- NULL
+    if (identical(layout, "hierarchy")) {
+      if (missing(node_size)) node_size <- 3.3
+      if (missing(edge_size)) edge_size <- c(0.2, 1.25)
+      if (missing(arrow_length)) arrow_length <- grid::unit(1.4, "mm")
+      if (missing(legend.position)) legend.position <- "bottom"
+      if (missing(legend.direction)) {
+        legend.direction <- if (legend.position %in% c("top", "bottom")) {
+          "horizontal"
+        } else {
+          "vertical"
+        }
+      }
+      hierarchy <- list(
+        directed = if (missing(directed)) TRUE else isTRUE(directed),
+        arrow = grid::arrow(
+          type = arrow_type, angle = arrow_angle, length = arrow_length
+        ),
+        curvature = link_curvature
+      )
+    }
+    finish_pathway_plots <- function(plots) {
+      if (!is.null(hierarchy)) {
+        max_weight <- max(vapply(plots, function(p) max(abs(p$data$weight)), numeric(1)))
+        metric <- if (display_by == "interaction") {
+          "Sum of selected LR scores"
+        } else {
+          switch(ccc_circle_value_col(value),
+            count = "Interaction count", mean = "Mean score",
+            max = "Maximum score", sum = "Total score"
+          )
+        }
+        if (any(vapply(plots, function(p) any(p$data$weight < 0), logical(1)))) {
+          metric <- paste(metric, "(magnitude)")
+        }
+        plots <- lapply(plots, function(p) {
+          p + ggplot2::scale_linewidth_continuous(
+            name = legend.title %||% metric,
+            range = edge_size, limits = c(0, max_weight),
+            breaks = function(limits) {
+              ticks <- scales::breaks_extended(n = 4)(limits)
+              ticks <- ticks[ticks > 0 & ticks <= limits[2]]
+              if (length(ticks)) ticks else limits[2]
+            },
+            guide = ggplot2::guide_legend(
+              override.aes = list(colour = "grey30", alpha = 1, arrow = NULL)
+            )
+          )
+        })
+      }
+      simplify_cc_plot_list(plots)
+    }
     if (identical(method, "CellChat")) {
-      if (!identical(layout, "circle")) {
+      if (!layout %in% c("circle", "hierarchy")) {
         log_message(
           "{.arg layout} is ignored for {.val plot_type = {plot_type}}; CellChat pathway/LR networks use the circle layout",
           message_type = "warning"
@@ -532,10 +667,12 @@ CCCNetworkPlot <- function(
         dataset = dataset
       )
       cellchat_object <- obj_info$object
-      plot_cellchat_circle <- function(sig,
-                                       pairLR = NULL,
-                                       plot_title = NULL,
-                                       plot_subtitle = NULL) {
+      if (!is.null(hierarchy)) {
+        hierarchy$levels <- ccc_group_levels(cellchat_object@idents)
+      }
+      plot_cellchat_pathway <- function(
+        sig, pairLR = NULL, plot_title = NULL, plot_subtitle = NULL
+      ) {
         ccc_cellchat_circle_network_plot(
           srt = srt,
           condition = condition,
@@ -560,6 +697,7 @@ CCCNetworkPlot <- function(
           link_palcolor = palette_cfg$link_palcolor,
           title = plot_title,
           subtitle = plot_subtitle,
+          hierarchy = hierarchy,
           legend.position = legend.position,
           legend.direction = legend.direction,
           legend.title = legend.title,
@@ -583,7 +721,7 @@ CCCNetworkPlot <- function(
           )
         }
         plots <- lapply(pathways_to_show, function(sig) {
-          plot_cellchat_circle(
+          plot_cellchat_pathway(
             sig = sig,
             plot_title = if (length(pathways_to_show) == 1L) {
               title %||% sig
@@ -593,7 +731,7 @@ CCCNetworkPlot <- function(
             plot_subtitle = if (length(pathways_to_show) == 1L) subtitle else NULL
           )
         })
-        return(simplify_cc_plot_list(plots))
+        return(finish_pathway_plots(plots))
       }
 
       if (is.null(signaling)) {
@@ -609,7 +747,7 @@ CCCNetworkPlot <- function(
         )
       }
       plots <- lapply(signaling, function(sig) {
-        plot_cellchat_circle(
+        plot_cellchat_pathway(
           sig = sig,
           pairLR = pairLR.use,
           plot_title = title %||% if (is.null(pairLR.use)) {
@@ -624,10 +762,10 @@ CCCNetworkPlot <- function(
           plot_subtitle = subtitle
         )
       })
-      return(simplify_cc_plot_list(plots))
+      return(finish_pathway_plots(plots))
     }
 
-    if (!identical(layout, "circle")) {
+    if (!layout %in% c("circle", "hierarchy")) {
       log_message(
         "{.arg layout} is ignored for {.val plot_type = {plot_type}} when using pathway-aware generic CCC results; the circle layout is used",
         message_type = "warning"
@@ -643,6 +781,11 @@ CCCNetworkPlot <- function(
       thresh = thresh
     )
     long_df <- standardize_long_df(long_df)
+    if (!is.null(hierarchy)) {
+      hierarchy$levels <- union(
+        ccc_group_levels(long_df$sender), ccc_group_levels(long_df$receiver)
+      )
+    }
     available_pathways <- unique(as.character(long_df$pathway_name))
     available_pathways <- available_pathways[
       !is.na(available_pathways) & nzchar(available_pathways)
@@ -684,7 +827,7 @@ CCCNetworkPlot <- function(
       }
     }
 
-    plot_generic_circle <- function(sig) {
+    plot_generic_pathway <- function(sig) {
       df_sig <- filter_long_df(
         df = long_df,
         sender.use = sender.use,
@@ -715,7 +858,8 @@ CCCNetworkPlot <- function(
             edge_size = edge_size,
             node_size = node_size,
             node_alpha = node_alpha,
-            link_alpha = link_alpha
+            link_alpha = link_alpha,
+            hierarchy = hierarchy
           ),
           list(
             title = if (identical(plot_type, "individual_lr")) {
@@ -750,14 +894,14 @@ CCCNetworkPlot <- function(
       )
     }
 
-    plots <- Filter(Negate(is.null), lapply(pathways_to_show, plot_generic_circle))
+    plots <- Filter(Negate(is.null), lapply(pathways_to_show, plot_generic_pathway))
     if (length(plots) == 0L) {
       log_message(
         "No pathway-specific communication records remain after filtering",
         message_type = "error"
       )
     }
-    return(simplify_cc_plot_list(plots))
+    return(finish_pathway_plots(plots))
   }
 
   if (identical(plot_type, "diff_network")) {
@@ -1114,7 +1258,8 @@ ccc_cellchat_circle_network_plot <- function(
   legend.title = NULL,
   font.size = 10,
   theme_use = "theme_scop",
-  theme_args = list()
+  theme_args = list(),
+  hierarchy = NULL
 ) {
   df <- extract_long_table(
     srt = srt,
@@ -1161,7 +1306,8 @@ ccc_cellchat_circle_network_plot <- function(
     legend.direction = legend.direction,
     font.size = font.size,
     theme_use = theme_use,
-    theme_args = theme_args
+    theme_args = theme_args,
+    hierarchy = hierarchy
   )
 }
 
@@ -1185,11 +1331,6 @@ bipartite_plot <- function(
   legend.position = "right",
   legend.direction = "vertical",
   legend.title = NULL,
-  label = FALSE,
-  label.size = 4,
-  label.fg = "white",
-  label.bg = "black",
-  label.bg.r = 0.1,
   font.size = 10,
   theme_use = "theme_scop",
   theme_args = list()
@@ -1340,7 +1481,7 @@ bipartite_plot <- function(
   cell_cols <- palette_colors(
     all_cell_types,
     palette = cell_palette,
-    palcolor = cell_palcolor,
+    palcolor = ccc_align_named_palcolor(cell_palcolor, all_cell_types),
     NA_keep = TRUE
   )
   node_df$fill <- ifelse(
@@ -1439,8 +1580,8 @@ bipartite_plot <- function(
   receiver_label_df <- node_df[node_df$col_type == "receiver", , drop = FALSE]
   structural_nodes <- node_df[!node_df$is_cell, , drop = FALSE]
   cell_nodes <- node_df[node_df$is_cell, , drop = FALSE]
-  sender_label_df$x_label <- sender_label_df$x - 0.08
-  receiver_label_df$x_label <- receiver_label_df$x + 0.08
+  sender_label_df$x_label <- sender_label_df$x - 0.13
+  receiver_label_df$x_label <- receiver_label_df$x + 0.13
   ligand_label_df$n_lines <- lengths(strsplit(
     ligand_label_df$label_plot,
     "\n",
@@ -1452,20 +1593,17 @@ bipartite_plot <- function(
     fixed = TRUE
   ))
   ligand_label_df$y_label <- ligand_label_df$y +
-    0.035 +
+    0.055 +
     0.018 * pmax(ligand_label_df$n_lines - 1, 0)
   receptor_label_df$y_label <- receptor_label_df$y +
-    0.035 +
+    0.055 +
     0.018 * pmax(receptor_label_df$n_lines - 1, 0)
   y_min <- 0.08
-  y_max <- min(
-    0.96,
-    max(
-      c(node_df$y, ligand_label_df$y_label, receptor_label_df$y_label),
-      na.rm = TRUE
-    ) +
-      0.03
-  )
+  y_max <- max(
+    c(node_df$y, ligand_label_df$y_label, receptor_label_df$y_label),
+    na.rm = TRUE
+  ) + 0.11 + 0.05 * (max(c(ligand_label_df$n_lines, receptor_label_df$n_lines)) - 1)
+
 
   p <- ggplot2::ggplot() +
     ggplot2::geom_segment(
@@ -1533,55 +1671,21 @@ bipartite_plot <- function(
       alpha = node_alpha,
       show.legend = FALSE
     ) +
-    ccc_network_label_layer(
+    ggplot2::geom_text(
       data = sender_label_df,
-      mapping = ggplot2::aes(x = x_label, y = y, label = label_plot),
-      label = TRUE,
-      label_size = label.size,
-      label_fg = label.fg,
-      label_bg = label.bg,
-      label_bg_r = label.bg.r,
-      repel = FALSE,
-      hjust = 1
+      ggplot2::aes(x = x_label, y = y, label = label_plot),
+      hjust = 1, size = font.size, size.unit = "pt", colour = "grey15"
     ) +
-    ccc_network_label_layer(
-      data = ligand_label_df,
-      mapping = ggplot2::aes(x = x, y = y_label, label = label_plot),
-      label = TRUE,
-      label_size = max(3, label.size * 0.92),
-      label_fg = label.fg,
-      label_bg = label.bg,
-      label_bg_r = label.bg.r,
-      repel = FALSE,
-      hjust = 0.5,
-      vjust = 0,
-      lineheight = 0.9,
-      fontface = "italic"
+    ggplot2::geom_text(
+      data = rbind(ligand_label_df, receptor_label_df),
+      ggplot2::aes(x = x, y = y_label, label = label_plot),
+      vjust = 0, size = font.size, size.unit = "pt", colour = "grey20",
+      lineheight = 0.92, fontface = "italic"
     ) +
-    ccc_network_label_layer(
-      data = receptor_label_df,
-      mapping = ggplot2::aes(x = x, y = y_label, label = label_plot),
-      label = TRUE,
-      label_size = max(3, label.size * 0.92),
-      label_fg = label.fg,
-      label_bg = label.bg,
-      label_bg_r = label.bg.r,
-      repel = FALSE,
-      hjust = 0.5,
-      vjust = 0,
-      lineheight = 0.9,
-      fontface = "italic"
-    ) +
-    ccc_network_label_layer(
+    ggplot2::geom_text(
       data = receiver_label_df,
-      mapping = ggplot2::aes(x = x_label, y = y, label = label_plot),
-      label = TRUE,
-      label_size = label.size,
-      label_fg = label.fg,
-      label_bg = label.bg,
-      label_bg_r = label.bg.r,
-      repel = FALSE,
-      hjust = 0
+      ggplot2::aes(x = x_label, y = y, label = label_plot),
+      hjust = 0, size = font.size, size.unit = "pt", colour = "grey15"
     ) +
     ggplot2::geom_point(
       data = data.frame(
@@ -1609,11 +1713,6 @@ bipartite_plot <- function(
           stroke = 0.8
         )
       )
-    ) +
-    ggplot2::scale_x_continuous(
-      breaks = c(0, 1, 2, 3),
-      labels = c("Sender", "Ligand", "Receptor", "Receiver"),
-      expand = ggplot2::expansion(mult = c(0.22, 0.22))
     ) +
     ggplot2::scale_y_continuous(
       limits = c(y_min, y_max),
@@ -1665,8 +1764,15 @@ bipartite_plot <- function(
     ggplot2::theme(
       legend.position = legend.position,
       legend.direction = legend.direction,
+      legend.location = "panel",
+      legend.justification.right = c(0, 0.5),
+      legend.box.spacing = grid::unit(2, "mm"),
       panel.grid = ggplot2::element_blank(),
       panel.border = ggplot2::element_blank(),
+      axis.text.x.top = ggplot2::element_text(
+        size = font.size, face = "bold", colour = "grey20",
+        margin = ggplot2::margin(b = 7)
+      ),
       axis.text.y = ggplot2::element_blank(),
       axis.ticks.x = ggplot2::element_blank(),
       axis.ticks.y = ggplot2::element_blank(),
@@ -1676,9 +1782,13 @@ bipartite_plot <- function(
         face = "bold"
       ),
       plot.subtitle = ggplot2::element_text(size = font.size),
-      plot.margin = ggplot2::margin(5, 40, 5, 40)
+      plot.margin = ggplot2::margin(6, 9, 6, 9)
     )
-  p
+  ccc_size_labeled_network(
+    p, sender_label_df$label_plot, receiver_label_df$label_plot,
+    font.size, 0:3, c("Sender", "Ligand", "Receptor", "Receiver"), 0.37,
+    rows = max(sum(ligand_label_df$n_lines), sum(receptor_label_df$n_lines))
+  )
 }
 
 
@@ -1736,7 +1846,7 @@ ccc_align_named_palcolor <- function(palcolor, levels) {
   if (is.null(palcolor) || is.null(names(palcolor))) {
     return(palcolor)
   }
-  levels <- as.character(levels)
+  levels <- if (is.factor(levels)) base::levels(levels) else as.character(levels)
   levels <- levels[!is.na(levels) & nzchar(levels)]
   pal_names <- names(palcolor)
   if (!all(levels %in% pal_names)) {
@@ -1997,7 +2107,7 @@ ccc_diff_network_plot <- function(
   node_cols <- palette_colors(
     node_levels,
     palette = cell_palette,
-    palcolor = cell_palcolor,
+    palcolor = ccc_align_named_palcolor(cell_palcolor, node_levels),
     NA_keep = TRUE
   )
   edge_cols <- ccc_diff_edge_palette(
@@ -2068,22 +2178,57 @@ ccc_diff_network_plot <- function(
 
   old_par <- graphics::par(no.readonly = TRUE)
   on.exit(try(graphics::par(old_par), silent = TRUE), add = TRUE)
-  graphics::par(mar = c(0.5, 0.5, if (is.null(title) && is.null(subtitle)) 1.8 else 3, 0.5))
+  margins <- c(0.5, 0.5, if (is.null(title) && is.null(subtitle)) 1.8 else 3, 0.5)
+  has_legend <- isTRUE(legend.position %in% c("bottom", "left", "top", "right"))
+  if (has_legend) {
+    guide_labels <- c(negative_label, positive_label)
+    guide_cols <- unname(edge_cols[guide_labels])
+    guide_cex <- max(0.7, font.size / 12)
+    guide_horizontal <- identical(legend.direction, "horizontal")
+    line_in <- graphics::par("csi") * graphics::par("mex")
+    label_in <- graphics::strwidth(guide_labels, units = "inches", cex = guide_cex)
+    side <- match(legend.position, c("bottom", "left", "top", "right"))
+    extra <- if (side %% 2L == 0L) {
+      if (guide_horizontal) sum(label_in / line_in + 2.5) else max(label_in / line_in) + 2.5
+    } else {
+      if (guide_horizontal) 1.6 else 2.6
+    }
+    margins[side] <- margins[side] + extra
+  }
+  graphics::par(mar = margins)
   plot(
     g,
     edge.curved = link_curvature,
     vertex.shape = "circle",
     layout = coords_scale,
-    margin = 0.2,
+    margin = if (has_legend) 0.45 else 0.2,
     vertex.label.dist = label_dist,
-    vertex.label.degree = label_locs,
-    vertex.label.family = "Helvetica",
-    edge.label.family = "Helvetica"
+    vertex.label.degree = label_locs
   )
   graphics::title(
     main = title %||% paste0(object_names[2], " vs ", object_names[1]),
-    sub = subtitle
+    sub = subtitle,
+    line = if (has_legend && side %in% c(1L, 3L)) 0.5 else NA
   )
+  if (has_legend) {
+    usr <- graphics::par("usr")
+    x <- mean(usr[1:2])
+    y <- mean(usr[3:4])
+    gap <- 0.05
+    if (side %% 2L == 0L) {
+      x_edge <- graphics::grconvertX(usr[if (side == 2L) 1L else 2L], "user", "inches")
+      x <- graphics::grconvertX(x_edge + if (side == 2L) -gap else gap, "inches", "user")
+    } else {
+      y_edge <- graphics::grconvertY(usr[if (side == 1L) 3L else 4L], "user", "inches")
+      shift <- if (side == 3L || !is.null(subtitle)) 1.5 * line_in else gap
+      y <- graphics::grconvertY(y_edge + if (side == 1L) -shift else shift, "inches", "user")
+    }
+    graphics::legend(
+      x, y, legend = guide_labels, col = guide_cols, lwd = 2,
+      bty = "n", cex = guide_cex, horiz = guide_horizontal, xpd = NA,
+      xjust = c(0.5, 1, 0.5, 0)[side], yjust = c(1, 0.5, 0, 0.5)[side]
+    )
+  }
   grDevices::recordPlot()
 }
 
@@ -2114,7 +2259,8 @@ ccc_circle_plot <- function(
   label.size = 4,
   label.fg = "white",
   label.bg = "black",
-  label.bg.r = 0.1
+  label.bg.r = 0.1,
+  hierarchy = NULL
 ) {
   value_col <- ccc_circle_value_col(value)
   plot_df <- ccc_network_df(
@@ -2138,6 +2284,15 @@ ccc_circle_plot <- function(
       "No finite CCC edge values are available for circle plotting",
       message_type = "error"
     )
+  }
+
+  if (!is.null(hierarchy)) {
+    return(ccc_hierarchy_network_plot(
+      plot_df, hierarchy, node_size, node_alpha, link_alpha,
+      cell_palette, cell_palcolor, link_palette, link_palcolor,
+      title, subtitle, legend.position, legend.direction,
+      font.size, theme_use, theme_args
+    ))
   }
 
   node_levels <- unique(c(
@@ -2166,7 +2321,7 @@ ccc_circle_plot <- function(
   cell_cols <- palette_colors(
     node_levels,
     palette = cell_palette,
-    palcolor = cell_palcolor,
+    palcolor = ccc_align_named_palcolor(cell_palcolor, node_levels),
     NA_keep = TRUE
   )
   link_cols <- palette_colors(
@@ -2241,14 +2396,108 @@ ccc_circle_plot <- function(
     layout = coords_scale,
     margin = 0.2,
     vertex.label.dist = label_dist,
-    vertex.label.degree = label_locs,
-    vertex.label.family = "Helvetica",
-    edge.label.family = "Helvetica"
+    vertex.label.degree = label_locs
   )
   if (!is.null(title) || !is.null(subtitle)) {
     graphics::title(main = title, sub = subtitle)
   }
   grDevices::recordPlot()
+}
+
+ccc_hierarchy_network_plot <- function(
+  edges,
+  hierarchy,
+  node_size,
+  node_alpha,
+  link_alpha,
+  cell_palette,
+  cell_palcolor,
+  link_palette,
+  link_palcolor,
+  title,
+  subtitle,
+  legend.position,
+  legend.direction,
+  font.size,
+  theme_use,
+  theme_args
+) {
+  edges <- edges[edges$weight != 0, , drop = FALSE]
+  if (nrow(edges) == 0L) {
+    log_message("No nonzero CCC edges remain for hierarchy plotting", message_type = "error")
+  }
+  cells <- union(
+    hierarchy$levels,
+    union(as.character(edges$sender), as.character(edges$receiver))
+  )
+  y <- rev(seq_along(cells))
+  cell_colors <- palette_colors(
+    cells, palette = cell_palette,
+    palcolor = ccc_align_named_palcolor(cell_palcolor, cells)
+  )
+  link_colors <- palette_colors(
+    cells, palette = link_palette,
+    palcolor = ccc_align_named_palcolor(link_palcolor, cells)
+  )
+  nodes <- data.frame(
+    x = rep(c(0, 1), each = length(cells)), y = rep(y, 2L),
+    active = c(cells %in% edges$sender, cells %in% edges$receiver),
+    color = rep(unname(cell_colors[cells]), 2L)
+  )
+  nodes$fill <- ifelse(nodes$active, nodes$color, "white")
+
+  edges$y_from <- y[match(edges$sender, cells)]
+  edges$y_to <- y[match(edges$receiver, cells)]
+  edges$color <- unname(link_colors[as.character(edges$sender)])
+  edges <- edges[order(abs(edges$weight)), , drop = FALSE]
+
+  mapping <- ggplot2::aes(
+    y = y_from, yend = y_to, linewidth = abs(weight), color = color
+  )
+  arrow <- if (hierarchy$directed) hierarchy$arrow else NULL
+  edge_layer <- if (isTRUE(hierarchy$curvature == 0)) {
+    ggplot2::geom_segment(
+      mapping, x = 0.05, xend = 0.95, arrow = arrow,
+      alpha = link_alpha, lineend = "round", show.legend = c(colour = FALSE)
+    )
+  } else {
+    ggplot2::geom_curve(
+      mapping, x = 0.05, xend = 0.95, arrow = arrow,
+      curvature = hierarchy$curvature,
+      alpha = link_alpha, lineend = "round", show.legend = c(colour = FALSE)
+    )
+  }
+  p <- ggplot2::ggplot(edges) +
+    edge_layer +
+    ggplot2::geom_point(
+      data = nodes, ggplot2::aes(x = x, y = y, fill = fill, color = color),
+      inherit.aes = FALSE, shape = 21, size = node_size,
+      stroke = 0.8, alpha = node_alpha, show.legend = FALSE
+    ) +
+    ggplot2::scale_colour_identity() +
+    ggplot2::scale_fill_identity() +
+    ggplot2::scale_x_continuous(
+      breaks = c(0, 1), labels = c("Sender", "Receiver"),
+      position = "top", expand = ggplot2::expansion(mult = 0.055)
+    ) +
+    ggplot2::scale_y_continuous(
+      breaks = y, labels = cells,
+      sec.axis = ggplot2::dup_axis(name = NULL),
+      expand = ggplot2::expansion(add = 0.55)
+    ) +
+    ggplot2::labs(x = NULL, y = NULL)
+  p <- finalize_cc_plot(
+    p, title = title, subtitle = subtitle, legend.position = legend.position,
+    legend.direction = legend.direction,
+    theme_use = theme_use, theme_args = theme_args, font.size = font.size
+  )
+  p + ggplot2::theme(
+    panel.grid = ggplot2::element_blank(), panel.border = ggplot2::element_blank(),
+    axis.line = ggplot2::element_blank(), axis.ticks = ggplot2::element_blank(),
+    axis.text.x.top = ggplot2::element_text(face = "bold"),
+    axis.text.y = ggplot2::element_text(color = "grey23"),
+    legend.position = legend.position, legend.direction = legend.direction
+  )
 }
 
 ccc_network_df <- function(
@@ -2750,7 +2999,7 @@ ccc_flow_network_plot <- function(
   celltype_cols <- palette_colors(
     celltype_levels,
     palette = cell_palette,
-    palcolor = cell_palcolor,
+    palcolor = ccc_align_named_palcolor(cell_palcolor, celltype_levels),
     NA_keep = TRUE
   )
   node_df$fill <- ifelse(
@@ -2819,9 +3068,17 @@ ccc_flow_network_plot <- function(
   label_receiver <- node_df[node_df$column == "receiver", , drop = FALSE]
   cell_node_df <- node_df[node_df$column %in% c("sender", "receiver"), , drop = FALSE]
   interaction_node_df <- node_df[node_df$column == "interaction", , drop = FALSE]
-  label_sender$x_label <- label_sender$x - 0.06
-  label_receiver$x_label <- label_receiver$x + 0.06
-  label_interaction$y_label <- label_interaction$y + 0.08
+  label_sender$hjust <- 1
+  label_receiver$hjust <- 0
+  label_cell <- rbind(label_sender, label_receiver)
+  core_width <- max(60, 24 * length(flow$breaks))
+  label_offset <- ifelse(
+    is.finite(label_cell$size_scaled), label_cell$size_scaled, node_size
+  ) / 2 + 1.8
+  label_cell$x_label <- label_cell$x +
+    ifelse(label_cell$column == "sender", -1, 1) *
+      label_offset * diff(range(flow$breaks)) / core_width
+  label_interaction$y_label <- label_interaction$y + 0.26
 
   p <- ggplot2::ggplot()
   if (identical(plot_type, "sigmoid")) {
@@ -2921,44 +3178,51 @@ ccc_flow_network_plot <- function(
     ) +
     ggplot2::scale_size_identity() +
     ggplot2::scale_linewidth_continuous(range = edge_size, guide = "none") +
-    ccc_network_label_layer(
-      data = label_sender,
-      mapping = ggplot2::aes(x = x_label, y = y, label = label),
-      label = label,
-      label_size = label.size,
-      label_fg = label.fg,
-      label_bg = label.bg,
-      label_bg_r = label.bg.r,
-      repel = TRUE,
-      direction = "y",
-      hjust = 1
-    ) +
-    ccc_network_label_layer(
-      data = label_interaction,
-      mapping = ggplot2::aes(x = x, y = y_label, label = label),
-      label = label,
-      label_size = label.size,
-      label_fg = label.fg,
-      label_bg = label.bg,
-      label_bg_r = label.bg.r,
-      repel = isTRUE(label) && identical(display_by, "interaction"),
-      direction = "y",
-      hjust = 0.5,
-      vjust = 0,
-      lineheight = 0.9
-    ) +
-    ccc_network_label_layer(
-      data = label_receiver,
-      mapping = ggplot2::aes(x = x_label, y = y, label = label),
-      label = label,
-      label_size = label.size,
-      label_fg = label.fg,
-      label_bg = label.bg,
-      label_bg_r = label.bg.r,
-      repel = TRUE,
-      direction = "y",
-      hjust = 0
-    ) +
+    (if (!isTRUE(label) && nrow(label_interaction) >= 8L) {
+      ggrepel::geom_text_repel(
+        data = label_interaction,
+        mapping = ggplot2::aes(x = x, y = y_label, label = label),
+        size = label.size, color = label.fg, bg.color = label.bg, bg.r = 0.04,
+        box.padding = 0, point.padding = 0, max.overlaps = Inf,
+        force = 0, force_pull = 0, segment.color = NA, seed = 11,
+        vjust = 0, inherit.aes = FALSE, show.legend = FALSE
+      )
+    } else {
+      ccc_network_label_layer(
+        data = label_interaction,
+        mapping = ggplot2::aes(x = x, y = y_label, label = label),
+        label = label,
+        label_size = label.size,
+        label_fg = label.fg,
+        label_bg = label.bg,
+        label_bg_r = label.bg.r,
+        repel = isTRUE(label) && identical(display_by, "interaction"),
+        direction = "y",
+        hjust = 0.5,
+        vjust = 0,
+        lineheight = 0.9
+      )
+    }) +
+    (if (isTRUE(label)) {
+      ccc_network_label_layer(
+        data = label_cell,
+        mapping = ggplot2::aes(x = x_label, y = y, label = label, hjust = hjust),
+        label = TRUE,
+        label_size = label.size,
+        label_fg = label.fg,
+        label_bg = label.bg,
+        label_bg_r = label.bg.r,
+        direction = "y"
+      )
+    } else {
+      ggplot2::geom_text(
+        data = label_cell,
+        ggplot2::aes(x = x_label, y = y, label = label, hjust = hjust),
+        size = label.size,
+        color = label.fg,
+        show.legend = FALSE
+      )
+    }) +
     ggplot2::geom_point(
       data = data.frame(
         x = NA_real_,
@@ -2983,11 +3247,6 @@ ccc_flow_network_plot <- function(
         override.aes = list(shape = 21, size = 4, color = "grey20", stroke = 0.8)
       )
     ) +
-    ggplot2::scale_x_continuous(
-      breaks = flow$breaks,
-      labels = flow$labels,
-      expand = ggplot2::expansion(mult = c(0.18, 0.18))
-    ) +
     ggplot2::coord_cartesian(clip = "off") +
     ggplot2::labs(x = NULL, y = NULL)
 
@@ -3002,15 +3261,53 @@ ccc_flow_network_plot <- function(
     font.size = font.size
   )
 
-  p +
+  p <- p +
     ggplot2::theme(
       panel.grid = ggplot2::element_blank(),
       panel.border = ggplot2::element_blank(),
       axis.ticks = ggplot2::element_blank(),
       axis.text.y = ggplot2::element_blank(),
+      axis.text.x.top = ggplot2::element_text(
+        face = "bold",
+        color = "black",
+        margin = ggplot2::margin(b = 8)
+      ),
       axis.line = ggplot2::element_blank(),
-      plot.margin = ggplot2::margin(5.5, 28, 5.5, 28)
+      plot.margin = ggplot2::margin(5.5, 9, 5.5, 9)
     )
+  ccc_size_labeled_network(
+    p, label_sender$label, label_receiver$label,
+    label.size * ggplot2::.pt, flow$breaks, flow$labels, 0.34,
+    rows = nrow(label_interaction), side_gap = max(c(0, label_offset))
+  )
+}
+
+ccc_size_labeled_network <- function(p, left, right, font.size, breaks, labels, expansion, rows = 0L, side_gap = 0) {
+  widths <- vapply(list(left, right), function(text) {
+    if (!length(text)) return(0)
+    grobs <- lapply(unique(text), grid::textGrob, gp = grid::gpar(fontsize = font.size))
+    max(vapply(grobs, function(grob) {
+      grid::convertWidth(grid::grobWidth(grob), "mm", valueOnly = TRUE)
+    }, numeric(1)))
+  }, numeric(1))
+  core_width <- max(60, 24 * length(breaks))
+  padding <- pmax(expansion, (widths + side_gap + 4) / core_width)
+  p <- p + ggplot2::scale_x_continuous(
+    breaks = breaks,
+    labels = labels,
+    position = "top",
+    expand = ggplot2::expansion(mult = padding)
+  )
+  label_height <- grid::convertHeight(
+    grid::unit(font.size * 1.55, "pt"), "mm", valueOnly = TRUE
+  )
+  sized <- thisplot::plot_autosize(
+    p, panel_width = core_width * (1 + sum(padding)),
+    panel_height = max(35, label_height * max(length(left), length(right), rows)),
+    base_size = NULL, label_autosize = FALSE
+  )
+  attr(p, "size") <- attr(sized, "size", exact = TRUE)
+  p
 }
 
 ccc_chord_plot <- function(
@@ -3168,7 +3465,7 @@ ccc_chord_plot <- function(
   cell_cols <- palette_colors(
     cell_order,
     palette = cell_palette,
-    palcolor = cell_palcolor
+    palcolor = ccc_align_named_palcolor(cell_palcolor, cell_order)
   )
   names(cell_cols) <- cell_order
 
@@ -3304,7 +3601,7 @@ ccc_gene_chord_plot <- function(
   cell_cols <- palette_colors(
     cell_levels,
     palette = cell_palette,
-    palcolor = cell_palcolor
+    palcolor = ccc_align_named_palcolor(cell_palcolor, cell_levels)
   )
   names(cell_cols) <- cell_levels
   node_cell <- strength_df$cell[match(node_order, strength_df$node)]
@@ -3343,8 +3640,14 @@ ccc_draw_chord <- function(
   on.exit(try(graphics::par(old_par), silent = TRUE), add = TRUE)
 
   graphics::par(mar = c(1, 1, if (!is.null(title) || !is.null(subtitle)) 3 else 1, 1))
+  label_width <- max(graphics::strwidth(names(grid_colors), units = "inches", cex = lab.cex))
+  device_span <- min(graphics::par("pin"))
+  label_fraction <- min(0.5, 2 * label_width / device_span)
+  canvas_limit <- 1.04 / (1 - label_fraction)
   circlize::circos.par(
     start.degree = 90,
+    canvas.xlim = c(-canvas_limit, canvas_limit),
+    canvas.ylim = c(-canvas_limit, canvas_limit),
     cell.padding = c(0, 0, 0, 0),
     track.margin = c(0.01, 0.01),
     points.overflow.warning = FALSE
@@ -3964,7 +4267,7 @@ ccc_dim_network_layers <- function(
   colors <- palette_colors(
     group_levels,
     palette = cell_palette,
-    palcolor = cell_palcolor,
+    palcolor = ccc_align_named_palcolor(cell_palcolor, group_levels),
     NA_keep = TRUE
   )
   edge_cols <- palette_colors(

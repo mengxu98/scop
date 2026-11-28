@@ -21,7 +21,7 @@ sct_norm_sparse <- function(counts, normalization.method, scale.factor, margin, 
   }
   norm <- counts
   norm@x <- counts@x + 0
-  log_normalize_dgc(norm, scale.factor, 100L, scop_n_threads(cores))
+  log_normalize_dgc(norm, scale.factor, 100L, normalize_thread_count(cores))
   norm
 }
 

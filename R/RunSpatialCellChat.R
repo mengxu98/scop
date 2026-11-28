@@ -1412,13 +1412,17 @@ SpatialCellChatPlot <- function(
   if (!is.null(signaling)) table <- table[table$pathway_name %in% signaling, , drop = FALSE]
   if (!is.null(pairLR.use)) table <- table[table$interaction_name %in% pairLR.use, , drop = FALSE]
   if (nrow(table) == 0L) log_message("No stored SpatialCellChat records match the requested filters", message_type = "error")
-  colors <- thisplot::palette_colors(
-    x = seq_len(100),
-    n = 100,
-    palette = palette,
-    palcolor = palcolor,
-    type = "continuous"
-  )
+  spatial_theme <- theme_spatial() +
+    ggplot2::theme(
+      axis.text = ggplot2::element_blank(),
+      axis.ticks = ggplot2::element_blank(),
+      panel.grid = ggplot2::element_blank(),
+      legend.location = "panel",
+      legend.justification.right = c(0, 0.5),
+      legend.key.size = grid::unit(4.5, "mm"),
+      legend.text = ggplot2::element_text(size = 11),
+      legend.title = ggplot2::element_text(size = 11, face = "bold")
+    )
 
   if (identical(plot_type, "spatial_network")) {
     network <- spatialcellchat_extract_network(table)
@@ -1432,28 +1436,92 @@ SpatialCellChatPlot <- function(
     from <- centers[match(network$sender, centers$label), , drop = FALSE]
     to <- centers[match(network$receiver, centers$label), , drop = FALSE]
     edges <- cbind(network, x = from$x, y = from$y, xend = to$x, yend = to$y)
-    return(
-      ggplot2::ggplot() +
-        ggplot2::geom_segment(
-          data = edges,
-          ggplot2::aes(x = x, y = y, xend = xend, yend = yend, linewidth = weight),
-          alpha = 0.55,
-          arrow = grid::arrow(length = grid::unit(0.08, "inches"))
-        ) +
-        ggplot2::geom_point(
-          data = centers,
-          ggplot2::aes(x = x, y = y, color = label),
-          size = point.size * 2
-        ) +
-        ggplot2::coord_fixed() +
-        ggplot2::labs(
-          title = title %||% "Aggregated spatial communication network",
-          subtitle = paste(stored$sample, result$diagnostics$interpretation),
-          color = "Group",
-          linewidth = "Weight"
-        ) +
-        theme_scop()
+    colors <- ccc_cell_palcolor(
+      object, "SpatialCellChat", if (missing(palette)) "Chinese" else palette, palcolor, coords$label
     )
+    colors <- spatial_palette_colors(
+      ccc_group_levels(coords$label), palette = if (missing(palette)) "Chinese" else palette, palcolor = colors
+    )
+    self <- edges$sender == edges$receiver
+    arcs <- edges[!self, , drop = FALSE]
+    loops <- edges[self, , drop = FALSE]
+    span <- max(vapply(
+      coords[c("x_display", "y_display")],
+      function(x) diff(range(x, finite = TRUE)),
+      numeric(1)
+    ))
+    offset <- max(0.05, if (is.finite(span)) span * 0.04 else 0.1)
+    coincident <- which(arcs$x == arcs$xend & arcs$y == arcs$yend)
+    arcs$x_draw <- arcs$x
+    arcs$xend_draw <- arcs$xend
+    if (length(coincident)) {
+      groups <- match(arcs$sender[coincident], centers$label) <
+        match(arcs$receiver[coincident], centers$label)
+      gap <- ifelse(groups, offset, -offset)
+      arcs$x_draw[coincident] <- arcs$x[coincident] - gap
+      arcs$xend_draw[coincident] <- arcs$xend[coincident] + gap
+    }
+    weight_key <- function(data, params, size) {
+      color <- scales::alpha(data$colour %||% "black", data$alpha %||% 1)
+      grid::grobTree(
+        grid::segmentsGrob(
+          x0 = 0.12, x1 = 0.88, y0 = 0.5, y1 = 0.5,
+          gp = grid::gpar(col = color, lwd = data$linewidth * ggplot2::.pt * 0.25, lineend = "round")
+        ),
+        grid::polylineGrob(
+          x = c(0.67, 0.88, 0.67), y = c(0.25, 0.5, 0.75),
+          gp = grid::gpar(col = color, lwd = 0.8, lineend = "round", linejoin = "round")
+        )
+      )
+    }
+    p <- ggplot2::ggplot() +
+      ggplot2::geom_point(
+        data = coords, ggplot2::aes(x = x_display, y = y_display),
+        color = "grey80", size = point.size * 0.7, alpha = 0.5
+      ) +
+      ggplot2::geom_curve(
+        data = arcs,
+        ggplot2::aes(x = .data$x_draw, y = y, xend = .data$xend_draw, yend = yend, linewidth = weight),
+        curvature = 0.18, alpha = 0.55,
+        arrow = grid::arrow(length = grid::unit(0.08, "inches")),
+        key_glyph = weight_key
+      )
+    if (nrow(loops)) {
+      p <- p + ggplot2::geom_curve(
+        data = loops,
+        ggplot2::aes(
+          x = x - offset * 0.65, y = y + offset * 0.30,
+          xend = xend + offset * 0.65, yend = yend + offset * 0.30,
+          linewidth = weight
+        ),
+        curvature = 1.3, alpha = 0.55, show.legend = !nrow(arcs),
+        arrow = grid::arrow(length = grid::unit(0.08, "inches")),
+        key_glyph = weight_key
+      )
+    }
+    p <- p +
+      ggplot2::geom_point(
+        data = centers,
+        ggplot2::aes(x = x, y = y, color = label),
+        size = point.size * 2
+      ) +
+      ggplot2::scale_colour_manual(values = colors) +
+      ggplot2::scale_linewidth_continuous(range = c(0.45, 2.2)) +
+      ggplot2::coord_fixed() +
+      ggplot2::labs(
+        title = title %||% "Aggregated spatial communication network",
+        subtitle = paste(stored$sample, result$diagnostics$interpretation),
+        color = "Group",
+        linewidth = "Weight", x = NULL, y = NULL
+      ) +
+      ggplot2::guides(
+        color = ggplot2::guide_legend(override.aes = list(size = 3.4, alpha = 1)),
+        linewidth = ggplot2::guide_legend(
+          theme = ggplot2::theme(legend.key.width = grid::unit(8, "mm"))
+        )
+      ) +
+      spatial_theme
+    return(thisplot::plot_autosize(p, panel_width = 66, base_size = NULL, label_autosize = FALSE))
   }
 
   if (plot_type %in% c("incoming", "outgoing")) direction <- plot_type
@@ -1463,7 +1531,20 @@ SpatialCellChatPlot <- function(
   if (all(!is.finite(coords$communication_score))) {
     log_message("No finite communication scores are available for plotting", message_type = "error")
   }
-  ggplot2::ggplot(
+  finite <- coords$communication_score[is.finite(coords$communication_score)]
+  sequential <- missing(palette) && is.null(palcolor) && all(finite >= 0)
+  colors <- thisplot::palette_colors(
+    x = seq_len(100), n = 100,
+    palette = if (sequential) "Reds" else palette, palcolor = palcolor,
+    type = "continuous"
+  )
+  focus <- pairLR.use %||% signaling
+  heading <- if (length(focus) == 1L) {
+    paste(gsub("_", " - ", focus, fixed = TRUE), direction, "score", sep = " ")
+  } else {
+    paste("SpatialCellChat", direction, "score")
+  }
+  p <- ggplot2::ggplot(
     coords,
     ggplot2::aes(
       x = .data$x_display,
@@ -1472,12 +1553,17 @@ SpatialCellChatPlot <- function(
     )
   ) +
     ggplot2::geom_point(size = point.size) +
-    ggplot2::scale_color_gradientn(colours = colors, na.value = "grey85") +
+    ggplot2::scale_color_gradientn(
+      colours = colors, na.value = "grey85",
+      limits = if (sequential) c(0, if (max(finite) > 0) max(finite) else 1),
+      guide = ggplot2::guide_colourbar(frame.colour = "black")
+    ) +
     ggplot2::coord_fixed() +
     ggplot2::labs(
-      title = title %||% paste("SpatialCellChat", direction, "score"),
+      title = title %||% heading,
       subtitle = paste(stored$sample, result$diagnostics$interpretation),
-      color = "Score"
+      color = "Score", x = NULL, y = NULL
     ) +
-    theme_scop()
+    spatial_theme
+  thisplot::plot_autosize(p, panel_width = 66, base_size = NULL, label_autosize = FALSE)
 }

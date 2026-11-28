@@ -1,3 +1,30 @@
+test_that("manifold preprocessing preserves PCA boundaries and method-specific behavior", {
+  trimap <- get("manifold_prepare_data", asNamespace("scop"))
+  pacmap <- get("pacmap_prepare_data", asNamespace("scop"))
+  data <- matrix(
+    sin(seq_len(25L * 101L)^2),
+    nrow = 25L,
+    dimnames = list(paste0("cell", 25:1), paste0("feature", 1:101))
+  )
+  narrow <- data[, seq_len(100L)]
+  normalize <- function(input) {
+    scaled <- (input - min(input)) / diff(range(input))
+    sweep(scaled, 2L, colMeans(scaled), "-")
+  }
+  pca <- stats::prcomp(data, center = TRUE, scale. = FALSE, rank. = 24L)$x
+
+  expect_identical(trimap(narrow), narrow)
+  expect_identical(pacmap(narrow), normalize(narrow))
+  expect_identical(trimap(data, apply_pca = FALSE), data)
+  expect_identical(pacmap(data, apply_pca = FALSE), normalize(data))
+  expect_identical(trimap(data), pca)
+  expect_identical(pacmap(data), pca)
+
+  data[1L, 1L] <- Inf
+  expect_error(trimap(data), "Manifold algorithm requires finite input values")
+  expect_error(pacmap(data), "PaCMAP requires finite input values")
+})
+
 test_that("native PaCMAP covers initialization and distance branches", {
   set.seed(20260730)
   data <- rbind(

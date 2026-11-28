@@ -73,7 +73,7 @@ test_that("RunCellRank forwards the moscot and real-time configuration", {
       list(obs = data.frame(cluster = factor(c("a", "a", "b", "b"))))
     },
     palette_colors = function(...) c(a = "#111111", b = "#222222"),
-    scop_python_import = function(...) {
+    import_bundled_python = function(...) {
       list(CellRank = function(...) {
         captured$args <- list(...)
         list(

@@ -791,7 +791,7 @@ env_module_requirements <- function() {
       "commot" = "git+https://github.com/zcang/COMMOT.git"
     )),
     spatialdm = env_python_spec(c(
-      "SpatialDM" = "git+https://github.com/StatBiomed/SpatialDM.git"
+      "SpatialDM" = "SpatialDM==0.3.1"
     )),
     magic = env_python_spec(c("magic-impute" = "magic-impute==3.0.0", pandas = "pandas==2.0.3"), environment = "scprep_env"),
     scfea = env_python_spec(c(

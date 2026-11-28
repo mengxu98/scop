@@ -108,7 +108,9 @@ jobs:
         with:
           packages: deps::.,local::.
           lockfile-create-lib: .libPaths()
-          extra-packages: ${{ steps.dependencies.outputs.extra }}
+          extra-packages: |
+            ${{ steps.dependencies.outputs.extra }}
+            cran::rjags@4-18
           needs: website
           dependencies: '"hard"'
           cache: always

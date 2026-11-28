@@ -74,10 +74,10 @@ commot_read_table <- function(path, required, numeric, label, allow_empty = FALS
     log_message("COMMOT did not produce {.val {label}} output", message_type = "error")
   }
   value <- tryCatch(
-    utils::read.csv(
-      path,
-      stringsAsFactors = FALSE, check.names = FALSE,
-      na.strings = c("", "NA", "NaN", "nan")
+    read_runner_output_table(
+      path, sep = ",",
+      id.cols = c("cell_id", "group", "sender", "receiver", "ligand", "receptor",
+                  "interaction_name", "pathway_name", "key")
     ),
     error = function(e) {
       log_message("Unable to read COMMOT {.val {label}} output: {conditionMessage(e)}", message_type = "error")
@@ -177,8 +177,9 @@ commot_execute <- function(
     species = species, database = database,
     distance_threshold = distance.threshold,
     cluster = cluster, direction = direction,
-    communication_args = communication.args,
-    cluster_args = cluster.args, direction_args = direction.args,
+    communication_args = if (length(communication.args)) communication.args,
+    cluster_args = if (length(cluster.args)) cluster.args,
+    direction_args = if (length(direction.args)) direction.args,
     store_h5ad = store.h5ad
   ))
   config_path <- file.path(workdir, "config.json")
@@ -424,8 +425,8 @@ commot_select_key <- function(table, key, label) {
 #' data(visium_human_pancreas_sub)
 #' spatial <- RunCOMMOT(
 #'   visium_human_pancreas_sub,
-#'   group.by = "CellType",
-#'   coord.cols = c("col", "row"),
+#'   group.by = "coda_label", assay = "Spatial", image = "slice1",
+#'   coord.cols = c("x", "y"), distance.threshold = 136.7708,
 #'   cluster = TRUE,
 #'   direction = TRUE,
 #'   backend = "r"
@@ -464,29 +465,78 @@ COMMOTPlot <- function(
       log_message("The stored COMMOT result has no cluster communication", message_type = "error")
     }
     table <- commot_select_key(table, key, "cluster output")
-    return(
-      ggplot2::ggplot(table, ggplot2::aes(
-        x = .data[["receiver"]], y = .data[["sender"]], fill = .data[["score"]]
-      )) +
-        ggplot2::geom_tile() +
-        ggplot2::scale_fill_viridis_c() +
-        ggplot2::labs(x = "Receiver", y = "Sender", fill = "Score") +
-        apply_plot_theme(theme_use, theme_args)
-    )
+    finite <- table$score[is.finite(table$score)]
+    nonnegative <- length(finite) > 0L && all(finite >= 0)
+    table$sender <- factor(table$sender, levels = rev(sort(unique(table$sender))))
+    table$receiver <- factor(table$receiver, levels = sort(unique(table$receiver)))
+    if (anyDuplicated(table[c("sender", "receiver")])) {
+      log_message("The stored COMMOT matrix has duplicate sender-receiver records", message_type = "error")
+    }
+    mat <- ccc_pivot_matrix(table, "sender", "receiver", "score")
+    dots <- list(...)
+    groups <- union(rownames(mat), colnames(mat))
+    palette <- dots$cell_palette %||% dots$palette %||% "Chinese"
+    palcolor <- ccc_cell_palcolor(object, "COMMOT", palette, dots$cell_palcolor %||% dots$palcolor, groups)
+    position <- dots$legend.position %||% theme_args$legend.position %||% "right"
+    font.size <- dots$font.size %||% 10
+    return(ccc_matrix_heatmap_plot(
+      mat, value_label = "Score", row_title = "Sender", column_title = "Receiver",
+      add_text = FALSE, compact = TRUE, width = ncol(mat) * 5.6 * font.size / 10,
+      units = "mm", value_palette = if (nonnegative) "Reds" else "viridis",
+      value_limits = if (nonnegative) c(0, if (max(finite) > 0) max(finite) else 1),
+      cell_palette = palette, cell_palcolor = palcolor, font.size = font.size,
+      legend.position = position,
+      legend.direction = dots$legend.direction %||% if (position %in% c("top", "bottom")) "horizontal" else "vertical",
+      theme_use = theme_use, theme_args = theme_args
+    ))
+  }
+  if (identical(theme_use, "theme_scop") && !"panel.border" %in% names(theme_args)) {
+    theme_args$panel.border <- ggplot2::element_blank()
   }
   table <- stored$result$direction_table
   if (!is.data.frame(table) || nrow(table) == 0L) {
     log_message("The stored COMMOT result has no communication directions", message_type = "error")
   }
+  groups <- ccc_group_levels(table$group)
+  dots <- list(...)
+  palette <- dots$cell_palette %||% dots$palette %||% "Chinese"
+  colors <- ccc_cell_palcolor(object, "COMMOT", palette, dots$cell_palcolor %||% dots$palcolor, groups)
+  colors <- spatial_palette_colors(groups, palette = palette, palcolor = colors)
   table <- commot_select_key(table, key, "direction output")
-  ggplot2::ggplot(table, ggplot2::aes(x = .data[["x"]], y = .data[["y"]])) +
-    ggplot2::geom_point(ggplot2::aes(color = .data[["group"]]), alpha = 0.45) +
-    ggplot2::geom_segment(ggplot2::aes(
-      xend = .data[["x"]] + .data[["dx"]],
-      yend = .data[["y"]] + .data[["dy"]]
-    ), arrow = grid::arrow(length = grid::unit(0.08, "inches")), alpha = 0.65) +
+  arrows <- table
+  if (nrow(table) > 1000L && all(is.finite(table$x)) && all(is.finite(table$y))) {
+    ordered <- order(table$dx^2 + table$dy^2, decreasing = TRUE)
+    x_bin <- findInterval(table$x, seq(min(table$x), max(table$x), length.out = 17L), all.inside = TRUE)
+    y_bin <- findInterval(table$y, seq(min(table$y), max(table$y), length.out = 17L), all.inside = TRUE)
+    tiles <- data.frame(perspective = table$perspective, x = x_bin, y = y_bin)
+    arrows <- table[ordered[!duplicated(tiles[ordered, , drop = FALSE])], , drop = FALSE]
+  }
+  p <- ggplot2::ggplot(table, ggplot2::aes(x = .data[["x"]], y = .data[["y"]])) +
+    ggplot2::geom_point(ggplot2::aes(color = .data[["group"]]), size = 1.15, alpha = 0.38) +
+    ggplot2::geom_segment(
+      data = arrows,
+      ggplot2::aes(
+        xend = .data[["x"]] + .data[["dx"]],
+        yend = .data[["y"]] + .data[["dy"]]
+      ),
+      arrow = grid::arrow(length = grid::unit(1.1, "mm"), angle = 22),
+      colour = "#263342", linewidth = 0.35, alpha = 0.75
+    ) +
+    ggplot2::scale_colour_manual(values = colors) +
     ggplot2::facet_wrap(~perspective) +
     ggplot2::coord_equal() +
     ggplot2::labs(x = "Raw x", y = "Raw y", color = "Group") +
-    apply_plot_theme(theme_use, theme_args)
+    apply_plot_theme(theme_use, theme_args) +
+    ggplot2::guides(color = ggplot2::guide_legend(override.aes = list(size = 3.4, alpha = 1))) +
+    ggplot2::theme(
+      legend.location = "panel",
+      legend.justification.right = c(0, 0.5),
+      legend.key.size = grid::unit(4.5, "mm"),
+      legend.text = ggplot2::element_text(size = 11),
+      legend.title = ggplot2::element_text(size = 11, face = "bold"),
+      strip.background = ggplot2::element_blank(),
+      strip.text = ggplot2::element_text(colour = "black"),
+      panel.grid = ggplot2::element_blank()
+    )
+  thisplot::plot_autosize(p, panel_width = 40, base_size = NULL, label_autosize = FALSE)
 }

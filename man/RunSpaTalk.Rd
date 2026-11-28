@@ -84,12 +84,25 @@ and added to SCOP's unified CCC table.
 }
 \examples{
 \dontrun{
-spatial <- RunSpaTalk(
-  spatial,
-  group.by = "celltype",
-  mode = "single_cell",
-  image = "slice1"
+example_dir <- system.file("extdata", package = "SpaTalk")
+load(file.path(example_dir, "starmap_data.rda"))
+load(file.path(example_dir, "starmap_meta.rda"))
+rownames(starmap_meta) <- starmap_meta$cell
+spatial <- SeuratObject::CreateSeuratObject(
+  counts = Matrix::Matrix(as.matrix(starmap_data), sparse = TRUE),
+  meta.data = starmap_meta
 )
+set.seed(1)
+spatial <- RunSpaTalk(
+  spatial, group.by = "celltype", mode = "single_cell",
+  species = "Mouse", coord.cols = c("x", "y"),
+  if_doParallel = FALSE, backend = "r"
+)
+SpaTalkPlot(spatial, plot_type = "network")
+SpaTalkPlot(spatial, plot_type = "bubble", top_n = 8)
+SpaTalkPlot(spatial, plot_type = "pathway", top_n = 8)
+SpaTalkPlot(spatial, plot_type = "tf")
+CCCNetworkPlot(spatial, method = "SpaTalk", plot_type = "spatial")
 }
 }
 \references{

@@ -52,7 +52,6 @@
 #'   and NES. RdBu maps negative NES to blue and positive NES to red.
 #' @param palcolor List of named class, subclass, program and sample colors,
 #'   or expression and enrichment color ramps.
-#' @param family Font family.
 #' @param title,panel_label Optional title and panel letter.
 #' @param return_data Include numerical summaries and metadata with the plot.
 #' @param flip Arrange clusters in rows with the tree on the left and upright legends.
@@ -136,7 +135,6 @@ CellStatePlot <- function(
   expression_palette = "Reds",
   enrichment_palette = "RdBu",
   palcolor = NULL,
-  family = "sans",
   title = NULL,
   panel_label = NULL,
   return_data = FALSE,
@@ -373,7 +371,7 @@ CellStatePlot <- function(
   plot <- cellstate_plot(
     data, tree, features, marker.labels, enrichment$ids, pathway.labels,
     encoded, palette, expression_palette, enrichment_palette,
-    palcolor, family, title, panel_label, flip
+    palcolor, title, panel_label, flip
   )
   provenance <- list(
     input = input$source, input.scale = input.scale, assay = input$assay,
@@ -691,9 +689,8 @@ cellstate_palettes <- function(data, palette, expression_palette, enrichment_pal
 
 cellstate_plot <- function(data, tree, features, feature.labels, pathways,
                            pathway.labels, encoded, palette, expression_palette,
-                           enrichment_palette, palcolor, family, title,
+                           enrichment_palette, palcolor, title,
                            panel_label, flip) {
-  if (length(family) != 1L || is.na(family)) stop("family must be one font family.")
   if (length(title) > 1L || length(panel_label) > 1L ||
     anyNA(title) || anyNA(panel_label)) {
     stop("title and panel_label must be single strings or NULL.")
@@ -711,7 +708,7 @@ cellstate_plot <- function(data, tree, features, feature.labels, pathways,
       return(vapply(s, function(value) {
         string_width(
           value,
-          family = family, size = size, res = 7200,
+          size = size, res = 7200,
           weight = if (face == "bold") "bold" else "normal", italic = face == "italic"
         ) / 100
       }, numeric(1)))
@@ -903,7 +900,7 @@ cellstate_plot <- function(data, tree, features, feature.labels, pathways,
     panel.offset = panel.offset, xs = xs, left = left, right = right, label.x = label.x,
     runs = runs, edges = edges, cluster.labels = cluster.labels,
     title.lines = title.lines, title.y = title.y,
-    panel_label = panel_label, family = family,
+    panel_label = panel_label,
     tree.top = tree.top, tree.bottom = tree.bottom, tree.height = tree.height,
     sub.top = sub.top, sub.height = sub.height,
     cluster.top = cluster.top, cluster.bottom = cluster.bottom,
@@ -1006,7 +1003,7 @@ cellstate_render <- function(x) {
     add(grid::textGrob(s, native(xx), native(yy),
       just = c(just, vertical.just), rot = rot,
       gp = grid::gpar(
-        fontfamily = a$family, fontsize = size * scale,
+        fontsize = size * scale,
         fontface = face, col = col
       )
     ))

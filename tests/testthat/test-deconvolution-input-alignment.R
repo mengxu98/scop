@@ -65,6 +65,12 @@ test_that("deconvolution wrappers align subset assay cells by ID", {
       labels <- if (identical(method, "RunRCTD")) captured$ref_labels else captured$labels
       expect_identical(names(labels), c("A1", "B1"))
       expect_identical(as.character(labels), c("A", "B"))
+      if (identical(method, "RunRCTD")) {
+        expect_equal(captured$st_numi, c(s1 = 1000, s3 = 3000))
+        expect_equal(captured$ref_numi, c(A1 = 1000, B1 = 2000))
+        expect_equal(Matrix::colSums(captured$st_counts), c(s1 = 30, s3 = 30))
+        expect_equal(Matrix::colSums(captured$ref_counts), c(A1 = 10, B1 = 10))
+      }
     }
     if (!identical(method, "RunSPOTlight")) {
       expect_identical(rownames(captured$coords), c("s1", "s3"))
@@ -74,16 +80,8 @@ test_that("deconvolution wrappers align subset assay cells by ID", {
   expect_identical(pair, original)
 })
 
-test_that("RCTD preserves full selected-assay library depth before feature filtering", {
+test_that("RCTD preserves full selected-assay library depth for implicit feature overlap", {
   pair <- make_deconv_alignment_pair()
-  captured <- capture_deconv_inputs("RunRCTD", pair,
-    assay = "ALT", reference_assay = "ALT", features = c("g2", "g1")
-  )
-  expect_equal(captured$st_numi, c(s1 = 1000, s3 = 3000))
-  expect_equal(captured$ref_numi, c(A1 = 1000, B1 = 2000))
-  expect_equal(Matrix::colSums(captured$st_counts), c(s1 = 30, s3 = 30))
-  expect_equal(Matrix::colSums(captured$ref_counts), c(A1 = 10, B1 = 10))
-
   ref <- GetAssayData5(pair$reference, assay = "ALT")
   rownames(ref)[3] <- "reference-only"
   pair$reference[["ALT"]] <- SeuratObject::CreateAssay5Object(counts = ref)

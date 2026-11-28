@@ -308,12 +308,25 @@ spatalk_pathway_table <- function(object, lr_table) {
 #'
 #' @examples
 #' \dontrun{
-#' spatial <- RunSpaTalk(
-#'   spatial,
-#'   group.by = "celltype",
-#'   mode = "single_cell",
-#'   image = "slice1"
+#' example_dir <- system.file("extdata", package = "SpaTalk")
+#' load(file.path(example_dir, "starmap_data.rda"))
+#' load(file.path(example_dir, "starmap_meta.rda"))
+#' rownames(starmap_meta) <- starmap_meta$cell
+#' spatial <- SeuratObject::CreateSeuratObject(
+#'   counts = Matrix::Matrix(as.matrix(starmap_data), sparse = TRUE),
+#'   meta.data = starmap_meta
 #' )
+#' set.seed(1)
+#' spatial <- RunSpaTalk(
+#'   spatial, group.by = "celltype", mode = "single_cell",
+#'   species = "Mouse", coord.cols = c("x", "y"),
+#'   if_doParallel = FALSE, backend = "r"
+#' )
+#' SpaTalkPlot(spatial, plot_type = "network")
+#' SpaTalkPlot(spatial, plot_type = "bubble", top_n = 8)
+#' SpaTalkPlot(spatial, plot_type = "pathway", top_n = 8)
+#' SpaTalkPlot(spatial, plot_type = "tf")
+#' CCCNetworkPlot(spatial, method = "SpaTalk", plot_type = "spatial")
 #' }
 RunSpaTalk <- function(
   object,
@@ -502,6 +515,10 @@ RunSpaTalk <- function(
 #' @param result.name Stored SpaTalk result name.
 #' @param plot_type Network, ligand-receptor bubble, pathway bubble, or
 #'   receptor-TF view.
+#'   When the backend does not label interactions by pathway, the pathway view
+#'   uses exact directed ligand-to-receptor edges in the stored pathway
+#'   annotation. It shows the associated interaction scores, not an independent
+#'   statistical test of pathway activity.
 #' @param theme_use,theme_args Theme name or function, plus extra theme arguments.
 #' Applied to every plot type, including the delegated CCC views.
 #' @param ... Arguments passed to other functions.
@@ -521,6 +538,32 @@ SpaTalkPlot <- function(
   if (!identical(plot_type, "tf")) {
     bundle <- stored$bundle
     long_table <- stored$result$long_table %||% spatalk_long_table(stored$result$lr_table)
+    if (identical(plot_type, "pathway")) {
+      pathway <- long_table$pathway_name
+      known <- !is.na(pathway) & nzchar(pathway) & pathway != "Unclassified"
+      if (!any(known)) {
+        edges <- stored$result$pathway_table
+        if (!all(c("src", "dest", "pathway") %in% names(edges))) {
+          log_message("The stored SpaTalk result has no pathway labels", message_type = "error")
+        }
+        edges <- unique(data.frame(
+          ligand = as.character(edges$src), receptor = as.character(edges$dest),
+          pathway_name = as.character(edges$pathway)
+        ))
+        edges <- edges[stats::complete.cases(edges) & nzchar(edges$pathway_name), , drop = FALSE]
+        long_table$pathway_name <- NULL
+        long_table <- dplyr::inner_join(
+          long_table, edges, by = c("ligand", "receptor"), relationship = "many-to-many"
+        )
+        if (!nrow(long_table)) {
+          log_message("The stored SpaTalk result has no pathway labels or matching directed ligand-receptor pathway edges", message_type = "error")
+        }
+      } else {
+        long_table <- long_table[known, , drop = FALSE]
+      }
+      long_table$classification <- long_table$pathway_name
+      long_table$interaction_label <- stringr::str_wrap(long_table$pathway_name, width = 32)
+    }
     bundle$active_result <- stored$result.name
     bundle$long_table <- long_table
     bundle$primary_table <- long_table
@@ -532,17 +575,14 @@ SpaTalkPlot <- function(
         theme_use = theme_use, theme_args = theme_args, ...
       ))
     }
-    if (identical(plot_type, "pathway")) {
-      pathway <- long_table$pathway_name
-      if (all(is.na(pathway)) || all(!nzchar(pathway[!is.na(pathway)]))) {
-        log_message("The stored SpaTalk result has no pathway labels", message_type = "error")
-      }
-    }
-    return(CCCHeatmap(
+    dots <- list(...)
+    dots$display_by <- dots$display_by %||% "interaction"
+    dots$value <- dots$value %||% "score"
+    return(do.call(CCCHeatmap, c(list(
       object = plot_object, method = "SpaTalk",
       plot_type = if (identical(plot_type, "pathway")) "pathway_bubble" else "bubble",
-      theme_use = theme_use, theme_args = theme_args, ...
-    ))
+      theme_use = theme_use, theme_args = theme_args
+    ), dots)))
   }
   tf <- stored$result$tf_table
   if (!is.data.frame(tf) || nrow(tf) == 0L) {
@@ -563,11 +603,59 @@ SpaTalkPlot <- function(
     stringsAsFactors = FALSE
   )
   plot_df$score[!is.finite(plot_df$score)] <- 1
-  ggplot2::ggplot(plot_df, ggplot2::aes(
-    x = .data[["receptor"]], y = .data[["tf"]],
+  dots <- list(...)
+  palette <- dots$cell_palette %||% dots$palette %||% "Chinese"
+  groups <- ccc_group_levels(plot_df$receiver)
+  colors <- ccc_cell_palcolor(object, "SpaTalk", palette, dots$cell_palcolor %||% dots$palcolor, groups)
+  colors <- spatial_palette_colors(groups, palette = palette, palcolor = colors)
+  receptor_levels <- sort(unique(plot_df$receptor))
+  tf_levels <- sort(unique(plot_df$tf))
+  plot_df$x <- match(plot_df$receptor, receptor_levels)
+  plot_df$y <- match(plot_df$tf, tf_levels)
+  buckets <- split(seq_len(nrow(plot_df)), interaction(plot_df$receptor, plot_df$tf, drop = TRUE))
+  max_points <- max(lengths(buckets))
+  for (idx in buckets[lengths(buckets) > 1L]) {
+    idx <- idx[order(plot_df$receiver[idx])]
+    cols <- ceiling(sqrt(length(idx)))
+    row <- (seq_along(idx) - 1L) %/% cols
+    rows <- split(idx, row)
+    for (j in seq_along(rows)) {
+      points <- rows[[j]]
+      if (length(points) > 1L) {
+        plot_df$x[points] <- plot_df$x[points] + seq(-0.32, 0.32, length.out = length(points))
+      }
+      if (length(rows) > 1L) {
+        plot_df$y[points] <- plot_df$y[points] + seq(-0.22, 0.22, length.out = length(rows))[[j]]
+      }
+    }
+  }
+  p <- ggplot2::ggplot(plot_df, ggplot2::aes(
+    x = .data[["x"]], y = .data[["y"]],
     size = .data[["score"]], color = .data[["receiver"]]
   )) +
     ggplot2::geom_point(alpha = 0.8) +
+    ggplot2::scale_x_continuous(
+      breaks = seq_along(receptor_levels), labels = receptor_levels,
+      expand = ggplot2::expansion(add = 0.3)
+    ) +
+    ggplot2::scale_y_continuous(
+      breaks = seq_along(tf_levels), labels = tf_levels,
+      expand = ggplot2::expansion(add = 0.26)
+    ) +
+    ggplot2::scale_colour_manual(values = colors) +
     ggplot2::labs(x = "Receptor", y = "Transcription factor", color = "Receiver", size = "Score") +
-    apply_plot_theme(theme_use, theme_args)
+    apply_plot_theme(theme_use, theme_args) +
+    ggplot2::guides(color = ggplot2::guide_legend(override.aes = list(size = 3.4, alpha = 1))) +
+    ggplot2::theme(
+      legend.justification.right = c(0, 0.5),
+      panel.grid.major = ggplot2::element_line(colour = "grey92", linewidth = 0.25),
+      panel.grid.minor = ggplot2::element_blank(),
+      axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)
+    )
+  sized <- thisplot::plot_autosize(
+    p, panel_width = max(65, length(receptor_levels) * (8 + 5 * ceiling(sqrt(max_points)))),
+    panel_height = max(36, length(tf_levels) * 18), base_size = NULL
+  )
+  attr(p, "size") <- attr(sized, "size")
+  p
 }

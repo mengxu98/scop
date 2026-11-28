@@ -3,10 +3,17 @@
 #' @md
 #' @details Canonical selection parameters and legacy aliases may be supplied
 #'   together only when their values agree. Conflicting values raise an error.
+#'   `width` and `height` here control the heatmap body, not the canvas.
 #' @inheritParams CCCStatPlot
 #' @inheritParams scop-params
 #' @param plot_type Plot type. One of `"heatmap"` or `"dot"`.
-#' `"bubble"` is a CellChat-specific interaction bubble matrix.
+#' `"bubble"` is a CellChat interaction matrix with sender–receiver pairs on
+#' rows and ligand–receptor interactions on columns. By default, color shows
+#' communication probability and size shows p-value bands: `p <= 0.01`,
+#' `0.01 < p <= 0.05`, and `p > 0.05`.
+#' Comparisons share scales across condition panels. Shared matrix bubbles use
+#' upper and left summary bars by default; add cell strips explicitly if needed.
+#' Nonnegative scores use a sequential red scale unless a value palette is supplied.
 #' `"ligand_target"` is a special heatmap path available only with
 #' `NicheNet`/`MultiNicheNet` results. `"role_heatmap"` and `"diff_heatmap"`
 #' are CellChat-specific pathway role views.
@@ -20,6 +27,9 @@
 #' `"histogram"`, `"density"`, `"violin"`, `"cell"`, or a character vector
 #' containing multiple values.
 #' Defaults are `left_anno = "bar"` and `right_anno = "cell"`.
+#' @param row_bar_color,column_bar_color Optional colors for the summary bars in
+#'   shared matrix bubble plots. Each defaults to the first cell palette color
+#'   and can be overridden independently.
 #' @param bar_value Aggregation metric shown in the bar annotations.
 #' One or more of `"count"`, `"sum"`, `"mean"`, or `"max"`.
 #' Multiple values add multiple annotation tracks. Default `"sum"`.
@@ -37,8 +47,13 @@
 #' @param value_palcolor Optional custom colors for `value_palette`.
 #' @param width,height Optional heatmap body width and height. When only one is
 #'   supplied, the other is inferred from the matrix dimensions to keep cells
-#'   square. When both are `NULL`, a square-cell size is computed automatically.
+#'   square. When both are `NULL`, the body is sized automatically from the matrix and labels.
 #' @param units Units for `width` and `height`. Default `"inch"`.
+#'
+#' @details Aggregation heatmaps retain receivers on rows and senders on
+#' columns. By default, the top and left show bars; the bottom and right
+#' show cell-type color strips. The legend is on the right and sender labels
+#' are rotated by 90 degrees. The export is sized from the rendered heatmap.
 #'
 #' @return A ggplot / patchwork object wrapping the ComplexHeatmap grob.
 #' @export
@@ -181,6 +196,19 @@
 #'   width = 0.6,
 #'   height = 3.5
 #' )
+#'
+#' CCCHeatmap(
+#'   pancreas_sub,
+#'   method = "CellChat",
+#'   condition = "ConditionA_vs_ConditionB",
+#'   plot_type = "bubble",
+#'   sender.use = c("Ductal", "Ngn3-low-EP", "Ngn3-high-EP"),
+#'   receiver.use = c("Ductal", "Ngn3-low-EP"),
+#'   interaction.use = c(
+#'     "MDK_NCL", "CLDN3_CLDN3", "MDK_SDC1", "MDK_ITGA6_ITGB1",
+#'     "COL9A2_SDC4", "DLK1_NOTCH1", "GRN_SORT1"
+#'   )
+#' )
 CCCHeatmap <- function(
   object,
   method = NULL,
@@ -238,6 +266,8 @@ CCCHeatmap <- function(
   resource = NULL,
   sample = NULL,
   srt = NULL,
+  row_bar_color = NULL,
+  column_bar_color = NULL,
   ...
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
@@ -253,8 +283,7 @@ CCCHeatmap <- function(
     isTRUE(dots[["remove.isolate"]])
   }
   bubble_color.by <- dots[["bubble_color.by"]] %||% "prob"
-  bubble_size.range <- dots[["bubble_size.range"]] %||% c(1.5, 8)
-  angle.x <- dots[["angle.x"]] %||% x_text_angle
+  bubble_size.range <- dots[["bubble_size.range"]] %||% c(1.5, 5.4)
   hjust.x <- dots[["hjust.x"]] %||% 1
   vjust.x <- dots[["vjust.x"]] %||% 1
   aspect.ratio <- dots[["aspect.ratio"]] %||% NULL
@@ -410,30 +439,16 @@ CCCHeatmap <- function(
     choices = c("count", "sum", "mean", "max"),
     several.ok = TRUE
   )
-  default_top_bar <- identical(top_anno, "bar")
-  default_left_bar <- identical(left_anno, "bar")
-  default_bottom_cell <- identical(bottom_anno, "cell")
-  default_right_cell <- identical(right_anno, "cell")
+  aggregate_heatmap <- identical(plot_type, "heatmap") &&
+    identical(display_by, "aggregation")
+  if (identical(plot_type, "bubble")) {
+    if (missing(bottom_anno)) bottom_anno <- NULL
+    if (missing(right_anno)) right_anno <- NULL
+  }
   top_anno <- ccc_match_side_anno(top_anno)
   right_anno <- ccc_match_side_anno(right_anno)
   left_anno <- ccc_match_side_anno(left_anno)
   bottom_anno <- ccc_match_side_anno(bottom_anno)
-  if (plot_type %in% c("heatmap", "bubble") && isTRUE(default_top_bar)) {
-    top_anno <- c("bar", "cell")
-  }
-  if (
-    plot_type %in% c("heatmap", "bubble") &&
-      identical(display_by, "aggregation") &&
-      isTRUE(default_left_bar)
-  ) {
-    left_anno <- c("bar", "cell")
-  }
-  if (plot_type %in% c("heatmap", "bubble") && isTRUE(default_bottom_cell)) {
-    bottom_anno <- NULL
-  }
-  if (plot_type %in% c("heatmap", "bubble") && isTRUE(default_right_cell)) {
-    right_anno <- NULL
-  }
 
   if ("add_top_bar" %in% dot_names) {
     top_anno <- ccc_update_side_anno_legacy(
@@ -450,7 +465,7 @@ CCCHeatmap <- function(
 
   if (is.null(cell_palette) || identical(cell_palette, "Chinese")) {
     cell_palette <- palette
-    cell_palcolor <- palcolor
+    cell_palcolor <- cell_palcolor %||% palcolor
   }
 
   palette_cfg <- ccc_palettes(
@@ -463,16 +478,28 @@ CCCHeatmap <- function(
   )
 
   method <- detect_method(srt = srt, method = method)
+  comparison_palette_cfg <- palette_cfg
+  palette_cfg$cell_palcolor <- ccc_cell_palcolor(
+    srt, method, palette_cfg$cell_palette, palette_cfg$cell_palcolor
+  )
   combine_methods <- match.arg(combine_methods)
   srt <- ccc_prepare_filtered_object(
     srt = srt,
     method = method,
     resource = resource,
     condition = if (identical(method, "CellChat")) NULL else condition,
-    sample = sample
+    sample = sample,
+    native_cellchat = plot_type %in% c("bubble", "role_heatmap", "diff_heatmap") ||
+      ccc_uses_native_cellchat_table(
+        srt, method, condition, dataset, slot.name, signaling, pairLR.use,
+        sender.use, receiver.use
+      )
   )
   if (identical(method, "CCC") && identical(combine_methods, "separate")) {
-    return(ccc_plot_methods_separately(match.call(), srt = srt, env = parent.frame()))
+    return(ccc_plot_methods_separately(
+      match.call(), srt = srt, env = parent.frame(), palette_cfg = comparison_palette_cfg,
+      condition = condition, filter_context = !is.null(resource) || !is.null(sample)
+    ))
   }
   srt <- ccc_prepare_combined_object(
     srt = srt,
@@ -553,7 +580,11 @@ CCCHeatmap <- function(
         units = units,
         title = title,
         subtitle = subtitle,
-        value_palette = palette_cfg$value_palette,
+        value_palette = if (missing(value_palette) && is.null(value_palcolor)) {
+          "Reds"
+        } else {
+          palette_cfg$value_palette
+        },
         value_palcolor = palette_cfg$value_palcolor,
         cell_palette = palette_cfg$cell_palette,
         cell_palcolor = palette_cfg$cell_palcolor,
@@ -600,6 +631,18 @@ CCCHeatmap <- function(
   }
 
   if (identical(plot_type, "bubble") && identical(method, "CellChat")) {
+    bubble_palette <- if (missing(value_palette) && is.null(value_palcolor)) {
+      "Reds"
+    } else {
+      palette_cfg$value_palette
+    }
+    bubble_legend_direction <- if (missing(legend.direction) &&
+      isTRUE(legend.position %in% c("top", "bottom"))) {
+      "horizontal"
+    } else {
+      legend.direction
+    }
+    bubble_angle <- dots[["angle.x"]] %||% if (missing(x_text_angle)) 45 else x_text_angle
     explicit_lr_filter <- !is.null(pairLR.use) || !is.null(interaction.use)
     bubble_top_n <- if (isTRUE(explicit_lr_filter)) NULL else top_n
     if (use_cc_single_condition(srt, condition = condition)) {
@@ -639,14 +682,14 @@ CCCHeatmap <- function(
         ylab = NULL,
         color.by = bubble_color.by,
         bubble_size.range = bubble_size.range,
-        palette = palette_cfg$value_palette,
+        palette = bubble_palette,
         palcolor = palette_cfg$value_palcolor,
         font.size = font.size,
-        angle.x = angle.x,
+        angle.x = bubble_angle,
         hjust.x = hjust.x,
         vjust.x = vjust.x,
         legend.position = legend.position,
-        legend.direction = legend.direction,
+        legend.direction = bubble_legend_direction,
         theme_use = theme_use,
         theme_args = theme_args,
         aspect.ratio = aspect.ratio,
@@ -690,6 +733,7 @@ CCCHeatmap <- function(
       )
     }
     df_bubble <- do.call(rbind, df_list)
+    df_bubble$dataset <- factor(df_bubble$dataset, levels = names(df_list))
     return(custom_cc_bubble_plot(
       df = df_bubble,
       title = title %||% cmp_cc_label(cmp, comp_idx),
@@ -698,14 +742,14 @@ CCCHeatmap <- function(
       ylab = NULL,
       color.by = bubble_color.by,
       bubble_size.range = bubble_size.range,
-      palette = palette_cfg$value_palette,
+      palette = bubble_palette,
       palcolor = palette_cfg$value_palcolor,
       font.size = font.size,
-      angle.x = angle.x,
+      angle.x = bubble_angle,
       hjust.x = hjust.x,
       vjust.x = vjust.x,
       legend.position = legend.position,
-      legend.direction = legend.direction,
+      legend.direction = bubble_legend_direction,
       theme_use = theme_use,
       theme_args = theme_args,
       aspect.ratio = aspect.ratio,
@@ -766,7 +810,13 @@ CCCHeatmap <- function(
       cell_palette = palette_cfg$cell_palette,
       cell_palcolor = palette_cfg$cell_palcolor,
       legend.position = legend.position,
-      legend.direction = legend.direction,
+      legend.direction = if (missing(legend.direction) &&
+        isTRUE(legend.position %in% c("top", "bottom"))) {
+        "horizontal"
+      } else {
+        legend.direction
+      },
+      sequential = missing(value_palette) && is.null(value_palcolor),
       font.size = font.size,
       theme_use = theme_use,
       theme_args = theme_args
@@ -858,16 +908,78 @@ CCCHeatmap <- function(
       )
     }
   }
+  if (identical(method, "SpaTalk") && identical(plot_type, "bubble") &&
+    identical(display_by, "interaction")) {
+    df <- df[is.finite(df$score), , drop = FALSE]
+    if (!nrow(df)) {
+      log_message("No SpaTalk interaction scores remain after filtering", message_type = "error")
+    }
+    df$source <- df$sender
+    df$target <- df$receiver
+    df$prob <- df$score
+    df$pval <- df$pvalue
+    lr <- ccc_display_interaction(df$interaction_name)
+    pathway_bubble <- identical(plot_type_requested, "pathway_bubble")
+    if (pathway_bubble) {
+      df$interaction_name <- paste(stringr::str_wrap(df$pathway_name, width = 30), lr, sep = "\n")
+    } else {
+      df$interaction_name <- lr
+      if (is.numeric(top_n) && length(top_n) == 1L && is.finite(top_n) && top_n > 0L &&
+        is.null(pairLR.use) && is.null(interaction.use)) {
+        rank <- sort(tapply(df$prob, lr, sum), decreasing = TRUE)
+        df <- df[lr %in% names(utils::head(rank, top_n)), , drop = FALSE]
+      }
+    }
+    df$interaction_name_2 <- NULL
+    if (isTRUE(return.data)) {
+      return(df)
+    }
+    return(custom_cc_bubble_plot(
+      df = df,
+      title = title,
+      subtitle = subtitle,
+      color.by = dots[["bubble_color.by"]] %||%
+        if (identical(color.by, "pvalue")) "pval" else "prob",
+      bubble_size.range = bubble_size.range,
+      palette = if (missing(value_palette) && is.null(value_palcolor)) "Reds" else palette_cfg$value_palette,
+      palcolor = palette_cfg$value_palcolor,
+      font.size = font.size,
+      angle.x = dots[["angle.x"]] %||% if (!missing(x_text_angle)) x_text_angle else if (pathway_bubble) 90 else 45,
+      hjust.x = hjust.x,
+      vjust.x = if (pathway_bubble && is.null(dots[["vjust.x"]])) 0.5 else vjust.x,
+      legend.position = legend.position,
+      legend.direction = if (missing(legend.direction) && legend.position %in% c("top", "bottom")) {
+        "horizontal"
+      } else {
+        legend.direction
+      },
+      theme_use = theme_use,
+      theme_args = theme_args,
+      aspect.ratio = aspect.ratio,
+      remove.isolate = remove.isolate,
+      score.title = "SpaTalk score"
+    ))
+  }
   plot_data <- ccc_plot_tables(df, thresh = thresh)
   df <- plot_data$long_df
   pair_df <- plot_data$pair_df
   interaction_df <- plot_data$interaction_df
 
-  if (identical(plot_type, "dot")) {
+  if (plot_type %in% c("dot", "sample_dot")) {
+    source_target <- identical(plot_type, "dot")
+    scores <- suppressWarnings(as.numeric(if (source_target) interaction_df$score else df$score))
+    dot_palette <- if (identical(color.by, "score") && all(scores[is.finite(scores)] >= 0) &&
+      missing(value_palette) && is.null(value_palcolor)) {
+      "Reds"
+    } else {
+      palette_cfg$value_palette
+    }
     return(ccc_interaction_dot_plot(
-      df = interaction_df,
-      display = "source_target",
+      df = if (source_target) interaction_df else df,
+      display = if (source_target) "source_target" else "sample",
+      sample_key = sample_key,
       top_n = top_n,
+      top_n_pairs = top_n_pairs,
       color.by = color.by,
       interaction.use = interaction.use,
       pairLR.use = pairLR.use,
@@ -875,11 +987,16 @@ CCCHeatmap <- function(
       nrows = nrows,
       title = title,
       subtitle = subtitle,
-      value_palette = palette_cfg$value_palette,
+      value_palette = dot_palette,
       value_palcolor = palette_cfg$value_palcolor,
       legend.position = legend.position,
-      legend.direction = legend.direction,
+      legend.direction = if (missing(legend.direction) && isTRUE(legend.position %in% c("top", "bottom"))) {
+        "horizontal"
+      } else {
+        legend.direction
+      },
       font.size = font.size,
+      x_text_angle = if (missing(x_text_angle)) NULL else x_text_angle,
       theme_use = theme_use,
       theme_args = theme_args
     ))
@@ -897,31 +1014,14 @@ CCCHeatmap <- function(
       value_palette = palette_cfg$value_palette,
       value_palcolor = palette_cfg$value_palcolor,
       legend.position = legend.position,
-      legend.direction = legend.direction,
-      font.size = font.size,
-      theme_use = theme_use,
-      theme_args = theme_args
-    ))
-  }
-
-  if (identical(plot_type, "sample_dot")) {
-    return(ccc_interaction_dot_plot(
-      df = df,
-      display = "sample",
-      sample_key = sample_key,
-      top_n = top_n,
-      top_n_pairs = top_n_pairs,
-      color.by = color.by,
-      interaction.use = interaction.use,
-      pairLR.use = pairLR.use,
-      ncols = ncols,
-      nrows = nrows,
-      title = title,
-      subtitle = subtitle,
-      value_palette = palette_cfg$value_palette,
-      value_palcolor = palette_cfg$value_palcolor,
-      legend.position = legend.position,
-      legend.direction = legend.direction,
+      legend.direction = if (missing(legend.direction) &&
+        isTRUE(legend.position %in% c("top", "bottom"))) {
+        "horizontal"
+      } else {
+        legend.direction
+      },
+      sequential = missing(value_palette) && is.null(value_palcolor),
+      x_text_angle = x_text_angle,
       font.size = font.size,
       theme_use = theme_use,
       theme_args = theme_args
@@ -968,7 +1068,16 @@ CCCHeatmap <- function(
     cell_palette = palette_cfg$cell_palette,
     cell_palcolor = palette_cfg$cell_palcolor,
     legend.position = legend.position,
-    legend.direction = legend.direction,
+    legend.direction = if ((aggregate_heatmap || add_dot_eff) && missing(legend.direction) &&
+      isTRUE(legend.position %in% c("top", "bottom"))) {
+      "horizontal"
+    } else {
+      legend.direction
+    },
+    sequential = identical(color.by, "score") && missing(value_palette) &&
+      is.null(value_palcolor),
+    row_bar_color = row_bar_color,
+    column_bar_color = column_bar_color,
     font.size = font.size,
     theme_use = theme_use,
     theme_args = theme_args
@@ -1012,7 +1121,10 @@ ccc_heatmap_full_plot <- function(
   legend.direction = "vertical",
   font.size = 10,
   theme_use = "theme_scop",
-  theme_args = list()
+  theme_args = list(),
+  sequential = FALSE,
+  row_bar_color = NULL,
+  column_bar_color = NULL
 ) {
   check_r("ComplexHeatmap", verbose = FALSE)
 
@@ -1302,7 +1414,11 @@ ccc_heatmap_full_plot <- function(
     legend.direction = legend.direction,
     font.size = font.size,
     theme_use = theme_use,
-    theme_args = theme_args
+    theme_args = theme_args,
+    compact = TRUE,
+    sequential = sequential,
+    row_bar_color = row_bar_color,
+    column_bar_color = column_bar_color
   )
 }
 
@@ -1339,7 +1455,8 @@ ccc_ligand_target_heatmap <- function(
   legend.direction = "vertical",
   font.size = 10,
   theme_use = "theme_scop",
-  theme_args = list()
+  theme_args = list(),
+  sequential = FALSE
 ) {
   check_r("ComplexHeatmap", verbose = FALSE)
 
@@ -1474,7 +1591,9 @@ ccc_ligand_target_heatmap <- function(
     legend.direction = legend.direction,
     font.size = font.size,
     theme_use = theme_use,
-    theme_args = theme_args
+    theme_args = theme_args,
+    compact = is.null(width) && is.null(height),
+    sequential = sequential
   )
 }
 
@@ -1588,8 +1707,8 @@ custom_cc_bubble_plot <- function(
   xlab = NULL,
   ylab = NULL,
   color.by = c("prob", "pval"),
-  bubble_size.range = c(1.5, 8),
-  palette = "RdBu",
+  bubble_size.range = c(1.5, 5.4),
+  palette = "Reds",
   palcolor = NULL,
   font.size = 10,
   angle.x = 45,
@@ -1601,7 +1720,8 @@ custom_cc_bubble_plot <- function(
   theme_use = "theme_scop",
   theme_args = list(),
   aspect.ratio = NULL,
-  remove.isolate = TRUE
+  remove.isolate = TRUE,
+  score.title = NULL
 ) {
   color.by <- match.arg(color.by)
   if (is.null(df) || nrow(df) == 0L) {
@@ -1630,88 +1750,86 @@ custom_cc_bubble_plot <- function(
     )
   }
 
-  df$pair <- paste(df$source, "->", df$target)
-  if ("dataset" %in% colnames(df) && length(unique(df$dataset)) > 1L) {
-    df$pair <- paste0(df$pair, " [", df$dataset, "]")
-  }
-  df$interaction_plot <- as.character(df$interaction_name)
-
-  pair_order <- sort(
-    tapply(df$prob, df$pair, sum, na.rm = TRUE),
-    decreasing = TRUE
-  )
+  df$pair <- paste(df$source, "\u2192", df$target)
+  pair_order <- sort(tapply(df$prob, df$pair, sum, na.rm = TRUE), decreasing = TRUE)
   interaction_order <- sort(
-    tapply(df$prob, df$interaction_plot, sum, na.rm = TRUE),
+    tapply(df$prob, df$interaction_name, sum, na.rm = TRUE),
     decreasing = TRUE
   )
-  df$pair <- factor(df$pair, levels = names(pair_order))
-  df$interaction_plot <- factor(
-    df$interaction_plot,
-    levels = rev(names(interaction_order))
+  df$pair <- factor(df$pair, levels = rev(names(pair_order)))
+  df$interaction_plot <- factor(df$interaction_name, levels = names(interaction_order))
+  interaction_labels <- stats::setNames(
+    levels(df$interaction_plot),
+    levels(df$interaction_plot)
   )
-
-  cols <- palette_colors(palette = palette, palcolor = palcolor, n = 9)
-  fill_var <- if (identical(color.by, "pval")) {
-    df$fill_val <- -log10(df$pval + 1e-300)
-    "fill_val"
-  } else {
-    df$fill_val <- df$prob
-    "fill_val"
+  if ("interaction_name_2" %in% names(df)) {
+    labeled <- !is.na(df$interaction_name_2) & nzchar(trimws(df$interaction_name_2))
+    interaction_labels[as.character(df$interaction_name[labeled])] <-
+      gsub("[[:space:]]+", " ", trimws(df$interaction_name_2[labeled]))
   }
-  fill_label <- legend.title %||%
-    if (identical(color.by, "pval")) "-log10(pval)" else "prob"
 
-  p <- ggplot2::ggplot(
-    df,
-    ggplot2::aes(
-      x = pair,
-      y = interaction_plot,
-      size = prob,
-      fill = .data[[fill_var]]
-    )
-  ) +
-    ggplot2::geom_point(shape = 21, color = "grey20", stroke = 0.2) +
-    ggplot2::scale_size_area(
-      name = "prob",
-      max_size = max(bubble_size.range),
-      n.breaks = 4,
-      guide = ggplot2::guide_legend(
-        override.aes = list(fill = "grey30", shape = 21, color = "grey20"),
-        order = 2
+  df$pvalue_band <- cut(
+    ifelse(is.finite(df$pval) & df$pval >= 0 & df$pval <= 1, df$pval, NA_real_),
+    breaks = c(0, 0.01, 0.05, 1),
+    labels = c("p \u2264 0.01", "0.01 < p \u2264 0.05", "p > 0.05"),
+    include.lowest = TRUE
+  )
+  bands <- levels(df$pvalue_band)
+  cols <- palette_colors(palette = palette, palcolor = palcolor, n = 9)
+  probability_title <- score.title %||% if (identical(legend.direction, "horizontal")) {
+    "Communication probability"
+  } else {
+    "Communication\nprobability"
+  }
+  p <- ggplot2::ggplot(df, ggplot2::aes(x = interaction_plot, y = pair))
+  if (identical(color.by, "pval")) {
+    p <- p +
+      ggplot2::geom_point(
+        ggplot2::aes(fill = pvalue_band, size = prob),
+        shape = 21, colour = "grey20", stroke = 0.2
+      ) +
+      ggplot2::scale_fill_manual(
+        name = legend.title %||% "P-value",
+        values = stats::setNames(cols[c(9L, 6L, 3L)], bands), breaks = bands,
+        na.value = "grey90", guide = ggplot2::guide_legend(
+          order = 1, override.aes = list(size = 3.4, alpha = 1)
+        )
+      ) +
+      ggplot2::scale_size_area(
+        name = probability_title, max_size = max(bubble_size.range), n.breaks = 4,
+        guide = ggplot2::guide_legend(order = 2, override.aes = list(fill = "grey30", alpha = 1))
       )
-    ) +
-    ggplot2::scale_fill_gradientn(
-      name = fill_label,
-      colours = cols,
-      n.breaks = 4,
-      guide = ggplot2::guide_colorbar(
-        frame.colour = "black",
-        ticks.colour = "black",
-        title.hjust = 0,
-        order = 1
+  } else {
+    p <- p +
+      ggplot2::geom_point(
+        ggplot2::aes(fill = prob, size = pvalue_band),
+        shape = 21, colour = "grey20", stroke = 0.2
+      ) +
+      ggplot2::scale_fill_gradientn(
+        name = legend.title %||% probability_title, colours = cols, n.breaks = 4,
+        guide = ggplot2::guide_colorbar(
+          frame.colour = "grey55", ticks.colour = "grey55", order = 1,
+          theme = if (identical(legend.direction, "vertical")) {
+            ggplot2::theme(legend.key.height = grid::unit(18, "mm"))
+          }
+        )
+      ) +
+      ggplot2::scale_size_manual(
+        name = "P-value",
+        values = stats::setNames(
+          seq(max(bubble_size.range), min(bubble_size.range), length.out = 4L)[1:3],
+          bands
+        ),
+        breaks = bands,
+        na.value = min(bubble_size.range),
+        guide = ggplot2::guide_legend(order = 2, override.aes = list(fill = "grey30", alpha = 1))
       )
-    ) +
-    ggplot2::labs(
-      x = xlab,
-      y = ylab,
-      title = title,
-      subtitle = subtitle
-    ) +
-    ggplot2::theme(
-      axis.text.x = ggplot2::element_text(
-        angle = angle.x,
-        hjust = hjust.x,
-        vjust = vjust.x
-      ),
-      panel.grid.major = ggplot2::element_line(
-        linewidth = 0.3,
-        colour = "grey80",
-        linetype = 2
-      ),
-      panel.grid.minor = ggplot2::element_blank()
-    )
+  }
+  if ("dataset" %in% names(df) && length(unique(df$dataset)) > 1L) {
+    p <- p + ggplot2::facet_grid(rows = ggplot2::vars(dataset))
+  }
 
-  finalize_cc_plot(
+  p <- finalize_cc_plot(
     p,
     title = title,
     subtitle = subtitle,
@@ -1719,12 +1837,55 @@ custom_cc_bubble_plot <- function(
     ylab = ylab,
     legend.position = legend.position,
     legend.direction = legend.direction,
-    legend.title = legend.title,
     theme_use = theme_use,
     theme_args = theme_args,
     aspect.ratio = aspect.ratio,
     font.size = font.size
-  )
+  ) +
+    ggplot2::scale_x_discrete(labels = interaction_labels, expand = ggplot2::expansion(add = 0.6)) +
+    ggplot2::scale_y_discrete(expand = ggplot2::expansion(add = 0.6)) +
+    ggplot2::theme(
+      legend.position = legend.position,
+      legend.direction = legend.direction,
+      legend.location = "panel",
+      legend.justification.right = c(0, 0.5),
+      legend.box = if (identical(legend.direction, "horizontal")) "horizontal" else "vertical",
+      legend.spacing.y = grid::unit(1.5, "mm"),
+      axis.text.x = ggplot2::element_text(angle = angle.x, hjust = hjust.x, vjust = vjust.x),
+      strip.background = ggplot2::element_blank(),
+      strip.text.y.right = ggplot2::element_text(colour = "black", face = "bold")
+    )
+  if (identical(theme_use, "theme_scop") && !length(theme_args)) {
+    p <- p + ggplot2::theme(
+      panel.grid.major = ggplot2::element_line(colour = "grey92", linewidth = 0.25),
+      panel.grid.minor = ggplot2::element_blank(),
+      axis.ticks = ggplot2::element_blank(),
+      plot.margin = ggplot2::margin(4, 5, 4, 4),
+      legend.box.spacing = grid::unit(2, "mm"),
+      legend.key.height = grid::unit(max(4.5, max(bubble_size.range)), "mm")
+    )
+  }
+  if (is.null(aspect.ratio) && identical(theme_use, "theme_scop") && !length(theme_args)) {
+    font_mm <- (font.size %||% 10) * 25.4 / 72
+    point_mm <- max(bubble_size.range)
+    pitch_x <- if (sin(abs(angle.x) * pi / 180) >= 0.25) {
+      font_mm / sin(abs(angle.x) * pi / 180)
+    } else {
+      max(nchar(interaction_labels, type = "width")) * font_mm * 0.55
+    }
+    label_lines <- max(lengths(strsplit(interaction_labels, "\n", fixed = TRUE)))
+    if (label_lines > 1L) {
+      pitch_x <- pitch_x + (label_lines - 1L) * font_mm * 1.25
+    }
+    sized <- thisplot::plot_autosize(
+      p,
+      panel_width = max(22, nlevels(df$interaction_plot) * max(pitch_x, point_mm + 0.8)),
+      panel_height = max(13.5, nlevels(df$pair) * max(font_mm * 1.35, point_mm + 0.8)),
+      base_size = NULL, label_autosize = FALSE
+    )
+    attr(p, "size") <- attr(sized, "size")
+  }
+  p
 }
 
 ccc_identifier_key <- function(x) {
@@ -1856,6 +2017,7 @@ ccc_interaction_dot_plot <- function(
   legend.position = "right",
   legend.direction = "vertical",
   font.size = 10,
+  x_text_angle = NULL,
   theme_use = "theme_scop",
   theme_args = list()
 ) {
@@ -1913,7 +2075,11 @@ ccc_interaction_dot_plot <- function(
 
     grid <- ccc_panel_grid(
       n_panels = length(source_order),
-      ncols = ncols,
+      ncols = if (is.null(nrows)) {
+        ncols %||% if (length(source_order) <= 3L) length(source_order) else ceiling(sqrt(length(source_order)))
+      } else {
+        ncols
+      },
       nrows = nrows,
       context = "source-target dot plot"
     )
@@ -1972,7 +2138,11 @@ ccc_interaction_dot_plot <- function(
     df$interaction_label <- factor(df$interaction_label, levels = keep_interactions)
     grid <- ccc_panel_grid(
       n_panels = length(keep_interactions),
-      ncols = ncols %||% min(3L, length(keep_interactions)),
+      ncols = if (is.null(nrows)) {
+        ncols %||% min(3L, floor(sqrt(length(keep_interactions))))
+      } else {
+        ncols
+      },
       nrows = nrows,
       context = "sample dot plot"
     )
@@ -1993,6 +2163,7 @@ ccc_interaction_dot_plot <- function(
   } else {
     "Communication score"
   }
+  angle <- x_text_angle %||% if (source_target || any(nchar(plot_df$sample) > 13L, na.rm = TRUE)) 45 else 0
   p <- ggplot2::ggplot(plot_df, mapping) +
     ggplot2::geom_point(shape = 21, color = "grey20", stroke = 0.25, alpha = 0.9) +
     ggplot2::facet_wrap(
@@ -2001,17 +2172,24 @@ ccc_interaction_dot_plot <- function(
       nrow = grid$nrows,
       scales = if (source_target) "free_x" else "free_y"
     ) +
-    ggplot2::scale_fill_gradientn(colours = fill_cols, name = fill_label) +
-    ggplot2::scale_size_area(name = "Communication score", max_size = 8) +
-    ggplot2::labs(
-      x = if (source_target) "Target" else sample_col,
-      y = if (source_target) "Interactions (Ligand -> Receptor)" else "Sender -> receiver"
+    ggplot2::scale_fill_gradientn(
+      colours = fill_cols, name = fill_label, n.breaks = 4,
+      guide = ggplot2::guide_colorbar(frame.colour = "grey55", ticks.colour = "grey55", order = 1)
+    ) +
+    ggplot2::scale_size_area(
+      name = "Communication score", max_size = 5.4, n.breaks = 4,
+      guide = if (identical(color.by, "pvalue")) {
+        ggplot2::guide_legend(order = 2, override.aes = list(fill = "grey45"))
+      } else {
+        "none"
+      }
     )
 
   finalize_cc_plot(
     p,
     title = title,
     subtitle = subtitle,
+    xlab = if (source_target) "Receiver cell type" else NULL,
     legend.position = legend.position,
     legend.direction = legend.direction,
     theme_use = theme_use,
@@ -2019,8 +2197,18 @@ ccc_interaction_dot_plot <- function(
     font.size = font.size
   ) +
     ggplot2::theme(
-      axis.text.x = ggplot2::element_text(angle = 90, hjust = 1, vjust = 0.5),
-      panel.grid.major = ggplot2::element_line(colour = "grey90", linewidth = 0.3),
+      legend.position = legend.position,
+      legend.direction = legend.direction,
+      legend.location = "panel",
+      legend.justification.right = c(0, 0.5),
+      legend.box.spacing = grid::unit(2, "mm"),
+      axis.text.x = ggplot2::element_text(
+        angle = angle, hjust = if (angle == 0) 0.5 else 1, vjust = if (angle == 90) 0.5 else 1
+      ),
+      axis.ticks = ggplot2::element_blank(),
+      strip.background = ggplot2::element_blank(),
+      strip.text = ggplot2::element_text(colour = "black", face = "bold"),
+      panel.grid.major = ggplot2::element_line(colour = "grey92", linewidth = 0.25),
       panel.grid.minor = ggplot2::element_blank()
     )
 }
@@ -2039,7 +2227,9 @@ ccc_source_target_tile_plot <- function(
   legend.direction = "vertical",
   font.size = 10,
   theme_use = "theme_scop",
-  theme_args = list()
+  theme_args = list(),
+  sequential = FALSE,
+  x_text_angle = 90
 ) {
   if (is.null(interaction_df) || nrow(interaction_df) == 0L) {
     log_message(
@@ -2097,29 +2287,52 @@ ccc_source_target_tile_plot <- function(
   )
   plot_df <- rbind(left, right)
   plot_df$interaction_label <- factor(plot_df$interaction_label, levels = interaction_order)
+  sequential <- isTRUE(sequential) && all(plot_df$plot_metric >= 0)
   fill_cols <- palette_colors(
-    palette = value_palette,
+    palette = if (sequential) "Reds" else value_palette,
     palcolor = value_palcolor,
-    n = 9
+    n = if (sequential) 100L else 9L
   )
+  fill_limits <- if (sequential) {
+    max_value <- max(plot_df$plot_metric)
+    c(0, if (max_value > 0) max_value else 1)
+  }
   fill_label <- if (identical(color.by, "pvalue")) {
     "-log10(p-value)"
   } else {
     "Communication score"
   }
+  columns <- length(unique(plot_df$cell_type))
+  x_text_angle <- x_text_angle %||% 90
+  strip_labels <- if (columns < 5L) {
+    ggplot2::as_labeller(c(
+      "Source ligand" = "Source\nligand",
+      "Target receptor" = "Target\nreceptor"
+    ))
+  } else {
+    ggplot2::label_value
+  }
   p <- ggplot2::ggplot(
     plot_df,
     ggplot2::aes(x = cell_type, y = interaction_label, fill = plot_metric)
   ) +
-    ggplot2::geom_tile(color = "white", linewidth = 0.4) +
-    ggplot2::facet_wrap(~type, nrow = 1, scales = "free_x") +
-    ggplot2::scale_fill_gradientn(colours = fill_cols, name = fill_label) +
-    ggplot2::labs(x = "Cell type", y = NULL)
+    ggplot2::geom_tile(color = "white", linewidth = 0.3) +
+    ggplot2::facet_wrap(~type, nrow = 1, labeller = strip_labels) +
+    ggplot2::coord_fixed(ratio = 1, expand = FALSE) +
+    ggplot2::scale_x_discrete(expand = ggplot2::expansion(add = 0)) +
+    ggplot2::scale_y_discrete(expand = ggplot2::expansion(add = 0)) +
+    ggplot2::scale_fill_gradientn(
+      colours = fill_cols,
+      limits = fill_limits,
+      name = fill_label,
+      guide = ggplot2::guide_colourbar(frame.colour = "black")
+    )
 
-  finalize_cc_plot(
+  p <- finalize_cc_plot(
     p,
     title = title,
     subtitle = subtitle,
+    xlab = "Cell type",
     legend.position = legend.position,
     legend.direction = legend.direction,
     theme_use = theme_use,
@@ -2127,7 +2340,28 @@ ccc_source_target_tile_plot <- function(
     font.size = font.size
   ) +
     ggplot2::theme(
-      axis.text.x = ggplot2::element_text(angle = 90, hjust = 1, vjust = 0.5),
+      axis.text.x = ggplot2::element_text(
+        angle = x_text_angle,
+        hjust = if (x_text_angle == 0) 0.5 else 1,
+        vjust = if (x_text_angle == 90) 0.5 else 1
+      ),
       panel.grid = ggplot2::element_blank()
     )
+  if (identical(theme_use, "theme_scop") && !length(theme_args)) {
+    p <- p + ggplot2::theme(
+      strip.text = ggplot2::element_text(colour = "black", face = "bold", size = font.size),
+      strip.background = ggplot2::element_blank(),
+      panel.spacing.x = grid::unit(2, "mm"),
+      panel.border = ggplot2::element_rect(fill = NA, colour = "black", linewidth = 0.35),
+      legend.box.spacing = grid::unit(2.5, "mm"),
+      legend.location = "panel",
+      legend.justification.right = c(0, 0.5)
+    )
+  }
+  thisplot::plot_autosize(
+    p,
+    panel_width = max(columns * 5.6, 13.5) * (font.size %||% 10) / 10,
+    base_size = NULL,
+    label_autosize = FALSE
+  )
 }

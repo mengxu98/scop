@@ -157,6 +157,64 @@ test_that("RunESTIMATE stores Seurat pseudo-bulk results", {
   expect_equal(out@tools$ESTIMATE$details$sample_metadata$group, c("A", "A", "B", "B"))
 })
 
+test_that("RunESTIMATE aggregates only cells in the selected assay layer", {
+  skip_if_not_installed("Seurat")
+  counts <- round(make_estimate_mock(n_samples = 6)) + 1
+  colnames(counts) <- paste0("Cell", seq_len(ncol(counts)))
+  counts <- Matrix::Matrix(counts, sparse = TRUE)
+  meta <- data.frame(
+    sample = c("S1", "S2", "S1", "S1", "S2", NA_character_),
+    condition = c("A", "B", "outside", "A", "B", NA_character_),
+    row.names = colnames(counts)
+  )
+  srt <- Seurat::CreateSeuratObject(counts = counts, meta.data = meta)
+  srt[["subset"]] <- SeuratObject::CreateAssay5Object(
+    counts = counts[, c("Cell5", "Cell2", "Cell4", "Cell1")]
+  )
+  expect_true(methods::validObject(srt, test = TRUE))
+
+  expected_sum <- cbind(
+    S1 = Matrix::rowSums(counts[, c("Cell1", "Cell4")]),
+    S2 = Matrix::rowSums(counts[, c("Cell2", "Cell5")])
+  )
+  expected_metadata <- data.frame(
+    sample = c("S1", "S2"),
+    group = c("A", "B"),
+    row.names = c("S1", "S2")
+  )
+  for (aggregate_fun in c("sum", "mean")) {
+    expected <- if (aggregate_fun == "sum") expected_sum else expected_sum / 2
+    pseudo <- estimate_seurat_pseudobulk(
+      srt,
+      assay = "subset",
+      layer = "counts",
+      sample.by = "sample",
+      group.by = "condition",
+      aggregate_fun = aggregate_fun
+    )
+    expect_equal(pseudo$matrix, expected)
+    expect_identical(pseudo$sample_metadata, expected_metadata)
+
+    result <- RunESTIMATE(
+      object = srt,
+      assay = "subset",
+      layer = "counts",
+      sample.by = "sample",
+      group.by = "condition",
+      aggregate_fun = aggregate_fun,
+      min_sig_genes = 5,
+      verbose = FALSE
+    )@tools$ESTIMATE
+    scores <- RunESTIMATE(
+      count_matrix = expected,
+      min_sig_genes = 5,
+      verbose = FALSE
+    )$scores
+    expect_identical(result$scores, scores)
+    expect_identical(result$details$sample_metadata, expected_metadata)
+  }
+})
+
 test_that("ESTIMATE plot helpers return ggplot objects", {
   mat <- make_estimate_mock()
   out <- RunESTIMATE(
@@ -189,4 +247,95 @@ test_that("ESTIMATE plot helpers return ggplot objects", {
   expect_s3_class(p1, "ggplot")
   expect_s3_class(p2, "ggplot")
   expect_s3_class(p3, "ggplot")
+})
+
+test_that("RunESTIMATE preserves sparse input results and leaves the input unchanged", {
+  mat <- make_estimate_mock()
+  extra <- matrix(
+    1, nrow = 150L, ncol = ncol(mat),
+    dimnames = list(paste0("NotInEstimate", seq_len(150L)), colnames(mat))
+  )
+  mat <- rbind(mat, extra, all_zero = 0, absent = c(Inf, -Inf, NA, NaN, 0, 0))
+  mat[cbind(1:6, 1:6)] <- c(-1, Inf, -Inf, NA, NaN, -3)
+  sparse <- as(Matrix::Matrix(mat, sparse = TRUE), "dgCMatrix")
+  sparse@x[[1L]] <- -0.0
+  original <- sparse
+  dense <- as.matrix(sparse)
+  common <- function() estimate_get_signatures()$common_genes
+  expect_s4_class(estimate_prepare_matrix(sparse, sparse_common = common), "dgCMatrix")
+  expect_true(is.matrix(estimate_prepare_matrix(sparse)))
+  expect_true(is.matrix(estimate_prepare_matrix(sparse[seq_len(40L), ], sparse_common = common)))
+  for (filter in c(TRUE, FALSE)) {
+    actual <- RunESTIMATE(
+      count_matrix = sparse, filter_common_genes = filter,
+      min_sig_genes = 5, verbose = FALSE
+    )
+    expected <- RunESTIMATE(
+      count_matrix = dense, filter_common_genes = filter,
+      min_sig_genes = 5, verbose = FALSE
+    )
+    expect_identical(actual, expected, num.eq = FALSE)
+  }
+  expect_identical(sparse, original, num.eq = FALSE)
+
+  attributed <- sparse
+  attributed@Dimnames[[2L]] <- setNames(colnames(attributed), seq_len(ncol(attributed)))
+  expect_true(is.matrix(estimate_prepare_matrix(attributed, sparse_common = common)))
+  expect_identical(
+    RunESTIMATE(count_matrix = attributed, min_sig_genes = 5, verbose = FALSE),
+    RunESTIMATE(count_matrix = as.matrix(attributed), min_sig_genes = 5, verbose = FALSE),
+    num.eq = FALSE
+  )
+
+  annotated_values <- sparse
+  attr(annotated_values@x, "provenance") <- "custom annotation"
+  expect_true(is.matrix(estimate_prepare_matrix(annotated_values, sparse_common = common)))
+  expect_identical(
+    RunESTIMATE(count_matrix = annotated_values, min_sig_genes = 5, verbose = FALSE),
+    RunESTIMATE(count_matrix = as.matrix(annotated_values), min_sig_genes = 5, verbose = FALSE),
+    num.eq = FALSE
+  )
+
+  rownames(sparse)[2L] <- tolower(rownames(sparse)[1L])
+  expect_identical(
+    RunESTIMATE(count_matrix = sparse, min_sig_genes = 5, verbose = FALSE),
+    RunESTIMATE(count_matrix = as.matrix(sparse), min_sig_genes = 5, verbose = FALSE),
+    num.eq = FALSE
+  )
+})
+
+test_that("RunESTIMATE keeps sparse preprocessing errors", {
+  mat <- make_estimate_mock()
+  empty <- Matrix::sparseMatrix(
+    i = integer(), j = integer(), x = numeric(),
+    dims = dim(mat), dimnames = dimnames(mat)
+  )
+  expect_error(RunESTIMATE(count_matrix = empty, verbose = FALSE), "No usable expression values")
+  nameless <- as(Matrix::Matrix(mat, sparse = TRUE), "dgCMatrix")
+  rownames(nameless) <- NULL
+  expect_error(RunESTIMATE(count_matrix = nameless, verbose = FALSE), "must have gene names")
+})
+
+
+test_that("RunESTIMATE keeps the legacy path for overallocated sparse slots", {
+  mat <- make_estimate_mock()
+  extra <- matrix(
+    0, nrow = 150L, ncol = ncol(mat),
+    dimnames = list(paste0("NotInEstimate", seq_len(150L)), colnames(mat))
+  )
+  extra[, 1L] <- 1
+  extra[150L, ] <- 0
+  sparse <- as(Matrix::Matrix(rbind(mat, extra), sparse = TRUE), "dgCMatrix")
+  sparse@i <- c(sparse@i, nrow(sparse) - 1L)
+  sparse@x <- c(sparse@x, 7)
+  if (!isTRUE(methods::validObject(sparse, test = TRUE))) {
+    skip("Matrix version does not allow overallocated sparse slots")
+  }
+  common <- function() estimate_get_signatures()$common_genes
+  expect_true(is.matrix(estimate_prepare_matrix(sparse, sparse_common = common)))
+  expect_identical(
+    RunESTIMATE(count_matrix = sparse, min_sig_genes = 5, verbose = FALSE),
+    RunESTIMATE(count_matrix = as.matrix(sparse), min_sig_genes = 5, verbose = FALSE),
+    num.eq = FALSE
+  )
 })

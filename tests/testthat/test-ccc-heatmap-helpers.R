@@ -54,3 +54,24 @@ test_that("ccc_ligand_target_matrix preserves ordered finite pair sums", {
     )
   )
 })
+
+test_that("communication heatmaps render missing values white without replacing zero", {
+  skip_if_not_installed("ComplexHeatmap")
+  skip_if_not_installed("circlize")
+  heatmap <- ComplexHeatmap::Heatmap
+  seen <- NULL
+  local_mocked_bindings(
+    Heatmap = function(matrix, col, na_col, ...) {
+      seen <<- list(matrix = matrix, zero = col(0), na_col = na_col)
+      heatmap(matrix = matrix, col = col, na_col = na_col, ...)
+    },
+    .package = "ComplexHeatmap"
+  )
+  values <- matrix(c(0, NA_real_, .5, 1), 2L,
+    dimnames = list(c("A", "B"), c("A", "B"))
+  )
+  ccc_matrix_heatmap_plot(values, compact = TRUE, value_palette = "Reds", value_limits = c(0, 1))
+  expect_identical(seen$matrix, values)
+  expect_identical(seen$na_col, "white")
+  expect_false(seen$zero %in% c("white", "#FFFFFF", "#FFFFFFFF"))
+})

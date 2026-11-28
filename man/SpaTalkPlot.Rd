@@ -19,7 +19,11 @@ SpaTalkPlot(
 \item{result.name}{Stored SpaTalk result name.}
 
 \item{plot_type}{Network, ligand-receptor bubble, pathway bubble, or
-receptor-TF view.}
+receptor-TF view.
+When the backend does not label interactions by pathway, the pathway view
+uses exact directed ligand-to-receptor edges in the stored pathway
+annotation. It shows the associated interaction scores, not an independent
+statistical test of pathway activity.}
 
 \item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.
 Applied to every plot type, including the delegated CCC views.}

@@ -701,6 +701,22 @@ ccc_palettes <- function(
   )
 }
 
+ccc_cell_palcolor <- function(srt, method, palette = "Chinese", palcolor = NULL, groups = NULL) {
+  if (!is.null(palcolor)) return(palcolor)
+  bundle <- srt@tools[[method]]
+  group_by <- bundle$parameters$group.by
+  reference <- if (length(group_by) == 1L) srt@meta.data[[group_by]]
+  if (!is.factor(reference)) reference <- sort(unique(reference))
+  table <- bundle$long_table %||% bundle$primary_table
+  labels <- unique(c(
+    ccc_group_levels(reference),
+    ccc_group_levels(groups),
+    ccc_group_levels(table$sender),
+    ccc_group_levels(table$receiver)
+  ))
+  if (length(labels)) thisplot::palette_colors(labels, palette = palette)
+}
+
 ccc_assign_plot_score <- function(df, value = "score") {
   if (is.null(df) || nrow(df) == 0L) {
     return(df)
@@ -815,6 +831,12 @@ ccc_filter_table_context <- function(
     df <- df[as.character(df$resource) %in% as.character(resource), , drop = FALSE]
   }
   if (!is.null(condition)) {
+    if (all(c("method", "dataset") %in% names(df))) {
+      conditions <- if ("condition" %in% names(df)) as.character(df$condition) else rep(NA_character_, nrow(df))
+      cellchat <- which(df$method == "CellChat" & (is.na(conditions) | !nzchar(conditions)))
+      conditions[cellchat] <- as.character(df$dataset[cellchat])
+      df$condition <- conditions
+    }
     available_condition <- if ("condition" %in% colnames(df)) {
       unique(as.character(df$condition))
     } else {
@@ -861,8 +883,16 @@ ccc_prepare_filtered_object <- function(
   method,
   resource = NULL,
   condition = NULL,
-  sample = NULL
+  sample = NULL,
+  native_cellchat = FALSE
 ) {
+  if (identical(method, "CellChat") && (!is.null(resource) || !is.null(sample)) &&
+    isTRUE(native_cellchat)) {
+    log_message(
+      "Native CellChat plots do not support {.arg resource} or {.arg sample}; select a native result with {.arg condition}",
+      message_type = "error"
+    )
+  }
   if (is.null(resource) && is.null(condition) && is.null(sample)) {
     return(srt)
   }
@@ -1010,10 +1040,42 @@ ccc_prepare_combined_object <- function(
   srt
 }
 
-ccc_plot_methods_separately <- function(call, srt, env) {
+ccc_plot_methods_separately <- function(
+  call,
+  srt,
+  env,
+  palette_cfg,
+  link_groups = FALSE,
+  condition = NULL,
+  filter_context = FALSE
+) {
   unified <- ccc_semantic_long_table(srt@tools[["CCC"]]$long_table)
   methods <- unique(as.character(unified$method))
   methods <- methods[!is.na(methods) & nzchar(methods) & methods != "CCC"]
+  group_by <- unique(unlist(lapply(methods, function(method) srt@tools[[method]]$parameters$group.by)))
+  group_by <- group_by[!is.na(group_by) & nzchar(group_by)]
+  share_groups <- !is.null(palette_cfg) && length(group_by) <= 1L
+  if (share_groups) {
+    group_by <- intersect(group_by, colnames(srt@meta.data))
+    labels <- unique(c(
+      unlist(lapply(srt@meta.data[group_by], ccc_group_levels)),
+      sort(unique(c(ccc_group_levels(unified$sender), ccc_group_levels(unified$receiver))))
+    ))
+    shared_colors <- function(palette, colors) {
+      if (!length(labels)) return(colors)
+      if (is.null(names(colors))) {
+        return(thisplot::palette_colors(labels, palette = palette, palcolor = colors))
+      }
+      resolved <- thisplot::palette_colors(labels, palette = palette)
+      override <- intersect(names(colors), labels)
+      resolved[override] <- unlist(colors[override])
+      resolved
+    }
+    cell_colors <- shared_colors(palette_cfg$cell_palette, palette_cfg$cell_palcolor)
+    if (link_groups) {
+      link_colors <- shared_colors(palette_cfg$link_palette, palette_cfg$link_palcolor)
+    }
+  }
   plots <- lapply(methods, function(method) {
     method_table <- unified[as.character(unified$method) == method, , drop = FALSE]
     bundle <- srt@tools[[method]] %||% list(method = method)
@@ -1026,9 +1088,28 @@ ccc_plot_methods_separately <- function(call, srt, env) {
     next_call$srt <- NULL
     next_call$object <- method_object
     next_call$method <- method
+    if (share_groups) {
+      next_call$cell_palcolor <- cell_colors
+      if (link_groups) next_call$link_palcolor <- link_colors
+    }
     next_call$combine_methods <- "legacy"
     next_call$resource <- NULL
     next_call$condition <- NULL
+    if (identical(method, "CellChat") && length(c(cc_names(srt), comparison_cc_names(srt)))) {
+      if (filter_context) {
+        log_message(
+          "Separate CellChat panes do not support {.arg resource} or {.arg sample}; select a native result with {.arg condition}",
+          message_type = "error"
+        )
+      }
+      if (length(condition) > 1L) {
+        log_message(
+          "CellChat panes require a single {.arg condition}; draw each condition separately",
+          message_type = "error"
+        )
+      }
+      next_call$condition <- condition
+    }
     next_call$sample <- NULL
     eval(next_call, envir = env)
   })
@@ -1070,7 +1151,10 @@ ccc_matrix_heatmap_plot <- function(
   font.size = 10,
   theme_use = "theme_scop",
   theme_args = list(),
-  symmetric = FALSE
+  symmetric = FALSE,
+  compact = FALSE,
+  value_limits = NULL,
+  na_col = "white"
 ) {
   check_r("ComplexHeatmap", verbose = FALSE)
 
@@ -1130,6 +1214,9 @@ ccc_matrix_heatmap_plot <- function(
     column_annotation_name = column_annotation_name,
     add_text = add_text,
     symmetric = symmetric,
+    compact = compact,
+    value_limits = value_limits,
+    na_col = na_col,
     top_bar_vec = top_bar_vec,
     top_box_vec = top_box_vec,
     top_summary_vec = top_summary_vec,
@@ -1202,8 +1289,20 @@ ccc_draw_heatmap <- function(
   theme_use,
   theme_args,
   symmetric = FALSE,
-  add_dot = FALSE
+  add_dot = FALSE,
+  compact = FALSE,
+  sequential = FALSE,
+  value_limits = NULL,
+  na_col = "white",
+  row_bar_color = NULL,
+  column_bar_color = NULL
 ) {
+  measured <- compact || isTRUE(add_dot)
+  if (measured) {
+    grDevices::pdf(NULL)
+    capture_device <- grDevices::dev.cur()
+    on.exit(grDevices::dev.off(capture_device), add = TRUE)
+  }
   mat_vals <- mat[is.finite(mat)]
   if (length(mat_vals) == 0L) {
     mat_vals <- c(0, 1)
@@ -1220,6 +1319,13 @@ ccc_draw_heatmap <- function(
       val_range <- val_range + c(-0.5, 0.5)
     }
   }
+  sequential <- sequential && !symmetric && all(mat_vals >= 0)
+  if (sequential) {
+    value_palette <- "Reds"
+    val_range[1] <- 0
+    if (val_range[2] <= 0) val_range[2] <- 1
+  }
+  if (!is.null(value_limits)) val_range <- value_limits
   fill_cols <- palette_colors(
     palette = value_palette,
     palcolor = value_palcolor,
@@ -1240,8 +1346,12 @@ ccc_draw_heatmap <- function(
           x,
           y,
           gp = grid::gpar(
-            fontsize = font.size * 0.7,
-            col = if (!is.na(fill) && grDevices::col2rgb(fill)[1] < 128) {
+            fontsize = font.size * if (compact) 0.85 else 0.7,
+            col = if (!is.na(fill) && (if (compact || sequential) {
+              sum(c(0.213, 0.715, 0.072) * grDevices::col2rgb(fill)[, 1L]) < 140
+            } else {
+              grDevices::col2rgb(fill)[1L] < 128
+            })) {
               "white"
             } else {
               "grey20"
@@ -1285,7 +1395,17 @@ ccc_draw_heatmap <- function(
       lwd = 0.6
     )
   } else {
-    layer_fun <- NULL
+    layer_fun <- if (isTRUE(border) && anyNA(mat)) {
+      function(j, i, x, y, width, height, fill) {
+        missing <- is.na(mat[cbind(i, j)])
+        if (any(missing)) {
+          grid::grid.rect(
+            x[missing], y[missing], width[missing], height[missing],
+            gp = grid::gpar(col = "#D9D9D9", fill = NA, lwd = 0.65)
+          )
+        }
+      }
+    }
     rect_gp <- grid::gpar(
       col = if (isTRUE(border)) "white" else NA,
       lwd = 1
@@ -1297,15 +1417,73 @@ ccc_draw_heatmap <- function(
     ncol = ncol(mat),
     width = width,
     height = height,
-    units = units
+    units = units,
+    default_cell_size = if (isTRUE(add_dot)) {
+      grid::convertWidth(grid::unit(font.size * 2.12, "pt"), units, valueOnly = TRUE)
+    } else {
+      0.35
+    }
   )
+
+  if (is.null(x_text_angle)) {
+    x_text_angle <- 90
+  }
+  horizontal_labels <- compact && isTRUE(x_text_angle == 0) &&
+    isTRUE(show_column_names) && !is.null(colnames(mat))
+  column_label_ann <- NULL
+  if (horizontal_labels) {
+    label_gp <- grid::gpar(fontsize = font.size)
+    labels <- vapply(colnames(mat), function(label) {
+      parts <- strwrap(gsub("-", "- ", label, fixed = TRUE), width = 13)
+      gsub("- ", "-", paste(parts, collapse = "\n"), fixed = TRUE)
+    }, character(1))
+    label_grobs <- lapply(labels, grid::textGrob, gp = label_gp)
+    label_height <- do.call(grid::unit.pmax, lapply(label_grobs, grid::grobHeight))
+    label_width <- do.call(grid::unit.pmax, lapply(label_grobs, grid::grobWidth))
+    column_label_ann <- get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation")(
+      sender_label = get_namespace_fun("ComplexHeatmap", "anno_text")(
+        labels, which = "column", rot = 0, just = "center",
+        location = grid::unit(0.5, "npc"),
+        height = label_height + grid::unit(2.2, "mm"), gp = label_gp
+      ),
+      show_annotation_name = FALSE
+    )
+    if (!body_size$fixed) {
+      body_size$width <- ncol(mat) * grid::unit.pmax(
+        grid::unit(3 * font.size, "pt"), label_width + grid::unit(5, "pt")
+      )
+    }
+  }
+  if (compact && !body_size$fixed) {
+    if (isTRUE(add_text) && !isTRUE(add_dot)) {
+      number_width <- ComplexHeatmap::max_text_width(
+        unique(sprintf("%.2g", mat_vals)), gp = grid::gpar(fontsize = font.size * 0.85)
+      )
+      body_size$width <- grid::unit.pmax(
+        body_size$width, ncol(mat) * (number_width + grid::unit(5, "pt"))
+      )
+    }
+    row_height <- if (nrow(mat) <= 10L) 2.45 else 1.72
+    body_size$height <- grid::unit(nrow(mat) * row_height * font.size, "pt")
+  }
+
+  row_cols <- col_cols <- NULL
+  if (compact) {
+    cells <- sort(union(rownames(mat), colnames(mat)))
+    common_colors <- palette_colors(
+      cells, palette = cell_palette,
+      palcolor = ccc_align_named_palcolor(cell_palcolor, cells)
+    )
+    row_cols <- common_colors[rownames(mat)]
+    col_cols <- common_colors[colnames(mat)]
+  }
 
   col_ann <- if (!is.null(colnames(mat))) {
     col_nms <- colnames(mat)
-    col_cols <- palette_colors(
+    col_cols <- col_cols %||% palette_colors(
       col_nms,
       palette = cell_palette,
-      palcolor = cell_palcolor
+      palcolor = ccc_align_named_palcolor(cell_palcolor, col_nms)
     )
     get_namespace_fun("ComplexHeatmap", "HeatmapAnnotation")(
       df = stats::setNames(
@@ -1320,7 +1498,12 @@ ccc_draw_heatmap <- function(
       show_annotation_name = FALSE,
       show_legend = FALSE,
       which = "column",
-      border = border,
+      border = border && !compact,
+      simple_anno_size = if (compact) {
+        grid::unit(1.4, "mm")
+      } else {
+        ComplexHeatmap::ht_opt("simple_anno_size")
+      },
       gp = grid::gpar(col = if (isTRUE(border)) "white" else NA)
     )
   } else {
@@ -1329,10 +1512,10 @@ ccc_draw_heatmap <- function(
 
   row_ann <- if (!is.null(rownames(mat))) {
     row_nms <- rownames(mat)
-    row_cols <- palette_colors(
+    row_cols <- row_cols %||% palette_colors(
       row_nms,
       palette = cell_palette,
-      palcolor = cell_palcolor
+      palcolor = ccc_align_named_palcolor(cell_palcolor, row_nms)
     )
     get_namespace_fun("ComplexHeatmap", "rowAnnotation")(
       df = stats::setNames(
@@ -1346,7 +1529,12 @@ ccc_draw_heatmap <- function(
       annotation_name_gp = grid::gpar(fontsize = font.size * 0.8),
       show_annotation_name = FALSE,
       show_legend = FALSE,
-      border = border,
+      border = border && !compact,
+      simple_anno_size = if (compact) {
+        grid::unit(1.4, "mm")
+      } else {
+        ComplexHeatmap::ht_opt("simple_anno_size")
+      },
       gp = grid::gpar(col = if (isTRUE(border)) "white" else NA)
     )
   } else {
@@ -1355,43 +1543,62 @@ ccc_draw_heatmap <- function(
 
   top_names <- colnames(mat)
   right_names <- rownames(mat)
-  top_cols <- if (!is.null(top_names)) {
-    palette_colors(top_names, palette = cell_palette, palcolor = cell_palcolor)
+  top_cols <- if (compact) col_cols else if (!is.null(top_names)) {
+    palette_colors(top_names, palette = cell_palette, palcolor = ccc_align_named_palcolor(cell_palcolor, top_names))
   } else {
     NULL
   }
-  right_cols <- if (!is.null(right_names)) {
+  right_cols <- if (compact) row_cols else if (!is.null(right_names)) {
     palette_colors(
       right_names,
       palette = cell_palette,
-      palcolor = cell_palcolor
+      palcolor = ccc_align_named_palcolor(cell_palcolor, right_names)
     )
   } else {
     NULL
   }
 
+  bar_ranges <- NULL
+  if (compact) {
+    bar_ranges <- lapply(union(names(top_bar_vec), names(right_bar_vec)), function(metric) {
+      values <- c(0, top_bar_vec[[metric]], right_bar_vec[[metric]])
+      range(values[is.finite(values)])
+    })
+    names(bar_ranges) <- union(names(top_bar_vec), names(right_bar_vec))
+  }
+  bar_color <- function(color) {
+    color %||% unname(thisplot::palette_colors("bar", palette = cell_palette))
+  }
   top_bar_ann <- ccc_build_bar_annotation(
     stats_list = top_bar_vec,
-    fill_cols = top_cols,
+    fill_cols = if (isTRUE(add_dot)) bar_color(column_bar_color) else top_cols,
     which = "column",
     font.size = font.size,
-    border = border,
+    border = border && !measured,
+    ranges = bar_ranges,
+    track_size = if (measured) 12 else 20,
     reverse = FALSE
   )
   left_bar_ann <- ccc_build_bar_annotation(
     stats_list = right_bar_vec,
-    fill_cols = right_cols,
+    fill_cols = if (isTRUE(add_dot)) bar_color(row_bar_color) else right_cols,
     which = "row",
     font.size = font.size,
-    border = border,
+    border = border && !measured,
+    ranges = bar_ranges,
+    track_size = if (measured) 12 else 20,
+    show_name = !(measured && "bar" %in% top_anno && "bar" %in% left_anno &&
+      length(top_bar_vec) == 1L && identical(names(top_bar_vec), names(right_bar_vec))),
     reverse = TRUE
   )
   right_bar_ann <- ccc_build_bar_annotation(
     stats_list = right_bar_vec,
-    fill_cols = right_cols,
+    fill_cols = if (isTRUE(add_dot)) bar_color(row_bar_color) else right_cols,
     which = "row",
     font.size = font.size,
-    border = border,
+    border = border && !measured,
+    ranges = bar_ranges,
+    track_size = if (measured) 12 else 20,
     reverse = FALSE
   )
   top_box_ann <- ccc_build_distribution_annotation(
@@ -1583,6 +1790,13 @@ ccc_draw_heatmap <- function(
       cell = col_ann
     )
   )
+  if (!is.null(column_label_ann)) {
+    bottom_combined <- if (is.null(bottom_combined)) {
+      column_label_ann
+    } else {
+      c(bottom_combined, column_label_ann, gap = grid::unit(0.5, "mm"))
+    }
+  }
   left_combined <- ccc_combine_side_annotations(
     side_anno = left_anno,
     annotations = list(
@@ -1610,9 +1824,15 @@ ccc_draw_heatmap <- function(
     )
   )
 
+  legend_breaks <- if (isTRUE(add_dot)) {
+    breaks <- scales::breaks_extended(n = 5)(val_range)
+    breaks <- breaks[is.finite(breaks) & breaks >= val_range[1] & breaks <= val_range[2]]
+    if (length(breaks) > 1L) breaks else val_range
+  }
   ht <- get_namespace_fun("ComplexHeatmap", "Heatmap")(
     matrix = mat,
     col = col_fun,
+    na_col = na_col,
     name = value_label,
     cell_fun = cell_fun,
     layer_fun = layer_fun,
@@ -1625,7 +1845,7 @@ ccc_draw_heatmap <- function(
     row_title_gp = grid::gpar(fontsize = font.size),
     column_title_gp = grid::gpar(fontsize = font.size),
     show_row_names = show_row_names,
-    show_column_names = show_column_names,
+    show_column_names = show_column_names && !horizontal_labels,
     cluster_rows = cluster_rows,
     cluster_columns = cluster_columns,
     row_names_gp = grid::gpar(fontsize = font.size),
@@ -1636,13 +1856,69 @@ ccc_draw_heatmap <- function(
     use_raster = FALSE,
     width = body_size$width,
     height = body_size$height,
-    heatmap_legend_param = list(
+    show_heatmap_legend = !measured || !identical(legend.position, "none"),
+    heatmap_legend_param = c(if (!is.null(legend_breaks)) list(at = legend_breaks), list(
+      direction = if (measured && isTRUE(legend.direction %in% c("horizontal", "vertical"))) {
+        legend.direction
+      } else {
+        "vertical"
+      },
       title_gp = grid::gpar(fontsize = font.size * 0.9, fontface = "bold"),
       labels_gp = grid::gpar(fontsize = font.size * 0.8),
       border = "black",
       grid_width = grid::unit(4, "mm")
-    )
+    ))
   )
+
+  if (measured) {
+    draw_heatmap <- get_namespace_fun("ComplexHeatmap", "draw")
+    legend.position <- legend.position %||% "right"
+    legend_side <- if (legend.position %in% c("top", "bottom", "left", "right")) {
+      legend.position
+    } else {
+      "right"
+    }
+    heading <- paste(c(title, subtitle), collapse = "\n")
+    heading_style <- NULL
+    if (nzchar(heading) && (!identical(theme_use, "theme_scop") || length(theme_args))) {
+      plot_theme <- apply_plot_theme(theme_use, theme_args, allow_null = TRUE)
+      heading_style <- ggplot2::calc_element("plot.title", ggplot2::theme_get() + plot_theme)
+      if (inherits(heading_style, "element_blank")) heading <- ""
+    }
+    draw_args <- list(
+      object = ht, heatmap_legend_side = legend_side,
+      padding = grid::unit(rep(2.5, 4), "mm"),
+      column_title = if (nzchar(heading)) heading else NULL,
+      column_title_gp = grid::gpar(
+        fontsize = font.size * 1.12,
+        fontface = heading_style$face %||% "bold",
+        col = heading_style$colour %||% "black",
+        fontfamily = heading_style$family %||% ""
+      )
+    )
+    drawn <- do.call(draw_heatmap, draw_args)
+    size <- c(
+      width = grid::convertWidth(
+        get_namespace_fun("ComplexHeatmap", "width")(drawn), "in", valueOnly = TRUE
+      ),
+      height = grid::convertHeight(
+        get_namespace_fun("ComplexHeatmap", "height")(drawn), "in", valueOnly = TRUE
+      )
+    )
+    grob <- grid::grid.grabExpr(
+      do.call(draw_heatmap, draw_args),
+      width = size[["width"]], height = size[["height"]],
+      wrap = TRUE, wrap.grobs = TRUE
+    )
+    canvas <- gtable::gtable_matrix(
+      "ccc_heatmap", matrix(list(grob), nrow = 1L),
+      widths = grid::unit(size[["width"]], "in"),
+      heights = grid::unit(size[["height"]], "in")
+    )
+    p <- patchwork::wrap_plots(canvas)
+    attr(p, "size") <- list(width = size[["width"]], height = size[["height"]], units = "in")
+    return(p)
+  }
 
   g_tree <- grid::grid.grabExpr(
     get_namespace_fun("ComplexHeatmap", "draw")(
@@ -1775,7 +2051,8 @@ ccc_cellchat_role_heatmap_plot <- function(
     mat,
     plot_title,
     plot_subtitle = NULL,
-    symmetric = FALSE
+    symmetric = FALSE,
+    show_legend = TRUE
   ) {
     ccc_matrix_heatmap_plot(
       mat = mat,
@@ -1809,12 +2086,14 @@ ccc_cellchat_role_heatmap_plot <- function(
       value_palcolor = value_palcolor,
       cell_palette = cell_palette,
       cell_palcolor = cell_palcolor,
-      legend.position = legend.position,
+      legend.position = if (show_legend) legend.position else "none",
       legend.direction = legend.direction,
       font.size = font.size,
       theme_use = theme_use,
       theme_args = theme_args,
-      symmetric = symmetric
+      symmetric = symmetric,
+      compact = TRUE,
+      value_limits = if (!symmetric) c(0, 1) else NULL
     )
   }
   if (isTRUE(use_cc_single_condition(srt, condition = condition))) {
@@ -1854,10 +2133,22 @@ ccc_cellchat_role_heatmap_plot <- function(
     )
     build_role_heatmap(
       mat = role$scaled,
-      plot_title = object_names[i]
+      plot_title = object_names[i],
+      show_legend = !identical(legend.position, "right") || i == length(object_list)
     )
   })
-  out <- Reduce(`+`, plots)
+  sizes <- lapply(plots, attr, which = "size", exact = TRUE)
+  ncols <- min(3L, length(plots))
+  plot_cols <- rep_len(seq_len(ncols), length(plots))
+  plot_rows <- ceiling(seq_along(plots) / ncols)
+  col_widths <- tapply(vapply(sizes, `[[`, numeric(1), "width"), plot_cols, max)
+  row_heights <- tapply(vapply(sizes, `[[`, numeric(1), "height"), plot_rows, max)
+  out <- patchwork::wrap_plots(
+    plots,
+    ncol = ncols,
+    widths = grid::unit(col_widths, "in"),
+    heights = grid::unit(row_heights, "in")
+  )
   if (!is.null(title) || !is.null(subtitle)) {
     out <- out +
       patchwork::plot_annotation(
@@ -1869,6 +2160,14 @@ ccc_cellchat_role_heatmap_plot <- function(
         plot.subtitle = ggplot2::element_text(size = font.size, hjust = 0.5)
       )
   }
+  grDevices::pdf(NULL)
+  on.exit(grDevices::dev.off(), add = TRUE)
+  layout <- patchwork::patchworkGrob(out)
+  attr(out, "size") <- list(
+    width = grid::convertWidth(sum(layout$widths), "in", valueOnly = TRUE),
+    height = grid::convertHeight(sum(layout$heights), "in", valueOnly = TRUE),
+    units = "in"
+  )
   out
 }
 
@@ -1964,7 +2263,8 @@ ccc_cellchat_diff_heatmap_plot <- function(
     font.size = font.size,
     theme_use = theme_use,
     theme_args = theme_args,
-    symmetric = TRUE
+    symmetric = TRUE,
+    compact = TRUE
   )
 }
 
@@ -2228,7 +2528,10 @@ ccc_build_bar_annotation <- function(
   which = c("column", "row"),
   font.size = 10,
   border = TRUE,
-  reverse = FALSE
+  reverse = FALSE,
+  ranges = NULL,
+  track_size = 20,
+  show_name = TRUE
 ) {
   which <- match.arg(which)
   if (is.null(stats_list) || is.null(fill_cols)) {
@@ -2241,12 +2544,14 @@ ccc_build_bar_annotation <- function(
       which = which,
       font.size = font.size,
       border = border,
-      reverse = reverse
+      reverse = reverse,
+      ranges = ranges,
+      track_size = track_size
     ),
     list(
       annotation_name_gp = grid::gpar(fontsize = font.size * 0.8),
       annotation_name_side = if (identical(which, "column")) "left" else "top",
-      show_annotation_name = TRUE,
+      show_annotation_name = show_name,
       border = border,
       gap = grid::unit(1, "mm")
     )
@@ -2430,7 +2735,9 @@ ccc_build_bar_annotation_args <- function(
   which = c("column", "row"),
   font.size = 10,
   border = TRUE,
-  reverse = FALSE
+  reverse = FALSE,
+  ranges = NULL,
+  track_size = 20
 ) {
   which <- match.arg(which)
   out <- list()
@@ -2448,6 +2755,10 @@ ccc_build_bar_annotation_args <- function(
       border = border,
       bar_width = 0.8
     )
+    limits <- ranges[[metric]]
+    if (length(limits) == 2L && diff(limits) > 0) {
+      anno_args$ylim <- limits
+    }
     anno_args$axis_param <- list(
       gp = grid::gpar(fontsize = font.size * 0.7)
     )
@@ -2459,9 +2770,9 @@ ccc_build_bar_annotation_args <- function(
       }
     }
     if (identical(which, "column")) {
-      anno_args$height <- grid::unit(2, "cm")
+      anno_args$height <- grid::unit(track_size, "mm")
     } else {
-      anno_args$width <- grid::unit(2, "cm")
+      anno_args$width <- grid::unit(track_size, "mm")
     }
     out[[tools::toTitleCase(metric)]] <- do.call(
       get_namespace_fun("ComplexHeatmap", "anno_barplot"),

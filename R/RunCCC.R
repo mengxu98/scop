@@ -22,6 +22,17 @@
 #' @param thresh Significance threshold used when rebuilding unified CCC tables
 #' and passed to `RunCellChat()` unless overridden in `method_params$CellChat`.
 #'
+#' @details Choose a named method in `methods` and keep method-specific
+#'   inference arguments in `method_params`. For example, select CellChat
+#'   with `methods = "CellChat"` and pass `species` in
+#'   `method_params$CellChat`. Choose sender/receiver, top records, colors,
+#'   and legend position in the plotting function after inference; these do
+#'   not rerun the engine. Save the Seurat object with [saveRDS()] to preserve
+#'   native and unified results. Use [ccc_to_liana()] for ligand–receptor
+#'   records, not for association-only methods such as MDIC3. Those methods
+#'   may have nonempty group-pair tables even when there are no
+#'   ligand–receptor rows.
+#' @seealso [CCCHeatmap()], [CCCNetworkPlot()], [CCCStatPlot()]
 #' @return A `Seurat` object with method-specific results and a unified
 #' `srt@tools[["CCC"]]` bundle.
 #' @export

@@ -35,7 +35,14 @@ SpatialDMPlot(
 
 \item{highlight}{LR interactions to label in the global plot.}
 
-\item{palette, palcolor, theme_use, theme_args}{SCOP plotting controls.}
+\item{palette}{Palette name. The global plot defaults to `"Chinese"`;
+other plot types retain their continuous palettes.}
+
+\item{palcolor}{Custom colors that override the palette. For the global plot,
+supply colors in the order `Selected`, `Not selected`, or name them
+with those labels. A single unnamed color overrides only `Selected`.}
+
+\item{theme_use, theme_args}{SCOP theme controls.}
 
 \item{image.scale}{Image scale factor matching the selected raster.}
 
@@ -50,11 +57,15 @@ Plot stored SpatialDM results
 \examples{
 \dontrun{
 data(visium_human_pancreas_sub)
+spatial <- Seurat::NormalizeData(
+  visium_human_pancreas_sub, assay = "Spatial", verbose = FALSE
+)
 spatial <- RunSpatialDM(
-  visium_human_pancreas_sub,
-  coord.cols = c("col", "row")
+  spatial, assay = "Spatial", image = "slice1",
+  coord.cols = c("x", "y"), coordinate.unit = "pixel", l = 54.70832
 )
 SpatialDMPlot(spatial, plot_type = "global")
 SpatialDMPlot(spatial, plot_type = "weights", spot = colnames(spatial)[1])
+SpatialDMPlot(spatial, plot_type = "local", pair = "MDK_SDC4")
 }
 }

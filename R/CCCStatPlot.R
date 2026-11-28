@@ -14,7 +14,8 @@
 #' combines within-method percentile ranks for visualization, and `"legacy"`
 #' retains the deprecated raw-score aggregation.
 #' @param resource,sample Optional resource and sample/context filters for
-#' unified CCC results.
+#' unified CCC results. Native CellChat plots use a stored result selected
+#' by `condition` and do not support these additional filters.
 #' @param plot_type Plot type. One of:
 #' - `"bar"` — horizontal bar chart of top pairs or interactions according to
 #'   `display_by`.
@@ -278,21 +279,9 @@ CCCStatPlot <- function(
   )
 
   method <- detect_method(srt = srt, method = method)
-  combine_methods <- match.arg(combine_methods)
-  srt <- ccc_prepare_filtered_object(
-    srt = srt,
-    method = method,
-    resource = resource,
-    condition = if (identical(method, "CellChat")) NULL else condition,
-    sample = sample
-  )
-  if (identical(method, "CCC") && identical(combine_methods, "separate")) {
-    return(ccc_plot_methods_separately(match.call(), srt = srt, env = parent.frame()))
-  }
-  srt <- ccc_prepare_combined_object(
-    srt = srt,
-    method = method,
-    combine_methods = combine_methods
+  comparison_palette_cfg <- palette_cfg
+  palette_cfg$cell_palcolor <- ccc_cell_palcolor(
+    srt, method, palette_cfg$cell_palette, palette_cfg$cell_palcolor
   )
   dots <- list(...)
   return.data <- isTRUE(dots[["return.data"]])
@@ -313,6 +302,36 @@ CCCStatPlot <- function(
     c("context_col", "condition_col", "dataset_col"),
     sample_col,
     supplied = "sample_col" %in% names(dots)
+  )
+
+  combine_methods <- match.arg(combine_methods)
+  srt <- ccc_prepare_filtered_object(
+    srt = srt,
+    method = method,
+    resource = resource,
+    condition = if (identical(method, "CellChat")) NULL else condition,
+    sample = sample,
+    native_cellchat = plot_type %in% c(
+      "gene", "ranknet", "role_change", "role_network", "role_network_marsilea", "comparison"
+    ) ||
+      ccc_uses_native_cellchat_table(
+        srt, method, condition, dataset, slot.name, signaling, pairLR.use,
+        sender.use, receiver.use
+      )
+  )
+  if (identical(method, "CCC") && identical(combine_methods, "separate")) {
+    share_colors <- plot_type %in% c(
+      "sankey", "scatter", "role_scatter", "role_network", "role_network_marsilea", "role_change"
+    ) || (plot_type %in% c("box", "violin") && !identical(facet_by, "pair"))
+    return(ccc_plot_methods_separately(
+      match.call(), srt = srt, env = parent.frame(),
+      palette_cfg = if (share_colors) comparison_palette_cfg, condition = condition, filter_context = !is.null(resource) || !is.null(sample)
+    ))
+  }
+  srt <- ccc_prepare_combined_object(
+    srt = srt,
+    method = method,
+    combine_methods = combine_methods
   )
 
   if (identical(plot_type, "role_scatter")) {
@@ -653,7 +672,7 @@ CCCStatPlot <- function(
       interaction.use = interaction.use,
       pairLR.use = pairLR.use,
       facet_by = facet_by,
-      x_text_angle = x_text_angle,
+      x_text_angle = if (missing(x_text_angle)) 45 else x_text_angle,
       cell_palette = palette_cfg$cell_palette,
       cell_palcolor = palette_cfg$cell_palcolor,
       title = title,
@@ -910,6 +929,8 @@ ccc_lr_contribution_panels <- function(
   theme_args,
   font.size
 ) {
+  value_limit <- max(contrib_df$contribution, na.rm = TRUE)
+  percent_label <- scales::label_percent(accuracy = 0.1)
   lapply(
     split(contrib_df, contrib_df$signaling),
     function(df_sig) {
@@ -928,17 +949,20 @@ ccc_lr_contribution_panels <- function(
       )
       p <- ggplot2::ggplot(
         df_sig,
-        ggplot2::aes(x = interaction, y = contribution, fill = interaction)
+        ggplot2::aes(x = contribution, y = interaction, fill = interaction)
       ) +
-        ggplot2::geom_col(width = 0.75, show.legend = FALSE) +
-        ggplot2::coord_flip() +
-        ggplot2::scale_fill_manual(values = cols, drop = FALSE) +
-        ggplot2::scale_y_continuous(
-          labels = scales::label_percent(accuracy = 1),
-          expand = ggplot2::expansion(mult = c(0, 0.05))
+        ggplot2::geom_col(width = 0.65, show.legend = FALSE) +
+        ggplot2::geom_text(
+          ggplot2::aes(label = percent_label(contribution)),
+          hjust = -0.13, size = font.size * 0.9, size.unit = "pt", colour = "grey25"
         ) +
-        ggplot2::labs(x = NULL, y = "Contribution")
-      finalize_cc_plot(
+        ggplot2::scale_fill_manual(values = cols, drop = FALSE) +
+        ggplot2::scale_x_continuous(
+          limits = c(0, value_limit),
+          labels = scales::label_percent(accuracy = 1),
+          expand = ggplot2::expansion(mult = c(0, 0.32))
+        )
+      p <- finalize_cc_plot(
         p,
         title = if (single_pathway) {
           title %||% df_sig$signaling[1]
@@ -946,12 +970,21 @@ ccc_lr_contribution_panels <- function(
           df_sig$signaling[1]
         },
         subtitle = if (single_pathway) subtitle else NULL,
+        xlab = "Contribution share",
         legend.position = legend.position,
         legend.direction = legend.direction,
         theme_use = theme_use,
         theme_args = theme_args,
         font.size = font.size
-      )
+      ) +
+        ggplot2::theme(
+          panel.grid.minor = ggplot2::element_blank(),
+          panel.grid.major.x = ggplot2::element_line(colour = "grey91", linewidth = 0.3),
+          panel.grid.major.y = ggplot2::element_blank(),
+          axis.ticks.y = ggplot2::element_blank()
+        )
+      row_mm <- max(4, font.size * 25.4 / 72 * 1.30)
+      p + ggplot2::theme(aspect.ratio = (nrow(df_sig) + 0.2) * row_mm / 45)
     }
   )
 }
@@ -1085,26 +1118,49 @@ ccc_cellchat_ranknet_plot <- function(
         x = value_1,
         xend = value_2
       ),
-      color = "grey75",
-      linewidth = 0.7
+      color = "grey72",
+      linewidth = 0.55
     ) +
     ggplot2::geom_point(
       data = long_df,
-      ggplot2::aes(x = value, y = pathway, color = dataset),
-      size = 3
+      ggplot2::aes(x = value, y = pathway, fill = dataset, size = dataset),
+      shape = 21, colour = "grey25", stroke = 0.24
     ) +
-    ggplot2::scale_color_manual(values = cols, drop = FALSE) +
-    ggplot2::labs(x = "Information flow", y = NULL, color = NULL)
-  finalize_cc_plot(
+    ggplot2::scale_fill_manual(
+      name = "Condition", values = cols, breaks = cc_cmp$object_names, drop = FALSE,
+      guide = ggplot2::guide_legend(override.aes = list(size = c(3, 2)))
+    ) +
+    ggplot2::scale_size_manual(
+      values = stats::setNames(c(3, 2), cc_cmp$object_names), guide = "none"
+    ) +
+    ggplot2::expand_limits(x = 0) +
+    ggplot2::scale_x_continuous(expand = ggplot2::expansion(mult = c(.03, .08)))
+  p <- finalize_cc_plot(
     p,
     title = title %||% cmp_cc_label(cc_cmp$cmp, cc_cmp$comp_idx),
     subtitle = subtitle,
+    xlab = "Information flow",
     legend.position = legend.position,
     legend.direction = legend.direction,
     theme_use = theme_use,
     theme_args = theme_args,
     font.size = font.size
-  )
+  ) +
+    ggplot2::theme(
+      legend.position = legend.position,
+      legend.direction = legend.direction,
+      legend.location = "panel",
+      legend.justification.right = c(0, 0.5),
+      legend.box.spacing = grid::unit(2, "mm"),
+      panel.grid.minor = ggplot2::element_blank(),
+      panel.grid.major.x = ggplot2::element_line(colour = "grey91", linewidth = 0.3),
+      panel.grid.major.y = ggplot2::element_blank(),
+      axis.ticks.y = ggplot2::element_blank()
+    )
+  axis_text <- ggplot2::calc_element("axis.text.y", ggplot2::theme_get() + p$theme)
+  label_size <- axis_text$size %||% font.size
+  row_mm <- max(4, label_size * 25.4 / 72 * 1.25)
+  p + ggplot2::theme(aspect.ratio = (nrow(wide) + 0.2) * row_mm / 45)
 }
 
 ccc_cellchat_role_components <- function(object, signaling = NULL) {
@@ -1228,8 +1284,18 @@ ccc_cellchat_role_change_plot <- function(
   cell_cols <- palette_colors(
     idents_use,
     palette = palette,
-    palcolor = palcolor
+    palcolor = ccc_align_named_palcolor(palcolor, idents_use)
   )
+  label_df <- role_df
+  if (any(table(role_df$celltype) > 12L)) {
+    label_df <- do.call(rbind, lapply(split(role_df, role_df$celltype), function(df) {
+      if (nrow(df) <= 12L) return(df)
+      rows <- head(order(df$magnitude, decreasing = TRUE), 8L)
+      df[rows, , drop = FALSE]
+    }))
+  }
+  delta <- paste(cc_cmp$object_names[2], "-", cc_cmp$object_names[1])
+  subtitle <- paste(c(subtitle, delta), collapse = "\n")
   p <- ggplot2::ggplot(
     role_df,
     ggplot2::aes(
@@ -1248,33 +1314,28 @@ ccc_cellchat_role_change_plot <- function(
       stroke = 0.25
     ) +
     ggrepel::geom_text_repel(
+      data = label_df,
       ggplot2::aes(label = signaling),
       size = max(2.8, font.size * 0.28),
       min.segment.length = 0,
-      box.padding = 0.3,
+      box.padding = 0.4,
+      segment.colour = "grey50",
+      segment.size = 0.3,
       point.padding = 0.15,
       seed = 11,
+      max.overlaps = Inf,
       show.legend = FALSE
     ) +
-    ggplot2::scale_fill_manual(values = cell_cols, drop = FALSE) +
-    ggplot2::scale_size_continuous(name = "Change", range = c(2.5, 8)) +
-    ggplot2::labs(
-      x = paste0(
-        "Outgoing change (",
-        cc_cmp$object_names[2],
-        " - ",
-        cc_cmp$object_names[1],
-        ")"
-      ),
-      y = paste0(
-        "Incoming change (",
-        cc_cmp$object_names[2],
-        " - ",
-        cc_cmp$object_names[1],
-        ")"
-      ),
-      fill = NULL
-    )
+    ggplot2::scale_fill_manual(
+      values = cell_cols, name = "Cell type", drop = FALSE,
+      guide = ggplot2::guide_legend(order = 1, override.aes = list(size = 3))
+    ) +
+    ggplot2::scale_size_continuous(
+      name = "Change magnitude", range = c(2, 6), breaks = scales::breaks_extended(4),
+      guide = ggplot2::guide_legend(order = 2, override.aes = list(fill = "grey55"))
+    ) +
+    ggplot2::scale_x_continuous(expand = ggplot2::expansion(mult = .12)) +
+    ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = .12))
   if (length(idents_use) > 1L) {
     p <- p + ggplot2::facet_wrap(~celltype)
   }
@@ -1282,13 +1343,25 @@ ccc_cellchat_role_change_plot <- function(
     p,
     title = title %||% cmp_cc_label(cc_cmp$cmp, cc_cmp$comp_idx),
     subtitle = subtitle,
+    xlab = "Outgoing change",
+    ylab = "Incoming change",
     legend.position = legend.position,
     legend.direction = legend.direction,
     theme_use = theme_use,
     theme_args = theme_args,
     aspect.ratio = aspect.ratio,
     font.size = font.size
-  )
+  ) +
+    ggplot2::theme(
+      legend.position = legend.position,
+      legend.direction = legend.direction,
+      legend.location = "panel",
+      legend.justification.right = c(0, 0.5),
+      strip.text = ggplot2::element_text(colour = "black", face = "bold"),
+      strip.background = ggplot2::element_blank(),
+      panel.grid.major = ggplot2::element_line(colour = "grey91", linewidth = 0.25),
+      panel.grid.minor = ggplot2::element_blank()
+    )
 }
 
 ccc_match_seurat_genes <- function(genes, seurat_genes) {
@@ -1732,7 +1805,8 @@ ccc_feature_plot <- function(
     return(gene_df)
   }
 
-  group.by <- get_group_by(srt, method = method)
+  group.by <- dots[["group.by"]] %||% get_group_by(srt, method = method)
+  stack <- dots[["stack"]] %||% TRUE
   if (is.null(group.by) || !group.by %in% colnames(srt@meta.data)) {
     group.by <- ".ccc_gene_group"
     srt[[group.by]] <- as.character(SeuratObject::Idents(srt))
@@ -1747,7 +1821,9 @@ ccc_feature_plot <- function(
       "idents.use",
       "signaling.exclude",
       "aspect.ratio",
-      "gene_plot_type"
+      "gene_plot_type",
+      "group.by",
+      "stack"
     )] <- NULL
     p <- do.call(
       FeatureStatPlot,
@@ -1760,8 +1836,7 @@ ccc_feature_plot <- function(
           plot_type = gene_plot_type,
           palette = palette,
           palcolor = palcolor,
-          stack = isTRUE(local_dots[["stack"]]) ||
-            is.null(local_dots[["stack"]]),
+          stack = isTRUE(stack),
           legend.position = legend.position,
           legend.direction = legend.direction,
           theme_use = theme_use,
@@ -1775,6 +1850,37 @@ ccc_feature_plot <- function(
     )
     p
   })
+  plot_list <- lapply(plot_list, function(p) {
+    table <- attr(p, "grobs", exact = TRUE)$full
+    thisplot::plot_autosize(
+      if (inherits(table, "gtable")) table else p,
+      base_size = NULL, label_autosize = FALSE
+    )
+  })
+  if (length(plot_list) > 1L && isTRUE(combine)) {
+    np <- length(plot_list)
+    ncol <- ncol %||% if (is.null(nrow)) grDevices::n2mfrow(np)[2L] else ceiling(np / nrow)
+    ncol <- min(ncol, np)
+    nrow <- nrow %||% ceiling(np / ncol)
+    sizes <- lapply(plot_list, attr, which = "size", exact = TRUE)
+    cols <- rep(seq_len(ncol), length.out = np)
+    rows <- ceiling(seq_len(np) / ncol)
+    widths <- tapply(vapply(sizes, `[[`, numeric(1), "width"), cols, max)
+    heights <- tapply(vapply(sizes, `[[`, numeric(1), "height"), rows, max)
+    p <- patchwork::wrap_plots(
+      plot_list, ncol = ncol, nrow = nrow,
+      widths = grid::unit(widths, "mm"), heights = grid::unit(heights, "mm")
+    )
+    grDevices::pdf(NULL)
+    on.exit(grDevices::dev.off(), add = TRUE)
+    layout <- patchwork::patchworkGrob(p)
+    attr(p, "size") <- list(
+      width = grid::convertWidth(sum(layout$widths), "mm", valueOnly = TRUE),
+      height = grid::convertHeight(sum(layout$heights), "mm", valueOnly = TRUE),
+      units = "mm"
+    )
+    return(p)
+  }
   plot_cc_list(plot_list, combine = combine, nrow = nrow, ncol = ncol)
 }
 
@@ -1893,22 +1999,37 @@ ccc_stat_bar_plot <- function(
   ) +
     ggplot2::geom_col(width = 0.75) +
     ggplot2::coord_flip() +
-    ggplot2::scale_fill_manual(values = cols, guide = "none") +
-    ggplot2::labs(x = NULL, y = value_label)
-  return(finalize_cc_plot(
+    ggplot2::scale_fill_manual(values = cols, guide = "none")
+  p <- finalize_cc_plot(
     p,
     title = title %||% paste0(
       "Top communication ",
       if (identical(display_by, "aggregation")) "pairs" else "interactions"
     ),
     subtitle = subtitle,
+    ylab = value_label,
     legend.position = legend.position,
     legend.direction = legend.direction,
     theme_use = theme_use,
     theme_args = theme_args,
     font.size = font.size
   ) +
-    ggplot2::theme(panel.grid.major = grid_major_element))
+    ggplot2::theme(
+      panel.grid.major.x = grid_major_element,
+      panel.grid.major.y = ggplot2::element_blank(),
+      panel.grid.minor = ggplot2::element_blank()
+    )
+  if (identical(theme_use, "theme_scop") && !length(theme_args)) {
+    p <- p + ggplot2::theme(
+      axis.ticks.y = ggplot2::element_blank(),
+      plot.margin = ggplot2::margin(4, 5, 4, 4)
+    )
+    row_mm <- max(4, font.size * 25.4 / 72 * 1.3)
+    if ((nrow(plot_df) + 1) * row_mm > 35) {
+      p <- p + ggplot2::theme(aspect.ratio = (nrow(plot_df) + 1) * row_mm / 45)
+    }
+  }
+  p
 }
 
 ccc_pathway_summary_plot <- function(
@@ -1997,9 +2118,16 @@ ccc_pathway_summary_plot <- function(
   } else {
     ggplot2::element_blank()
   }
+  compact <- identical(theme_use, "theme_scop") && !length(theme_args)
+  metric_label <- switch(value,
+    count = "Significant interactions",
+    mean = "Mean pathway communication strength",
+    max = "Maximum pathway communication strength",
+    "Total pathway communication strength"
+  )
   p <- ggplot2::ggplot(
     summary,
-    ggplot2::aes(x = pathway, y = total_strength, fill = pathway)
+    ggplot2::aes(x = total_strength, y = pathway, fill = pathway)
   ) +
     ggplot2::geom_col(width = 0.75) +
     ggplot2::geom_text(
@@ -2007,22 +2135,43 @@ ccc_pathway_summary_plot <- function(
       hjust = -0.08,
       size = max(3, font.size * 0.28)
     ) +
-    ggplot2::coord_flip(clip = "off") +
+    ggplot2::coord_cartesian(clip = "off") +
     ggplot2::scale_fill_manual(values = bar_cols, guide = "none") +
-    ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0, 0.18))) +
-    ggplot2::labs(x = NULL, y = "Total pathway communication strength")
+    ggplot2::scale_x_continuous(expand = ggplot2::expansion(mult = c(0, 0.50)))
 
-  finalize_cc_plot(
+  p <- finalize_cc_plot(
     p,
     title = title %||% "Significant pathway communication summary",
     subtitle = subtitle,
+    xlab = metric_label,
     legend.position = legend.position,
     legend.direction = legend.direction,
     theme_use = theme_use,
     theme_args = theme_args,
     font.size = font.size
   ) +
-    ggplot2::theme(panel.grid.major = grid_major_element)
+    ggplot2::theme(
+      panel.grid.major.x = grid_major_element,
+      panel.grid.major.y = ggplot2::element_blank(),
+      panel.grid.minor = ggplot2::element_blank()
+    )
+  if (compact) {
+    p <- p + ggplot2::theme(
+      axis.ticks.y = ggplot2::element_blank(),
+      panel.border = ggplot2::element_blank(),
+      axis.line.x = ggplot2::element_line(colour = "grey65", linewidth = 0.3),
+      plot.margin = ggplot2::margin(4, 5, 4, 4)
+    )
+  }
+  if (nrow(summary) > 9L) {
+    pitch <- font.size * 25.4 / 72 * 1.6
+    sized <- thisplot::plot_autosize(
+      p, panel_height = (nrow(summary) + 1L) * pitch,
+      base_size = NULL, label_autosize = FALSE
+    )
+    attr(p, "size") <- attr(sized, "size")
+  }
+  p
 }
 
 ccc_stat_comparison_plot <- function(
@@ -2125,11 +2274,12 @@ ccc_stat_comparison_plot <- function(
         size = 3
       ) +
       ggplot2::scale_fill_manual(values = cols, drop = FALSE) +
-      ggplot2::labs(x = NULL, y = ylab, fill = NULL)
+      ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0.04, 0.16)))
     return(finalize_cc_plot(
       p,
       title = title %||% cmp_cc_label(cc_cmp$cmp, cc_cmp$comp_idx),
       subtitle = subtitle,
+      ylab = ylab,
       legend.position = legend.position,
       legend.direction = legend.direction,
       theme_use = theme_use,
@@ -2180,12 +2330,13 @@ ccc_stat_comparison_plot <- function(
     ) +
     ggplot2::facet_wrap(~celltype, scales = "free_y") +
     ggplot2::scale_fill_manual(values = cols, drop = FALSE) +
-    ggplot2::labs(x = NULL, y = ylab, fill = NULL)
+    ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0.04, 0.16)))
   finalize_cc_plot(
     p,
     title = title %||%
       paste0(cmp_cc_label(cc_cmp$cmp, cc_cmp$comp_idx), ": ", pattern),
     subtitle = subtitle,
+    ylab = ylab,
     legend.position = legend.position,
     legend.direction = legend.direction,
     theme_use = theme_use,
@@ -2271,11 +2422,12 @@ ccc_generic_stat_comparison_plot <- function(
         size = 3
       ) +
       ggplot2::scale_fill_manual(values = cols, drop = FALSE) +
-      ggplot2::labs(x = NULL, y = cmp_data$ylab, fill = NULL)
+      ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0.04, 0.16)))
     return(finalize_cc_plot(
       p,
       title = title %||% paste(context_names, collapse = " vs "),
       subtitle = subtitle,
+      ylab = cmp_data$ylab,
       legend.position = legend.position,
       legend.direction = legend.direction,
       theme_use = theme_use,
@@ -2297,11 +2449,12 @@ ccc_generic_stat_comparison_plot <- function(
     ) +
     ggplot2::facet_wrap(~celltype, scales = "free_y") +
     ggplot2::scale_fill_manual(values = cols, drop = FALSE) +
-    ggplot2::labs(x = NULL, y = cmp_data$ylab, fill = NULL)
+    ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0.04, 0.16)))
   finalize_cc_plot(
     p,
     title = title %||% paste0(paste(context_names, collapse = " vs "), ": ", pattern),
     subtitle = subtitle,
+    ylab = cmp_data$ylab,
     legend.position = legend.position,
     legend.direction = legend.direction,
     theme_use = theme_use,
@@ -2678,8 +2831,8 @@ ccc_scatter_plot <- function(
   do_label <- if (is.null(dots[["do.label"]])) TRUE else isTRUE(dots[["do.label"]])
   show_legend <- if (is.null(dots[["show.legend"]])) TRUE else isTRUE(dots[["show.legend"]])
   show_axes <- if (is.null(dots[["show.axes"]])) TRUE else isTRUE(dots[["show.axes"]])
-  xlabel <- dots[["xlabel"]] %||% "Outgoing interaction strength"
-  ylabel <- dots[["ylabel"]] %||% "Incoming interaction strength"
+  xlabel <- dots[["xlabel"]] %||% "Outgoing strength"
+  ylabel <- dots[["ylabel"]] %||% "Incoming strength"
   weight_minmax <- dots[["weight.MinMax"]] %||% NULL
 
   plot_df <- ccc_scatter_df(pair_df)
@@ -2694,7 +2847,7 @@ ccc_scatter_plot <- function(
   cell_cols <- palette_colors(
     cell_levels,
     palette = cell_palette,
-    palcolor = cell_palcolor,
+    palcolor = ccc_align_named_palcolor(cell_palcolor, cell_levels),
     NA_keep = TRUE
   )
   plot_df$cell <- factor(plot_df$cell, levels = cell_levels)
@@ -2711,14 +2864,20 @@ ccc_scatter_plot <- function(
     ggplot2::geom_point(
       shape = 21,
       color = "grey20",
-      stroke = 0.8,
+      stroke = 0.35,
       alpha = dot_alpha
     ) +
-    ggplot2::scale_fill_manual(values = cell_cols[cell_levels], drop = FALSE) +
+    ggplot2::scale_fill_manual(
+      values = cell_cols[cell_levels], drop = FALSE,
+      guide = ggplot2::guide_legend(order = 1, override.aes = list(size = 3))
+    ) +
     ggplot2::scale_size_continuous(
       range = dot_size,
-      limits = weight_minmax
+      limits = weight_minmax,
+      guide = ggplot2::guide_legend(order = 2, override.aes = list(fill = "grey60"))
     ) +
+    ggplot2::scale_x_continuous(expand = ggplot2::expansion(mult = 0.14)) +
+    ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = 0.14)) +
     ggplot2::labs(
       x = xlabel,
       y = ylabel,
@@ -2734,6 +2893,7 @@ ccc_scatter_plot <- function(
       segment.size = 0.2,
       segment.alpha = 0.5,
       seed = 1,
+      max.overlaps = if (length(cell_levels) <= 12L) Inf else getOption("ggrepel.max.overlaps", 10),
       size = label_size,
       color = "grey15"
     )
@@ -2749,6 +2909,10 @@ ccc_scatter_plot <- function(
       plot.subtitle = ggplot2::element_text(size = font.size),
       legend.position = legend.position,
       legend.direction = legend.direction,
+      legend.location = "panel",
+      legend.justification.right = c(0, 0.5),
+      panel.grid.major = ggplot2::element_line(colour = "grey91", linewidth = 0.25),
+      panel.grid.minor = ggplot2::element_blank(),
       axis.line.x = ggplot2::element_line(linewidth = 0.25),
       axis.line.y = ggplot2::element_line(linewidth = 0.25)
     )
@@ -2873,7 +3037,14 @@ ccc_sankey_plot <- function(
     ylab_use <- "Interaction count"
   }
 
-  StatPlot(
+  if (!is.null(names(cell_palcolor))) {
+    sankey_levels <- unique(unlist(lapply(meta_data[stat_by], ccc_group_levels), use.names = FALSE))
+    colors <- thisplot::palette_colors(sankey_levels, palette = cell_palette)
+    matched <- intersect(sankey_levels, names(cell_palcolor))
+    colors[matched] <- cell_palcolor[matched]
+    cell_palcolor <- unname(colors)
+  }
+  p <- StatPlot(
     meta.data = meta_data,
     stat.by = stat_by,
     plot_type = "sankey",
@@ -2888,6 +3059,28 @@ ccc_sankey_plot <- function(
     theme_use = plot_theme_use,
     theme_args = theme_args,
     combine = TRUE
+  )
+  gt <- attr(p, "grobs", exact = TRUE)$full
+  if (!inherits(gt, "gtable")) return(p)
+  panel <- match("panel", gt$layout$name)
+  guides <- which(vapply(gt$grobs, inherits, logical(1), "gtable"))
+  guides <- setdiff(guides, panel)
+  if (is.na(panel)) return(p)
+  grDevices::pdf(NULL)
+  on.exit(grDevices::dev.off(), add = TRUE)
+  horizontal <- legend.position %in% c("top", "bottom")
+  guide_span <- vapply(gt$grobs[guides], function(guide) {
+    if (horizontal) {
+      grid::convertWidth(gtable::gtable_width(guide), "mm", valueOnly = TRUE)
+    } else {
+      grid::convertHeight(gtable::gtable_height(guide), "mm", valueOnly = TRUE)
+    }
+  }, numeric(1))
+  thisplot::panel_fix(
+    gt, panel_index = panel,
+    width = max(45, if (horizontal) guide_span),
+    height = max(35, if (!horizontal) guide_span),
+    units = "mm", margin = 2
   )
 }
 
@@ -2937,64 +3130,68 @@ ccc_distribution_plot <- function(
   } else {
     "pair"
   }
-  fill_levels <- unique(plot_df[[group_var]])
+  fill_levels <- unique(as.character(plot_df[[group_var]]))
   fill_cols <- palette_colors(
     fill_levels,
     palette = cell_palette,
-    palcolor = cell_palcolor
+    palcolor = ccc_align_named_palcolor(cell_palcolor, fill_levels)
   )
 
+  group_label <- switch(group_var, sender = "Sender", receiver = "Receiver", pair = "Sender–receiver pair")
+  p <- ggplot2::ggplot(
+    plot_df,
+    ggplot2::aes(x = .data[[group_var]], y = score, fill = .data[[group_var]])
+  )
   if (identical(plot_type, "violin")) {
-    p <- ggplot2::ggplot(
-      plot_df,
-      ggplot2::aes(
-        x = .data[[group_var]],
-        y = score,
-        fill = .data[[group_var]]
+    p <- p +
+      ggplot2::geom_violin(
+        scale = "width", trim = FALSE, alpha = 0.72, linewidth = 0.32,
+        colour = "grey30", key_glyph = ggplot2::draw_key_rect
+      ) +
+      ggplot2::geom_boxplot(
+        width = 0.15, outlier.size = 0.2, fill = "white", alpha = 0.8,
+        linewidth = 0.32, colour = "grey25", show.legend = FALSE
       )
-    ) +
-      ggplot2::geom_violin(scale = "width", trim = FALSE, alpha = 0.8) +
-      ggplot2::geom_boxplot(width = 0.15, outlier.size = 0.2, alpha = 0.5) +
-      ggplot2::labs(x = group_var, y = "score", fill = group_var)
-    if (!identical(facet_by, "pair")) {
-      p <- p +
-        ggplot2::facet_wrap(
-          stats::as.formula(paste("~", facet_by)),
-          scales = "free_x"
-        )
-    }
   } else {
-    p <- ggplot2::ggplot(
-      plot_df,
-      ggplot2::aes(
-        x = .data[[group_var]],
-        y = score,
-        fill = .data[[group_var]]
+    p <- p +
+      ggplot2::geom_boxplot(
+        alpha = 0.8, outlier.size = 0.3, linewidth = 0.38,
+        colour = "grey30", key_glyph = ggplot2::draw_key_rect
       )
-    ) +
-      ggplot2::geom_boxplot(alpha = 0.85, outlier.size = 0.3) +
-      ggplot2::labs(x = group_var, y = "score", fill = group_var)
-    if (!identical(facet_by, "pair")) {
-      p <- p +
-        ggplot2::facet_wrap(
-          stats::as.formula(paste("~", facet_by)),
-          scales = "free_x"
-        )
-    }
   }
-  p <- p +
-    ggplot2::scale_fill_manual(values = fill_cols[fill_levels], drop = FALSE) +
-    ggplot2::theme(
-      axis.text.x = ggplot2::element_text(angle = x_text_angle, hjust = 1)
-    )
-  finalize_cc_plot(
+  if (!identical(facet_by, "pair")) {
+    p <- p +
+      ggplot2::facet_wrap(
+        stats::as.formula(paste("~", facet_by)),
+        scales = "free_x"
+      )
+  }
+  p <- p + ggplot2::scale_fill_manual(name = group_label, values = fill_cols[fill_levels], drop = FALSE)
+  p <- finalize_cc_plot(
     p,
     title = title,
     subtitle = subtitle,
+    ylab = "Communication score",
     legend.position = legend.position,
     legend.direction = legend.direction,
     theme_use = theme_use,
     theme_args = theme_args,
     font.size = font.size
+  )
+  p + ggplot2::theme(
+    axis.text.x = ggplot2::element_text(
+      angle = x_text_angle,
+      hjust = if (isTRUE(x_text_angle == 0)) 0.5 else 1,
+      vjust = if (isTRUE(x_text_angle == 90)) 0.5 else 1
+    ),
+    axis.ticks.x = ggplot2::element_blank(),
+    panel.grid.major.x = ggplot2::element_blank(),
+    panel.grid.major.y = ggplot2::element_line(colour = "grey90", linewidth = 0.3),
+    panel.grid.minor = ggplot2::element_blank(),
+    strip.text = ggplot2::element_text(face = "bold", colour = "black"),
+    strip.background = ggplot2::element_blank(),
+    legend.location = "panel",
+    legend.justification.right = c(0, 0.5),
+    legend.key.spacing.y = grid::unit(1, "mm")
   )
 }

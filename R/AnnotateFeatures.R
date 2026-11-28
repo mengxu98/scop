@@ -155,57 +155,7 @@ AnnotateFeatures <- function(
   }
 
   if (!is.null(gtf)) {
-    gtf_all <- suppressWarnings(
-      utils::read.table(gtf, sep = "\t", header = FALSE)
-    )
-    gtf_all <- gtf_all[, 1:9]
-    columns <- c(
-      "seqname",
-      "feature",
-      "start",
-      "end",
-      "strand",
-      "gene_id",
-      "gene_name",
-      "gene_type"
-    )
-    colnames(gtf_all) <- columns
-    for (type in c("gene", "transcript", "exon", "CDS")) {
-      if (type %in% gtf_all[["feature"]]) {
-        gtf_all <- gtf_all[gtf_all[["feature"]] == type, ]
-        break
-      }
-    }
-
-    gtf_attribute <- gtf_all[["attribute"]]
-    gtf_attribute <- gsub(
-      pattern = "\"", replacement = "", x = gtf_attribute
-    )
-    gtf_attribute <- strsplit(gtf_attribute, split = "; *")
-    gene_attr <- lapply(
-      gtf_attribute, function(x) {
-        detail <- strsplit(x, " ")
-        out <- lapply(detail, function(x) x[2:length(x)])
-        names(out) <- vapply(detail, function(x) x[1], character(1))
-        out[intersect(columns, names(out))]
-      }
-    )
-
-    gene_attr_df <- do.call(rbind, gene_attr)
-    gtf_columns <- cbind(
-      gtf_all[, intersect(colnames(gtf_all), columns), with = FALSE],
-      gene_attr_df
-    )
-    colnames(gtf_columns) <- make.unique(colnames(gtf_columns))
-    gtf_columns_collapse <- stats::aggregate(
-      gtf_columns,
-      by = list(rowid = gtf_columns[[merge_gtf_by]]),
-      FUN = function(x) {
-        paste0(unique(x), collapse = ";")
-      }
-    )
-    rownames(gtf_columns_collapse) <- gtf_columns_collapse[["rowid"]]
-    gtf_columns_collapse[["rowid"]] <- NULL
+    gtf_columns_collapse <- gtf_feature_annotations(gtf, columns, merge_gtf_by)
     for (assay in assays) {
       meta_features <- GetFeaturesData(srt, assay = assay)
       if (
@@ -219,16 +169,15 @@ AnnotateFeatures <- function(
         meta_features <- meta_features[, setdiff(
           colnames(meta_features),
           colnames(gtf_columns_collapse)
-        )]
+        ), drop = FALSE]
       }
-      meta_features <- cbind(
-        meta_features,
-        gtf_columns_collapse[
-          rownames(meta_features),
-          setdiff(colnames(gtf_columns_collapse), colnames(meta_features)),
-          drop = FALSE
-        ]
-      )
+      annotations <- gtf_columns_collapse[
+        match(rownames(meta_features), rownames(gtf_columns_collapse)),
+        setdiff(colnames(gtf_columns_collapse), colnames(meta_features)),
+        drop = FALSE
+      ]
+      rownames(annotations) <- rownames(meta_features)
+      meta_features <- cbind(meta_features, annotations)
       srt <- AddFeaturesData(
         srt,
         features = meta_features,
@@ -237,4 +186,82 @@ AnnotateFeatures <- function(
     }
   }
   return(srt)
+}
+
+gtf_feature_annotations <- function(gtf, columns, merge_gtf_by) {
+  if (!is.character(columns) || !length(columns) || anyNA(columns) || any(!nzchar(columns))) {
+    log_message("{.arg columns} must contain GTF column or attribute names.", message_type = "error")
+  }
+  if (!is.character(merge_gtf_by) || length(merge_gtf_by) != 1L ||
+    is.na(merge_gtf_by) || !nzchar(merge_gtf_by)) {
+    log_message("{.arg merge_gtf_by} must name one GTF column or attribute.", message_type = "error")
+  }
+  columns <- unique(columns)
+  records <- read_gtf_feature_records(gtf)
+  attrs <- setdiff(c(columns, merge_gtf_by), names(records))
+  if (length(attrs)) {
+    pattern <- r"{(?:^|;)[[:space:]]*([^;[:space:]]+)[[:space:]]+("(?:[^"\\]|\\.)*"|[^";]*?)[[:space:]]*(?=;|$)}"
+    attributes <- regmatches(records$attribute, gregexec(pattern, records$attribute, perl = TRUE))
+    for (j in seq_along(attrs)) {
+      records[[attrs[j]]] <- vapply(attributes, function(fields) {
+        if (!length(fields)) {
+          return(NA_character_)
+        }
+        value <- fields[3L, match(attrs[j], fields[2L, ])]
+        sub('^"(.*)"$', '\\1', value)
+      }, character(1))
+    }
+  }
+  keys <- records[[merge_gtf_by]]
+  found <- !is.na(keys) & nzchar(keys) & keys != "."
+  if (!any(found)) {
+    log_message(
+      "No GTF records contain values for {.arg merge_gtf_by} ({.val {merge_gtf_by}}).",
+      message_type = "error"
+    )
+  }
+  out <- stats::aggregate(
+    records[found, columns, drop = FALSE],
+    by = list(rowid = keys[found]),
+    FUN = function(x) {
+      values <- unique(x[!is.na(x)])
+      if (length(values)) paste(values, collapse = ";") else NA_character_
+    }
+  )
+  rownames(out) <- out[[1L]]
+  out[, -1L, drop = FALSE]
+}
+
+read_gtf_feature_records <- function(gtf) {
+  fields <- c("seqname", "source", "feature", "start", "end", "score", "strand", "frame", "attribute")
+  precedence <- c("gene", "transcript", "exon", "CDS")
+  retained <- list()
+  best <- length(precedence) + 1L
+  con <- file(gtf, open = "rt")
+  on.exit(close(con))
+  repeat {
+    lines <- readLines(con, n = 4096L, warn = FALSE)
+    if (!length(lines)) break
+    lines <- lines[!grepl("^[[:space:]]*(#|$)", lines)]
+    if (!length(lines)) next
+    parts <- strsplit(lines, "\t", fixed = TRUE)
+    if (any(lengths(parts) != length(fields))) {
+      log_message("GTF records must contain exactly nine tab-separated fields.", message_type = "error")
+    }
+    block <- do.call(rbind, parts)
+    rank <- match(block[, 3L], precedence, nomatch = length(precedence) + 1L)
+    if (min(rank) < best) {
+      retained <- list()
+      best <- min(rank)
+    }
+    if (any(rank == best)) {
+      retained[[length(retained) + 1L]] <- block[rank == best, , drop = FALSE]
+    }
+  }
+  if (!length(retained)) {
+    log_message("No annotation records were found in the GTF file.", message_type = "error")
+  }
+  result <- as.data.frame(do.call(rbind, retained), stringsAsFactors = FALSE)
+  names(result) <- fields
+  result
 }

@@ -37,9 +37,7 @@ test_that("GetSimilarFeatures preserves feature names", {
 
   expect_type(similar, "character")
   expect_length(similar, 2)
-  expect_false(anyNA(similar))
-  expect_false("Query" %in% similar)
-  expect_true(all(similar %in% rownames(srt)))
+  expect_true(all(similar %in% setdiff(rownames(srt), "Query")))
 
   similar_multiple <- GetSimilarFeatures(
     srt,
@@ -52,7 +50,5 @@ test_that("GetSimilarFeatures preserves feature names", {
 
   expect_type(similar_multiple, "character")
   expect_length(similar_multiple, 1)
-  expect_false(anyNA(similar_multiple))
-  expect_false(similar_multiple %in% c("Query", "Different"))
-  expect_true(similar_multiple %in% rownames(srt))
+  expect_true(all(similar_multiple %in% setdiff(rownames(srt), c("Query", "Different"))))
 })

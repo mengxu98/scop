@@ -131,7 +131,7 @@ test_that("constant dot domains and zero-height trees draw without side effects"
   p <- CellStatePlot(
     f$object, "cluster", "donor", "M4",
     program.by = "donor",
-    gsea = f$gsea, tree = tree, family = "sans", return_data = TRUE
+    gsea = f$gsea, tree = tree, return_data = TRUE
   )
   expect_identical(grDevices::dev.list(), devices)
   expect_identical(.Random.seed, seed)
@@ -258,7 +258,7 @@ test_that("marker size legends describe the displayed high fractions", {
     gsea = f$gsea, tree = tree, return_data = TRUE
   )
   file <- withr::local_tempfile(fileext = ".pdf")
-  grDevices::pdf(file, family = "sans")
+  grDevices::pdf(file)
   on.exit(grDevices::dev.off(), add = TRUE)
   children <- as.list(cellstate_render(cellstate_test_state(p$plot))$children)
   legend <- Filter(function(g) {
@@ -277,7 +277,7 @@ test_that("single-row panels reserve space for their vertical titles", {
   p <- CellStatePlot(
     f$object, "cluster", "donor", "M1",
     program.by = "donor",
-    gsea = f$gsea, pathways = "H_ONE", family = "sans", return_data = TRUE
+    gsea = f$gsea, pathways = "H_ONE", return_data = TRUE
   )
   file <- withr::local_tempfile(fileext = ".pdf")
   grDevices::pdf(file, width = p$width_mm / 25.4, height = p$height_mm / 25.4)

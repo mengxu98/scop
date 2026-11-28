@@ -40,8 +40,8 @@ raw-coordinate direction vectors without rerunning Python.
 data(visium_human_pancreas_sub)
 spatial <- RunCOMMOT(
   visium_human_pancreas_sub,
-  group.by = "CellType",
-  coord.cols = c("col", "row"),
+  group.by = "coda_label", assay = "Spatial", image = "slice1",
+  coord.cols = c("x", "y"), distance.threshold = 136.7708,
   cluster = TRUE,
   direction = TRUE,
   backend = "r"

@@ -412,14 +412,14 @@ RunMetabolism <- function(
         gene_sets = gene_sets,
         strategy = "topk",
         tie_method = "first",
-        cores = scop_n_threads(cores)
+        cores = normalize_thread_count(cores)
       )
     } else {
       scores_mat <- run_aucell_official_scores(
         expr_counts = expr_counts,
         gene_sets = gene_sets,
         tie_method = "first",
-        cores = scop_n_threads(cores)
+        cores = normalize_thread_count(cores)
       )
     }
   } else if (method %in% c("GSVA", "ssGSEA")) {
@@ -431,7 +431,7 @@ RunMetabolism <- function(
           min_gs_size = minGSSize,
           max_gs_size = maxGSSize,
           chunk_size = cpp_chunk_size,
-          cores = scop_n_threads(cores)
+          cores = normalize_thread_count(cores)
         )
       } else {
         scores_mat <- run_ssgsea_scores(

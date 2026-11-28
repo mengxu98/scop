@@ -26,7 +26,6 @@
 #' @param label Whether to draw cluster IDs inside nodes.
 #' @param label.size,label.fg Size and color of cluster-ID labels.
 #' `label.fg = "auto"` chooses black or white for each node from its fill.
-#' @param family Font family used for node labels, axes, titles, and legends.
 #' @param direction Tree direction: `"left-to-right"`, `"right-to-left"`,
 #' `"top-to-bottom"`, or `"bottom-to-top"`.
 #' @param title Plot title. `NULL` (the default) hides the redundant overall
@@ -94,7 +93,6 @@ ClusterTreePlot <- function(
   ncol = NULL,
   return_data = FALSE,
   verbose = TRUE,
-  family = "Arial",
   direction = c("left-to-right", "right-to-left", "top-to-bottom", "bottom-to-top"),
   srt = NULL
 ) {
@@ -148,7 +146,6 @@ ClusterTreePlot <- function(
         label = label,
         label.size = label.size,
         label.fg = label.fg,
-        family = family,
         title = title,
         subtitle = subtitle,
         xlab = xlab,
@@ -184,7 +181,6 @@ ClusterTreePlot <- function(
         label = label,
         label.size = label.size,
         label.fg = label.fg,
-        family = family,
         title = title,
         subtitle = subtitle,
         xlab = xlab,
@@ -206,7 +202,6 @@ ClusterTreePlot <- function(
     combine = combine,
     ncol = ncol,
     legend.position = legend.position,
-    family = family,
     direction = direction
   )
   if (isTRUE(return_data)) {
@@ -690,7 +685,6 @@ clustertree_single_plot <- function(
   label = TRUE,
   label.size = 2.8,
   label.fg = "auto",
-  family = "Arial",
   title = NULL,
   subtitle = NULL,
   xlab = "Resolution",
@@ -905,7 +899,6 @@ clustertree_single_plot <- function(
           ggplot2::aes(x = .data$x, y = .data$y, label = .data$cluster),
           size = label.size,
           color = label_color,
-          family = family,
           show.legend = FALSE
         )
     }
@@ -914,7 +907,6 @@ clustertree_single_plot <- function(
     apply_plot_theme(theme_use, theme_args) +
     clustertree_legend_theme(
       legend.position,
-      family = family,
       direction = direction
     )
 }
@@ -1019,7 +1011,6 @@ clustertree_colorbar_guide <- function(legend.position, order = 1) {
 
 clustertree_legend_theme <- function(
   legend.position,
-  family = "Arial",
   direction = "left-to-right"
 ) {
   horizontal <- clustertree_is_horizontal_legend(legend.position)
@@ -1036,23 +1027,20 @@ clustertree_legend_theme <- function(
     "left"
   }
   ggplot2::theme(
-    text = ggplot2::element_text(family = family, color = "black"),
+    text = ggplot2::element_text(color = "black"),
     plot.title = ggplot2::element_text(
-      family = family,
       face = "bold",
       size = 13,
       color = "black",
       margin = ggplot2::margin(b = 4)
     ),
     plot.subtitle = ggplot2::element_text(
-      family = family,
       face = "bold",
       size = 11.5,
       color = "black",
       margin = ggplot2::margin(b = 7)
     ),
     axis.title = ggplot2::element_text(
-      family = family,
       face = "plain",
       size = 11,
       color = "black"
@@ -1061,7 +1049,6 @@ clustertree_legend_theme <- function(
       ggplot2::element_blank()
     } else {
       ggplot2::element_text(
-        family = family,
         size = 10,
         color = "black",
         margin = ggplot2::margin(t = 4)
@@ -1097,13 +1084,11 @@ clustertree_legend_theme <- function(
       "left"
     },
     legend.title = ggplot2::element_text(
-      family = family,
       face = "bold",
       size = 9.5,
       color = "black"
     ),
     legend.text = ggplot2::element_text(
-      family = family,
       size = 8.5,
       color = "black"
     ),
@@ -1159,7 +1144,6 @@ clustertree_legend_theme <- function(
     },
     axis.text.y = if (vertical_tree) {
       ggplot2::element_text(
-        family = family,
         size = 10,
         color = "black",
         margin = ggplot2::margin(r = 4)
@@ -1181,7 +1165,6 @@ clustertree_combine_plots <- function(
   combine = TRUE,
   ncol = NULL,
   legend.position = "inside",
-  family = "Arial",
   direction = "left-to-right"
 ) {
   if (length(plots) == 1L) {
@@ -1199,7 +1182,6 @@ clustertree_combine_plots <- function(
   patchwork::wrap_plots(plotlist = plots, ncol = ncol, guides = guides_mode) &
     clustertree_legend_theme(
       legend.position,
-      family = family,
       direction = direction
     )
 }

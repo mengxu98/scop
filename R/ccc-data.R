@@ -402,6 +402,17 @@ ccc_require_coordinate_contracts <- function(srt, methods) {
   invisible(methods)
 }
 
+ccc_uses_native_cellchat_table <- function(
+  srt, method, condition, dataset, slot.name, signaling, pairLR.use,
+  sources.use, targets.use
+) {
+  identical(method, "CellChat") &&
+    (!ccc_has_unified_method(srt, method) || !is.null(condition) ||
+      !isTRUE(dataset == 1) || !identical(slot.name, "net") ||
+      !is.null(signaling) || !is.null(pairLR.use) ||
+      !is.null(sources.use) || !is.null(targets.use))
+}
+
 ccc_long_table_for_method <- function(
   srt,
   method,
@@ -416,16 +427,10 @@ ccc_long_table_for_method <- function(
 ) {
   method <- detect_method(srt = srt, method = method)
   ccc_require_coordinate_contracts(srt, method)
-  use_cellchat_direct <- identical(method, "CellChat") &&
-    (
-      !is.null(condition) ||
-        !isTRUE(dataset == 1) ||
-        !identical(slot.name, "net") ||
-        !is.null(signaling) ||
-        !is.null(pairLR.use) ||
-        !is.null(sources.use) ||
-        !is.null(targets.use)
-    )
+  use_cellchat_direct <- ccc_uses_native_cellchat_table(
+    srt, method, condition, dataset, slot.name, signaling, pairLR.use,
+    sources.use, targets.use
+  )
   if (
     !isTRUE(use_cellchat_direct) &&
       (identical(method, "CCC") || ccc_has_unified_method(srt, method = method))
@@ -486,6 +491,7 @@ ccc_build_cellchat_long_table <- function(srt, thresh = 0.05) {
     if (is.null(out) || nrow(out) == 0L) {
       return(data.frame())
     }
+    out$condition <- condition
     out
   })
   pieces <- Filter(function(x) is.data.frame(x) && nrow(x) > 0L, pieces)

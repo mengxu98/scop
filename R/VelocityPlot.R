@@ -244,51 +244,14 @@ VelocityPlot <- function(
     )
     df_field[["length_perc"]] <- df_field[["length"]] / global_size
 
-    grouped <- plot_type == "raw" && !is.null(group.by)
-    if (grouped) {
-      df_field[["group.by"]] <- srt@meta.data[
-        rownames(df_field),
-        group.by,
-        drop = TRUE
-      ]
-    }
-    segment_args <- list(
-      data = df_field,
-      mapping = if (grouped) {
-        aes(x = x, y = y, xend = x + .data$u, yend = y + .data$v, color = group.by)
-      } else {
-        aes(x = x, y = y, xend = x + .data$u, yend = y + .data$v)
-      },
-      arrow = grid::arrow(
-        length = grid::unit(1.5, "mm"),
-        type = "closed",
-        angle = arrow_angle
-      ),
-      linewidth = if (plot_type == "raw") 0.25 else 0.3,
-      alpha = if (plot_type == "raw") 0.75 else 0.8,
-      lineend = "round",
-      linejoin = "mitre",
-      inherit.aes = FALSE
-    )
-    if (!grouped) {
-      segment_args["color"] <- list(arrow_color)
-    }
-    velocity_layer <- list(do.call(geom_segment, segment_args))
-    if (grouped) {
-      velocity_layer[[2L]] <- scale_color_manual(
-        name = group.by,
-        values = palette_colors(
-          df_field[["group.by"]],
-          palette = group_palette,
-          palcolor = group_palcolor
-        ),
-        guide = guide_legend(
-          title.hjust = 0,
-          order = 1,
-          override.aes = list(linewidth = 2, alpha = 1)
-        )
+    velocity_layer <- projection_segment_layers(
+      df_field, srt@meta.data, plot_type, group.by,
+      arrow_angle, arrow_color, group_palette, group_palcolor,
+      segment_style = list(
+        linewidth = if (plot_type == "raw") 0.25 else 0.3,
+        alpha = if (plot_type == "raw") 0.75 else 0.8
       )
-    }
+    )
   }
   if (plot_type == "stream") {
     res <- compute_velocity_on_grid(
@@ -347,4 +310,50 @@ VelocityPlot <- function(
     return(plot_layers)
   }
   ggplot() + plot_layers
+}
+
+projection_segment_layers <- function(df_field, metadata, plot_type, group.by,
+                                      arrow_angle, arrow_color, group_palette,
+                                      group_palcolor, segment_style = list()) {
+  grouped <- plot_type == "raw" && !is.null(group.by)
+  if (grouped) {
+    df_field[["group.by"]] <- metadata[rownames(df_field), group.by, drop = TRUE]
+  }
+  segment_args <- c(
+    list(
+      data = df_field,
+      mapping = if (grouped) {
+        aes(x = x, y = y, xend = x + .data$u, yend = y + .data$v, color = group.by)
+      } else {
+        aes(x = x, y = y, xend = x + .data$u, yend = y + .data$v)
+      },
+      arrow = grid::arrow(
+        length = grid::unit(1.5, "mm"),
+        type = "closed",
+        angle = arrow_angle
+      )
+    ),
+    segment_style,
+    list(lineend = "round", linejoin = "mitre", inherit.aes = FALSE)
+  )
+  if (!grouped) {
+    segment_args["color"] <- list(arrow_color)
+  }
+  layers <- list(do.call(geom_segment, segment_args))
+  if (grouped) {
+    layers[[2L]] <- scale_color_manual(
+      name = group.by,
+      values = palette_colors(
+        df_field[["group.by"]],
+        palette = group_palette,
+        palcolor = group_palcolor
+      ),
+      guide = guide_legend(
+        title.hjust = 0,
+        order = 1,
+        override.aes = list(linewidth = 2, alpha = 1)
+      )
+    )
+  }
+  layers
 }

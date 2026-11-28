@@ -74,7 +74,7 @@ test_that("RunCellRankTrends stores normalized trend payload", {
     PrepareEnv = function(...) NULL,
     check_python = function(...) TRUE,
     srt_to_adata = function(...) "adata",
-    scop_python_import = function(...) {
+    import_bundled_python = function(...) {
       list(CellRankTrends = function(...) {
         forwarded <<- list(...)
         list(
@@ -259,7 +259,7 @@ test_that("RunCellRank stores named fate and driver payloads", {
     py_to_r2 = function(x) x,
     srt_to_adata = function(...) list(obs = data.frame(cluster = factor(c("a", "a", "b", "b")))),
     palette_colors = function(...) c(a = "#111111", b = "#222222"),
-    scop_python_import = function(...) {
+    import_bundled_python = function(...) {
       list(CellRank = function(...) {
         captured$recompute_neighbors <- list(...)$recompute_neighbors
         captured$schur_method <- list(...)$schur_method

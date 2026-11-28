@@ -232,7 +232,7 @@ RunPAGA <- function(
     palcolor = palcolor
   )
 
-  functions <- scop_python_import("functions", convert = TRUE)
+  functions <- import_bundled_python("functions", convert = TRUE)
   log_message("Running {.pkg PAGA} analysis...", verbose = verbose)
   adata <- do.call(functions$PAGA, args)
   log_message(
@@ -350,7 +350,7 @@ run_paga_cpp <- function(
       k = knn_k,
       metric = "euclidean",
       exclude_self = TRUE,
-      n_threads = scop_n_threads(cores)
+      n_threads = normalize_thread_count(cores)
     )
   }
   paga <- paga_connectivities_cpp(
@@ -523,8 +523,14 @@ run_paga_cpp <- function(
   if (isTRUE(embedded_with_PAGA) && !is.null(nonlinear_reduction) &&
     nonlinear_reduction %in% names(srt@reductions)) {
     current <- as.matrix(srt@reductions[[nonlinear_reduction]]@cell.embeddings)
-    centers <- sweep(rowsum(current, groups), 1L, as.numeric(table(groups)), "/")
-    offsets <- current - centers[as.integer(groups), , drop = FALSE]
+    cells <- colnames(srt)
+    if (!identical(rownames(current), cells)) {
+      current <- current[cells, , drop = FALSE]
+    }
+    centers <- rowsum(current, groups)
+    center_groups <- match(rownames(centers), group_levels)
+    centers <- sweep(centers, 1L, paga[["group_sizes"]][center_groups], "/")
+    offsets <- current - centers[match(as.character(groups), rownames(centers)), , drop = FALSE]
     scale <- apply(offsets, 2L, stats::sd)
     scale[!is.finite(scale) | scale == 0] <- 1
     embedded <- pos[as.integer(groups), , drop = FALSE] +

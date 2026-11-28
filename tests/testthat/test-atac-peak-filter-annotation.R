@@ -273,8 +273,9 @@ test_that("filtering preserves native fragment maps without reading inactive mis
     expect_identical(as.vector(actual_map), as.vector(expected_map))
     expect_identical(as.character(names(actual_map)), as.character(names(expected_map)))
   }
-  expect_identical(CheckATACData(result, assay = "filtered_peaks")$fragments$active, c(TRUE, FALSE))
-  expect_true(CheckATACData(result, assay = "filtered_peaks")$fragments_ready)
+  report <- CheckATACData(result, assay = "filtered_peaks")
+  expect_identical(report$fragments$active, c(TRUE, FALSE))
+  expect_true(report$fragments_ready)
   expect_identical(colnames(result), colnames(partial))
   # Native Signac adds only fastmatch's pointer cache to counts/data cell IDs.
   uncached <- partial

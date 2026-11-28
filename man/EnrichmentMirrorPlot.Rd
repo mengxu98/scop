@@ -25,7 +25,6 @@ EnrichmentMirrorPlot(
   symmetric_axis = FALSE,
   band_gap = 0.6,
   base_size = 11,
-  font_family = "sans",
   res = NULL
 )
 }
@@ -66,8 +65,6 @@ each extent while preserving identical numeric unit lengths on both sides.}
 \item{band_gap}{Non-negative gap between the database band and estimated left content extent, in x-axis units.}
 
 \item{base_size}{Positive theme font size in points.}
-
-\item{font_family}{Font family used by the theme, term and gene text.}
 
 \item{res}{Result list with an enrichment data.frame, as returned by RunEnrichment. Overrides object.}
 }

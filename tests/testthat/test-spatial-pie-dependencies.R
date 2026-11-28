@@ -27,8 +27,10 @@ test_that("empty pies render without looking up the optional backend", {
     missing = matrix(NA_real_, 3, 2),
     incomplete = cbind(c(1, NA, 0), c(NA, 1, 0))
   )
-  for (value in values) {
+  for (state in names(values)) {
+    value <- values[[state]]
     dimnames(value) <- list(colnames(object), c("A", "B"))
+    if (identical(state, "zero")) value <- as.data.frame(value)
     plot <- scop::SpatialSpotPlot(
       object,
       values = value, plot_type = "pie", overlay_image = FALSE,

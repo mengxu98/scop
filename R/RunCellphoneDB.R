@@ -125,7 +125,7 @@ RunCellphoneDB <- function(
     verbose = verbose
   )
 
-  functions <- scop_python_import("functions", convert = TRUE)
+  functions <- import_bundled_python("functions", convert = TRUE)
 
   args <- mget(names(formals()))
   args <- runner_python_arguments(args, parent.frame())

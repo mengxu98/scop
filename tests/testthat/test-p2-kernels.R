@@ -1,22 +1,29 @@
-test_that("native KNN voting preserves probabilities and first-level ties", {
+test_that("native KNN voting preserves first-level ties and missing labels", {
   vote <- getFromNamespace("knn_vote_labels", "scop")
-  labels <- matrix(
-    c("B", "A", "A", "B", "B", "C", "A", "C", "C", "B", "A", "C"),
-    nrow = 4,
-    byrow = TRUE,
-    dimnames = list(paste0("q", 1:4), NULL)
+  labels <- rbind(
+    q1 = c("B", "A", "A"),
+    q2 = c("B", "B", "C"),
+    q3 = c("A", "C", "C"),
+    q4 = c("B", "A", "C"),
+    q5 = c(NA_character_, "A", "B"),
+    q6 = rep(NA_character_, 3L)
   )
   levels <- c("B", "A", "C")
   out <- vote(labels, levels = levels)
-  expected <- t(vapply(seq_len(nrow(labels)), function(i) {
-    tabulate(match(labels[i, ], levels), nbins = length(levels)) / ncol(labels)
-  }, numeric(length(levels))))
-  dimnames(expected) <- list(rownames(labels), levels)
+  expected <- rbind(
+    q1 = c(1 / 3, 2 / 3, 0),
+    q2 = c(2 / 3, 0, 1 / 3),
+    q3 = c(0, 1 / 3, 2 / 3),
+    q4 = rep(1 / 3, 3L),
+    q5 = c(0.5, 0.5, 0),
+    q6 = rep(NA_real_, 3L)
+  )
+  colnames(expected) <- levels
 
-  expect_equal(out$probability, expected)
+  expect_identical(out$probability, expected)
   expect_identical(
-    unname(out$best),
-    levels[max.col(expected, ties.method = "first")]
+    out$best,
+    setNames(c("A", "B", "C", "B", "B", NA_character_), rownames(labels))
   )
 })
 

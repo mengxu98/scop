@@ -119,3 +119,49 @@ test_that("sankey selections preserve unweighted rows and explicit weights", {
   expect_no_warning(patchwork::patchworkGrob(plot))
   expect_identical(object, before)
 })
+
+test_that("composition styling retains size units, visible category keys and plot shape", {
+  srt <- make_cell_stat_srt()
+  args <- list(object = srt, stat.by = "celltype", group.by = "group")
+  bar <- do.call(CellStatPlot, args)
+  expect_identical(bar$theme$axis.text.x$angle, 0)
+  expect_s3_class(bar$theme$panel.grid.major.x, "element_blank")
+  expect_s3_class(bar$guides$guides$fill, "GuideLegend")
+  custom_grid <- do.call(CellStatPlot, c(args, list(grid_major_colour = "red")))
+  expect_identical(custom_grid$theme$panel.grid.major$colour, "red")
+
+  p <- do.call(CellStatPlot, c(args, list(plot_type = "dot")))
+  expect_identical(p$theme$axis.text.x$angle, 0)
+  expect_identical(p$scales$get_scales("size")$labels(0.25), "25%")
+  expect_s3_class(p$guides$guides$fill, "GuideLegend")
+  hidden <- do.call(CellStatPlot, c(args, list(plot_type = "dot", legend.position = "none")))
+  expect_identical(hidden$theme$legend.position, "none")
+  expect_equal(p$scales$get_scales("y")$expand, c(0, 1, 0, 1))
+
+  flipped <- do.call(CellStatPlot, c(args, list(
+    plot_type = "dot", flip = TRUE, stat_type = "count", x_text_angle = 30
+  )))
+  expect_identical(flipped$theme$axis.text.x$angle, 30)
+  expect_s3_class(flipped$theme$panel.grid.major.x, "element_line")
+  expect_false(is.function(flipped$scales$get_scales("size")$labels))
+  expect_no_error(ggplot2::ggplotGrob(flipped))
+
+  custom <- do.call(CellStatPlot, c(args, list(
+    plot_type = "dot",
+    theme_use = function() ggplot2::theme_bw() +
+      ggplot2::theme(axis.text.y = ggplot2::element_blank())
+  )))
+  expect_s3_class(custom$theme$axis.text.y, "element_blank")
+  expect_s3_class(custom$guides$guides$fill, "GuideLegend")
+
+  srt$split <- rep(c("left", "right"), 3)
+  args$object <- srt
+  args$split.by <- "split"
+  separate <- do.call(CellStatPlot, c(args, list(plot_type = "dot", combine = FALSE)))
+  combined <- do.call(CellStatPlot, c(args, list(plot_type = "dot", nrow = 1)))
+  expect_length(separate, 2L)
+  expect_s3_class(combined, "patchwork")
+  expect_identical(combined[[1]]$data, separate[[1]]$data)
+  expect_s3_class(combined[[2]]$guides$guides$fill, "GuideLegend")
+  expect_no_error(patchwork::patchworkGrob(combined))
+})

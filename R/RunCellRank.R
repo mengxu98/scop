@@ -516,7 +516,7 @@ RunCellRank <- function(
   }
 
   log_message("Running {.pkg CellRank} analysis...", verbose = verbose)
-  functions <- scop_python_import("functions", convert = TRUE)
+  functions <- import_bundled_python("functions", convert = TRUE)
   result <- do.call(functions$CellRank, args)
   log_message(
     "{.pkg CellRank} analysis completed",

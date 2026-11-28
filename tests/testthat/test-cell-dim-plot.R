@@ -22,6 +22,79 @@ make_cell_dim_plot_srt <- function(n_cells = 10L) {
   srt
 }
 
+test_that("feature dimension plots align partial assays and embeddings by cell ID", {
+  object <- make_cell_dim_plot_srt()
+  cells <- colnames(object)
+  observed <- cells[c(2, 5, 8)]
+  counts <- matrix(
+    c(2, 3, 4, 5, 6, 7), nrow = 2L,
+    dimnames = list(c("adt1", "adt2"), observed)
+  )
+  object[["ADT"]] <- SeuratObject::CreateAssay5Object(
+    counts = Matrix::Matrix(counts[, rev(observed)], sparse = TRUE)
+  )
+  object$meta_numeric <- seq_along(cells)
+  partial <- SeuratObject::Embeddings(object, "umap")[observed, , drop = FALSE]
+  colnames(partial) <- c("SUB_1", "SUB_2")
+  object[["partial"]] <- SeuratObject::CreateDimReducObject(
+    partial, key = "SUB_", assay = "RNA"
+  )
+  original <- object
+  panels <- FeatureDimPlot(
+    object, features = c("adt1", "adt2", "meta_numeric", "SUB_1"),
+    assay = "ADT", layer = "counts", reduction = "umap",
+    calculate_coexp = TRUE, bg_cutoff = -Inf, lower_cutoff = 0, upper_cutoff = 20,
+    raster = FALSE, combine = FALSE, verbose = FALSE
+  )
+  expect_length(panels, 5L)
+  values <- lapply(panels, function(panel) panel$data[cells, "value"])
+  expected <- rep(NA_real_, length(cells))
+  expected[match(observed, cells)] <- counts["adt1", ]
+  expect_equal(values[[1L]], expected)
+  expected[match(observed, cells)] <- counts["adt2", ]
+  expect_equal(values[[2L]], expected)
+  expect_equal(values[[3L]], seq_along(cells))
+  expected[match(observed, cells)] <- partial[, "SUB_1"]
+  expect_equal(values[[4L]], expected)
+  expected[match(observed, cells)] <- sqrt(counts["adt1", ] * counts["adt2", ])
+  expect_equal(values[[5L]], expected)
+  expect_identical(object, original)
+})
+
+test_that("3D feature plots align values with the selected partial reduction", {
+  skip_if_not_installed("plotly")
+  object <- make_cell_dim_plot_srt()
+  observed <- colnames(object)[c(2, 5, 8)]
+  counts <- matrix(c(2, 4, 6), nrow = 1L, dimnames = list("adt1", observed))
+  object[["ADT"]] <- SeuratObject::CreateAssay5Object(counts = Matrix::Matrix(counts, sparse = TRUE))
+  selected <- rev(observed)
+  partial <- cbind(
+    SeuratObject::Embeddings(object, "umap")[selected, , drop = FALSE],
+    seq_along(selected)
+  )
+  colnames(partial) <- paste0("SUB_", seq_len(ncol(partial)))
+  object[["partial"]] <- SeuratObject::CreateDimReducObject(
+    partial, key = "SUB_", assay = "RNA"
+  )
+  score <- matrix(c(20, 30), ncol = 1L, dimnames = list(observed[-1L], "SCORE_1"))
+  object[["score"]] <- SeuratObject::CreateDimReducObject(
+    score, key = "SCORE_", assay = "RNA"
+  )
+  widget <- FeatureDimPlot3D(
+    object, features = c("adt1", "SCORE_1"), assay = "ADT", layer = "counts",
+    reduction = "partial", verbose = FALSE
+  )
+  built <- plotly::plotly_build(widget)
+  trace <- built$x$data[[1L]]
+  expect_equal(as.numeric(trace$x), unname(partial[observed, "SUB_1"]))
+  expect_equal(as.numeric(trace$z), unname(partial[observed, "SUB_3"]))
+  expect_equal(as.numeric(trace$marker$color), unname(counts["adt1", ]))
+  expect_identical(as.vector(trace$text), paste0("Cell:", observed, "<br />Exp:", counts["adt1", ]))
+  score_button <- built$x$layout$updatemenus[[2L]]$buttons[[2L]]
+  expect_identical(score_button$label, "SCORE_1")
+  expect_equal(as.numeric(score_button$args[[1L]]$marker$color), c(NA_real_, 20, 30))
+})
+
 test_that("dimension plots preserve caller randomness on success and errors", {
   srt <- make_cell_dim_plot_srt()
   for (has_seed in c(TRUE, FALSE)) {
@@ -897,4 +970,132 @@ test_that("3D dimension plots retain highlighted traces and feature menus", {
     }
   }
   expect_identical(object, original)
+})
+
+test_that("3D HTML saves isolate staging and replace only the requested file", {
+  local_dir <- withr::local_tempdir()
+  file <- file.path(local_dir, "plot.html")
+  other <- file.path(local_dir, "keep.txt")
+  stage <- NULL
+  writeLines("previous output", file)
+  writeLines("keep this", other)
+
+  save_widget <- function(widget, file, selfcontained, libdir) {
+    stage <<- dirname(file)
+    expect_identical(dirname(libdir), stage)
+    expect_true(dir.exists(stage))
+    expect_false(identical(stage, local_dir))
+    expect_identical(widget, "example")
+    expect_true(selfcontained)
+    dir.create(libdir)
+    writeLines("temporary dependency", file.path(libdir, "dependency.js"))
+    writeLines("complete widget", file)
+  }
+
+  save_dim_plot_widget("example", file, save_widget)
+  expect_identical(readLines(file), "complete widget")
+  expect_identical(readLines(other), "keep this")
+  expect_false(dir.exists(stage))
+  expect_setequal(list.files(local_dir), c("plot.html", "keep.txt"))
+})
+
+test_that("3D HTML saves leave existing output intact when rendering fails", {
+  local_dir <- withr::local_tempdir()
+  file <- file.path(local_dir, "plot.html")
+  stage <- NULL
+  writeLines("previous output", file)
+
+  save_widget <- function(widget, file, selfcontained, libdir) {
+    stage <<- dirname(file)
+    dir.create(libdir)
+    writeLines("incomplete widget", file)
+    stop("render failed")
+  }
+
+  expect_error(save_dim_plot_widget("example", file, save_widget), "render failed")
+  expect_identical(readLines(file), "previous output")
+  expect_false(dir.exists(stage))
+})
+
+test_that("2D highlights treat FALSE as no highlight and validate requested cell IDs", {
+  withr::local_seed(11L)
+  object <- make_cell_dim_plot_srt()
+  original <- object
+  plotters <- list(
+    function(ids) CellDimPlot(
+      object, group.by = "celltype", reduction = "umap", raster = FALSE,
+      show_stat = FALSE, cells.highlight = ids
+    ),
+    function(ids) FeatureDimPlot(
+      object, features = "gene1", layer = "counts", reduction = "umap",
+      raster = FALSE, show_stat = FALSE, bg_cutoff = -Inf, cells.highlight = ids
+    )
+  )
+  for (draw in plotters) {
+    without_highlights <- ggplot2::ggplot_build(draw(NULL))$data
+    expect_identical(ggplot2::ggplot_build(draw(FALSE))$data, without_highlights)
+    expect_identical(ggplot2::ggplot_build(draw(character()))$data, without_highlights)
+    expect_error(draw("missing-cell"), "No cells.*found")
+    expect_warning(kept <- draw(c("missing-cell", "cell2")), "Some cells.*not found")
+    expect_identical(ggplot2::ggplot_build(kept)$data,
+                     ggplot2::ggplot_build(draw("cell2"))$data)
+    expect_equal(nrow(tail(draw(TRUE)$layers, 1L)[[1L]]$data), ncol(object))
+  }
+  expect_identical(object, original)
+})
+
+test_that("3D highlights preserve traces for the matched IDs only", {
+  skip_if_not_installed("plotly")
+  withr::local_seed(11L)
+  object <- make_cell_dim_plot_srt()
+  embedding <- cbind(SeuratObject::Embeddings(object, "umap"), seq_len(ncol(object)))
+  colnames(embedding) <- paste0("UMAP3D_", seq_len(ncol(embedding)))
+  object[["umap3d"]] <- SeuratObject::CreateDimReducObject(
+    embedding, key = "UMAP3D_", assay = "RNA"
+  )
+  plotters <- list(
+    function(ids) CellDimPlot3D(
+      object, group.by = "celltype", reduction = "umap3d", cells.highlight = ids
+    ),
+    function(ids) FeatureDimPlot3D(
+      object, features = "gene1", layer = "counts", reduction = "umap3d",
+      cells.highlight = ids
+    )
+  )
+  traces <- function(plot) {
+    lapply(plotly::plotly_build(plot)$x$data, function(x) x[c("name", "x", "y", "z", "marker")])
+  }
+  for (draw in plotters) {
+    expect_identical(traces(draw(FALSE)), traces(draw(NULL)))
+    expect_error(draw("missing-cell"), "No cells.*found")
+    expect_warning(kept <- draw(c("missing-cell", "cell3")), "Some cells.*not found")
+    expect_identical(traces(kept), traces(draw("cell3")))
+    expect_length(tail(traces(draw(TRUE)), 1L)[[1L]]$x, ncol(object))
+  }
+})
+
+test_that("correlation and expression statistic plots normalize highlight inputs", {
+  withr::local_seed(11L)
+  object <- make_cell_dim_plot_srt()
+  meta <- object[[]]
+  meta$cells <- rownames(meta)
+  plotters <- list(
+    function(ids) FeatureCorPlot(
+      object, features = c("gene1", "gene2"), group.by = "celltype",
+      layer = "counts", raster = FALSE, cells.highlight = ids
+    ),
+    function(ids) ExpressionStatPlot(
+      meta.data = meta, stat.by = "nCount_RNA", group.by = "celltype",
+      plot_type = "box", add_point = TRUE, cells.highlight = ids
+    ),
+    function(ids) FeatureStatPlot(
+      object, stat.by = "nCount_RNA", group.by = "celltype", layer = "counts",
+      plot_type = "box", add_point = TRUE, cells.highlight = ids
+    )
+  )
+  for (draw in plotters) {
+    expect_no_error(draw(FALSE))
+    expect_error(draw("missing-cell"), "No cells.*found")
+    expect_warning(draw(c("missing-cell", "cell3")), "Some cells.*not found")
+  }
 })

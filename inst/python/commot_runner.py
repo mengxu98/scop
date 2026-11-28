@@ -17,7 +17,7 @@ import scanpy as sc
 from scipy import sparse
 from scipy.io import mmread
 
-from scop_runner_io import configuration_path, read_ids as _read_single_column, read_json, write_manifest as _write_json
+from runner_io import configuration_path, read_ids as _read_single_column, read_json, read_staged_tsv, validate_ids, write_manifest as _write_json
 
 
 COMMUNICATION_COLUMNS = [
@@ -60,16 +60,14 @@ def _normalize_api_args(value: dict) -> dict:
 
 def _build_adata(config: dict) -> anndata.AnnData:
     features = _read_single_column(Path(config["features_path"]), "feature table")
-    metadata = pd.read_csv(config["metadata_path"], sep="\t", dtype=str)
-    coordinates = pd.read_csv(config["coordinates_path"], sep="\t")
+    metadata = read_staged_tsv(config["metadata_path"])
+    coordinates = read_staged_tsv(config["coordinates_path"])
     if list(metadata.columns) != ["cell_id", "group"]:
         raise ValueError("metadata columns must be cell_id and group")
     if list(coordinates.columns) != ["cell_id", "x", "y"]:
         raise ValueError("coordinate columns must be cell_id, x, and y")
-    cell_ids = metadata["cell_id"].astype(str).tolist()
-    coordinate_ids = coordinates["cell_id"].astype(str).tolist()
-    if not cell_ids or len(cell_ids) != len(set(cell_ids)):
-        raise ValueError("metadata cell IDs must be unique")
+    cell_ids = validate_ids(metadata["cell_id"].tolist(), "metadata cell IDs")
+    coordinate_ids = validate_ids(coordinates["cell_id"].tolist(), "coordinate cell IDs")
     if cell_ids != coordinate_ids:
         raise ValueError("metadata and coordinate IDs are not identically ordered")
     groups = metadata["group"]

@@ -151,7 +151,12 @@ column used to scale edge line width. If \code{NULL}, all edges have equal
 width.}
 
 \item{layout}{Layout used for graph-based network views. \code{"chord"} can also
-be requested via \code{plot_type = "circle"} for backward compatibility.}
+be requested via \code{plot_type = "circle"} for backward compatibility.
+Use \code{"hierarchy"} with \code{plot_type = "pathway"}, \code{"individual"} or
+\code{"individual_lr"} for a directional sender-to-receiver network.
+The circle layout remains the default.
+Cell positions and colors are kept across pathways from the same dataset;
+paths returned by a single call also share an edge-width scale.}
 
 \item{link_curvature}{Curvature used for circle-like differential links and
 flow edges.}
@@ -220,7 +225,8 @@ combines within-method percentile ranks for visualization, and \code{"legacy"}
 retains the deprecated raw-score aggregation.}
 
 \item{resource, sample}{Optional resource and sample/context filters for
-unified CCC results.}
+unified CCC results. Native CellChat plots use a stored result selected
+by \code{condition} and do not support these additional filters.}
 
 \item{spot_size, spot_alpha}{Size and alpha of ordinary spatial observations.}
 
@@ -242,6 +248,11 @@ A ggplot, patchwork, or recorded plot object.
 CCC network and flow plots
 }
 \details{
+For side-by-side networks, explicitly reuse the same named \code{cell_palcolor} and
+\code{link_palcolor} vectors for consistent identity colors across filtered plots.
+If edge widths are normalized separately by the layout, compare the stored scores
+rather than comparing line widths across panels.
+
 Canonical selection parameters and legacy aliases may be supplied
 together only when their values agree. Conflicting values raise an error.
 }

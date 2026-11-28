@@ -1,3 +1,24 @@
+save_dim_plot_widget <- function(widget, file, save_widget = htmlwidgets::saveWidget) {
+  staging <- tempfile("scop-widget-")
+  if (!dir.create(staging, mode = "0700")) {
+    stop("Could not create a temporary directory for the HTML widget.", call. = FALSE)
+  }
+  on.exit(unlink(staging, recursive = TRUE), add = TRUE)
+
+  staged_file <- file.path(staging, "widget.html")
+  save_widget(
+    widget = widget,
+    file = staged_file,
+    selfcontained = TRUE,
+    libdir = file.path(staging, "widget_files")
+  )
+  if (dir.exists(file) ||
+      !file.copy(staged_file, file, overwrite = TRUE, copy.mode = FALSE)) {
+    stop("Could not write the HTML widget to: ", file, call. = FALSE)
+  }
+  invisible(NULL)
+}
+
 #' @title Cell Dimensional Plot
 #'
 #' @description
@@ -690,22 +711,7 @@ CellDimPlot <- function(
       message_type = "error"
     )
   }
-  if (!is.null(cells.highlight) && isFALSE(cells.highlight)) {
-    if (!any(cells.highlight %in% colnames(srt@assays[[1]]))) {
-      log_message(
-        "No cells in '{.arg cells.highlight}' found in srt",
-        message_type = "error"
-      )
-    }
-    if (!all(cells.highlight %in% colnames(srt@assays[[1]]))) {
-      log_message(
-        "Some cells in '{.arg cells.highlight}' not found in srt",
-        message_type = "warning",
-        verbose = verbose
-      )
-    }
-    cells.highlight <- intersect(cells.highlight, colnames(srt@assays[[1]]))
-  }
+  cells.highlight <- normalize_plot_highlight(cells.highlight, colnames(srt), verbose)
 
   dat_meta <- srt@meta.data[, object_meta_cols, drop = FALSE]
   if (isTRUE(synthetic_split)) {
@@ -2069,22 +2075,7 @@ CellDimPlot3D <- function(
       message_type = "error"
     )
   }
-  if (!is.null(cells.highlight) && isFALSE(cells.highlight)) {
-    if (!any(cells.highlight %in% colnames(srt@assays[[1]]))) {
-      log_message(
-        "No cells in 'cells.highlight' found in srt.",
-        message_type = "error"
-      )
-    }
-    if (!all(cells.highlight %in% colnames(srt@assays[[1]]))) {
-      log_message(
-        "Some cells in 'cells.highlight' not found in srt.",
-        message_type = "warning",
-        verbose = verbose
-      )
-    }
-    cells.highlight <- intersect(cells.highlight, colnames(srt@assays[[1]]))
-  }
+  cells.highlight <- normalize_plot_highlight(cells.highlight, colnames(srt), verbose)
   reduction_key <- srt@reductions[[reduction]]@key
   if (identical(plot_type, "density_surface")) {
     if (is.null(axis_labs) || length(axis_labs) < 2) {
@@ -2450,11 +2441,10 @@ CellDimPlot3D <- function(
       autosize = FALSE
     )
     if ((!is.null(save) && is.character(save) && nchar(save) > 0)) {
-      htmlwidgets::saveWidget(
+      save_dim_plot_widget(
         widget = plotly::as_widget(p),
         file = save
       )
-      unlink(gsub("\\.html", "_files", save), recursive = TRUE)
     }
     return(p)
   }
@@ -2617,11 +2607,10 @@ CellDimPlot3D <- function(
 
 
   if ((!is.null(save) && is.character(save) && nchar(save) > 0)) {
-    htmlwidgets::saveWidget(
+    save_dim_plot_widget(
       widget = plotly::as_widget(p),
       file = save
     )
-    unlink(paste0(tools::file_path_sans_ext(save), "_files"), recursive = TRUE)
   }
 
   return(p)

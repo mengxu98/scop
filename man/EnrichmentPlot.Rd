@@ -301,15 +301,21 @@ EnrichmentPlot(res = annotated_res, db = "GO", plot_type = "annotated_bar")
 
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
+# Keep both directions and no fold-change filter for background eligibility.
 pancreas_sub <- RunDEtest(
   pancreas_sub,
-  group.by = "CellType"
+  group.by = "CellType",
+  only.pos = FALSE, fc.threshold = 1
 )
+stored_de <- pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox
+tested_background <- split(stored_de$gene, stored_de$group1)
 
 pancreas_sub <- RunEnrichment(
   pancreas_sub,
   db = c("GO_BP", "GO_CC"),
   group.by = "CellType",
+  universe = tested_background,
+  DE_threshold = "avg_log2FC >= log2(1.5) & p_val_adj < 0.05",
   species = "Mus_musculus"
 )
 
@@ -542,6 +548,8 @@ pancreas_sub <- RunEnrichment(
   pancreas_sub,
   db = c("MP", "DO"),
   group.by = "CellType",
+  universe = tested_background,
+  DE_threshold = "avg_log2FC >= log2(1.5) & p_val_adj < 0.05",
   convert_species = TRUE,
   species = "Mus_musculus"
 )

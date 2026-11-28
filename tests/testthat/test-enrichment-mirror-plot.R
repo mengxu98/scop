@@ -36,7 +36,7 @@ test_that("mirror axes and group order adapt without changing result values", {
   expect_true(all(p$data$.xmin[p$data$Groups == "B"] < 0))
   q <- EnrichmentMirrorPlot(
     res = mirror_fixture(), group_use = c("B", "A"),
-    db = "GO", symmetric_axis = TRUE, term_size = 4, font_family = "sans"
+    db = "GO", symmetric_axis = TRUE, term_size = 4
   )
   expect_equal(p$data$.score, q$data$.score)
   expect_equal(q$layers[[7]]$data$x, -q$layers[[8]]$data$x)

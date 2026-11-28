@@ -354,3 +354,57 @@ test_that("bundled COMMOT runner uses only official API entry points", {
   expect_match(source, "ct.tl.communication_direction", fixed = TRUE)
   expect_false(grepl("reticulate", source, fixed = TRUE))
 })
+
+test_that("staged Python IDs preserve literal text and reject genuinely empty IDs", {
+  python <- Sys.which("python3")
+  skip_if(!nzchar(python), "Python 3 is unavailable")
+  pandas <- suppressWarnings(system2(
+    python, c("-c", shQuote("import pandas")), stdout = FALSE, stderr = FALSE
+  ))
+  skip_if(pandas != 0L, "pandas is unavailable")
+  runner_dir <- dirname(getFromNamespace("runner_script_path", "scop")("commot_runner.py", "COMMOT"))
+  ids <- withr::local_tempfile()
+  writeLines(c("cell_id", "001", "NULL", "N/A", "  padded  "), ids)
+  invalid <- withr::local_tempfile()
+  writeLines(c("cell_id", "001", "", "002"), invalid)
+  script <- withr::local_tempfile(lines = c(
+    "import sys",
+    "sys.path.insert(0, sys.argv[1])",
+    "from pathlib import Path",
+    "from runner_io import read_ids",
+    "assert read_ids(Path(sys.argv[2]), 'test IDs') == ['001', 'NULL', 'N/A', '  padded  ']",
+    "try:",
+    "    read_ids(Path(sys.argv[3]), 'test IDs')",
+    "except ValueError as err:",
+    "    assert 'unique non-empty IDs' in str(err)",
+    "else:",
+    "    raise AssertionError('empty ID was accepted')"
+  ), fileext = ".py")
+  result <- suppressWarnings(system2(
+    python, c("-B", shQuote(c(script, runner_dir, ids, invalid))),
+    stdout = TRUE, stderr = TRUE
+  ))
+  expect_null(attr(result, "status"), info = paste(result, collapse = "\n"))
+})
+
+test_that("COMMOT returned identifiers keep their exact spelling", {
+  path <- withr::local_tempfile()
+  writeLines(c(
+    "cell_id,group,sender,receiver,ligand,receptor,pathway_name,x,pvalue",
+    "001,02,TRUE,002,003,NA,NULL,1.5,NaN",
+    "\"A,B\",N/A,009,NA,NA,,009,2,0.05",
+    ",,NA,NA,NA,NA,NA,3,"
+  ), path)
+  out <- commot_read_table(path, "cell_id", c("x", "pvalue"), "direction")
+  expect_identical(out$cell_id, c("001", "A,B", NA_character_))
+  expect_identical(out$group, c("02", "N/A", NA_character_))
+  expect_identical(out$sender, c("TRUE", "009", "NA"))
+  expect_identical(out$receptor, c("NA", NA_character_, "NA"))
+  expect_identical(out$pathway_name, c("NULL", "009", "NA"))
+  expect_identical(out$x, c(1.5, 2, 3))
+  expect_identical(out$pvalue, c(NA_real_, 0.05, NA_real_))
+  writeLines(c("cell_id,group,x", "001,009,1", "002,010,2"), path)
+  numeric_ids <- commot_read_table(path, "cell_id", "x", "direction")
+  expect_identical(numeric_ids$cell_id, c("001", "002"))
+  expect_identical(numeric_ids$group, c("009", "010"))
+})

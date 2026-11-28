@@ -1,30 +1,21 @@
-test_that("pancreas_sub nCount_RNA matches counts colSums used by the fast path", {
-  data("pancreas_sub", package = "scop")
-  expect_true("nCount_RNA" %in% colnames(pancreas_sub@meta.data))
-  expect_equal(
-    pancreas_sub@meta.data$nCount_RNA,
-    unname(Matrix::colSums(GetAssayData5(pancreas_sub, layer = "counts")))
+test_that("GroupHeatmap yields the same library-normalized values from metadata and counts", {
+  counts <- Matrix::Matrix(
+    rbind(target = c(1, 4, 2, 3), reference = c(3, 0, 6, 7)),
+    sparse = TRUE
   )
-})
-
-test_that("GroupHeatmap libsize uses meta.data fast path and colSums fallback", {
-  data("pancreas_sub", package = "scop")
-  feats <- head(rownames(pancreas_sub), 5)
-
-  p_fast <- GroupHeatmap(
-    pancreas_sub,
-    features = feats,
-    group.by = "CellType",
-    lib_normalize = TRUE
+  colnames(counts) <- paste0("cell", 1:4)
+  object <- SeuratObject::CreateSeuratObject(counts)
+  object$group <- factor(c("B", "A", "B", "A"), levels = c("A", "B"))
+  draw <- function(x) {
+    GroupHeatmap(
+      x, features = "target", group.by = "group",
+      exp_method = "raw", lib_normalize = TRUE, verbose = FALSE
+    )$matrix_list$group
+  }
+  expected <- matrix(c(3.9, 1.5), nrow = 1,
+    dimnames = list("target", c("A", "B"))
   )
-  expect_false(is.null(p_fast))
-
-  pancreas_sub@meta.data$nCount_RNA <- NULL
-  p_fallback <- GroupHeatmap(
-    pancreas_sub,
-    features = feats,
-    group.by = "CellType",
-    lib_normalize = TRUE
-  )
-  expect_false(is.null(p_fallback))
+  expect_equal(draw(object), expected)
+  object$nCount_RNA <- NULL
+  expect_equal(draw(object), expected)
 })

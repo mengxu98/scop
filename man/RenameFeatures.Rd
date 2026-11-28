@@ -15,10 +15,13 @@ RenameFeatures(
 \arguments{
 \item{object}{A \code{Seurat} object.}
 
-\item{newnames}{A vector with the same length of features in Seurat object,
-or characters named with old features.}
+\item{newnames}{One name per feature in the first selected assay, or a character
+vector named by old feature IDs. Unnamed vectors require the selected assays
+to have the same feature IDs.}
 
-\item{assays}{Assays to rename.}
+\item{assays}{Assays to rename (all assays by default). Standard Seurat v3 and
+v5 assays are supported. Rename features before fitting reductions that rely
+on those features.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
@@ -28,6 +31,9 @@ will be removed in scop 1.0.0.}
 }
 \description{
 Rename features for the Seurat object
+}
+\details{
+Previously computed results stored in the object are not rewritten.
 }
 \examples{
 data(panc8_sub)

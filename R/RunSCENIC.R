@@ -322,7 +322,7 @@ RunSCENIC <- function(
   )
   configure_python_runtime(scenic_python)
 
-  functions <- scop_python_import("functions", convert = TRUE)
+  functions <- import_bundled_python("functions", convert = TRUE)
 
   log_message(
     "Preparing {.pkg SCENIC} input matrix",
@@ -1373,7 +1373,7 @@ cistarget2 <- function(
       top_n_targets = module_top_n_targets,
       keep_only_activating = !isTRUE(include_negative_regulons),
       verbose = verbose,
-      cores = scop_n_threads(cores_kernel)
+      cores = normalize_thread_count(cores_kernel)
     )
   })
   modules <- profiled[["value"]]
@@ -1872,7 +1872,7 @@ scenic_add_correlation <- function(
       expr = expr_mtx,
       tf_index = tf_index,
       target_index = target_index,
-      n_threads = scop_n_threads(cores)
+      n_threads = normalize_thread_count(cores)
     ),
     error = function(e) NULL
   )
@@ -2547,7 +2547,7 @@ scenic_compute_aucell_score <- function(
       strategy = "full",
       algorithm = cpp_algorithm,
       seed = if (!is.null(seed)) -1L else 0L,
-      cores = scop_n_threads(cores)
+      cores = normalize_thread_count(cores)
     )
     return(as.data.frame(scores, check.names = FALSE)[
       colnames(counts), ,

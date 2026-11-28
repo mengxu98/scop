@@ -189,7 +189,7 @@ test_that("metacell grouping treats metadata names as data", {
   testthat::local_mocked_bindings(
     check_r = function(...) invisible(TRUE),
     PrepareEnv = function(...) invisible(TRUE),
-    scop_python_import = function(...) list(),
+    import_bundled_python = function(...) list(),
     python_anndata_from_matrix = function(x, embeddings) list(obsm = embeddings),
     get_namespace_fun = function(package, fun) {
       if (identical(package, "SuperCell")) {

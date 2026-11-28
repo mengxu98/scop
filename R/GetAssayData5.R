@@ -81,22 +81,21 @@ GetAssayData5.Assay5 <- function(
         dims = c(length(features_use), length(cells_use)), dimnames = list(features_use, cells_use)
       ))
     }
-    object <- subset(object, features = features_use, cells = cells_use)
+    full_native_join <- is.null(features) && is.null(cells) &&
+      identical(class(object)[[1L]], "Assay5") &&
+      identical(features_use, rownames(object)) &&
+      identical(cells_use, colnames(object)) &&
+      all(vapply(methods::slot(object, "layers"), function(x) {
+        identical(class(x)[[1L]], "dgCMatrix")
+      }, logical(1))) &&
+      isTRUE(getOption("Seurat.object.validate", TRUE)) &&
+      isTRUE(methods::validObject(object, test = TRUE))
+    if (!full_native_join) {
+      object <- subset(object, features = features_use, cells = cells_use)
+    }
     object <- SeuratObject::JoinLayers(object, layers = layer, new = layer)
   }
-  data <- if (length(matching_layers) == 1L && identical(matching_layers, layer)) {
-    SeuratObject::GetAssayData(
-      object,
-      layer = layer,
-      ...
-    )
-  } else {
-    SeuratObject::GetAssayData(
-      object,
-      layer = layer,
-      ...
-    )
-  }
+  data <- SeuratObject::GetAssayData(object, layer = layer, ...)
   subset_assay_data(data, features, cells)
 }
 

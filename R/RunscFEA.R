@@ -202,7 +202,7 @@ os.environ['NUMBA_NUM_THREADS'] = '1'
   python_path <- conda_python(conda = conda, envname = envname)
   configure_python_runtime(python_path)
 
-  scfea <- scop_python_import("scfea", convert = FALSE)
+  scfea <- import_bundled_python("scfea", convert = FALSE)
   pd <- reticulate::import("pandas", convert = FALSE)
 
   py_expr <- pd$DataFrame(

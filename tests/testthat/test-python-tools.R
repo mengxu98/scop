@@ -40,7 +40,7 @@ test_that("RunPAGA python backend promotes misc$paga into tools$PAGA", {
     PrepareEnv = function(...) NULL,
     py_to_r2 = function(x) x,
     palette_colors = function(...) c("a" = "#111111", "b" = "#222222"),
-    scop_python_import = function(...) {
+    import_bundled_python = function(...) {
       list(PAGA = python_mock_without_data_object("fake_adata_out"))
     },
     adata_to_srt = function(...) paga_srt
@@ -82,7 +82,7 @@ test_that("RunSCVELO python backend records result locations in tools", {
     .package = "scop",
     PrepareEnv = function(...) NULL,
     py_to_r2 = function(x) x,
-    scop_python_import = function(...) {
+    import_bundled_python = function(...) {
       list(SCVELO = python_mock_without_data_object("fake_adata_out"))
     },
     adata_to_srt = function(...) scvelo_srt
@@ -146,7 +146,7 @@ test_that("RunPalantir python backend records converted outputs in tools", {
     PrepareEnv = function(...) NULL,
     check_python = function(...) TRUE,
     py_to_r2 = function(x) x,
-    scop_python_import = function(...) {
+    import_bundled_python = function(...) {
       list(Palantir = python_mock_without_data_object("fake_adata_out"))
     },
     adata_to_srt = function(...) palantir_srt
@@ -191,7 +191,7 @@ test_that("RunPAGA python backend takes the data object as `object`", {
     py_to_r2 = function(x) x,
     srt_to_adata = function(object, ...) adata_in,
     palette_colors = function(...) c("a" = "#111111", "b" = "#222222"),
-    scop_python_import = function(...) {
+    import_bundled_python = function(...) {
       list(PAGA = python_mock_without_data_object("fake_adata_out"))
     }
   )
@@ -219,7 +219,7 @@ test_that("RunWOT python backend takes the data object as `object`", {
     py_to_r2 = function(x) x,
     srt_to_adata = function(object, ...) adata_in,
     palette_colors = function(...) c("a" = "#111111", "b" = "#222222"),
-    scop_python_import = function(...) {
+    import_bundled_python = function(...) {
       list(WOT = python_mock_without_data_object("fake_adata_out"))
     }
   )

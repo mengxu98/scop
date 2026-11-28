@@ -822,7 +822,7 @@ scmf_python_classifier_available <- function() {
 }
 
 import_scmalignantfinder <- function(convert = TRUE) {
-  scop_python_import("scmalignantfinder", convert = convert)
+  import_bundled_python("scmalignantfinder", convert = convert)
 }
 
 scmf_check_one_input <- function(srt = NULL, adata = NULL, h5ad = NULL) {
